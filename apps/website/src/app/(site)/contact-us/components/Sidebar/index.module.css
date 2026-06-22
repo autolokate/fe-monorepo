@@ -1,0 +1,136 @@
+.card {
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  border: 1px solid rgba(228, 228, 231, 0.95);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 18px 48px -24px rgba(15, 23, 42, 0.1);
+  color: #18181b;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 2rem 2.25rem;
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #09090b;
+}
+
+.list {
+  margin: 1.35rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.iconWrap {
+  --contact-brand: #52525b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--contact-brand) 12%, #f4f4f5);
+  color: var(--contact-brand);
+}
+
+.iconWrap svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.rowText {
+  min-width: 0;
+  padding-top: 0.15rem;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a1a1aa;
+}
+
+.value {
+  margin: 0.2rem 0 0;
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #18181b;
+}
+
+.valueLink:hover {
+  color: #3f3f46;
+}
+
+.social {
+  margin-top: 1.5rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid #f4f4f5;
+}
+
+.socialLabel {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #52525b;
+}
+
+.socialList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.socialLink {
+  --social-brand: #52525b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--social-brand) 35%, #e4e4e7);
+  background: #fff;
+  color: var(--social-brand);
+  transition:
+    border-color 0.15s,
+    color 0.15s,
+    background-color 0.15s,
+    transform 0.15s;
+}
+
+.socialLink:hover {
+  border-color: var(--social-brand);
+  background: color-mix(in srgb, var(--social-brand) 10%, #fff);
+  transform: translateY(-1px);
+}
+
+.socialLink svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}

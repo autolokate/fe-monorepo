@@ -1,0 +1,166 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://placeholder.test
+          NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL: https://placeholder.test
+        run: npm run build
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [quality]
+    if: >-
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      GCP_REGION: ${{ vars.GCP_REGION }}
+      IMAGE_TAG: ${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Fetch build-time secrets
+        run: |
+          SITE_URL=$(gcloud secrets versions access latest --secret=fe-next-public-site-url-staging --project=${GCP_PROJECT_ID})
+          echo "::add-mask::${SITE_URL}"
+          echo "NEXT_PUBLIC_SITE_URL=${SITE_URL}" >> "$GITHUB_ENV"
+
+          API_URL=$(gcloud secrets versions access latest --secret=fe-next-public-autolokate-api-base-url-staging --project=${GCP_PROJECT_ID})
+          echo "::add-mask::${API_URL}"
+          echo "NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL=${API_URL}" >> "$GITHUB_ENV"
+
+          RZP_KEY=$(gcloud secrets versions access latest --secret=fe-next-public-razorpay-key-id-staging --project=${GCP_PROJECT_ID} 2>/dev/null || echo "")
+          if [ -n "$RZP_KEY" ]; then
+            echo "::add-mask::${RZP_KEY}"
+            echo "NEXT_PUBLIC_RAZORPAY_KEY_ID=${RZP_KEY}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build & push image
+        run: |
+          gcloud builds submit . \
+            --project="${GCP_PROJECT_ID}" \
+            --config=/dev/stdin \
+            --timeout=900s \
+            --suppress-logs \
+            --quiet <<YAML
+          steps:
+            - name: 'gcr.io/cloud-builders/docker'
+              args:
+                - 'build'
+                - '--build-arg'
+                - 'NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}'
+                - '--build-arg'
+                - 'NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL=${NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL}'
+                - '--build-arg'
+                - 'NEXT_PUBLIC_RAZORPAY_KEY_ID=${NEXT_PUBLIC_RAZORPAY_KEY_ID}'
+                - '-t'
+                - '${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/autolokate/fe:${IMAGE_TAG}'
+                - '-t'
+                - '${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/autolokate/fe:latest'
+                - '-f'
+                - 'Dockerfile'
+                - '.'
+          images:
+            - '${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/autolokate/fe:${IMAGE_TAG}'
+            - '${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/autolokate/fe:latest'
+          YAML
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: autolokate-fe-staging
+          region: ${{ env.GCP_REGION }}
+          image: ${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/autolokate/fe:${{ env.IMAGE_TAG }}
+
+  smoke-test-staging:
+    name: Staging Smoke Test
+    needs: [deploy-staging]
+    if: needs.deploy-staging.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: staging
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+
+    steps:
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Get FE URL
+        run: |
+          FE_URL=$(gcloud run services describe autolokate-fe-staging --region=${{ vars.GCP_REGION }} --format='value(status.url)' --project=${GCP_PROJECT_ID})
+          echo "FE_URL=${FE_URL}" >> "$GITHUB_ENV"
+
+      - name: Health check
+        run: |
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${FE_URL}/")
+            if [ "$STATUS" = "200" ]; then
+              echo "FE Health: OK"
+              break
+            fi
+            echo "Attempt $i: status=$STATUS, retrying in 10s..."
+            sleep 10
+          done
+          [ "$STATUS" = "200" ] || exit 1

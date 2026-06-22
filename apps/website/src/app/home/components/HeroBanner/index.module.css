@@ -1,0 +1,232 @@
+/* HeroBanner — dark full-bleed hero aligned to the home redesign mock. */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #050505;
+  color: #fff;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgBase,
+.bgCarLift {
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/home/home_banner.png");
+  background-size: cover;
+  background-position: 72% center;
+  background-repeat: no-repeat;
+}
+
+@media (min-width: 1024px) {
+  .bgBase,
+  .bgCarLift {
+    background-position: 68% center;
+  }
+}
+
+/* Brightness / contrast on grille & headlights (right side only). */
+.bgCarLift {
+  z-index: 1;
+  filter: brightness(1.14) contrast(1.1);
+  -webkit-mask-image: linear-gradient(
+    105deg,
+    transparent 28%,
+    rgba(0, 0, 0, 0.35) 40%,
+    #000 52%,
+    #000 100%
+  );
+  mask-image: linear-gradient(
+    105deg,
+    transparent 28%,
+    rgba(0, 0, 0, 0.35) 40%,
+    #000 52%,
+    #000 100%
+  );
+}
+
+.bgGradient {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.65) 42%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+}
+
+/* Lift grille / headlights so the front does not sink into the black bg. */
+.bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: radial-gradient(
+    ellipse 55% 48% at 72% 42%,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.05) 38%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+/* Soft glow near the headlight area. */
+.bg::after {
+  content: "";
+  position: absolute;
+  right: 25%;
+  top: 35%;
+  z-index: 3;
+  height: 10rem;
+  width: 10rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  filter: blur(48px);
+  pointer-events: none;
+}
+
+.fadeTop {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 4;
+  height: 7rem;
+  background: linear-gradient(to bottom, rgba(5, 5, 5, 0.75) 0%, transparent 100%);
+}
+
+.fadeBottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 4;
+  height: 10rem;
+  background: linear-gradient(to top, rgba(5, 5, 5, 0.95) 0%, transparent 100%);
+}
+
+.inner {
+  position: relative;
+  z-index: 10;
+  margin-inline: auto;
+  display: flex;
+  max-width: 80rem;
+  min-height: min(92vh, 52rem);
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2.5rem;
+  padding: 5.5rem 1rem 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 6.5rem 1.5rem 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    min-height: min(88vh, 54rem);
+    padding: 7rem 2rem 3.5rem;
+  }
+}
+
+.copy {
+  max-width: 36rem;
+}
+
+.headline {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.subheading {
+  margin-top: 1.25rem;
+  max-width: 32rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+@media (min-width: 640px) {
+  .subheading {
+    font-size: 1.05rem;
+  }
+}
+
+.ctas {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .features {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+  }
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  min-width: 0;
+}
+
+.featureTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.featureBody {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+@media (min-width: 640px) {
+  .featureBody {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Thumbnail tile inside the Trending Models card (legacy hero sidebar). */
+.thumb {
+  position: relative;
+  height: 3.5rem;
+  width: 5rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.08);
+}

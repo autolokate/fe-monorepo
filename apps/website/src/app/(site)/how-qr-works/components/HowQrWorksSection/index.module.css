@@ -1,0 +1,255 @@
+/* Light-section treatment — matches shop “How QR Works” mock (white / grey / black). */
+
+.section {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  scroll-margin-top: 5rem;
+}
+
+.inner {
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: 2.75rem 1.25rem 3.25rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 3.25rem 2rem 3.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 3.75rem 2.5rem 4.25rem;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  padding: 0.4rem 0.95rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.headline {
+  margin-top: 1.25rem;
+  margin-inline: auto;
+  max-width: 28rem;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.875rem, 4.2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: #0a0a0a;
+  text-wrap: balance;
+}
+
+.subheading {
+  margin-top: 1rem;
+  margin-inline: auto;
+  max-width: 36rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #6b7280;
+  text-wrap: pretty;
+}
+
+@media (min-width: 640px) {
+  .subheading {
+    font-size: 1rem;
+  }
+}
+
+.stepsWrap {
+  position: relative;
+  margin-top: 2.25rem;
+}
+
+@media (min-width: 1024px) {
+  .stepsWrap {
+    margin-top: 2.5rem;
+  }
+}
+
+.steps {
+  position: relative;
+  display: grid;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: 1fr;
+  gap: 2.25rem;
+}
+
+@media (min-width: 640px) {
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    align-items: start;
+  }
+
+  .steps::before {
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    top: 2rem;
+    z-index: 0;
+    height: 0;
+    border-top: 1px dashed rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+  }
+}
+
+.step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: 0.25rem;
+  text-align: center;
+}
+
+.stepHighlight .iconWrap {
+  border-color: #0a0a0a;
+  border-width: 1.5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.stepHighlight .stepTitle {
+  font-weight: 800;
+}
+
+@media (min-width: 1024px) {
+  .stepHighlight .stepTitle {
+    font-size: 1rem;
+  }
+}
+
+.iconStage {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 0.5rem;
+}
+
+.iconWrap {
+  position: relative;
+  display: flex;
+  height: 4rem;
+  width: 4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.stepNumber {
+  position: absolute;
+  bottom: -0.375rem;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  height: 1.25rem;
+  width: 1.25rem;
+  translate: -50% 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #0a0a0a;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.stepTitle {
+  margin-top: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #0a0a0a;
+}
+
+@media (min-width: 1024px) {
+  .stepTitle {
+    font-size: 1rem;
+  }
+}
+
+.stepBody {
+  margin-top: 0.4375rem;
+  margin-inline: auto;
+  max-width: 11.5rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #52525b;
+}
+
+@media (min-width: 1024px) {
+  .stepBody {
+    max-width: 12.5rem;
+  }
+}
+
+.privacyBanner {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 0.75rem;
+  background-color: #f5f5f5;
+  padding: 1.125rem 1.25rem;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .privacyBanner {
+    margin-top: 2.25rem;
+    padding: 1.25rem 1.5rem;
+    gap: 1.125rem;
+  }
+}
+
+.privacyIcon {
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+.privacyTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #0a0a0a;
+}
+
+.privacyBody {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #52525b;
+}

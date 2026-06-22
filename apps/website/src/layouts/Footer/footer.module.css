@@ -1,0 +1,104 @@
+/* Dark footer — car sketch background on the right. */
+
+.footer {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #050505;
+  color: #fff;
+}
+
+.bgWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgImage {
+  object-fit: cover;
+  object-position: 72% center;
+}
+
+@media (min-width: 1024px) {
+  .bgImage {
+    object-position: 78% center;
+  }
+}
+
+.bgFade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(5, 5, 5, 0.97) 0%,
+    rgba(5, 5, 5, 0.88) 42%,
+    rgba(5, 5, 5, 0.45) 68%,
+    rgba(5, 5, 5, 0.2) 100%
+  );
+}
+
+.navColumn {
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .navColumn + .navColumn {
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    padding-left: 1.75rem;
+  }
+}
+
+.socialIcon {
+  --social-brand: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--social-brand) 45%, rgba(255, 255, 255, 0.22));
+  background: #fff;
+  color: var(--social-brand);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.socialIcon:hover {
+  border-color: var(--social-brand);
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.socialIcon:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+.navLink {
+  display: inline-flex;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.72);
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: #fff;
+}
+
+.navLink:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .socialIcon:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,183 @@
+.card {
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  border: 1px solid rgba(228, 228, 231, 0.95);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 18px 48px -24px rgba(15, 23, 42, 0.1);
+  color: #18181b;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 2rem 2.25rem;
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #09090b;
+}
+
+.subtitle {
+  margin: 0.4rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #71717a;
+}
+
+.form {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fieldIcon {
+  position: absolute;
+  left: 0.95rem;
+  z-index: 1;
+  width: 1.05rem;
+  height: 1.05rem;
+  color: #a1a1aa;
+  pointer-events: none;
+}
+
+.fieldInput {
+  height: 3rem;
+  width: 100%;
+  padding-left: 2.65rem;
+  padding-right: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  font-size: 0.9375rem;
+  color: #18181b;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.fieldInput::placeholder {
+  color: #a1a1aa;
+}
+
+.fieldInput:focus {
+  border-color: #a1a1aa;
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
+}
+
+.textarea {
+  min-height: 7.5rem;
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+  resize: vertical;
+}
+
+.textareaIcon {
+  top: 0.95rem;
+  align-self: flex-start;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #dc2626;
+}
+
+.submit {
+  margin-top: 0.35rem;
+  display: inline-flex;
+  height: 3rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: #18181b;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.submit:hover:not(:disabled) {
+  background: #27272a;
+}
+
+.submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.privacy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: #71717a;
+}
+
+.privacyLink {
+  font-weight: 600;
+  color: #18181b;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.privacyLink:hover {
+  color: #3f3f46;
+}
+
+.success {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(24, 24, 27, 0.12);
+  background: rgba(24, 24, 27, 0.04);
+  padding: 1.1rem 1.15rem;
+}
+
+.successTitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #18181b;
+}
+
+.successAction {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #18181b;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.successAction:hover {
+  color: #52525b;
+}

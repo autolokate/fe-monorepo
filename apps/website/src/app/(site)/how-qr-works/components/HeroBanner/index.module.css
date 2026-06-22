@@ -1,0 +1,183 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #050505;
+  color: #fff;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/shop/shop_banner_bg.png");
+  background-size: cover;
+  background-position: 72% center;
+  background-repeat: no-repeat;
+}
+
+@media (min-width: 1024px) {
+  .bgImage {
+    background-position: 68% center;
+  }
+}
+
+.bgGradient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.72) 38%,
+    rgba(0, 0, 0, 0.2) 72%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+}
+
+.fadeBottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  height: 6rem;
+  background: linear-gradient(to top, rgba(5, 5, 5, 0.95) 0%, transparent 100%);
+}
+
+.inner {
+  position: relative;
+  z-index: 10;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: 4.5rem 1.25rem 4rem;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 5.5rem 2rem 4.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 6.5rem 2.5rem 5rem;
+  }
+}
+
+.copy {
+  max-width: 36rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  padding: 0.4rem 0.95rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.headline {
+  margin-top: 1.5rem;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+@media (min-width: 1024px) {
+  .headline {
+    font-size: clamp(2.125rem, 4.5vw, 3.22rem);
+  }
+}
+
+.subheading {
+  margin-top: 1.25rem;
+  max-width: 32rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+@media (min-width: 640px) {
+  .subheading {
+    font-size: 1.05rem;
+  }
+}
+
+.perks {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  max-width: 17.5rem;
+}
+
+@media (min-width: 640px) {
+  .perks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 30rem;
+    column-gap: 1.125rem;
+    row-gap: 1.375rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .perks {
+    max-width: 32rem;
+    column-gap: 1.25rem;
+  }
+}
+
+.perk {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+  text-align: left;
+}
+
+.perkIcon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.perkLabel {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+@media (min-width: 640px) {
+  .perkLabel {
+    font-size: 0.75rem;
+  }
+}
+
+.ctas {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
