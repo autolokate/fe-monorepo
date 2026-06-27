@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "@autolokate/design-system/theme.css";
 import "./styles/globals.css";
-import { Toaster } from "sonner";
 import { ThemeProvider, themeBootstrapScript } from "@/providers/theme-provider";
+import { ThemedToaster } from "@/providers/ThemedToaster";
 import { PreferenceFinderProvider } from "@/providers/PreferenceFinderProvider";
 import { VehiclePreferenceSync } from "@/components/shared/VehiclePreferenceSync";
 
@@ -58,18 +58,7 @@ export default function RootLayout({
         <ThemeProvider>
           <PreferenceFinderProvider>{children}</PreferenceFinderProvider>
           <VehiclePreferenceSync />
-          <Toaster
-            position="top-center"
-            richColors
-            closeButton
-            theme="light"
-            toastOptions={{
-              classNames: {
-                toast:
-                  "rounded-xl border border-border/70 bg-card text-card-foreground shadow-lg",
-              },
-            }}
-          />
+          <ThemedToaster />
         </ThemeProvider>
       </body>
     </html>

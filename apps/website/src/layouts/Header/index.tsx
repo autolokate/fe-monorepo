@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useIsAuthenticated, useLogout } from "@/hooks/auth";
 import { AvatarMenu } from "./AvatarMenu";
 import { avatarMenuItems } from "./AvatarMenu/constants";
+import { ThemeToggle } from "./ThemeToggle";
 import {
   CloseIcon,
   Logo,
@@ -146,6 +147,8 @@ export function Header({
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle size="sm" style={onDarkSurfaceStyle} />
+
           <AlButton
             size="sm"
             radius="pill"
@@ -193,7 +196,8 @@ export function Header({
           </Link>
         </div>
 
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end gap-1">
+          {!open ? <ThemeToggle style={onDarkSurfaceStyle} /> : null}
           <AlIconButton
             icon={open ? <CloseIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             label={open ? "Close menu" : "Open menu"}
