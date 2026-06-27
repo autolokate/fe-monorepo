@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { GitCompare, Shield } from "lucide-react";
 import { AlButton } from "@autolokate/ui/button";
 import { HERO_COPY } from "./constants";
 import styles from "./index.module.css";
@@ -14,7 +13,6 @@ export function HeroCtas() {
       <AlButton
         size="md"
         className={styles.ctaPrimary}
-        icon={<Shield className="h-4 w-4" aria-hidden />}
         variant="primary"
         onClick={() => router.push(HERO_COPY.primaryCta.href)}
       >
@@ -24,7 +22,6 @@ export function HeroCtas() {
         size="md"
         variant="outline"
         className={styles.ctaSecondary}
-        icon={<GitCompare className="h-4 w-4" aria-hidden />}
         onClick={() => {
           if (HERO_COPY.secondaryCta.href) {
             router.push(HERO_COPY.secondaryCta.href);

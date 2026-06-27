@@ -13,7 +13,12 @@ export interface HeroCta {
 }
 
 export interface HeroCopy {
+  /** Small monospace eyebrow shown above the headline. */
+  badge: string;
+  /** Leading part of the headline rendered in the base color. */
   headline: string;
+  /** Trailing word(s) rendered in the amber accent + italic. */
+  headlineAccent: string;
   subheading: string;
   primaryCta: HeroCta;
   secondaryCta: HeroCta;

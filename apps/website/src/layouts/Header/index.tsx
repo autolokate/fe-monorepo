@@ -7,6 +7,7 @@ import { LogIn, Menu } from "lucide-react";
 import { AlButton } from "@autolokate/ui/button";
 import { AlIconButton } from "@autolokate/ui/icon-button";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/providers/theme-provider";
 import { useIsAuthenticated, useLogout } from "@/hooks/auth";
 import { AvatarMenu } from "./AvatarMenu";
 import { avatarMenuItems } from "./AvatarMenu/constants";
@@ -70,10 +71,25 @@ export function Header({
   const pathname = usePathname();
   const router = useRouter();
   const scrolled = useScrolled();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [open, setOpen] = useState(false);
   const isPremium = variant === "premium";
-  const onDarkHero = overDarkHero && isPremium && !scrolled;
+  // The hero plate is only dark in the dark theme, so the white-on-dark nav
+  // treatment must follow the resolved theme (otherwise it vanishes on the
+  // light hero). Before mount we don't know the persisted theme, so fall back
+  // to the dark-hero look to match the server-rendered transparent header.
+  const heroIsDark = !mounted || resolvedTheme === "dark";
+  const onDarkHero = overDarkHero && isPremium && !scrolled && heroIsDark;
   const showDarkHeroStyle = onDarkHero && !open;
+  // The logo ink must match the surface behind it: white on any dark surface
+  // (the dark hero OR the dark-theme header/menu), otherwise the dark wordmark
+  // disappears on the dark `bg-background`.
+  const logoTone: "auto" | "on-dark" =
+    showDarkHeroStyle || (mounted && resolvedTheme === "dark") ? "on-dark" : "auto";
   const authed = useIsAuthenticated();
   const logout = useLogout({
     onSuccess: () => router.push("/"),
@@ -125,7 +141,7 @@ export function Header({
           aria-label="Autolokate home"
           className="flex shrink-0 items-center rounded-lg text-foreground outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <Logo tone={showDarkHeroStyle ? "on-dark" : "auto"} className="h-9 w-auto" priority />
+          <Logo tone={logoTone} className="h-9 w-auto" priority />
         </Link>
 
         <nav aria-label="Primary" className="ml-auto flex items-center gap-1">
@@ -192,7 +208,7 @@ export function Header({
             aria-label="Autolokate home"
             className="flex items-center rounded-lg outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring/50"
           >
-            <Logo tone={showDarkHeroStyle ? "on-dark" : "auto"} className="h-8 w-auto" priority />
+            <Logo tone={logoTone} className="h-8 w-auto" priority />
           </Link>
         </div>
 
