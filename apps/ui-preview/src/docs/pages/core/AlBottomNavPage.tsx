@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlIcon } from '@autolokate/icons';
-import { AlBottomNav } from '@autolokate/ui';
+import { AlBottomNav, AlStack, AlText } from '@autolokate/ui';
 
 import {
   CoreComponentShowcase,
@@ -54,12 +54,31 @@ export function AlBottomNavPage() {
         </p>
       }
       variants={
-        <AlBottomNav
-          items={navItems.map((item, index) => ({
-            ...item,
-            active: index === 0,
-          }))}
-        />
+        <AlStack gap="lg">
+          <AlStack gap="sm">
+            <AlText variant="caption" tone="muted">
+              Inline (default) — icon-only tabs with a labelled chip for the active tab.
+            </AlText>
+            <AlBottomNav
+              items={navItems.map((item, index) => ({
+                ...item,
+                active: index === 0,
+              }))}
+            />
+          </AlStack>
+          <AlStack gap="sm">
+            <AlText variant="caption" tone="muted">
+              Stacked — icon on top with the label beneath, shown for every tab.
+            </AlText>
+            <AlBottomNav
+              layout="stacked"
+              items={navItems.map((item, index) => ({
+                ...item,
+                active: index === 0,
+              }))}
+            />
+          </AlStack>
+        </AlStack>
       }
       renderStatePreview={renderBottomNavState}
       accessibility={
@@ -82,7 +101,17 @@ export function AlBottomNavPage() {
       code={`import { AlBottomNav } from '@autolokate/ui';
 import { AlIcon } from '@autolokate/icons';
 
+// Inline (default): icon-only tabs, labelled chip for the active tab
 <AlBottomNav
+  items={[
+    { id: 'home', label: 'Home', icon: <AlIcon name="house" size={20} />, active: true },
+    { id: 'profile', label: 'Profile', icon: <AlIcon name="circle-user" size={20} /> },
+  ]}
+/>
+
+// Stacked: icon on top, label beneath, shown for every tab
+<AlBottomNav
+  layout="stacked"
   items={[
     { id: 'home', label: 'Home', icon: <AlIcon name="house" size={20} />, active: true },
     { id: 'profile', label: 'Profile', icon: <AlIcon name="circle-user" size={20} /> },
@@ -92,6 +121,7 @@ import { AlIcon } from '@autolokate/icons';
         { name: 'items', type: 'AlBottomNavItem[]', description: 'Tab definitions with icon and handler.' },
         { name: 'items[].active', type: 'boolean', description: 'Current tab state.' },
         { name: 'items[].onClick', type: '() => void', description: 'Tab selection handler.' },
+        { name: 'layout', type: "'inline' | 'stacked'", description: "Icon/label arrangement. Defaults to 'inline'." },
       ]}
     />
   );

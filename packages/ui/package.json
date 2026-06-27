@@ -8,10 +8,22 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./button": {
+      "types": "./dist/components/primitives/Button/index.d.ts",
+      "default": "./dist/components/primitives/Button/index.js"
+    },
+    "./icon-button": {
+      "types": "./dist/components/primitives/IconButton.d.ts",
+      "default": "./dist/components/primitives/IconButton.js"
+    },
+    "./bottom-nav": {
+      "types": "./dist/components/navigation/BottomNav/index.d.ts",
+      "default": "./dist/components/navigation/BottomNav/index.js"
+    },
     "./assets/sos-emergency-alarm.wav": "./dist/assets/sos-emergency-alarm.wav"
   },
   "scripts": {
-    "build": "tsc --build && mkdir -p dist/assets && cp src/assets/*.wav dist/assets/ 2>/dev/null || true",
+    "build": "tsc --build && mkdir -p dist/assets && cp src/assets/*.wav dist/assets/ 2>/dev/null || true && find src -name '*.css' -exec sh -c 'for f; do d=\"dist/${f#src/}\"; mkdir -p \"$(dirname \"$d\")\"; cp \"$f\" \"$d\"; done' sh {} +",
     "generate:sos-alarm": "node scripts/generate-sos-alarm.mjs",
     "dev": "tsc --build --watch",
     "lint": "eslint .",

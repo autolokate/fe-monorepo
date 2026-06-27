@@ -8,6 +8,12 @@ import { VitePWA } from 'vite-plugin-pwa';
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  // Bind the loopback IP directly: some managed hosts (e.g. FortiClient ZTNA)
+  // rewrite /etc/hosts and drop the `localhost` entry, which makes Vite's
+  // default `localhost` bind fail with `getaddrinfo ENOTFOUND localhost`.
+  server: {
+    host: '127.0.0.1',
+  },
   plugins: [
     react(),
     VitePWA({
