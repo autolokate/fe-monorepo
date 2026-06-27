@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Workspace design-system packages import their own CSS from node_modules,
+  // so Next must transpile them for those stylesheet imports to resolve.
+  transpilePackages: ["@autolokate/ui", "@autolokate/design-system"],
   async redirects() {
     return [
       {

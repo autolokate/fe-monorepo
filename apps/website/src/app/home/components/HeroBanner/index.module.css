@@ -172,6 +172,34 @@
   gap: 0.75rem;
 }
 
+/* Design-system AlButton, themed for the always-dark hero with shared tokens.
+   The `button.` prefix keeps these overrides ahead of the `.al-button--*` rules;
+   brand primitives are theme-independent, so they stay white/black on the dark bg. */
+button.ctaPrimary {
+  border-color: transparent;
+  background-color: var(--al-brand-white);
+  color: var(--al-brand-black);
+  box-shadow: var(--al-shadow-none);
+}
+
+button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background-color: var(--al-neutral-50);
+  opacity: 1;
+}
+
+button.ctaSecondary {
+  border-color: color-mix(in srgb, var(--al-brand-white) 55%, transparent);
+  background-color: transparent;
+  color: var(--al-brand-white);
+}
+
+button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  border-color: var(--al-brand-white);
+  background-color: color-mix(in srgb, var(--al-brand-white) 10%, transparent);
+  color: var(--al-brand-white);
+  opacity: 1;
+}
+
 .features {
   display: grid;
   grid-template-columns: 1fr;

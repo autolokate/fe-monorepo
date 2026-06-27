@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { GitCompare, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { HeroCtas } from "./HeroCtas";
 import { HERO_COPY, HERO_FEATURES } from "./constants";
 import styles from "./index.module.css";
 
@@ -23,29 +21,7 @@ export function HeroBanner() {
 
           <p className={styles.subheading}>{HERO_COPY.subheading}</p>
 
-          <div className={styles.ctas}>
-            <Button
-              size="lg"
-              asChild
-              className="border-transparent bg-white px-7 text-[#0a0a0a] shadow-none hover:bg-zinc-100"
-            >
-              <Link href={HERO_COPY.primaryCta.href}>
-                <Shield className="h-4 w-4" aria-hidden />
-                {HERO_COPY.primaryCta.label}
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
-              className="border-white/55 bg-transparent px-7 text-white hover:border-white hover:bg-white/10 hover:text-white"
-            >
-              <Link href={HERO_COPY.secondaryCta.href}>
-                <GitCompare className="h-4 w-4" aria-hidden />
-                {HERO_COPY.secondaryCta.label}
-              </Link>
-            </Button>
-          </div>
+          <HeroCtas />
         </div>
 
         <ul className={styles.features}>

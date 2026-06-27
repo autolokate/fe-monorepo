@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import "@autolokate/design-system/theme.css";
 import "./styles/globals.css";
 import { Toaster } from "sonner";
 import { ThemeProvider, themeBootstrapScript } from "@/providers/theme-provider";
