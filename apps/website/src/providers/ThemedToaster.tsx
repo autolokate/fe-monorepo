@@ -1,18 +1,15 @@
 "use client";
 
 import { Toaster } from "sonner";
-import { useTheme } from "@/providers/theme-provider";
 
-/** sonner Toaster wired to the active website theme. */
+/** sonner Toaster — the website is light-only. */
 export function ThemedToaster() {
-  const { resolvedTheme } = useTheme();
-
   return (
     <Toaster
       position="top-center"
       richColors
       closeButton
-      theme={resolvedTheme}
+      theme="light"
       toastOptions={{
         classNames: {
           toast:

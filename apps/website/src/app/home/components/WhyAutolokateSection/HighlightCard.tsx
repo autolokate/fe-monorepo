@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { WhyHighlight } from "./types";
+import styles from "./index.module.css";
 
 interface HighlightCardProps {
   highlight: WhyHighlight;
@@ -12,20 +13,22 @@ export function HighlightCard({ highlight, className }: HighlightCardProps) {
   return (
     <article
       className={cn(
-        "relative z-10 flex h-full flex-col items-center rounded-2xl border border-border/80 bg-card px-4 py-6 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:px-5 sm:py-7",
+        `${styles.featureCard} flex h-full items-start gap-4 rounded-2xl px-5 py-5 sm:px-6 sm:py-6`,
         className,
       )}
     >
       <span
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-black text-white"
+        className={`${styles.iconBadge} flex h-11 w-11 shrink-0 items-center justify-center rounded-xl`}
         aria-hidden
       >
         <Icon className="h-5 w-5 stroke-[1.75]" />
       </span>
-      <h3 className="font-display mt-4 text-sm font-bold leading-snug text-foreground sm:text-[0.9375rem]">
-        {title}
-      </h3>
-      <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">{body}</p>
+      <div className="min-w-0">
+        <h3 className="font-display text-[15px] font-bold leading-snug text-foreground sm:text-base">
+          {title}
+        </h3>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">{body}</p>
+      </div>
     </article>
   );
 }

@@ -15,33 +15,27 @@
   pointer-events: none;
 }
 
-/* Background plate is desktop-only; mobile uses the flat hero surface. */
-.bgImage,
-.bgScrim,
-.fadeBottom {
-  display: none;
-}
-
+/* Mobile uses a tall portrait plate; desktop swaps to the wide plate below. */
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/new-design/newDesignHeroBg.png");
+  background-image: url("/images/new-design/newDesignHeroBgMobile.png");
   background-size: cover;
-  background-position: 70% center;
+  background-position: center bottom;
   background-repeat: no-repeat;
 }
 
-/* Darken the left edge so the copy stays legible over the car/city plate. */
+/* Vertical scrim darkens the top so the stacked mobile copy stays legible. */
 .bgScrim {
   position: absolute;
   inset: 0;
   z-index: 1;
   background-image: linear-gradient(
-    90deg,
-    rgba(5, 5, 5, 0.96) 0%,
-    rgba(5, 5, 5, 0.82) 32%,
-    rgba(5, 5, 5, 0.3) 60%,
-    rgba(5, 5, 5, 0.55) 100%
+    180deg,
+    rgba(5, 5, 5, 0.9) 0%,
+    rgba(5, 5, 5, 0.55) 30%,
+    rgba(5, 5, 5, 0.25) 56%,
+    rgba(5, 5, 5, 0.45) 100%
   );
 }
 
@@ -55,13 +49,19 @@
 
 @media (min-width: 1024px) {
   .bgImage {
-    display: block;
+    background-image: url("/images/new-design/newDesignHeroBg.png");
     background-position: center center;
   }
 
-  .bgScrim,
-  .fadeBottom {
-    display: block;
+  /* Darken the left edge so the copy stays legible over the car/city plate. */
+  .bgScrim {
+    background-image: linear-gradient(
+      90deg,
+      rgba(5, 5, 5, 0.96) 0%,
+      rgba(5, 5, 5, 0.82) 32%,
+      rgba(5, 5, 5, 0.3) 60%,
+      rgba(5, 5, 5, 0.55) 100%
+    );
   }
 }
 
@@ -126,14 +126,14 @@
   align-items: center;
   gap: 0.5rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--al-signal-amber) 32%, transparent);
-  background: color-mix(in srgb, var(--al-signal-amber) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--al-signal-green) 32%, transparent);
+  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
   padding: 0.4rem 0.85rem;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--al-signal-amber);
+  color: var(--al-signal-green);
 }
 
 .headline {
@@ -148,7 +148,7 @@
 
 .headlineAccent {
   font-style: italic;
-  color: var(--al-signal-amber);
+  color: var(--al-signal-green);
 }
 
 .subheading {
@@ -195,14 +195,14 @@
    The `button.` prefix keeps these overrides ahead of `.al-button--*` rules. */
 button.ctaPrimary {
   border-color: transparent;
-  background-color: var(--al-signal-amber);
+  background-color: var(--al-brand-white);
   color: var(--al-brand-black);
   font-weight: 700;
-  box-shadow: 0 12px 30px -12px color-mix(in srgb, var(--al-signal-amber) 70%, transparent);
+  box-shadow: 0 12px 30px -12px color-mix(in srgb, var(--al-brand-white) 50%, transparent);
 }
 
 button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
-  background-color: color-mix(in srgb, var(--al-signal-amber) 88%, #fff);
+  background-color: color-mix(in srgb, var(--al-brand-white) 88%, #000);
   opacity: 1;
 }
 
@@ -723,150 +723,4 @@ button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
   overflow: hidden;
   border-radius: 0.75rem;
   background-color: rgba(255, 255, 255, 0.08);
-}
-
-/* =====================================================================
-   Light theme — bright daytime plate + light app UI.
-   ===================================================================== */
-:global([data-theme="light"]) .hero {
-  background-color: #f6f5f2;
-  color: #15120e;
-}
-
-:global([data-theme="light"]) .bgImage {
-  background-image: url("/images/new-design/newDesignLightHeroBg.png");
-}
-
-:global([data-theme="light"]) .bgScrim {
-  background-image: linear-gradient(
-    90deg,
-    rgba(246, 245, 242, 0.94) 0%,
-    rgba(246, 245, 242, 0.72) 34%,
-    rgba(246, 245, 242, 0.15) 62%,
-    rgba(246, 245, 242, 0.45) 100%
-  );
-}
-
-:global([data-theme="light"]) .fadeBottom {
-  background: linear-gradient(to top, rgba(246, 245, 242, 0.95) 0%, transparent 100%);
-}
-
-:global([data-theme="light"]) .subheading {
-  color: rgba(21, 18, 14, 0.72);
-}
-
-:global([data-theme="light"]) button.ctaSecondary {
-  border-color: rgba(21, 18, 14, 0.22);
-  background-color: rgba(21, 18, 14, 0.04);
-  color: #15120e;
-}
-
-:global([data-theme="light"]) button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
-  border-color: rgba(21, 18, 14, 0.55);
-  background-color: rgba(21, 18, 14, 0.08);
-  color: #15120e;
-}
-
-/* ---- Light app screen ---- */
-:global([data-theme="light"]) .deviceScreen,
-:global([data-theme="light"]) .deviceScreen[data-mode="impact"],
-:global([data-theme="light"]) .deviceScreen[data-mode="count"],
-:global([data-theme="light"]) .deviceScreen[data-mode="safe"] {
-  background: #f7f6f3;
-}
-
-:global([data-theme="light"]) .statusBar {
-  color: #15120e;
-}
-
-:global([data-theme="light"]) .signal i,
-:global([data-theme="light"]) .batteryFill {
-  background: #15120e;
-}
-
-:global([data-theme="light"]) .battery {
-  border-color: rgba(21, 18, 14, 0.85);
-}
-
-:global([data-theme="light"]) .battery::after {
-  background: rgba(21, 18, 14, 0.85);
-}
-
-:global([data-theme="light"]) .logoMark {
-  border-color: rgba(21, 18, 14, 0.85);
-  color: #15120e;
-}
-
-:global([data-theme="light"]) .wordmark {
-  color: #15120e;
-}
-
-:global([data-theme="light"]) .profile {
-  border-color: rgba(21, 18, 14, 0.18);
-  background: rgba(21, 18, 14, 0.04);
-  color: #6b6459;
-}
-
-:global([data-theme="light"]) .stateTitle,
-:global([data-theme="light"]) .impactTitle,
-:global([data-theme="light"]) .safeTitle,
-:global([data-theme="light"]) .dispatchTitle {
-  color: #15120e;
-}
-
-:global([data-theme="light"]) .stateSub {
-  color: #8b8478;
-}
-
-:global([data-theme="light"]) .countCircle span {
-  color: #1a1a1a;
-}
-
-:global([data-theme="light"]) .countSub {
-  color: #3a342c;
-}
-
-:global([data-theme="light"]) .cancelBtn {
-  border-color: rgba(240, 99, 62, 0.6);
-  color: #f0633e;
-}
-
-:global([data-theme="light"]) .dangerSub {
-  color: #c2553a;
-}
-
-:global([data-theme="light"]) .dispatchItem {
-  border-color: rgba(31, 162, 74, 0.22);
-  background: rgba(31, 162, 74, 0.06);
-}
-
-:global([data-theme="light"]) .footerNote {
-  color: rgba(21, 18, 14, 0.42);
-}
-
-/* Deeper greens for contrast on the light screen. */
-:global([data-theme="light"]) .safeCircle {
-  background: #1fa24a;
-  box-shadow: 0 0 0 9px rgba(31, 162, 74, 0.12);
-}
-
-:global([data-theme="light"]) .dispatchDot,
-:global([data-theme="light"]) .liveDot {
-  background: #1fa24a;
-}
-
-:global([data-theme="light"]) .dispatchIcon,
-:global([data-theme="light"]) .dispatchSub,
-:global([data-theme="light"]) .driveMode,
-:global([data-theme="light"]) .radarCore {
-  color: #1fa24a;
-}
-
-:global([data-theme="light"]) .radarCore {
-  border-color: rgba(31, 162, 74, 0.55);
-  background: rgba(31, 162, 74, 0.12);
-}
-
-:global([data-theme="light"]) .radarRing {
-  border-color: rgba(31, 162, 74, 0.5);
 }

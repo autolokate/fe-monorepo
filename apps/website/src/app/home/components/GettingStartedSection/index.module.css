@@ -1,0 +1,253 @@
+/* GettingStartedSection — "Set it once. It protects every drive."
+   Desktop: a row of step cards joined by dotted amber connectors.
+   Mobile: a vertical timeline with a dotted amber spine.
+   Surfaces use semantic tokens (--card / --border / --foreground) so the whole
+   block flips between light and dark themes with no per-theme overrides; amber
+   accents come from the shared --al-signal-green token. */
+
+.amber {
+  color: var(--al-signal-green);
+}
+
+/* Faint dot texture, concentrated toward the edges via a radial mask. */
+.texture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--foreground) 7%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, transparent 42%, #000 100%);
+  mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, transparent 42%, #000 100%);
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 68%, transparent);
+  backdrop-filter: blur(6px);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--al-signal-green) 50%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--al-signal-green) 30%, transparent),
+    0 16px 36px -22px color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+}
+
+@media (min-width: 1024px) {
+  .card {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+}
+
+.iconBadge {
+  color: var(--al-signal-green);
+  border: 1px solid color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
+  box-shadow: 0 10px 24px -16px color-mix(in srgb, var(--al-signal-green) 75%, transparent);
+}
+
+/* Desktop dotted connector between cards. */
+.connectorLine {
+  display: block;
+  width: 2.25rem;
+  height: 0;
+  border-top: 2px dotted color-mix(in srgb, var(--al-signal-green) 55%, transparent);
+}
+
+/* Mobile vertical dotted spine between step badges. */
+.spine {
+  width: 0;
+  border-left: 2px dotted color-mix(in srgb, var(--al-signal-green) 45%, transparent);
+}
+
+/* ---- Protection carousel cards ---- */
+
+/* Image-backed cards (crash / live location). The dark + light plates are
+   passed in as --bg-dark / --bg-light custom props per card; the theme picks
+   which one wins. */
+.imageCard {
+  position: relative;
+  border: 1px solid var(--border);
+  background-color: var(--background);
+}
+
+/* The plate lives on a pseudo so it can zoom on hover without scaling the
+   card copy. Position is passed per-card via --bg-pos (defaults to center). */
+.imageCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--bg-dark);
+  background-size: cover;
+  background-position: var(--bg-pos, center);
+  background-repeat: no-repeat;
+  transform: scale(1);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:global([data-theme="light"]) .imageCard::before {
+  background-image: var(--bg-light);
+}
+
+.imageCard:hover::before {
+  transform: scale(1.07);
+}
+
+/* Top scrim keeps the heading legible on both themes — it borrows the theme
+   background colour so it darkens in dark mode and lightens in light mode. */
+.imageScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--background) 90%, transparent) 0%,
+    color-mix(in srgb, var(--background) 35%, transparent) 38%,
+    transparent 64%
+  );
+}
+
+/* Content cards share the near-black (dark) / near-white (light) plate tone of
+   the image cards by borrowing the theme background colour. */
+.contentCard {
+  border: 1px solid var(--border);
+  background: var(--background);
+}
+
+/* Inner alert panel sits slightly lifted above the (now darker) card. */
+.alertPanel {
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+
+.alertBadge {
+  color: var(--al-signal-green);
+  border: 1px solid color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+  background: color-mix(in srgb, var(--al-signal-green) 12%, transparent);
+}
+
+/* Hide the scrollbar on the horizontal carousel track. */
+.track {
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.navButton {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  color: var(--foreground);
+}
+
+.navButton:hover {
+  background: var(--card);
+}
+
+/* ---- Card motion ---- */
+
+/* Lift + green glow on hover for every protection card. */
+.protCard {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.protCard:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--al-signal-green) 55%, transparent);
+  /* The 0-offset 1px ring outlines all four sides (incl. the top) so the full
+     card border stays visible on hover; the rest is the lift shadow. */
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--al-signal-green) 35%, transparent),
+    0 22px 44px -22px color-mix(in srgb, var(--al-signal-green) 32%, transparent),
+    0 10px 24px -16px rgba(15, 23, 42, 0.16);
+}
+
+/* Staggered scroll-reveal — toggled by ProtectionCarousel once in view. */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.revealIn {
+  opacity: 1;
+  transform: none;
+}
+
+/* Countdown — a "calling for help" ring that pulses out behind the number. */
+.countdownPulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 104px;
+  width: 104px;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  border: 2px solid color-mix(in srgb, var(--al-signal-green) 45%, transparent);
+  animation: gsCountdownPulse 2.4s ease-out infinite;
+}
+
+@keyframes gsCountdownPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.86);
+    opacity: 0.6;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* "Live" ping radiating from the alert badge (Family Notified). */
+.alertBadge {
+  animation: gsLivePing 2.6s ease-out infinite;
+}
+
+@keyframes gsLivePing {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--al-signal-green) 45%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--al-signal-green) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .protCard:hover,
+  .card:hover {
+    transform: none;
+  }
+  .imageCard:hover::before {
+    transform: none;
+  }
+  .countdownPulse,
+  .alertBadge {
+    animation: none;
+  }
+}

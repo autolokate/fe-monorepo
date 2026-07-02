@@ -7,11 +7,9 @@ import { LogIn, Menu } from "lucide-react";
 import { AlButton } from "@autolokate/ui/button";
 import { AlIconButton } from "@autolokate/ui/icon-button";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/providers/theme-provider";
 import { useIsAuthenticated, useLogout } from "@/hooks/auth";
 import { AvatarMenu } from "./AvatarMenu";
 import { avatarMenuItems } from "./AvatarMenu/constants";
-import { ThemeToggle } from "./ThemeToggle";
 import {
   CloseIcon,
   Logo,
@@ -71,25 +69,15 @@ export function Header({
   const pathname = usePathname();
   const router = useRouter();
   const scrolled = useScrolled();
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const [open, setOpen] = useState(false);
   const isPremium = variant === "premium";
-  // The hero plate is only dark in the dark theme, so the white-on-dark nav
-  // treatment must follow the resolved theme (otherwise it vanishes on the
-  // light hero). Before mount we don't know the persisted theme, so fall back
-  // to the dark-hero look to match the server-rendered transparent header.
-  const heroIsDark = !mounted || resolvedTheme === "dark";
-  const onDarkHero = overDarkHero && isPremium && !scrolled && heroIsDark;
+  // The home hero plate is always dark, so over it (premium + not scrolled) the
+  // header uses the white-on-dark nav treatment.
+  const onDarkHero = overDarkHero && isPremium && !scrolled;
   const showDarkHeroStyle = onDarkHero && !open;
-  // The logo ink must match the surface behind it: white on any dark surface
-  // (the dark hero OR the dark-theme header/menu), otherwise the dark wordmark
-  // disappears on the dark `bg-background`.
-  const logoTone: "auto" | "on-dark" =
-    showDarkHeroStyle || (mounted && resolvedTheme === "dark") ? "on-dark" : "auto";
+  // The logo ink must match the surface behind it: white over the dark hero,
+  // otherwise the default dark wordmark.
+  const logoTone: "auto" | "on-dark" = showDarkHeroStyle ? "on-dark" : "auto";
   const authed = useIsAuthenticated();
   const logout = useLogout({
     onSuccess: () => router.push("/"),
@@ -163,8 +151,6 @@ export function Header({
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <ThemeToggle size="sm" style={onDarkSurfaceStyle} />
-
           <AlButton
             size="sm"
             radius="pill"
@@ -213,7 +199,6 @@ export function Header({
         </div>
 
         <div className="flex items-center justify-end gap-1">
-          {!open ? <ThemeToggle style={onDarkSurfaceStyle} /> : null}
           <AlIconButton
             icon={open ? <CloseIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             label={open ? "Close menu" : "Open menu"}

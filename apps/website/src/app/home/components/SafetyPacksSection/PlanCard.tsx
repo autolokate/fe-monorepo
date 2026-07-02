@@ -1,110 +1,70 @@
-import { Check, Minus, Star } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
+import { AlButton } from "@autolokate/ui/button";
 import { cn } from "@/lib/utils";
-import type { PlanFeature, SafetyPlan } from "./types";
-
-function FeatureRow({ label, description, state }: PlanFeature) {
-  const included = state === "included";
-
-  return (
-    <li className="flex gap-2.5">
-      <span
-        className={cn(
-          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
-          included
-            ? "bg-foreground text-background"
-            : "border border-border/80 bg-muted/40 text-muted-foreground",
-        )}
-        aria-hidden
-      >
-        {included ? (
-          <Check className="h-3 w-3 stroke-[2.5]" />
-        ) : (
-          <Minus className="h-3 w-3 stroke-[2.5]" />
-        )}
-      </span>
-      <div className="min-w-0">
-        <p
-          className={cn(
-            "text-[13px] font-semibold leading-snug",
-            included ? "text-foreground" : "text-muted-foreground",
-          )}
-        >
-          {label}
-          {!included ? (
-            <span className="ml-1.5 font-medium text-muted-foreground/80">Not included</span>
-          ) : null}
-        </p>
-        {description ? (
-          <p className="mt-0.5 text-[12px] leading-snug text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
-    </li>
-  );
-}
+import type { SafetyPlan } from "./types";
+import styles from "./index.module.css";
 
 interface PlanCardProps {
   plan: SafetyPlan;
+  focused?: boolean;
+  onChoose?: () => void;
 }
 
-export function PlanCard({ plan }: PlanCardProps) {
-  const isPopular = plan.variant === "shield";
-  const priceDisplay = plan.price || (plan.title === "Coming Soon" ? plan.title : plan.price);
-  const showTitle = plan.title !== "Coming Soon";
+export function PlanCard({ plan, focused = false, onChoose }: PlanCardProps) {
+  const { tierLabel, Icon, price, pricePeriod, popular, popularBadge, features, ctaLabel } = plan;
 
   return (
     <article
       className={cn(
-        "flex h-full flex-col overflow-hidden rounded-2xl border bg-white shadow-[0_2px_16px_rgba(15,23,42,0.06)]",
-        isPopular
-          ? "border-amber-400/40 shadow-[0_0_0_1px_rgba(245,158,11,0.18),0_12px_40px_-12px_rgba(245,158,11,0.28)]"
-          : "border-black/10",
+        styles.card,
+        popular && styles.cardPopular,
+        focused && styles.cardFocused,
+        "flex h-full flex-col rounded-3xl px-6 pb-6 pt-7 sm:px-7",
       )}
     >
-      {isPopular ? (
-        <div className="flex items-center justify-center gap-2 bg-black px-4 py-2.5">
-          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden />
-          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-400">
-            {plan.tierLabel} — {plan.popularBadge}
-          </span>
-        </div>
+      {popular ? (
+        <span className={styles.popularPill}>
+          <Star className="h-3 w-3 fill-current" aria-hidden />
+          {popularBadge}
+        </span>
       ) : null}
 
-      <div className={cn("px-5 pt-5 sm:px-6", isPopular && "pt-5")}>
-        {!isPopular ? (
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            {plan.tierLabel}
-          </p>
-        ) : plan.planCategory ? (
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            {plan.planCategory}
-          </p>
-        ) : null}
+      <div className="flex flex-col items-center text-center">
+        <span className={styles.tierBadge} aria-hidden>
+          <Icon className="h-6 w-6 stroke-[1.75]" />
+        </span>
+        <p className={cn(styles.tierName, "mt-4")}>{tierLabel}</p>
 
-        {showTitle ? (
-          <h3 className="font-display mt-2 text-xl font-bold tracking-tight text-foreground">
-            {plan.title}
-          </h3>
-        ) : null}
-
-        {priceDisplay ? (
-          <p
-            className={cn(
-              "font-display font-bold tracking-tight text-foreground",
-              showTitle ? "mt-3 text-4xl" : "mt-2 text-4xl",
-            )}
-          >
-            {priceDisplay}
-          </p>
-        ) : null}
-
-        <p className="mt-1.5 text-xs text-muted-foreground">{plan.priceNote}</p>
+        <p className="mt-3">
+          <span className="font-display text-4xl font-bold tracking-tight text-foreground">
+            {price}
+          </span>
+          <span className="ml-1 text-sm font-medium text-muted-foreground">{pricePeriod}</span>
+        </p>
       </div>
 
-      <ul className="mt-4 flex flex-1 flex-col gap-3 border-t border-border/60 px-5 pb-5 pt-4 sm:px-6 sm:pb-6">
-        {plan.features.map((feature) => (
-          <FeatureRow key={feature.label} {...feature} />
+      <ul className="mt-6 flex flex-1 flex-col gap-3.5 border-t border-border/60 pt-6">
+        {features.map(({ label, Icon: FeatureIcon }) => (
+          <li key={label} className="flex items-center gap-3">
+            <span className={styles.featureIcon} aria-hidden>
+              <FeatureIcon className="h-4 w-4 stroke-[1.75]" />
+            </span>
+            <span className="text-sm font-medium leading-snug text-foreground">{label}</span>
+          </li>
         ))}
       </ul>
+
+      <AlButton
+        size="lg"
+        variant={popular ? "primary" : "outline"}
+        className="mt-7 w-full justify-center"
+        icon={<ArrowRight className="h-4 w-4" aria-hidden />}
+        iconPosition="end"
+        onClick={onChoose}
+        tabIndex={focused ? 0 : -1}
+      >
+        {ctaLabel}
+      </AlButton>
     </article>
   );
 }

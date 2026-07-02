@@ -1,0 +1,40 @@
+/* WhyAutolokateSection — shares the home design language: green accent, token
+   surfaces, and the same hover lift + green ring used by the QR / Getting
+   Started cards. */
+
+.accent {
+  color: var(--al-signal-green);
+}
+
+.iconBadge {
+  color: var(--al-signal-green);
+  border: 1px solid color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
+}
+
+.featureCard {
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--al-signal-green) 50%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--al-signal-green) 30%, transparent),
+    0 16px 34px -22px color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featureCard {
+    transition: none;
+  }
+  .featureCard:hover {
+    transform: none;
+  }
+}
