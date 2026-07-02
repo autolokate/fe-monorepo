@@ -44,11 +44,9 @@ export function useGeolocationCapture() {
               lng: position.coords.longitude,
             };
             const name = await reverseGeocodeLocation(point);
-            if (!mountedRef.current) {
-              resolve(null);
-              return;
+            if (mountedRef.current) {
+              setLoading(false);
             }
-            setLoading(false);
             resolve({ ...point, name });
           })();
         },

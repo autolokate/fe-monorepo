@@ -58,6 +58,27 @@ export const endpoints = {
     create: '/v1/riders',
     delete: (riderId: string) => `/v1/riders/${encodeURIComponent(riderId)}`,
   },
+  scanner: {
+    parkOtpRequest: (code: string) =>
+      `/v1/qr/${encodeURIComponent(code)}/park/otp/request`,
+    parkOtpVerify: (code: string) =>
+      `/v1/qr/${encodeURIComponent(code)}/park/otp/verify`,
+    parkVehicleLookup: (code: string) =>
+      `/v1/qr/${encodeURIComponent(code)}/park/vehicles/lookup`,
+    parkMedia: (code: string) => `/v1/qr/${encodeURIComponent(code)}/park/media`,
+    parkMediaComplete: (code: string, mediaId: string) =>
+      `/v1/qr/${encodeURIComponent(code)}/park/media/${encodeURIComponent(mediaId)}/complete`,
+    parkOpen: (code: string) => `/v1/qr/${encodeURIComponent(code)}/park`,
+    parkStatus: (notificationId: string) =>
+      `/v1/park/${encodeURIComponent(notificationId)}`,
+    emergencyMedia: (code: string) =>
+      `/v1/qr/${encodeURIComponent(code)}/emergency/media`,
+    emergencyMediaComplete: (code: string, mediaId: string) =>
+      `/v1/qr/${encodeURIComponent(code)}/emergency/media/${encodeURIComponent(mediaId)}/complete`,
+    emergencyOpen: (code: string) => `/v1/qr/${encodeURIComponent(code)}/emergency`,
+    emergencyStatus: (alertId: string) =>
+      `/v1/emergency/${encodeURIComponent(alertId)}`,
+  },
 } as const;
 
 export type EndpointGroup = keyof typeof endpoints;

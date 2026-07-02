@@ -24,7 +24,9 @@ function hydrateSession(raw: Partial<PwaScanSession>): PwaScanSession {
           : pwaScannedVehicleFields,
     },
     parkMePhotos: { ...base.parkMePhotos, ...raw.parkMePhotos },
+    parkMePhotoIds: { ...base.parkMePhotoIds, ...raw.parkMePhotoIds },
     sosPhotos: { ...base.sosPhotos, ...raw.sosPhotos },
+    sosPhotoIds: { ...base.sosPhotoIds, ...raw.sosPhotoIds },
   };
 }
 

@@ -20,20 +20,19 @@ import {
   OTP_LENGTH,
   RESEND_COOLDOWN_SECONDS,
 } from '../../shared-auth/auth-flow/auth-flow.validation.js';
-import { isExpiredOtp, isValidOtp } from '../../shared-auth/auth-flow/auth-flow.demo.js';
-import type { AuthMobileState, AuthOtpState, OtpErrorKind } from '../../shared-auth/types.js';
+import type { AuthMobileState, AuthOtpState } from '../../shared-auth/types.js';
 import { PWA_BOOTSTRAP_MS } from '../constants/pwa-scan-paths.js';
 import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
-import {
-  isDemoNetworkFail,
-  PWA_LOADING_COPY,
-} from '../data/pwa-demo-data.js';
+import { PWA_LOADING_COPY } from '../data/pwa-demo-data.js';
 import { usePwaScan } from '../context/PwaScanContext.js';
 import type { PwaFlowIntent } from '../context/pwa-scan-types.js';
 import { PwaScanShell } from '../components/PwaScanShell.js';
 import { PwaVerifyShell } from '../components/PwaVerifyShell.js';
 import { PwaFade, PwaSpringPress } from '../components/PwaMotion.js';
 import { useQrResolve } from '../../../hooks/qr/useQrResolve.js';
+import { useParkOtp } from '../../../hooks/scanner/index.js';
+import { reportUserError } from '../../../platform/feedback/report-user-error.js';
+import { scannerLogger } from '../../../services/scanner/index.js';
 import {
   applyActivatedQrToPwaSession,
   isQrEntryUrl,
@@ -41,7 +40,6 @@ import {
 
 import '../styles/pwa-scan.css';
 
-const VERIFY_OTP_MS = 600;
 const VERIFY_OTP_SUCCESS_HOLD_MS = 2000;
 const SAVE_NAME_MS = 500;
 
@@ -206,6 +204,7 @@ export function PwaVehicleFoundRoute() {
 export function PwaVerifyMobileRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
+  const { requestOtp, isRequesting } = useParkOtp();
   const [mobileState, setMobileState] = useState<AuthMobileState>('empty');
 
   const handleContinue = () => {
@@ -213,11 +212,18 @@ export function PwaVerifyMobileRoute() {
       setMobileState('error');
       return;
     }
+
     setMobileState('loading');
-    window.setTimeout(() => {
+    void (async () => {
+      const result = await requestOtp(session.mobile);
+      if (!result.ok) {
+        setMobileState('error');
+        reportUserError(scannerLogger, 'park_otp_request_failed', result.error, result.error.message);
+        return;
+      }
       setMobileState('empty');
       void navigate(pwaScanPaths.verifyOtp);
-    }, VERIFY_OTP_MS);
+    })();
   };
 
   return (
@@ -228,7 +234,7 @@ export function PwaVerifyMobileRoute() {
         description="So the owner can reach you about their vehicle. We'll text a code."
         footerLabel="Get OTP"
         consentVariant="bystander"
-        mobileState={mobileState}
+        mobileState={isRequesting ? 'loading' : mobileState}
         mobileValue={session.mobile}
         onMobileChange={(value) => {
           updateSession({ mobile: clampMobileInput(value) });
@@ -252,10 +258,11 @@ export function PwaVerifyMobileRoute() {
 /** 04 · Bystander verify — OTP. */
 export function PwaVerifyOtpRoute() {
   const navigate = useNavigate();
-  const { session } = usePwaScan();
+  const { session, updateSession } = usePwaScan();
+  const { verifyOtp, requestOtp, isVerifying } = useParkOtp();
   const [otp, setOtp] = useState('');
   const [otpState, setOtpState] = useState<AuthOtpState>('default');
-  const [otpErrorKind, setOtpErrorKind] = useState<OtpErrorKind | null>(null);
+  const [otpErrorText, setOtpErrorText] = useState<string | undefined>(undefined);
   const [resendCooldown, setResendCooldown] = useState(RESEND_COOLDOWN_SECONDS);
   const successScheduledRef = useRef(false);
 
@@ -276,45 +283,38 @@ export function PwaVerifyOtpRoute() {
       return;
     }
     successScheduledRef.current = true;
+    updateSession({ verified: true });
     setOtpState('success');
     window.setTimeout(() => {
       void navigate(pwaScanPaths.verifyName);
     }, VERIFY_OTP_SUCCESS_HOLD_MS);
-  }, [navigate]);
+  }, [navigate, updateSession]);
+
+  const runVerify = useCallback(
+    async (code: string) => {
+      if (code.length < OTP_LENGTH || otpState === 'success' || isVerifying) {
+        return;
+      }
+      setOtpErrorText(undefined);
+      const result = await verifyOtp(session.mobile, code);
+      if (!result.ok) {
+        setOtpState('error');
+        setOtpErrorText(result.error.apiMessage ?? result.error.message);
+        reportUserError(scannerLogger, 'park_otp_verify_failed', result.error, result.error.message);
+        return;
+      }
+      completeOtpSuccess();
+    },
+    [completeOtpSuccess, isVerifying, otpState, session.mobile, verifyOtp],
+  );
 
   const handleVerify = () => {
-    if (otp.length < OTP_LENGTH || otpState === 'success') {
-      return;
-    }
-    if (isExpiredOtp(otp)) {
-      setOtpErrorKind('expired');
-      setOtpState('error');
-      return;
-    }
-    if (!isValidOtp(otp)) {
-      setOtpErrorKind('wrong');
-      setOtpState('error');
-      return;
-    }
-    completeOtpSuccess();
+    void runVerify(otp);
   };
 
-  const isComplete = otp.length === OTP_LENGTH;
-  const isAutoExpired = isComplete && isExpiredOtp(otp);
-  const isAutoWrong = isComplete && !isValidOtp(otp) && !isExpiredOtp(otp);
   const canResend = resendCooldown === 0 && otpState !== 'success';
   const otpInputState =
-    otpState === 'success'
-      ? 'success'
-      : otpState === 'error' || isAutoExpired || isAutoWrong
-        ? 'error'
-        : 'empty';
-  const errorText =
-    otpErrorKind === 'expired' || isAutoExpired
-      ? 'This code has expired. Request a new OTP.'
-      : otpState === 'error' || isAutoWrong
-        ? 'Incorrect code, try again'
-        : undefined;
+    otpState === 'success' ? 'success' : otpState === 'error' ? 'error' : 'empty';
 
   return (
     <PwaVerifyShell
@@ -340,7 +340,7 @@ export function PwaVerifyOtpRoute() {
       footer={
         <AlButton
           variant="primary"
-          disabled={otpState === 'success' || otp.length < OTP_LENGTH}
+          disabled={otpState === 'success' || otp.length < OTP_LENGTH || isVerifying}
           onClick={handleVerify}
         >
           Verify
@@ -353,31 +353,21 @@ export function PwaVerifyOtpRoute() {
         value={otp}
         onChange={(value) => {
           setOtp(value);
-          setOtpErrorKind(null);
+          setOtpErrorText(undefined);
           if (otpState === 'error') {
             setOtpState('default');
           }
           if (value.length === OTP_LENGTH && otpState !== 'success') {
-            if (isExpiredOtp(value)) {
-              setOtpErrorKind('expired');
-              setOtpState('error');
-              return;
-            }
-            if (!isValidOtp(value)) {
-              setOtpErrorKind('wrong');
-              setOtpState('error');
-              return;
-            }
-            completeOtpSuccess();
+            void runVerify(value);
           }
         }}
         state={otpInputState}
-        disabled={otpState === 'success'}
+        disabled={otpState === 'success' || isVerifying}
       />
       <div className="ob-auth-otp-status">
-        {errorText ? (
+        {otpErrorText ? (
           <p className="ob-otp-validation-error" role="alert">
-            {errorText}
+            {otpErrorText}
           </p>
         ) : null}
         {canResend ? (
@@ -385,11 +375,23 @@ export function PwaVerifyOtpRoute() {
             type="button"
             className="ob-auth-otp-resend-link"
             onClick={() => {
-              setResendCooldown(RESEND_COOLDOWN_SECONDS);
-              setOtp('');
-              successScheduledRef.current = false;
-              setOtpErrorKind(null);
-              setOtpState('default');
+              void (async () => {
+                const result = await requestOtp(session.mobile);
+                if (!result.ok) {
+                  reportUserError(
+                    scannerLogger,
+                    'park_otp_resend_failed',
+                    result.error,
+                    result.error.message,
+                  );
+                  return;
+                }
+                setResendCooldown(RESEND_COOLDOWN_SECONDS);
+                setOtp('');
+                successScheduledRef.current = false;
+                setOtpErrorText(undefined);
+                setOtpState('default');
+              })();
             }}
           >
             Resend code
@@ -417,9 +419,6 @@ export function PwaVerifyNameRoute() {
     }
     setNameState('loading');
     window.setTimeout(() => {
-      updateSession({
-        simulateNetworkFail: isDemoNetworkFail(session.name),
-      });
       resumePendingFlow();
     }, SAVE_NAME_MS);
   };

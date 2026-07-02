@@ -124,7 +124,7 @@ export function resolveB2bEntitlementCodeFromQrCode(
   }
 
   const frbMatch = trimmedQr.match(B2B_QR_CODE_PATTERN);
-  if (frbMatch) {
+  if (frbMatch?.[1]) {
     return `${B2B_ENTITLEMENT_PREFIX}-${frbMatch[1]}`;
   }
 

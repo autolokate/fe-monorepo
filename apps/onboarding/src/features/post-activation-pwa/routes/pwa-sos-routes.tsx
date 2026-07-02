@@ -16,7 +16,7 @@ import { PwaEmergencyScreen } from '../components/PwaEmergencyScreen.js';
 import { PwaScanShell } from '../components/PwaScanShell.js';
 import { PwaStatusHeroScreen } from '../components/PwaStatusHeroScreen.js';
 import { PwaFade } from '../components/PwaMotion.js';
-import { PWA_SOS_HOLD_MS, PWA_STATUS_STEP_MS, pwaScanPaths } from '../constants/pwa-scan-paths.js';
+import { PWA_SOS_HOLD_MS, pwaScanPaths } from '../constants/pwa-scan-paths.js';
 import {
   PWA_SOS_HOLD_ENGAGE_MS,
   type PwaSosHoldNavigationState,
@@ -28,6 +28,11 @@ import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary.js';
 import { usePwaPhotoCapture } from '../hooks/use-pwa-photo-capture.js';
 import { useGeolocationCapture } from '../hooks/use-geolocation.js';
 import { useHoldProgressFrom } from '../hooks/use-hold-progress-from.js';
+import {
+  useEmergencySendingFlow,
+  useEmergencyTrackerPoll,
+  useEmergencyContactsOnlySubmit,
+} from '../../../hooks/scanner/index.js';
 import { PwaPermissionRecoveryActions, queryPermissionState } from '../../../pwa/index.js';
 
 import '../styles/pwa-scan.css';
@@ -40,22 +45,6 @@ const SOS_PHOTO_LABELS: Record<SosPhotoSlot, string> = {
   left: 'Left',
   right: 'Right',
 };
-
-function useSosStatusAdvance(nextPath: string, status: ReturnType<typeof usePwaScan>['session']['sosStatus']) {
-  const navigate = useNavigate();
-  const { updateSession } = usePwaScan();
-
-  useEffect(() => {
-    updateSession({ sosStatus: status });
-    const timer = window.setTimeout(() => {
-      void navigate(nextPath, { replace: true });
-    }, PWA_STATUS_STEP_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [navigate, nextPath, status, updateSession]);
-}
 
 /** 14 · SOS idle — hold to send — Figma 848:278. */
 export function PwaSosRoute() {
@@ -303,6 +292,7 @@ export function PwaSosScenePhotosRoute() {
   const { activeSlot, captureError, clearCaptureError, captureToSlot } = usePwaPhotoCapture(
     'sos/scene-photos',
     'sosPhotos',
+    { kind: 'emergency', photoIdsField: 'sosPhotoIds' },
   );
 
   const filledCount = (Object.keys(session.sosPhotos) as SosPhotoSlot[]).filter(
@@ -376,6 +366,7 @@ export function PwaSosScenePhotosCapturedRoute() {
   const { captureError, clearCaptureError, captureToSlot } = usePwaPhotoCapture(
     'sos/scene-photos/captured',
     'sosPhotos',
+    { kind: 'emergency', photoIdsField: 'sosPhotoIds' },
   );
 
   return (
@@ -488,23 +479,8 @@ export function PwaSosLocationUnavailableRoute() {
 /** 17 · Sending alert — Figma 1177:2545. */
 export function PwaSosSendingRoute() {
   const navigate = useNavigate();
-  const { session, updateSession } = usePwaScan();
-
-  useEffect(() => {
-    updateSession({ sosStatus: 'sending' });
-    const shouldFail = session.simulateNetworkFail || !navigator.onLine;
-    const timer = window.setTimeout(() => {
-      if (shouldFail) {
-        void navigate(pwaScanPaths.sosCouldntSend, { replace: true });
-        return;
-      }
-      void navigate(pwaScanPaths.sosHelpReceived, { replace: true });
-    }, PWA_STATUS_STEP_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [navigate, session.simulateNetworkFail, updateSession]);
+  const { updateSession } = usePwaScan();
+  useEmergencySendingFlow();
 
   return (
     <PwaScanShell
@@ -537,7 +513,6 @@ export function PwaSosSendingRoute() {
 /** 18 · Couldn't send — network failure. */
 export function PwaSosCouldntSendRoute() {
   const navigate = useNavigate();
-  const { updateSession } = usePwaScan();
 
   return (
     <PwaStatusHeroScreen
@@ -549,7 +524,6 @@ export function PwaSosCouldntSendRoute() {
         <AlButton
           variant="primary"
           onClick={() => {
-            updateSession({ simulateNetworkFail: false });
             void navigate(pwaScanPaths.sosSending);
           }}
         >
@@ -564,8 +538,11 @@ export function PwaSosCouldntSendRoute() {
 export function PwaSosHelpReceivedRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
+  useEmergencyTrackerPoll();
 
-  useSosStatusAdvance(pwaScanPaths.sosHelpDispatched, 'help-received');
+  useEffect(() => {
+    updateSession({ sosStatus: 'help-received' });
+  }, [updateSession]);
 
   return (
     <PwaScanShell
@@ -603,8 +580,11 @@ export function PwaSosHelpReceivedRoute() {
 export function PwaSosHelpDispatchedRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
+  useEmergencyTrackerPoll();
 
-  useSosStatusAdvance(pwaScanPaths.sosResolved, 'dispatched');
+  useEffect(() => {
+    updateSession({ sosStatus: 'dispatched' });
+  }, [updateSession]);
 
   return (
     <PwaScanShell
@@ -711,6 +691,7 @@ export function PwaSosAlertCancelledRoute() {
 export function PwaSosContactsOnlyRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
+  useEmergencyContactsOnlySubmit();
 
   useEffect(() => {
     updateSession({ sosStatus: 'contacts-only' });

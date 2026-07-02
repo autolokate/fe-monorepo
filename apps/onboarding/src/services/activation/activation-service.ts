@@ -266,14 +266,16 @@ export function readStoredActivationPreviewCode(): string | null {
   if (!stored) {
     return null;
   }
-  const previewCode = stored.previewCode?.trim();
+  const previewCode = stored.previewCode.trim();
   if (previewCode) {
     return previewCode;
   }
   if (stored.partnerKind === 'b2b') {
-    return stored.entitlementCode?.trim() ?? null;
+    const entitlementCode = stored.entitlementCode?.trim();
+    return entitlementCode || null;
   }
-  return stored.qrCode?.trim() ?? null;
+  const qrCode = stored.qrCode.trim();
+  return qrCode || null;
 }
 
 function buildRedeemBody(

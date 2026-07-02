@@ -17,10 +17,11 @@ import {
   isPlateEntryReady,
   normalizePlate,
 } from '@/services/vehicle/index.js';
-import { useVehicleLookup } from '@/hooks/vehicle/index.js';
-import { PWA_STATUS_STEP_MS } from '../constants/pwa-scan-paths.js';
+import { useParkVehicleLookup, useParkCheckingFlow, useParkTrackerPoll } from '../../../hooks/scanner/index.js';
+import { reportUserError } from '../../../platform/feedback/report-user-error.js';
+import { scannerLogger } from '../../../services/scanner/index.js';
 import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
-import { PWA_CONSUMER_REPORTER_PLATE, PWA_PARK_ME_LOOKUP_COPY, isDemoPhotoQcFail, parkMeTimelineSteps } from '../data/pwa-demo-data.js';
+import { PWA_PARK_ME_LOOKUP_COPY, parkMeTimelineSteps } from '../data/pwa-demo-data.js';
 import { usePwaScan } from '../context/PwaScanContext.js';
 import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard.js';
 import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary.js';
@@ -88,26 +89,35 @@ export function PwaParkMeVehicleNumberRoute() {
 export function PwaParkMeLookingUpRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
-  const { lookupVehicle } = useVehicleLookup();
+  const { lookupReporterVehicle } = useParkVehicleLookup();
 
   useEffect(() => {
     let cancelled = false;
 
-    void lookupVehicle(session.reporterPlate).then((result) => {
+    void lookupReporterVehicle(session.reporterPlate).then((result) => {
       if (cancelled) {
         return;
       }
-      if (result.status !== 'success') {
+      if (!result.ok) {
+        if (result.status === 'error') {
+          reportUserError(
+            scannerLogger,
+            'park_vehicle_lookup_failed',
+            result.error,
+            result.error.message,
+          );
+        }
         void navigate(pwaScanPaths.parkMeVehicleNumber, { replace: true });
         return;
       }
 
-      const isProtected = normalizePlate(result.plate) === normalizePlate(PWA_CONSUMER_REPORTER_PLATE);
+      const isProtected =
+        normalizePlate(result.plate) === normalizePlate(session.scannedVehicle.plate);
       updateSession({
         reporterPlate: result.plate,
         reporterFields: result.fields,
         reporterProtected: isProtected,
-        reporterPlanLabel: isProtected ? 'Shield plan' : null,
+        reporterPlanLabel: isProtected ? session.scannedVehicle.planLabel ?? 'Shield plan' : null,
       });
       void navigate(
         isProtected ? pwaScanPaths.parkMeConfirmProtected : pwaScanPaths.parkMeConfirm,
@@ -118,7 +128,14 @@ export function PwaParkMeLookingUpRoute() {
     return () => {
       cancelled = true;
     };
-  }, [lookupVehicle, navigate, session.reporterPlate, updateSession]);
+  }, [
+    lookupReporterVehicle,
+    navigate,
+    session.reporterPlate,
+    session.scannedVehicle.planLabel,
+    session.scannedVehicle.plate,
+    updateSession,
+  ]);
 
   return (
     <PwaScanShell variant="protected">
@@ -320,35 +337,44 @@ export function PwaParkMePermissionsRoute() {
 export function PwaParkMePhotosRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
-  const { activeSlot, captureError, clearCaptureError, captureToSlot } = usePwaPhotoCapture(
+  const { activeSlot, isUploading, captureError, clearCaptureError, captureToSlot } = usePwaPhotoCapture(
     'park-me/photos',
     'parkMePhotos',
+    { kind: 'park', photoIdsField: 'parkMePhotoIds' },
   );
   const { requestLocation, loading: geoLoading, error: geoError } = useGeolocationCapture();
   useResolveStoredLocationName();
+  const [isLocating, setIsLocating] = useState(false);
 
   const handleLocation = useCallback(async () => {
-    const result = await requestLocation();
-    if (result) {
-      updateSession({
-        location: { lat: result.lat, lng: result.lng },
-        locationName: result.name,
-      });
+    setIsLocating(true);
+    try {
+      const result = await requestLocation();
+      if (result) {
+        updateSession({
+          location: { lat: result.lat, lng: result.lng },
+          locationName: result.name,
+        });
+      }
+    } finally {
+      setIsLocating(false);
     }
   }, [requestLocation, updateSession]);
 
   const hasBothPhotos = Boolean(session.parkMePhotos.front && session.parkMePhotos.rear);
+  const hasBothPhotoIds = Boolean(session.parkMePhotoIds.front && session.parkMePhotoIds.rear);
   const hasLocation = Boolean(session.location);
-  const canContinue = hasBothPhotos && hasLocation;
-  const autoLocateRef = useRef(false);
+  const locationLoading = isLocating || (geoLoading && !hasLocation);
+  const canContinue = hasBothPhotos && hasBothPhotoIds && hasLocation && !locationLoading && !isUploading;
+  const initialLocateRef = useRef(false);
 
   useEffect(() => {
-    if (autoLocateRef.current || hasLocation || geoLoading) {
+    if (initialLocateRef.current || hasLocation) {
       return;
     }
-    autoLocateRef.current = true;
+    initialLocateRef.current = true;
     void handleLocation();
-  }, [geoLoading, handleLocation, hasLocation]);
+  }, [handleLocation, hasLocation]);
 
   return (
     <PwaScanErrorBoundary routeLabel="park-me/photos">
@@ -418,7 +444,7 @@ export function PwaParkMePhotosRoute() {
                 label: hasLocation ? 'Location captured' : 'Share your location',
                 detail: formatPwaLocationDetail(session.location, session.locationName),
                 filled: hasLocation,
-                loading: geoLoading && !hasLocation,
+                loading: locationLoading,
                 loadingLabel: 'Fetching your location…',
                 onCapture: () => {
                   void handleLocation();
@@ -449,24 +475,8 @@ export function PwaParkMeReviewRoute() {
 
 /** 11 · Status — calling owner. */
 export function PwaParkMeStatusCheckingRoute() {
-  const navigate = useNavigate();
-  const { session, updateSession } = usePwaScan();
-
-  useEffect(() => {
-    updateSession({ parkMeStatus: 'checking' });
-    const timer = window.setTimeout(() => {
-      void navigate(
-        isDemoPhotoQcFail(session.name)
-          ? pwaScanPaths.parkMePhotoNotClear
-          : pwaScanPaths.parkMeStatusCalling,
-        { replace: true },
-      );
-    }, PWA_STATUS_STEP_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [navigate, session.name, updateSession]);
+  const { session } = usePwaScan();
+  useParkCheckingFlow();
 
   return (
     <PwaScanShell variant="protected">
@@ -488,19 +498,12 @@ export function PwaParkMeStatusCheckingRoute() {
 
 /** 11 · Status — calling owner. */
 export function PwaParkMeStatusCallingRoute() {
-  const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
+  useParkTrackerPoll();
 
   useEffect(() => {
     updateSession({ parkMeStatus: 'calling' });
-    const timer = window.setTimeout(() => {
-      void navigate(pwaScanPaths.parkMeStatusResolved, { replace: true });
-    }, PWA_STATUS_STEP_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [navigate, updateSession]);
+  }, [updateSession]);
 
   return (
     <PwaScanShell variant="protected">
@@ -577,7 +580,11 @@ export function PwaParkMePhotoNotClearRoute() {
             <AlButton
               variant="primary"
               onClick={() => {
-                updateSession({ parkMePhotos: { front: null, rear: null }, parkMeStatus: 'idle' });
+                updateSession({
+                  parkMePhotos: { front: null, rear: null },
+                  parkMePhotoIds: { front: null, rear: null },
+                  parkMeStatus: 'idle',
+                });
                 void navigate(pwaScanPaths.parkMePhotos);
               }}
             >

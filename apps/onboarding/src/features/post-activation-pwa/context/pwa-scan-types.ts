@@ -20,7 +20,19 @@ export type PwaParkMePhotos = {
   rear: string | null;
 };
 
+export type PwaParkMePhotoIds = {
+  front: string | null;
+  rear: string | null;
+};
+
 export type PwaSosPhotos = {
+  front: string | null;
+  rear: string | null;
+  left: string | null;
+  right: string | null;
+};
+
+export type PwaSosPhotoIds = {
   front: string | null;
   rear: string | null;
   left: string | null;
@@ -56,11 +68,13 @@ export type PwaScanSession = {
   reporterPlanLabel: string | null;
   permissionsGranted: boolean;
   parkMePhotos: PwaParkMePhotos;
+  parkMePhotoIds: PwaParkMePhotoIds;
   location: PwaGeoPoint | null;
   /** Reverse-geocoded place name from captured coordinates */
   locationName: string | null;
   parkMeStatus: PwaParkMeStatus;
   sosPhotos: PwaSosPhotos;
+  sosPhotoIds: PwaSosPhotoIds;
   sosStatus: PwaSosStatus;
   simulateNetworkFail: boolean;
   locationDenied: boolean;
@@ -86,10 +100,12 @@ export const defaultPwaScanSession = (): PwaScanSession => ({
   reporterPlanLabel: null,
   permissionsGranted: false,
   parkMePhotos: { front: null, rear: null },
+  parkMePhotoIds: { front: null, rear: null },
   location: null,
   locationName: null,
   parkMeStatus: 'idle',
   sosPhotos: { front: null, rear: null, left: null, right: null },
+  sosPhotoIds: { front: null, rear: null, left: null, right: null },
   sosStatus: 'idle',
   simulateNetworkFail: false,
   locationDenied: false,

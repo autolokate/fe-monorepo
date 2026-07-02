@@ -1,5 +1,6 @@
 import { clearJourneyPersistence } from '@/journey/persistence.js';
 import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository.js';
+import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository.js';
 import { emergencyContactStorageRepository } from '@/platform/storage/repositories/emergency-contact-storage-repository.js';
 import { riderStorageRepository } from '@/platform/storage/repositories/rider-storage-repository.js';
 import { clearLocalAuthSession } from '@/services/auth/auth-session.js';
@@ -13,6 +14,10 @@ import { resetPurchaseFlowState } from '@/services/purchase/reset-purchase-flow-
 import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service.js';
 import { clearResolvedQrCache } from '@/services/qr/qr-cache.js';
 import { resetRiderServiceState } from '@/services/rider/rider-service.js';
+import {
+  resetParkServiceState,
+  resetScannerEmergencyServiceState,
+} from '@/services/scanner/index.js';
 import { clearVehicleLookupCache } from '@/services/vehicle/vehicle-cache.js';
 
 /**
@@ -30,6 +35,9 @@ export function resetOnboardingJourneyStorage(): void {
   clearActivationRedeemAttempt();
   resetEmergencyContactServiceState();
   resetRiderServiceState();
+  resetParkServiceState();
+  resetScannerEmergencyServiceState();
+  anonymousScannerRepository.clear();
   resetAttachAttemptCache();
   clearResolvedQrCache();
   clearCheckoutCache();
