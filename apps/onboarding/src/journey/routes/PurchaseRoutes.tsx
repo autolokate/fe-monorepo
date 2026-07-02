@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
+import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { formatPlateInput } from '@autolokate/ui';
 
 import {
-  fetchVahanDetails,
-  getPlateFetchIntent,
+  isPlateEntryReady,
   normalizePlate,
-} from '../../features/qr-purchase/data/vahan-demo.js';
+} from '../../services/vehicle/index.js';
+import { useVehicleLookup } from '../../hooks/vehicle/index.js';
 import {
   R03VehicleNumberScreen,
   R04FetchingVehicleScreen,
@@ -31,17 +32,44 @@ import type {
 } from '../../features/qr-purchase/types-checkout.js';
 import { DEFAULT_PURCHASE_PLAN_ID, VALID_PROMO_CODE } from '../../features/qr-purchase/data/purchase-plans.js';
 import { buildOrderSummary } from '../../features/qr-purchase/data/purchase-pricing.js';
+import { normalizePromoCode } from '../../features/qr-purchase/data/purchase-promo.js';
+import { usePlans } from '../../hooks/plan/index.js';
+import { getRiderOptionsForPlan, isPlanRiderEligible } from '@/services/plan/plan-mapper.js';
+import { getPurchasePlansCatalog } from '@/services/plan/plan-service.js';
+import { useCheckout } from '../../hooks/checkout/index.js';
+import { usePaymentPolling } from '../../hooks/checkout/index.js';
+import { useQrAttach } from '../../hooks/qr/index.js';
+import { getStoredPurchaseQrResolve } from '@/services/qr/qr-service.js';
 import {
-  getDemoPaymentOutcome,
-  PAYMENT_CONFIRMING_MS,
-  PAYMENT_PROCESSING_MS,
-  resolveConfirmingPaymentOutcome,
-} from '../../features/qr-purchase/data/purchase-payment-demo.js';
-import { isValidPromoCode, normalizePromoCode } from '../../features/qr-purchase/data/purchase-promo.js';
+  getCheckoutSummary,
+  peekOrderId,
+  resetCheckoutForRetry,
+  type CheckoutParams,
+} from '../../services/checkout/index.js';
+import { syncVehiclesAfterPayment } from '@/services/vehicle/vehicle-sync-service.js';
+import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url.js';
+import { reportUserError } from '@/platform/feedback/index.js';
 import { getPurchasePostPaymentEmergencyPath } from '../activation-routing.js';
+import { persistPurchaseSelections, persistVehicleContext } from '@/services/purchase/purchase-context-service.js';
+import { resetPurchaseFlowState } from '@/services/purchase/reset-purchase-flow-state.js';
+import { isPageReload } from '@/platform/navigation/is-page-reload.js';
+import { checkoutLogger } from '@/services/checkout/checkout-logger.js';
+import { planLogger } from '@/services/plan/plan-logger.js';
+import { PurchaseAttachErrorSheet } from '../../features/qr-purchase/components/PurchaseAttachErrorSheet.js';
+import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service.js';
+import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
+import {
+  PURCHASE_ROUTE_ID,
+} from '@/journey/state/purchase-journey-state-machine.js';
+import { PurchaseRouteGate } from '../guards/PurchaseRouteGate.js';
+import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect.js';
+import type { QrAttachError } from '@/services/qr/qr-attach-errors.js';
+import { qrAttachLogger } from '@/services/qr/qr-attach-logger.js';
+import { qrLogger } from '@/services/qr/qr-logger.js';
+import { vehicleLogger } from '@/services/vehicle/vehicle-logger.js';
 import { authJourneyPaths } from '../auth/auth-routing.js';
 import { useJourney } from '../JourneyContext.js';
-import { purchaseJourneyPaths } from '../purchase/purchase-routing.js';
+import { purchaseJourneyPaths, legacyPurchasePathRedirects, PURCHASE_ROUTE_SEGMENTS } from '../purchase/purchase-routing.js';
 
 function PurchaseSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();
@@ -76,14 +104,14 @@ function usePurchaseCheckout() {
 
 function getOrderSummaryPath(promoApplied?: boolean, promoInvalid?: boolean) {
   if (promoInvalid) {
-    return purchaseJourneyPaths.r08cInvalidPromo;
+    return purchaseJourneyPaths.orderSummaryInvalidPromo;
   }
-  return promoApplied ? purchaseJourneyPaths.r08bPromoApplied : purchaseJourneyPaths.r08OrderSummary;
+  return promoApplied ? purchaseJourneyPaths.orderSummaryPromoApplied : purchaseJourneyPaths.orderSummary;
 }
 
 /** After payment success, resume at R10 until the user continues to emergency. */
 function getPostPaymentSuccessPath(): string {
-  return purchaseJourneyPaths.r10PaymentSuccess;
+  return purchaseJourneyPaths.paymentSuccess;
 }
 
 function getPostPaymentResumePath(purchase: ReturnType<typeof usePurchaseCheckout>['purchase']): string | null {
@@ -95,11 +123,11 @@ function getPostPaymentResumePath(purchase: ReturnType<typeof usePurchaseCheckou
     case 'success':
       return getPostPaymentSuccessPath();
     case 'unconfirmed':
-      return purchaseJourneyPaths.r10cPaymentUnconfirmed;
+      return purchaseJourneyPaths.paymentUnconfirmed;
     case 'confirming':
-      return purchaseJourneyPaths.r09bStillConfirming;
+      return purchaseJourneyPaths.paymentStillConfirming;
     case 'failed':
-      return purchaseJourneyPaths.r10bPaymentFailed;
+      return purchaseJourneyPaths.paymentFailed;
     default:
       return null;
   }
@@ -117,6 +145,58 @@ function redirectIfPaymentSucceeded(
   return true;
 }
 
+/** Avoid redirect races while paymentStatus transitions between payment screens. */
+function shouldLeavePaymentScreen(
+  current: ReturnType<typeof usePurchaseCheckout>['purchase'] | undefined,
+  allowed: Array<NonNullable<ReturnType<typeof usePurchaseCheckout>['purchase']>['paymentStatus']>,
+): boolean {
+  const status = current?.paymentStatus;
+  if (!status) {
+    return true;
+  }
+  return !allowed.includes(status);
+}
+
+function buildCheckoutParams(
+  planId: PurchasePlanId,
+  riderCount: PurchaseRiderCount,
+  purchase: ReturnType<typeof usePurchaseCheckout>['purchase'],
+): CheckoutParams {
+  return {
+    planId,
+    riderCount,
+    promoApplied: purchase?.promoApplied,
+    promoCode: purchase?.promoCode,
+  };
+}
+
+function patchPaymentOutcome(
+  patchPurchase: ReturnType<typeof usePurchaseCheckout>['patchPurchase'],
+  navigate: ReturnType<typeof useNavigate>,
+  paymentStatus: 'success' | 'failed' | 'unconfirmed' | 'confirming',
+) {
+  const summary = getCheckoutSummary();
+  const paidAmountInr = summary?.totalInr ?? 0;
+
+  if (paymentStatus === 'success') {
+    patchPurchase({ paymentStatus: 'success', paidAmountInr });
+    void navigate(purchaseJourneyPaths.paymentSuccess, { replace: true });
+    return;
+  }
+  if (paymentStatus === 'confirming') {
+    patchPurchase({ paymentStatus: 'confirming', paidAmountInr });
+    void navigate(purchaseJourneyPaths.paymentStillConfirming, { replace: true });
+    return;
+  }
+  if (paymentStatus === 'unconfirmed') {
+    patchPurchase({ paymentStatus: 'unconfirmed', paidAmountInr });
+    void navigate(purchaseJourneyPaths.paymentUnconfirmed, { replace: true });
+    return;
+  }
+  patchPurchase({ paymentStatus: 'failed' });
+  void navigate(purchaseJourneyPaths.paymentFailed);
+}
+
 function applyPromoCode(
   code: string,
   patchPurchase: ReturnType<typeof usePurchaseCheckout>['patchPurchase'],
@@ -126,21 +206,13 @@ function applyPromoCode(
   if (!normalized) {
     return;
   }
-  if (isValidPromoCode(normalized)) {
-    patchPurchase({
-      promoApplied: true,
-      promoCode: normalized,
-      promoInvalid: false,
-    });
-    void navigate(purchaseJourneyPaths.r08bPromoApplied);
-    return;
-  }
+
   patchPurchase({
-    promoApplied: false,
+    promoApplied: true,
     promoCode: normalized,
-    promoInvalid: true,
+    promoInvalid: false,
   });
-  void navigate(purchaseJourneyPaths.r08cInvalidPromo);
+  void navigate(purchaseJourneyPaths.orderSummaryPromoApplied);
 }
 
 function startPayment(
@@ -166,18 +238,22 @@ function startPayment(
     promoCode: params.promoCode,
   });
 
-  patchPurchase({
-    selectedPlanId: params.planId,
-    riderCount: params.riderCount,
-    checkoutReady: true,
-    paymentStatus: 'processing',
-    paidAmountInr: summary.totalInr,
+  flushSync(() => {
+    patchPurchase({
+      selectedPlanId: params.planId,
+      riderCount: params.riderCount,
+      checkoutReady: true,
+      paymentStatus: 'processing',
+      paidAmountInr: summary.totalInr,
+    });
   });
-  void navigate(purchaseJourneyPaths.r09ProcessingPayment);
+
+  void navigate(purchaseJourneyPaths.processingPayment);
 }
 
-function R03Route() {
+function VehicleDetailsRoute() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { session, updateSession } = useJourney();
   const { purchase } = usePurchaseCheckout();
   const vehicle = session.vehicle ?? {};
@@ -203,11 +279,18 @@ function R03Route() {
     redirectIfPaymentSucceeded(navigate, purchase);
   }, [navigate, purchase]);
 
+  useEffect(() => {
+    persistQrCodeFromUrl(searchParams);
+    const stored = getStoredPurchaseQrResolve();
+    if (!stored.ok) {
+      reportUserError(qrLogger, 'purchase_resolve_missing', stored.error, stored.error.message);
+    }
+  }, [searchParams]);
+
   const handleFetch = useCallback(() => {
     const normalized = normalizePlate(plate);
-    const intent = getPlateFetchIntent(normalized);
 
-    if (intent === 'invalid') {
+    if (!isPlateEntryReady(normalized)) {
       updateSession({
         vehicle: {
           ...vehicle,
@@ -226,7 +309,7 @@ function R03Route() {
         fetchStatus: 'fetching',
       },
     });
-    void navigate(purchaseJourneyPaths.r04Fetching);
+    void navigate(purchaseJourneyPaths.vehicleLookup);
   }, [navigate, plate, updateSession, vehicle]);
 
   return (
@@ -256,10 +339,11 @@ function R03Route() {
   );
 }
 
-function R04Route() {
+function VehicleLookupRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = useJourney();
   const { purchase } = usePurchaseCheckout();
+  const { lookupVehicle } = useVehicleLookup();
   const plate = session.vehicle?.plate ?? '';
 
   useEffect(() => {
@@ -267,26 +351,25 @@ function R04Route() {
       return;
     }
     if (!plate) {
-      void navigate(purchaseJourneyPaths.r03Vehicle, { replace: true });
+      void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
       return;
     }
 
-    const intent = getPlateFetchIntent(plate);
-    if (intent === 'invalid') {
+    if (!isPlateEntryReady(plate)) {
       updateSession({
         vehicle: {
           plate: normalizePlate(plate),
           fetchStatus: 'not-found',
         },
       });
-      void navigate(purchaseJourneyPaths.r03Vehicle, { replace: true });
+      void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
       return;
     }
 
     const abortController = new AbortController();
 
     void (async () => {
-      const result = await fetchVahanDetails(plate);
+      const result = await lookupVehicle(plate);
 
       if (abortController.signal.aborted) {
         return;
@@ -300,8 +383,17 @@ function R04Route() {
             fetchStatus: 'success',
           },
         });
-        void navigate(purchaseJourneyPaths.r05Confirm, { replace: true });
+        void navigate(purchaseJourneyPaths.vehicleConfirmation, { replace: true });
         return;
+      }
+
+      if (result.status === 'error') {
+        reportUserError(
+          vehicleLogger,
+          'purchase_vehicle_lookup_failed',
+          result,
+          'Unable to fetch vehicle details. Please try again.',
+        );
       }
 
       updateSession({
@@ -310,18 +402,18 @@ function R04Route() {
           fetchStatus: 'error',
         },
       });
-      void navigate(purchaseJourneyPaths.r04bFetchFailed, { replace: true });
+      void navigate(purchaseJourneyPaths.vehicleLookupFailed, { replace: true });
     })();
 
     return () => {
       abortController.abort();
     };
-  }, [navigate, plate, purchase, updateSession]);
+  }, [lookupVehicle, navigate, plate, purchase, updateSession]);
 
   return <R04FetchingVehicleScreen />;
 }
 
-function R04bRoute() {
+function VehicleLookupFailedRoute() {
   const navigate = useNavigate();
   const { session, purchase, updateSession } = usePurchaseCheckout();
   const vehicle = session.vehicle ?? {};
@@ -339,7 +431,7 @@ function R04bRoute() {
             fetchStatus: 'idle',
           },
         });
-        void navigate(purchaseJourneyPaths.r03Vehicle);
+        void navigate(purchaseJourneyPaths.vehicleDetails);
       }}
       onEnterManually={() => {
         updateSession({
@@ -348,16 +440,20 @@ function R04bRoute() {
             fetchStatus: 'not-found',
           },
         });
-        void navigate(purchaseJourneyPaths.r03Vehicle);
+        void navigate(purchaseJourneyPaths.vehicleDetails);
       }}
     />
   );
 }
 
-function R05Route() {
+function VehicleConfirmationRoute() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { session, updateSession } = useJourney();
   const { purchase } = usePurchaseCheckout();
+  const { attachPurchaseQr } = useQrAttach();
+  const [isAttaching, setIsAttaching] = useState(false);
+  const [attachError, setAttachError] = useState<QrAttachError | null>(null);
   const vehicle = session.vehicle ?? {};
 
   useEffect(() => {
@@ -365,92 +461,170 @@ function R05Route() {
       return;
     }
     if (!vehicle.plate || vehicle.fetchStatus !== 'success' || !vehicle.fields?.length) {
-      void navigate(purchaseJourneyPaths.r03Vehicle, { replace: true });
+      void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
     }
   }, [navigate, purchase, vehicle.fields, vehicle.fetchStatus, vehicle.plate]);
 
-  return (
-    <R05ConfirmVehicleScreen
-      plate={vehicle.plate}
-      fields={vehicle.fields}
-      onBack={() => {
-        void navigate(purchaseJourneyPaths.r03Vehicle);
-      }}
-      onContinue={() => {
+  const runAttach = useCallback(() => {
+    if (isAttaching) {
+      return;
+    }
+    setAttachError(null);
+    persistVehicleContext({
+      registration: vehicle.plate ?? '',
+      fields: vehicle.fields,
+      ownerName: session.auth?.ownerName,
+      languageId: session.auth?.languageId,
+      selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
+      riderCount: 1,
+    });
+    setIsAttaching(true);
+    void attachPurchaseQr(searchParams).then((result) => {
+      setIsAttaching(false);
+      if (!result.ok) {
+        purchaseStorageRepository.clearAttachResult();
+        resetAttachAttemptCache();
         updateSession({
           vehicle: {
             ...vehicle,
-            confirmed: true,
-          },
-          purchase: {
-            selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
-            riderCount: 1,
-            promoApplied: false,
-            promoCode: null,
-            promoInvalid: false,
-            checkoutReady: false,
-            paymentStatus: 'idle',
+            confirmed: false,
           },
         });
-        void navigate(purchaseJourneyPaths.r06ChoosePlan);
-      }}
-    />
+        qrAttachLogger.warn('purchase_attach_failed', {
+          code: result.error.code,
+          message: result.error.message,
+        });
+        setAttachError(result.error);
+        return;
+      }
+      updateSession({
+        vehicle: {
+          ...vehicle,
+          confirmed: true,
+        },
+        purchase: {
+          selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
+          riderCount: 1,
+          promoApplied: false,
+          promoCode: null,
+          promoInvalid: false,
+          checkoutReady: false,
+          paymentStatus: 'idle',
+        },
+      });
+      void navigate(purchaseJourneyPaths.choosePlan);
+    });
+  }, [
+    attachPurchaseQr,
+    isAttaching,
+    navigate,
+    searchParams,
+    session.auth?.languageId,
+    session.auth?.ownerName,
+    updateSession,
+    vehicle,
+  ]);
+
+  return (
+    <>
+      <R05ConfirmVehicleScreen
+        plate={vehicle.plate}
+        fields={vehicle.fields}
+        footerLoading={isAttaching}
+        onBack={() => {
+          void navigate(purchaseJourneyPaths.vehicleDetails);
+        }}
+        onContinue={runAttach}
+      />
+      <PurchaseAttachErrorSheet
+        open={attachError !== null}
+        error={attachError}
+        onRetry={() => {
+          resetAttachAttemptCache();
+          runAttach();
+        }}
+        onDismiss={() => {
+          setAttachError(null);
+        }}
+      />
+    </>
   );
 }
 
-function R06Route() {
+function ChoosePlanRoute() {
   const navigate = useNavigate();
-  const { session, planId, patchPurchase, purchase } = usePurchaseCheckout();
+  const { planId, patchPurchase, purchase } = usePurchaseCheckout();
+  const { ensurePlansLoaded, revision } = usePlans();
 
   useEffect(() => {
-    if (redirectIfPaymentSucceeded(navigate, purchase)) {
-      return;
-    }
-    if (!session.vehicle?.confirmed) {
-      void navigate(purchaseJourneyPaths.r05Confirm, { replace: true });
-    }
-  }, [navigate, purchase, session.vehicle?.confirmed]);
+    redirectIfPaymentSucceeded(navigate, purchase);
+  }, [navigate, purchase]);
+
+  useEffect(() => {
+    void ensurePlansLoaded().then((result) => {
+      if (!result.ok) {
+        reportUserError(planLogger, 'purchase_plans_load_failed', result.error, result.error.message);
+      }
+    });
+  }, [ensurePlansLoaded]);
 
   return (
     <R06ChoosePlanScreen
+      key={revision}
       selectedPlanId={planId}
       onSelectPlan={(id: PurchasePlanId) => {
         patchPurchase({ selectedPlanId: id });
       }}
       onBack={() => {
-        void navigate(purchaseJourneyPaths.r05Confirm);
+        void navigate(purchaseJourneyPaths.vehicleConfirmation);
       }}
       onContinue={() => {
+        persistPurchaseSelections({ selectedPlanId: planId });
         patchPurchase({ selectedPlanId: planId });
-        void navigate(purchaseJourneyPaths.r07RiderCover);
+        const catalog = getPurchasePlansCatalog();
+        if (isPlanRiderEligible(catalog, planId) && getRiderOptionsForPlan(catalog, planId).length > 0) {
+          void navigate(purchaseJourneyPaths.riderCover);
+        } else {
+          persistPurchaseSelections({ riderCount: 0 });
+          patchPurchase({ riderCount: 0 });
+          void navigate(purchaseJourneyPaths.orderSummary);
+        }
       }}
     />
   );
 }
 
-function R07Route() {
+function RiderCoverRoute() {
   const navigate = useNavigate();
-  const { session, planId, riderCount, patchPurchase, purchase } = usePurchaseCheckout();
+  const { planId, riderCount, patchPurchase, purchase } = usePurchaseCheckout();
+  const catalog = getPurchasePlansCatalog();
+  const riderOptions = getRiderOptionsForPlan(catalog, planId);
   const selectedRiderCount: Exclude<PurchaseRiderCount, 0> =
-    riderCount === 0 ? 1 : riderCount;
+    riderCount === 0 ? (riderOptions[0]?.riderCount ?? 1) : riderCount;
 
   useEffect(() => {
-    if (redirectIfPaymentSucceeded(navigate, purchase)) {
-      return;
-    }
-    if (!session.vehicle?.confirmed || !session.purchase?.selectedPlanId) {
-      void navigate(purchaseJourneyPaths.r06ChoosePlan, { replace: true });
-    }
-  }, [navigate, purchase, session.purchase?.selectedPlanId, session.vehicle?.confirmed]);
+    redirectIfPaymentSucceeded(navigate, purchase);
+  }, [navigate, purchase]);
 
   const goToSummary = (count: PurchaseRiderCount) => {
+    persistPurchaseSelections({ riderCount: count });
     patchPurchase({ riderCount: count, promoApplied: false, promoCode: null });
-    void navigate(purchaseJourneyPaths.r08OrderSummary);
+    void navigate(purchaseJourneyPaths.orderSummary);
   };
 
+  useEffect(() => {
+    if (!isPlanRiderEligible(catalog, planId) || riderOptions.length === 0) {
+      void navigate(purchaseJourneyPaths.orderSummary, { replace: true });
+    }
+  }, [catalog, navigate, planId, riderOptions.length]);
+
+  if (!isPlanRiderEligible(catalog, planId) || riderOptions.length === 0) {
+    return null;
+  }
   return (
     <R07RiderCoverScreen
       selectedPlanId={planId}
+      riderOptions={riderOptions}
       selectedRiderCount={selectedRiderCount}
       onSelectRiderCount={(count) => {
         patchPurchase({ riderCount: count });
@@ -459,7 +633,7 @@ function R07Route() {
         goToSummary(0);
       }}
       onBack={() => {
-        void navigate(purchaseJourneyPaths.r06ChoosePlan);
+        void navigate(purchaseJourneyPaths.choosePlan);
       }}
       onContinue={() => {
         goToSummary(selectedRiderCount);
@@ -468,19 +642,31 @@ function R07Route() {
   );
 }
 
-function R08Route() {
+function OrderSummaryRoute() {
   const navigate = useNavigate();
-  const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
+  const { planId, riderCount, purchase, patchPurchase, updateSession } = usePurchaseCheckout();
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
+  const resetOnReloadRef = useRef(isPageReload());
 
-  useEffect(() => {
-    if (redirectIfPaymentSucceeded(navigate, purchase)) {
+  useLayoutEffect(() => {
+    if (!resetOnReloadRef.current) {
       return;
     }
-    if (!session.purchase?.selectedPlanId) {
-      void navigate(purchaseJourneyPaths.r06ChoosePlan, { replace: true });
+    resetPurchaseFlowState();
+    updateSession({ vehicle: undefined, purchase: undefined });
+    void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
+  }, [navigate, updateSession]);
+
+  useEffect(() => {
+    if (resetOnReloadRef.current) {
+      return;
     }
-  }, [navigate, purchase, session.purchase?.selectedPlanId]);
+    redirectIfPaymentSucceeded(navigate, purchase);
+  }, [navigate, purchase]);
+
+  if (resetOnReloadRef.current) {
+    return null;
+  }
 
   return (
     <R08OrderSummaryScreen
@@ -496,7 +682,7 @@ function R08Route() {
         applyPromoCode(promoInput, patchPurchase, navigate);
       }}
       onBack={() => {
-        void navigate(purchaseJourneyPaths.r07RiderCover);
+        void navigate(purchaseJourneyPaths.riderCover);
       }}
       onContinue={() => {
         startPayment(patchPurchase, navigate, purchase, {
@@ -510,7 +696,7 @@ function R08Route() {
   );
 }
 
-function R08cRoute() {
+function OrderSummaryInvalidPromoRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
@@ -520,7 +706,7 @@ function R08cRoute() {
       return;
     }
     if (!session.purchase?.promoInvalid || !session.purchase.promoCode) {
-      void navigate(purchaseJourneyPaths.r08OrderSummary, { replace: true });
+      void navigate(purchaseJourneyPaths.orderSummary, { replace: true });
     }
   }, [navigate, purchase, session.purchase?.promoCode, session.purchase?.promoInvalid]);
 
@@ -540,7 +726,7 @@ function R08cRoute() {
       }}
       onBack={() => {
         patchPurchase({ promoInvalid: false, promoCode: null });
-        void navigate(purchaseJourneyPaths.r08OrderSummary);
+        void navigate(purchaseJourneyPaths.orderSummary);
       }}
       onContinue={() => {
         startPayment(patchPurchase, navigate, purchase, {
@@ -554,9 +740,10 @@ function R08cRoute() {
   );
 }
 
-function R08bRoute() {
+function OrderSummaryPromoAppliedRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
+  const promoCode = purchase?.promoCode ?? VALID_PROMO_CODE;
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -571,17 +758,17 @@ function R08bRoute() {
     <R08bPromoAppliedScreen
       selectedPlanId={planId}
       riderCount={riderCount}
-      promoCode={purchase?.promoCode ?? VALID_PROMO_CODE}
+      promoCode={promoCode}
       onRemovePromo={() => {
         if (purchase?.paymentStatus === 'success') {
           redirectIfPaymentSucceeded(navigate, purchase);
           return;
         }
         patchPurchase({ promoApplied: false, promoCode: null });
-        void navigate(purchaseJourneyPaths.r08OrderSummary);
+        void navigate(purchaseJourneyPaths.orderSummary);
       }}
       onBack={() => {
-        void navigate(purchaseJourneyPaths.r08OrderSummary);
+        void navigate(purchaseJourneyPaths.orderSummary);
       }}
       onContinue={() => {
         startPayment(patchPurchase, navigate, purchase, {
@@ -595,15 +782,19 @@ function R08bRoute() {
   );
 }
 
-function R09Route() {
+function ProcessingPaymentRoute() {
   const navigate = useNavigate();
-  const { session, planId, purchase, patchPurchase } = usePurchaseCheckout();
+  const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
+  const { executePayment } = usePaymentPolling();
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
       return;
     }
-    if (!session.purchase?.checkoutReady || session.purchase.paymentStatus !== 'processing') {
+    if (
+      !session.purchase?.checkoutReady ||
+      shouldLeavePaymentScreen(session.purchase, ['processing', 'confirming'])
+    ) {
       void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
         replace: true,
       });
@@ -622,52 +813,83 @@ function R09Route() {
       return;
     }
 
-    let cancelled = false;
+    const abortController = new AbortController();
 
-    const timer = window.setTimeout(() => {
-      if (cancelled) {
-        return;
-      }
+    void (async () => {
+      const result = await executePayment(
+        buildCheckoutParams(planId, riderCount, session.purchase),
+      );
 
-      const outcome = getDemoPaymentOutcome(planId);
-      if (outcome === 'confirming') {
-        patchPurchase({ paymentStatus: 'confirming' });
-        void navigate(purchaseJourneyPaths.r09bStillConfirming, { replace: true });
-        return;
-      }
-      if (outcome === 'success') {
-        patchPurchase({ paymentStatus: 'success' });
-        void navigate(purchaseJourneyPaths.r10PaymentSuccess, { replace: true });
-        return;
-      }
-      if (outcome === 'unconfirmed') {
-        patchPurchase({ paymentStatus: 'unconfirmed' });
-        void navigate(purchaseJourneyPaths.r10cPaymentUnconfirmed, { replace: true });
+      if (abortController.signal.aborted) {
         return;
       }
 
-      patchPurchase({ paymentStatus: 'failed' });
-      void navigate(purchaseJourneyPaths.r10bPaymentFailed);
-    }, PAYMENT_PROCESSING_MS);
+      if (!result.ok) {
+        if (result.phase === 'prepare' || result.error.code === 'payment_cancelled') {
+          if (result.error.code !== 'payment_cancelled') {
+            reportUserError(checkoutLogger, 'purchase_checkout_prepare_failed', result.error, result.error.message);
+          }
+          patchPurchase({ paymentStatus: 'idle', checkoutReady: false });
+          if (result.error.code === 'promo_invalid') {
+            patchPurchase({
+              promoApplied: false,
+              promoInvalid: true,
+              promoCode: session.purchase?.promoCode ?? null,
+            });
+            void navigate(purchaseJourneyPaths.orderSummaryInvalidPromo, { replace: true });
+            return;
+          }
+          void navigate(
+            getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
+            { replace: true },
+          );
+          return;
+        }
+
+        reportUserError(checkoutLogger, 'purchase_payment_failed', result.error, result.error.message);
+        patchPurchase({ paymentStatus: 'failed' });
+        void navigate(purchaseJourneyPaths.paymentFailed);
+        return;
+      }
+
+      if (
+        result.paymentStatus === 'success' ||
+        result.paymentStatus === 'failed' ||
+        result.paymentStatus === 'unconfirmed' ||
+        result.paymentStatus === 'confirming'
+      ) {
+        patchPaymentOutcome(patchPurchase, navigate, result.paymentStatus);
+      }
+    })();
 
     return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
+      abortController.abort();
     };
-  }, [navigate, patchPurchase, planId, purchase?.paymentStatus, session.purchase?.paymentStatus]);
+  }, [
+    executePayment,
+    navigate,
+    patchPurchase,
+    planId,
+    purchase?.paymentStatus,
+    riderCount,
+    session.purchase,
+    session.purchase?.paymentStatus,
+  ]);
 
   return <R09ProcessingPaymentScreen />;
 }
 
-function R09bRoute() {
+function PaymentStillConfirmingRoute() {
   const navigate = useNavigate();
-  const { session, planId, purchase, patchPurchase } = usePurchaseCheckout();
+  const { session, purchase, patchPurchase } = usePurchaseCheckout();
+  const { pollPaymentStatus } = usePaymentPolling();
+  const orderId = peekOrderId();
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
       return;
     }
-    if (session.purchase?.paymentStatus !== 'confirming') {
+    if (shouldLeavePaymentScreen(session.purchase, ['confirming', 'unconfirmed', 'success', 'failed'])) {
       void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
         replace: true,
       });
@@ -680,43 +902,47 @@ function R09bRoute() {
     session.purchase?.promoInvalid,
   ]);
 
-  const resolveConfirming = useCallback(() => {
-    const outcome = resolveConfirmingPaymentOutcome(planId);
-    if (outcome === 'success') {
-      patchPurchase({ paymentStatus: 'success' });
-      void navigate(purchaseJourneyPaths.r10PaymentSuccess, { replace: true });
-      return;
-    }
-    patchPurchase({ paymentStatus: 'unconfirmed' });
-    void navigate(purchaseJourneyPaths.r10cPaymentUnconfirmed, { replace: true });
-  }, [navigate, patchPurchase, planId]);
-
   useEffect(() => {
-    if (session.purchase?.paymentStatus !== 'confirming') {
+    if (session.purchase?.paymentStatus !== 'confirming' || !orderId) {
       return;
     }
 
-    let cancelled = false;
-    const timer = window.setTimeout(() => {
-      if (cancelled) {
+    const abortController = new AbortController();
+
+    void (async () => {
+      const result = await pollPaymentStatus(orderId);
+
+      if (abortController.signal.aborted) {
         return;
       }
-      resolveConfirming();
-    }, PAYMENT_CONFIRMING_MS);
+
+      if (!result.ok) {
+        reportUserError(checkoutLogger, 'purchase_payment_poll_failed', result.error, result.error.message);
+        return;
+      }
+
+      if (
+        result.paymentStatus === 'success' ||
+        result.paymentStatus === 'failed' ||
+        result.paymentStatus === 'unconfirmed'
+      ) {
+        patchPaymentOutcome(patchPurchase, navigate, result.paymentStatus);
+      }
+    })();
 
     return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
+      abortController.abort();
     };
-  }, [resolveConfirming, session.purchase?.paymentStatus]);
+  }, [navigate, orderId, patchPurchase, pollPaymentStatus, session.purchase?.paymentStatus]);
 
   return <R09bStillConfirmingScreen />;
 }
 
-function R10Route() {
+function PaymentSuccessRoute() {
   const navigate = useNavigate();
   const { setPhase, session, updateSession } = useJourney();
   const { planId, purchase } = usePurchaseCheckout();
+  const vehiclesSyncedRef = useRef(false);
   const paidAmountInr = purchase?.paidAmountInr ?? 0;
 
   useEffect(() => {
@@ -731,6 +957,18 @@ function R10Route() {
     session.purchase?.promoApplied,
     session.purchase?.promoInvalid,
   ]);
+
+  useEffect(() => {
+    if (session.purchase?.paymentStatus !== 'success' || vehiclesSyncedRef.current) {
+      return;
+    }
+    vehiclesSyncedRef.current = true;
+    void syncVehiclesAfterPayment().then((result) => {
+      if (!result.ok) {
+        reportUserError(vehicleLogger, 'purchase_vehicle_sync_failed', result.error, result.error.message);
+      }
+    });
+  }, [session.purchase?.paymentStatus]);
 
   return (
     <R10PaymentSuccessScreen
@@ -757,7 +995,7 @@ function R10Route() {
   );
 }
 
-function R10bRoute() {
+function PaymentFailedRoute() {
   const navigate = useNavigate();
   const { session, patchPurchase } = usePurchaseCheckout();
   const orderSummaryPath = getOrderSummaryPath(
@@ -780,6 +1018,7 @@ function R10bRoute() {
   return (
     <R10bPaymentFailedScreen
       onBack={() => {
+        resetCheckoutForRetry();
         patchPurchase({
           checkoutReady: false,
           paymentStatus: 'idle',
@@ -787,6 +1026,7 @@ function R10bRoute() {
         void navigate(orderSummaryPath);
       }}
       onRetry={() => {
+        resetCheckoutForRetry();
         patchPurchase({
           checkoutReady: false,
           paymentStatus: 'idle',
@@ -797,12 +1037,14 @@ function R10bRoute() {
   );
 }
 
-function R10cRoute() {
+function PaymentUnconfirmedRoute() {
   const navigate = useNavigate();
-  const { session, planId, patchPurchase } = usePurchaseCheckout();
+  const { session, patchPurchase } = usePurchaseCheckout();
+  const { pollPayment } = useCheckout();
+  const orderId = peekOrderId();
 
   useEffect(() => {
-    if (session.purchase?.paymentStatus !== 'unconfirmed') {
+    if (shouldLeavePaymentScreen(session.purchase, ['unconfirmed', 'success', 'failed'])) {
       void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
         replace: true,
       });
@@ -818,16 +1060,26 @@ function R10cRoute() {
     <R10cPaymentUnconfirmedScreen
       onBack={() => {
         patchPurchase({ paymentStatus: 'processing' });
-        void navigate(purchaseJourneyPaths.r09ProcessingPayment);
+        void navigate(purchaseJourneyPaths.processingPayment);
       }}
       onCheckStatus={() => {
-        const outcome = resolveConfirmingPaymentOutcome(planId);
-        if (outcome === 'success') {
-          patchPurchase({ paymentStatus: 'success' });
-          void navigate(purchaseJourneyPaths.r10PaymentSuccess);
+        if (!orderId) {
           return;
         }
-        patchPurchase({ paymentStatus: 'unconfirmed' });
+        void (async () => {
+          const result = await pollPayment(orderId);
+          if (!result.ok) {
+            reportUserError(checkoutLogger, 'purchase_payment_status_failed', result.error, result.error.message);
+            return;
+          }
+          if (
+            result.paymentStatus === 'success' ||
+            result.paymentStatus === 'failed' ||
+            result.paymentStatus === 'unconfirmed'
+          ) {
+            patchPaymentOutcome(patchPurchase, navigate, result.paymentStatus);
+          }
+        })();
       }}
     />
   );
@@ -837,22 +1089,78 @@ export function PurchaseRoutes() {
   return (
     <PurchaseSegmentBootstrap>
       <Routes>
-        <Route index element={<Navigate to={purchaseJourneyPaths.r03Vehicle} replace />} />
-        <Route path="r03-vehicle" element={<R03Route />} />
-        <Route path="r04-fetching" element={<R04Route />} />
-        <Route path="r04b-fetch-failed" element={<R04bRoute />} />
-        <Route path="r05-confirm" element={<R05Route />} />
-        <Route path="r06-choose-plan" element={<R06Route />} />
-        <Route path="r07-rider-cover" element={<R07Route />} />
-        <Route path="r08-order-summary" element={<R08Route />} />
-        <Route path="r08b-promo-applied" element={<R08bRoute />} />
-        <Route path="r08c-invalid-promo" element={<R08cRoute />} />
-        <Route path="r09-processing-payment" element={<R09Route />} />
-        <Route path="r09b-still-confirming" element={<R09bRoute />} />
-        <Route path="r10-payment-success" element={<R10Route />} />
-        <Route path="r10b-payment-failed" element={<R10bRoute />} />
-        <Route path="r10c-payment-unconfirmed" element={<R10cRoute />} />
-        <Route path="*" element={<Navigate to={purchaseJourneyPaths.r03Vehicle} replace />} />
+        <Route index element={<PurchaseIndexRedirect />} />
+        <Route
+          path={PURCHASE_ROUTE_SEGMENTS.vehicleDetails}
+          element={
+            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleDetails}>
+              <VehicleDetailsRoute />
+            </PurchaseRouteGate>
+          }
+        />
+        <Route
+          path={PURCHASE_ROUTE_SEGMENTS.vehicleLookup}
+          element={
+            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleLookup}>
+              <VehicleLookupRoute />
+            </PurchaseRouteGate>
+          }
+        />
+        <Route
+          path={PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed}
+          element={
+            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleLookupFailed}>
+              <VehicleLookupFailedRoute />
+            </PurchaseRouteGate>
+          }
+        />
+        <Route
+          path={PURCHASE_ROUTE_SEGMENTS.vehicleConfirmation}
+          element={
+            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleConfirmation}>
+              <VehicleConfirmationRoute />
+            </PurchaseRouteGate>
+          }
+        />
+        <Route
+          path={PURCHASE_ROUTE_SEGMENTS.choosePlan}
+          element={
+            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.choosePlan}>
+              <ChoosePlanRoute />
+            </PurchaseRouteGate>
+          }
+        />
+        <Route
+          path={PURCHASE_ROUTE_SEGMENTS.riderCover}
+          element={
+            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.riderCover}>
+              <RiderCoverRoute />
+            </PurchaseRouteGate>
+          }
+        />
+        <Route
+          path={PURCHASE_ROUTE_SEGMENTS.orderSummary}
+          element={
+            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.orderSummary}>
+              <OrderSummaryRoute />
+            </PurchaseRouteGate>
+          }
+        />
+        <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied} element={<OrderSummaryPromoAppliedRoute />} />
+        <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo} element={<OrderSummaryInvalidPromoRoute />} />
+        <Route path={PURCHASE_ROUTE_SEGMENTS.processingPayment} element={<ProcessingPaymentRoute />} />
+        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming} element={<PaymentStillConfirmingRoute />} />
+        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentSuccess} element={<PaymentSuccessRoute />} />
+        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentFailed} element={<PaymentFailedRoute />} />
+        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed} element={<PaymentUnconfirmedRoute />} />
+        {legacyPurchasePathRedirects.map(([legacySegment, canonicalPath]) => (
+          <Route
+            key={legacySegment}
+            path={legacySegment}
+            element={<Navigate to={canonicalPath} replace />}
+          />
+        ))}
+        <Route path="*" element={<PurchaseIndexRedirect />} />
       </Routes>
     </PurchaseSegmentBootstrap>
   );

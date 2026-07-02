@@ -1,5 +1,6 @@
 import { PwaScanProvider } from '../features/post-activation-pwa/context/PwaScanContext.js';
 import { JourneyProvider, type JourneyProviderProps } from '../journey/JourneyContext.js';
+import { ToastHost } from './feedback/index.js';
 
 export type AutolokateRootProviderProps = JourneyProviderProps;
 
@@ -10,7 +11,10 @@ export type AutolokateRootProviderProps = JourneyProviderProps;
 export function AutolokateRootProvider({ children, initialPhase }: AutolokateRootProviderProps) {
   return (
     <JourneyProvider initialPhase={initialPhase}>
-      <PwaScanProvider>{children}</PwaScanProvider>
+      <PwaScanProvider>
+        {children}
+        <ToastHost />
+      </PwaScanProvider>
     </JourneyProvider>
   );
 }

@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { L1PrivacyPolicyScreen } from '../../features/shared-legal/screens/l1-privacy-policy/index.js';
 import { L2TermsConditionsScreen } from '../../features/shared-legal/screens/l2-terms-conditions/index.js';
 import {
   clampMobileInput,
   formatMobileInput,
-  isExpiredOtp,
   isValidMobile,
-  isValidOtp,
   normalizeMobile,
   OTP_LENGTH,
   RESEND_COOLDOWN_SECONDS,
@@ -21,15 +19,26 @@ import type {
   AuthOtpState,
   AuthVehicleOwnerState,
 } from '../../features/shared-auth/types.js';
+import { useRequestOtp } from '../../hooks/auth/useRequestOtp.js';
+import { useVerifyOtp } from '../../hooks/auth/useVerifyOtp.js';
+import { useUpdateProfile } from '../../hooks/profile/useUpdateProfile.js';
+import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url.js';
+import { extractQrCodeParam } from '@/platform/qr/parse-qr-url.js';
+import { reportUserError } from '@/platform/feedback/index.js';
+import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanContext.js';
+import { useQrJourneyEntry } from '../../hooks/qr/useQrJourneyEntry.js';
+import { authLogger } from '@/services/auth/auth-logger.js';
+import { qrLogger } from '@/services/qr/qr-logger.js';
+import { loadLegalDocuments } from '@/services/legal/legal-service.js';
+import { applyVehicleOwnerSaveError } from '../../services/profile/profile-errors.js';
 import { authJourneyPaths } from '../auth/auth-routing.js';
 import { getAuthFlowBackPath } from '../activation-routing.js';
 import { useJourney } from '../JourneyContext.js';
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
-}
+import {
+  applyMobileSendError,
+  applyOtpVerifyError,
+  delay,
+} from './auth-route-helpers.js';
 
 function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();
@@ -43,15 +52,38 @@ function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
 
 function MobileRoute() {
   const navigate = useNavigate();
-  const { session, updateSession, selectedFlow } = useJourney();
+  const [searchParams] = useSearchParams();
+  const { session, updateSession, setSelectedFlow, setPhase, selectedFlow, resetForNewQrEntry } =
+    useJourney();
+  const { updateSession: updatePwaSession } = usePwaScan();
+  const { enterFromSearchParams } = useQrJourneyEntry();
+  const qrHandledRef = useRef(false);
   const auth = session.auth ?? {};
+  const { requestOtp, isPending: isRequestOtpPending } = useRequestOtp();
 
   const [mobile, setMobile] = useState(auth.mobileDisplay ?? '');
   const [consent, setConsent] = useState(auth.consentAccepted ?? false);
   const [mobileState, setMobileState] = useState<AuthMobileState>(() =>
     typeof navigator !== 'undefined' && !navigator.onLine ? 'offline' : 'empty',
   );
-  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    persistQrCodeFromUrl(searchParams);
+    const code = extractQrCodeParam(searchParams);
+    if (!code || qrHandledRef.current) {
+      return;
+    }
+    qrHandledRef.current = true;
+    void enterFromSearchParams(
+      searchParams,
+      { setSelectedFlow, setPhase, navigate, updateSession, updatePwaSession, resetForNewQrEntry },
+      { entryPoint: 'auth-mobile' },
+    ).then((result) => {
+      if (!result.ok) {
+        reportUserError(qrLogger, 'auth_mobile_qr_entry_failed', result.error, result.error.message);
+      }
+    });
+  }, [enterFromSearchParams, navigate, resetForNewQrEntry, searchParams, setPhase, setSelectedFlow, updatePwaSession, updateSession]);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -99,24 +131,27 @@ function MobileRoute() {
       setMobileState('filled');
       return;
     }
-    setSubmitting(true);
     setMobileState('loading');
-    await delay(700);
+    const mobileDigits = normalizeMobile(mobile);
+    const result = await requestOtp({ mobileDigits });
+    if (!result.ok) {
+      setMobileState(applyMobileSendError(result.error));
+      return;
+    }
     updateSession({
       auth: {
         ...auth,
-        mobile: normalizeMobile(mobile),
+        mobile: mobileDigits,
         mobileDisplay: formatMobileInput(mobile),
         consentAccepted: consent,
       },
     });
-    setSubmitting(false);
     void navigate(authJourneyPaths.otp);
   };
 
   return (
     <A1MobileScreen
-      mobileState={submitting ? 'loading' : mobileState}
+      mobileState={isRequestOtpPending ? 'loading' : mobileState}
       mobileValue={mobile}
       onMobileChange={(value) => {
         const formatted = clampMobileInput(value);
@@ -149,7 +184,7 @@ function MobileRoute() {
 }
 
 export type AuthRoutesProps = {
-  onAuthCompleted?: () => void;
+  onAuthCompleted?: () => void | Promise<void>;
 };
 
 function OtpRoute() {
@@ -157,6 +192,8 @@ function OtpRoute() {
   const { session, updateSession } = useJourney();
   const auth = session.auth ?? {};
   const mobile = auth.mobile ?? '';
+  const { requestOtp } = useRequestOtp();
+  const { verifyOtp, isPending: isVerifyOtpPending } = useVerifyOtp();
 
   const [otp, setOtp] = useState('');
   const [otpState, setOtpState] = useState<AuthOtpState>('default');
@@ -183,9 +220,21 @@ function OtpRoute() {
   }, [resendCooldown]);
 
   useEffect(() => {
+    const handleOnline = () => {
+      setOtpState((current) => (current === 'offline' ? 'default' : current));
+    };
+    const handleOffline = () => {
+      setOtpState('offline');
+    };
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       setOtpState('offline');
     }
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const handleVerify = async (code = otp) => {
@@ -197,19 +246,20 @@ function OtpRoute() {
       setOtpState('default');
       return;
     }
-    if (isExpiredOtp(code)) {
-      setOtpErrorKind('expired');
-      setOtpState('error');
-      return;
-    }
-    if (!isValidOtp(code)) {
-      setOtpErrorKind('wrong');
-      setOtpState('error');
-      return;
-    }
 
     setOtpState('verifying');
-    await delay(800);
+    const result = await verifyOtp({
+      mobileDigits: mobile,
+      code,
+      consentAccepted: auth.consentAccepted,
+    });
+
+    if (!result.ok) {
+      const mapped = applyOtpVerifyError(result.error);
+      setOtpErrorKind(mapped.otpErrorKind);
+      setOtpState(mapped.otpState);
+      return;
+    }
 
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       setOtpState('network-error');
@@ -217,17 +267,32 @@ function OtpRoute() {
     }
 
     setOtpState('success');
-    updateSession({ auth: { ...auth, otpVerified: true } });
+    updateSession({
+      auth: {
+        ...auth,
+        otpVerified: true,
+        ...result.data.journeyPatch,
+      },
+    });
     await delay(400);
     void navigate(authJourneyPaths.vehicleOwner);
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       setOtpState('resend-failed');
       return;
     }
     if (resendAttempts >= 1 && typeof navigator !== 'undefined' && !navigator.onLine) {
+      setOtpState('resend-failed');
+      return;
+    }
+    const result = await requestOtp({ mobileDigits: mobile });
+    if (!result.ok) {
+      if (result.error.type === 'offline') {
+        setOtpState('offline');
+        return;
+      }
       setOtpState('resend-failed');
       return;
     }
@@ -240,23 +305,13 @@ function OtpRoute() {
 
   return (
     <A2OtpScreen
-      otpState={otpState}
+      otpState={isVerifyOtpPending && otpState !== 'success' ? 'verifying' : otpState}
       mobile={mobile}
       otpValue={otp}
       onOtpChange={(value) => {
         setOtp(value);
         if (value.length === OTP_LENGTH) {
-          if (isExpiredOtp(value)) {
-            setOtpErrorKind('expired');
-            setOtpState('error');
-            return;
-          }
-          if (!isValidOtp(value)) {
-            setOtpErrorKind('wrong');
-            setOtpState('error');
-            return;
-          }
-          if (otpState !== 'verifying' && otpState !== 'success') {
+          if (otpState !== 'verifying' && otpState !== 'success' && !isVerifyOtpPending) {
             void handleVerify(value);
           }
           return;
@@ -273,10 +328,10 @@ function OtpRoute() {
       otpErrorKind={otpErrorKind}
       resendCooldownSeconds={resendCooldown}
       onResendOtp={() => {
-        handleResend();
+        void handleResend();
       }}
       onSmsFallback={() => {
-        handleResend();
+        void handleResend();
       }}
       onChangeNumber={() => {
         void navigate(authJourneyPaths.mobile);
@@ -295,10 +350,10 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
   const navigate = useNavigate();
   const { session, updateSession } = useJourney();
   const auth = session.auth ?? {};
+  const { updateProfile, isPending: isUpdateProfilePending } = useUpdateProfile();
 
   const [name, setName] = useState(auth.ownerName ?? '');
   const [nameState, setNameState] = useState<AuthVehicleOwnerState>('empty');
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!auth.otpVerified || !auth.mobile) {
@@ -324,23 +379,26 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
       setNameState('error');
       return;
     }
-    setSubmitting(true);
     setNameState('loading');
-    await delay(500);
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      setSubmitting(false);
-      setNameState('error');
+    const result = await updateProfile({ name: trimmed });
+    if (!result.ok) {
+      setNameState(applyVehicleOwnerSaveError(result.error));
       return;
     }
-    updateSession({ auth: { ...auth, ownerName: trimmed } });
-    setSubmitting(false);
-    onAuthCompleted?.();
+    updateSession({
+      auth: {
+        ...auth,
+        ...result.data.journeyPatch,
+        ownerName: result.data.journeyPatch.ownerName ?? trimmed,
+      },
+    });
+    await onAuthCompleted?.();
   };
 
   return (
     <A3VehicleOwnerScreen
       nameValue={name}
-      nameState={submitting ? 'loading' : nameState}
+      nameState={isUpdateProfilePending ? 'loading' : nameState}
       onNameChange={(value) => {
         setName(value);
         if (nameState === 'error') {
@@ -359,6 +417,15 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
 
 function PrivacyRoute() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    void loadLegalDocuments().then((result) => {
+      if (!result.ok) {
+        reportUserError(authLogger, 'legal_documents_load_failed', result.error);
+      }
+    });
+  }, []);
+
   return (
     <L1PrivacyPolicyScreen
       onBack={() => {
@@ -373,6 +440,15 @@ function PrivacyRoute() {
 
 function TermsRoute() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    void loadLegalDocuments().then((result) => {
+      if (!result.ok) {
+        reportUserError(authLogger, 'legal_documents_load_failed', result.error);
+      }
+    });
+  }, []);
+
   return (
     <L2TermsConditionsScreen
       onBack={() => {

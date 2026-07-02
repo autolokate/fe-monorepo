@@ -19,15 +19,8 @@ export const MOBILE_DIGIT_MAX = 10;
 export const MOBILE_INPUT_DISPLAY_MAX = 11;
 
 export function isValidMobile(value: string): boolean {
-  return normalizeMobile(value) === '9999999999';
-}
-
-export function isExpiredOtp(value: string): boolean {
-  return value === '000000';
-}
-
-export function isValidOtp(value: string): boolean {
-  return value === '123456';
+  const digits = normalizeMobile(value);
+  return /^[6-9]\d{9}$/.test(digits);
 }
 
 export const OTP_LENGTH = 6;

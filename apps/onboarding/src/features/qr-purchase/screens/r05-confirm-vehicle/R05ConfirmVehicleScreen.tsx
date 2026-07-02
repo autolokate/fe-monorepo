@@ -19,6 +19,7 @@ export function R05ConfirmVehicleScreen({
   footerLabel = 'Looks right',
   protectedPlan = false,
   planLabel,
+  footerLoading = false,
 }: PurchaseConfirmVehicleScreenProps) {
   return (
     <AuthStepShell
@@ -28,6 +29,7 @@ export function R05ConfirmVehicleScreen({
       title={title}
       description={description}
       footerLabel={footerLabel}
+      footerLoading={footerLoading}
       showBack={showBack}
       onBack={onBack}
       onContinue={onContinue}

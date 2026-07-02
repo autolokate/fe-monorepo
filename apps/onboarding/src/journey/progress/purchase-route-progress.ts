@@ -1,27 +1,26 @@
 import { journeyPaths } from '../constants.js';
+import { purchaseJourneyPaths } from '../purchase/purchase-routing.js';
 
 import type { RouteProgressConfig } from './route-progress.types.js';
 
-const purchaseBase = journeyPaths.purchase;
-
 /** Figma Consumer · QR Activation + Purchase — no step progress bar on any purchase frame. */
 export const purchaseRouteProgressByPath: Record<string, RouteProgressConfig | null> = {
-  [`${purchaseBase}/r03-vehicle`]: null,
-  [`${purchaseBase}/r04-fetching`]: null,
-  [`${purchaseBase}/r04b-fetch-failed`]: null,
-  [`${purchaseBase}/r05-confirm`]: null,
-  [`${purchaseBase}/r06-choose-plan`]: null,
-  [`${purchaseBase}/r07-rider-cover`]: null,
-  [`${purchaseBase}/r08-order-summary`]: null,
-  [`${purchaseBase}/r08b-promo-applied`]: null,
-  [`${purchaseBase}/r09-processing-payment`]: null,
-  [`${purchaseBase}/r10-payment-success`]: null,
-  [`${purchaseBase}/r10b-payment-failed`]: null,
+  [purchaseJourneyPaths.vehicleDetails]: null,
+  [purchaseJourneyPaths.vehicleLookup]: null,
+  [purchaseJourneyPaths.vehicleLookupFailed]: null,
+  [purchaseJourneyPaths.vehicleConfirmation]: null,
+  [purchaseJourneyPaths.choosePlan]: null,
+  [purchaseJourneyPaths.riderCover]: null,
+  [purchaseJourneyPaths.orderSummary]: null,
+  [purchaseJourneyPaths.orderSummaryPromoApplied]: null,
+  [purchaseJourneyPaths.processingPayment]: null,
+  [purchaseJourneyPaths.paymentSuccess]: null,
+  [purchaseJourneyPaths.paymentFailed]: null,
 };
 
 export function getPurchaseRouteProgress(pathname: string): RouteProgressConfig | null {
   const normalized = pathname.replace(/\/+$/, '');
-  if (normalized.startsWith(`${purchaseBase}/`) || normalized === purchaseBase) {
+  if (normalized.startsWith(`${journeyPaths.purchase}/`) || normalized === journeyPaths.purchase) {
     return purchaseRouteProgressByPath[normalized] ?? null;
   }
   return null;

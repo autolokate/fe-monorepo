@@ -10,6 +10,8 @@ export type EmergencyPlanLimits = {
   maxRiders: number;
 };
 
+export type EmergencyFlowKind = 'purchase' | 'partner';
+
 const MAX_EMERGENCY_CONTACTS_BY_PLAN: Record<PurchasePlanId, number> = {
   safe: 1,
   secure: 2,
@@ -38,11 +40,16 @@ export function getPurchasedRiderSlots(riderCount: PurchaseRiderCount | undefine
   return riderCount ?? 0;
 }
 
-/** Entitled rider slots = min(purchased addon count, product cap). */
+/** Entitled rider slots = min(purchased addon count, product cap) for B2C; preview count for partner. */
 export function getEntitledRiderSlots(
   planId: PurchasePlanId | undefined,
   riderCount: PurchaseRiderCount | undefined,
+  flowKind: EmergencyFlowKind = 'purchase',
 ): number {
+  if (flowKind === 'partner') {
+    return getPurchasedRiderSlots(riderCount);
+  }
+
   const limits = getEmergencyPlanLimits(planId);
   if (limits.maxRiders === 0) {
     return 0;
@@ -53,8 +60,9 @@ export function getEntitledRiderSlots(
 export function shouldEnterRiderPrompt(
   planId: PurchasePlanId | undefined,
   riderCount: PurchaseRiderCount | undefined,
+  flowKind: EmergencyFlowKind = 'purchase',
 ): boolean {
-  return getEntitledRiderSlots(planId, riderCount) > 0;
+  return getEntitledRiderSlots(planId, riderCount, flowKind) > 0;
 }
 
 export function canAddEmergencyContact(
@@ -69,8 +77,9 @@ export function canAddRider(
   currentRiderCount: number,
   planId: PurchasePlanId | undefined,
   purchasedRiderSlots: PurchaseRiderCount | undefined,
+  flowKind: EmergencyFlowKind = 'purchase',
 ): boolean {
-  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots);
+  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots, flowKind);
   return entitled > 0 && currentRiderCount < entitled;
 }
 
@@ -80,11 +89,12 @@ export function needsRiderSetup(
   purchasedRiderSlots: PurchaseRiderCount | undefined,
   currentRiderCount: number,
   riderSkipped?: boolean,
+  flowKind: EmergencyFlowKind = 'purchase',
 ): boolean {
   if (riderSkipped) {
     return false;
   }
-  return canAddRider(currentRiderCount, planId, purchasedRiderSlots);
+  return canAddRider(currentRiderCount, planId, purchasedRiderSlots, flowKind);
 }
 
 /** E5 Continue — rider setup only when slots remain and user has not skipped R0. */
@@ -93,11 +103,12 @@ export function getContactsSummaryRiderContext(
   purchasedRiderSlots: PurchaseRiderCount | undefined,
   currentRiderCount: number,
   riderSkipped: boolean | undefined,
+  flowKind: EmergencyFlowKind = 'purchase',
 ): {
   ridersOwed: boolean;
   shouldEnterRiderFlowOnContinue: boolean;
 } {
-  const entitledSlots = getEntitledRiderSlots(planId, purchasedRiderSlots);
+  const entitledSlots = getEntitledRiderSlots(planId, purchasedRiderSlots, flowKind);
   const ridersOwed = entitledSlots > 0 && currentRiderCount < entitledSlots;
 
   return {
@@ -127,8 +138,9 @@ export function getContactsMaxReachedMessage(planId: PurchasePlanId | undefined)
 export function getRidersMaxReachedMessage(
   planId: PurchasePlanId | undefined,
   purchasedRiderSlots: PurchaseRiderCount | undefined,
+  flowKind: EmergencyFlowKind = 'purchase',
 ): string {
-  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots);
+  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots, flowKind);
   return `You’ve added the maximum ${String(entitled)} riders`;
 }
 
@@ -164,8 +176,9 @@ export function getRidersSummaryDescription(
   currentCount: number,
   planId: PurchasePlanId | undefined,
   purchasedRiderSlots: PurchaseRiderCount | undefined,
+  flowKind: EmergencyFlowKind = 'purchase',
 ): string {
-  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots);
+  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots, flowKind);
 
   if (entitled === 0) {
     return '';

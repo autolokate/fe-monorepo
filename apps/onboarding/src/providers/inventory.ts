@@ -26,7 +26,7 @@ export const providerInventory: readonly ProviderDefinition[] = [
   {
     id: 'AuthProvider',
     package: '@autolokate/auth',
-    description: 'Session state from AuthClient',
+    description: 'TokenManager session + device identity',
     phase: '4-auth',
   },
   {

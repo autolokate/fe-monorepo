@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { AlPermissionSheet } from '@autolokate/ui';
 
@@ -18,7 +18,6 @@ import {
   pickDeviceContactWithStatus,
   shouldShowAddFromContactsCTA,
 } from '../../utils/device-contact-picker.js';
-import { shouldSimulateRiderPromptLoadFailure } from '../../features/emergency/data/rider-prompt-demo.js';
 import {
   canAddEmergencyContact,
   canAddRider,
@@ -28,10 +27,8 @@ import {
   shouldEnterRiderPrompt,
 } from '../../features/emergency/emergency-limits.js';
 import {
-  isExpiredOtp,
   isValidEmergencyName,
   isValidMobile,
-  isValidOtp,
   normalizeMobile,
   clampMobileInput,
 } from '../../features/emergency/emergency.validation.js';
@@ -39,11 +36,16 @@ import {
   OTP_LENGTH,
   RESEND_COOLDOWN_SECONDS,
 } from '../../features/shared-auth/auth-flow/auth-flow.validation.js';
+import { useEmergencyContacts, useRiders } from '@/hooks/emergency/index.js';
+import { reportEmergencyApiError } from '@/platform/feedback/report-emergency-api-error.js';
+import type { EmergencyApiError } from '@/services/emergency/emergency-api-errors.js';
+import { readEmergencyApiUserMessage } from '@/services/emergency/emergency-api-errors.js';
+import { emergencyContactLogger } from '@/services/emergency/emergency-contact-logger.js';
+import { riderLogger } from '@/services/rider/rider-logger.js';
 import type { PurchaseCheckoutSession } from '../../features/qr-purchase/types-checkout.js';
 import type {
   EmergencyContact,
   EmergencyNameFormState,
-  EmergencyRider,
   EmergencyRiderPromptState,
   EmergencySession,
   RelationshipId,
@@ -53,10 +55,14 @@ import { resolveEmergencyFoundationContext } from '../emergency/emergency-founda
 import { emergencyJourneyPaths } from '../emergency/emergency-routing.js';
 import { useJourney } from '../JourneyContext.js';
 
-const RIDER_LOAD_MS = 600;
-const SAVE_RIDER_MS = 800;
-const SAVE_CONTACT_MS = 800;
-const VERIFY_OTP_MS = 800;
+function mapOtpErrorKind(error: EmergencyApiError): 'wrong' | 'expired' {
+  if (error.code === 'unauthorized') {
+    return 'expired';
+  }
+  return 'wrong';
+}
+
+const VERIFY_OTP_SUCCESS_MS = 400;
 
 function EmergencySegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();
@@ -71,25 +77,27 @@ function EmergencySegmentBootstrap({ children }: { children: ReactNode }) {
 function useEmergencySession() {
   const { session, updateSession } = useJourney();
   const emergency = session.emergency ?? {};
+  const emergencyRef = useRef(emergency);
+  emergencyRef.current = emergency;
 
   const patchEmergency = useCallback(
     (patch: Partial<EmergencySession>) => {
       updateSession({
         emergency: {
-          ...emergency,
+          ...emergencyRef.current,
           ...patch,
         },
       });
     },
-    [emergency, updateSession],
+    [updateSession],
   );
 
   return { emergency, patchEmergency };
 }
 
 function useEmergencyFoundation() {
-  const { session } = useJourney();
-  return resolveEmergencyFoundationContext(session);
+  const { session, selectedFlow } = useJourney();
+  return resolveEmergencyFoundationContext(session, selectedFlow);
 }
 
 function useOnlineState() {
@@ -115,11 +123,6 @@ function useOnlineState() {
   return isOnline;
 }
 
-function upsertRider(riders: EmergencyRider[] | undefined, nextRider: EmergencyRider): EmergencyRider[] {
-  const existing = riders ?? [];
-  const withoutDuplicate = existing.filter((rider) => rider.mobile !== nextRider.mobile);
-  return [...withoutDuplicate, nextRider];
-}
 
 function LegacyRiderSetupRedirect() {
   return <Navigate to={emergencyJourneyPaths.riderPrompt} replace />;
@@ -157,9 +160,10 @@ function R0Route() {
   const { selectedFlow, session, setPhase } = useJourney();
   const { emergency, patchEmergency } = useEmergencySession();
   const purchase = session.purchase;
-  const { planId, riderCount } = useEmergencyFoundation();
+  const { planId, riderCount, flowKind } = useEmergencyFoundation();
+  const { refresh: refreshRiders } = useRiders(selectedFlow);
   const isOnline = useOnlineState();
-  const entitledSlots = getEntitledRiderSlots(planId, riderCount);
+  const entitledSlots = getEntitledRiderSlots(planId, riderCount, flowKind);
   const [viewState, setViewState] = useState<EmergencyRiderPromptState>(() =>
     resolveR0InitialViewState(
       typeof navigator === 'undefined' ? true : navigator.onLine,
@@ -168,50 +172,65 @@ function R0Route() {
     ),
   );
   const [loadAttempt, setLoadAttempt] = useState(0);
+  const [apiErrorMessage, setApiErrorMessage] = useState<string | null>(null);
   const [skipConfirmOpen, setSkipConfirmOpen] = useState(false);
 
   useEffect(() => {
-    if (!shouldEnterRiderPrompt(planId, riderCount)) {
+    if (!shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
       return;
     }
     if (!isOnline) {
       setViewState('offline');
       return;
     }
-    if (emergency.riderPromptLoadFailed) {
-      setViewState('error');
-      return;
-    }
 
-    if (hasRiderEntitlementInPurchaseSession(purchase) && loadAttempt === 0) {
+    if (hasRiderEntitlementInPurchaseSession(purchase) && loadAttempt === 0 && emergency.riders) {
       setViewState('default');
       return;
     }
 
     setViewState('loading');
-    const timer = window.setTimeout(() => {
-      if (shouldSimulateRiderPromptLoadFailure(planId, riderCount, loadAttempt)) {
-        patchEmergency({ riderPromptLoadFailed: true });
-        setViewState('error');
+    let cancelled = false;
+
+    void refreshRiders(true).then((result) => {
+      if (cancelled) {
         return;
       }
+      if (!result.ok) {
+        const apiMessage = readEmergencyApiUserMessage(result.error);
+        if (apiMessage) {
+          reportEmergencyApiError(riderLogger, 'riders_load_failed', result.error);
+          setApiErrorMessage(apiMessage);
+          patchEmergency({ riderPromptLoadFailed: true });
+          setViewState('error');
+          return;
+        }
+        patchEmergency({ riders: [], riderPromptLoadFailed: false });
+        setApiErrorMessage(null);
+        setViewState('default');
+        return;
+      }
+      patchEmergency({ riders: result.riders, riderPromptLoadFailed: false });
+      setApiErrorMessage(null);
       setViewState('default');
-    }, RIDER_LOAD_MS);
+    });
 
     return () => {
-      window.clearTimeout(timer);
+      cancelled = true;
     };
   }, [
-    emergency.riderPromptLoadFailed,
+    emergency.riders,
+    flowKind,
     isOnline,
     loadAttempt,
+    patchEmergency,
     planId,
-    purchase?.riderCount,
-    purchase?.selectedPlanId,
+    purchase,
+    refreshRiders,
     riderCount,
   ]);
 
-  if (!shouldEnterRiderPrompt(planId, riderCount)) {
+  if (!shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
     return <Navigate to={emergencyJourneyPaths.contactsEmpty} replace />;
   }
 
@@ -231,12 +250,14 @@ function R0Route() {
       <E01RiderPromptScreen
       viewState={viewState}
       description={getRiderPromptDescription(entitledSlots)}
+      errorMessage={apiErrorMessage}
       onBack={() => {
         void navigate(getEmergencyFlowBackPath(selectedFlow, session));
       }}
       onContinue={() => {
-        if (viewState === 'error') {
+        if (viewState === 'error' && apiErrorMessage) {
           patchEmergency({ riderPromptLoadFailed: false });
+          setApiErrorMessage(null);
           setLoadAttempt((attempt) => attempt + 1);
           return;
         }
@@ -274,12 +295,15 @@ function R0Route() {
 
 function R1Route() {
   const navigate = useNavigate();
+  const { selectedFlow } = useJourney();
   const { emergency, patchEmergency } = useEmergencySession();
+  const { requestOtp } = useRiders(selectedFlow);
   const isOnline = useOnlineState();
   const [mobile, setMobile] = useState(emergency.rider?.mobile ?? '');
   const [mobileState, setMobileState] = useState<'default' | 'error' | 'offline'>(
     isOnline ? 'default' : 'offline',
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setMobileState((current) => {
@@ -304,6 +328,9 @@ function R1Route() {
         void navigate(emergencyJourneyPaths.riderPrompt);
       }}
       onContinue={() => {
+        if (isSubmitting) {
+          return;
+        }
         if (!isOnline) {
           setMobileState('offline');
           return;
@@ -312,14 +339,23 @@ function R1Route() {
           setMobileState('error');
           return;
         }
-        patchEmergency({
-          rider: {
-            mobile: normalizeMobile(mobile),
-            name: emergency.rider?.name ?? '',
-            relation: emergency.rider?.relation ?? 'spouse',
-          },
+        const normalized = normalizeMobile(mobile);
+        setIsSubmitting(true);
+        void requestOtp(normalized).then((result) => {
+          setIsSubmitting(false);
+          if (!result.ok) {
+            reportEmergencyApiError(riderLogger, 'rider_otp_request_failed', result.error);
+            return;
+          }
+          patchEmergency({
+            rider: {
+              mobile: normalized,
+              name: emergency.rider?.name ?? '',
+              relation: emergency.rider?.relation ?? 'spouse',
+            },
+          });
+          void navigate(emergencyJourneyPaths.riderOtp);
         });
-        void navigate(emergencyJourneyPaths.riderOtp);
       }}
     />
   );
@@ -327,7 +363,9 @@ function R1Route() {
 
 function R2Route() {
   const navigate = useNavigate();
+  const { selectedFlow } = useJourney();
   const { emergency, patchEmergency } = useEmergencySession();
+  const { verifyOtp: verifyRiderOtpApi, requestOtp: requestRiderOtpApi } = useRiders(selectedFlow);
   const mobile = emergency.rider?.mobile ?? '';
   const [otp, setOtp] = useState('');
   const [otpState, setOtpState] = useState<
@@ -360,18 +398,14 @@ function R2Route() {
         setOtpErrorKind('wrong');
         return;
       }
-      if (isExpiredOtp(code)) {
-        setOtpState('error');
-        setOtpErrorKind('expired');
-        return;
-      }
-      if (!isValidOtp(code)) {
-        setOtpState('error');
-        setOtpErrorKind('wrong');
-        return;
-      }
       setOtpState('verifying');
-      window.setTimeout(() => {
+      void verifyRiderOtpApi(mobile, code).then((result) => {
+        if (!result.ok) {
+          reportEmergencyApiError(riderLogger, 'rider_otp_verify_failed', result.error);
+          setOtpState('error');
+          setOtpErrorKind(mapOtpErrorKind(result.error));
+          return;
+        }
         setOtpState('success');
         patchEmergency({
           rider: emergency.rider
@@ -380,10 +414,10 @@ function R2Route() {
         });
         window.setTimeout(() => {
           void navigate(emergencyJourneyPaths.riderName);
-        }, 400);
-      }, VERIFY_OTP_MS);
+        }, VERIFY_OTP_SUCCESS_MS);
+      });
     },
-    [emergency.rider, isOnline, mobile, navigate, otp, patchEmergency],
+    [emergency.rider, isOnline, mobile, navigate, otp, patchEmergency, verifyRiderOtpApi],
   );
 
   return (
@@ -394,16 +428,6 @@ function R2Route() {
       onOtpChange={(value) => {
         setOtp(value);
         if (value.length === OTP_LENGTH) {
-          if (isExpiredOtp(value)) {
-            setOtpErrorKind('expired');
-            setOtpState('error');
-            return;
-          }
-          if (!isValidOtp(value)) {
-            setOtpErrorKind('wrong');
-            setOtpState('error');
-            return;
-          }
           if (otpState !== 'verifying' && otpState !== 'success') {
             verifyOtp(value);
           }
@@ -417,9 +441,15 @@ function R2Route() {
       otpErrorKind={otpErrorKind}
       resendCooldownSeconds={resendCooldownSeconds}
       onResendOtp={() => {
-        setResendCooldownSeconds(RESEND_COOLDOWN_SECONDS);
-        setOtpState('default');
-        setOtpErrorKind(null);
+        void requestRiderOtpApi(mobile).then((result) => {
+          if (!result.ok) {
+            reportEmergencyApiError(riderLogger, 'rider_otp_resend_failed', result.error);
+            return;
+          }
+          setResendCooldownSeconds(RESEND_COOLDOWN_SECONDS);
+          setOtpState('default');
+          setOtpErrorKind(null);
+        });
       }}
       onChangeNumber={() => {
         void navigate(emergencyJourneyPaths.riderMobile);
@@ -434,21 +464,37 @@ function R2Route() {
 
 function R3Route() {
   const navigate = useNavigate();
+  const { selectedFlow } = useJourney();
   const { emergency, patchEmergency } = useEmergencySession();
+  const { addRider } = useRiders(selectedFlow);
   const isOnline = useOnlineState();
   const [name, setName] = useState(emergency.rider?.name ?? '');
   const [relation, setRelation] = useState<RelationshipId | undefined>(
     emergency.rider?.relation ?? 'spouse',
   );
   const [formState, setFormState] = useState<EmergencyNameFormState>('default');
+  const [apiErrorMessage, setApiErrorMessage] = useState<string | null>(null);
 
   return (
     <E04RiderNameScreen
       nameValue={name}
-      onNameChange={setName}
+      onNameChange={(value) => {
+        setName(value);
+        if (formState === 'error') {
+          setFormState('default');
+          setApiErrorMessage(null);
+        }
+      }}
       relation={relation}
-      onRelationChange={setRelation}
+      onRelationChange={(value) => {
+        setRelation(value);
+        if (formState === 'error') {
+          setFormState('default');
+          setApiErrorMessage(null);
+        }
+      }}
       formState={formState}
+      errorMessage={apiErrorMessage}
       onBack={() => {
         void navigate(emergencyJourneyPaths.riderOtp);
       }}
@@ -457,23 +503,33 @@ function R3Route() {
         if (!isValidEmergencyName(name) || !relation || !riderMobile) {
           return;
         }
+        if (!isOnline) {
+          return;
+        }
         setFormState('submitting');
-        window.setTimeout(() => {
-          if (!isOnline) {
-            setFormState('error');
+        setApiErrorMessage(null);
+        void addRider(name.trim(), relation).then((result) => {
+          if (!result.ok) {
+            const apiMessage = readEmergencyApiUserMessage(result.error);
+            if (apiMessage) {
+              reportEmergencyApiError(riderLogger, 'rider_create_failed', result.error);
+              setApiErrorMessage(apiMessage);
+              setFormState('error');
+              return;
+            }
+            if (result.error.code === 'validation') {
+              void navigate(emergencyJourneyPaths.riderOtp);
+              return;
+            }
+            setFormState('default');
             return;
           }
-          const savedRider: EmergencyRider = {
-            mobile: riderMobile,
-            name: name.trim(),
-            relation,
-          };
           patchEmergency({
-            rider: savedRider,
-            riders: upsertRider(emergency.riders, savedRider),
+            rider: undefined,
+            riders: result.riders,
           });
           void navigate(emergencyJourneyPaths.ridersSummary);
-        }, SAVE_RIDER_MS);
+        });
       }}
     />
   );
@@ -481,13 +537,27 @@ function R3Route() {
 
 function R4Route() {
   const navigate = useNavigate();
-  const { setPhase } = useJourney();
+  const { selectedFlow, setPhase } = useJourney();
   const { emergency, patchEmergency } = useEmergencySession();
-  const { planId, riderCount } = useEmergencyFoundation();
-  const riders = emergency.riders ?? (emergency.rider ? [emergency.rider] : []);
+  const { planId, riderCount, flowKind } = useEmergencyFoundation();
+  const { refresh: refreshRiders } = useRiders(selectedFlow);
+  const riders = emergency.riders ?? [];
   const contacts = emergency.contacts ?? [];
 
-  if (riders.length === 0) {
+  useEffect(() => {
+    let cancelled = false;
+    void refreshRiders(true).then((result) => {
+      if (cancelled || !result.ok) {
+        return;
+      }
+      patchEmergency({ riders: result.riders });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [patchEmergency, refreshRiders]);
+
+  if (riders.length === 0 && !emergency.rider) {
     return <Navigate to={emergencyJourneyPaths.riderName} replace />;
   }
 
@@ -496,11 +566,12 @@ function R4Route() {
       riders={riders}
       planId={planId}
       purchasedRiderSlots={riderCount}
+      flowKind={flowKind}
       onBack={() => {
         void navigate(emergencyJourneyPaths.riderName);
       }}
       onAddAnother={() => {
-        if (!canAddRider(riders.length, planId, riderCount)) {
+        if (!canAddRider(riders.length, planId, riderCount, flowKind)) {
           return;
         }
         patchEmergency({
@@ -528,12 +599,32 @@ function E0Route() {
   const navigate = useNavigate();
   const { selectedFlow, session } = useJourney();
   const { emergency, patchEmergency } = useEmergencySession();
-  const { planId, riderCount } = useEmergencyFoundation();
+  const { planId, riderCount, flowKind } = useEmergencyFoundation();
+  const { refresh: refreshContacts } = useEmergencyContacts();
   const showAddFromContacts = shouldShowAddFromContactsCTA();
 
+  useEffect(() => {
+    let cancelled = false;
+    void refreshContacts(true).then((result) => {
+      if (cancelled || !result.ok) {
+        if (!cancelled) {
+          patchEmergency({ contacts: [] });
+        }
+        return;
+      }
+      patchEmergency({ contacts: result.contacts });
+      if (result.contacts.length > 0) {
+        void navigate(emergencyJourneyPaths.contactsSummary);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const goToManualEntry = useCallback(() => {
-    patchEmergency({ contactDraft: { fromPicker: false, otpVerified: false } });
     void navigate(emergencyJourneyPaths.contactMobile);
+    patchEmergency({ contactDraft: { fromPicker: false, otpVerified: false } });
   }, [navigate, patchEmergency]);
 
   const applyPickedContact = useCallback(
@@ -587,7 +678,7 @@ function E0Route() {
           void navigate(emergencyJourneyPaths.ridersSummary);
           return;
         }
-        if (shouldEnterRiderPrompt(planId, riderCount)) {
+        if (shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
           void navigate(emergencyJourneyPaths.riderPrompt);
           return;
         }
@@ -602,11 +693,13 @@ function E0Route() {
 function E1Route() {
   const navigate = useNavigate();
   const { emergency, patchEmergency } = useEmergencySession();
+  const { requestOtp } = useEmergencyContacts();
   const isOnline = useOnlineState();
   const [mobile, setMobile] = useState(emergency.contactDraft?.mobile ?? '');
   const [mobileState, setMobileState] = useState<'default' | 'error' | 'offline'>(
     isOnline ? 'default' : 'offline',
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setMobileState((current) => {
@@ -621,6 +714,7 @@ function E1Route() {
     <E06ContactMobileScreen
       mobileState={mobileState}
       mobileValue={mobile}
+      footerLoading={isSubmitting}
       onMobileChange={(value) => {
         setMobile(clampMobileInput(value));
         if (mobileState === 'error') {
@@ -635,6 +729,9 @@ function E1Route() {
         void navigate(backPath);
       }}
       onContinue={() => {
+        if (isSubmitting) {
+          return;
+        }
         if (!isOnline) {
           setMobileState('offline');
           return;
@@ -643,14 +740,27 @@ function E1Route() {
           setMobileState('error');
           return;
         }
-        patchEmergency({
-          contactDraft: {
-            ...emergency.contactDraft,
-            mobile: normalizeMobile(mobile),
-            otpVerified: false,
-          },
+        const normalized = normalizeMobile(mobile);
+        setIsSubmitting(true);
+        void requestOtp(normalized).then((result) => {
+          setIsSubmitting(false);
+          if (!result.ok) {
+            reportEmergencyApiError(
+              emergencyContactLogger,
+              'contact_otp_request_failed',
+              result.error,
+            );
+            return;
+          }
+          patchEmergency({
+            contactDraft: {
+              ...emergency.contactDraft,
+              mobile: normalized,
+              otpVerified: false,
+            },
+          });
+          void navigate(emergencyJourneyPaths.contactOtp);
         });
-        void navigate(emergencyJourneyPaths.contactOtp);
       }}
     />
   );
@@ -659,6 +769,8 @@ function E1Route() {
 function E2Route() {
   const navigate = useNavigate();
   const { emergency, patchEmergency } = useEmergencySession();
+  const { verifyOtp: verifyContactOtpApi, requestOtp: requestContactOtpApi } =
+    useEmergencyContacts();
   const mobile = emergency.contactDraft?.mobile ?? '';
   const [otp, setOtp] = useState('');
   const [otpState, setOtpState] = useState<
@@ -691,18 +803,18 @@ function E2Route() {
         setOtpErrorKind('wrong');
         return;
       }
-      if (isExpiredOtp(code)) {
-        setOtpState('error');
-        setOtpErrorKind('expired');
-        return;
-      }
-      if (!isValidOtp(code)) {
-        setOtpState('error');
-        setOtpErrorKind('wrong');
-        return;
-      }
       setOtpState('verifying');
-      window.setTimeout(() => {
+      void verifyContactOtpApi(mobile, code).then((result) => {
+        if (!result.ok) {
+          reportEmergencyApiError(
+            emergencyContactLogger,
+            'contact_otp_verify_failed',
+            result.error,
+          );
+          setOtpState('error');
+          setOtpErrorKind(mapOtpErrorKind(result.error));
+          return;
+        }
         setOtpState('success');
         patchEmergency({
           contactDraft: {
@@ -713,11 +825,15 @@ function E2Route() {
         });
         window.setTimeout(() => {
           void navigate(emergencyJourneyPaths.contactName);
-        }, 400);
-      }, VERIFY_OTP_MS);
+        }, VERIFY_OTP_SUCCESS_MS);
+      });
     },
-    [emergency.contactDraft, isOnline, mobile, navigate, otp, patchEmergency],
+    [emergency.contactDraft, isOnline, mobile, navigate, otp, patchEmergency, verifyContactOtpApi],
   );
+
+  if (!mobile) {
+    return <Navigate to={emergencyJourneyPaths.contactMobile} replace />;
+  }
 
   return (
     <E07ContactOtpScreen
@@ -727,16 +843,6 @@ function E2Route() {
       onOtpChange={(value) => {
         setOtp(value);
         if (value.length === OTP_LENGTH) {
-          if (isExpiredOtp(value)) {
-            setOtpErrorKind('expired');
-            setOtpState('error');
-            return;
-          }
-          if (!isValidOtp(value)) {
-            setOtpErrorKind('wrong');
-            setOtpState('error');
-            return;
-          }
           if (otpState !== 'verifying' && otpState !== 'success') {
             verifyOtp(value);
           }
@@ -750,9 +856,19 @@ function E2Route() {
       otpErrorKind={otpErrorKind}
       resendCooldownSeconds={resendCooldownSeconds}
       onResendOtp={() => {
-        setResendCooldownSeconds(RESEND_COOLDOWN_SECONDS);
-        setOtpState('default');
-        setOtpErrorKind(null);
+        void requestContactOtpApi(mobile).then((result) => {
+          if (!result.ok) {
+            reportEmergencyApiError(
+              emergencyContactLogger,
+              'contact_otp_resend_failed',
+              result.error,
+            );
+            return;
+          }
+          setResendCooldownSeconds(RESEND_COOLDOWN_SECONDS);
+          setOtpState('default');
+          setOtpErrorKind(null);
+        });
       }}
       onChangeNumber={() => {
         void navigate(emergencyJourneyPaths.contactMobile);
@@ -768,6 +884,7 @@ function E2Route() {
 function E3Route() {
   const navigate = useNavigate();
   const { emergency, patchEmergency } = useEmergencySession();
+  const { createContact } = useEmergencyContacts();
   const isOnline = useOnlineState();
   const draft = emergency.contactDraft;
   const [name, setName] = useState(draft?.name ?? '');
@@ -796,25 +913,31 @@ function E3Route() {
         if (!draft || !isValidEmergencyName(name) || !relation || !mobile) {
           return;
         }
+        if (!isOnline) {
+          setFormState('error');
+          return;
+        }
+        if (!draft.otpVerified) {
+          void navigate(emergencyJourneyPaths.contactOtp);
+          return;
+        }
         setFormState('submitting');
-        window.setTimeout(() => {
-          if (!isOnline) {
+        void createContact(name.trim(), relation).then((result) => {
+          if (!result.ok) {
+            reportEmergencyApiError(
+              emergencyContactLogger,
+              'contact_create_failed',
+              result.error,
+            );
             setFormState('error');
             return;
           }
-          const nextContact: EmergencyContact = {
-            name: name.trim(),
-            mobile,
-            relation,
-            verified: Boolean(draft.otpVerified),
-          };
-          const existing = emergency.contacts ?? [];
           patchEmergency({
-            contacts: [...existing, nextContact],
+            contacts: result.contacts,
             contactDraft: undefined,
           });
           void navigate(emergencyJourneyPaths.contactsSummary);
-        }, SAVE_CONTACT_MS);
+        });
       }}
     />
   );
@@ -824,15 +947,32 @@ function E5Route() {
   const navigate = useNavigate();
   const { setPhase } = useJourney();
   const { emergency, patchEmergency } = useEmergencySession();
-  const { planId, riderCount } = useEmergencyFoundation();
-  const contacts = emergency.contacts ?? [];
-  const riders = emergency.riders ?? (emergency.rider ? [emergency.rider] : []);
+  const { planId, riderCount, flowKind } = useEmergencyFoundation();
+  const { refresh: refreshContacts } = useEmergencyContacts();
+  const [contacts, setContacts] = useState<EmergencyContact[]>([]);
+  const riders = emergency.riders ?? [];
   const riderContext = getContactsSummaryRiderContext(
     planId,
     riderCount,
     riders.length,
     emergency.riderSkipped,
+    flowKind,
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    void refreshContacts(true).then((result) => {
+      if (cancelled) {
+        return;
+      }
+      const nextContacts = result.ok ? result.contacts : [];
+      setContacts(nextContacts);
+      patchEmergency({ contacts: nextContacts });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const goToRiderSetup = () => {
     patchEmergency({ riderSkipped: false });
@@ -879,7 +1019,7 @@ function E5Route() {
 function EmergencyWildcardRedirect() {
   const { session, selectedFlow } = useJourney();
   const emergency = session.emergency ?? {};
-  const { planId, riderCount } = resolveEmergencyFoundationContext(session);
+  const { planId, riderCount, flowKind } = resolveEmergencyFoundationContext(session, selectedFlow);
 
   if (emergency.riderSkipped) {
     return <Navigate to={getCompletedPath()} replace />;
@@ -889,7 +1029,7 @@ function EmergencyWildcardRedirect() {
     return <Navigate to={emergencyJourneyPaths.contactsEmpty} replace />;
   }
 
-  if (!shouldEnterRiderPrompt(planId, riderCount)) {
+  if (!shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
     return <Navigate to={emergencyJourneyPaths.contactsEmpty} replace />;
   }
 

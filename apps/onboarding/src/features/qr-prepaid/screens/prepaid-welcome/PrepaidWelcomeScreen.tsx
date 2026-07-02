@@ -11,20 +11,23 @@ import {
 import { applyLandingEntitlementToSession } from '@/features/b2b-shared/apply-landing-entitlement.js';
 import { getWelcomeShellPresentation } from '@/features/b2b-shared/get-welcome-shell-presentation.js';
 import { resolveWelcomePlanDisplay } from '@/features/b2b-shared/resolve-welcome-plan-display.js';
-import { useWelcomeLanding } from '@/features/b2b-shared/use-welcome-landing.js';
+import { useActivationPreview } from '@/hooks/activation/index.js';
 import { journeyPaths } from '@/journey/constants.js';
 import { useJourney } from '@/journey/JourneyContext.js';
 import { authJourneyPaths } from '@/journey/auth/auth-routing.js';
-import { getDemoPrepaidLandingEntitlement } from '../../data/prepaid-landing-config.js';
+import { readStoredActivationPreviewCode, readStoredActivationQrCode } from '@/services/activation/activation-service.js';
 
 const PREPAID_SUCCESS_BODY =
-  'Sharma Fleet set up and paid for your plan. Nothing to pay.';
+  'Your sponsor set up and paid for your plan. Nothing to pay.';
 
 export function PrepaidWelcomeScreen() {
   const navigate = useNavigate();
-  const { setSelectedFlow, setPhase, updateSession } = useJourney();
-  const { viewState, config, retry } = useWelcomeLanding({
-    loadConfig: getDemoPrepaidLandingEntitlement,
+  const { session, setSelectedFlow, setPhase, updateSession } = useJourney();
+  const activationCode =
+    session.prepaid?.voucherId ?? readStoredActivationPreviewCode() ?? readStoredActivationQrCode();
+  const { viewState, config, retry } = useActivationPreview({
+    code: activationCode,
+    flow: 'prepaid',
   });
 
   const handleActivate = () => {
@@ -34,7 +37,7 @@ export function PrepaidWelcomeScreen() {
 
     setSelectedFlow('prepaid');
     updateSession({
-      prepaid: { entitlement: config },
+      prepaid: { entitlement: config, voucherId: activationCode ?? undefined },
       ...applyLandingEntitlementToSession(config),
     });
     setPhase('shared-auth');

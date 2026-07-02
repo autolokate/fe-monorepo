@@ -6,6 +6,7 @@ import type {
   QrPrepaidPayload,
   QrPurchasePayload,
 } from './qr-dispatch-contract.js';
+import { QR_URL_PARAMS, readQrCodeFromSearchParams } from './qr-url-params.js';
 
 function invalid(message: string): QrDecodeResult {
   return {
@@ -90,7 +91,7 @@ const PARSERS: Record<QrPayloadType, (params: URLSearchParams) => QrDecodeResult
 
 /** Decode QR entry query params from a scanned sticker URL. */
 export function parseQrFromSearchParams(params: URLSearchParams): QrDecodeResult {
-  const type = params.get('type')?.trim() as QrPayloadType | undefined;
+  const type = params.get(QR_URL_PARAMS.legacyType)?.trim() as QrPayloadType | undefined;
   if (!type) {
     return invalid('Missing QR type');
   }
@@ -103,5 +104,17 @@ export function parseQrFromSearchParams(params: URLSearchParams): QrDecodeResult
 }
 
 export function isQrEntryUrl(params: URLSearchParams): boolean {
-  return Boolean(params.get('type')?.trim());
+  return Boolean(
+    params.get(QR_URL_PARAMS.legacyType)?.trim() || readQrCodeFromSearchParams(params),
+  );
+}
+
+/** Legacy demo/deep-link URLs that carry an explicit `type` query param. */
+export function hasLegacyQrEntryParams(params: URLSearchParams): boolean {
+  return Boolean(params.get(QR_URL_PARAMS.legacyType)?.trim());
+}
+
+/** Opaque backend QR code from `?qr_code=` (preferred) or legacy `?code=`. */
+export function extractQrCodeParam(params: URLSearchParams): string | null {
+  return readQrCodeFromSearchParams(params);
 }

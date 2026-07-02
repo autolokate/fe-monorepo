@@ -1,9 +1,15 @@
+import type { TokenManager } from '@autolokate/auth';
+
 import { endpoints } from './endpoints.js';
+import { readEnvelopeMeta } from './envelope.js';
 
 export type ApiClientConfig = {
   baseUrl: string;
   getAccessToken?: () => string | null;
   fetch?: typeof fetch;
+  /** When set, 401 responses trigger a single queued refresh + retry. */
+  tokenManager?: TokenManager;
+  onAuthFailure?: () => void;
 };
 
 export type ApiRequestOptions = {
@@ -11,6 +17,10 @@ export type ApiRequestOptions = {
   body?: unknown;
   headers?: Record<string, string>;
   signal?: AbortSignal;
+  /** Do not attach bearer token (public endpoints). */
+  skipAuth?: boolean;
+  /** Do not attempt refresh + retry on 401. */
+  skipAuthRetry?: boolean;
 };
 
 export class ApiError extends Error {
@@ -27,25 +37,46 @@ export class ApiError extends Error {
   }
 }
 
+import type { ApiErrorEnvelope } from './envelope.js';
+
 type ErrorBody = {
   message?: string;
   code?: string;
   details?: unknown;
 };
 
+const AUTH_PUBLIC_PATHS = new Set<string>([
+  endpoints.auth.requestOtp,
+  endpoints.auth.verifyOtp,
+  endpoints.auth.refresh,
+  endpoints.legal.documents,
+]);
+
+function isAuthPublicPath(path: string): boolean {
+  if (AUTH_PUBLIC_PATHS.has(path)) {
+    return true;
+  }
+  return path.startsWith('/v1/activation/preview');
+}
+
 /**
  * Typed HTTP client for Autolokate backend APIs.
- * Wire a real backend by configuring baseUrl and auth token resolution.
+ * Supports bearer injection, refresh-on-401 (single queue), and envelope errors.
  */
 export class ApiClient {
   private readonly baseUrl: string;
   private readonly getAccessToken: () => string | null;
   private readonly fetchImpl: typeof fetch;
+  private readonly tokenManager: TokenManager | undefined;
+  private readonly onAuthFailure: (() => void) | undefined;
+  private correlationId: string | null = null;
 
   constructor(config: ApiClientConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, '');
     this.getAccessToken = config.getAccessToken ?? (() => null);
     this.fetchImpl = config.fetch ?? globalThis.fetch.bind(globalThis);
+    this.tokenManager = config.tokenManager;
+    this.onAuthFailure = config.onAuthFailure;
   }
 
   get endpoints() {
@@ -84,16 +115,18 @@ export class ApiClient {
     return this.request<T>(path, { ...options, method: 'DELETE' });
   }
 
-  async request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-    const { method = 'GET', body, headers = {}, signal } = options;
+  async request<T>(path: string, options: ApiRequestOptions = {}, isRetry = false): Promise<T> {
+    const { method = 'GET', body, headers = {}, signal, skipAuth = false, skipAuthRetry = false } =
+      options;
     const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
-    const token = this.getAccessToken();
+    const token = skipAuth ? null : this.getAccessToken();
     const requestInit: RequestInit = {
       method,
       headers: {
         Accept: 'application/json',
         ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(this.correlationId ? { 'X-Correlation-Id': this.correlationId } : {}),
         ...headers,
       },
       ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
@@ -101,6 +134,14 @@ export class ApiClient {
     };
 
     const response = await this.fetchImpl(url, requestInit);
+
+    if (response.status === 401 && !isRetry && !skipAuthRetry && this.shouldAttemptRefresh(path)) {
+      const refreshed = await this.tokenManager?.refresh();
+      if (refreshed) {
+        return this.request<T>(path, options, true);
+      }
+      this.onAuthFailure?.();
+    }
 
     if (!response.ok) {
       throw await this.parseError(response);
@@ -110,23 +151,50 @@ export class ApiClient {
       return undefined as T;
     }
 
-    return (await response.json()) as T;
+    const json = (await response.json()) as T;
+    const meta = readEnvelopeMeta(json);
+    if (meta?.correlationId) {
+      this.correlationId = meta.correlationId;
+    }
+    return json;
+  }
+
+  private shouldAttemptRefresh(path: string): boolean {
+    if (!this.tokenManager) {
+      return false;
+    }
+    if (isAuthPublicPath(path) || path === endpoints.auth.refresh) {
+      return false;
+    }
+    return true;
   }
 
   private async parseError(response: Response): Promise<ApiError> {
-    let body: ErrorBody | null = null;
+    let body: ErrorBody | ApiErrorEnvelope | null = null;
 
     try {
-      body = (await response.json()) as ErrorBody;
+      body = (await response.json()) as ErrorBody | ApiErrorEnvelope;
     } catch {
       body = null;
     }
 
+    if (body && typeof body === 'object' && 'error' in body) {
+      const nested = body.error;
+      return new ApiError(
+        nested.message || `Request failed with status ${String(response.status)}`,
+        response.status,
+        nested.code,
+        nested,
+      );
+    }
+
+    const flat = body;
+
     return new ApiError(
-      body?.message ?? `Request failed with status ${String(response.status)}`,
+      flat?.message ?? `Request failed with status ${String(response.status)}`,
       response.status,
-      body?.code ?? null,
-      body?.details ?? null,
+      flat?.code ?? null,
+      flat?.details ?? null,
     );
   }
 }
@@ -134,4 +202,25 @@ export class ApiClient {
 /** Create a preconfigured API client instance. */
 export function createApiClient(config: ApiClientConfig): ApiClient {
   return new ApiClient(config);
+}
+
+/**
+ * Authenticated client with refresh-on-401 wired to TokenManager.
+ * Call `wireTokenRefresh` once before use to attach the refresh handler.
+ */
+export function createAuthenticatedApiClient(
+  config: Omit<ApiClientConfig, 'getAccessToken' | 'tokenManager'> & {
+    tokenManager: TokenManager;
+  },
+): ApiClient {
+  const { tokenManager, onAuthFailure, ...rest } = config;
+  return createApiClient({
+    ...rest,
+    tokenManager,
+    getAccessToken: () => tokenManager.getAccessToken(),
+    onAuthFailure: () => {
+      tokenManager.clear();
+      onAuthFailure?.();
+    },
+  });
 }

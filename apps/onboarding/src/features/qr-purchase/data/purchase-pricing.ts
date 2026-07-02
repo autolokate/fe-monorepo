@@ -1,38 +1,78 @@
+import { formatInrFromPaise } from '@autolokate/utils';
+
 import type {
   OrderSummaryTotals,
   PurchasePlanId,
   PurchaseRiderCount,
 } from '../types-checkout.js';
 
-import {
-  PROMO_DISCOUNT_INR,
-  getPurchasePlan,
-} from './purchase-plans.js';
+import { getPurchasePlan, VALID_PROMO_CODE } from './purchase-plans.js';
+import { getCheckoutSummary } from '@/services/checkout/checkout-service.js';
 
-const RIDER_PRICES: Record<Exclude<PurchaseRiderCount, 0>, { price: number; strike: number }> = {
-  1: { price: 949, strike: 999 },
-  2: { price: 1798, strike: 1998 },
-};
+/** Demo promo discount shown on R08b before backend order total is available. */
+const PROMO_DISCOUNT_PAISE = 10_000;
 
 export function formatInr(amount: number, suffix = ''): string {
   const formatted = amount.toLocaleString('en-IN');
   return suffix ? `₹${formatted}${suffix}` : `₹${formatted}`;
 }
 
-export function getRiderPrice(riderCount: PurchaseRiderCount): number {
-  if (riderCount === 0) {
-    return 0;
-  }
-  return RIDER_PRICES[riderCount].price;
-}
-
 export function getRiderCtaLabel(riderCount: Exclude<PurchaseRiderCount, 0>): string {
-  const price = formatInr(getRiderPrice(riderCount));
-  return riderCount === 1 ? `Add 1 rider · ${price}` : `Add 2 riders · ${price}`;
+  return riderCount === 1 ? 'Add 1 rider' : 'Add 2 riders';
 }
 
-export function computeGstInclusive(totalInr: number): number {
-  return Math.round((totalInr * 18) / 118);
+function buildPreviewOrderSummary(params: {
+  planId: PurchasePlanId;
+  riderCount: PurchaseRiderCount;
+  promoApplied?: boolean;
+  promoCode?: string | null;
+}): OrderSummaryTotals {
+  const plan = getPurchasePlan(params.planId);
+  let totalPaise = plan.pricePaise;
+
+  let riderLine: OrderSummaryTotals['riderLine'];
+  if (params.riderCount > 0) {
+    const riderOption = plan.riderOptions.find((option) => option.riderCount === params.riderCount);
+    if (riderOption) {
+      totalPaise += riderOption.pricePaise;
+      riderLine = {
+        label: `Rider cover × ${String(params.riderCount)}`,
+        value: `+${formatInrFromPaise(riderOption.pricePaise)}`,
+      };
+    }
+  }
+
+  const promoCode = params.promoCode?.trim().toUpperCase() ?? '';
+  const promoApplied =
+    params.promoApplied &&
+    promoCode.length > 0 &&
+    promoCode === VALID_PROMO_CODE;
+
+  let promoLine: OrderSummaryTotals['promoLine'];
+  if (promoApplied) {
+    totalPaise = Math.max(0, totalPaise - PROMO_DISCOUNT_PAISE);
+    promoLine = {
+      label: `Promo · ${promoCode}`,
+      value: `−${formatInrFromPaise(PROMO_DISCOUNT_PAISE)}`,
+      tone: 'promo',
+    };
+  }
+
+  const totalLabel = formatInrFromPaise(totalPaise);
+  const totalInr = Math.round(totalPaise / 100);
+
+  return {
+    planLine: {
+      label: `${plan.name} plan`,
+      value: plan.priceLabel,
+    },
+    riderLine,
+    promoLine,
+    totalLabel,
+    totalInr,
+    gstNote: 'Inclusive of 18% GST',
+    payCtaLabel: promoApplied ? `Pay ${totalLabel}` : 'Pay securely',
+  };
 }
 
 export function buildOrderSummary(params: {
@@ -41,38 +81,12 @@ export function buildOrderSummary(params: {
   promoApplied?: boolean;
   promoCode?: string | null;
 }): OrderSummaryTotals {
-  const plan = getPurchasePlan(params.planId);
-  const riderInr = getRiderPrice(params.riderCount);
-  const promoInr = params.promoApplied ? PROMO_DISCOUNT_INR : 0;
-  const totalInr = plan.priceInr + riderInr - promoInr;
-
-  const result: OrderSummaryTotals = {
-    planLine: {
-      label: `${plan.name} plan`,
-      value: plan.priceLabel,
-    },
-    totalLabel: formatInr(totalInr),
-    totalInr,
-    gstNote: `Inclusive of 18% GST (${formatInr(computeGstInclusive(totalInr))})`,
-    payCtaLabel: `Pay ${formatInr(totalInr)}`,
-  };
-
-  if (params.riderCount > 0) {
-    result.riderLine = {
-      label: `Rider cover × ${String(params.riderCount)}`,
-      value: `+${formatInr(riderInr)}`,
-    };
+  const cached = getCheckoutSummary();
+  if (cached) {
+    return cached;
   }
 
-  if (params.promoApplied && params.promoCode) {
-    result.promoLine = {
-      label: `Promo · ${params.promoCode}`,
-      value: `−${formatInr(promoInr)}`,
-      tone: 'promo',
-    };
-  }
-
-  return result;
+  return buildPreviewOrderSummary(params);
 }
 
 export function getPlanContextLabel(planId: PurchasePlanId): string {

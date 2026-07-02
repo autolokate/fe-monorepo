@@ -1,47 +1,44 @@
 import { AlIcon } from '@autolokate/icons';
+import { formatInrFromPaise } from '@autolokate/utils';
 
-import type { PurchaseRiderCount } from '@/features/qr-purchase/types-checkout.js';
-import { formatInr, getRiderPrice } from '@/features/qr-purchase/data/purchase-pricing.js';
+import type { PurchaseRiderOption } from '@/features/qr-purchase/types-checkout.js';
 
 import './rider-cover-options.css';
 
-type RiderOption = {
-  count: Exclude<PurchaseRiderCount, 0>;
+export type RiderCoverOptionView = {
+  count: 1 | 2;
   label: string;
   discountLabel: string;
   icon: 'user' | 'users';
-  strikePrice: number;
+  priceLabel: string;
+  strikePriceLabel: string;
 };
-
-const RIDER_OPTIONS: RiderOption[] = [
-  {
-    count: 1,
-    label: '1 rider',
-    discountLabel: '5% OFF',
-    icon: 'user',
-    strikePrice: 999,
-  },
-  {
-    count: 2,
-    label: '2 riders',
-    discountLabel: '10% OFF',
-    icon: 'users',
-    strikePrice: 1998,
-  },
-];
 
 export type RiderCoverOptionsProps = {
-  selectedCount: Exclude<PurchaseRiderCount, 0>;
-  onSelect: (count: Exclude<PurchaseRiderCount, 0>) => void;
+  options: readonly RiderCoverOptionView[];
+  selectedCount: 1 | 2;
+  onSelect: (count: 1 | 2) => void;
 };
 
-/** Figma R07 layout_TV8XSJ — option cards with radio, discount chip, pricing. */
-export function RiderCoverOptions({ selectedCount, onSelect }: RiderCoverOptionsProps) {
+export function mapRiderOptionsToView(
+  options: readonly PurchaseRiderOption[],
+): readonly RiderCoverOptionView[] {
+  return options.map((option) => ({
+    count: option.riderCount,
+    label: option.riderCount === 1 ? '1 rider' : '2 riders',
+    discountLabel: `${String(option.discountPercent)}% OFF`,
+    icon: option.riderCount === 1 ? 'user' : 'users',
+    priceLabel: `${formatInrFromPaise(option.pricePaise)}/yr`,
+    strikePriceLabel: formatInrFromPaise(option.originalPricePaise),
+  }));
+}
+
+/** Figma R07 layout — option cards driven by GET /v1/plans riderOptions. */
+export function RiderCoverOptions({ options, selectedCount, onSelect }: RiderCoverOptionsProps) {
   return (
     <div className="ob-rider-cover-options" role="radiogroup" aria-label="Rider cover options">
-      {RIDER_OPTIONS.map((option) => {
+      {options.map((option) => {
         const selected = option.count === selectedCount;
-        const price = getRiderPrice(option.count);
         return (
           <button
             key={option.count}
@@ -70,8 +67,8 @@ export function RiderCoverOptions({ selectedCount, onSelect }: RiderCoverOptions
               <span className="ob-rider-cover-option__subtitle">₹1L cover for each rider</span>
             </div>
             <div className="ob-rider-cover-option__price-col">
-              <span className="ob-rider-cover-option__price">{formatInr(price)}/yr</span>
-              <span className="ob-rider-cover-option__strike">{formatInr(option.strikePrice)}</span>
+              <span className="ob-rider-cover-option__price">{option.priceLabel}</span>
+              <span className="ob-rider-cover-option__strike">{option.strikePriceLabel}</span>
             </div>
           </button>
         );

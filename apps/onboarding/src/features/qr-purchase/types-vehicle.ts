@@ -35,4 +35,5 @@ export type PurchaseConfirmVehicleScreenProps = {
   footerLabel?: string;
   protectedPlan?: boolean;
   planLabel?: string;
+  footerLoading?: boolean;
 };

@@ -1,14 +1,13 @@
-import {
-  resolvePurchasePlanId,
-  shouldEnterRiderPrompt,
-} from '../features/emergency/emergency-limits.js';
+import { shouldEnterRiderPrompt } from '../features/emergency/emergency-limits.js';
 
 import { authJourneyPaths, defaultActivationAfterAuth } from './auth/auth-routing.js';
 import { journeyPaths } from './constants.js';
 import { emergencyJourneyPaths } from './emergency/emergency-routing.js';
+import { resolveEmergencyFoundationContext } from './emergency/emergency-foundation.js';
 import { b2b2cJourneyPaths } from './b2b2c/b2b2c-routing.js';
 import { prepaidJourneyPaths } from './prepaid/prepaid-routing.js';
 import { purchaseJourneyPaths } from './purchase/purchase-routing.js';
+import { resolvePurchaseEntryPath } from '@/journey/state/purchase-journey-state-machine.js';
 import type { ActivationFlowId, JourneySession } from './types.js';
 
 /** First activation step after AUTH_COMPLETED. */
@@ -28,7 +27,7 @@ export const authCompletionEntry: ActivationEntry = {
 export const activationEntryByFlow: Record<ActivationFlowId, ActivationEntry> = {
   purchase: {
     stepId: 'purchase.vehicle-number',
-    path: purchaseJourneyPaths.r03Vehicle,
+    path: purchaseJourneyPaths.vehicleDetails,
     label: 'Vehicle number · Purchase activation entry',
   },
   prepaid: {
@@ -78,10 +77,10 @@ export function getPostAuthActivationPath(
   }
 
   if (flow === 'purchase') {
-    return purchaseJourneyPaths.r03Vehicle;
+    return resolvePurchaseEntryPath();
   }
 
-  return getEmergencyHandoffPath(session);
+  return getEmergencyHandoffPath(session, flow);
 }
 
 export function getActivationEntry(flow: ActivationFlowId): ActivationEntry {
@@ -102,12 +101,11 @@ export function getPurchasePostPaymentEmergencyPath(): string {
  */
 export function getEmergencyHandoffPath(
   session?: Pick<JourneySession, 'purchase'>,
+  selectedFlow?: ActivationFlowId | null,
 ): string {
-  const purchase = session?.purchase;
-  const planId = resolvePurchasePlanId(purchase?.selectedPlanId);
-  const riderCount = purchase?.riderCount;
+  const context = resolveEmergencyFoundationContext(session ?? {}, selectedFlow);
 
-  if (!shouldEnterRiderPrompt(planId, riderCount)) {
+  if (!shouldEnterRiderPrompt(context.planId, context.riderCount, context.flowKind)) {
     return emergencyJourneyPaths.contactsEmpty;
   }
 
@@ -136,7 +134,7 @@ export function getEmergencyFlowBackPath(
   session?: Pick<JourneySession, 'purchase'>,
 ): string {
   if (flow === 'purchase') {
-    return purchaseJourneyPaths.r10PaymentSuccess;
+    return purchaseJourneyPaths.paymentSuccess;
   }
 
   if (flow === 'prepaid') {

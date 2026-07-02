@@ -11,6 +11,7 @@ import {
   getEntitledRiderSlots,
   getRidersMaxReachedMessage,
   getRidersSummaryDescription,
+  type EmergencyFlowKind,
 } from '../../emergency-limits.js';
 import type { EmergencyRider, EmergencyScreenNavigationProps } from '../../types.js';
 
@@ -18,6 +19,7 @@ export type E10RidersSummaryScreenProps = EmergencyScreenNavigationProps & {
   riders: EmergencyRider[];
   planId: PurchasePlanId;
   purchasedRiderSlots: PurchaseRiderCount;
+  flowKind?: EmergencyFlowKind;
   footerDisabled?: boolean;
   onAddAnother?: () => void;
 };
@@ -27,6 +29,7 @@ export function E10RidersSummaryScreen({
   riders,
   planId,
   purchasedRiderSlots,
+  flowKind = 'purchase',
   footerDisabled = false,
   onAddAnother,
   onContinue,
@@ -34,8 +37,8 @@ export function E10RidersSummaryScreen({
   showBack = true,
 }: E10RidersSummaryScreenProps) {
   const count = riders.length;
-  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots);
-  const canAddMore = canAddRider(count, planId, purchasedRiderSlots);
+  const entitled = getEntitledRiderSlots(planId, purchasedRiderSlots, flowKind);
+  const canAddMore = canAddRider(count, planId, purchasedRiderSlots, flowKind);
   const isMaxReached = count >= entitled && entitled > 0;
 
   return (
@@ -43,7 +46,7 @@ export function E10RidersSummaryScreen({
       phase="emergency"
       step={5}
       title="Riders"
-      description={getRidersSummaryDescription(count, planId, purchasedRiderSlots)}
+      description={getRidersSummaryDescription(count, planId, purchasedRiderSlots, flowKind)}
       footerLabel="Continue"
       footerDisabled={footerDisabled}
       hideProgress
@@ -59,7 +62,7 @@ export function E10RidersSummaryScreen({
           <AddContactRow label="Add another rider" onClick={onAddAnother} disabled={!onAddAnother} />
         ) : isMaxReached ? (
           <p className="ob-emergency-max-message">
-            {getRidersMaxReachedMessage(planId, purchasedRiderSlots)}
+            {getRidersMaxReachedMessage(planId, purchasedRiderSlots, flowKind)}
           </p>
         ) : null}
       </AlStack>

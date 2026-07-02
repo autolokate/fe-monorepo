@@ -1,0 +1,897 @@
+{
+  "ranAt": "2026-07-01T13:03:03.319Z",
+  "config": {
+    "BASE": "http://localhost:5173",
+    "API_BASE": "https://malisa-noninclusive-davin.ngrok-free.dev",
+    "QR_CODE": "ALK-B2C005",
+    "PLATE": "DL7CQ1939",
+    "PHONE": "9876543210",
+    "HEADED": true
+  },
+  "finalUrl": "http://localhost:5173/journey/purchase/r09-processing-payment",
+  "razorpayAutomated": false,
+  "orderValidation": {
+    "issues": [],
+    "attachIdx": 8,
+    "plansIdx": 10,
+    "vehicleDetailIdx": -1,
+    "vehiclesListIdx": 9
+  },
+  "consoleLogs": [
+    "[R03] mounted",
+    "[R03] session qr = {localStorage_qr_code: ALK-B2C005, canonical: ALK-B2C005}",
+    "[R03] calling resolve {code: ALK-B2C005}",
+    "[attach] vehicle confirmed — POST /v1/qr/{code}/attach",
+    "[attach] attaching QR {code: ALK-B2C005, registration: DL7CQ1939}",
+    "[attach] success after vehicle confirm {vehicleId: 006c53d0-07df-4347-b385-a3ec66fc19fa, qrStatus: ATTACHED}",
+    "[orders] R08 mounted — getQrCode() = ALK-B2C005 {localStorage_qr_code: ALK-B2C005, canonical: ALK-B2C005}",
+    "[orders] R08 mounted — getQrCode() = ALK-B2C005 {localStorage_qr_code: ALK-B2C005, canonical: ALK-B2C005}",
+    "[orders] Pay button flow started — POST /v1/orders then /pay",
+    "[orders] qr before create {purchaseQrCode: ALK-B2C005, storage: Object}",
+    "[orders] Pay button flow started — POST /v1/orders then /pay",
+    "[razorpay] opening checkout {razorpayOrderId: order_T8FL21cDyl4XtM, keySource: backend, amountPaise: 99900}"
+  ],
+  "timeline": [
+    {
+      "order": 1,
+      "method": "GET",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/legal/documents",
+      "status": 200,
+      "headers": {},
+      "requestBody": null,
+      "responseBody": {
+        "data": {
+          "noticeVersion": "2026-06-17",
+          "documents": [
+            {
+              "kind": "PRIVACY_POLICY",
+              "version": "2026-06-17",
+              "title": "Privacy Policy",
+              "body": "<h3>What we collect</h3><p>Your mobile number, vehicle RC details (via Vahan), emergency contacts, and your live location only during a crash. Plus basic app usage to keep the service reliable.</p><h3>Why we use it</h3><p>To verify your identity, dispatch help in an emergency, show your plan and service history, and run the vehicle services you choose. Nothing more.</p><h3>Your DPDP rights</h3><p>You can access, correct, or erase your data, and withdraw consent at any time from Settings. We act on every request within the DPDP-mandated timeline.</p><h3>How we protect it</h3><p>JWT, KYC and emergency-contact data are encrypted on your device (Android Keystore / iOS Keychain). All traffic is HTTPS. We never sell your data to third parties.</p><h3>Grievance Officer</h3><p>Questions or complaints about your data? Email <a href=\"mailto:privacy@autolokate.com\">privacy@autolokate.com</a> and our Grievance Officer will respond promptly.</p>",
+              "effectiveDate": "2026-06-17"
+            },
+            {
+              "kind": "TERMS",
+              "version": "2026-06-17",
+              "title": "Terms & Conditions",
+              "body": "<h3>Using Autolokate</h3><p>Autolokate is a daily companion for your vehicle, safety, utility, marketplace and more. You must be 18+ and the owner or an authorised user of any vehicle you add.</p><h3>Safety features</h3><p>Automatic crash detection and emergency dispatch are best-effort aids, not a guaranteed service. Always call the national emergency number 112 when you can.</p><h3>Plans &amp; payments</h3><p>Plan prices are shown before you pay. Payments are handled by our partners; renewals and refunds follow the plan terms you accept.</p><h3>Partners &amp; marketplace</h3><p>Bookings and services are fulfilled by independent partners. Autolokate connects you with them but is not liable for partner workmanship.</p><h3>Changes to these terms</h3><p>We may update these terms and will notify you in-app. Continuing to use Autolokate means you accept the latest version.</p>",
+              "effectiveDate": "2026-06-17"
+            }
+          ]
+        },
+        "meta": {
+          "requestId": "94ab6a88-aaff-4a47-8590-6269999344b1",
+          "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+        }
+      }
+    },
+    {
+      "order": 2,
+      "method": "POST",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/auth/otp/request",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json"
+      },
+      "requestBody": {
+        "phone": "+919876543210"
+      },
+      "responseBody": {
+        "data": {
+          "channel": "sms"
+        },
+        "meta": {
+          "requestId": "7fe990d2-cb29-43db-af3f-19182ee23a0f",
+          "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+        }
+      }
+    },
+    {
+      "order": 3,
+      "method": "POST",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/auth/otp/verify",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json"
+      },
+      "requestBody": {
+        "phone": "+919876543210",
+        "code": "123456"
+      },
+      "responseBody": {
+        "data": {
+          "accessToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImRldiJ9.eyJyb2xlIjoiQ09OU1VNRVIiLCJzY29wZSI6W10sImFtciI6WyJvdHAiXSwic3RlcF91cCI6ZmFsc2UsInNpZCI6IjRkNzI1YzgwLTI0MmYtNDVkYi05YzhjLTIxZWQ3NjUxNzg3MyIsInN1YiI6ImJjNDAwMTM3LTM3MTktNDkzNy04M2JjLTYzMzRlOWNmOGUxMiIsImF1ZCI6ImF1dG9sb2thdGUiLCJpc3MiOiJhdXRvbG9rYXRlIiwiaWF0IjoxNzgyOTEwNjM5LCJleHAiOjE3ODI5MTE1Mzl9.Of1F6tyojUOIiFCjAZbAY3wBvoPqd3Qjg7Sc0q99ZianBTUughaw4pFPpSkp9M62uHcH1EdxgO7_P13fZAkFuf5SsNwgnZZ0zXbykW-fur2Q8y2nmEjA71Gt1dmvTajSoSbSk4VvVkNrUpPriewNHuCcSyb2ZMGtdCR5elPAX4aIh_4mvFZ-LSL9taDkRryCWtaBP-nsmTvTKqZXKjnU17yfge-Sc4tPVbEvW5b7lmmEmsngktJp-8lfYoReigZXDTUIW5F-zKIskwwe62akDc7zdnj739321g67cN4eTRFchHRl1um3UgZ0-4TUpVAPkgboG7RfXZSpLdmPNeNlew",
+          "refreshToken": "y-pE0pjae_Cq4lCw5AgI9J-qYxYh0JwKRr7Q10QNEZg",
+          "expiresAt": "2026-07-01T13:12:19.000Z",
+          "userId": "bc400137-3719-4937-83bc-6334e9cf8e12",
+          "isNewUser": false
+        },
+        "meta": {
+          "requestId": "af030129-bdba-45f5-a3e3-57b14d084ba7",
+          "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+        }
+      }
+    },
+    {
+      "order": 4,
+      "method": "GET",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/profile",
+      "status": 200,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…"
+      },
+      "requestBody": null,
+      "responseBody": {
+        "data": {
+          "name": "Kapil Test",
+          "locale": "en",
+          "photoMediaId": null
+        },
+        "meta": {
+          "requestId": "920ff7e1-9fee-46ce-bc5e-635139afbe6e",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 5,
+      "method": "POST",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/me/consents",
+      "status": 200,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…",
+        "content-type": "application/json"
+      },
+      "requestBody": {
+        "purpose": "ACCOUNT",
+        "noticeVersion": "2026-06-17"
+      },
+      "responseBody": {
+        "data": {
+          "purpose": "ACCOUNT",
+          "status": "GRANTED",
+          "noticeVersion": "2026-06-17",
+          "grantedAt": "2026-07-01T06:56:13.814Z",
+          "withdrawnAt": null
+        },
+        "meta": {
+          "requestId": "224832f0-4e6e-4b7e-95c6-88ff22372066",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 6,
+      "method": "PATCH",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/profile",
+      "status": 200,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…",
+        "content-type": "application/json"
+      },
+      "requestBody": {
+        "name": "Kapil Test"
+      },
+      "responseBody": {
+        "data": {
+          "name": "Kapil Test",
+          "locale": "en",
+          "photoMediaId": null
+        },
+        "meta": {
+          "requestId": "77826819-c938-46ec-9282-459bf75983a6",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 7,
+      "method": "GET",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/qr/ALK-B2C005/resolve",
+      "status": 200,
+      "headers": {},
+      "requestBody": null,
+      "responseBody": {
+        "data": {
+          "qrStatus": "ACTIVATED",
+          "channel": "B2C_RETAIL_ONLINE",
+          "journey": "CONSUMER_SELF_PAY",
+          "offeredSku": null,
+          "vehicle": {
+            "plate": "DL7CQ1939",
+            "color": null,
+            "make": null,
+            "model": null,
+            "protection": "PROTECTED"
+          }
+        },
+        "meta": {
+          "requestId": "4e52c674-a3f9-48e2-86d5-fd9fb293f9b2",
+          "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+        }
+      }
+    },
+    {
+      "order": 8,
+      "method": "GET",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/vehicles/lookup?plate=DL7CQ1939",
+      "status": 200,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…"
+      },
+      "requestBody": null,
+      "responseBody": {
+        "data": {
+          "registration": "DL7CQ1939",
+          "make": "Hyundai",
+          "model": "i20",
+          "year": 2018,
+          "fuel": "DIESEL",
+          "insuranceStatus": "VALID",
+          "pucStatus": "VALID",
+          "rcValidTill": "2031-12-31"
+        },
+        "meta": {
+          "requestId": "e1f97f61-24d7-4549-9372-705298ac6237",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 9,
+      "method": "POST",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/qr/ALK-B2C005/attach",
+      "status": 409,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…",
+        "content-type": "application/json"
+      },
+      "requestBody": {
+        "registration": "DL7CQ1939"
+      },
+      "responseBody": {
+        "error": {
+          "code": "already_attached",
+          "message": "This code is no longer available to attach.",
+          "requestId": "c91c4fb7-2c3b-4950-8cb8-3fe84df26df1",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 10,
+      "method": "GET",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/vehicles",
+      "status": 200,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…"
+      },
+      "requestBody": null,
+      "responseBody": {
+        "data": [
+          {
+            "subscriptionId": "719386ad-eacf-41c9-8b90-e1adc13b040d",
+            "vehicleId": "006c53d0-07df-4347-b385-a3ec66fc19fa",
+            "planTier": "SECURE",
+            "status": "ACTIVE",
+            "plate": "DL7CQ1939",
+            "make": null,
+            "model": null,
+            "color": null,
+            "protection": "PROTECTED"
+          }
+        ],
+        "meta": {
+          "requestId": "bb9a787f-3171-4648-9bfc-9f502c377f04",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 11,
+      "method": "GET",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/plans",
+      "status": 200,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…"
+      },
+      "requestBody": null,
+      "responseBody": {
+        "data": [
+          {
+            "tier": "SAFE",
+            "name": "Safe",
+            "pricePaise": 9900,
+            "period": "YEARLY",
+            "riderEligible": false,
+            "features": [
+              "QR identity, Park Me & parking memory",
+              "Phone dashcam",
+              "Challan, FASTag & renewal alerts",
+              "Community, service history & Angel",
+              "1 emergency contact + WhatsApp alert"
+            ],
+            "badge": null,
+            "includesLabel": null,
+            "riderOptions": []
+          },
+          {
+            "tier": "SECURE",
+            "name": "Secure",
+            "pricePaise": 99900,
+            "period": "YEARLY",
+            "riderEligible": true,
+            "features": [
+              "Automatic crash detection",
+              "Ambulance + ₹3,000 cover",
+              "3 contacts + AI calling",
+              "₹1L accidental · ₹1,000/day hospital",
+              "Driver score & leaderboard"
+            ],
+            "badge": "MOST POPULAR",
+            "includesLabel": "Includes everything in Safe",
+            "riderOptions": [
+              {
+                "riderCount": 1,
+                "pricePaise": 94905,
+                "originalPricePaise": 99900,
+                "discountPercent": 5
+              },
+              {
+                "riderCount": 2,
+                "pricePaise": 179820,
+                "originalPricePaise": 199800,
+                "discountPercent": 10
+              }
+            ]
+          },
+          {
+            "tier": "SHIELD",
+            "name": "Shield",
+            "pricePaise": 199900,
+            "period": "YEARLY",
+            "riderEligible": true,
+            "features": [
+              "Roadside assistance (50 km)",
+              "₹3L accidental · ₹1,500/day hospital",
+              "Ambulance cover ₹5,000"
+            ],
+            "badge": null,
+            "includesLabel": "Includes everything in Secure",
+            "riderOptions": [
+              {
+                "riderCount": 1,
+                "pricePaise": 189905,
+                "originalPricePaise": 199900,
+                "discountPercent": 5
+              },
+              {
+                "riderCount": 2,
+                "pricePaise": 359820,
+                "originalPricePaise": 399800,
+                "discountPercent": 10
+              }
+            ]
+          },
+          {
+            "tier": "SHIELD_PLUS",
+            "name": "Shield+",
+            "pricePaise": 299900,
+            "period": "YEARLY",
+            "riderEligible": true,
+            "features": [
+              "Roadside assistance (100 km+)",
+              "₹5L accidental · ₹2,000/day hospital",
+              "Ambulance cover ₹10,000"
+            ],
+            "badge": null,
+            "includesLabel": "Includes everything in Shield",
+            "riderOptions": [
+              {
+                "riderCount": 1,
+                "pricePaise": 284905,
+                "originalPricePaise": 299900,
+                "discountPercent": 5
+              },
+              {
+                "riderCount": 2,
+                "pricePaise": 539820,
+                "originalPricePaise": 599800,
+                "discountPercent": 10
+              }
+            ]
+          }
+        ],
+        "meta": {
+          "requestId": "46c9e23d-fe05-4835-a739-9942710bfc4f",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 12,
+      "method": "POST",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/orders",
+      "status": 201,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…",
+        "idempotency-key": "10d6263f-4dbb-47fa-a146-554959ddb87d",
+        "content-type": "application/json"
+      },
+      "requestBody": {
+        "code": "ALK-B2C005",
+        "planTier": "SECURE",
+        "riderCount": 0
+      },
+      "responseBody": {
+        "data": {
+          "orderId": "07baffda-2d6b-4c0b-a3ad-e66a1ae8873a",
+          "totalPaise": 99900,
+          "status": "PENDING_PAYMENT"
+        },
+        "meta": {
+          "requestId": "37981233-94e6-4c3a-a079-f90961115ec0",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    },
+    {
+      "order": 13,
+      "method": "POST",
+      "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/orders/07baffda-2d6b-4c0b-a3ad-e66a1ae8873a/pay",
+      "status": 200,
+      "headers": {
+        "authorization": "Bearer eyJhbGciOiJSU…",
+        "idempotency-key": "f7496b6f-b81b-4615-a503-b0d31ffe5254",
+        "content-type": "application/json"
+      },
+      "requestBody": {
+        "mode": "ONLINE"
+      },
+      "responseBody": {
+        "data": {
+          "paymentRef": "pay_29483ec8f09d43b8bce1c20794ac57cf",
+          "providerOrderId": "order_T8FL21cDyl4XtM",
+          "razorpayKeyId": "rzp_test_T7vT7zqV13HcS2"
+        },
+        "meta": {
+          "requestId": "948777a2-ecae-4c17-b5d9-e50cc784c294",
+          "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "resolve": [
+      {
+        "order": 7,
+        "method": "GET",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/qr/ALK-B2C005/resolve",
+        "status": 200,
+        "headers": {},
+        "requestBody": null,
+        "responseBody": {
+          "data": {
+            "qrStatus": "ACTIVATED",
+            "channel": "B2C_RETAIL_ONLINE",
+            "journey": "CONSUMER_SELF_PAY",
+            "offeredSku": null,
+            "vehicle": {
+              "plate": "DL7CQ1939",
+              "color": null,
+              "make": null,
+              "model": null,
+              "protection": "PROTECTED"
+            }
+          },
+          "meta": {
+            "requestId": "4e52c674-a3f9-48e2-86d5-fd9fb293f9b2",
+            "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+          }
+        }
+      }
+    ],
+    "legal": [
+      {
+        "order": 1,
+        "method": "GET",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/legal/documents",
+        "status": 200,
+        "headers": {},
+        "requestBody": null,
+        "responseBody": {
+          "data": {
+            "noticeVersion": "2026-06-17",
+            "documents": [
+              {
+                "kind": "PRIVACY_POLICY",
+                "version": "2026-06-17",
+                "title": "Privacy Policy",
+                "body": "<h3>What we collect</h3><p>Your mobile number, vehicle RC details (via Vahan), emergency contacts, and your live location only during a crash. Plus basic app usage to keep the service reliable.</p><h3>Why we use it</h3><p>To verify your identity, dispatch help in an emergency, show your plan and service history, and run the vehicle services you choose. Nothing more.</p><h3>Your DPDP rights</h3><p>You can access, correct, or erase your data, and withdraw consent at any time from Settings. We act on every request within the DPDP-mandated timeline.</p><h3>How we protect it</h3><p>JWT, KYC and emergency-contact data are encrypted on your device (Android Keystore / iOS Keychain). All traffic is HTTPS. We never sell your data to third parties.</p><h3>Grievance Officer</h3><p>Questions or complaints about your data? Email <a href=\"mailto:privacy@autolokate.com\">privacy@autolokate.com</a> and our Grievance Officer will respond promptly.</p>",
+                "effectiveDate": "2026-06-17"
+              },
+              {
+                "kind": "TERMS",
+                "version": "2026-06-17",
+                "title": "Terms & Conditions",
+                "body": "<h3>Using Autolokate</h3><p>Autolokate is a daily companion for your vehicle, safety, utility, marketplace and more. You must be 18+ and the owner or an authorised user of any vehicle you add.</p><h3>Safety features</h3><p>Automatic crash detection and emergency dispatch are best-effort aids, not a guaranteed service. Always call the national emergency number 112 when you can.</p><h3>Plans &amp; payments</h3><p>Plan prices are shown before you pay. Payments are handled by our partners; renewals and refunds follow the plan terms you accept.</p><h3>Partners &amp; marketplace</h3><p>Bookings and services are fulfilled by independent partners. Autolokate connects you with them but is not liable for partner workmanship.</p><h3>Changes to these terms</h3><p>We may update these terms and will notify you in-app. Continuing to use Autolokate means you accept the latest version.</p>",
+                "effectiveDate": "2026-06-17"
+              }
+            ]
+          },
+          "meta": {
+            "requestId": "94ab6a88-aaff-4a47-8590-6269999344b1",
+            "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+          }
+        }
+      }
+    ],
+    "lookup": [
+      {
+        "order": 8,
+        "method": "GET",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/vehicles/lookup?plate=DL7CQ1939",
+        "status": 200,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…"
+        },
+        "requestBody": null,
+        "responseBody": {
+          "data": {
+            "registration": "DL7CQ1939",
+            "make": "Hyundai",
+            "model": "i20",
+            "year": 2018,
+            "fuel": "DIESEL",
+            "insuranceStatus": "VALID",
+            "pucStatus": "VALID",
+            "rcValidTill": "2031-12-31"
+          },
+          "meta": {
+            "requestId": "e1f97f61-24d7-4549-9372-705298ac6237",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ],
+    "attach": [
+      {
+        "order": 9,
+        "method": "POST",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/qr/ALK-B2C005/attach",
+        "status": 409,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…",
+          "content-type": "application/json"
+        },
+        "requestBody": {
+          "registration": "DL7CQ1939"
+        },
+        "responseBody": {
+          "error": {
+            "code": "already_attached",
+            "message": "This code is no longer available to attach.",
+            "requestId": "c91c4fb7-2c3b-4950-8cb8-3fe84df26df1",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ],
+    "plans": [
+      {
+        "order": 11,
+        "method": "GET",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/plans",
+        "status": 200,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…"
+        },
+        "requestBody": null,
+        "responseBody": {
+          "data": [
+            {
+              "tier": "SAFE",
+              "name": "Safe",
+              "pricePaise": 9900,
+              "period": "YEARLY",
+              "riderEligible": false,
+              "features": [
+                "QR identity, Park Me & parking memory",
+                "Phone dashcam",
+                "Challan, FASTag & renewal alerts",
+                "Community, service history & Angel",
+                "1 emergency contact + WhatsApp alert"
+              ],
+              "badge": null,
+              "includesLabel": null,
+              "riderOptions": []
+            },
+            {
+              "tier": "SECURE",
+              "name": "Secure",
+              "pricePaise": 99900,
+              "period": "YEARLY",
+              "riderEligible": true,
+              "features": [
+                "Automatic crash detection",
+                "Ambulance + ₹3,000 cover",
+                "3 contacts + AI calling",
+                "₹1L accidental · ₹1,000/day hospital",
+                "Driver score & leaderboard"
+              ],
+              "badge": "MOST POPULAR",
+              "includesLabel": "Includes everything in Safe",
+              "riderOptions": [
+                {
+                  "riderCount": 1,
+                  "pricePaise": 94905,
+                  "originalPricePaise": 99900,
+                  "discountPercent": 5
+                },
+                {
+                  "riderCount": 2,
+                  "pricePaise": 179820,
+                  "originalPricePaise": 199800,
+                  "discountPercent": 10
+                }
+              ]
+            },
+            {
+              "tier": "SHIELD",
+              "name": "Shield",
+              "pricePaise": 199900,
+              "period": "YEARLY",
+              "riderEligible": true,
+              "features": [
+                "Roadside assistance (50 km)",
+                "₹3L accidental · ₹1,500/day hospital",
+                "Ambulance cover ₹5,000"
+              ],
+              "badge": null,
+              "includesLabel": "Includes everything in Secure",
+              "riderOptions": [
+                {
+                  "riderCount": 1,
+                  "pricePaise": 189905,
+                  "originalPricePaise": 199900,
+                  "discountPercent": 5
+                },
+                {
+                  "riderCount": 2,
+                  "pricePaise": 359820,
+                  "originalPricePaise": 399800,
+                  "discountPercent": 10
+                }
+              ]
+            },
+            {
+              "tier": "SHIELD_PLUS",
+              "name": "Shield+",
+              "pricePaise": 299900,
+              "period": "YEARLY",
+              "riderEligible": true,
+              "features": [
+                "Roadside assistance (100 km+)",
+                "₹5L accidental · ₹2,000/day hospital",
+                "Ambulance cover ₹10,000"
+              ],
+              "badge": null,
+              "includesLabel": "Includes everything in Shield",
+              "riderOptions": [
+                {
+                  "riderCount": 1,
+                  "pricePaise": 284905,
+                  "originalPricePaise": 299900,
+                  "discountPercent": 5
+                },
+                {
+                  "riderCount": 2,
+                  "pricePaise": 539820,
+                  "originalPricePaise": 599800,
+                  "discountPercent": 10
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "requestId": "46c9e23d-fe05-4835-a739-9942710bfc4f",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ],
+    "createOrder": [
+      {
+        "order": 12,
+        "method": "POST",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/orders",
+        "status": 201,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…",
+          "idempotency-key": "10d6263f-4dbb-47fa-a146-554959ddb87d",
+          "content-type": "application/json"
+        },
+        "requestBody": {
+          "code": "ALK-B2C005",
+          "planTier": "SECURE",
+          "riderCount": 0
+        },
+        "responseBody": {
+          "data": {
+            "orderId": "07baffda-2d6b-4c0b-a3ad-e66a1ae8873a",
+            "totalPaise": 99900,
+            "status": "PENDING_PAYMENT"
+          },
+          "meta": {
+            "requestId": "37981233-94e6-4c3a-a079-f90961115ec0",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ],
+    "payOrder": [
+      {
+        "order": 13,
+        "method": "POST",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/orders/07baffda-2d6b-4c0b-a3ad-e66a1ae8873a/pay",
+        "status": 200,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…",
+          "idempotency-key": "f7496b6f-b81b-4615-a503-b0d31ffe5254",
+          "content-type": "application/json"
+        },
+        "requestBody": {
+          "mode": "ONLINE"
+        },
+        "responseBody": {
+          "data": {
+            "paymentRef": "pay_29483ec8f09d43b8bce1c20794ac57cf",
+            "providerOrderId": "order_T8FL21cDyl4XtM",
+            "razorpayKeyId": "rzp_test_T7vT7zqV13HcS2"
+          },
+          "meta": {
+            "requestId": "948777a2-ecae-4c17-b5d9-e50cc784c294",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ],
+    "paymentPoll": [],
+    "vehicleDetail": [],
+    "vehiclesList": [
+      {
+        "order": 10,
+        "method": "GET",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/vehicles",
+        "status": 200,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…"
+        },
+        "requestBody": null,
+        "responseBody": {
+          "data": [
+            {
+              "subscriptionId": "719386ad-eacf-41c9-8b90-e1adc13b040d",
+              "vehicleId": "006c53d0-07df-4347-b385-a3ec66fc19fa",
+              "planTier": "SECURE",
+              "status": "ACTIVE",
+              "plate": "DL7CQ1939",
+              "make": null,
+              "model": null,
+              "color": null,
+              "protection": "PROTECTED"
+            }
+          ],
+          "meta": {
+            "requestId": "bb9a787f-3171-4648-9bfc-9f502c377f04",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ],
+    "auth": [
+      {
+        "order": 2,
+        "method": "POST",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/auth/otp/request",
+        "status": 200,
+        "headers": {
+          "content-type": "application/json"
+        },
+        "requestBody": {
+          "phone": "+919876543210"
+        },
+        "responseBody": {
+          "data": {
+            "channel": "sms"
+          },
+          "meta": {
+            "requestId": "7fe990d2-cb29-43db-af3f-19182ee23a0f",
+            "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+          }
+        }
+      },
+      {
+        "order": 3,
+        "method": "POST",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/auth/otp/verify",
+        "status": 200,
+        "headers": {
+          "content-type": "application/json"
+        },
+        "requestBody": {
+          "phone": "+919876543210",
+          "code": "123456"
+        },
+        "responseBody": {
+          "data": {
+            "accessToken": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImRldiJ9.eyJyb2xlIjoiQ09OU1VNRVIiLCJzY29wZSI6W10sImFtciI6WyJvdHAiXSwic3RlcF91cCI6ZmFsc2UsInNpZCI6IjRkNzI1YzgwLTI0MmYtNDVkYi05YzhjLTIxZWQ3NjUxNzg3MyIsInN1YiI6ImJjNDAwMTM3LTM3MTktNDkzNy04M2JjLTYzMzRlOWNmOGUxMiIsImF1ZCI6ImF1dG9sb2thdGUiLCJpc3MiOiJhdXRvbG9rYXRlIiwiaWF0IjoxNzgyOTEwNjM5LCJleHAiOjE3ODI5MTE1Mzl9.Of1F6tyojUOIiFCjAZbAY3wBvoPqd3Qjg7Sc0q99ZianBTUughaw4pFPpSkp9M62uHcH1EdxgO7_P13fZAkFuf5SsNwgnZZ0zXbykW-fur2Q8y2nmEjA71Gt1dmvTajSoSbSk4VvVkNrUpPriewNHuCcSyb2ZMGtdCR5elPAX4aIh_4mvFZ-LSL9taDkRryCWtaBP-nsmTvTKqZXKjnU17yfge-Sc4tPVbEvW5b7lmmEmsngktJp-8lfYoReigZXDTUIW5F-zKIskwwe62akDc7zdnj739321g67cN4eTRFchHRl1um3UgZ0-4TUpVAPkgboG7RfXZSpLdmPNeNlew",
+            "refreshToken": "y-pE0pjae_Cq4lCw5AgI9J-qYxYh0JwKRr7Q10QNEZg",
+            "expiresAt": "2026-07-01T13:12:19.000Z",
+            "userId": "bc400137-3719-4937-83bc-6334e9cf8e12",
+            "isNewUser": false
+          },
+          "meta": {
+            "requestId": "af030129-bdba-45f5-a3e3-57b14d084ba7",
+            "correlationId": "64b62d7a-3aab-4875-8bab-2b3583a3977e"
+          }
+        }
+      }
+    ],
+    "consents": [
+      {
+        "order": 5,
+        "method": "POST",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/me/consents",
+        "status": 200,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…",
+          "content-type": "application/json"
+        },
+        "requestBody": {
+          "purpose": "ACCOUNT",
+          "noticeVersion": "2026-06-17"
+        },
+        "responseBody": {
+          "data": {
+            "purpose": "ACCOUNT",
+            "status": "GRANTED",
+            "noticeVersion": "2026-06-17",
+            "grantedAt": "2026-07-01T06:56:13.814Z",
+            "withdrawnAt": null
+          },
+          "meta": {
+            "requestId": "224832f0-4e6e-4b7e-95c6-88ff22372066",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ],
+    "profile": [
+      {
+        "order": 6,
+        "method": "PATCH",
+        "url": "https://malisa-noninclusive-davin.ngrok-free.dev/v1/profile",
+        "status": 200,
+        "headers": {
+          "authorization": "Bearer eyJhbGciOiJSU…",
+          "content-type": "application/json"
+        },
+        "requestBody": {
+          "name": "Kapil Test"
+        },
+        "responseBody": {
+          "data": {
+            "name": "Kapil Test",
+            "locale": "en",
+            "photoMediaId": null
+          },
+          "meta": {
+            "requestId": "77826819-c938-46ec-9282-459bf75983a6",
+            "correlationId": "f6859b35-2087-47cf-bd79-222ad4fa9272"
+          }
+        }
+      }
+    ]
+  }
+}

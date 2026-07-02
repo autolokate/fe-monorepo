@@ -14,11 +14,10 @@ import {
 } from '@autolokate/ui';
 
 import {
-  fetchVahanDetails,
-  getPlateFetchIntent,
   isPlateEntryReady,
   normalizePlate,
-} from '../../qr-purchase/data/vahan-demo.js';
+} from '@/services/vehicle/index.js';
+import { useVehicleLookup } from '@/hooks/vehicle/index.js';
 import { PWA_STATUS_STEP_MS } from '../constants/pwa-scan-paths.js';
 import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
 import { PWA_CONSUMER_REPORTER_PLATE, PWA_PARK_ME_LOOKUP_COPY, isDemoPhotoQcFail, parkMeTimelineSteps } from '../data/pwa-demo-data.js';
@@ -44,8 +43,7 @@ export function PwaParkMeVehicleNumberRoute() {
   const plateReady = isPlateEntryReady(session.reporterPlate);
 
   const handleContinue = () => {
-    const intent = getPlateFetchIntent(session.reporterPlate);
-    if (intent !== 'success') {
+    if (!isPlateEntryReady(session.reporterPlate)) {
       setPlateError(true);
       return;
     }
@@ -90,11 +88,12 @@ export function PwaParkMeVehicleNumberRoute() {
 export function PwaParkMeLookingUpRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
+  const { lookupVehicle } = useVehicleLookup();
 
   useEffect(() => {
     let cancelled = false;
 
-    void fetchVahanDetails(session.reporterPlate).then((result) => {
+    void lookupVehicle(session.reporterPlate).then((result) => {
       if (cancelled) {
         return;
       }
@@ -119,7 +118,7 @@ export function PwaParkMeLookingUpRoute() {
     return () => {
       cancelled = true;
     };
-  }, [navigate, session.reporterPlate, updateSession]);
+  }, [lookupVehicle, navigate, session.reporterPlate, updateSession]);
 
   return (
     <PwaScanShell variant="protected">

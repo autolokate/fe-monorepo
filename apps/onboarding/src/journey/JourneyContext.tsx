@@ -9,8 +9,9 @@ import {
 
 import { AUTH_COMPLETED } from '../features/shared-auth/types.js';
 
+import { reconcileAuthSession, revokeAndClearAuthSession } from '../services/auth/auth-session.js';
+import { resetOnboardingJourneyStorage } from '@/platform/storage/reset-onboarding-journey-storage.js';
 import {
-  clearJourneyPersistence,
   loadJourneyState,
   persistSelectedFlow,
   saveJourneyState,
@@ -31,7 +32,16 @@ export type JourneyProviderProps = {
 };
 
 export function JourneyProvider({ initialPhase = 'home', children }: JourneyProviderProps) {
-  const [persisted, setPersisted] = useState<PersistedJourneyState>(() => loadJourneyState());
+  const [persisted, setPersisted] = useState<PersistedJourneyState>(() => {
+    const loaded = loadJourneyState();
+    const patch = reconcileAuthSession(loaded.session);
+    if (!patch) {
+      return loaded;
+    }
+    const next = { ...loaded, session: { ...loaded.session, ...patch } };
+    saveJourneyState(next);
+    return next;
+  });
   const [phase, setPhase] = useState<JourneyPhase>(initialPhase);
 
   const setSelectedFlow = useCallback((flow: ActivationFlowId) => {
@@ -54,9 +64,15 @@ export function JourneyProvider({ initialPhase = 'home', children }: JourneyProv
   }, []);
 
   const clearJourney = useCallback(() => {
-    clearJourneyPersistence();
+    void revokeAndClearAuthSession();
+    resetOnboardingJourneyStorage();
     setPersisted({ selectedFlow: null, authStatus: 'pending', session: {} });
     setPhase('home');
+  }, []);
+
+  const resetForNewQrEntry = useCallback(() => {
+    resetOnboardingJourneyStorage();
+    setPersisted({ selectedFlow: null, authStatus: 'pending', session: {} });
   }, []);
 
   const updateSession = useCallback((patch: Partial<JourneySession>) => {
@@ -74,10 +90,11 @@ export function JourneyProvider({ initialPhase = 'home', children }: JourneyProv
       setSelectedFlow,
       completeAuth,
       clearJourney,
+      resetForNewQrEntry,
       setPhase,
       updateSession,
     }),
-    [clearJourney, completeAuth, persisted, phase, setSelectedFlow, updateSession],
+    [clearJourney, completeAuth, persisted, phase, resetForNewQrEntry, setSelectedFlow, updateSession],
   );
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;

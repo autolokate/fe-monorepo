@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { emergencyJourneyPaths } from '../emergency/emergency-routing.js';
+import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect.js';
 import {
   RequireAuthCompleted,
   RequireSelectedFlow,
@@ -49,9 +50,9 @@ export function JourneyRoutes() {
         <Route path="/journey/qr-scan" element={<Navigate to={journeyPaths.root} replace />} />
         <Route
           path="/journey/purchase/qr-scan"
-          element={<Navigate to="/journey/purchase/r03-vehicle" replace />}
+          element={<PurchaseIndexRedirect />}
         />
-        <Route path="/journey/purchase" element={<Navigate to="/journey/purchase/r03-vehicle" replace />} />
+        <Route path="/journey/purchase" element={<PurchaseIndexRedirect />} />
         <Route path="/journey/purchase/*" element={<PurchaseActivationRoute />} />
         <Route path="/journey/prepaid/*" element={<PrepaidRoutes />} />
         <Route path="/journey/b2b2c/*" element={<B2b2cRoutes />} />

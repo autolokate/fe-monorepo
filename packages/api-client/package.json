@@ -16,6 +16,7 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@autolokate/auth": "workspace:*",
     "@autolokate/types": "workspace:*"
   },
   "files": ["dist"]

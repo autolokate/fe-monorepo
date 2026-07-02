@@ -6,15 +6,21 @@ import { FlowOptionCard } from '../../components/compositions/flow-entry/index.j
 import { useThemeMode } from '../../hooks/useThemeMode.js';
 import { PwaInstallPrompt } from '../../pwa/index.js';
 import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanContext.js';
+import { useQrJourneyEntry } from '../../hooks/qr/useQrJourneyEntry.js';
+import { useQrResolve } from '../../hooks/qr/useQrResolve.js';
 import {
   ACTIVATION_FLOW_ENTRIES,
   dispatchPlatformFlow,
   dispatchQrPayload,
+  hasLegacyQrEntryParams,
   isQrEntryUrl,
-  parseQrFromSearchParams,
   POST_ACTIVATION_FLOW_ENTRY,
 } from '../../platform/index.js';
+import { extractQrCodeParam } from '../../platform/qr/parse-qr-url.js';
 import { useJourney } from '../JourneyContext.js';
+import { reportUserError } from '@/platform/feedback/index.js';
+import { qrLogger } from '@/services/qr/qr-logger.js';
+import { saveQrCode } from '@/storage/index.js';
 
 import './flow-entry-screen.css';
 
@@ -22,36 +28,59 @@ import './flow-entry-screen.css';
 export function FlowEntryScreen() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { setSelectedFlow, setPhase, updateSession } = useJourney();
+  const { setSelectedFlow, setPhase, updateSession, resetForNewQrEntry } = useJourney();
   const { updateSession: updatePwaSession } = usePwaScan();
   const { themeMode, applyTheme } = useThemeMode();
+  const { resolveEntry } = useQrResolve();
+  const { enterFromSearchParams } = useQrJourneyEntry();
   const qrHandledRef = useRef(false);
 
   useEffect(() => {
     setPhase('flow-select');
   }, [setPhase]);
 
-  const dispatchDeps = { setSelectedFlow, setPhase, navigate, updateSession };
+  const dispatchDeps = {
+    setSelectedFlow,
+    setPhase,
+    navigate,
+    updateSession,
+    updatePwaSession,
+    resetForNewQrEntry,
+  };
 
   useEffect(() => {
     if (qrHandledRef.current || !isQrEntryUrl(searchParams)) {
       return;
     }
 
-    const result = parseQrFromSearchParams(searchParams);
-    if (!result.ok) {
+    if (!hasLegacyQrEntryParams(searchParams)) {
+      qrHandledRef.current = true;
+      void enterFromSearchParams(searchParams, dispatchDeps, { entryPoint: 'flow-entry' }).then(
+        (result) => {
+          if (!result.ok) {
+            reportUserError(qrLogger, 'flow_entry_resolve_failed', result.error);
+          }
+        },
+      );
       return;
     }
 
-    qrHandledRef.current = true;
-    dispatchQrPayload(result.payload, {
-      setSelectedFlow,
-      setPhase,
-      navigate,
-      updateSession,
-      updatePwaSession,
-    });
-  }, [navigate, searchParams, setPhase, setSelectedFlow, updatePwaSession, updateSession]);
+    void (async () => {
+      const urlCode = extractQrCodeParam(searchParams);
+      if (urlCode) {
+        resetForNewQrEntry();
+        saveQrCode(urlCode);
+      }
+      const result = await resolveEntry(searchParams);
+      if (!result.ok) {
+        reportUserError(qrLogger, 'flow_entry_resolve_failed', result.error);
+        return;
+      }
+
+      qrHandledRef.current = true;
+      dispatchQrPayload(result.payload, dispatchDeps);
+    })();
+  }, [enterFromSearchParams, navigate, resetForNewQrEntry, resolveEntry, searchParams, setPhase, setSelectedFlow, updatePwaSession, updateSession]);
 
   return (
     <AlScreenBg variant="protected" className="ob-flow-entry">

@@ -1,5 +1,8 @@
 import type { NavigateFunction } from 'react-router-dom';
 
+import { extractQrCodeParam } from '@/platform/qr/parse-qr-url.js';
+import { saveQrCode } from '@/storage/index.js';
+
 import { authJourneyPaths } from '../auth/auth-routing.js';
 import { b2b2cJourneyPaths } from '../b2b2c/b2b2c-routing.js';
 import { prepaidJourneyPaths } from '../prepaid/prepaid-routing.js';
@@ -32,6 +35,10 @@ export function selectActivationFlow(
   setSelectedFlow(flow);
 
   if (flow === 'purchase') {
+    const codeFromUrl = extractQrCodeParam(new URLSearchParams(window.location.search));
+    if (codeFromUrl) {
+      saveQrCode(codeFromUrl);
+    }
     updateSession?.(resetPurchaseCheckoutSession());
     setPhase('shared-auth');
     void navigate(authJourneyPaths.mobile);

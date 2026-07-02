@@ -12,6 +12,7 @@ export type E06ContactMobileScreenProps = EmergencyScreenNavigationProps & {
   mobileState?: EmergencyMobileState;
   mobileValue?: string;
   onMobileChange?: (mobile: string) => void;
+  footerLoading?: boolean;
 };
 
 /** E1 · Contact mobile — Figma 789:1982 */
@@ -19,6 +20,7 @@ export function E06ContactMobileScreen({
   mobileState = 'default',
   mobileValue,
   onMobileChange,
+  footerLoading = false,
   onContinue,
   onBack,
   showBack = true,
@@ -37,6 +39,7 @@ export function E06ContactMobileScreen({
       description="We’ll send them a code on WhatsApp. Enter it here to confirm."
       footerLabel="Get OTP"
       footerDisabled={isOffline || (interactive && !hasMobile)}
+      footerLoading={footerLoading}
       captureProgress={{ step: 1, total: 3 }}
       showBack={showBack}
       onBack={onBack}

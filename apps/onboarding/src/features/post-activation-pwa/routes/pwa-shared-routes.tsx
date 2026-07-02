@@ -16,12 +16,11 @@ import { A3VehicleOwnerScreen } from '../../shared-auth/screens/a3-vehicle-owner
 import { formatMobileForDisplay } from '../../shared-auth/data/demo-data.js';
 import {
   clampMobileInput,
-  isExpiredOtp,
   isValidMobile,
-  isValidOtp,
   OTP_LENGTH,
   RESEND_COOLDOWN_SECONDS,
 } from '../../shared-auth/auth-flow/auth-flow.validation.js';
+import { isExpiredOtp, isValidOtp } from '../../shared-auth/auth-flow/auth-flow.demo.js';
 import type { AuthMobileState, AuthOtpState, OtpErrorKind } from '../../shared-auth/types.js';
 import { PWA_BOOTSTRAP_MS } from '../constants/pwa-scan-paths.js';
 import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
@@ -34,10 +33,10 @@ import type { PwaFlowIntent } from '../context/pwa-scan-types.js';
 import { PwaScanShell } from '../components/PwaScanShell.js';
 import { PwaVerifyShell } from '../components/PwaVerifyShell.js';
 import { PwaFade, PwaSpringPress } from '../components/PwaMotion.js';
+import { useQrResolve } from '../../../hooks/qr/useQrResolve.js';
 import {
   applyActivatedQrToPwaSession,
   isQrEntryUrl,
-  parseQrFromSearchParams,
 } from '../../../platform/index.js';
 
 import '../styles/pwa-scan.css';
@@ -51,6 +50,7 @@ export function PwaLoadingRoute() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { updateSession } = usePwaScan();
+  const { resolveEntry } = useQrResolve();
   const qrHandledRef = useRef(false);
 
   useEffect(() => {
@@ -58,14 +58,16 @@ export function PwaLoadingRoute() {
       return;
     }
 
-    const result = parseQrFromSearchParams(searchParams);
-    if (!result.ok || result.payload.type !== 'activated') {
-      return;
-    }
+    void (async () => {
+      const result = await resolveEntry(searchParams);
+      if (!result.ok || result.payload.type !== 'activated') {
+        return;
+      }
 
-    qrHandledRef.current = true;
-    applyActivatedQrToPwaSession(result.payload, updateSession);
-  }, [searchParams, updateSession]);
+      qrHandledRef.current = true;
+      applyActivatedQrToPwaSession(result.payload, updateSession);
+    })();
+  }, [resolveEntry, searchParams, updateSession]);
 
   const finishBootstrap = useCallback(() => {
     updateSession({ bootstrapComplete: true });

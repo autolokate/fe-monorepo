@@ -1,0 +1,22 @@
+.ob-toast-host {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.25rem);
+  transform: translateX(-50%);
+  z-index: 10000;
+  width: min(22rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.ob-toast {
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--al-color-surface-elevated, #1a1a1a);
+  color: var(--al-color-on-surface, #fff);
+  border: 1px solid color-mix(in srgb, var(--al-color-danger, #e5484d) 35%, transparent);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 24%);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: center;
+}

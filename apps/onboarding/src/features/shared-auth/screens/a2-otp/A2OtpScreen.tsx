@@ -4,7 +4,7 @@ import { AuthStepShell } from '@/components/auth-step-shell/index.js';
 import { useAuthRouteProgress } from '@/journey/progress/index.js';
 import { AlSmsFallback } from '@/components/compositions/index.js';
 import { formatMobileForDisplay } from '../../data/demo-data.js';
-import { isExpiredOtp, isValidOtp, OTP_LENGTH } from '../../auth-flow/auth-flow.validation.js';
+import { OTP_LENGTH } from '../../auth-flow/auth-flow.validation.js';
 import type { A2OtpScreenProps } from '../../types.js';
 
 /** A2 · OTP — Figma 103:324 · 557:1647 */
@@ -30,23 +30,20 @@ export function A2OtpScreen({
   const isWrong =
     otpState === 'error' || otpErrorKind === 'wrong' || otpErrorKind === 'expired';
   const isOffline = otpState === 'offline';
-  const isComplete = otpValue.length === OTP_LENGTH;
-  const isAutoExpired = isComplete && isExpiredOtp(otpValue);
-  const isAutoWrong = isComplete && !isValidOtp(otpValue) && !isExpiredOtp(otpValue);
   const canResend = Boolean(onResendOtp) && resendCooldownSeconds === 0 && !verifying && !isOffline;
   const showSmsFallback =
     isWrong || isNetworkError || isResendFailed || otpState === 'resend' || canResend;
 
   const otpInputState = isSuccess
     ? 'success'
-    : isWrong || isNetworkError || isResendFailed || isAutoExpired || isAutoWrong
+    : isWrong || isNetworkError || isResendFailed
       ? 'error'
       : 'empty';
 
   const errorText =
-    otpErrorKind === 'expired' || isAutoExpired
+    otpErrorKind === 'expired'
       ? 'This code has expired. Request a new OTP.'
-      : isWrong || isAutoWrong
+      : isWrong
         ? 'Incorrect code, try again'
         : isNetworkError
           ? "Couldn't reach the server, tap Verify to retry"
@@ -57,8 +54,7 @@ export function A2OtpScreen({
       ? `Resend code in 0:${String(resendCooldownSeconds).padStart(2, '0')}`
       : undefined;
 
-  const shellVariant =
-    isWrong || isNetworkError || isResendFailed || isAutoWrong || isAutoExpired ? 'error' : 'default';
+  const shellVariant = isWrong || isNetworkError || isResendFailed ? 'error' : 'default';
   const progressConfig = useAuthRouteProgress();
 
   return (
@@ -105,7 +101,7 @@ export function A2OtpScreen({
             Couldn&apos;t resend, check your connection and try again
           </p>
         ) : null}
-        {errorText && (isWrong || isNetworkError || isAutoWrong || isAutoExpired) ? (
+        {errorText && (isWrong || isNetworkError) ? (
           <p className="ob-otp-validation-error" role="alert">
             {errorText}
           </p>

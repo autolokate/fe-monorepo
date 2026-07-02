@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { setThemeMode } from '@autolokate/design-system';
 
+import { validateEnv } from './config/env.js';
 import { ScreenDevApp } from './dev/ScreenDevApp.js';
 import { JourneyOrchestrator } from './journey/index.js';
 import { THEME_KEY } from './journey/constants.js';
@@ -22,6 +23,8 @@ function getInitialTheme(): 'light' | 'dark' {
 const theme = getInitialTheme();
 setThemeMode(theme);
 document.documentElement.setAttribute('data-theme', theme);
+
+validateEnv();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

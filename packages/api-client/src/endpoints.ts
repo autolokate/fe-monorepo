@@ -1,20 +1,62 @@
 /** API route definitions — single source of truth for backend paths. */
 export const endpoints = {
   auth: {
-    requestOtp: '/auth/otp/request',
-    verifyOtp: '/auth/otp/verify',
-    refresh: '/auth/session/refresh',
-    logout: '/auth/session/logout',
-    me: '/auth/me',
+    requestOtp: '/v1/auth/otp/request',
+    verifyOtp: '/v1/auth/otp/verify',
+    refresh: '/v1/auth/refresh',
+    logout: '/v1/auth/logout',
+    session: '/v1/auth/session',
+    profile: '/v1/profile',
+  },
+  consents: {
+    list: '/v1/me/consents',
+    grant: '/v1/me/consents',
+  },
+  legal: {
+    documents: '/v1/legal/documents',
+  },
+  devices: {
+    token: '/v1/devices/token',
+  },
+  qr: {
+    resolve: (code: string) => `/v1/qr/${encodeURIComponent(code)}/resolve`,
+    attach: (code: string) => `/v1/qr/${encodeURIComponent(code)}/attach`,
   },
   vehicles: {
-    list: '/vehicles',
-    detail: (vehicleId: string) => `/vehicles/${vehicleId}`,
+    lookup: '/v1/vehicles/lookup',
+    list: '/v1/vehicles',
+    detail: (vehicleId: string) => `/v1/vehicles/${vehicleId}`,
     create: '/vehicles',
   },
   plans: {
-    list: '/plans',
+    list: '/v1/plans',
     detail: (planId: string) => `/plans/${planId}`,
+  },
+  orders: {
+    create: '/v1/orders',
+    pay: (orderId: string) => `/v1/orders/${orderId}/pay`,
+    payment: (orderId: string) => `/v1/orders/${orderId}/payment`,
+  },
+  activation: {
+    preview: (code: string) =>
+      `/v1/activation/preview?code=${encodeURIComponent(code)}`,
+    redeem: '/v1/activation/redeem',
+  },
+  emergencyContacts: {
+    list: '/v1/emergency-contacts',
+    otpRequest: '/v1/emergency-contacts/otp/request',
+    otpVerify: '/v1/emergency-contacts/otp/verify',
+    create: '/v1/emergency-contacts',
+    delete: (contactId: string) =>
+      `/v1/emergency-contacts/${encodeURIComponent(contactId)}`,
+  },
+  riders: {
+    list: (subscriptionId: string) =>
+      `/v1/subscriptions/${encodeURIComponent(subscriptionId)}/riders`,
+    otpRequest: '/v1/riders/otp/request',
+    otpVerify: '/v1/riders/otp/verify',
+    create: '/v1/riders',
+    delete: (riderId: string) => `/v1/riders/${encodeURIComponent(riderId)}`,
   },
 } as const;
 

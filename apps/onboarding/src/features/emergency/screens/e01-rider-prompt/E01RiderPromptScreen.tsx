@@ -15,6 +15,8 @@ import '../../emergency.css';
 export type E01RiderPromptScreenProps = EmergencyScreenNavigationProps & {
   viewState?: EmergencyRiderPromptState;
   description?: string;
+  /** API error message — shown only when the backend returned a message. */
+  errorMessage?: string | null;
 };
 
 const defaultRiderDescription = getRiderPromptDescription(
@@ -25,6 +27,7 @@ const defaultRiderDescription = getRiderPromptDescription(
 export function E01RiderPromptScreen({
   viewState = 'default',
   description = defaultRiderDescription,
+  errorMessage = null,
   onContinue,
   onBack,
   showBack = true,
@@ -32,11 +35,12 @@ export function E01RiderPromptScreen({
   onFooterSecondary,
 }: E01RiderPromptScreenProps) {
   const isLoading = viewState === 'loading';
-  const isError = viewState === 'error';
   const isOffline = viewState === 'offline';
+  const apiError = errorMessage?.trim() ?? '';
+  const showApiError = viewState === 'error' && apiError.length > 0;
 
-  const resolvedDescription = isError
-    ? 'We couldn’t load your rider cover'
+  const resolvedDescription = showApiError
+    ? apiError
     : isOffline
       ? getRiderPromptOfflineDescription()
       : description;
@@ -47,7 +51,7 @@ export function E01RiderPromptScreen({
       step={1}
       title="Add your rider’s details?"
       description={resolvedDescription}
-      footerLabel={isError ? 'Try again' : 'Add rider details'}
+      footerLabel={showApiError ? 'Try again' : 'Add rider details'}
       footerLoading={isLoading}
       footerDisabled={isOffline || isLoading}
       hideProgress

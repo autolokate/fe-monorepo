@@ -1,17 +1,16 @@
 export {
-  AuthClient,
-  createAuthClient,
-  createMemoryAuthStorage,
-} from './auth.js';
+  TokenManager,
+  createTokenManager,
+  getTokenManager,
+} from './tokens/token-manager.js';
 export {
-  type AuthClientConfig,
-  type AuthEvent,
-  type AuthListener,
-  type AuthSession,
-  type AuthState,
-  type AuthStorage,
-  type OtpRequestPayload,
-  type OtpRequestResponse,
-  type OtpVerifyPayload,
-  type OtpVerifyResponse,
-} from './types.js';
+  TOKEN_STORAGE_KEY,
+  createSessionTokenStorage,
+} from './tokens/token-storage.js';
+export type {
+  StoredTokenPair,
+  TokenRefreshHandler,
+  TokenStorage,
+} from './tokens/types.js';
+export { DEVICE_ID_KEY, getDeviceId } from './device/device-id.js';
+export { createLogger, type Logger, type LogLevel } from './logger.js';

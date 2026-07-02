@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -12,42 +11,43 @@ import {
 import { applyLandingEntitlementToSession } from '@/features/b2b-shared/apply-landing-entitlement.js';
 import { getWelcomeShellPresentation } from '@/features/b2b-shared/get-welcome-shell-presentation.js';
 import { resolveWelcomePlanDisplay } from '@/features/b2b-shared/resolve-welcome-plan-display.js';
-import { useWelcomeLanding } from '@/features/b2b-shared/use-welcome-landing.js';
+import { useActivationPreview } from '@/hooks/activation/index.js';
 import { journeyPaths } from '@/journey/constants.js';
 import { useJourney } from '@/journey/JourneyContext.js';
 import { authJourneyPaths } from '@/journey/auth/auth-routing.js';
-import {
-  getDemoPartnerLandingEntitlement,
-  type PartnerLandingVariant,
-} from '../../data/partner-landing-config.js';
+import { resolvePartnerVariantFromRiderCount } from '@/journey/state/partner-journey-state-machine.js';
+import { readStoredActivationQrCode } from '@/services/activation/activation-service.js';
+
+export type PartnerLandingVariant = 'plan-only' | 'plan-rider';
 
 export type PartnerWelcomeScreenProps = {
   variant?: PartnerLandingVariant;
 };
 
 const PARTNER_BODY_COPY: Record<PartnerLandingVariant, string> = {
-  'plan-only': 'Sharma Motors set up and paid for your plan. Activate it now.',
+  'plan-only': 'Your partner set up and paid for your plan. Activate it now.',
   'plan-rider':
-    'Sharma Motors set up and paid for your plan and rider. Activate it now.',
+    'Your partner set up and paid for your plan and rider. Activate it now.',
 };
 
 export function PartnerWelcomeScreen({ variant = 'plan-only' }: PartnerWelcomeScreenProps) {
   const navigate = useNavigate();
-  const { setSelectedFlow, setPhase, updateSession } = useJourney();
-  const loadConfig = useCallback(
-    () => getDemoPartnerLandingEntitlement(variant),
-    [variant],
-  );
-  const { viewState, config, retry } = useWelcomeLanding({ loadConfig });
+  const { session, setSelectedFlow, setPhase, updateSession } = useJourney();
+  const activationCode = session.b2b2c?.partnerId ?? readStoredActivationQrCode();
+  const { viewState, config, retry } = useActivationPreview({
+    code: activationCode,
+    flow: 'b2b2c',
+  });
 
   const handleActivate = () => {
     if (!config || viewState !== 'default') {
       return;
     }
 
+    const resolvedVariant = resolvePartnerVariantFromRiderCount(config.riderCount);
     setSelectedFlow('b2b2c');
     updateSession({
-      b2b2c: { entitlement: config, variant },
+      b2b2c: { entitlement: config, variant: resolvedVariant, partnerId: activationCode ?? undefined },
       ...applyLandingEntitlementToSession(config),
     });
     setPhase('shared-auth');

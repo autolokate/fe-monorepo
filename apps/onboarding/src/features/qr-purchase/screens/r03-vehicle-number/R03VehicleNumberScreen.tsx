@@ -3,7 +3,7 @@ import { AlPlateInput } from '@autolokate/ui';
 import { AuthStepShell } from '@/components/auth-step-shell/index.js';
 import { TrustRow } from '@/components/compositions/trust-row/TrustRow.js';
 import { VahanPreviewChips } from '@/components/compositions/vahan-preview-chips/index.js';
-import { isPlateEntryReady } from '../../data/vahan-demo.js';
+import { isPlateEntryReady } from '@/services/vehicle/index.js';
 import type { PurchaseVehicleScreenProps } from '../../types-vehicle.js';
 
 import '../purchase-vehicle.css';

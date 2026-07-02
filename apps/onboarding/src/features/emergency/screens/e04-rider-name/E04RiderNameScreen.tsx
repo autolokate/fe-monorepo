@@ -13,6 +13,8 @@ export type E04RiderNameScreenProps = EmergencyScreenNavigationProps & {
   relation?: RelationshipId;
   onRelationChange?: (relation: RelationshipId) => void;
   formState?: EmergencyNameFormState;
+  /** API error message — shown only when the backend returned a message. */
+  errorMessage?: string | null;
 };
 
 /** R3 · Rider name — Figma 374:71 */
@@ -22,16 +24,18 @@ export function E04RiderNameScreen({
   relation,
   onRelationChange,
   formState = 'default',
+  errorMessage = null,
   onContinue,
   onBack,
   showBack = true,
 }: E04RiderNameScreenProps) {
   const interactive = onNameChange !== undefined;
   const isSubmitting = formState === 'submitting';
-  const isError = formState === 'error';
+  const apiError = errorMessage?.trim() ?? '';
+  const showApiError = formState === 'error' && apiError.length > 0;
   const hasName = nameValue.trim().length > 0;
   const isInvalid = interactive && (!hasName || !relation);
-  const showDisabledHelper = isInvalid && !isSubmitting && !isError;
+  const showDisabledHelper = isInvalid && !isSubmitting && !showApiError;
 
   return (
     <FlowStepShell
@@ -43,13 +47,13 @@ export function E04RiderNameScreen({
       footerLoading={isSubmitting}
       footerDisabled={isInvalid || isSubmitting}
       footerHelperText={
-        isError
-          ? 'We couldn’t save rider details'
+        showApiError
+          ? apiError
           : showDisabledHelper
             ? 'Add a name to continue'
             : undefined
       }
-      footerHelperTone={isError ? 'warning' : 'muted'}
+      footerHelperTone={showApiError ? 'warning' : 'muted'}
       captureProgress={{ step: 3, total: 3 }}
       showBack={showBack}
       onBack={onBack}

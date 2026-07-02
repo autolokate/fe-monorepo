@@ -210,8 +210,8 @@ export function PlanCarousel({ selectedPlanId, onSelectPlan }: PlanCarouselProps
                   className="ob-plan-carousel__card"
                   name={plan.name}
                   price={plan.priceLabel}
-                  badge={plan.badge}
-                  includesLabel={plan.includesLabel}
+                  badge={plan.badge ?? undefined}
+                  includesLabel={plan.includesLabel ?? undefined}
                   features={[...plan.features]}
                   addon={plan.addon}
                   selected={isSelected}

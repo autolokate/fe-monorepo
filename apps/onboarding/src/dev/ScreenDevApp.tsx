@@ -504,6 +504,20 @@ const purchasePhaseBScreens: PurchaseStatusDevScreen[] = [
     render: () => (
       <R07RiderCoverScreen
         selectedPlanId="secure"
+        riderOptions={[
+          {
+            riderCount: 1,
+            pricePaise: 9900,
+            originalPricePaise: 19900,
+            discountPercent: 50,
+          },
+          {
+            riderCount: 2,
+            pricePaise: 14900,
+            originalPricePaise: 39800,
+            discountPercent: 63,
+          },
+        ]}
         selectedRiderCount={1}
         onSelectRiderCount={() => undefined}
       />

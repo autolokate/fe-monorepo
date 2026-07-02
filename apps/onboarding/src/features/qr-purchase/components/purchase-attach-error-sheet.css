@@ -1,0 +1,13 @@
+.ob-purchase-attach-error-sheet__support {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--al-color-on-surface-muted, rgb(255 255 255 / 64%));
+  text-align: center;
+}
+
+.ob-purchase-attach-error-sheet__email {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}

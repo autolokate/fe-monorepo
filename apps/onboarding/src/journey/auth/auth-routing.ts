@@ -27,4 +27,4 @@ export const legacySharedPaths = {
 } as const;
 
 /** First post-auth activation step when flow is not yet resolved. */
-export const defaultActivationAfterAuth = purchaseJourneyPaths.r03Vehicle;
+export const defaultActivationAfterAuth = purchaseJourneyPaths.vehicleDetails;

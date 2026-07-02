@@ -27,7 +27,19 @@ export {
   DEMO_QR_ENTRY_URLS,
   QR_ENTRY_BASE_URL,
 } from './qr/qr-entry-urls.js';
-export { isQrEntryUrl, parseQrFromSearchParams } from './qr/parse-qr-url.js';
+export {
+  extractQrCodeParam,
+  hasLegacyQrEntryParams,
+  isQrEntryUrl,
+  parseQrFromSearchParams,
+} from './qr/parse-qr-url.js';
+export {
+  QR_STATUS,
+  isActivatedQrLifecycleStatus,
+  isAttachedQrLifecycleStatus,
+  isDistributedQrLifecycleStatus,
+  isExpiredQrLifecycleStatus,
+} from './qr/qr-status.js';
 export {
   createQrDispatchRequest,
   mapQrPayloadToPlatformFlow,

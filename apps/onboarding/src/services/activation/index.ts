@@ -1,0 +1,22 @@
+export {
+  loadActivationPreview,
+  loadPartnerActivationPreviewAtEntry,
+  redeemActivationEntitlement,
+  seedActivationFromQrPayload,
+  seedPartnerActivationContext,
+  rememberActivationContext,
+  clearActivationCache,
+  clearActivationRedeemAttempt,
+  getActivationRevision,
+  peekActivationPreview,
+  peekActivationCode,
+  peekActivationQrCode,
+  peekSubscriptionId,
+  peekActivationLastError,
+  readStoredActivationPreview,
+  readStoredActivationQrCode,
+  type LoadActivationPreviewResult,
+  type RedeemActivationResult,
+  type ActivationFlowKind,
+} from './activation-service.js';
+export { type ActivationError, type ActivationErrorCode } from './activation-errors.js';

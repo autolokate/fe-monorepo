@@ -22,8 +22,10 @@ export type RelationshipId =
   | 'other';
 
 export type EmergencyContact = {
+  id?: string;
   name: string;
   mobile: string;
+  phoneMasked?: string;
   relation: RelationshipId;
   verified: boolean;
 };
@@ -37,7 +39,9 @@ export type EmergencyContactDraft = {
 };
 
 export type EmergencyRider = {
+  id?: string;
   mobile: string;
+  phoneMasked?: string;
   name: string;
   relation: RelationshipId;
 };

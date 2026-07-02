@@ -1,7 +1,6 @@
+export { isExpiredOtp, isValidOtp } from '../shared-auth/auth-flow/auth-flow.demo.js';
 export {
-  isExpiredOtp,
   isValidMobile,
-  isValidOtp,
   normalizeMobile,
   clampMobileInput,
   formatMobileInput,

@@ -1,0 +1,14 @@
+export {
+  evaluatePurchaseRouteAccess,
+  isPostActivationQrResolution,
+  isPurchaseCheckoutUnlocked,
+  isVehiclePurchaseStepBlocked,
+  readPurchaseJourneyState,
+  resolvePurchaseEntryPath,
+} from '@/journey/state/purchase-journey-state-machine.js';
+
+/** @deprecated Use resolvePurchaseEntryPath */
+export { resolvePurchaseEntryPath as getPurchasePostAuthPath } from '@/journey/state/purchase-journey-state-machine.js';
+
+/** @deprecated Use isVehiclePurchaseStepBlocked */
+export { isVehiclePurchaseStepBlocked as shouldSkipVehiclePurchaseSteps } from '@/journey/state/purchase-journey-state-machine.js';

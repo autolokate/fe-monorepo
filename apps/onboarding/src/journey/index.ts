@@ -15,10 +15,10 @@ export {
 export {
   getNextPurchasePath,
   getPrevPurchasePath,
-  getPurchaseActivationStartPath,
   purchaseJourneyPaths,
   purchaseStepPathSequence,
 } from './purchase/purchase-routing.js';
+export { resolvePurchaseEntryPath } from './state/purchase-journey-state-machine.js';
 export type {
   ActivationFlowId,
   AuthStatus,

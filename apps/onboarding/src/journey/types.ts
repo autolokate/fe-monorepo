@@ -65,6 +65,7 @@ export type JourneyContextValue = PersistedJourneyState & {
   setSelectedFlow: (flow: ActivationFlowId) => void;
   completeAuth: () => void;
   clearJourney: () => void;
+  resetForNewQrEntry: () => void;
   setPhase: (phase: JourneyPhase) => void;
   updateSession: (patch: Partial<JourneySession>) => void;
 };

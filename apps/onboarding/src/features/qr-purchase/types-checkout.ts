@@ -23,14 +23,24 @@ export type PurchaseCheckoutSession = {
   paidAmountInr?: number;
 };
 
+export type PurchaseRiderOption = {
+  riderCount: 1 | 2;
+  pricePaise: number;
+  originalPricePaise: number;
+  discountPercent: number;
+};
+
 export type PurchasePlanDefinition = {
   id: PurchasePlanId;
   name: string;
   priceLabel: string;
   priceInr: number;
-  badge?: string;
-  includesLabel?: string;
+  pricePaise: number;
+  badge?: string | null;
+  includesLabel?: string | null;
   features: readonly string[];
+  riderEligible: boolean;
+  riderOptions: readonly PurchaseRiderOption[];
   addon?: { label: string };
   /** Figma Secure card is 366px vs 340px for others. */
   tall?: boolean;
