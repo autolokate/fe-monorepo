@@ -10,6 +10,7 @@ import {
 } from '../../features/qr-purchase/data/purchase-pricing.js';
 import { resolvePurchasePlanId } from '../../features/emergency/emergency-limits.js';
 import { useJourney } from '../JourneyContext.js';
+import { journeyPaths } from '../constants.js';
 
 import './completion-experience/completion-experience.css';
 
@@ -33,7 +34,7 @@ export function JourneyCompletedScreen() {
 
   const finish = () => {
     clearJourney();
-    void navigate('/journey');
+    void navigate(journeyPaths.entry);
   };
 
   return (

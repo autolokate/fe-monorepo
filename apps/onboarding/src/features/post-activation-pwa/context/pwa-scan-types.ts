@@ -76,7 +76,6 @@ export type PwaScanSession = {
   sosPhotos: PwaSosPhotos;
   sosPhotoIds: PwaSosPhotoIds;
   sosStatus: PwaSosStatus;
-  simulateNetworkFail: boolean;
   locationDenied: boolean;
 };
 
@@ -88,10 +87,10 @@ export const defaultPwaScanSession = (): PwaScanSession => ({
   consentAccepted: false,
   pendingFlow: null,
   scannedVehicle: {
-    plate: 'MH 12 AB 1234',
-    modelSummary: 'White · Maruti Swift',
-    protected: true,
-    planLabel: 'Safe',
+    plate: '',
+    modelSummary: '',
+    protected: false,
+    planLabel: undefined,
     fields: [],
   },
   reporterPlate: '',
@@ -107,6 +106,5 @@ export const defaultPwaScanSession = (): PwaScanSession => ({
   sosPhotos: { front: null, rear: null, left: null, right: null },
   sosPhotoIds: { front: null, rear: null, left: null, right: null },
   sosStatus: 'idle',
-  simulateNetworkFail: false,
   locationDenied: false,
 });

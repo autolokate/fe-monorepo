@@ -4,7 +4,7 @@ import type { ActivationFlowId } from '../../journey/types.js';
 export type PlatformFlowId = ActivationFlowId | 'postActivation';
 
 /** Where a dispatch request originated. */
-export type FlowDispatchSource = 'homeCard' | 'flowHub' | 'qrPayload';
+export type FlowDispatchSource = 'qrPayload';
 
 export type FlowEntryKind = 'activation' | 'scanner';
 

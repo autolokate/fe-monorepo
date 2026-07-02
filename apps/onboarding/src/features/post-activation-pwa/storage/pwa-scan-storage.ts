@@ -1,6 +1,5 @@
 import { PWA_SCAN_STORAGE_KEY } from '../constants/pwa-scan-paths.js';
 import { defaultPwaScanSession, type PwaScanSession } from '../context/pwa-scan-types.js';
-import { pwaScannedVehicleFields, PWA_SCANNED_MODEL, PWA_SCANNED_PLATE, PWA_SCANNED_PLAN } from '../data/pwa-demo-data.js';
 import {
   estimateSessionPhotoBytes,
   logPhotoDiagnostic,
@@ -14,14 +13,7 @@ function hydrateSession(raw: Partial<PwaScanSession>): PwaScanSession {
     scannedVehicle: {
       ...base.scannedVehicle,
       ...raw.scannedVehicle,
-      plate: raw.scannedVehicle?.plate ?? PWA_SCANNED_PLATE,
-      modelSummary: raw.scannedVehicle?.modelSummary ?? PWA_SCANNED_MODEL,
-      protected: raw.scannedVehicle?.protected ?? true,
-      planLabel: raw.scannedVehicle?.planLabel ?? PWA_SCANNED_PLAN,
-      fields:
-        raw.scannedVehicle?.fields && raw.scannedVehicle.fields.length > 0
-          ? raw.scannedVehicle.fields
-          : pwaScannedVehicleFields,
+      fields: raw.scannedVehicle?.fields ?? base.scannedVehicle.fields,
     },
     parkMePhotos: { ...base.parkMePhotos, ...raw.parkMePhotos },
     parkMePhotoIds: { ...base.parkMePhotoIds, ...raw.parkMePhotoIds },

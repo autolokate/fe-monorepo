@@ -2,7 +2,6 @@ import { AlTextField } from '@autolokate/ui';
 
 import { FormFieldStack } from '@/components/compositions/index.js';
 import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import { demoMobileDisplay } from '@/features/shared-auth/data/demo-data.js';
 import { MOBILE_INPUT_DISPLAY_MAX } from '@/features/shared-auth/auth-flow/auth-flow.validation.js';
 import type { EmergencyMobileState, EmergencyScreenNavigationProps } from '../../types.js';
 
@@ -26,7 +25,7 @@ export function E02RiderMobileScreen({
   const isError = mobileState === 'error';
   const isOffline = mobileState === 'offline';
   const interactive = mobileValue !== undefined && onMobileChange !== undefined;
-  const resolvedMobile = interactive ? mobileValue : demoMobileDisplay;
+  const resolvedMobile = interactive ? mobileValue : '';
   const hasMobile = resolvedMobile.replace(/\D/g, '').length > 0;
 
   return (
@@ -47,7 +46,7 @@ export function E02RiderMobileScreen({
           className="ob-auth-mobile-field"
           aria-label="Mobile number"
           value={interactive ? mobileValue : undefined}
-          defaultValue={interactive ? undefined : demoMobileDisplay}
+          defaultValue={interactive ? undefined : ''}
           onChange={
             onMobileChange
               ? (event) => {

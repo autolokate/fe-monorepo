@@ -32,7 +32,7 @@ import {
 } from '@/services/activation/activation-service.js';
 import { resolveB2bEntitlementCodeFromQrCode } from '@/services/activation/activation-mapper.js';
 
-export type QrJourneyEntryPoint = 'flow-entry' | 'auth-mobile' | 'scanner';
+export type QrJourneyEntryPoint = 'auth-mobile' | 'scanner';
 
 export type QrJourneyEntryDeps = {
   setSelectedFlow: (flow: ActivationFlowId) => void;
@@ -132,7 +132,7 @@ async function beginPartnerActivationJourney(
 }
 
 /**
- * Single QR entry path for scanner, Flow Entry URL, and dev `?qr_code=` auth URL.
+ * Single QR entry path for scanner and auth-mobile `?qr_code=` URLs.
  * Resolves once, persists the response, then routes by journey target (state machine).
  */
 export async function enterJourneyFromQrCode(
@@ -148,7 +148,7 @@ export async function enterJourneyFromQrCode(
     };
   }
 
-  const entryPoint = options?.entryPoint ?? 'flow-entry';
+  const entryPoint = options?.entryPoint ?? 'auth-mobile';
   deps.resetForNewQrEntry?.();
   saveQrCode(trimmed);
 

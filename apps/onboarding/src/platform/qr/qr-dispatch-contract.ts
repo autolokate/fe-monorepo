@@ -24,6 +24,8 @@ export type QrActivatedPayload = {
   type: 'activated';
   vehicleId: string;
   plate: string;
+  modelSummary?: string;
+  protected?: boolean;
   planLabel?: string;
 };
 

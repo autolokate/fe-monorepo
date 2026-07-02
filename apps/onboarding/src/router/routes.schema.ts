@@ -14,8 +14,9 @@ export const routePaths = {
   root: '/',
   activate: '/activate/:token',
   journey: {
-    home: '/journey/home',
-    qrScan: '/journey/qr-scan',
+    entry: '/journey/auth/mobile',
+    home: '/journey/auth/mobile',
+    qrScan: '/journey/auth/mobile',
     auth: '/journey/auth',
     authWildcard: '/journey/auth/*',
     authMobile: '/journey/auth/mobile',

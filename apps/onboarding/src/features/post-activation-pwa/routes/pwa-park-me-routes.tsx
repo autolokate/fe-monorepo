@@ -21,7 +21,7 @@ import { useParkVehicleLookup, useParkCheckingFlow, useParkTrackerPoll } from '.
 import { reportUserError } from '../../../platform/feedback/report-user-error.js';
 import { scannerLogger } from '../../../services/scanner/index.js';
 import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
-import { PWA_PARK_ME_LOOKUP_COPY, parkMeTimelineSteps } from '../data/pwa-demo-data.js';
+import { PWA_PARK_ME_LOOKUP_COPY, parkMeTimelineSteps } from '../data/pwa-content.js';
 import { usePwaScan } from '../context/PwaScanContext.js';
 import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard.js';
 import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary.js';

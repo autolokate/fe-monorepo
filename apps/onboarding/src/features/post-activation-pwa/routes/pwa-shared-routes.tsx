@@ -13,7 +13,7 @@ import {
 
 import { A1MobileScreen } from '../../shared-auth/screens/a1-mobile/index.js';
 import { A3VehicleOwnerScreen } from '../../shared-auth/screens/a3-vehicle-owner/index.js';
-import { formatMobileForDisplay } from '../../shared-auth/data/demo-data.js';
+import { formatMobileLocal } from '@/shared/format-mobile.js';
 import {
   clampMobileInput,
   isValidMobile,
@@ -23,7 +23,7 @@ import {
 import type { AuthMobileState, AuthOtpState } from '../../shared-auth/types.js';
 import { PWA_BOOTSTRAP_MS } from '../constants/pwa-scan-paths.js';
 import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
-import { PWA_LOADING_COPY } from '../data/pwa-demo-data.js';
+import { PWA_LOADING_COPY } from '../data/pwa-content.js';
 import { usePwaScan } from '../context/PwaScanContext.js';
 import type { PwaFlowIntent } from '../context/pwa-scan-types.js';
 import { PwaScanShell } from '../components/PwaScanShell.js';
@@ -321,7 +321,7 @@ export function PwaVerifyOtpRoute() {
       title="Enter the 6-digit code"
       description={
         <p className="ob-auth-otp-desc">
-          Sent on WhatsApp to {formatMobileForDisplay(session.mobile)}{' '}
+          Sent on WhatsApp to {formatMobileLocal(session.mobile)}{' '}
           <button
             type="button"
             className="ob-auth-otp-desc__change"

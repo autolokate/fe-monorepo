@@ -1,7 +1,6 @@
 import { AlOtpInput } from '@autolokate/ui';
 
 import { FlowStepShell, type FlowStepCaptureProgress } from '@/components/flow-step-shell/index.js';
-import { isExpiredOtp, isValidOtp } from '@/features/shared-auth/auth-flow/auth-flow.demo.js';
 import { OTP_LENGTH } from '@/features/shared-auth/auth-flow/auth-flow.validation.js';
 import { formatMobileLocal } from '@/shared/format-mobile.js';
 import type { EmergencyOtpState, EmergencyScreenNavigationProps } from '../../types.js';
@@ -41,23 +40,19 @@ export function EmergencyOtpScreen({
   const verifying = otpState === 'verifying';
   const isSuccess = otpState === 'success';
   const isNetworkError = otpState === 'network-error';
-  const isWrong =
-    otpState === 'error' || otpErrorKind === 'wrong' || otpErrorKind === 'expired';
-  const isComplete = otpValue.length === OTP_LENGTH;
-  const isAutoExpired = isComplete && isExpiredOtp(otpValue);
-  const isAutoWrong = isComplete && !isValidOtp(otpValue) && !isExpiredOtp(otpValue);
+  const isWrong = otpState === 'error' || otpErrorKind === 'wrong' || otpErrorKind === 'expired';
   const canResend = Boolean(onResendOtp) && resendCooldownSeconds === 0 && !verifying && !isSuccess;
 
   const otpInputState = isSuccess
     ? 'success'
-    : isWrong || isNetworkError || isAutoExpired || isAutoWrong
+    : isWrong || isNetworkError
       ? 'error'
       : 'empty';
 
   const errorText =
-    otpErrorKind === 'expired' || isAutoExpired
+    otpErrorKind === 'expired'
       ? 'This code has expired. Request a new OTP.'
-      : isWrong || isAutoWrong
+      : isWrong
         ? 'Incorrect code. Try again.'
         : isNetworkError
           ? 'Couldn’t reach the server. Tap Verify to retry.'
@@ -106,7 +101,7 @@ export function EmergencyOtpScreen({
         disabled={verifying || isSuccess}
       />
       <div className="ob-emergency-otp-status">
-        {errorText && (isWrong || isNetworkError || isAutoWrong || isAutoExpired) ? (
+        {errorText && (isWrong || isNetworkError) ? (
           <p className="ob-otp-validation-error" role="alert">
             {errorText}
           </p>

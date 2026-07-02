@@ -8,21 +8,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { setThemeMode } from '@autolokate/design-system';
 
 import { validateEnv } from './config/env.js';
+import { applyScheduledTheme, resolveScheduledTheme } from './platform/theme/resolve-scheduled-theme.js';
 import { ScreenDevApp } from './dev/ScreenDevApp.js';
 import { JourneyOrchestrator } from './journey/index.js';
-import { THEME_KEY } from './journey/constants.js';
 
-function getInitialTheme(): 'light' | 'dark' {
-  const stored = window.localStorage.getItem(THEME_KEY);
-  if (stored === 'light' || stored === 'dark') {
-    return stored;
-  }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-const theme = getInitialTheme();
-setThemeMode(theme);
-document.documentElement.setAttribute('data-theme', theme);
+applyScheduledTheme();
+setThemeMode(resolveScheduledTheme());
 
 validateEnv();
 

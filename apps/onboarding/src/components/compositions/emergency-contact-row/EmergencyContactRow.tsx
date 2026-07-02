@@ -1,7 +1,7 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlAvatar, AlContactCard } from '@autolokate/ui';
 
-import { formatMobileForDisplay } from '@/features/emergency/data/demo-data.js';
+import { formatMobileIntl } from '@/shared/format-mobile.js';
 import { CONTACT_RELATIONSHIP_OPTIONS } from '@/features/emergency/data/relationships.js';
 import type { EmergencyContact, EmergencyRider } from '@/features/emergency/types.js';
 
@@ -39,7 +39,7 @@ export function EmergencyContactRow({ contact }: EmergencyContactRowProps) {
     <AlContactCard
       className="ob-emergency-contact-card"
       name={contact.name}
-      subtitle={`${relationLabel} · ${formatMobileForDisplay(contact.mobile)}`}
+      subtitle={`${relationLabel} · ${formatMobileIntl(contact.mobile)}`}
       verified={verified}
       avatar={
         <AlAvatar size="md" initials={getInitials(contact.name)} aria-hidden />

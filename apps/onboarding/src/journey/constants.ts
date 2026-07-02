@@ -2,13 +2,11 @@ import type { ActivationFlowId } from './types.js';
 
 export const JOURNEY_STORAGE_KEY = 'al-journey-v1';
 export const SELECTED_FLOW_KEY = 'al-selected-flow';
-export const THEME_KEY = 'al-onboarding-theme';
 
 export const journeyPaths = {
-  root: '/journey',
-  home: '/journey/home',
-  flowHub: '/journey/flow-hub',
-  qrScan: '/journey/qr-scan',
+  /** Production QR entry — scan lands on auth mobile with ?qr_code= */
+  entry: '/journey/auth/mobile',
+  root: '/journey/auth/mobile',
   auth: '/journey/auth',
   authWildcard: '/journey/auth/*',
   purchase: '/journey/purchase',

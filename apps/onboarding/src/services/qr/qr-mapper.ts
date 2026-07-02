@@ -13,6 +13,10 @@ import type {
   QrPrepaidPayload,
   QrPurchasePayload,
 } from '@/platform/qr/qr-dispatch-contract.js';
+import {
+  formatQrPublicVehicleSummary,
+  isQrVehicleProtected,
+} from '@/features/post-activation-pwa/utils/pwa-vehicle-utils.js';
 import { formatApiTierLabel } from '@/services/plan/plan-mapper.js';
 
 /** Map backend journey to existing activation flow ids — no new flow types. */
@@ -38,10 +42,13 @@ function buildActivatedPayload(code: string, resolution: QrResolution): QrActiva
   }
 
   const tier = resolution.offeredSku?.offeredTiers[0];
+  const modelSummary = formatQrPublicVehicleSummary(vehicle);
   return {
     type: 'activated',
     vehicleId: code,
     plate: vehicle.plate,
+    protected: isQrVehicleProtected(vehicle.protection),
+    ...(modelSummary ? { modelSummary } : {}),
     ...(tier ? { planLabel: formatApiTierLabel(tier).replace(' Plus', '+') } : {}),
   };
 }

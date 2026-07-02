@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AutolokateRootProvider } from '../platform/AutolokateRootProvider.js';
+import { ScheduledThemeSync } from '../platform/theme/ScheduledThemeSync.js';
 import { AuthSessionRegistrar } from '../platform/auth/AuthSessionRegistrar.js';
 import { DeviceRegistrationRegistrar } from '../platform/device/DeviceRegistrationRegistrar.js';
 import { PwaScanRoutes } from '../features/post-activation-pwa/routes/PwaScanRoutes.js';
@@ -14,6 +15,7 @@ export function JourneyOrchestrator() {
   return (
     <BrowserRouter>
       <AutolokateRootProvider>
+        <ScheduledThemeSync />
         <AuthSessionRegistrar />
         <DeviceRegistrationRegistrar />
         <PwaAppShell>

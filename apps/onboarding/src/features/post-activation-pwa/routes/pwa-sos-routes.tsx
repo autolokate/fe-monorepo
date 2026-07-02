@@ -21,7 +21,7 @@ import {
   PWA_SOS_HOLD_ENGAGE_MS,
   type PwaSosHoldNavigationState,
 } from '../constants/pwa-sos-hold.js';
-import { sosTimelineSteps } from '../data/pwa-demo-data.js';
+import { sosTimelineSteps } from '../data/pwa-content.js';
 import { usePwaScan } from '../context/PwaScanContext.js';
 import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard.js';
 import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary.js';

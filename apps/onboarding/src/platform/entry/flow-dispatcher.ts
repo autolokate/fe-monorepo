@@ -16,8 +16,7 @@ export type FlowDispatchDeps = SelectActivationFlowDeps;
 
 /**
  * Unified platform flow dispatcher.
- * Today: home card + flow hub selection.
- * Future: QR payload decoded to PlatformFlowId with source `qrPayload`.
+ * Routes decoded QR payloads and activation flow selection.
  */
 export function dispatchPlatformFlow(request: FlowDispatchRequest, deps: FlowDispatchDeps): void {
   if (!isActivationFlowId(request.flowId)) {

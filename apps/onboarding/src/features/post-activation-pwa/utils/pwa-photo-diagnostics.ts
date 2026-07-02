@@ -24,10 +24,6 @@ export function logPhotoDiagnostic(
     ...(detail ? { detail } : {}),
   };
 
-  if (import.meta.env.DEV) {
-    console.info('[pwa-photo]', entry);
-  }
-
   try {
     const raw = window.sessionStorage.getItem(DIAG_KEY);
     const list = raw ? (JSON.parse(raw) as PhotoDiagnosticEntry[]) : [];

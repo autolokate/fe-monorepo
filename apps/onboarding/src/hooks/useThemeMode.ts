@@ -1,23 +1,33 @@
 import { useCallback, useState } from 'react';
 import { setThemeMode } from '@autolokate/design-system';
 
-import { THEME_KEY } from '../journey/constants.js';
+import {
+  applyScheduledTheme,
+  resolveScheduledTheme,
+  type ThemeMode,
+} from '../platform/theme/resolve-scheduled-theme.js';
 
-export type ThemeMode = 'light' | 'dark';
+export type { ThemeMode };
 
 function readThemeMode(): ThemeMode {
-  return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  return resolveScheduledTheme();
 }
 
+/** Read and apply the time-of-day theme (no persisted preference). */
 export function useThemeMode() {
   const [themeMode, setThemeModeState] = useState<ThemeMode>(readThemeMode);
 
   const applyTheme = useCallback((next: ThemeMode) => {
     setThemeMode(next);
     document.documentElement.setAttribute('data-theme', next);
-    window.localStorage.setItem(THEME_KEY, next);
     setThemeModeState(next);
   }, []);
 
-  return { themeMode, applyTheme };
+  const syncScheduledTheme = useCallback(() => {
+    const next = applyScheduledTheme();
+    setThemeMode(next);
+    setThemeModeState(next);
+  }, []);
+
+  return { themeMode, applyTheme, syncScheduledTheme };
 }

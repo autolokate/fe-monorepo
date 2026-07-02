@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useOnlineStatus } from '../use-online-status.js';
 import { PwaOfflineScreen } from './PwaOfflineScreen.js';
 import { PwaUpdatePrompt } from './PwaUpdatePrompt.js';
+import { PwaInstallPrompt } from './PwaInstallPrompt.js';
 
 import './PwaOfflineBanner.css';
 
@@ -36,6 +37,7 @@ export function PwaAppShell({ children }: PwaAppShellProps) {
         </div>
       ) : null}
       {children}
+      <PwaInstallPrompt />
       <PwaUpdatePrompt />
     </>
   );

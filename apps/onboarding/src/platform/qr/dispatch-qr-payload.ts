@@ -1,8 +1,3 @@
-import {
-  PWA_SCANNED_MODEL,
-  PWA_SCANNED_PLAN,
-  pwaScannedVehicleFields,
-} from '../../features/post-activation-pwa/data/pwa-demo-data.js';
 import type { PwaScanSession } from '../../features/post-activation-pwa/context/pwa-scan-types.js';
 import { prepaidJourneyPaths } from '../../journey/prepaid/prepaid-routing.js';
 import { selectActivationFlow } from '../../journey/navigation/select-activation-flow.js';
@@ -29,10 +24,10 @@ export function applyActivatedQrToPwaSession(
     bootstrapComplete: false,
     scannedVehicle: {
       plate: payload.plate,
-      modelSummary: PWA_SCANNED_MODEL,
-      protected: true,
-      planLabel: payload.planLabel ?? PWA_SCANNED_PLAN,
-      fields: pwaScannedVehicleFields,
+      modelSummary: payload.modelSummary ?? '',
+      protected: payload.protected ?? true,
+      planLabel: payload.planLabel,
+      fields: [],
     },
   });
 }

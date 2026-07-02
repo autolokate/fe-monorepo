@@ -7,8 +7,6 @@ import {
   RequireSelectedFlow,
   RequireSelectedFlowMatch,
 } from '../guards/JourneyRouteGuards.js';
-import { FlowEntryScreen } from '../screens/FlowEntryScreen.js';
-import { FlowHubScreen } from '../screens/FlowHubScreen.js';
 import { JourneyCompletedScreen } from '../screens/JourneyCompletedScreen.js';
 import { journeyPaths } from '../constants.js';
 import { B2b2cRoutes } from './B2b2cRoutes.js';
@@ -41,13 +39,12 @@ export function JourneyRoutes() {
   return (
     <div className="journey-frame">
       <Routes>
-        <Route path="/" element={<Navigate to={journeyPaths.root} replace />} />
-        <Route path="/journey" element={<FlowEntryScreen />} />
-        <Route path="/journey/home" element={<Navigate to={journeyPaths.root} replace />} />
-        <Route path="/journey/flow-hub" element={<FlowHubScreen />} />
+        <Route path="/" element={<Navigate to={journeyPaths.entry} replace />} />
+        <Route path="/journey" element={<Navigate to={journeyPaths.entry} replace />} />
+        <Route path="/journey/home" element={<Navigate to={journeyPaths.entry} replace />} />
+        <Route path="/journey/flow-hub" element={<Navigate to={journeyPaths.entry} replace />} />
+        <Route path="/journey/qr-scan" element={<Navigate to={journeyPaths.entry} replace />} />
         <Route path="/journey/auth/*" element={<JourneySharedAuthRoute />} />
-        {/* R01 · Scan sticker — pre-auth marketing; QR entry assumed before onboarding */}
-        <Route path="/journey/qr-scan" element={<Navigate to={journeyPaths.root} replace />} />
         <Route
           path="/journey/purchase/qr-scan"
           element={<PurchaseIndexRedirect />}
@@ -62,7 +59,7 @@ export function JourneyRoutes() {
         />
         <Route path="/journey/emergency/*" element={<EmergencyActivationRoute />} />
         <Route path="/journey/completed" element={<JourneyCompletedScreen />} />
-        <Route path="*" element={<Navigate to={journeyPaths.root} replace />} />
+        <Route path="*" element={<Navigate to={journeyPaths.entry} replace />} />
       </Routes>
     </div>
   );

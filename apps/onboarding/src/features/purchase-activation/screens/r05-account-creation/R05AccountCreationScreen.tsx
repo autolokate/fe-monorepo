@@ -3,7 +3,6 @@ import { AlInput, AlText } from '@autolokate/ui';
 import { FormFieldStack } from '@/components/compositions/index.js';
 import { FlowStepShell } from '@/components/flow-step-shell/index.js';
 import type { R05AccountCreationScreenProps } from '../../types.js';
-import { demoName } from '../../data/demo-data.js';
 
 export type { R05AccountCreationScreenProps };
 
@@ -38,7 +37,7 @@ export function R05AccountCreationScreen({
         <AlInput
           label="Full name"
           value={interactive ? nameValue : undefined}
-          defaultValue={interactive ? undefined : isEmpty ? '' : demoName}
+          defaultValue={interactive ? undefined : ''}
           onChange={onNameChange ? (event) => {
             onNameChange(event.target.value);
           } : undefined}

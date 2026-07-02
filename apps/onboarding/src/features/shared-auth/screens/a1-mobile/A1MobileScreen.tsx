@@ -9,7 +9,6 @@ import {
   InlineConsentBlock,
   TrustRow,
 } from '@/components/compositions/index.js';
-import { formatMobileForDisplay } from '../../data/demo-data.js';
 import { MOBILE_INPUT_DISPLAY_MAX } from '../../auth-flow/auth-flow.validation.js';
 import type { A1MobileScreenProps } from '../../types.js';
 
@@ -128,5 +127,3 @@ export function A1MobileScreen({
     </AuthStepShell>
   );
 }
-
-export { formatMobileForDisplay };

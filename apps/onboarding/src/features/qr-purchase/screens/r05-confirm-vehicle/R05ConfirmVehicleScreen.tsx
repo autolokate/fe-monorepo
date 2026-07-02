@@ -2,15 +2,14 @@ import { AlIcon } from '@autolokate/icons';
 import { AlVehicleRcCard } from '@autolokate/ui';
 
 import { AuthStepShell } from '@/components/auth-step-shell/index.js';
-import { demoPlate, demoVehicleFields } from '@/features/purchase-activation/data/demo-data.js';
 import type { PurchaseConfirmVehicleScreenProps } from '../../types-vehicle.js';
 
 import '../purchase-vehicle.css';
 
 /** R05 · Confirm vehicle — Figma 170:71 */
 export function R05ConfirmVehicleScreen({
-  plate = demoPlate,
-  fields = demoVehicleFields,
+  plate = '',
+  fields = [],
   onContinue,
   onBack,
   showBack = true,

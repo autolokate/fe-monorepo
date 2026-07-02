@@ -1,42 +1,9 @@
 import type { AlDispatchTimelineStep } from '@autolokate/ui';
 
-import { demoVehicleFields } from '../../purchase-activation/data/demo-data.js';
-import { demoPlate } from '../../purchase-activation/data/demo-data.js';
-
-/** Scanned sticker vehicle — Figma 843:2080 */
-export const PWA_SCANNED_PLATE = 'MH 12 AB 1234';
-export const PWA_SCANNED_MODEL = 'White · Maruti Swift';
-export const PWA_SCANNED_PLAN = 'Safe';
-
-export const pwaScannedVehicleFields = demoVehicleFields.map((field) =>
-  field.label === 'Owner' ? { ...field, value: 'Shibu Shrivastva' } : field,
-);
-
-/** Reporter vehicle — consumer match → 08b */
-export const PWA_CONSUMER_REPORTER_PLATE = demoPlate;
-
 export const PWA_LOADING_COPY = {
   title: 'Opening Autolokate',
   description: 'No app needed. Loading the scanner securely.',
 } as const;
-
-export const PWA_SCANNER_COPY = {
-  guidance: 'Point at the QR sticker on the vehicle',
-  permissionDenied: 'Camera access is needed to scan the sticker',
-  fallback: 'Tap to simulate scan',
-} as const;
-
-/** Deterministic demo branches — enter these names on verify screen 05. */
-export const PWA_DEMO_PHOTO_FAIL_NAME = 'Photo Fail';
-export const PWA_DEMO_NETWORK_FAIL_NAME = 'Network Fail';
-
-export function isDemoPhotoQcFail(name: string): boolean {
-  return name.trim().toLowerCase() === PWA_DEMO_PHOTO_FAIL_NAME.toLowerCase();
-}
-
-export function isDemoNetworkFail(name: string): boolean {
-  return name.trim().toLowerCase() === PWA_DEMO_NETWORK_FAIL_NAME.toLowerCase();
-}
 
 type StepInput = Omit<AlDispatchTimelineStep, 'state'>;
 

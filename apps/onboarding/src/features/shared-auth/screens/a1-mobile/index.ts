@@ -1,1 +1,1 @@
-export { A1MobileScreen, formatMobileForDisplay } from './A1MobileScreen.js';
+export { A1MobileScreen } from './A1MobileScreen.js';
