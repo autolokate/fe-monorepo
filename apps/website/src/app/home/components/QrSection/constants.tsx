@@ -12,7 +12,7 @@ export const QR_SECTION_COPY: QrSectionCopy = {
   headlineEmphasis: "connected.",
   subheading:
     "Your Autolokate QR helps others reach you when parked, alert your emergency contacts, and access important vehicle records when needed.",
-  primaryCta: { label: "How QR Works", href: "/how-qr-works" },
+  primaryCta: { label: "How QR Works", href: "/how-it-works" },
 };
 
 export const QR_FEATURES: QrFeature[] = [

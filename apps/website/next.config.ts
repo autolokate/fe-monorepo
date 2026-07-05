@@ -9,12 +9,17 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/shop",
-        destination: "/how-qr-works",
+        destination: "/how-it-works",
         permanent: true,
       },
       {
         source: "/how-to-use",
-        destination: "/how-qr-works",
+        destination: "/how-it-works",
+        permanent: true,
+      },
+      {
+        source: "/how-qr-works",
+        destination: "/how-it-works",
         permanent: true,
       },
     ];

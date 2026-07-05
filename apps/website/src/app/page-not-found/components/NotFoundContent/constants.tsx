@@ -32,7 +32,7 @@ export interface NotFoundQuickLink {
 
 export const NOT_FOUND_QUICK_LINKS: NotFoundQuickLink[] = [
   { id: "about-us", label: "About Us", href: "/about-us", Icon: Home },
-  { id: "how-qr-works", label: "How QR Works", href: "/how-qr-works", Icon: QrCode },
+  { id: "how-it-works", label: "How It Works", href: "/how-it-works", Icon: QrCode },
   { id: "explore-cars", label: "Explore Cars", href: "/cars/explore", Icon: Car },
   { id: "compare-cars", label: "Compare Cars", href: "/cars/compare", Icon: BarChart3 },
   { id: "media", label: "Media", href: "/media", Icon: Play },

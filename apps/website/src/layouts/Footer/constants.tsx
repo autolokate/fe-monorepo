@@ -79,7 +79,7 @@ export const footerLinks: FooterLinkSection[] = [
     title: "Platform",
     links: [
       { id: "about", label: "About Us", href: "/about-us" },
-      { id: "how-qr-works", label: "How QR Works", href: "/how-qr-works" },
+      { id: "how-it-works", label: "How It Works", href: "/how-it-works" },
       { id: "explore", label: "Explore Cars", href: "/explore" },
       { id: "compare", label: "Compare Cars", href: "/compare" },
       { id: "media", label: "Media", href: "/media" },

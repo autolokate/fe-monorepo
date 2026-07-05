@@ -11,7 +11,7 @@ export const HERO_COPY: HeroCopy = {
   subheading:
     "Automatic crash detection, family alerts, live location sharing, QR backup, and vehicle records built for safer everyday driving.",
   primaryCta: { label: "Get Protected Now", href: `/#${SAFETY_PACKS_SECTION_ID}` },
-  secondaryCta: { label: "See How It Works", href: "/how-qr-works" },
+  secondaryCta: { label: "See How It Works", href: "/how-it-works" },
 };
 
 export const HERO_FEATURES: HeroFeature[] = [

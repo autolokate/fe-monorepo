@@ -100,7 +100,7 @@ export const MEDIA_BLOG_POSTS: MediaBlogItem[] = [
     category: "Blog",
     readTime: "8 min read",
     coverImage: "/images/explore_banner_bg_dark.png",
-    href: "/how-qr-works",
+    href: "/how-it-works",
   },
   {
     id: "3",
@@ -124,7 +124,7 @@ export const MEDIA_BLOG_POSTS: MediaBlogItem[] = [
     category: "Tips",
     readTime: "7 min read",
     coverImage: "/images/download_bg_dark.png",
-    href: "/how-qr-works",
+    href: "/how-it-works",
   },
   {
     id: "6",

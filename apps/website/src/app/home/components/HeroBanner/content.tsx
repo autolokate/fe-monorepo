@@ -26,7 +26,7 @@ function toTrendingItems(models: CatalogueModel[]): TrendingModel[] {
         ? `/cars/${encodeURIComponent(m.brand_slug)}/${encodeURIComponent(m.model_slug)}`
         : m.model_slug
           ? `/cars/${encodeURIComponent(m.model_slug)}`
-          : "/how-qr-works";
+          : "/how-it-works";
     const subtitle = [m.body_type, ...(m.fuel_types ?? [])]
       .filter((s): s is string => Boolean(s))
       .slice(0, 3)
@@ -121,7 +121,7 @@ export function TrendingModelsCard() {
 
       <div className="relative mt-4 border-t border-border/70 pt-3">
         <Link
-          href="/how-qr-works"
+          href="/how-it-works"
           className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition hover:gap-2"
         >
           <BookOpen className="h-4 w-4" aria-hidden />
