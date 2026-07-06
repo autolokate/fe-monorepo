@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { AlScreenBg, AlScreenSpinner } from '@autolokate/ui';
+
 import { L1PrivacyPolicyScreen } from '../../features/shared-legal/screens/l1-privacy-policy/index.js';
 import { L2TermsConditionsScreen } from '../../features/shared-legal/screens/l2-terms-conditions/index.js';
 import {
@@ -14,6 +16,7 @@ import {
 import { A1MobileScreen } from '../../features/shared-auth/screens/a1-mobile/index.js';
 import { A2OtpScreen } from '../../features/shared-auth/screens/a2-otp/index.js';
 import { A3VehicleOwnerScreen } from '../../features/shared-auth/screens/a3-vehicle-owner/index.js';
+import { QrScanEntryScreen } from '../../features/shared-auth/screens/qr-scan-entry/index.js';
 import type {
   AuthMobileState,
   AuthOtpState,
@@ -24,15 +27,18 @@ import { useVerifyOtp } from '../../hooks/auth/useVerifyOtp.js';
 import { useUpdateProfile } from '../../hooks/profile/useUpdateProfile.js';
 import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url.js';
 import { extractQrCodeParam } from '@/platform/qr/parse-qr-url.js';
+import { QR_URL_PARAMS } from '@/platform/qr/qr-url-params.js';
 import { reportUserError } from '@/platform/feedback/index.js';
 import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanContext.js';
 import { useQrJourneyEntry } from '../../hooks/qr/useQrJourneyEntry.js';
 import { authLogger } from '@/services/auth/auth-logger.js';
 import { qrLogger } from '@/services/qr/qr-logger.js';
+import { ensureValidAuthSession } from '@/services/auth/ensure-valid-auth-session.js';
 import { loadLegalDocuments } from '@/services/legal/legal-service.js';
 import { applyVehicleOwnerSaveError } from '../../services/profile/profile-errors.js';
-import { authJourneyPaths } from '../auth/auth-routing.js';
+import { authJourneyPaths, authMobileUrl, isAuthMobileContinueEntry } from '../auth/auth-routing.js';
 import { getAuthFlowBackPath } from '../activation-routing.js';
+import { resolveJourneyResumePath } from '../resume/journey-resume-path.js';
 import { useJourney } from '../JourneyContext.js';
 import {
   applyMobileSendError,
@@ -50,29 +56,89 @@ function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
   return children;
 }
 
+type MobileEntryMode = 'loading' | 'scan' | 'form';
+
 function MobileRoute() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { session, updateSession, setSelectedFlow, setPhase, selectedFlow, resetForNewQrEntry } =
-    useJourney();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const {
+    session,
+    updateSession,
+    setSelectedFlow,
+    setPhase,
+    selectedFlow,
+    resetForNewQrEntry,
+    authStatus,
+    phase,
+    lastRoutePath,
+    markAuthLoggedOut,
+  } = useJourney();
   const { updateSession: updatePwaSession } = usePwaScan();
   const { enterFromSearchParams } = useQrJourneyEntry();
   const qrHandledRef = useRef(false);
-  const auth = session.auth ?? {};
-  const { requestOtp, isPending: isRequestOtpPending } = useRequestOtp();
+  const bootstrapRef = useRef(false);
+  const [entryMode, setEntryMode] = useState<MobileEntryMode>('loading');
 
-  const [mobile, setMobile] = useState(auth.mobileDisplay ?? '');
-  const [consent, setConsent] = useState(auth.consentAccepted ?? false);
-  const [mobileState, setMobileState] = useState<AuthMobileState>(() =>
-    typeof navigator !== 'undefined' && !navigator.onLine ? 'offline' : 'empty',
-  );
+  const qrCode = extractQrCodeParam(searchParams);
+  const authContinue = isAuthMobileContinueEntry(searchParams);
 
   useEffect(() => {
-    persistQrCodeFromUrl(searchParams);
-    const code = extractQrCodeParam(searchParams);
-    if (!code || qrHandledRef.current) {
+    if (bootstrapRef.current) {
       return;
     }
+    bootstrapRef.current = true;
+
+    void (async () => {
+      const sessionValidity = await ensureValidAuthSession();
+      if (sessionValidity === 'logged_out') {
+        markAuthLoggedOut();
+      }
+
+      const signedIn = sessionValidity === 'valid';
+
+      if (signedIn && !qrCode) {
+        const resumePath = resolveJourneyResumePath(
+          { selectedFlow, authStatus, session, lastRoutePath },
+          phase,
+          lastRoutePath,
+        );
+        void navigate(resumePath, { replace: true });
+        return;
+      }
+
+      if (!qrCode) {
+        if (authContinue && selectedFlow) {
+          setEntryMode('form');
+          return;
+        }
+
+        resetForNewQrEntry();
+        markAuthLoggedOut();
+        setEntryMode('scan');
+        return;
+      }
+
+      setEntryMode('form');
+    })();
+  }, [
+    authContinue,
+    authStatus,
+    lastRoutePath,
+    markAuthLoggedOut,
+    navigate,
+    phase,
+    qrCode,
+    resetForNewQrEntry,
+    selectedFlow,
+    session,
+  ]);
+
+  useEffect(() => {
+    if (entryMode !== 'form' || !qrCode || qrHandledRef.current) {
+      return;
+    }
+
+    persistQrCodeFromUrl(searchParams);
     qrHandledRef.current = true;
     void enterFromSearchParams(
       searchParams,
@@ -83,7 +149,56 @@ function MobileRoute() {
         reportUserError(qrLogger, 'auth_mobile_qr_entry_failed', result.error, result.error.message);
       }
     });
-  }, [enterFromSearchParams, navigate, resetForNewQrEntry, searchParams, setPhase, setSelectedFlow, updatePwaSession, updateSession]);
+  }, [
+    enterFromSearchParams,
+    entryMode,
+    navigate,
+    qrCode,
+    resetForNewQrEntry,
+    searchParams,
+    setPhase,
+    setSelectedFlow,
+    updatePwaSession,
+    updateSession,
+  ]);
+
+  const handleQrCodeDetected = useCallback(
+    (code: string) => {
+      const next = new URLSearchParams(searchParams);
+      next.set(QR_URL_PARAMS.qrCode, code.trim());
+      qrHandledRef.current = false;
+      setEntryMode('form');
+      setSearchParams(next, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
+
+  if (entryMode === 'loading') {
+    return (
+      <AlScreenBg variant="protected">
+        <AlScreenSpinner size="lg" animated aria-label="Loading" />
+      </AlScreenBg>
+    );
+  }
+
+  if (entryMode === 'scan') {
+    return <QrScanEntryScreen onQrCodeDetected={handleQrCodeDetected} />;
+  }
+
+  return <MobileAuthForm />;
+}
+
+function MobileAuthForm() {
+  const navigate = useNavigate();
+  const { session, updateSession, selectedFlow } = useJourney();
+  const auth = session.auth ?? {};
+  const { requestOtp, isPending: isRequestOtpPending } = useRequestOtp();
+
+  const [mobile, setMobile] = useState(auth.mobileDisplay ?? '');
+  const [consent, setConsent] = useState(auth.consentAccepted ?? false);
+  const [mobileState, setMobileState] = useState<AuthMobileState>(() =>
+    typeof navigator !== 'undefined' && !navigator.onLine ? 'offline' : 'empty',
+  );
 
   useEffect(() => {
     const handleOnline = () => {
@@ -189,7 +304,7 @@ export type AuthRoutesProps = {
 
 function OtpRoute() {
   const navigate = useNavigate();
-  const { session, updateSession } = useJourney();
+  const { session, updateSession, selectedFlow } = useJourney();
   const auth = session.auth ?? {};
   const mobile = auth.mobile ?? '';
   const { requestOtp } = useRequestOtp();
@@ -203,9 +318,9 @@ function OtpRoute() {
 
   useEffect(() => {
     if (!mobile) {
-      void navigate(authJourneyPaths.mobile, { replace: true });
+      void navigate(authMobileUrl({ continueAuth: Boolean(selectedFlow) }), { replace: true });
     }
-  }, [mobile, navigate]);
+  }, [mobile, navigate, selectedFlow]);
 
   useEffect(() => {
     if (resendCooldown === 0) {
@@ -334,10 +449,10 @@ function OtpRoute() {
         void handleResend();
       }}
       onChangeNumber={() => {
-        void navigate(authJourneyPaths.mobile);
+        void navigate(authMobileUrl({ continueAuth: Boolean(selectedFlow) }));
       }}
       onBack={() => {
-        void navigate(authJourneyPaths.mobile);
+        void navigate(authMobileUrl({ continueAuth: Boolean(selectedFlow) }));
       }}
       onContinue={() => {
         void handleVerify();

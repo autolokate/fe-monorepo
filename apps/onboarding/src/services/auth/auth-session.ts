@@ -1,6 +1,7 @@
 import { getTokenManager } from '@autolokate/auth';
 
-import type { JourneySession } from '@/journey/types.js';
+import type { JourneySession, PersistedJourneyState } from '@/journey/types.js';
+import { AUTH_COMPLETED } from '@/features/shared-auth/types.js';
 
 import { logout } from './auth-service.js';
 
@@ -16,30 +17,32 @@ export async function revokeAndClearAuthSession(): Promise<void> {
 
 /**
  * Align journey auth flags with token presence after reload.
- * Returns a session patch when stale `otpVerified` must be cleared.
+ * Clears stale AUTH_COMPLETED when tokens are missing.
  */
-export function reconcileAuthSession(session: JourneySession): Partial<JourneySession> | null {
-  const otpVerified = session.auth?.otpVerified === true;
-  if (!otpVerified) {
+export function reconcileAuthSession(state: PersistedJourneyState): Partial<PersistedJourneyState> | null {
+  const expectsAuth =
+    state.authStatus === AUTH_COMPLETED || state.session.auth?.otpVerified === true;
+  if (!expectsAuth) {
     return null;
   }
   if (getTokenManager().hasSession()) {
     return null;
   }
-  return {
-    auth: {
-      ...session.auth,
-      otpVerified: false,
-    },
-  };
+  return createAuthFailureSessionPatch(state.session);
 }
 
 /** Session patch applied when refresh fails and tokens are cleared. */
-export function createAuthFailureSessionPatch(session: JourneySession): Partial<JourneySession> {
+export function createAuthFailureSessionPatch(
+  session: JourneySession,
+): Pick<PersistedJourneyState, 'authStatus' | 'session'> {
   return {
-    auth: {
-      ...session.auth,
-      otpVerified: false,
+    authStatus: 'pending',
+    session: {
+      ...session,
+      auth: {
+        ...session.auth,
+        otpVerified: false,
+      },
     },
   };
 }

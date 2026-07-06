@@ -1,6 +1,26 @@
 import { journeyPaths } from '../constants.js';
 import { purchaseJourneyPaths } from '../purchase/purchase-routing.js';
 
+/** Query flag: land on mobile auth form (skip QR scan) after welcome / in-flow auth. */
+export const AUTH_ENTRY_QUERY = {
+  param: 'auth',
+  continueValue: 'continue',
+} as const;
+
+export function isAuthMobileContinueEntry(searchParams: URLSearchParams): boolean {
+  return searchParams.get(AUTH_ENTRY_QUERY.param) === AUTH_ENTRY_QUERY.continueValue;
+}
+
+export function authMobileUrl(options?: { continueAuth?: boolean }): string {
+  if (!options?.continueAuth) {
+    return authJourneyPaths.mobile;
+  }
+  const params = new URLSearchParams({
+    [AUTH_ENTRY_QUERY.param]: AUTH_ENTRY_QUERY.continueValue,
+  });
+  return `${authJourneyPaths.mobile}?${params.toString()}`;
+}
+
 export const authJourneyPaths = {
   mobile: `${journeyPaths.auth}/mobile`,
   otp: `${journeyPaths.auth}/otp`,

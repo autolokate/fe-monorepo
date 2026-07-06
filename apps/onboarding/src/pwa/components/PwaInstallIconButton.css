@@ -1,0 +1,15 @@
+.pwa-install-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid color-mix(in srgb, var(--al-color-on-surface) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--al-color-surface) 90%, transparent);
+  color: var(--al-color-on-surface);
+  cursor: pointer;
+}
+
+.pwa-install-icon:active {
+  opacity: 0.85;
+}

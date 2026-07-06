@@ -14,7 +14,7 @@ import { resolveWelcomePlanDisplay } from '@/features/b2b-shared/resolve-welcome
 import { useActivationPreview } from '@/hooks/activation/index.js';
 import { journeyPaths } from '@/journey/constants.js';
 import { useJourney } from '@/journey/JourneyContext.js';
-import { authJourneyPaths } from '@/journey/auth/auth-routing.js';
+import { authMobileUrl } from '@/journey/auth/auth-routing.js';
 import { resolvePartnerVariantFromRiderCount } from '@/journey/state/partner-journey-state-machine.js';
 import { readStoredActivationQrCode } from '@/services/activation/activation-service.js';
 
@@ -51,7 +51,7 @@ export function PartnerWelcomeScreen({ variant = 'plan-only' }: PartnerWelcomeSc
       ...applyLandingEntitlementToSession(config),
     });
     setPhase('shared-auth');
-    void navigate(authJourneyPaths.mobile);
+    void navigate(authMobileUrl({ continueAuth: true }));
   };
 
   const planDisplay = config

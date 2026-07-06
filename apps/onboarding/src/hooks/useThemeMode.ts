@@ -1,33 +1,26 @@
-import { useCallback, useState } from 'react';
-import { setThemeMode } from '@autolokate/design-system';
-
 import {
-  applyScheduledTheme,
-  resolveScheduledTheme,
-  type ThemeMode,
-} from '../platform/theme/resolve-scheduled-theme.js';
+  useThemeContext,
+  type ThemeContextValue,
+} from '../platform/theme/ThemeProvider.js';
+import type { ThemeMode } from '../platform/theme/resolve-scheduled-theme.js';
+import type { ThemePreference } from '../platform/theme/theme-preference.js';
 
-export type { ThemeMode };
+export type { ThemeMode, ThemePreference };
 
-function readThemeMode(): ThemeMode {
-  return resolveScheduledTheme();
-}
+/** Shared theme state — use inside ThemeProvider. */
+export function useThemeMode(): ThemeContextValue & {
+  syncScheduledTheme: () => void;
+} {
+  const context = useThemeContext();
 
-/** Read and apply the time-of-day theme (no persisted preference). */
-export function useThemeMode() {
-  const [themeMode, setThemeModeState] = useState<ThemeMode>(readThemeMode);
-
-  const applyTheme = useCallback((next: ThemeMode) => {
-    setThemeMode(next);
-    document.documentElement.setAttribute('data-theme', next);
-    setThemeModeState(next);
-  }, []);
-
-  const syncScheduledTheme = useCallback(() => {
-    const next = applyScheduledTheme();
-    setThemeMode(next);
-    setThemeModeState(next);
-  }, []);
-
-  return { themeMode, applyTheme, syncScheduledTheme };
+  return {
+    ...context,
+    syncScheduledTheme: () => {
+      if (context.preference !== 'auto') {
+        return;
+      }
+      const next = context.themeMode;
+      context.applyTheme(next);
+    },
+  };
 }

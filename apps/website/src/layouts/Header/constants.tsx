@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { SVGProps } from "react";
 import { cn } from "@/lib/utils";
 
@@ -11,36 +10,37 @@ interface LogoProps {
   tone?: "auto" | "on-dark";
 }
 
-/** White/light wordmark — use on dark backgrounds (hero, dark footer). */
-const LOGO_ON_DARK_BG = "https://autolokate.com/autolokate_dark.png";
-/** Dark wordmark — use on light backgrounds (default header, cards). */
-const LOGO_ON_LIGHT_BG = "https://autolokate.com/autolokate_light.png";
+/** White mark for dark backgrounds (hero, dark footer). */
+const LOGO_ON_DARK_BG = "/brand/al-logo-dark.svg";
+/** Dark mark for light backgrounds (default header, cards). */
+const LOGO_ON_LIGHT_BG = "/brand/al-logo-light.svg";
 
 /**
- * Brand mark — PNGs from autolokate.com.
- * File names refer to the *background* they sit on, not the ink colour.
+ * Brand mark — theme-aware SVGs from `@autolokate/brand` (synced to `/public/brand`).
  */
 export function Logo({ className, priority = false, tone = "auto" }: LogoProps) {
   if (tone === "on-dark") {
     return (
-      <Image
+      <img
         src={LOGO_ON_DARK_BG}
         alt="Autolokate"
         width={140}
-        height={36}
-        priority={priority}
+        height={133}
+        draggable={false}
+        fetchPriority={priority ? "high" : undefined}
         className={cn("h-8 w-auto sm:h-9", className)}
       />
     );
   }
 
   return (
-    <Image
+    <img
       src={LOGO_ON_LIGHT_BG}
       alt="Autolokate"
       width={140}
-      height={36}
-      priority={priority}
+      height={133}
+      draggable={false}
+      fetchPriority={priority ? "high" : undefined}
       className={cn("h-8 w-auto sm:h-9", className)}
     />
   );

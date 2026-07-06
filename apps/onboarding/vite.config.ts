@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       injectRegister: 'auto',
       includeAssets: [
         'favicon.ico',
@@ -20,6 +20,8 @@ export default defineConfig({
         'apple-touch-icon.png',
         'offline.html',
         'manifest.webmanifest',
+        'brand/al-logo-dark.svg',
+        'brand/al-logo-light.svg',
         'icons/icon-192.png',
         'icons/icon-512.png',
         'icons/icon-192-maskable.png',
@@ -32,7 +34,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: false,
+        skipWaiting: true,
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.destination === 'document',
@@ -43,18 +45,6 @@ export default defineConfig({
               expiration: {
                 maxEntries: 8,
                 maxAgeSeconds: 60 * 60 * 24,
-              },
-            },
-          },
-          {
-            urlPattern: ({ request }) =>
-              request.destination === 'script' || request.destination === 'style',
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'al-static-assets',
-              expiration: {
-                maxEntries: 64,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
               },
             },
           },

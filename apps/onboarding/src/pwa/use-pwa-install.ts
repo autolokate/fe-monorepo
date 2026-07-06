@@ -8,15 +8,19 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 function readDismissedRecently(): boolean {
-  const raw = window.localStorage.getItem(PWA_INSTALL_DISMISS_KEY);
-  if (!raw) {
+  try {
+    const raw = window.localStorage.getItem(PWA_INSTALL_DISMISS_KEY);
+    if (!raw) {
+      return false;
+    }
+    const dismissedAt = Number(raw);
+    if (!Number.isFinite(dismissedAt)) {
+      return false;
+    }
+    return Date.now() - dismissedAt < PWA_INSTALL_DISMISS_MS;
+  } catch {
     return false;
   }
-  const dismissedAt = Number(raw);
-  if (!Number.isFinite(dismissedAt)) {
-    return false;
-  }
-  return Date.now() - dismissedAt < PWA_INSTALL_DISMISS_MS;
 }
 
 function isStandalone(): boolean {
@@ -51,7 +55,8 @@ export function usePwaInstall() {
     };
   }, []);
 
-  const canPrompt = Boolean(deferredPrompt) && !installed && !dismissedRecently;
+  const canInstall = Boolean(deferredPrompt) && !installed;
+  const canPrompt = canInstall && !dismissedRecently;
 
   const promptInstall = useCallback(async () => {
     if (!deferredPrompt) {
@@ -67,18 +72,26 @@ export function usePwaInstall() {
       return true;
     }
 
-    window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
+    try {
+      window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
+    } catch {
+      // ignore
+    }
     setDismissedRecently(true);
     return false;
   }, [deferredPrompt]);
 
   const dismissPrompt = useCallback(() => {
-    window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
+    try {
+      window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
+    } catch {
+      // ignore
+    }
     setDismissedRecently(true);
-    setDeferredPrompt(null);
   }, []);
 
   return {
+    canInstall,
     canPrompt,
     installed,
     promptInstall,

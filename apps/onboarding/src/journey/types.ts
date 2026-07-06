@@ -58,6 +58,8 @@ export type PersistedJourneyState = {
   selectedFlow: ActivationFlowId | null;
   authStatus: AuthStatus;
   session: JourneySession;
+  /** Last in-journey pathname — restored when user returns without a QR code. */
+  lastRoutePath?: string | null;
 };
 
 export type JourneyContextValue = PersistedJourneyState & {
@@ -68,4 +70,6 @@ export type JourneyContextValue = PersistedJourneyState & {
   resetForNewQrEntry: () => void;
   setPhase: (phase: JourneyPhase) => void;
   updateSession: (patch: Partial<JourneySession>) => void;
+  updateLastRoutePath: (path: string) => void;
+  markAuthLoggedOut: () => void;
 };

@@ -9,7 +9,7 @@ import {
 
 import { AUTH_COMPLETED } from '../features/shared-auth/types.js';
 
-import { reconcileAuthSession, revokeAndClearAuthSession } from '../services/auth/auth-session.js';
+import { reconcileAuthSession, revokeAndClearAuthSession, createAuthFailureSessionPatch } from '../services/auth/auth-session.js';
 import { resetOnboardingJourneyStorage } from '@/platform/storage/reset-onboarding-journey-storage.js';
 import {
   loadJourneyState,
@@ -34,11 +34,11 @@ export type JourneyProviderProps = {
 export function JourneyProvider({ initialPhase = 'home', children }: JourneyProviderProps) {
   const [persisted, setPersisted] = useState<PersistedJourneyState>(() => {
     const loaded = loadJourneyState();
-    const patch = reconcileAuthSession(loaded.session);
+    const patch = reconcileAuthSession(loaded);
     if (!patch) {
       return loaded;
     }
-    const next = { ...loaded, session: { ...loaded.session, ...patch } };
+    const next = { ...loaded, ...patch };
     saveJourneyState(next);
     return next;
   });
@@ -83,6 +83,29 @@ export function JourneyProvider({ initialPhase = 'home', children }: JourneyProv
     });
   }, []);
 
+  const updateLastRoutePath = useCallback((path: string) => {
+    setPersisted((current) => {
+      if (current.lastRoutePath === path) {
+        return current;
+      }
+      const next = { ...current, lastRoutePath: path };
+      saveJourneyState(next);
+      return next;
+    });
+  }, []);
+
+  const markAuthLoggedOut = useCallback(() => {
+    setPersisted((current) => {
+      const next = {
+        ...current,
+        ...createAuthFailureSessionPatch(current.session),
+      };
+      saveJourneyState(next);
+      return next;
+    });
+    setPhase('shared-auth');
+  }, []);
+
   const value = useMemo<JourneyContextValue>(
     () => ({
       ...persisted,
@@ -93,8 +116,20 @@ export function JourneyProvider({ initialPhase = 'home', children }: JourneyProv
       resetForNewQrEntry,
       setPhase,
       updateSession,
+      updateLastRoutePath,
+      markAuthLoggedOut,
     }),
-    [clearJourney, completeAuth, persisted, phase, resetForNewQrEntry, setSelectedFlow, updateSession],
+    [
+      clearJourney,
+      completeAuth,
+      markAuthLoggedOut,
+      persisted,
+      phase,
+      resetForNewQrEntry,
+      setSelectedFlow,
+      updateLastRoutePath,
+      updateSession,
+    ],
   );
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;

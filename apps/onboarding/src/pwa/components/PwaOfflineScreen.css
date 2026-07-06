@@ -14,9 +14,9 @@
   text-align: center;
 }
 
-.pwa-offline-screen__icon {
+.pwa-offline-screen__logo {
   width: 72px;
-  height: 72px;
+  height: auto;
 }
 
 .pwa-offline-screen__description {

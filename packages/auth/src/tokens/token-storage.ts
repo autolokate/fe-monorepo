@@ -7,21 +7,33 @@ function readSessionStorage(key: string): string | null {
   if (typeof sessionStorage === 'undefined') {
     return null;
   }
-  return sessionStorage.getItem(key);
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
 }
 
 function writeSessionStorage(key: string, value: string): void {
   if (typeof sessionStorage === 'undefined') {
     return;
   }
-  sessionStorage.setItem(key, value);
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {
+    // ignore quota / private mode failures
+  }
 }
 
 function removeSessionStorage(key: string): void {
   if (typeof sessionStorage === 'undefined') {
     return;
   }
-  sessionStorage.removeItem(key);
+  try {
+    sessionStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
 }
 
 /** Browser sessionStorage-backed token storage (onboarding PWA default). */

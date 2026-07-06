@@ -8,12 +8,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { setThemeMode } from '@autolokate/design-system';
 
 import { validateEnv } from './config/env.js';
-import { applyScheduledTheme, resolveScheduledTheme } from './platform/theme/resolve-scheduled-theme.js';
+import { AppStartupErrorBoundary } from './platform/AppStartupErrorBoundary.js';
+import { applyEffectiveTheme } from './platform/theme/theme-preference.js';
 import { ScreenDevApp } from './dev/ScreenDevApp.js';
 import { JourneyOrchestrator } from './journey/index.js';
 
-applyScheduledTheme();
-setThemeMode(resolveScheduledTheme());
+const initialTheme = applyEffectiveTheme();
+setThemeMode(initialTheme);
 
 validateEnv();
 
@@ -26,12 +27,14 @@ const isDevPreview = new URLSearchParams(window.location.search).get('dev') === 
 
 createRoot(rootElement).render(
   <StrictMode>
-    {isDevPreview ? (
-      <BrowserRouter>
-        <ScreenDevApp />
-      </BrowserRouter>
-    ) : (
-      <JourneyOrchestrator />
-    )}
+    <AppStartupErrorBoundary>
+      {isDevPreview ? (
+        <BrowserRouter>
+          <ScreenDevApp />
+        </BrowserRouter>
+      ) : (
+        <JourneyOrchestrator />
+      )}
+    </AppStartupErrorBoundary>
   </StrictMode>,
 );

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { authJourneyPaths } from '@/journey/auth/auth-routing.js';
 import { useJourney } from '@/journey/JourneyContext.js';
-import { createAuthFailureSessionPatch } from '@/services/auth/auth-session.js';
 import { setOnboardingAuthFailureHandler } from '@/platform/api/onboarding-api-client.js';
 
 /**
@@ -12,19 +11,19 @@ import { setOnboardingAuthFailureHandler } from '@/platform/api/onboarding-api-c
  */
 export function AuthSessionRegistrar() {
   const navigate = useNavigate();
-  const { session, updateSession } = useJourney();
-  const sessionRef = useRef(session);
-  sessionRef.current = session;
+  const { markAuthLoggedOut } = useJourney();
+  const markAuthLoggedOutRef = useRef(markAuthLoggedOut);
+  markAuthLoggedOutRef.current = markAuthLoggedOut;
 
   useEffect(() => {
     setOnboardingAuthFailureHandler(() => {
-      updateSession(createAuthFailureSessionPatch(sessionRef.current));
+      markAuthLoggedOutRef.current();
       void navigate(authJourneyPaths.mobile, { replace: true });
     });
     return () => {
       setOnboardingAuthFailureHandler(null);
     };
-  }, [navigate, updateSession]);
+  }, [navigate]);
 
   return null;
 }

@@ -1,7 +1,11 @@
 import { type BrandLogoProps } from '../types.js';
 
 const DEFAULT_LABEL = 'Autolokate';
-const LOGO_SRC = new URL('../assets/autolokate_dark.png', import.meta.url).href;
+
+const MARK_SRC = {
+  light: new URL('../assets/al-mark-light.svg', import.meta.url).href,
+  dark: new URL('../assets/al-mark-dark.svg', import.meta.url).href,
+} as const;
 
 export function AlBrandMark({
   size = 32,
@@ -11,7 +15,7 @@ export function AlBrandMark({
 }: BrandLogoProps) {
   return (
     <img
-      src={LOGO_SRC}
+      src={MARK_SRC[variant]}
       width={size}
       height={size}
       className={className}
@@ -21,7 +25,6 @@ export function AlBrandMark({
       style={{
         display: 'block',
         objectFit: 'contain',
-        filter: variant === 'dark' ? 'brightness(0) invert(1)' : undefined,
       }}
     />
   );

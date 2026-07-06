@@ -1,12 +1,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import { AppLaunchSplash } from '../platform/AppLaunchSplash.js';
 import { AutolokateRootProvider } from '../platform/AutolokateRootProvider.js';
-import { ScheduledThemeSync } from '../platform/theme/ScheduledThemeSync.js';
+import { ThemeProvider } from '../platform/theme/ThemeProvider.js';
 import { AuthSessionRegistrar } from '../platform/auth/AuthSessionRegistrar.js';
 import { DeviceRegistrationRegistrar } from '../platform/device/DeviceRegistrationRegistrar.js';
 import { PwaScanRoutes } from '../features/post-activation-pwa/routes/PwaScanRoutes.js';
 import { PwaAppShell } from '../pwa/index.js';
 import { JourneyRoutes } from './routes/JourneyRoutes.js';
+import { JourneyRouteTracker } from './resume/JourneyRouteTracker.js';
 
 import './journey.css';
 
@@ -14,17 +16,21 @@ import './journey.css';
 export function JourneyOrchestrator() {
   return (
     <BrowserRouter>
-      <AutolokateRootProvider>
-        <ScheduledThemeSync />
-        <AuthSessionRegistrar />
+      <ThemeProvider>
+        <AutolokateRootProvider>
+          <AuthSessionRegistrar />
         <DeviceRegistrationRegistrar />
-        <PwaAppShell>
-          <Routes>
-            <Route path="/pwa/scan/*" element={<PwaScanRoutes />} />
-            <Route path="*" element={<JourneyRoutes />} />
-          </Routes>
-        </PwaAppShell>
-      </AutolokateRootProvider>
+        <JourneyRouteTracker />
+        <AppLaunchSplash>
+          <PwaAppShell>
+            <Routes>
+              <Route path="/pwa/scan/*" element={<PwaScanRoutes />} />
+              <Route path="*" element={<JourneyRoutes />} />
+            </Routes>
+          </PwaAppShell>
+        </AppLaunchSplash>
+        </AutolokateRootProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

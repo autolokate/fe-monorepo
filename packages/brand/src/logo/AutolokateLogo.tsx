@@ -1,7 +1,11 @@
 import { LOGO_ASPECT_RATIO, type BrandLogoProps } from '../types.js';
 
 const DEFAULT_LABEL = 'Autolokate';
-const LOGO_SRC = new URL('../assets/autolokate_dark.png', import.meta.url).href;
+
+const LOGO_SRC = {
+  light: new URL('../assets/al-logo-light.svg', import.meta.url).href,
+  dark: new URL('../assets/al-logo-dark.svg', import.meta.url).href,
+} as const;
 
 export function AlLogo({
   size = 120,
@@ -9,11 +13,12 @@ export function AlLogo({
   'aria-label': ariaLabel = DEFAULT_LABEL,
   variant = 'light',
 }: BrandLogoProps) {
-  const height = typeof size === 'number' ? size / LOGO_ASPECT_RATIO : undefined;
+  const height =
+    typeof size === 'number' ? Math.round(size / LOGO_ASPECT_RATIO) : undefined;
 
   return (
     <img
-      src={LOGO_SRC}
+      src={LOGO_SRC[variant]}
       width={size}
       height={height}
       className={className}
@@ -23,7 +28,6 @@ export function AlLogo({
       style={{
         display: 'block',
         objectFit: 'contain',
-        filter: variant === 'dark' ? 'brightness(0) invert(1)' : undefined,
       }}
     />
   );

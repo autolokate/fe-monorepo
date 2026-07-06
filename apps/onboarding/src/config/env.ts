@@ -7,6 +7,10 @@ export type AppEnv = {
   razorpayKey: string | null;
 };
 
+/** Consumer onboarding API (auth, QR, legal, checkout) — NOT the website catalog API. */
+const DEFAULT_ONBOARDING_API_BASE_URL =
+  'https://malisa-noninclusive-davin.ngrok-free.dev';
+
 type EnvKey =
   | 'VITE_API_BASE_URL'
   | 'VITE_ENVIRONMENT'
@@ -22,14 +26,17 @@ function readRaw(key: EnvKey): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-function requireEnv(key: 'VITE_API_BASE_URL'): string {
-  const value = readRaw(key);
-  if (!value) {
-    throw new Error(
-      `[onboarding] Missing required environment variable: ${key}. See apps/onboarding/.env.example`,
-    );
+function resolveApiBaseUrl(): string {
+  const value = readRaw('VITE_API_BASE_URL');
+  if (value) {
+    return value;
   }
-  return value;
+  if (import.meta.env.PROD) {
+    return DEFAULT_ONBOARDING_API_BASE_URL;
+  }
+  throw new Error(
+    '[onboarding] Missing required environment variable: VITE_API_BASE_URL. Copy apps/onboarding/.env.example to .env.development',
+  );
 }
 
 function parseEnvironment(value: string | undefined): AppEnvironment {
@@ -41,7 +48,7 @@ function parseEnvironment(value: string | undefined): AppEnvironment {
 
 /** Validated, typed environment — the only module that reads `import.meta.env`. */
 export const env: AppEnv = Object.freeze({
-  apiBaseUrl: requireEnv('VITE_API_BASE_URL'),
+  apiBaseUrl: resolveApiBaseUrl(),
   environment: parseEnvironment(readRaw('VITE_ENVIRONMENT')),
   enableLogs: readRaw('VITE_ENABLE_LOGS') === 'true',
   razorpayKey: readRaw('VITE_RAZORPAY_KEY') ?? null,

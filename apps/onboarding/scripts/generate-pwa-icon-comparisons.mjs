@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const brandMark = path.resolve(rootDir, '../../packages/brand/src/assets/autolokate_dark.png');
+const brandMark = path.resolve(rootDir, '../../packages/brand/src/assets/al-logo-dark.svg');
 const iconsDir = path.resolve(rootDir, 'public/icons');
 const publicDir = path.resolve(rootDir, 'public');
 const outDir = path.resolve(rootDir, '../../docs/assets/pwa-icon-audit');
@@ -17,21 +17,11 @@ const outDir = path.resolve(rootDir, '../../docs/assets/pwa-icon-audit');
 const BRAND_BG = { r: 10, g: 10, b: 10, alpha: 1 };
 
 async function loadDarkVariantMark() {
-  const { data, info } = await sharp(brandMark).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  for (let i = 0; i < data.length; i += 4) {
-    if (data[i + 3] > 0) {
-      data[i] = 255;
-      data[i + 1] = 255;
-      data[i + 2] = 255;
-    }
-  }
-  return sharp(data, {
-    raw: { width: info.width, height: info.height, channels: 4 },
-  }).png();
+  return sharp(brandMark).ensureAlpha().png();
 }
 
-async function renderInAppReference(width = 244) {
-  const height = Math.round(width / (164 / 146));
+async function renderInAppReference(width = 120) {
+  const height = width;
   const mark = await loadDarkVariantMark();
   const layer = await mark
     .resize(width, height, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })

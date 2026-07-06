@@ -14,7 +14,7 @@ import { resolveWelcomePlanDisplay } from '@/features/b2b-shared/resolve-welcome
 import { useActivationPreview } from '@/hooks/activation/index.js';
 import { journeyPaths } from '@/journey/constants.js';
 import { useJourney } from '@/journey/JourneyContext.js';
-import { authJourneyPaths } from '@/journey/auth/auth-routing.js';
+import { authMobileUrl } from '@/journey/auth/auth-routing.js';
 import { readStoredActivationPreviewCode, readStoredActivationQrCode } from '@/services/activation/activation-service.js';
 
 const PREPAID_SUCCESS_BODY =
@@ -41,7 +41,7 @@ export function PrepaidWelcomeScreen() {
       ...applyLandingEntitlementToSession(config),
     });
     setPhase('shared-auth');
-    void navigate(authJourneyPaths.mobile);
+    void navigate(authMobileUrl({ continueAuth: true }));
   };
 
   const planDisplay = config

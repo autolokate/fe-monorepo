@@ -20,6 +20,7 @@ export function loadJourneyState(): PersistedJourneyState {
       selectedFlow: parsed.selectedFlow ?? null,
       authStatus: parsed.authStatus === AUTH_COMPLETED ? AUTH_COMPLETED : 'pending',
       session: parsed.session ?? {},
+      lastRoutePath: parsed.lastRoutePath ?? null,
     };
   } catch {
     return loadSelectedFlowOnly();
@@ -27,27 +28,43 @@ export function loadJourneyState(): PersistedJourneyState {
 }
 
 function loadSelectedFlowOnly(): PersistedJourneyState {
-  const flow = window.localStorage.getItem(SELECTED_FLOW_KEY);
-  if (flow === 'purchase' || flow === 'prepaid' || flow === 'b2b2c') {
-    return { ...defaultState, selectedFlow: flow };
+  try {
+    const flow = window.localStorage.getItem(SELECTED_FLOW_KEY);
+    if (flow === 'purchase' || flow === 'prepaid' || flow === 'b2b2c') {
+      return { ...defaultState, selectedFlow: flow };
+    }
+  } catch {
+    // Private browsing / storage disabled on mobile Safari
   }
   return { ...defaultState };
 }
 
 export function saveJourneyState(state: PersistedJourneyState): void {
-  window.sessionStorage.setItem(JOURNEY_STORAGE_KEY, JSON.stringify(state));
-  if (state.selectedFlow) {
-    window.localStorage.setItem(SELECTED_FLOW_KEY, state.selectedFlow);
+  try {
+    window.sessionStorage.setItem(JOURNEY_STORAGE_KEY, JSON.stringify(state));
+    if (state.selectedFlow) {
+      window.localStorage.setItem(SELECTED_FLOW_KEY, state.selectedFlow);
+    }
+  } catch {
+    // ignore quota / private mode failures
   }
 }
 
 export function persistSelectedFlow(flow: ActivationFlowId): void {
-  window.localStorage.setItem(SELECTED_FLOW_KEY, flow);
+  try {
+    window.localStorage.setItem(SELECTED_FLOW_KEY, flow);
+  } catch {
+    // ignore
+  }
 }
 
 export function clearJourneyPersistence(): void {
-  window.sessionStorage.removeItem(JOURNEY_STORAGE_KEY);
-  window.localStorage.removeItem(SELECTED_FLOW_KEY);
+  try {
+    window.sessionStorage.removeItem(JOURNEY_STORAGE_KEY);
+    window.localStorage.removeItem(SELECTED_FLOW_KEY);
+  } catch {
+    // ignore
+  }
 }
 
 export function updateAuthStatus(authStatus: AuthStatus, session?: JourneySession): PersistedJourneyState {

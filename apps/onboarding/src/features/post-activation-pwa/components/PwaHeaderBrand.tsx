@@ -1,10 +1,19 @@
-import logoFigma from '@autolokate/brand/assets/al-logo-figma-dark.png';
+import { AlLogo } from '@autolokate/brand';
 
-/** Figma 158:25 — Logo component raster, 108×23.13 in PWA header. */
+import { useThemeMode } from '@/hooks/useThemeMode.js';
+
+/** PWA scan header — theme-aware Autolokate logo. */
 export function PwaHeaderBrand() {
+  const { themeMode } = useThemeMode();
+
   return (
     <div className="pwa-scan-shell__brand" aria-label="Autolokate">
-      <img src={logoFigma} alt="Autolokate" className="pwa-scan-shell__logo-figma" />
+      <AlLogo
+        className="pwa-scan-shell__logo"
+        size={40}
+        variant={themeMode === 'dark' ? 'dark' : 'light'}
+        aria-label="Autolokate"
+      />
     </div>
   );
 }

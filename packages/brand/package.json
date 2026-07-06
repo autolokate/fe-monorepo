@@ -11,12 +11,10 @@
     "./assets/al-logo-dark.svg": "./dist/assets/al-logo-dark.svg",
     "./assets/al-logo-light.svg": "./dist/assets/al-logo-light.svg",
     "./assets/al-mark-dark.svg": "./dist/assets/al-mark-dark.svg",
-    "./assets/al-mark-light.svg": "./dist/assets/al-mark-light.svg",
-    "./assets/autolokate_dark.png": "./dist/assets/autolokate_dark.png",
-    "./assets/al-logo-figma-dark.png": "./dist/assets/al-logo-figma-dark.png"
+    "./assets/al-mark-light.svg": "./dist/assets/al-mark-light.svg"
   },
   "scripts": {
-    "build": "tsc --build && rm -rf dist/assets && mkdir -p dist/assets && cp src/assets/*.svg dist/assets/ && cp src/assets/*.png dist/assets/",
+    "build": "tsc --build && rm -rf dist/assets && mkdir -p dist/assets && cp src/assets/*.svg dist/assets/",
     "dev": "tsc --build --watch",
     "lint": "eslint .",
     "clean": "rm -rf dist *.tsbuildinfo"

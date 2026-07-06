@@ -34,16 +34,11 @@
   min-width: 0;
 }
 
-.pwa-scan-shell__logo-figma {
+.pwa-scan-shell__logo {
   display: block;
-  width: 108px;
-  height: 23px;
-  max-width: min(100%, 160px);
+  width: min(40px, 12vw);
+  height: auto;
   object-fit: contain;
-}
-
-[data-theme='light'] .pwa-scan-shell__logo-figma {
-  filter: brightness(0);
 }
 
 .pwa-scan-shell__back.al-icon-button {

@@ -11,15 +11,19 @@ type PwaIosInstallSheetProps = {
 };
 
 function readDismissedRecently(): boolean {
-  const raw = window.localStorage.getItem(PWA_INSTALL_DISMISS_KEY);
-  if (!raw) {
+  try {
+    const raw = window.localStorage.getItem(PWA_INSTALL_DISMISS_KEY);
+    if (!raw) {
+      return false;
+    }
+    const dismissedAt = Number(raw);
+    if (!Number.isFinite(dismissedAt)) {
+      return false;
+    }
+    return Date.now() - dismissedAt < PWA_INSTALL_DISMISS_MS;
+  } catch {
     return false;
   }
-  const dismissedAt = Number(raw);
-  if (!Number.isFinite(dismissedAt)) {
-    return false;
-  }
-  return Date.now() - dismissedAt < PWA_INSTALL_DISMISS_MS;
 }
 
 export function shouldShowIosInstallSheet(): boolean {
@@ -27,7 +31,11 @@ export function shouldShowIosInstallSheet(): boolean {
 }
 
 export function dismissIosInstallSheet(): void {
-  window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
+  try {
+    window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
+  } catch {
+    // ignore private mode / storage disabled
+  }
 }
 
 function getIosNonSafariInstallCopy(): { title: string; description: string } {

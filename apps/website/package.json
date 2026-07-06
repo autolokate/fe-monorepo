@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "mkdir -p public/brand && cp ../../packages/brand/src/assets/*.svg public/brand/",
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",

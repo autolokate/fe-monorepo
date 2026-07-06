@@ -1,8 +1,7 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-const LOGO_DARK_SRC = "https://autolokate.com/autolokate_dark.png";
-const LOGO_LIGHT_SRC = "https://autolokate.com/autolokate_light.png";
+const LOGO_ON_DARK_BG = "/brand/al-logo-dark.svg";
+const LOGO_ON_LIGHT_BG = "/brand/al-logo-light.svg";
 
 interface BrandWordmarkProps {
   className?: string;
@@ -11,21 +10,21 @@ interface BrandWordmarkProps {
 export function BrandWordmark({ className }: BrandWordmarkProps) {
   return (
     <>
-      <Image
-        src={LOGO_DARK_SRC}
+      <img
+        src={LOGO_ON_DARK_BG}
         alt="Autolokate"
         width={140}
-        height={36}
-        priority
-        className={cn("theme-dark-only", className)}
+        height={133}
+        draggable={false}
+        className={cn("theme-dark-only block h-8 w-auto sm:h-9", className)}
       />
-      <Image
-        src={LOGO_LIGHT_SRC}
+      <img
+        src={LOGO_ON_LIGHT_BG}
         alt="Autolokate"
         width={140}
-        height={36}
-        priority
-        className={cn("theme-light-only", className)}
+        height={133}
+        draggable={false}
+        className={cn("theme-light-only block h-8 w-auto sm:h-9", className)}
       />
     </>
   );

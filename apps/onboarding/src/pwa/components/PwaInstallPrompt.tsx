@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import {
-  isAndroidDevice,
   isIosNonSafariBrowser,
   isIosSafari,
   isStandaloneDisplay,
@@ -49,7 +48,7 @@ export function PwaInstallPrompt() {
 
   return (
     <>
-      {canPrompt && isAndroidDevice() ? <PwaInstallBanner /> : null}
+      {canPrompt ? <PwaInstallBanner /> : null}
       {showIosSafariBanner ? <PwaIosSafariInstallBanner onDismiss={dismissIos} /> : null}
       <PwaIosInstallSheet open={iosSheetOpen} onDismiss={dismissIos} />
     </>

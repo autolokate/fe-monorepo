@@ -1,0 +1,110 @@
+.ob-qr-scan-entry-bg {
+  min-height: 100dvh;
+}
+
+.ob-qr-scan-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--al-space-xl) var(--al-space-lg);
+  padding-bottom: calc(var(--al-space-xl) + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  gap: var(--al-space-md);
+}
+
+.ob-qr-scan-entry__logo {
+  width: min(120px, 40vw);
+  height: auto;
+  margin-bottom: var(--al-space-xs);
+}
+
+.ob-qr-scan-entry__title {
+  max-width: 20rem;
+}
+
+.ob-qr-scan-entry__description,
+.ob-qr-scan-entry__fallback {
+  max-width: 18rem;
+}
+
+.ob-qr-scan-entry__cta {
+  width: 100%;
+  max-width: 18rem;
+  margin-top: var(--al-space-sm);
+}
+
+.ob-qr-scan-scanner {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--al-color-bg-primary);
+}
+
+.ob-qr-scan-scanner__header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--al-space-md) var(--al-space-lg);
+  padding-top: calc(var(--al-space-md) + env(safe-area-inset-top, 0px));
+}
+
+.ob-qr-scan-scanner__header-spacer {
+  width: 40px;
+}
+
+.ob-qr-scan-scanner__viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  margin: 0 var(--al-space-lg) var(--al-space-md);
+  border-radius: var(--al-radius-lg);
+  background: #000;
+}
+
+.ob-qr-scan-scanner__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ob-qr-scan-scanner__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.45);
+}
+
+.ob-qr-scan-scanner__frame {
+  position: absolute;
+  inset: 15%;
+  border: 2px solid rgb(255 255 255 / 0.85);
+  border-radius: var(--al-radius-md);
+  pointer-events: none;
+}
+
+.ob-qr-scan-scanner__hint {
+  flex-shrink: 0;
+  padding: 0 var(--al-space-lg) calc(var(--al-space-lg) + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.ob-qr-scan-scanner__error {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--al-space-md);
+  padding: var(--al-space-xl) var(--al-space-lg);
+  padding-bottom: calc(var(--al-space-xl) + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
