@@ -9,6 +9,7 @@ export type ScannerApiErrorCode =
   | 'not_provisioned'
   | 'not_uploaded'
   | 'vendor_unavailable'
+  | 'alert_not_cancellable'
   | 'offline'
   | 'timeout'
   | 'server_error'
@@ -87,6 +88,10 @@ export function mapScannerApiError(error: unknown): ScannerApiError {
 
   if (apiCode === 'vendor_unavailable' || normalized.status === 503) {
     return { code: 'vendor_unavailable', message, apiMessage };
+  }
+
+  if (apiCode === 'alert_not_cancellable' || normalized.status === 409) {
+    return { code: 'alert_not_cancellable', message, apiMessage };
   }
 
   if (normalized.code === 'validation' || normalized.status === 400) {

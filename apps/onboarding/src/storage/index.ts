@@ -2,6 +2,7 @@ export {
   PURCHASE_STORAGE_KEYS,
   clearAttachResult,
   clearCheckout,
+  clearQrCodeFromStorage,
   clearPurchaseStorage,
   getAttachResult,
   getCheckout,

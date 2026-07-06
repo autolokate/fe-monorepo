@@ -10,6 +10,7 @@ export type PromoCodeFieldProps = {
   onApply?: () => void;
   onRemove?: () => void;
   errorMessage?: string;
+  isApplying?: boolean;
 };
 
 /** Figma R08 layout_7TWAFU / R08b layout_YRKE26 / R08c 579:1748 */
@@ -20,6 +21,7 @@ export function PromoCodeField({
   onApply,
   onRemove,
   errorMessage,
+  isApplying = false,
 }: PromoCodeFieldProps) {
   if (variant === 'applied' && promoCode) {
     return (
@@ -54,14 +56,15 @@ export function PromoCodeField({
             placeholder="Have a promo code?"
             aria-invalid={isInvalid || undefined}
             aria-describedby={isInvalid ? 'ob-promo-code-error' : undefined}
+            disabled={isApplying}
           />
           <button
             type="button"
             className="ob-promo-code-field__action ob-promo-code-field__action--apply"
             onClick={onApply}
-            disabled={!promoCode.trim()}
+            disabled={!promoCode.trim() || isApplying}
           >
-            Apply
+            {isApplying ? 'Applying…' : 'Apply'}
           </button>
         </div>
         {isInvalid && errorMessage ? (

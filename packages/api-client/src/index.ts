@@ -59,6 +59,11 @@ export {
   type PaymentOutcomeDto,
   type PaymentRefDto,
 } from './orders.js';
+export {
+  validatePromo,
+  type PromoPreviewDto,
+  type ValidatePromoBody,
+} from './promos.js';
 export { normalizeTokenPair } from './auth.js';
 export {
   previewActivation,
@@ -110,6 +115,7 @@ export {
   requestEmergencyMediaUpload,
   completeEmergencyMediaUpload,
   acceptEmergency,
+  cancelEmergencyAlert,
   getEmergencyAlertStatus,
   type ParkOtpRequestBody,
   type ParkOtpRequestedDto,
@@ -132,6 +138,7 @@ export {
   type AlertStatus,
   type EmergencyDispatchPath,
   type AlertStatusDto,
+  type CancelAlertResponseDto,
 } from './scanner.js';
 export { normalizeApiError, type NormalizedApiError, type NormalizedErrorCode } from './errors.js';
 export { wireTokenRefresh } from './interceptors.js';

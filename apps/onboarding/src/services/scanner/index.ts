@@ -12,9 +12,11 @@ export {
 } from './park-service.js';
 export {
   submitScannerEmergency,
+  cancelScannerEmergency,
   resetScannerEmergencyServiceState,
   type EmergencySubmitResult,
   type EmergencySubmitInput,
+  type EmergencyCancelResult,
 } from './scanner-emergency-service.js';
 export {
   subscribeParkStatusPoll,

@@ -30,7 +30,7 @@ import type {
   PurchasePlanId,
   PurchaseRiderCount,
 } from '../../features/qr-purchase/types-checkout.js';
-import { DEFAULT_PURCHASE_PLAN_ID, VALID_PROMO_CODE } from '../../features/qr-purchase/data/purchase-plans.js';
+import { DEFAULT_PURCHASE_PLAN_ID } from '../../features/qr-purchase/data/purchase-plans.js';
 import { buildOrderSummary } from '../../features/qr-purchase/data/purchase-pricing.js';
 import { normalizePromoCode } from '../../features/qr-purchase/data/purchase-promo.js';
 import { usePlans } from '../../hooks/plan/index.js';
@@ -54,9 +54,12 @@ import { persistPurchaseSelections, persistVehicleContext } from '@/services/pur
 import { resetPurchaseFlowState } from '@/services/purchase/reset-purchase-flow-state.js';
 import { isPageReload } from '@/platform/navigation/is-page-reload.js';
 import { checkoutLogger } from '@/services/checkout/checkout-logger.js';
+import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code.js';
+import { clearPromoPreviewCache, validatePromoCheckout } from '@/services/promo/index.js';
+import { promoLogger } from '@/services/promo/promo-logger.js';
 import { planLogger } from '@/services/plan/plan-logger.js';
 import { PurchaseAttachErrorSheet } from '../../features/qr-purchase/components/PurchaseAttachErrorSheet.js';
-import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service.js';
+import { isPurchaseAttachReady, resetAttachAttemptCache } from '@/services/qr/qr-attach-service.js';
 import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
 import {
   PURCHASE_ROUTE_ID,
@@ -197,19 +200,56 @@ function patchPaymentOutcome(
   void navigate(purchaseJourneyPaths.paymentFailed);
 }
 
-function applyPromoCode(
+async function applyPromoCode(
   code: string,
+  params: {
+    planId: PurchasePlanId;
+    riderCount: PurchaseRiderCount;
+  },
   patchPurchase: ReturnType<typeof usePurchaseCheckout>['patchPurchase'],
   navigate: ReturnType<typeof useNavigate>,
-) {
+): Promise<void> {
   const normalized = normalizePromoCode(code);
   if (!normalized) {
     return;
   }
 
+  const purchaseQrCode = resolveOrderQrCode();
+  if (!purchaseQrCode) {
+    reportUserError(
+      qrLogger,
+      'promo_validate_missing_qr',
+      new Error('missing_purchase_qr_code'),
+      'Your purchase QR code is missing. Scan your Autolokate sticker or open your purchase link again.',
+    );
+    return;
+  }
+
+  const result = await validatePromoCheckout({
+    purchaseQrCode,
+    planId: params.planId,
+    riderCount: params.riderCount,
+    promoCode: normalized,
+  });
+
+  if (!result.ok) {
+    if (result.error.code === 'promo_invalid') {
+      patchPurchase({
+        promoApplied: false,
+        promoInvalid: true,
+        promoCode: normalized,
+      });
+      void navigate(purchaseJourneyPaths.orderSummaryInvalidPromo);
+      return;
+    }
+
+    reportUserError(promoLogger, 'promo_validate_failed', result.error, result.error.message);
+    return;
+  }
+
   patchPurchase({
     promoApplied: true,
-    promoCode: normalized,
+    promoCode: result.promoCode,
     promoInvalid: false,
   });
   void navigate(purchaseJourneyPaths.orderSummaryPromoApplied);
@@ -482,6 +522,35 @@ function VehicleConfirmationRoute() {
     void attachPurchaseQr(searchParams).then((result) => {
       setIsAttaching(false);
       if (!result.ok) {
+        if (
+          result.error.code === 'missing_qr_code' &&
+          isPurchaseAttachReady(searchParams)
+        ) {
+          qrAttachLogger.info('purchase_attach_recovered', { reason: 'attach_ready_without_qr' });
+          updateSession({
+            vehicle: {
+              ...vehicle,
+              confirmed: true,
+            },
+            purchase: {
+              selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
+              riderCount: 1,
+              promoApplied: false,
+              promoCode: null,
+              promoInvalid: false,
+              checkoutReady: false,
+              paymentStatus: 'idle',
+            },
+          });
+          void navigate(purchaseJourneyPaths.choosePlan);
+          return;
+        }
+
+        if (result.error.code === 'missing_qr_code') {
+          qrAttachLogger.warn('purchase_attach_missing_qr', { message: result.error.message });
+          return;
+        }
+
         purchaseStorageRepository.clearAttachResult();
         resetAttachAttemptCache();
         updateSession({
@@ -537,7 +606,7 @@ function VehicleConfirmationRoute() {
         onContinue={runAttach}
       />
       <PurchaseAttachErrorSheet
-        open={attachError !== null}
+        open={attachError !== null && attachError.code !== 'missing_qr_code'}
         error={attachError}
         onRetry={() => {
           resetAttachAttemptCache();
@@ -646,6 +715,7 @@ function OrderSummaryRoute() {
   const navigate = useNavigate();
   const { planId, riderCount, purchase, patchPurchase, updateSession } = usePurchaseCheckout();
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
+  const [promoApplying, setPromoApplying] = useState(false);
   const resetOnReloadRef = useRef(isPageReload());
 
   useLayoutEffect(() => {
@@ -674,12 +744,16 @@ function OrderSummaryRoute() {
       riderCount={riderCount}
       promoCode={promoInput}
       onPromoCodeChange={setPromoInput}
+      isApplyingPromo={promoApplying}
       onApplyPromo={() => {
         if (purchase?.paymentStatus === 'success') {
           redirectIfPaymentSucceeded(navigate, purchase);
           return;
         }
-        applyPromoCode(promoInput, patchPurchase, navigate);
+        setPromoApplying(true);
+        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(() => {
+          setPromoApplying(false);
+        });
       }}
       onBack={() => {
         void navigate(purchaseJourneyPaths.riderCover);
@@ -700,6 +774,7 @@ function OrderSummaryInvalidPromoRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
+  const [promoApplying, setPromoApplying] = useState(false);
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -715,6 +790,7 @@ function OrderSummaryInvalidPromoRoute() {
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoInput}
+      isApplyingPromo={promoApplying}
       onPromoCodeChange={(code) => {
         setPromoInput(code);
         if (purchase?.promoInvalid) {
@@ -722,10 +798,14 @@ function OrderSummaryInvalidPromoRoute() {
         }
       }}
       onApplyPromo={() => {
-        applyPromoCode(promoInput, patchPurchase, navigate);
+        setPromoApplying(true);
+        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(() => {
+          setPromoApplying(false);
+        });
       }}
       onBack={() => {
         patchPurchase({ promoInvalid: false, promoCode: null });
+        clearPromoPreviewCache();
         void navigate(purchaseJourneyPaths.orderSummary);
       }}
       onContinue={() => {
@@ -743,7 +823,7 @@ function OrderSummaryInvalidPromoRoute() {
 function OrderSummaryPromoAppliedRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
-  const promoCode = purchase?.promoCode ?? VALID_PROMO_CODE;
+  const promoCode = purchase?.promoCode ?? '';
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -764,6 +844,7 @@ function OrderSummaryPromoAppliedRoute() {
           redirectIfPaymentSucceeded(navigate, purchase);
           return;
         }
+        clearPromoPreviewCache();
         patchPurchase({ promoApplied: false, promoCode: null });
         void navigate(purchaseJourneyPaths.orderSummary);
       }}
@@ -775,7 +856,7 @@ function OrderSummaryPromoAppliedRoute() {
           planId,
           riderCount,
           promoApplied: true,
-          promoCode: purchase?.promoCode ?? VALID_PROMO_CODE,
+          promoCode: purchase?.promoCode ?? null,
         });
       }}
     />

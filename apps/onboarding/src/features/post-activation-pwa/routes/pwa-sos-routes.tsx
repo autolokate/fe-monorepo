@@ -32,6 +32,7 @@ import {
   useEmergencySendingFlow,
   useEmergencyTrackerPoll,
   useEmergencyContactsOnlySubmit,
+  useEmergencyCancelAlert,
 } from '../../../hooks/scanner/index.js';
 import { PwaPermissionRecoveryActions, queryPermissionState } from '../../../pwa/index.js';
 
@@ -476,27 +477,23 @@ export function PwaSosLocationUnavailableRoute() {
   );
 }
 
+/** Shared “I'm safe, cancel alert” footer button. */
+function PwaSosCancelAlertButton() {
+  const { cancelAlert, cancelling } = useEmergencyCancelAlert();
+
+  return (
+    <AlButton variant="secondary" disabled={cancelling} onClick={() => void cancelAlert()}>
+      {cancelling ? 'Cancelling…' : "I'm safe, cancel alert"}
+    </AlButton>
+  );
+}
+
 /** 17 · Sending alert — Figma 1177:2545. */
 export function PwaSosSendingRoute() {
-  const navigate = useNavigate();
-  const { updateSession } = usePwaScan();
   useEmergencySendingFlow();
 
   return (
-    <PwaScanShell
-      variant="emergency"
-      footer={
-        <AlButton
-          variant="secondary"
-          onClick={() => {
-            updateSession({ sosStatus: 'cancelled' });
-            void navigate(pwaScanPaths.sosAlertCancelled);
-          }}
-        >
-          I&apos;m safe, cancel alert
-        </AlButton>
-      }
-    >
+    <PwaScanShell variant="emergency" footer={<PwaSosCancelAlertButton />}>
       <PwaFade className="pwa-scan-sos-sending">
         <div className="pwa-scan-sos-sending__aura">
           <AlScreenSpinner size="lg" animated tone="emergency" aria-label="Sending your alert" />
@@ -536,7 +533,6 @@ export function PwaSosCouldntSendRoute() {
 
 /** 19 · Help on the way — alert received — Figma 849:321. */
 export function PwaSosHelpReceivedRoute() {
-  const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
   useEmergencyTrackerPoll();
 
@@ -545,21 +541,7 @@ export function PwaSosHelpReceivedRoute() {
   }, [updateSession]);
 
   return (
-    <PwaScanShell
-      variant="emergency"
-      stickyFooter
-      footer={
-        <AlButton
-          variant="secondary"
-          onClick={() => {
-            updateSession({ sosStatus: 'cancelled' });
-            void navigate(pwaScanPaths.sosAlertCancelled);
-          }}
-        >
-          I&apos;m safe, cancel alert
-        </AlButton>
-      }
-    >
+    <PwaScanShell variant="emergency" stickyFooter footer={<PwaSosCancelAlertButton />}>
       <PwaFade className="pwa-scan-screen pwa-scan-status-timeline-screen">
         <div className="pwa-scan-screen__intro">
           <AlHeading variant="h2">Help is on the way</AlHeading>
@@ -578,7 +560,6 @@ export function PwaSosHelpReceivedRoute() {
 
 /** 20 · Help dispatched — Figma 870:2145. */
 export function PwaSosHelpDispatchedRoute() {
-  const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
   useEmergencyTrackerPoll();
 
@@ -587,21 +568,7 @@ export function PwaSosHelpDispatchedRoute() {
   }, [updateSession]);
 
   return (
-    <PwaScanShell
-      variant="emergency"
-      stickyFooter
-      footer={
-        <AlButton
-          variant="secondary"
-          onClick={() => {
-            updateSession({ sosStatus: 'cancelled' });
-            void navigate(pwaScanPaths.sosAlertCancelled);
-          }}
-        >
-          I&apos;m safe, cancel alert
-        </AlButton>
-      }
-    >
+    <PwaScanShell variant="emergency" stickyFooter footer={<PwaSosCancelAlertButton />}>
       <PwaFade className="pwa-scan-screen pwa-scan-status-timeline-screen">
         <div className="pwa-scan-screen__intro">
           <AlHeading variant="h2">Help is on the way</AlHeading>

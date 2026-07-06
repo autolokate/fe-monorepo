@@ -11,6 +11,7 @@ import {
 import { clearCheckoutCache } from '@/services/checkout/checkout-cache.js';
 import { resetEmergencyContactServiceState } from '@/services/emergency/emergency-contact-service.js';
 import { resetPurchaseFlowState } from '@/services/purchase/reset-purchase-flow-state.js';
+import { clearQrCodeFromStorage } from '@/storage/index.js';
 import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service.js';
 import { clearResolvedQrCache } from '@/services/qr/qr-cache.js';
 import { resetRiderServiceState } from '@/services/rider/rider-service.js';
@@ -27,6 +28,7 @@ import { clearVehicleLookupCache } from '@/services/vehicle/vehicle-cache.js';
 export function resetOnboardingJourneyStorage(): void {
   clearLocalAuthSession();
   clearJourneyPersistence();
+  clearQrCodeFromStorage();
   resetPurchaseFlowState();
   emergencyContactStorageRepository.clear();
   riderStorageRepository.clear();

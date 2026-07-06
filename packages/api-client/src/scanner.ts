@@ -108,6 +108,12 @@ export type AlertStatusDto = {
   dispatchPath: EmergencyDispatchPath;
 };
 
+export type CancelAlertResponseDto = {
+  /** true if this call flipped RECEIVED → CANCELLED; false if already CANCELLED (idempotent). */
+  cancelled: boolean;
+  status: 'CANCELLED';
+};
+
 const publicOpts = { skipAuth: true } as const;
 
 /** POST /v1/qr/{code}/park/otp/request */
@@ -270,4 +276,18 @@ export async function getEmergencyAlertStatus(
     ...options,
   });
   return unwrapEnvelope(response) as AlertStatusDto;
+}
+
+/** POST /v1/emergency/{alertId}/cancel — “I'm safe” (owner or anonymous bystander). */
+export async function cancelEmergencyAlert(
+  client: ApiClient,
+  alertId: string,
+  options?: { signal?: AbortSignal },
+): Promise<CancelAlertResponseDto> {
+  const response = await client.post<unknown>(
+    endpoints.scanner.emergencyCancel(alertId),
+    undefined,
+    { ...publicOpts, ...options },
+  );
+  return unwrapEnvelope(response) as CancelAlertResponseDto;
 }

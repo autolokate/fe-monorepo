@@ -5,4 +5,5 @@ export {
   useEmergencySendingFlow,
   useEmergencyTrackerPoll,
   useEmergencyContactsOnlySubmit,
+  useEmergencyCancelAlert,
 } from './useScannerEmergency.js';

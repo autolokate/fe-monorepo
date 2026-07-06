@@ -96,6 +96,26 @@ ok &= assertShape(
 );
 
 ok &= assertShape(
+  'ValidatePromoBodyDto (api-client)',
+  { properties: { code: 'string', planTier: 'string', riderCount: 'number', promoCode: 'string' } },
+  schemaProps(spec, 'ValidatePromoBodyDto'),
+);
+
+ok &= assertShape(
+  'PromoPreviewDto (api-client)',
+  {
+    properties: {
+      promoCode: 'string',
+      subtotalPaise: 'number',
+      gstPaise: 'number',
+      discountPaise: 'number',
+      totalPaise: 'number',
+    },
+  },
+  schemaProps(spec, 'PromoPreviewDto'),
+);
+
+ok &= assertShape(
   'PayOrderBodyDto (api-client)',
   { properties: { mode: 'string', setupMandate: 'boolean', mandateConsent: 'boolean' } },
   schemaProps(spec, 'PayOrderBodyDto'),

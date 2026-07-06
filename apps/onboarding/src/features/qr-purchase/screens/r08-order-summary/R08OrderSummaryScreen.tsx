@@ -12,6 +12,7 @@ export type R08OrderSummaryScreenProps = {
   promoCode?: string;
   onPromoCodeChange?: (code: string) => void;
   onApplyPromo?: () => void;
+  isApplyingPromo?: boolean;
   onContinue?: () => void;
   onBack?: () => void;
   showBack?: boolean;
@@ -24,6 +25,7 @@ export function R08OrderSummaryScreen({
   promoCode = '',
   onPromoCodeChange,
   onApplyPromo,
+  isApplyingPromo = false,
   onContinue,
   onBack,
   showBack = true,
@@ -53,6 +55,7 @@ export function R08OrderSummaryScreen({
           promoCode={promoCode}
           onPromoCodeChange={onPromoCodeChange}
           onApply={onApplyPromo}
+          isApplying={isApplyingPromo}
         />
         <OrderSummaryCard summary={summary} />
         <p className="ob-purchase-gateway-note">

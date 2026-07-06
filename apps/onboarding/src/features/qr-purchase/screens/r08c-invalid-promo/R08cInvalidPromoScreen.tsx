@@ -12,6 +12,7 @@ export type R08cInvalidPromoScreenProps = {
   promoCode: string;
   onPromoCodeChange?: (code: string) => void;
   onApplyPromo?: () => void;
+  isApplyingPromo?: boolean;
   onContinue?: () => void;
   onBack?: () => void;
   showBack?: boolean;
@@ -24,6 +25,7 @@ export function R08cInvalidPromoScreen({
   promoCode,
   onPromoCodeChange,
   onApplyPromo,
+  isApplyingPromo = false,
   onContinue,
   onBack,
   showBack = true,
@@ -53,6 +55,7 @@ export function R08cInvalidPromoScreen({
           promoCode={promoCode}
           onPromoCodeChange={onPromoCodeChange}
           onApply={onApplyPromo}
+          isApplying={isApplyingPromo}
           errorMessage="That code isn't valid, check and try again"
         />
         <OrderSummaryCard summary={summary} />

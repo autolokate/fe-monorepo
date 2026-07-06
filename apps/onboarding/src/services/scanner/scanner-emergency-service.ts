@@ -1,5 +1,6 @@
 import {
   acceptEmergency,
+  cancelEmergencyAlert,
 } from '@autolokate/api-client';
 
 import { getOnboardingBootstrapClient } from '@/platform/api/onboarding-api-client.js';
@@ -20,11 +21,71 @@ export type EmergencySubmitResult =
   | { ok: true; alertId: string; incidentId: string }
   | { ok: false; error: ScannerApiError };
 
+export type EmergencyCancelResult =
+  | { ok: true; cancelled: boolean }
+  | { ok: false; error: ScannerApiError };
+
 let inflightSubmit: Promise<EmergencySubmitResult> | null = null;
+let inflightCancel: Promise<EmergencyCancelResult> | null = null;
+
+/** POST /v1/emergency/{alertId}/cancel — “I'm safe”. */
+export async function cancelScannerEmergency(alertId: string): Promise<EmergencyCancelResult> {
+  if (!alertId.trim()) {
+    return {
+      ok: false,
+      error: { code: 'unavailable', message: 'Missing alert id.', apiMessage: null },
+    };
+  }
+
+  if (inflightCancel) {
+    return inflightCancel;
+  }
+
+  const promise = (async (): Promise<EmergencyCancelResult> => {
+    stopEmergencyAlertPoll();
+
+    for (let attempt = 1; attempt <= SCANNER_MAX_ATTEMPTS; attempt += 1) {
+      try {
+        const client = getOnboardingBootstrapClient();
+        const response = await withTimeout(
+          cancelEmergencyAlert(client, alertId),
+          SCANNER_REQUEST_TIMEOUT_MS,
+        );
+        scannerLogger.info('emergency_cancelled', {
+          alertId,
+          cancelled: response.cancelled,
+          status: response.status,
+        });
+        return { ok: true, cancelled: response.cancelled };
+      } catch (error) {
+        if (isScannerTransientError(error) && attempt < SCANNER_MAX_ATTEMPTS) {
+          await delay(SCANNER_RETRY_BASE_MS * attempt);
+          continue;
+        }
+        const mapped = mapScannerApiError(error);
+        scannerLogger.warn('emergency_cancel_failed', { alertId, error: mapped });
+        return { ok: false, error: mapped };
+      }
+    }
+
+    return {
+      ok: false,
+      error: { code: 'unavailable', message: 'Could not cancel alert.', apiMessage: null },
+    };
+  })();
+
+  inflightCancel = promise;
+  try {
+    return await promise;
+  } finally {
+    inflightCancel = null;
+  }
+}
 
 /** Clear emergency in-flight state. */
 export function resetScannerEmergencyServiceState(): void {
   inflightSubmit = null;
+  inflightCancel = null;
   stopEmergencyAlertPoll();
 }
 

@@ -6,11 +6,9 @@ import type {
   PurchaseRiderCount,
 } from '../types-checkout.js';
 
-import { getPurchasePlan, VALID_PROMO_CODE } from './purchase-plans.js';
-import { getCheckoutSummary } from '@/services/checkout/checkout-service.js';
-
-/** Demo promo discount shown on R08b before backend order total is available. */
-const PROMO_DISCOUNT_PAISE = 10_000;
+import { getPurchasePlan } from './purchase-plans.js';
+import { buildCheckoutParamsKey } from '@/services/checkout/checkout-mapper.js';
+import { peekCheckoutSummary, readCheckoutState } from '@/services/checkout/checkout-cache.js';
 
 export function formatInr(amount: number, suffix = ''): string {
   const formatted = amount.toLocaleString('en-IN');
@@ -24,8 +22,6 @@ export function getRiderCtaLabel(riderCount: Exclude<PurchaseRiderCount, 0>): st
 function buildPreviewOrderSummary(params: {
   planId: PurchasePlanId;
   riderCount: PurchaseRiderCount;
-  promoApplied?: boolean;
-  promoCode?: string | null;
 }): OrderSummaryTotals {
   const plan = getPurchasePlan(params.planId);
   let totalPaise = plan.pricePaise;
@@ -42,22 +38,6 @@ function buildPreviewOrderSummary(params: {
     }
   }
 
-  const promoCode = params.promoCode?.trim().toUpperCase() ?? '';
-  const promoApplied =
-    params.promoApplied &&
-    promoCode.length > 0 &&
-    promoCode === VALID_PROMO_CODE;
-
-  let promoLine: OrderSummaryTotals['promoLine'];
-  if (promoApplied) {
-    totalPaise = Math.max(0, totalPaise - PROMO_DISCOUNT_PAISE);
-    promoLine = {
-      label: `Promo · ${promoCode}`,
-      value: `−${formatInrFromPaise(PROMO_DISCOUNT_PAISE)}`,
-      tone: 'promo',
-    };
-  }
-
   const totalLabel = formatInrFromPaise(totalPaise);
   const totalInr = Math.round(totalPaise / 100);
 
@@ -67,11 +47,10 @@ function buildPreviewOrderSummary(params: {
       value: plan.priceLabel,
     },
     riderLine,
-    promoLine,
     totalLabel,
     totalInr,
     gstNote: 'Inclusive of 18% GST',
-    payCtaLabel: promoApplied ? `Pay ${totalLabel}` : 'Pay securely',
+    payCtaLabel: 'Pay securely',
   };
 }
 
@@ -81,8 +60,15 @@ export function buildOrderSummary(params: {
   promoApplied?: boolean;
   promoCode?: string | null;
 }): OrderSummaryTotals {
-  const cached = getCheckoutSummary();
-  if (cached) {
+  const cached = peekCheckoutSummary();
+  const paramsKey = buildCheckoutParamsKey({
+    planId: params.planId,
+    riderCount: params.riderCount,
+    promoApplied: params.promoApplied,
+    promoCode: params.promoCode,
+  });
+
+  if (cached && readCheckoutState().paramsKey === paramsKey) {
     return cached;
   }
 

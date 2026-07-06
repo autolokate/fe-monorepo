@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { pwaScanPaths } from '@/features/post-activation-pwa/constants/pwa-scan-paths.js';
 import type { PwaSosPhotoIds } from '@/features/post-activation-pwa/context/pwa-scan-types.js';
 import { usePwaScan } from '@/features/post-activation-pwa/context/PwaScanContext.js';
 import { reportUserError } from '@/platform/feedback/report-user-error.js';
+import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository.js';
 import {
+  cancelScannerEmergency,
   scannerJourneyStateMachine,
   scannerLogger,
+  stopEmergencyAlertPoll,
   submitScannerEmergency,
   subscribeEmergencyAlertPoll,
 } from '@/services/scanner/index.js';
@@ -104,4 +107,38 @@ export function useEmergencyContactsOnlySubmit() {
       unsubscribeRef.current = null;
     };
   }, [navigate, updateSession]);
+}
+
+/** Cancel an active SOS alert via POST /v1/emergency/{alertId}/cancel. */
+export function useEmergencyCancelAlert() {
+  const navigate = useNavigate();
+  const { updateSession } = usePwaScan();
+  const [cancelling, setCancelling] = useState(false);
+
+  const cancelAlert = useCallback(async () => {
+    if (cancelling) {
+      return;
+    }
+
+    setCancelling(true);
+    try {
+      stopEmergencyAlertPoll();
+      const alertId = anonymousScannerRepository.readAlertId();
+
+      if (alertId) {
+        const result = await cancelScannerEmergency(alertId);
+        if (!result.ok) {
+          reportUserError(scannerLogger, 'emergency_cancel_failed', result.error, result.error.message);
+          return;
+        }
+      }
+
+      updateSession({ sosStatus: 'cancelled' });
+      void navigate(pwaScanPaths.sosAlertCancelled);
+    } finally {
+      setCancelling(false);
+    }
+  }, [cancelling, navigate, updateSession]);
+
+  return { cancelAlert, cancelling };
 }

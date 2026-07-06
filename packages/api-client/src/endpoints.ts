@@ -37,6 +37,9 @@ export const endpoints = {
     pay: (orderId: string) => `/v1/orders/${orderId}/pay`,
     payment: (orderId: string) => `/v1/orders/${orderId}/payment`,
   },
+  promos: {
+    validate: '/v1/promos/validate',
+  },
   activation: {
     preview: (code: string) =>
       `/v1/activation/preview?code=${encodeURIComponent(code)}`,
@@ -78,6 +81,8 @@ export const endpoints = {
     emergencyOpen: (code: string) => `/v1/qr/${encodeURIComponent(code)}/emergency`,
     emergencyStatus: (alertId: string) =>
       `/v1/emergency/${encodeURIComponent(alertId)}`,
+    emergencyCancel: (alertId: string) =>
+      `/v1/emergency/${encodeURIComponent(alertId)}/cancel`,
   },
 } as const;
 

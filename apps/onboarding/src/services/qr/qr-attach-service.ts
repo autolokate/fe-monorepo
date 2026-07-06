@@ -38,6 +38,18 @@ function mapRegistrationForAttach(registration: string): string | null {
   return compact.length >= 5 ? compact : null;
 }
 
+function successFromStoredAttach(
+  attach: NonNullable<ReturnType<typeof purchaseStorageRepository.readAttachResult>>,
+): AttachPurchaseQrResult {
+  return {
+    ok: true,
+    attachEventId: attach.attachEventId,
+    vehicleId: attach.vehicleId,
+    qrStatus: attach.qrStatus,
+    subscriptionId: attach.subscriptionId,
+  };
+}
+
 /**
  * True when checkout may proceed.
  * ATTACHED resolve: attach API is not required.
@@ -102,7 +114,20 @@ export async function attachPurchaseQr(
 
   const purchaseQrCode = resolvePurchaseQrCode(searchParams);
   const registration = purchaseStorageRepository.readVehicle()?.registration;
+  const compactRegistration = registration ? mapRegistrationForAttach(registration) : null;
+
   if (!purchaseQrCode) {
+    const storedAttach = purchaseStorageRepository.readAttachResult();
+    if (
+      storedAttach?.purchaseQrCode &&
+      compactRegistration &&
+      compactPlate(storedAttach.registration) === compactRegistration
+    ) {
+      qrStorageRepository.writeCode(storedAttach.purchaseQrCode);
+      qrAttachLogger.info('attach_reused', { reason: 'stored_attach_without_qr_code' });
+      return successFromStoredAttach(storedAttach);
+    }
+
     qrAttachLogger.warn('attach_skipped', { reason: 'missing_qr_code' });
     return {
       ok: false,
@@ -113,20 +138,11 @@ export async function attachPurchaseQr(
     };
   }
 
-  if (!registration) {
-    qrAttachLogger.warn('attach_skipped', { reason: 'missing_registration' });
-    return {
-      ok: false,
-      error: {
-        code: 'invalid',
-        message: resolveUserFacingMessage(null, 'Missing vehicle registration.'),
-      },
-    };
-  }
-
-  const compactRegistration = mapRegistrationForAttach(registration);
-  if (!compactRegistration) {
-    qrAttachLogger.warn('attach_skipped', { reason: 'invalid_registration', registration });
+  if (!registration || !compactRegistration) {
+    qrAttachLogger.warn('attach_skipped', {
+      reason: registration ? 'invalid_registration' : 'missing_registration',
+      registration,
+    });
     return {
       ok: false,
       error: {

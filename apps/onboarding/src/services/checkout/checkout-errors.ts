@@ -1,4 +1,4 @@
-import { normalizeApiError } from '@autolokate/api-client';
+import { ApiError, normalizeApiError } from '@autolokate/api-client';
 
 import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error.js';
 
@@ -17,6 +17,13 @@ export type CheckoutError = {
 
 /** Map API failures into existing purchase checkout UI branches only. */
 export function mapCheckoutApiError(error: unknown): CheckoutError {
+  if (error instanceof ApiError && error.code === 'promo_invalid') {
+    return {
+      code: 'promo_invalid',
+      message: resolveUserFacingMessage(error),
+    };
+  }
+
   const normalized = normalizeApiError(error);
   const message = resolveUserFacingMessage(error);
 

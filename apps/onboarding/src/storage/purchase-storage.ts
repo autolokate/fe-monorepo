@@ -161,7 +161,8 @@ function readQrCodeFromLocal(): string | null {
   return readPlainStringFrom(store, PURCHASE_STORAGE_KEYS.qrCode);
 }
 
-function removeQrCodeEverywhere(): void {
+/** Clears persisted QR code — only for explicit new-QR / full journey reset. */
+export function clearQrCodeFromStorage(): void {
   const localStore = local();
   if (localStore) {
     removeFrom(localStore, PURCHASE_STORAGE_KEYS.qrCode);
@@ -325,8 +326,8 @@ export function clearAttachResult(): void {
   removeKey(PURCHASE_STORAGE_KEYS.attach);
 }
 
+/** Clears in-tab purchase journey blobs; preserves `localStorage.qr_code`. */
 export function clearPurchaseStorage(): void {
-  removeQrCodeEverywhere();
   removeKey(PURCHASE_STORAGE_KEYS.qrResolve);
   removeKey(PURCHASE_STORAGE_KEYS.vehicle);
   removeKey(PURCHASE_STORAGE_KEYS.order);
