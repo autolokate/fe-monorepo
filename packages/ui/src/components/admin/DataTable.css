@@ -48,6 +48,14 @@
   max-height: min(70vh, 42rem);
 }
 
+.al-data-table__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 14rem;
+  padding: var(--al-space-8);
+}
+
 .al-data-table__table {
   width: 100%;
   border-collapse: separate;

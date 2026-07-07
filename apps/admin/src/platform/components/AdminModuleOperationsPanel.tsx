@@ -5,7 +5,6 @@ export type AdminModuleOperation = {
   id: string;
   title: string;
   description: string;
-  endpoint: string;
   actionLabel: string;
   onAction: () => void;
   loading?: boolean;
@@ -41,7 +40,7 @@ export function AdminModuleOperationsPanel({
             variant={operation.variant ?? 'secondary'}
             loading={operation.loading}
             disabled={operation.disabled || operation.loading}
-            title={`${operation.title} — ${operation.description}\n${operation.endpoint}`}
+            title={`${operation.title} — ${operation.description}`}
             onClick={operation.onAction}
           >
             {operation.actionLabel}

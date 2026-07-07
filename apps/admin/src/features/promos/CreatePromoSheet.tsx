@@ -85,7 +85,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
       open={open}
       onOpenChange={onOpenChange}
       title="Create promo"
-      description="POST /admin/v1/promos — author a new promo code."
+      description="Configure a new promotional campaign."
     >
       <form
         onSubmit={(event) => {

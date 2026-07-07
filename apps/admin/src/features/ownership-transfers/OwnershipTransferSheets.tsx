@@ -66,7 +66,7 @@ export function InitiateTransferSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="Initiate ownership transfer"
-      description="POST /admin/v1/ownership-transfers — open a transfer case for a QR code."
+      description="Start an ownership transfer for a vehicle QR code."
     >
       <form
         onSubmit={(event) => {
@@ -181,7 +181,7 @@ export function ApproveTransferSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="Approve ownership transfer"
-      description="POST /admin/v1/ownership-transfers/{id}/approve — re-bind to the new owner."
+      description="Complete the transfer and assign the vehicle to the new owner."
     >
       <form
         onSubmit={(event) => {

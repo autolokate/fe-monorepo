@@ -1,19 +1,15 @@
 import type { AdminPromoDto } from '@autolokate/api-client';
-import {
-  AlButton,
-  AlSectionHeader,
-  AlSheet,
-  AlStack,
-  AlStatusBadge,
-  AlText,
-} from '@autolokate/ui';
+import { AlButton, AlSheet, AlStack, AlStatusBadge } from '@autolokate/ui';
 
+import {
+  AdminDetailField,
+  AdminDetailGrid,
+  AdminDetailSection,
+} from '@/platform/components/AdminDetailField.js';
 import {
   formatPromoDiscount,
   getPromoLifecycleStatus,
 } from '@/services/promos/promo-metrics.js';
-
-import './promos.css';
 
 export type PromoDetailSheetProps = {
   promo: AdminPromoDto | null;
@@ -23,20 +19,9 @@ export type PromoDetailSheetProps = {
   onCreatePromo?: () => void;
 };
 
-function DetailField({ label, value }: { label: string; value: string }) {
-  return (
-    <AlStack gap="xs">
-      <AlText variant="caption" tone="muted">
-        {label}
-      </AlText>
-      <AlText>{value}</AlText>
-    </AlStack>
-  );
-}
-
 function formatDateTime(value: string | null): string {
   if (!value) {
-    return 'Unbounded';
+    return 'No end date';
   }
   return new Date(value).toLocaleString();
 }
@@ -66,105 +51,66 @@ export function PromoDetailSheet({
       open={open}
       onOpenChange={onOpenChange}
       title={promo.code}
-      description="PromoDto from GET /admin/v1/promos"
+      description={formatPromoDiscount(promo)}
     >
-      <AlStack gap="lg">
-        <section>
-          <AlSectionHeader title="Overview" />
-          <AlStack gap="md">
-            <DetailField label="Promo code" value={promo.code} />
-            <AlStack gap="xs">
-              <AlText variant="caption" tone="muted">
-                Lifecycle
-              </AlText>
-              <AlStatusBadge
-                label={lifecycle}
-                status={lifecycle === 'ACTIVE' ? 'active' : lifecycle === 'UPCOMING' ? 'pending' : 'inactive'}
-              />
-            </AlStack>
-            <AlStack gap="xs">
-              <AlText variant="caption" tone="muted">
-                Active flag
-              </AlText>
-              <AlStatusBadge
-                label={promo.active ? 'Active' : 'Inactive'}
-                status={promo.active ? 'active' : 'inactive'}
-              />
-            </AlStack>
-          </AlStack>
-        </section>
+      <AlStack gap="md">
+        <AdminDetailSection title="Status">
+          <div className="admin-sheet-actions">
+            <AlStatusBadge
+              label={lifecycle}
+              status={lifecycle === 'ACTIVE' ? 'active' : lifecycle === 'UPCOMING' ? 'pending' : 'inactive'}
+            />
+            <AlStatusBadge
+              label={promo.active ? 'Enabled' : 'Disabled'}
+              status={promo.active ? 'active' : 'inactive'}
+            />
+          </div>
+        </AdminDetailSection>
 
-        <section>
-          <AlSectionHeader title="Discount" />
-          <AlStack gap="md">
-            <DetailField label="Formatted discount" value={formatPromoDiscount(promo)} />
-            <DetailField
-              label="Discount percent"
+        <AdminDetailSection title="Discount">
+          <AdminDetailGrid>
+            <AdminDetailField label="Offer" value={formatPromoDiscount(promo)} />
+            <AdminDetailField
+              label="Percent off"
               value={promo.discountPercent !== null ? `${String(promo.discountPercent)}%` : '—'}
             />
-            <DetailField
-              label="Discount paise"
+            <AdminDetailField
+              label="Fixed amount (paise)"
               value={promo.discountPaise !== null ? promo.discountPaise.toLocaleString() : '—'}
             />
-          </AlStack>
-        </section>
+          </AdminDetailGrid>
+        </AdminDetailSection>
 
-        <section>
-          <AlSectionHeader title="Validity" />
-          <AlStack gap="md">
-            <DetailField label="Valid from" value={formatDateTime(promo.validFrom)} />
-            <DetailField label="Valid to" value={formatDateTime(promo.validTo)} />
-          </AlStack>
-        </section>
+        <AdminDetailSection title="Validity">
+          <AdminDetailGrid>
+            <AdminDetailField label="Starts" value={formatDateTime(promo.validFrom)} />
+            <AdminDetailField label="Ends" value={formatDateTime(promo.validTo)} />
+          </AdminDetailGrid>
+        </AdminDetailSection>
 
-        <section>
-          <AlSectionHeader title="Eligibility" description="Redemption caps from PromoDto." />
-          <AlStack gap="md">
-            <DetailField label="Max redemptions (global)" value={formatLimit(promo.maxRedemptions)} />
-            <DetailField label="Max per account" value={formatLimit(promo.maxPerAccount)} />
-          </AlStack>
-        </section>
+        <AdminDetailSection title="Limits">
+          <AdminDetailGrid>
+            <AdminDetailField label="Max redemptions" value={formatLimit(promo.maxRedemptions)} />
+            <AdminDetailField label="Max per account" value={formatLimit(promo.maxPerAccount)} />
+          </AdminDetailGrid>
+        </AdminDetailSection>
 
-        <section>
-          <AlSectionHeader title="Campaign" description="PromoDto has no campaign field in OpenAPI." />
-          <AlText tone="muted">Not exposed by GET /admin/v1/promos.</AlText>
-        </section>
+        <AdminDetailSection title="Reference">
+          <AdminDetailField label="Promo ID" value={promo.id} mono />
+        </AdminDetailSection>
 
-        <section>
-          <AlSectionHeader title="Metadata" />
-          <AlStack gap="md">
-            <DetailField label="Promo ID" value={promo.id} />
-          </AlStack>
-        </section>
-
-        <section>
-          <AlSectionHeader title="Raw API" description="PromoDto payload" />
-          <pre className="promo-detail-sheet__raw">{JSON.stringify(promo, null, 2)}</pre>
-        </section>
-
-        <section>
-          <AlSectionHeader title="Actions" />
-          {canWrite ? (
-            <AlStack gap="sm">
-              <AlText tone="muted">
-                OpenAPI exposes create only (POST /admin/v1/promos). Update, deactivate, and delete
-                are not available.
-              </AlText>
-              {onCreatePromo ? (
-                <AlButton
-                  size="sm"
-                  onClick={() => {
-                    onCreatePromo();
-                  }}
-                >
-                  Create promo
-                </AlButton>
-              ) : null}
-            </AlStack>
-          ) : (
-            <AlText tone="muted">You have read-only access to promos.</AlText>
-          )}
-        </section>
+        {canWrite && onCreatePromo ? (
+          <AdminDetailSection title="Actions">
+            <AlButton
+              size="sm"
+              onClick={() => {
+                onCreatePromo();
+              }}
+            >
+              Create another promo
+            </AlButton>
+          </AdminDetailSection>
+        ) : null}
       </AlStack>
     </AlSheet>
   );

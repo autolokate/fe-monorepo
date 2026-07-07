@@ -60,7 +60,7 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
       open={open}
       onOpenChange={onOpenChange}
       title="Create clawback"
-      description="POST /admin/v1/clawbacks — reverse a captured payment and claw back commission."
+      description="Reverse a captured payment and claw back its commission."
     >
       <form
         onSubmit={(event) => {

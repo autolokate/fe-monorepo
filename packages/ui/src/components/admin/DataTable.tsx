@@ -27,6 +27,7 @@ import {
 
 import { cn } from '../../utils/cn.js';
 import { AlButton } from '../primitives/Button/index.js';
+import { AlScreenSpinner } from '../primitives/ScreenSpinner/index.js';
 import { AlCheckbox } from '../forms/Checkbox/index.js';
 import { AlEmptyState } from './EmptyState.js';
 import { AlErrorState } from './EmptyState.js';
@@ -39,7 +40,6 @@ import {
   type DataTableDensity,
 } from './data-table-utils.js';
 import { AlSearchInput } from './SearchInput.js';
-import { AlSkeleton } from './Skeleton.js';
 import { AlToolbar } from './SearchInput.js';
 import './DataTable.css';
 
@@ -296,6 +296,7 @@ export function AlDataTable<TData>({
 
   const selectedCount = Object.keys(rowSelection ?? internalRowSelection).length;
   const filteredCount = table.getFilteredRowModel().rows.length;
+  const showLoadingState = loading && data.length === 0;
   const isEmpty = !loading && filteredCount === 0;
 
   if (error) {
@@ -338,8 +339,8 @@ export function AlDataTable<TData>({
                 {bulkActions}
               </>
             ) : (
-              <span className={cn('al-toolbar__meta', isRefreshing && 'is-pulsing')}>
-                {isRefreshing ? 'Refreshing…' : `${filteredCount} rows`}
+              <span className={cn('al-toolbar__meta', (isRefreshing || showLoadingState) && 'is-pulsing')}>
+                {showLoadingState ? 'Loading…' : isRefreshing ? 'Refreshing…' : `${filteredCount} rows`}
               </span>
             )}
             {enableDensitySwitch ? (
@@ -410,7 +411,11 @@ export function AlDataTable<TData>({
         }
       />
 
-      {isEmpty ? (
+      {showLoadingState ? (
+        <div className="al-data-table__loading" role="status" aria-live="polite" aria-busy="true">
+          <AlScreenSpinner size="md" animated aria-label="Loading table data" />
+        </div>
+      ) : isEmpty ? (
         <div className="al-data-table__empty">
           <AlEmptyState
             compact
@@ -484,17 +489,7 @@ export function AlDataTable<TData>({
               ))}
             </thead>
             <tbody>
-              {loading
-                ? Array.from({ length: 5 }).map((_, rowIndex) => (
-                    <tr key={`skeleton-${String(rowIndex)}`}>
-                      {selectionColumns.map((column, columnIndex) => (
-                        <td key={`${String(column.id ?? columnIndex)}-sk`}>
-                          <AlSkeleton height={density === 'compact' ? 12 : 14} />
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                : table.getRowModel().rows.map((row, rowIndex) => (
+              {table.getRowModel().rows.map((row, rowIndex) => (
                     <tr
                       key={row.id}
                       data-row-index={rowIndex}

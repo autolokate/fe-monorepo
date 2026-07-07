@@ -69,7 +69,7 @@ export function FulfilPartnerReorderSheet({
         open={open}
         onOpenChange={onOpenChange}
         title="Fulfil partner reorder"
-        description="POST /admin/v1/partner-reorders/{id}/fulfil — allocate PROVISIONED stock to the ship-to site."
+        description="Allocate provisioned stock to a partner reorder."
       >
         <form
           onSubmit={(event) => {
@@ -79,8 +79,7 @@ export function FulfilPartnerReorderSheet({
         >
           <AlStack gap="lg">
             <AlText tone="muted">
-              No admin list endpoint exists — enter the PENDING reorder (QrDistribution) ID from
-              your partner operations workflow.
+              Enter the pending reorder ID from your partner operations workflow.
             </AlText>
 
             <AlInput

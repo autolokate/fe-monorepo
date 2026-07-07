@@ -78,7 +78,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
       open={open}
       onOpenChange={onOpenChange}
       title="Create batch"
-      description="POST /admin/v1/qr-batches — creates a DRAFT batch."
+      description="Set up a new QR batch in draft status."
       footer={
         <AlStack gap="sm" direction="row">
           <AlButton

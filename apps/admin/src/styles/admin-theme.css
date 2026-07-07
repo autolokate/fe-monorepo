@@ -172,14 +172,6 @@
   color: var(--al-color-text-subtle);
 }
 
-.al-page-layout pre[class*='__raw'],
-.al-page-layout .inventory-detail-sheet__raw,
-.al-page-layout .promo-detail-sheet__raw,
-.al-page-layout .audit-detail-sheet__raw {
-  background: var(--al-color-surface-variant);
-  color: var(--al-color-text);
-}
-
 [data-theme='dark'] .al-page-layout .al-skeleton {
   background: linear-gradient(
     90deg,

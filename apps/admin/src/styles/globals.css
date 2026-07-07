@@ -45,3 +45,4 @@ select {
 @import './admin-theme.css';
 @import './admin-shell.css';
 @import './admin-operations.css';
+@import './admin-detail.css';
