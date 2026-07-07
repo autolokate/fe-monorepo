@@ -20,6 +20,7 @@ import { ScreenBackgroundsPage } from './pages/ScreenBackgroundsPage.js';
 import { UsagePage } from './pages/UsagePage.js';
 import { CompositionIndexPage } from './pages/compositions/CompositionIndexPage.js';
 import { CompositionsPage } from './pages/compositions/CompositionsPage.js';
+import { AdminComponentsPage } from './pages/admin/AdminComponentsPage.js';
 import type { DocPageId } from './types.js';
 
 function getTypographyPreviewStyle(token: string): CSSProperties {
@@ -115,6 +116,9 @@ export function AppContent({ page }: { page: DocPageId }) {
   }
   if (page === 'icons') {
     return <IconsPage />;
+  }
+  if (page === 'admin-data-table') {
+    return <AdminComponentsPage />;
   }
   if (isCoreComponentPage(page)) {
     return <CoreComponentsPage page={page} />;

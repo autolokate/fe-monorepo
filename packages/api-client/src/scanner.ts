@@ -1,4 +1,5 @@
 import type { ApiClient } from './client.js';
+import type { RcRecordDto } from './vehicles.js';
 import { endpoints } from './endpoints.js';
 import { unwrapEnvelope } from './envelope.js';
 
@@ -24,16 +25,7 @@ export type ParkVehicleLookupBody = {
   plate: string;
 };
 
-export type BystanderRcRecordDto = {
-  registration: string;
-  make: string | null;
-  model: string | null;
-  year: number | null;
-  fuel: string | null;
-  insuranceStatus: string | null;
-  pucStatus: string | null;
-  rcValidTill: string | null;
-};
+export type BystanderRcRecordDto = RcRecordDto;
 
 export type RequestScanUploadBody = {
   contentType: string;

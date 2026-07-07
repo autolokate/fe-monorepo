@@ -84,6 +84,26 @@ export const endpoints = {
     emergencyCancel: (alertId: string) =>
       `/v1/emergency/${encodeURIComponent(alertId)}/cancel`,
   },
+  admin: {
+    auditEvents: '/admin/v1/audit-events',
+    clawbacks: '/admin/v1/clawbacks',
+    inventory: '/admin/v1/inventory',
+    ownershipTransfers: '/admin/v1/ownership-transfers',
+    approveOwnershipTransfer: (id: string) =>
+      `/admin/v1/ownership-transfers/${encodeURIComponent(id)}/approve`,
+    fulfilPartnerReorder: (id: string) =>
+      `/admin/v1/partner-reorders/${encodeURIComponent(id)}/fulfil`,
+    promos: '/admin/v1/promos',
+    qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
+    qrBatches: '/admin/v1/qr-batches',
+    generateQrBatch: (id: string) =>
+      `/admin/v1/qr-batches/${encodeURIComponent(id)}/generate`,
+    provisionQrBatch: (id: string) =>
+      `/admin/v1/qr-batches/${encodeURIComponent(id)}/provision`,
+    replaceQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/replace`,
+    retireQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/retire`,
+    settlementBatch: '/admin/v1/settlement-batch',
+  },
 } as const;
 
 export type EndpointGroup = keyof typeof endpoints;

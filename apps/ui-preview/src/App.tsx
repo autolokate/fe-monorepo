@@ -45,6 +45,7 @@ const pageDescriptions: Record<DocPageId, string> = {
   'core-container': 'Max-width content container',
   'core-divider': 'Horizontal divider rule',
   'core-icon-button': 'Accessible icon-only button',
+  'admin-data-table': 'Admin DataTable, headers, metrics, and empty states',
   'composition-index': 'Figma composition validation overview',
   'composition-form-section': 'Form field stack — phone, plate, name, OTP',
   'composition-vehicle-info': 'Vehicle detail rows with protection status',

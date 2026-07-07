@@ -1,0 +1,9 @@
+import { z } from 'zod';
+
+import { adminReorderIdSchema } from '@/platform/validation/admin-openapi-schemas.js';
+
+export const fulfilPartnerReorderSchema = z.object({
+  reorderId: adminReorderIdSchema,
+});
+
+export type FulfilPartnerReorderFormValues = z.infer<typeof fulfilPartnerReorderSchema>;

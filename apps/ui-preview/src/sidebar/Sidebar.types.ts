@@ -14,6 +14,7 @@ export type DocNavGroupId =
   | 'core-display'
   | 'core-progress'
   | 'core-layout'
+  | 'admin'
   | 'composition-validation';
 
 export type DocNavItem = {

@@ -1,0 +1,53 @@
+.al-metric-card,
+.al-stat-card {
+  padding: var(--al-space-5);
+  transition: box-shadow var(--al-motion-fast) var(--al-admin-ease-sidebar);
+}
+
+.al-metric-card:hover,
+.al-stat-card:hover {
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--al-color-on-surface) 8%, transparent),
+    0 0 0 1px var(--al-color-border-subtle);
+}
+
+.al-stat-card {
+  display: flex;
+  gap: var(--al-space-4);
+  align-items: flex-start;
+}
+
+.al-stat-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.al-stat-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--al-admin-radius-control);
+  background: var(--al-color-surface-elevated);
+  color: var(--al-color-text-muted);
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+}
+
+.al-metric-card__trend {
+  font-size: var(--al-text-caption-size);
+  font-weight: var(--al-font-weight-medium);
+  line-height: var(--al-text-caption-line-height);
+}
+
+.al-metric-card__trend--up {
+  color: var(--al-signal-green);
+}
+
+.al-metric-card__trend--down {
+  color: var(--al-signal-red);
+}
+
+.al-metric-card__trend--neutral {
+  color: var(--al-color-text-muted);
+}

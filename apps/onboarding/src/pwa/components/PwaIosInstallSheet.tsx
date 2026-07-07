@@ -1,7 +1,7 @@
 import { AlButton, AlPermissionSheet } from '@autolokate/ui';
 
 import { isIosChrome, isIosEdge } from '../device-detection.js';
-import { PWA_INSTALL_DISMISS_KEY, PWA_INSTALL_DISMISS_MS } from '../constants.js';
+import { readPwaInstallDismissedRecently, writePwaInstallDismissedAt } from '../install-dismiss-storage.js';
 
 import './PwaIosInstallSheet.css';
 
@@ -10,32 +10,12 @@ type PwaIosInstallSheetProps = {
   onDismiss: () => void;
 };
 
-function readDismissedRecently(): boolean {
-  try {
-    const raw = window.localStorage.getItem(PWA_INSTALL_DISMISS_KEY);
-    if (!raw) {
-      return false;
-    }
-    const dismissedAt = Number(raw);
-    if (!Number.isFinite(dismissedAt)) {
-      return false;
-    }
-    return Date.now() - dismissedAt < PWA_INSTALL_DISMISS_MS;
-  } catch {
-    return false;
-  }
-}
-
 export function shouldShowIosInstallSheet(): boolean {
-  return !readDismissedRecently();
+  return !readPwaInstallDismissedRecently();
 }
 
 export function dismissIosInstallSheet(): void {
-  try {
-    window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
-  } catch {
-    // ignore private mode / storage disabled
-  }
+  writePwaInstallDismissedAt();
 }
 
 function getIosNonSafariInstallCopy(): { title: string; description: string } {

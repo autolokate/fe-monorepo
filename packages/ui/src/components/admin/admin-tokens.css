@@ -1,0 +1,76 @@
+/**
+ * Admin dashboard semantic tokens — aliases to @autolokate/design-system roles.
+ * Import via admin/index.ts. Do not hardcode colors in admin components.
+ */
+:root {
+  /* Content */
+  --al-color-text: var(--al-color-on-surface);
+  --al-color-text-muted: var(--al-color-on-surface-muted);
+  --al-color-text-subtle: color-mix(in srgb, var(--al-color-on-surface-muted) 72%, transparent);
+  --al-color-canvas: var(--al-color-background);
+  --al-color-border: var(--al-color-outline);
+  --al-color-border-subtle: color-mix(in srgb, var(--al-color-outline) 55%, transparent);
+  --al-color-surface-elevated: var(--al-color-surface-variant);
+  --al-color-surface-hover: color-mix(in srgb, var(--al-color-on-surface) 4%, var(--al-color-surface));
+  --al-color-surface-active: color-mix(in srgb, var(--al-color-on-surface) 7%, var(--al-color-surface));
+  --al-color-focus-ring: var(--al-color-focus);
+
+  /* Numeric spacing scale (4px rhythm) */
+  --al-space-0: 0;
+  --al-space-1: var(--al-space-xs);
+  --al-space-2: var(--al-space-sm);
+  --al-space-3: var(--al-space-md);
+  --al-space-4: var(--al-space-lg);
+  --al-space-5: var(--al-space-xl);
+  --al-space-6: var(--al-space-xxl);
+  --al-space-7: 2.5rem;
+  --al-space-8: var(--al-space-xxxl);
+
+  /* Admin shell layout */
+  --al-admin-sidebar-width: 15.5rem;
+  --al-admin-sidebar-collapsed-width: 4.25rem;
+  --al-admin-header-height: 3.625rem;
+  --al-admin-content-max-width: 75rem;
+  --al-admin-content-padding-x: var(--al-space-xxl);
+  --al-admin-content-padding-y: var(--al-space-xl);
+  --al-admin-section-gap: var(--al-space-xl);
+  --al-admin-nav-item-height: 2.375rem;
+  --al-admin-nav-icon-size: 1.125rem;
+  --al-admin-radius-panel: var(--al-radius-lg);
+  --al-admin-radius-control: var(--al-radius-md);
+
+  /* Elevation */
+  --al-admin-shadow-panel: 0 1px 2px color-mix(in srgb, var(--al-color-on-surface) 6%, transparent),
+    0 0 0 1px var(--al-color-border-subtle);
+  --al-admin-shadow-header: 0 1px 0 var(--al-color-border-subtle);
+  --al-admin-shadow-sidebar: 1px 0 0 var(--al-color-border-subtle);
+  --al-admin-shadow-overlay: 0 8px 28px color-mix(in srgb, var(--al-color-on-surface) 14%, transparent),
+    0 0 0 1px var(--al-color-border-subtle);
+  --al-admin-shadow-dropdown: 0 4px 16px color-mix(in srgb, var(--al-color-on-surface) 10%, transparent),
+    0 0 0 1px var(--al-color-border-subtle);
+
+  /* Motion */
+  --al-admin-motion-sidebar: var(--al-motion-standard);
+  --al-admin-ease-sidebar: var(--al-motion-ease-standard);
+}
+
+/* Shared surfaces */
+.al-admin-surface {
+  background: var(--al-color-surface);
+  border-radius: var(--al-admin-radius-panel);
+  box-shadow: var(--al-admin-shadow-panel);
+}
+
+.al-admin-surface--flat {
+  box-shadow: none;
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-admin-muted {
+  color: var(--al-color-text-muted);
+}
+
+.al-admin-focus-ring:focus-visible {
+  outline: 2px solid var(--al-color-focus-ring);
+  outline-offset: 2px;
+}

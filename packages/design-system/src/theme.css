@@ -21,12 +21,16 @@
   --al-signal-red-bright: #ff4a3d;
   --al-signal-amber: #f5a623;
   --al-signal-green: #1fa24a;
+  --al-signal-blue: #1a73e8;
+  --al-signal-blue-bright: #8ab4f8;
 
   /* Figma CC signal aliases — used by promoted PWA components */
   --al-color-signal-green: var(--al-signal-green);
   --al-color-signal-amber: var(--al-signal-amber);
   --al-color-signal-red: var(--al-signal-red);
   --al-color-signal-red-bright: var(--al-signal-red-bright);
+  --al-color-signal-blue: var(--al-signal-blue);
+  --al-color-signal-blue-bright: var(--al-signal-blue-bright);
 
   /* Neutral ramp */
   --al-neutral-0: #ffffff;
@@ -280,7 +284,7 @@ body {
   --al-color-pill-on-surface: var(--al-neutral-1000);
   --al-color-primary: var(--al-brand-black);
   --al-color-on-primary: var(--al-brand-white);
-  --al-color-secondary-border: var(--al-neutral-700);
+  --al-color-secondary-border: var(--al-neutral-300);
   --al-color-emergency: var(--al-signal-red);
   --al-color-on-emergency: var(--al-brand-white);
   --al-color-success: var(--al-signal-green);
@@ -315,7 +319,7 @@ body {
   --al-color-pill-on-surface: var(--al-brand-white);
   --al-color-primary: var(--al-brand-white);
   --al-color-on-primary: var(--al-brand-black);
-  --al-color-secondary-border: var(--al-neutral-700);
+  --al-color-secondary-border: var(--al-neutral-500);
   --al-color-emergency: var(--al-signal-red-bright);
   --al-color-on-emergency: var(--al-brand-white);
   --al-color-success: var(--al-signal-green);
@@ -351,7 +355,7 @@ body {
     --al-color-pill-on-surface: var(--al-brand-white);
     --al-color-primary: var(--al-brand-white);
     --al-color-on-primary: var(--al-brand-black);
-    --al-color-secondary-border: var(--al-neutral-700);
+    --al-color-secondary-border: var(--al-neutral-500);
     --al-color-emergency: var(--al-signal-red-bright);
     --al-color-on-emergency: var(--al-brand-white);
     --al-color-success: var(--al-signal-green);

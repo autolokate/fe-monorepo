@@ -1,27 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { PWA_INSTALL_DISMISS_KEY, PWA_INSTALL_DISMISS_MS } from './constants.js';
+import {
+  readPwaInstallDismissedRecently,
+  writePwaInstallDismissedAt,
+} from './install-dismiss-storage.js';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 };
-
-function readDismissedRecently(): boolean {
-  try {
-    const raw = window.localStorage.getItem(PWA_INSTALL_DISMISS_KEY);
-    if (!raw) {
-      return false;
-    }
-    const dismissedAt = Number(raw);
-    if (!Number.isFinite(dismissedAt)) {
-      return false;
-    }
-    return Date.now() - dismissedAt < PWA_INSTALL_DISMISS_MS;
-  } catch {
-    return false;
-  }
-}
 
 function isStandalone(): boolean {
   return (
@@ -33,7 +20,7 @@ function isStandalone(): boolean {
 export function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(isStandalone());
-  const [dismissedRecently, setDismissedRecently] = useState(readDismissedRecently);
+  const [dismissedRecently, setDismissedRecently] = useState(readPwaInstallDismissedRecently);
 
   useEffect(() => {
     const onBeforeInstall = (event: Event) => {
@@ -72,21 +59,13 @@ export function usePwaInstall() {
       return true;
     }
 
-    try {
-      window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
-    } catch {
-      // ignore
-    }
+    writePwaInstallDismissedAt();
     setDismissedRecently(true);
     return false;
   }, [deferredPrompt]);
 
   const dismissPrompt = useCallback(() => {
-    try {
-      window.localStorage.setItem(PWA_INSTALL_DISMISS_KEY, String(Date.now()));
-    } catch {
-      // ignore
-    }
+    writePwaInstallDismissedAt();
     setDismissedRecently(true);
   }, []);
 

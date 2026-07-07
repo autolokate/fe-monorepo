@@ -1,0 +1,75 @@
+.admin-mutation-result {
+  padding: var(--al-space-md);
+  border-radius: var(--al-admin-radius-control);
+  background: var(--al-color-surface-elevated);
+  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+}
+
+.admin-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--al-space-2) var(--al-space-3);
+  min-height: 2.5rem;
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-admin-radius-control);
+  background: var(--al-color-surface-elevated);
+  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+}
+
+.admin-action-bar--notice {
+  gap: var(--al-space-3);
+}
+
+.admin-action-bar__label {
+  flex-shrink: 0;
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  font-weight: var(--al-font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--al-color-text-subtle);
+}
+
+.admin-action-bar__actions {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--al-space-2);
+  min-width: 0;
+}
+
+.admin-action-bar__trailing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--al-space-2);
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .admin-action-bar {
+    align-items: flex-start;
+  }
+
+  .admin-action-bar__label {
+    width: 100%;
+  }
+
+  .admin-action-bar__trailing {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Legacy aliases — finance / ownership result blocks inside expanded sections */
+.admin-operations-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-md);
+}
+
+.admin-operations-results:empty {
+  display: none;
+}

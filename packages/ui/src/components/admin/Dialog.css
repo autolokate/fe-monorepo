@@ -1,0 +1,91 @@
+.al-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--al-color-overlay);
+  animation: al-fade-in var(--al-motion-fast) var(--al-admin-ease-sidebar);
+}
+
+.al-dialog-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 51;
+  width: min(28rem, calc(100vw - 2rem));
+  transform: translate(-50%, -50%);
+  padding: var(--al-space-6);
+  border-radius: var(--al-admin-radius-panel);
+  background: var(--al-color-surface);
+  box-shadow: var(--al-admin-shadow-overlay);
+  animation: al-scale-in var(--al-motion-standard) var(--al-admin-ease-sidebar);
+}
+
+.al-sheet {
+  position: fixed;
+  top: 0;
+  z-index: 51;
+  height: 100vh;
+  width: min(28rem, 100vw);
+  padding: var(--al-space-6);
+  background: var(--al-color-surface);
+  box-shadow: var(--al-admin-shadow-overlay);
+  overflow-y: auto;
+  animation: al-slide-up var(--al-motion-standard) var(--al-admin-ease-sidebar);
+}
+
+.al-sheet--right {
+  right: 0;
+  border-left: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-sheet--left {
+  left: 0;
+  border-right: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-sheet__body {
+  margin-top: var(--al-space-5);
+}
+
+.al-sheet__footer {
+  position: sticky;
+  bottom: 0;
+  margin-top: var(--al-space-5);
+  padding-top: var(--al-space-4);
+  border-top: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  background: var(--al-color-surface);
+}
+
+.al-dialog-close {
+  position: absolute;
+  top: var(--al-space-4);
+  right: var(--al-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--al-admin-radius-control);
+  background: var(--al-color-surface-elevated);
+  color: var(--al-color-text-muted);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--al-motion-fast) var(--al-admin-ease-sidebar),
+    color var(--al-motion-fast) var(--al-admin-ease-sidebar);
+}
+
+.al-dialog-close:hover {
+  background: var(--al-color-surface-hover);
+  color: var(--al-color-text);
+}
+
+.al-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--al-space-2);
+  margin-top: var(--al-space-6);
+  padding-top: var(--al-space-4);
+  border-top: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}

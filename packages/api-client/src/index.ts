@@ -64,7 +64,6 @@ export {
   type PromoPreviewDto,
   type ValidatePromoBody,
 } from './promos.js';
-export { normalizeTokenPair } from './auth.js';
 export {
   previewActivation,
   redeemActivation,
@@ -144,4 +143,45 @@ export { normalizeApiError, type NormalizedApiError, type NormalizedErrorCode } 
 export { wireTokenRefresh } from './interceptors.js';
 export { unwrapEnvelope, readEnvelopeMeta, type ApiEnvelope, type ApiErrorEnvelope } from './envelope.js';
 export { endpoints, type EndpointGroup } from './endpoints.js';
+export {
+  createAdminPromo,
+  createQrBatch,
+  generateQrBatchCodes,
+  listAdminPromos,
+  listQrInventory,
+  provisionQrBatch,
+  qrAutoDetachSweep,
+  queryAuditEvents,
+  queryAuditEventsPage,
+  replaceQrCode,
+  retireQrCode,
+  createClawback,
+  initiateOwnershipTransfer,
+  approveOwnershipTransfer,
+  fulfilPartnerReorder,
+  runSettlementBatch,
+  type ClawbackBody,
+  type ClawbackResultDto,
+  type InitiateTransferBody,
+  type ApproveTransferBody,
+  type TransferInitiatedDto,
+  type TransferCompletedDto,
+  type SettlementBatchResultDto,
+  type ReorderFulfilResultDto,
+  type AdminPromoDto,
+  type AuditAction,
+  type AuditEventDto,
+  type AuditEventsPageResult,
+  type BatchSummaryDto,
+  type CreateBatchBody,
+  type CreatePromoBody,
+  type ListQrInventoryQuery,
+  type PaginationDto,
+  type QrAutoDetachResultDto,
+  type QrBatchChannel,
+  type QrBatchStatus,
+  type QueryAuditEventsParams,
+  type ReplacedDto,
+  type RetiredDto,
+} from './admin.js';
 export type { Plan, User, Vehicle } from '@autolokate/types';

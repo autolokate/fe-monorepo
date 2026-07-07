@@ -19,7 +19,6 @@
     "@autolokate/auth": "workspace:*",
     "@autolokate/brand": "workspace:*",
     "@autolokate/design-system": "workspace:*",
-    "@autolokate/hooks": "workspace:*",
     "@autolokate/icons": "workspace:*",
     "@autolokate/types": "workspace:*",
     "@autolokate/ui": "workspace:*",

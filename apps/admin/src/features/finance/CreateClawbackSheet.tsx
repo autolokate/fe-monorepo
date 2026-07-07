@@ -1,0 +1,118 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { ClawbackResultDto } from '@autolokate/api-client';
+import { AlButton, AlInput, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+
+import {
+  createClawbackSchema,
+  type CreateClawbackFormValues,
+} from '@/features/finance/create-clawback-schema.js';
+import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations.js';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
+
+export type CreateClawbackSheetProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreated?: (result: ClawbackResultDto) => void;
+};
+
+export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateClawbackSheetProps) {
+  const abortRef = useRef<AbortController | null>(null);
+  const { clawbackMutation, mapMutationError } = useFinanceMutations();
+
+  const form = useForm<CreateClawbackFormValues>({
+    resolver: zodResolver(createClawbackSchema),
+    defaultValues: { paymentRef: '' },
+  });
+
+  useEffect(() => {
+    if (!open) {
+      abortRef.current?.abort();
+      abortRef.current = null;
+      form.reset({ paymentRef: '' });
+    }
+  }, [form, open]);
+
+  const submitError = clawbackMutation.isError
+    ? mapMutationError(clawbackMutation.error).userMessage
+    : null;
+
+  const onSubmit = form.handleSubmit(async (values) => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      const result = await clawbackMutation.mutateAsync({
+        body: { paymentRef: values.paymentRef },
+        signal: controller.signal,
+      });
+      onCreated?.(result);
+      onOpenChange(false);
+    } catch {
+      // Error surfaced via mutation state + toast.
+    }
+  });
+
+  return (
+    <AlSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Create clawback"
+      description="POST /admin/v1/clawbacks — reverse a captured payment and claw back commission."
+    >
+      <form
+        onSubmit={(event) => {
+          void onSubmit(event);
+        }}
+      >
+        <AlStack gap="lg">
+          <AlInput
+            label="Payment reference"
+            mono
+            autoComplete="off"
+            {...form.register('paymentRef')}
+            errorText={form.formState.errors.paymentRef?.message}
+            helperText="Opaque PaymentRef of the CAPTURED payment to reverse."
+          />
+
+          {submitError ? <AlText role="alert">{submitError}</AlText> : null}
+
+          <AlStack gap="sm" direction="row">
+            <AlButton
+              type="submit"
+              loading={clawbackMutation.isPending}
+              disabled={clawbackMutation.isPending}
+            >
+              Create clawback
+            </AlButton>
+            <AlButton
+              type="button"
+              variant="secondary"
+              disabled={clawbackMutation.isPending}
+              onClick={() => {
+                onOpenChange(false);
+              }}
+            >
+              Cancel
+            </AlButton>
+          </AlStack>
+        </AlStack>
+      </form>
+    </AlSheet>
+  );
+}
+
+export function ClawbackResultPanel({ result }: { result: ClawbackResultDto }) {
+  return (
+    <AdminMutationResultPanel
+      title="Clawback result"
+      fields={[
+        { label: 'Payment reference', value: result.paymentRef },
+        { label: 'Payment state', value: result.paymentState },
+        { label: 'Commission status', value: result.commissionStatus ?? '—' },
+      ]}
+    />
+  );
+}

@@ -22,7 +22,8 @@ export type CoreComponentPageId =
   | 'core-grid'
   | 'core-container'
   | 'core-divider'
-  | 'core-icon-button';
+  | 'core-icon-button'
+  | 'admin-data-table';
 
 export type CompositionPageId =
   | 'composition-index'

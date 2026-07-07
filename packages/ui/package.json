@@ -18,7 +18,11 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@autolokate/design-system": "workspace:*"
+    "@autolokate/design-system": "workspace:*",
+    "@radix-ui/react-dialog": "^1.1.17",
+    "@radix-ui/react-dropdown-menu": "^2.1.18",
+    "@radix-ui/react-tabs": "^1.1.13",
+    "@tanstack/react-table": "^8.21.3"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
