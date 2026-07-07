@@ -1,11 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { AlScreenSpinner } from '@autolokate/ui';
 
 import { adminPaths } from '@/app/routes/admin-paths.js';
 import { RequireAuth } from '@/app/routes/RequireAuth.js';
 import { AdminShellLayout } from '@/layouts/AdminShellLayout.js';
 import { LoginPage } from '@/features/auth/LoginPage.js';
+import { AdminPageLoader } from '@/platform/components/AdminPageLoader.js';
 
 const DashboardPage = lazy(() =>
   import('@/features/dashboard/DashboardPage.js').then((module) => ({
@@ -50,7 +50,7 @@ const OwnershipTransfersPage = lazy(() =>
 );
 
 function LazyFallback() {
-  return <AlScreenSpinner aria-label="Loading admin page…" />;
+  return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
 
 export function AdminRoutes() {

@@ -23,6 +23,7 @@ import {
 import { useAuditColumns } from '@/features/audit/audit-columns.js';
 import { useAuditExplorer } from '@/hooks/audit/useAuditExplorer.js';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
 import { buildPageSummary } from '@/platform/components/build-page-summary.js';
 import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
 
@@ -116,93 +117,102 @@ export function AuditEventsPage() {
           }
         />
 
-        <div className="audit-filters-inline" aria-label="Audit filters">
-          <AuditActionFilter
-            compact
-            value={filters.action}
-            onChange={(action) => {
-              setFilters((current) => ({ ...current, action }));
-              setFilterError(null);
-            }}
-            errorText={filterError}
+        <AdminDataBlock
+          filters={
+            <>
+              <AdminFilterField label="Action">
+                <AuditActionFilter
+                  compact
+                  value={filters.action}
+                  onChange={(action) => {
+                    setFilters((current) => ({ ...current, action }));
+                    setFilterError(null);
+                  }}
+                  errorText={filterError}
+                />
+              </AdminFilterField>
+              <AdminFilterField label="Target type">
+                <AlInput
+                  value={filters.targetType}
+                  placeholder="e.g. batch, promo"
+                  onChange={(event) => {
+                    setFilters((current) => ({ ...current, targetType: event.target.value }));
+                  }}
+                />
+              </AdminFilterField>
+              <div className="audit-filters-inline__actions">
+                <AlButton size="sm" onClick={applyFilters}>
+                  Apply
+                </AlButton>
+                {filtersActive ? (
+                  <AlButton size="sm" variant="secondary" onClick={clearFilters}>
+                    Clear
+                  </AlButton>
+                ) : null}
+                <AlButton
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setShowAdvancedFilters((value) => !value);
+                  }}
+                >
+                  {showAdvancedFilters ? 'Less' : 'More'}
+                </AlButton>
+                {filtersActive ? <AlBadge variant="info">Filtered</AlBadge> : null}
+              </div>
+              {showAdvancedFilters ? (
+                <div className="audit-filters-advanced">
+                  <AdminFilterField label="Target ID">
+                    <AlInput
+                      value={filters.targetId}
+                      placeholder="Entity identifier"
+                      mono
+                      onChange={(event) => {
+                        setFilters((current) => ({ ...current, targetId: event.target.value }));
+                      }}
+                    />
+                  </AdminFilterField>
+                  <AdminFilterField label="From">
+                    <AlInput
+                      type="datetime-local"
+                      value={filters.from}
+                      onChange={(event) => {
+                        setFilters((current) => ({ ...current, from: event.target.value }));
+                      }}
+                    />
+                  </AdminFilterField>
+                  <AdminFilterField label="To">
+                    <AlInput
+                      type="datetime-local"
+                      value={filters.to}
+                      onChange={(event) => {
+                        setFilters((current) => ({ ...current, to: event.target.value }));
+                      }}
+                    />
+                  </AdminFilterField>
+                </div>
+              ) : null}
+            </>
+          }
+        >
+          <AlDataTable
+            {...ADMIN_LIST_TABLE_PROPS}
+            tableId="audit-events"
+            columns={columns}
+            data={events}
+            loading={isLoading}
+            isRefreshing={isFetching}
+            error={userErrorMessage && events.length > 0 ? userErrorMessage : null}
+            onRetry={refresh}
+            pageSize={appliedFilters.limit}
+            pageSizeOptions={[...AUDIT_PAGE_SIZE_OPTIONS]}
+            globalSearchPlaceholder="Search loaded events…"
+            emptyTitle="No audit events found"
+            emptyDescription="Adjust filters or refresh the audit log."
+            getRowId={(row) => row.id}
+            onRowClick={openEvent}
           />
-
-          <AlInput
-            value={filters.targetType}
-            placeholder="Target type"
-            onChange={(event) => {
-              setFilters((current) => ({ ...current, targetType: event.target.value }));
-            }}
-          />
-
-          <div className="audit-filters-inline__actions">
-            <AlButton size="sm" onClick={applyFilters}>
-              Apply
-            </AlButton>
-            {filtersActive ? (
-              <AlButton size="sm" variant="secondary" onClick={clearFilters}>
-                Clear
-              </AlButton>
-            ) : null}
-            <AlButton
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                setShowAdvancedFilters((value) => !value);
-              }}
-            >
-              {showAdvancedFilters ? 'Less' : 'More'}
-            </AlButton>
-            {filtersActive ? <AlBadge variant="info">Filtered</AlBadge> : null}
-          </div>
-        </div>
-
-        {showAdvancedFilters ? (
-          <div className="audit-filters-advanced">
-            <AlInput
-              value={filters.targetId}
-              placeholder="Target ID"
-              mono
-              onChange={(event) => {
-                setFilters((current) => ({ ...current, targetId: event.target.value }));
-              }}
-            />
-            <AlInput
-              type="datetime-local"
-              value={filters.from}
-              placeholder="From"
-              onChange={(event) => {
-                setFilters((current) => ({ ...current, from: event.target.value }));
-              }}
-            />
-            <AlInput
-              type="datetime-local"
-              value={filters.to}
-              placeholder="To"
-              onChange={(event) => {
-                setFilters((current) => ({ ...current, to: event.target.value }));
-              }}
-            />
-          </div>
-        ) : null}
-
-        <AlDataTable
-          {...ADMIN_LIST_TABLE_PROPS}
-          tableId="audit-events"
-          columns={columns}
-          data={events}
-          loading={isLoading}
-          isRefreshing={isFetching}
-          error={userErrorMessage && events.length > 0 ? userErrorMessage : null}
-          onRetry={refresh}
-          pageSize={appliedFilters.limit}
-          pageSizeOptions={[...AUDIT_PAGE_SIZE_OPTIONS]}
-          globalSearchPlaceholder="Search loaded events…"
-          emptyTitle="No audit events found"
-          emptyDescription="Adjust filters or refresh the audit log."
-          getRowId={(row) => row.id}
-          onRowClick={openEvent}
-        />
+        </AdminDataBlock>
 
         {hasMore ? (
           <div className="audit-load-more">

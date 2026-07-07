@@ -6,6 +6,7 @@ export const ADMIN_LIST_TABLE_PROPS = {
   enableColumnVisibility: false,
   enableCopyCell: false,
   stickyHeader: true,
+  stickyToolbar: false,
   pageSize: 20,
   pageSizeOptions: [10, 20, 50, 100],
 };

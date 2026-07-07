@@ -1,5 +1,6 @@
 import { AlButton, AlIconButton } from '@autolokate/ui';
 
+import { AdminActivityNotification } from '@/platform/components/AdminActivityNotification.js';
 import { ThemeToggleButton } from '@/platform/theme/ThemeToggleButton.js';
 import { useAdminAuth } from '@/providers/AdminAuthProvider.js';
 
@@ -45,6 +46,7 @@ export function AdminHeader({ onOpenCommandPalette, onOpenMobileNav }: AdminHead
           <span className="admin-command-trigger__kbd">⌘K</span>
         </AlButton>
         <ThemeToggleButton />
+        <AdminActivityNotification />
         {profile?.name ? (
           <div className="admin-shell-profile" title={session?.role ? `Role: ${session.role}` : undefined}>
             <span className="admin-shell-profile__avatar" aria-hidden>

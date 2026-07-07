@@ -15,6 +15,7 @@ import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters.
 import { useInventoryColumns } from '@/features/inventory/inventory-columns.js';
 import { useQrInventory } from '@/hooks/inventory/useQrInventory.js';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
 import { AdminMoreActions } from '@/platform/components/AdminMoreActions.js';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
@@ -146,29 +147,34 @@ export function QrInventoryPage() {
           }
         />
 
-        <AlDataTable
-          {...ADMIN_LIST_TABLE_PROPS}
-          tableId="qr-inventory"
-          columns={columns}
-          data={batches}
-          loading={isLoading}
-          isRefreshing={isFetching}
-          error={userErrorMessage && data ? userErrorMessage : null}
-          onRetry={refresh}
-          toolbarTrailing={
-            <AdminFilterChips
-              options={INVENTORY_STATE_FILTERS}
-              value={stateFilter}
-              onChange={setStateFilter}
-              aria-label="Batch status"
-            />
+        <AdminDataBlock
+          filters={
+            <AdminFilterField label="Status">
+              <AdminFilterChips
+                options={INVENTORY_STATE_FILTERS}
+                value={stateFilter}
+                onChange={setStateFilter}
+                aria-label="Batch status"
+              />
+            </AdminFilterField>
           }
-          globalSearchPlaceholder="Search batch code or channel…"
-          emptyTitle="No batches found"
-          emptyDescription="Try another status filter or create a batch."
-          getRowId={(row) => row.id}
-          onRowClick={openBatch}
-        />
+        >
+          <AlDataTable
+            {...ADMIN_LIST_TABLE_PROPS}
+            tableId="qr-inventory"
+            columns={columns}
+            data={batches}
+            loading={isLoading}
+            isRefreshing={isFetching}
+            error={userErrorMessage && data ? userErrorMessage : null}
+            onRetry={refresh}
+            globalSearchPlaceholder="Search batch code or channel…"
+            emptyTitle="No batches found"
+            emptyDescription="Try another status filter or create a batch."
+            getRowId={(row) => row.id}
+            onRowClick={openBatch}
+          />
+        </AdminDataBlock>
 
         <CreateBatchSheet
           open={createOpen}

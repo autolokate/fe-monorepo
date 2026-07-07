@@ -3,10 +3,26 @@ import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
 
 import { batchStatusTone } from '@/platform/utils/batch-status.js';
 
+function formatShortDate(value: string | null): string {
+  if (!value) {
+    return '—';
+  }
+  return new Date(value).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export const dashboardBatchColumns: ColumnDef<BatchSummaryDto>[] = [
   {
     accessorKey: 'batchCode',
-    header: 'Batch',
+    header: 'Batch code',
+    cell: ({ row }) => (
+      <span className="admin-table-primary-cell" title={row.original.batchCode}>
+        {row.original.batchCode}
+      </span>
+    ),
   },
   {
     accessorKey: 'channel',
@@ -21,7 +37,7 @@ export const dashboardBatchColumns: ColumnDef<BatchSummaryDto>[] = [
   },
   {
     accessorKey: 'totalCount',
-    header: 'Total',
+    header: 'Total QR',
     cell: ({ row }) => row.original.totalCount.toLocaleString(),
   },
   {
@@ -32,6 +48,6 @@ export const dashboardBatchColumns: ColumnDef<BatchSummaryDto>[] = [
   {
     accessorKey: 'createdAt',
     header: 'Created',
-    cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
+    cell: ({ row }) => formatShortDate(row.original.createdAt),
   },
 ];

@@ -13,6 +13,7 @@ import { PromoDetailSheet } from '@/features/promos/PromoDetailSheet.js';
 import { PROMO_STATUS_FILTERS } from '@/features/promos/promo-filters.js';
 import { usePromoColumns } from '@/features/promos/promo-columns.js';
 import { usePromoManagement } from '@/hooks/promos/usePromoManagement.js';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
 import { buildPageSummary } from '@/platform/components/build-page-summary.js';
@@ -103,29 +104,34 @@ export function PromoManagementPage() {
           }
         />
 
-        <AlDataTable
-          {...ADMIN_LIST_TABLE_PROPS}
-          tableId="promos"
-          columns={columns}
-          data={promos}
-          loading={isLoading}
-          isRefreshing={isFetching}
-          error={userErrorMessage && data ? userErrorMessage : null}
-          onRetry={refresh}
-          toolbarTrailing={
-            <AdminFilterChips
-              options={PROMO_STATUS_FILTERS}
-              value={statusFilter}
-              onChange={setStatusFilter}
-              aria-label="Promo status"
-            />
+        <AdminDataBlock
+          filters={
+            <AdminFilterField label="Status">
+              <AdminFilterChips
+                options={PROMO_STATUS_FILTERS}
+                value={statusFilter}
+                onChange={setStatusFilter}
+                aria-label="Promo status"
+              />
+            </AdminFilterField>
           }
-          globalSearchPlaceholder="Search promo code…"
-          emptyTitle="No promos found"
-          emptyDescription="Create a promo or try another status filter."
-          getRowId={(row) => row.id}
-          onRowClick={openPromo}
-        />
+        >
+          <AlDataTable
+            {...ADMIN_LIST_TABLE_PROPS}
+            tableId="promos"
+            columns={columns}
+            data={promos}
+            loading={isLoading}
+            isRefreshing={isFetching}
+            error={userErrorMessage && data ? userErrorMessage : null}
+            onRetry={refresh}
+            globalSearchPlaceholder="Search promo code…"
+            emptyTitle="No promos found"
+            emptyDescription="Create a promo or try another status filter."
+            getRowId={(row) => row.id}
+            onRowClick={openPromo}
+          />
+        </AdminDataBlock>
 
         <CreatePromoSheet
           open={createOpen}
