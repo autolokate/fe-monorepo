@@ -5,6 +5,7 @@ import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/layouts/Footer";
 import { Header, PremiumHeader } from "@/layouts/Header";
+import { MobileBottomNav } from "@/layouts/MobileBottomNav";
 
 /**
  * Conditional site chrome. Routes under `/auth/**` are full-bleed flows
@@ -21,7 +22,7 @@ export function Chrome({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="relative flex min-h-screen min-w-0 flex-col">
+    <div className="relative flex min-h-screen min-w-0 flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
       {isHome ? <PremiumHeader overDarkHero /> : <Header />}
       <main
         className={cn(
@@ -32,6 +33,7 @@ export function Chrome({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      <MobileBottomNav />
     </div>
   );
 }

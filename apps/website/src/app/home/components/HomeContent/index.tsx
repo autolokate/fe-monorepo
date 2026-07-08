@@ -1,34 +1,31 @@
 import { HeroBanner } from "../HeroBanner";
+import { WhyItMattersSection } from "../WhyItMattersSection";
+import { GettingStartedSection } from "../GettingStartedSection";
 import { QrSection } from "../QrSection";
 import { SafetyPacksSection } from "../SafetyPacksSection";
 import { WhyAutolokateSection } from "../WhyAutolokateSection";
-import { HowItWorksSection } from "../HowItWorksSection";
-import { EmergencyProtectionSection } from "../EmergencyProtectionSection";
-import { ExploreAutolokateSection } from "../ExploreAutolokateSection";
-import { FeaturedVideosSection } from "../FeaturedVideosSection";
+import { TestimonialsSection } from "../TestimonialsSection";
+import { FromOwnerSection } from "../FromOwnerSection";
+import { BuiltForIndiaSection } from "../BuiltForIndiaSection";
 import { HomeAmbient } from "../HomeAmbient";
-import { EmergencyBackupSection } from "../EmergencyBackupSection";
 
 /**
- * Top-level home page composition. Sections are arranged so each one is
- * self-contained — `AiMatchedResults` renders nothing until the user has
- * completed the preference finder, so first-time visitors see the marketing
- * sections cleanly without an empty slot in between.
+ * Top-level home page composition. Each section is self-contained and rendered
+ * in order for a clean first-time visitor experience.
  */
 export function HomeContent() {
   return (
     <main className="relative">
       <HomeAmbient />
       <HeroBanner />
+      <WhyItMattersSection />
+      <GettingStartedSection />
       <QrSection />
-      <EmergencyBackupSection />
-      <SafetyPacksSection />
       <WhyAutolokateSection />
-      <HowItWorksSection />
-      <EmergencyProtectionSection />
-      <ExploreAutolokateSection />
-      <FeaturedVideosSection />
-      {/* <AiMatchedResults /> */}
+      <SafetyPacksSection />
+      <TestimonialsSection />
+      <FromOwnerSection />
+      <BuiltForIndiaSection />
     </main>
   );
 }

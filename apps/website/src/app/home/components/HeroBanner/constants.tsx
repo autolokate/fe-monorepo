@@ -2,14 +2,16 @@ import { FileClock, Headphones, MapPinned, QrCode } from "lucide-react";
 import { SAFETY_PACKS_SECTION_ID } from "../SafetyPacksSection/constants";
 import type { HeroCopy, HeroFeature, TrendingModel } from "./types";
 
-export const HERO_BANNER_IMAGE = "/images/home/home_banner.png";
+export const HERO_BANNER_IMAGE = "/images/new-design/newDesignHeroBg.png";
 
 export const HERO_COPY: HeroCopy = {
-  headline: "Your vehicle, always protected.",
+  badge: "Automatic Crash Detection",
+  headline: "Protection that starts",
+  headlineAccent: "when every second matters",
   subheading:
-    "Autolokate keeps your vehicle safe, reachable, and connected with smart QR protection, parking assistance, service records, and faster help in emergencies.",
-  primaryCta: { label: "Get Safety Pack", href: `/#${SAFETY_PACKS_SECTION_ID}` },
-  secondaryCta: { label: "Start Vehicle Finder", href: "" },
+    "Automatic crash detection, family alerts, live location sharing, QR backup, and vehicle records built for safer everyday driving.",
+  primaryCta: { label: "Get Protected Now", href: `/#${SAFETY_PACKS_SECTION_ID}` },
+  secondaryCta: { label: "See How It Works", href: "/how-it-works" },
 };
 
 export const HERO_FEATURES: HeroFeature[] = [

@@ -1,0 +1,143 @@
+/* TestimonialsSection — "What our owners say."
+   Shares the home design language: green accent, token surfaces, and the same
+   hover lift + green ring used by the Getting Started / QR cards. A faint
+   car-silhouette line-art plate sits behind the whole block. */
+
+.accent {
+  color: var(--al-signal-green);
+}
+
+/* Faint car line-art plate. The asset is a light plate that matches the
+   section background, so it simply reads as a subtle watermark. */
+.bgPlate {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("/images/home/testimonialBgImage.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 0.85;
+}
+
+/* ---------- Carousel ---------- */
+.carousel {
+  position: relative;
+}
+
+/* Hide the scrollbar on the horizontal track. The track keeps a little top/
+   bottom padding so a card's hover lift + green ring is never clipped by the
+   horizontal scroll container. */
+.track {
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Testimonial card ---------- */
+.card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--al-signal-green) 50%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--al-signal-green) 30%, transparent),
+    0 16px 36px -22px color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+}
+
+.avatar {
+  display: flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--al-signal-green);
+  border: 1px solid color-mix(in srgb, var(--al-signal-green) 38%, transparent);
+  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
+}
+
+.starActive {
+  color: var(--al-signal-green);
+  fill: var(--al-signal-green);
+}
+
+.starMuted {
+  color: color-mix(in srgb, var(--foreground) 22%, transparent);
+  fill: color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+/* ---------- Dots ---------- */
+.dot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--foreground) 22%, transparent);
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.dotActive {
+  width: 1.5rem;
+  background: var(--al-signal-green);
+}
+
+/* ---------- Stats bar ---------- */
+.statsBar {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 40px -28px rgba(15, 23, 42, 0.28);
+}
+
+/* Vertical hairline between the three columns on every breakpoint. */
+.stat:not(:first-child) {
+  border-left: 1px solid var(--border);
+}
+
+.statIcon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  color: var(--al-signal-green);
+  border: 1px solid color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
+}
+
+@media (min-width: 640px) {
+  .statIcon {
+    height: 2.75rem;
+    width: 2.75rem;
+    border-radius: 0.875rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .dot {
+    transition: none;
+  }
+  .card:hover {
+    transform: none;
+  }
+}

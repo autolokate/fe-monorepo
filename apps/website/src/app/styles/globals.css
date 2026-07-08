@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* Autolokate FE — single light theme.
-   Black accent on near-white surfaces. No light/dark toggle. */
+/* Autolokate FE — light + dark themes.
+   Theme is selected via `data-theme` on <html> (see ThemeProvider), matching
+   the onboarding / ui-preview apps and the shared design-system tokens. */
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
@@ -22,7 +23,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-success: #16a34a;
+  --color-success: var(--success);
   --color-cta: var(--cta);
   --color-cta-foreground: var(--cta-foreground);
   --color-cta-hover: var(--cta-hover);
@@ -38,31 +39,143 @@
 
 :root {
   --radius: 0.875rem;
-  /* Near-white surfaces, black accents. */
-  --background: #fafafa;
-  --foreground: #0a0a0a;
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --accent-foreground: #0a0a0a;
-  --destructive: #dc2626;
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #18181b;
-  --text-dim: #71717a;
-  --cta: #0a0a0a;
+
+  /* Color tokens are mapped onto the shared design-system semantic tokens
+     (@autolokate/design-system/theme.css). They switch automatically with
+     `data-theme` on <html> — no per-theme values are duplicated here. */
+  --background: var(--al-color-background);
+  --foreground: var(--al-color-on-background);
+  --card: var(--al-color-surface);
+  --card-foreground: var(--al-color-on-surface);
+  --popover: var(--al-color-surface);
+  --popover-foreground: var(--al-color-on-surface);
+  --primary: var(--al-color-primary);
+  --primary-foreground: var(--al-color-on-primary);
+  --secondary: var(--al-color-surface-variant);
+  --secondary-foreground: var(--al-color-on-surface);
+  --muted: var(--al-color-surface-variant);
+  --muted-foreground: var(--al-color-on-surface-muted);
+  --accent: var(--al-color-surface-variant);
+  --accent-foreground: var(--al-color-on-surface);
+  --destructive: var(--al-color-danger);
+  --border: var(--al-color-outline);
+  --input: var(--al-color-outline);
+  --ring: var(--al-color-focus);
+  --success: var(--al-color-success);
+  --text-dim: var(--al-color-on-surface-muted);
+  --cta: var(--al-color-primary);
+  --cta-foreground: var(--al-color-on-primary);
+
+  /* Website-only tokens with no design-system equivalent. */
   --cta-hover: #18181b;
-  --cta-foreground: #ffffff;
   --warn-soft: #fff7eb;
   --warn-soft-foreground: #6b4420;
+}
+
+/* Dark values for the few website-only tokens not covered by the
+   design-system semantic tokens above. */
+[data-theme="dark"] {
+  --cta-hover: #e4e4e7;
+  --warn-soft: #2a2113;
+  --warn-soft-foreground: #f5d9a8;
+}
+
+/* Dark theme — adjust decorative surfaces that hardcode light tints so they
+   read correctly on near-black backgrounds. */
+[data-theme="dark"] .glass-panel {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .glass-card {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .shadow-premium {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 10px 28px -10px rgba(0, 0, 0, 0.6),
+    0 28px 56px -28px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .shadow-app-soft {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 48px -28px rgba(0, 0, 0, 0.55),
+    0 32px 64px -36px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .shadow-hero-card {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 22px 56px -28px rgba(0, 0, 0, 0.6),
+    0 40px 80px -40px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .bg-hero-mesh {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 130% 85% at 92% -25%, rgba(228, 228, 231, 0.08), transparent 55%),
+    radial-gradient(ellipse 95% 65% at 5% 105%, rgba(161, 161, 170, 0.07), transparent 50%),
+    radial-gradient(rgba(212, 212, 216, 0.04) 0.8px, transparent 0.8px);
+  background-size: auto, auto, 26px 26px;
+}
+
+[data-theme="dark"] .login-auth-card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 22px 56px -28px rgba(0, 0, 0, 0.6),
+    0 40px 80px -40px rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="dark"] .bg-premium-aurora {
+  background-image:
+    radial-gradient(ellipse 120% 80% at 5% 0%, rgba(228, 228, 231, 0.08), transparent 50%),
+    radial-gradient(ellipse 100% 70% at 95% 10%, rgba(228, 228, 231, 0.06), transparent 48%),
+    linear-gradient(180deg, #0a0a0c 0%, #050506 100%);
+  background-size: 140% 140%, 140% 140%, 100% 100%;
+}
+
+[data-theme="dark"] .card-hover-premium:hover {
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  border-color: rgba(228, 228, 231, 0.22);
+}
+
+[data-theme="dark"] .lift-hover:hover {
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .neon-glow {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .media-cinematic-fade {
+  background: linear-gradient(to top, var(--background) 0%, rgba(10, 10, 12, 0.92) 24%, transparent 100%);
+}
+
+[data-theme="dark"] .media-hero-overlay {
+  background:
+    linear-gradient(to top, var(--background) 0%, rgba(10, 10, 12, 0.92) 32%, transparent 72%),
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(228, 228, 231, 0.05), transparent 55%);
+}
+
+[data-theme="dark"] .media-thumb-overlay {
+  background: linear-gradient(to top, rgba(10, 10, 12, 0.95) 0%, transparent 55%);
+}
+
+[data-theme="dark"] .skeleton-shimmer::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+[data-theme="dark"] ::selection {
+  background: rgba(228, 228, 231, 0.24);
+  color: #fafafa;
 }
 
 @layer base {
@@ -603,13 +716,20 @@
 }
 
 @layer utilities {
-  /* Legacy theme-scoped visibility — kept so existing components don't need
-     edits. Dark variants are hidden; light variants always render. */
+  /* Theme-scoped visibility — show the variant that matches the active theme.
+     `--theme-dark-display` (set per element via the auth constants) preserves
+     the element's intended display type (inline-block / flex / inline-flex). */
   .theme-dark-only {
     display: none !important;
   }
   .theme-light-only {
     display: var(--theme-dark-display, inline-block);
+  }
+  [data-theme="dark"] .theme-light-only {
+    display: none !important;
+  }
+  [data-theme="dark"] .theme-dark-only {
+    display: var(--theme-dark-display, inline-block) !important;
   }
 
   /* Safe areas (notch / home indicator) — use on fixed footers / docks */
@@ -883,4 +1003,8 @@ html {
 .site-breadcrumb-nav .breadcrumb-active-text {
   color: #0a0a0a !important;
   font-weight: 600;
+}
+[data-theme="dark"] .site-breadcrumb-nav [aria-current="page"],
+[data-theme="dark"] .site-breadcrumb-nav .breadcrumb-active-text {
+  color: #fafafa !important;
 }

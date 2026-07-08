@@ -6,12 +6,13 @@ export const QR_SECTION_IMAGE = "/images/home/autolokate_qr_sticker_transparent.
 export const QR_SECTION_BACKGROUND = "/images/home/home_qr_banner.png";
 
 export const QR_SECTION_COPY: QrSectionCopy = {
-  eyebrow: "SMART VEHICLE QR",
+  eyebrow: "Smart Vehicle QR",
   headlineLine1: "One QR.",
-  headlineLine2: "Your vehicle stays connected.",
+  headlineLine2Prefix: "Your vehicle stays ",
+  headlineEmphasis: "connected.",
   subheading:
     "Your Autolokate QR helps others reach you when parked, alert your emergency contacts, and access important vehicle records when needed.",
-  primaryCta: { label: "How QR Works", href: "/how-qr-works" },
+  primaryCta: { label: "How QR Works", href: "/how-it-works" },
 };
 
 export const QR_FEATURES: QrFeature[] = [

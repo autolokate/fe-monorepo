@@ -1,4 +1,13 @@
 import type { SVGProps } from "react";
+import {
+  Home,
+  LayoutGrid,
+  type LucideIcon,
+  ScanLine,
+  ShieldCheck,
+  Smartphone,
+  Tag,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -104,27 +113,44 @@ export function SearchIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   );
 }
 
-/**
- * Fallback nav items rendered when `navigationConfig` is empty.
- * Once you populate `src/navigation/config.ts`, the header will use that instead.
- */
 export interface HeaderNavItem {
   label: string;
   href: string;
   external?: boolean;
-  /** When true, href is rewritten from saved cars/bikes preference (Compare link). */
-  useVehicleCompareHref?: boolean;
-  /** When true, href is rewritten from saved cars/bikes preference (Explore catalogue link). */
-  useVehicleExploreHref?: boolean;
+  /** Glyph shown in the mobile bottom nav (and optional desktop affordances). */
+  icon?: LucideIcon;
+  /** Short label used in compact surfaces (mobile bottom nav). Falls back to `label`. */
+  shortLabel?: string;
 }
 
-export const defaultHeaderNavItems: HeaderNavItem[] = [
-  { label: "About Us", href: "/about-us" },
-  { label: "How QR Works", href: "/how-qr-works" },
-  { label: "Explore", href: "/explore", useVehicleExploreHref: true },
-  { label: "Compare", href: "/compare", useVehicleCompareHref: true },
-  { label: "Media", href: "/media" },
+/**
+ * Primary information architecture (consumer-first site map).
+ * Rendered as the desktop top nav and the mobile bottom nav.
+ */
+export const primaryNavItems: HeaderNavItem[] = [
+  { label: "Home", href: "/", icon: Home },
+  { label: "How It Works", href: "/how-it-works", icon: ScanLine, shortLabel: "How" },
+  { label: "Features", href: "/features", icon: LayoutGrid },
+  { label: "Emergency & Safety", href: "/safety", icon: ShieldCheck, shortLabel: "Safety" },
+  { label: "Pricing", href: "/pricing", icon: Tag },
 ];
+
+/** Conversion CTA — consumer app download hub. */
+export const downloadAppCta: Required<Pick<HeaderNavItem, "label" | "href" | "icon">> = {
+  label: "Download App",
+  href: "/app",
+  icon: Smartphone,
+};
+
+/** Secondary links surfaced only inside the mobile menu drawer + footer. */
+export const secondaryNavItems: HeaderNavItem[] = [
+  { label: "About Us", href: "/about-us" },
+  { label: "Media", href: "/media" },
+  { label: "Contact", href: "/contact-us" },
+];
+
+/** Back-compat alias — the header renders `primaryNavItems` directly. */
+export const defaultHeaderNavItems = primaryNavItems;
 
 /** Primary auth CTA shown on the right of the header. */
 export const headerLoginCta = {
@@ -132,8 +158,9 @@ export const headerLoginCta = {
   href: "/auth/login",
 };
 
-/** Center search trigger (acts as a SmartSearchBar placeholder until a real one is wired). */
-export const headerSearchPrompt = {
-  placeholder: "Search models, brands, cities…",
-  href: "/search",
-};
+/** Whether a nav item matches the current route (exact for "/", prefix otherwise). */
+export function isNavItemActive(pathname: string | null, href: string): boolean {
+  if (!pathname) return false;
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}

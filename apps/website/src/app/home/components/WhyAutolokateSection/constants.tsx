@@ -1,45 +1,51 @@
-import { Bell, History, Lock, ShieldCheck, UserRound } from "lucide-react";
+import { CalendarClock, Car, Gauge, ReceiptText, Sparkles, Video } from "lucide-react";
 import type { WhyAutolokateSectionCopy, WhyHighlight } from "./types";
 
 export const WHY_AUTOLOKATE_BACKGROUND = "/images/home/home_footer_light.png";
 
 export const WHY_AUTOLOKATE_COPY: WhyAutolokateSectionCopy = {
-  eyebrow: "Why Autolokate",
-  headlineLine1: "Smarter protection for every vehicle.",
-  headlineLine2: "Complete peace of mind for every owner.",
-  description:
-    "Smart QR protection, trusted support, and vehicle records working together to keep every drive safer.",
+  eyebrow: "Every other day",
+  headlinePrefix: "One app for your ",
+  headlineEmphasis: "whole car",
+  headlineSuffix: ".",
+  description: "Safety is why you start. These are why you open it every week.",
 };
 
 export const WHY_HIGHLIGHTS: WhyHighlight[] = [
   {
-    id: "identification",
-    title: "Instant Identification",
-    body: "Your QR helps others identify your vehicle and reach the right contact when needed.",
-    Icon: ShieldCheck,
+    id: "dashcam",
+    title: "Dashcam",
+    body: "Footage saved to your vehicle profile.",
+    Icon: Video,
   },
   {
-    id: "response",
-    title: "Faster Response",
-    body: "Share location and emergency details faster when every second matters.",
-    Icon: Bell,
+    id: "challan-fastag",
+    title: "Challan & FASTag",
+    body: "Track dues and recharge in one tap.",
+    Icon: ReceiptText,
   },
   {
-    id: "history",
-    title: "Complete History",
-    body: "Keep service, ownership, insurance, and important records linked to your vehicle.",
-    Icon: History,
+    id: "renewal-alerts",
+    title: "Renewal Alerts",
+    body: "Insurance, PUC and licence reminders.",
+    Icon: CalendarClock,
   },
   {
-    id: "expert",
-    title: "Expert Support",
-    body: "Get access to verified partners for repairs, roadside help, and vehicle support.",
-    Icon: UserRound,
+    id: "driver-score",
+    title: "Driver Score",
+    body: "See your driving score and improve it.",
+    Icon: Gauge,
   },
   {
-    id: "privacy",
-    title: "Privacy First",
-    body: "Your number and personal details stay private unless you choose to share them.",
-    Icon: Lock,
+    id: "ai-car-advisor",
+    title: "AI Car Advisor",
+    body: "Buying help + zero-commission consults.",
+    Icon: Sparkles,
+  },
+  {
+    id: "multi-vehicle",
+    title: "Multi-vehicle",
+    body: "Every car you own, one profile.",
+    Icon: Car,
   },
 ];

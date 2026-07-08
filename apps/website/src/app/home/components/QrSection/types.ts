@@ -10,7 +10,8 @@ export interface QrFeature {
 export interface QrSectionCopy {
   eyebrow: string;
   headlineLine1: string;
-  headlineLine2: string;
+  headlineLine2Prefix: string;
+  headlineEmphasis: string;
   subheading: string;
   primaryCta: { label: string; href: string };
 }

@@ -63,17 +63,4 @@ export const endpoints = {
   contact: {
     submit: "/v1/contact-us",
   },
-  advisor: {
-    conversations: "/v1/advisor/conversations",
-    conversationById: (id: string) =>
-      `/v1/advisor/conversations/${encodeURIComponent(id)}`,
-    currentStep: (id: string) =>
-      `/v1/advisor/conversations/${encodeURIComponent(id)}/steps/current`,
-    submitAnswer: (id: string) =>
-      `/v1/advisor/conversations/${encodeURIComponent(id)}/answer`,
-    results: (id: string) =>
-      `/v1/advisor/conversations/${encodeURIComponent(id)}/results`,
-    actions: (id: string) =>
-      `/v1/advisor/conversations/${encodeURIComponent(id)}/actions`,
-  },
 } as const;

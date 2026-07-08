@@ -1,23 +1,25 @@
-export type PlanFeatureState = "included" | "excluded";
+import type { ComponentType } from "react";
+import type { LucideProps } from "lucide-react";
 
 export interface PlanFeature {
   label: string;
-  description?: string;
-  state: PlanFeatureState;
+  Icon: ComponentType<LucideProps>;
 }
 
-export type SafetyPlanVariant = "starter" | "shield" | "shieldPlus";
+export type SafetyPlanVariant = "secure" | "shield" | "shieldPlus";
 
 export interface SafetyPlan {
   id: string;
   variant: SafetyPlanVariant;
   tierLabel: string;
-  popularBadge?: string;
-  /** Small caps label above the plan title (e.g. Full Protection on Shield). */
-  planCategory?: string;
-  title: string;
+  /** Tier glyph shown in the badge at the top of the card. */
+  Icon: ComponentType<LucideProps>;
   price: string;
-  priceNote: string;
+  pricePeriod: string;
+  popular?: boolean;
+  popularBadge?: string;
+  ctaLabel: string;
+  ctaHref: string;
   features: PlanFeature[];
 }
 
@@ -26,4 +28,5 @@ export interface SafetyPacksSectionCopy {
   headline: string;
   subheading: string;
   headerPill: string;
+  footnotes: string[];
 }

@@ -10,7 +10,8 @@ export interface WhyHighlight {
 
 export interface WhyAutolokateSectionCopy {
   eyebrow: string;
-  headlineLine1: string;
-  headlineLine2: string;
+  headlinePrefix: string;
+  headlineEmphasis: string;
+  headlineSuffix: string;
   description: string;
 }

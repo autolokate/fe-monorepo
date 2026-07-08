@@ -68,3 +68,27 @@
 .al-bottom-nav__item--active {
   flex-direction: row;
 }
+
+/* Stacked layout: icon on top, label beneath, shown for every item. */
+.al-bottom-nav--stacked .al-bottom-nav__item {
+  flex: 1;
+  flex-direction: column;
+  gap: var(--al-space-xs);
+  padding: 0.5rem 0.5rem;
+}
+
+.al-bottom-nav--stacked .al-bottom-nav__item--active {
+  flex-direction: column;
+  background-color: transparent;
+  padding: 0.5rem 0.5rem;
+}
+
+.al-bottom-nav--stacked .al-bottom-nav__label {
+  display: block;
+  text-align: center;
+}
+
+.al-bottom-nav--stacked .al-bottom-nav__item--active .al-bottom-nav__label {
+  display: block;
+  font-weight: var(--al-text-label-strong-weight, 600);
+}

@@ -8,6 +8,12 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
+  // Bind the loopback IP directly: some managed hosts (e.g. FortiClient ZTNA)
+  // rewrite /etc/hosts and drop the `localhost` entry, which makes Vite's
+  // default `localhost` bind fail with `getaddrinfo ENOTFOUND localhost`.
+  server: {
+    host: '127.0.0.1',
+  },
   resolve: {
     alias: {
       '@autolokate/brand': path.resolve(rootDir, '../../packages/brand/src'),
