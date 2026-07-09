@@ -38,6 +38,7 @@ import {
   loadDataTablePrefs,
   saveDataTablePrefs,
   type DataTableDensity,
+  type DataTablePrefs,
 } from './data-table-utils.js';
 import { AlSearchInput } from './SearchInput.js';
 import { AlToolbar } from './SearchInput.js';
@@ -132,7 +133,7 @@ export function AlDataTable<TData>({
     () =>
       tableId
         ? loadDataTablePrefs(tableId, { pageSize, density: 'comfortable' })
-        : { pageSize, density: 'comfortable' as DataTableDensity, columnVisibility: {} },
+        : ({ pageSize, density: 'comfortable', columnVisibility: {} } satisfies DataTablePrefs),
     [pageSize, tableId],
   );
 
@@ -340,7 +341,7 @@ export function AlDataTable<TData>({
               </>
             ) : (
               <span className={cn('al-toolbar__meta', (isRefreshing || showLoadingState) && 'is-pulsing')}>
-                {showLoadingState ? 'Loading…' : isRefreshing ? 'Refreshing…' : `${filteredCount} rows`}
+                {showLoadingState ? 'Loading…' : isRefreshing ? 'Refreshing…' : `${String(filteredCount)} rows`}
               </span>
             )}
             {enableDensitySwitch ? (
@@ -559,7 +560,7 @@ export function AlDataTable<TData>({
           <span className="al-data-table__footer-meta">
             Page {table.getState().pagination.pageIndex + 1} of {Math.max(table.getPageCount(), 1)}
             {sorting.length > 0
-              ? ` · ${sorting.length} sort${sorting.length > 1 ? 's' : ''}`
+              ? ` · ${String(sorting.length)} sort${sorting.length > 1 ? 's' : ''}`
               : ''}
           </span>
           <div className="al-data-table__pagination">
@@ -600,7 +601,9 @@ function formatCellValueForCallback(value: unknown): string {
   try {
     return JSON.stringify(value);
   } catch {
-    return String(value);
+    // Un-serializable (e.g. circular) — fall back to the tag string rather than String(value), which
+    // the base-to-string lint rule (correctly) rejects for non-primitives.
+    return Object.prototype.toString.call(value);
   }
 }
 

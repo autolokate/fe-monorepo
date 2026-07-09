@@ -1,0 +1,51 @@
+# Frontend staging box (1x EC2 t4g.nano). Runs the Next.js `website` app (SSR) behind Caddy, which is
+# the origin reverse proxy + TLS terminator behind Cloudflare (orange-cloud, Full-strict). admin + qr
+# are NOT here — they are static builds served from S3 (infra/terraform/staging/frontend-static.tf).
+# The box writes .env + the CF Origin Certificate from SSM Parameter Store; ECR_REGISTRY / APP_DOMAIN /
+# IMAGE_TAG_BLUE / IMAGE_TAG_GREEN come from it.
+#
+# Zero-downtime blue/green (Caddyfile has the matching upstream/health-check config): website runs as a
+# `-blue`/`-green` pair gated behind Compose `profiles` — so a bare `docker compose up -d` only
+# (re)starts services with NO profile (caddy); the active slot is always started by NAME
+# (user_data.sh.tftpl at boot, deploy-staging.yml on redeploy), which Compose runs regardless of profile
+# gating (docs.docker.com/compose/how-tos/profiles). This keeps steady-state RAM at ~1x website on the
+# t4g.nano — the idle slot doesn't exist as a running container until a deploy targets it.
+x-website-common: &website-common
+  restart: unless-stopped
+  env_file: ['.env']
+  # PORT must match the Caddy upstream port. NEXT_PUBLIC_API_BASE_URL (backend api-staging.<apex>) comes
+  # from .env at runtime — server-side fetches read it; not baked into the image.
+  environment:
+    NODE_ENV: production
+    PORT: '3000'
+    HOSTNAME: '0.0.0.0'
+
+services:
+  # Caddy: origin reverse proxy + TLS behind Cloudflare (orange-cloud, Full-strict). Serves the
+  # Cloudflare Origin Certificate (./origin, written by the bootstrap from SSM), NOT Let's Encrypt. Only
+  # :443 is published, and the SG admits only Cloudflare's IPs on it — no direct-to-EIP bypass of the CF
+  # edge. No depends_on on a specific slot: Caddy's active health check (Caddyfile) tolerates an upstream
+  # that doesn't exist yet, so it never blocks on which slot happens to be active.
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ['443:443']
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./origin:/etc/caddy/origin:ro
+      - caddy-data:/data
+
+  website-blue:
+    <<: *website-common
+    profiles: [blue]
+    image: ${ECR_REGISTRY}/autolokate-fe-staging/website:${IMAGE_TAG_BLUE}
+
+  website-green:
+    <<: *website-common
+    profiles: [green]
+    image: ${ECR_REGISTRY}/autolokate-fe-staging/website:${IMAGE_TAG_GREEN}
+
+volumes:
+  caddy-data:

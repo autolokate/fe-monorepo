@@ -6,8 +6,6 @@ export type AppEnv = {
   enableLogs: boolean;
 };
 
-const DEFAULT_API_BASE_URL = 'https://malisa-noninclusive-davin.ngrok-free.dev';
-
 type EnvKey = 'VITE_API_BASE_URL' | 'VITE_ENVIRONMENT' | 'VITE_ENABLE_LOGS';
 
 function readRaw(key: EnvKey): string | undefined {
@@ -21,7 +19,15 @@ function readRaw(key: EnvKey): string | undefined {
 }
 
 function resolveApiBaseUrl(): string {
-  return readRaw('VITE_API_BASE_URL') ?? DEFAULT_API_BASE_URL;
+  const value = readRaw('VITE_API_BASE_URL');
+  if (value) {
+    return value;
+  }
+  // Fail fast in every mode rather than baking a fallback URL into the bundle. Local dev supplies this
+  // via .env.development (copy .env.example); staging/prod builds inject it at build time (CI).
+  throw new Error(
+    '[admin] Missing required environment variable: VITE_API_BASE_URL. Copy apps/admin/.env.example to .env.development',
+  );
 }
 
 function parseEnvironment(value: string | undefined): AppEnvironment {

@@ -11,7 +11,7 @@ export default [
     },
   },
   {
-    files: ['apps/onboarding/scripts/**/*.mjs'],
+    files: ['apps/qr/scripts/**/*.mjs'],
     languageOptions: {
       globals: {
         document: 'readonly',

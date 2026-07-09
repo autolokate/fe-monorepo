@@ -54,7 +54,7 @@ This file is the entry point for long-lived project memory. Detailed historical 
 | `docs/visual-truth/completed/` | Completed screen before/after + Figma 171:59 |
 | `docs/archive/visual-truth-metadata/` | capture-manifest.json, measurements.json |
 
-Full 1308-screenshot capture set was removed during consolidation (2026-06-20). Re-generate via `apps/onboarding/scripts/visual-truth-capture.mjs`.
+Full 1308-screenshot capture set was removed during consolidation (2026-06-20). Re-generate via `apps/qr/scripts/visual-truth-capture.mjs`.
 
 ---
 

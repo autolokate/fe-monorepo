@@ -1,7 +1,13 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Pin the standalone tracing root to the monorepo root (this file lives at apps/website/). Without
+  // this, Next auto-detects the root by walking up for a lockfile and can land on the PARENT of the
+  // repo (sibling repos share that dir), nesting the output under an extra path segment and diverging
+  // between local and Docker builds. Pinning it keeps server.js at a deterministic apps/website/server.js.
+  outputFileTracingRoot: path.join(import.meta.dirname, "../.."),
   // Workspace design-system packages import their own CSS from node_modules,
   // so Next must transpile them for those stylesheet imports to resolve.
   transpilePackages: ["@autolokate/ui", "@autolokate/design-system"],

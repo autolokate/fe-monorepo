@@ -2,7 +2,7 @@
   "name": "autolokate-web",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@11.10.0+sha512.0b7f8b98060031904c017e3a41eb187a16d40eeb829b95c4f8cb03681761fc4ab53dd219115b9b447f4dce1a05a214764461e7d3703392a9f32f9511ce8c86c8",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -16,11 +16,11 @@
     "eslint": "^9.29.0",
     "globals": "^16.2.0",
     "prettier": "^3.5.3",
-    "turbo": "^2.5.4",
+    "turbo": "^2.10.4",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0A0A0A" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Autolokate" />
+    <meta name="description" content="Vehicle protection activation, emergency SOS, and Park Me reporting." />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Autolokate · Onboarding</title>
+    <script>
+      (function () {
+        var stored = null;
+        try {
+          stored = localStorage.getItem('al-qr-theme');
+        } catch (e) {}
+
+        var theme;
+        if (stored === 'light' || stored === 'dark') {
+          theme = stored;
+        } else {
+          var hour = new Date().getHours();
+          theme = hour >= 6 && hour < 18 ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script>
+      (function () {
+        var recoveryKey = 'al-sw-recovery-v1';
+
+        function recoverFromStaleShell() {
+          if (sessionStorage.getItem(recoveryKey) === '1') {
+            return;
+          }
+          sessionStorage.setItem(recoveryKey, '1');
+          if (!('serviceWorker' in navigator)) {
+            window.location.reload();
+            return;
+          }
+          navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            return Promise.all(registrations.map(function (registration) {
+              return registration.unregister();
+            }));
+          }).finally(function () {
+            window.location.reload();
+          });
+        }
+
+        window.addEventListener('error', function (event) {
+          var message = event.message || '';
+          if (message.indexOf('[onboarding]') !== -1) {
+            recoverFromStaleShell();
+          }
+        });
+
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (sessionStorage.getItem(recoveryKey) === '1') {
+              return;
+            }
+            sessionStorage.setItem(recoveryKey, '1');
+            window.location.reload();
+          });
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <p style="margin:0;padding:24px;font-family:system-ui,sans-serif;color:#a3a3a3;text-align:center;">
+        Loading Autolokate…
+      </p>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

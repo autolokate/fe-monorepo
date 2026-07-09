@@ -62,6 +62,14 @@ Desktop.ini
 *.swo
 *~
 
+# Terraform — local provider cache + state + tfvars (lock file IS committed)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+
 # Misc
 .cache/
 .temp/

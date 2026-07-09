@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    # Deliberately NOT `main`: a merge to main is already gated by the pull_request run above (branch
+    # protection requires it green before merge) — re-running on the merge commit is redundant.
+    # `staging` is the one push-triggered branch: it's also deploy-staging.yml's upstream gate via
+    # workflow_run.
+    branches: [staging]
+
+# A superseding push/PR-update cancels the stale run instead of racing it to completion.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # corepack (which resolves the pinned pnpm from package.json's `packageManager`) must be enabled
+      # BEFORE setup-node's `cache: pnpm` runs, since that option shells out to `pnpm store path`.
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Turbo's local cache, commit-scoped — repeat runs replay instead of recompiling.
+      - name: Cache turbo build outputs
+        uses: actions/cache@v6
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
+      # Lint first (fast fail on style), then typecheck, then build (the heaviest gate).
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm turbo typecheck
+
+      - name: Build
+        run: pnpm build
