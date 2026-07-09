@@ -17,7 +17,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>Autolokate · Onboarding</title>
+    <title>Autolokate · QR</title>
     <script>
       (function () {
         var stored = null;
@@ -59,7 +59,7 @@
 
         window.addEventListener('error', function (event) {
           var message = event.message || '';
-          if (message.indexOf('[onboarding]') !== -1) {
+          if (message.indexOf('[qr]') !== -1) {
             recoverFromStaleShell();
           }
         });
