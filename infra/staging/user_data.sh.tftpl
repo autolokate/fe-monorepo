@@ -57,10 +57,19 @@ chmod 600 "$APP_DIR/origin/tls.key"
 
 aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
-# Explicit service names, not a bare `up -d`: only the blue slot has a real (bootstrap) image tag right
-# now, and the green profile is intentionally left stopped — Compose only starts a profiled service when
-# it's targeted by name (docs.docker.com/compose/how-tos/profiles), which keeps steady-state RAM at ~1x
-# website on this t4g.nano.
+# Caddy first, unconditionally: its image (caddy:2, Docker Hub) always resolves, and its active health
+# check (Caddyfile) already tolerates an upstream that isn't up yet — so Caddy coming up must never be
+# gated on website-blue's image existing. website-blue is best-effort here: on a genuinely fresh
+# environment (this stack's first-ever boot, before any CI deploy has pushed an image) ECR has no
+# `website` tag at all yet and the pull 404s — that's expected, not fatal, and the first deploy-staging.yml
+# run brings it up for real. Explicit service names, not a bare `up -d`: the green profile is intentionally
+# left stopped — Compose only starts a profiled service when it's targeted by name
+# (docs.docker.com/compose/how-tos/profiles), which keeps steady-state RAM at ~1x website on this t4g box.
 cd "$APP_DIR"
-docker compose pull caddy website-blue
-docker compose up -d caddy website-blue
+docker compose pull caddy
+docker compose up -d caddy
+if docker compose pull website-blue; then
+  docker compose up -d website-blue
+else
+  echo "website-blue: no image in ECR yet (expected on first boot) -- Caddy is up; deploy-staging.yml starts it on the first CI deploy."
+fi
