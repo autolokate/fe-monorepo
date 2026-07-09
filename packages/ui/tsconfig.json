@@ -12,9 +12,5 @@
     "../../packages/config/typescript/css-modules.d.ts"
   ],
   "exclude": ["dist", "node_modules"],
-  "references": [
-    { "path": "../design-system" },
-    { "path": "../types" },
-    { "path": "../utils" }
-  ]
+  "references": [{ "path": "../design-system" }]
 }
