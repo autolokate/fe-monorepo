@@ -1,8 +1,8 @@
 import { useId } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlCheckboxProps } from './Checkbox.types.js';
+import type { AlCheckboxProps } from './Checkbox.types';
 import './Checkbox.css';
 
 export function AlCheckbox({

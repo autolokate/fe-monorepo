@@ -1,10 +1,10 @@
-import { AuthStepShell } from '@/components/auth-step-shell/index.js';
+import { AuthStepShell } from '@/components/auth-step-shell/index';
 import {
   mapRiderOptionsToView,
   RiderCoverOptions,
-} from '@/components/compositions/rider-cover-options/index.js';
-import type { PurchasePlanId, PurchaseRiderCount, PurchaseRiderOption } from '../../types-checkout.js';
-import { getRiderCtaLabel } from '../../data/purchase-pricing.js';
+} from '@/components/compositions/rider-cover-options/index';
+import type { PurchasePlanId, PurchaseRiderCount, PurchaseRiderOption } from '../../types-checkout';
+import { getRiderCtaLabel } from '../../data/purchase-pricing';
 
 import '../purchase-phase-b.css';
 

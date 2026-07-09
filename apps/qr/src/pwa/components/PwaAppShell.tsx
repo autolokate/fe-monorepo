@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 
-import { useOnlineStatus } from '../use-online-status.js';
-import { PwaOfflineScreen } from './PwaOfflineScreen.js';
-import { PwaUpdatePrompt } from './PwaUpdatePrompt.js';
-import { PwaInstallPrompt } from './PwaInstallPrompt.js';
-import { PwaShellActions } from './PwaShellActions.js';
+import { useOnlineStatus } from '../use-online-status';
+import { PwaOfflineScreen } from './PwaOfflineScreen';
+import { PwaUpdatePrompt } from './PwaUpdatePrompt';
+import { PwaInstallPrompt } from './PwaInstallPrompt';
+import { PwaShellActions } from './PwaShellActions';
 
 import './PwaOfflineBanner.css';
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { registerToastListener } from './toast.js';
+import { registerToastListener } from './toast';
 
 import './toast.css';
 

@@ -8,7 +8,7 @@ import {
   type CheckoutParams,
   type PaymentFlowResult,
   type PrepareCheckoutResult,
-} from '@/services/checkout/checkout-service.js';
+} from '@/services/checkout/checkout-service';
 
 export function useCheckout() {
   const [revision, setRevision] = useState(() => getCheckoutRevision());

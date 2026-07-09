@@ -5,8 +5,8 @@ import type {
   QrPayloadType,
   QrPrepaidPayload,
   QrPurchasePayload,
-} from './qr-dispatch-contract.js';
-import { QR_URL_PARAMS, readQrCodeFromSearchParams } from './qr-url-params.js';
+} from './qr-dispatch-contract';
+import { QR_URL_PARAMS, readQrCodeFromSearchParams } from './qr-url-params';
 
 function invalid(message: string): QrDecodeResult {
   return {

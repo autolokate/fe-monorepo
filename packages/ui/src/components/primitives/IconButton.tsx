@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './IconButton.css';
 
 export type AlIconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {

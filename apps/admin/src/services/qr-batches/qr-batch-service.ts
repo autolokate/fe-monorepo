@@ -16,7 +16,7 @@ import {
   retireQrCode,
 } from '@autolokate/api-client';
 
-import { getAdminApiClient } from '@/platform/api/admin-api-client.js';
+import { getAdminApiClient } from '@/platform/api/admin-api-client';
 
 export async function createBatch(
   body: CreateBatchBody,

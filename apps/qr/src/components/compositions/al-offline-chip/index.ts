@@ -1,2 +1,2 @@
-export { AlOfflineChip } from './AlOfflineChip.js';
-export type { AlOfflineChipProps } from './AlOfflineChip.js';
+export { AlOfflineChip } from './AlOfflineChip';
+export type { AlOfflineChipProps } from './AlOfflineChip';

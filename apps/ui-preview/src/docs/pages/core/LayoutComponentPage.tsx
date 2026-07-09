@@ -12,8 +12,8 @@ import {
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
-import type { CoreComponentPageId, PropRow } from '../../types.js';
+} from '../../components/CoreComponentShowcase';
+import type { CoreComponentPageId, PropRow } from '../../types';
 
 function renderLayoutPreview(page: CoreComponentPageId, _state: ShowcaseState) {
   switch (page) {

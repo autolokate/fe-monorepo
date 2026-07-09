@@ -4,14 +4,14 @@ import {
   redeemActivation as redeemActivationApi,
 } from '@autolokate/api-client';
 
-import type { LandingEntitlement } from '@/features/b2b-shared/types-landing.js';
-import type { QrB2b2cPayload, QrPrepaidPayload } from '@/platform/qr/qr-dispatch-contract.js';
-import type { PartnerActivationKind } from '@/platform/activation/activation-channel.js';
+import type { LandingEntitlement } from '@/features/b2b-shared/types-landing';
+import type { QrB2b2cPayload, QrPrepaidPayload } from '@/platform/qr/qr-dispatch-contract';
+import type { PartnerActivationKind } from '@/platform/activation/activation-channel';
 import {
   getQrApiClient,
   getQrBootstrapClient,
-} from '@/platform/api/qr-api-client.js';
-import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository.js';
+} from '@/platform/api/qr-api-client';
+import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository';
 
 import {
   clearActivationCache,
@@ -29,8 +29,8 @@ import {
   setInflightPreview,
   setInflightRedeem,
   updateActivationState,
-} from './activation-cache.js';
-import { isActivationTransientError, mapActivationApiError, type ActivationError } from './activation-errors.js';
+} from './activation-cache';
+import { isActivationTransientError, mapActivationApiError, type ActivationError } from './activation-errors';
 import {
   createActivationIdempotencyKey,
   mapPreviewToLandingEntitlement,
@@ -39,8 +39,8 @@ import {
   resolveEntitlementCodeFromPayload,
   resolvePartnerKindFromFlow,
   type ActivationFlowKind,
-} from './activation-mapper.js';
-import { activationLogger } from './activation-logger.js';
+} from './activation-mapper';
+import { activationLogger } from './activation-logger';
 
 const PREVIEW_MAX_ATTEMPTS = 3;
 const PREVIEW_RETRY_BASE_MS = 400;
@@ -416,4 +416,4 @@ export {
   peekSubscriptionId,
   peekActivationLastError,
 };
-export type { ActivationFlowKind } from './activation-mapper.js';
+export type { ActivationFlowKind } from './activation-mapper';

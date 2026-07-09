@@ -1,2 +1,2 @@
-export { OrderSummaryCard } from './OrderSummaryCard.js';
-export type { OrderSummaryCardProps } from './OrderSummaryCard.js';
+export { OrderSummaryCard } from './OrderSummaryCard';
+export type { OrderSummaryCardProps } from './OrderSummaryCard';

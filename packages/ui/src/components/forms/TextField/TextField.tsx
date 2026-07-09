@@ -1,8 +1,8 @@
 import { useId } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlTextFieldProps } from './TextField.types.js';
+import type { AlTextFieldProps } from './TextField.types';
 import './TextField.css';
 
 export function AlTextField({

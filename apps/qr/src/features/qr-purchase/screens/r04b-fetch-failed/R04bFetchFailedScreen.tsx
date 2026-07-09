@@ -1,7 +1,7 @@
 import { AlIcon } from '@autolokate/icons';
 
-import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index.js';
-import type { PurchaseFetchFailedScreenProps } from '../../types-vehicle.js';
+import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index';
+import type { PurchaseFetchFailedScreenProps } from '../../types-vehicle';
 
 /** R04b · Couldn't fetch from Vahan — Figma 579:1663 */
 export function R04bFetchFailedScreen({

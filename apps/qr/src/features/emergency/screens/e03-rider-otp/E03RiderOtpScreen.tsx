@@ -1,4 +1,4 @@
-import { EmergencyOtpScreen, type EmergencyOtpScreenProps } from '../shared/EmergencyOtpScreen.js';
+import { EmergencyOtpScreen, type EmergencyOtpScreenProps } from '../shared/EmergencyOtpScreen';
 
 export type E03RiderOtpScreenProps = Omit<EmergencyOtpScreenProps, 'step'>;
 

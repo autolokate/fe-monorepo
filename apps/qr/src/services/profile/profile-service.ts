@@ -1,9 +1,9 @@
 import { updateProfile as updateProfileApi, type Profile } from '@autolokate/api-client';
 
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
 
-import { mapProfileToJourney, type ProfileJourneyPatch } from './profile-mapper.js';
-import { profileLogger } from './profile-logger.js';
+import { mapProfileToJourney, type ProfileJourneyPatch } from './profile-mapper';
+import { profileLogger } from './profile-logger';
 
 export type SaveOwnerNameInput = {
   name: string;

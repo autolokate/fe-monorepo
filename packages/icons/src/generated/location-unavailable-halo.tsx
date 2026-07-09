@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma 875:2193 — location unavailable amber halo + map pin. */
 export function LocationUnavailableHaloIcon({

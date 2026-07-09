@@ -1,7 +1,7 @@
-import { journeyPaths } from '../constants.js';
-import { purchaseJourneyPaths } from '../purchase/purchase-routing.js';
+import { journeyPaths } from '../constants';
+import { purchaseJourneyPaths } from '../purchase/purchase-routing';
 
-import type { RouteProgressConfig } from './route-progress.types.js';
+import type { RouteProgressConfig } from './route-progress.types';
 
 /** Figma Consumer · QR Activation + Purchase — no step progress bar on any purchase frame. */
 export const purchaseRouteProgressByPath: Record<string, RouteProgressConfig | null> = {

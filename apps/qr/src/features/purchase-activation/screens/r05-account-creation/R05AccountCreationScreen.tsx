@@ -1,8 +1,8 @@
 import { AlInput, AlText } from '@autolokate/ui';
 
-import { FormFieldStack } from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import type { R05AccountCreationScreenProps } from '../../types.js';
+import { FormFieldStack } from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import type { R05AccountCreationScreenProps } from '../../types';
 
 export type { R05AccountCreationScreenProps };
 

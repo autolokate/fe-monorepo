@@ -1,6 +1,6 @@
-import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error.js';
+import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error';
 
-import { showErrorToast } from './toast.js';
+import { showErrorToast } from './toast';
 
 type Logger = {
   warn: (event: string, context?: Record<string, unknown>) => void;

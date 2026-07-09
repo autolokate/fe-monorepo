@@ -2,7 +2,7 @@ import { Command } from 'cmdk';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { adminPaths, adminRoutes } from '@/app/routes/admin-paths.js';
+import { adminPaths, adminRoutes } from '@/app/routes/admin-paths';
 
 const COMMAND_GROUPS = [
   {

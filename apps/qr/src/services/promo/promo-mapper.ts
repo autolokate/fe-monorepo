@@ -1,8 +1,8 @@
 import type { PromoPreviewDto } from '@autolokate/api-client';
 import { formatInrFromPaise } from '@autolokate/utils';
 
-import type { OrderSummaryTotals, PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout.js';
-import { getPurchasePlanById } from '@/services/plan/plan-service.js';
+import type { OrderSummaryTotals, PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout';
+import { getPurchasePlanById } from '@/services/plan/plan-service';
 
 export function mapPromoPreviewToSummary(
   preview: PromoPreviewDto,

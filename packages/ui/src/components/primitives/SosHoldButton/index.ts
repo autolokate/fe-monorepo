@@ -1,2 +1,2 @@
-export { AlSosHoldButton } from './SosHoldButton.js';
-export type { AlSosHoldButtonProps } from './SosHoldButton.types.js';
+export { AlSosHoldButton } from './SosHoldButton';
+export type { AlSosHoldButtonProps } from './SosHoldButton.types';

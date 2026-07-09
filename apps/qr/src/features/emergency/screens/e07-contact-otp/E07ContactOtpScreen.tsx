@@ -1,4 +1,4 @@
-import { EmergencyOtpScreen, type EmergencyOtpScreenProps } from '../shared/EmergencyOtpScreen.js';
+import { EmergencyOtpScreen, type EmergencyOtpScreenProps } from '../shared/EmergencyOtpScreen';
 
 export type E07ContactOtpScreenProps = Omit<EmergencyOtpScreenProps, 'step'>;
 

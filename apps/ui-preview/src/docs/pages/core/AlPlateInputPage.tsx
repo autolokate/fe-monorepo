@@ -4,7 +4,7 @@ import { AlPlateInput } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function renderPlateInput(state: ShowcaseState, value = 'MH 12 AB 3456') {
   const disabled = state === 'disabled';

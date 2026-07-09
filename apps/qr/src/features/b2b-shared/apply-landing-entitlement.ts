@@ -1,6 +1,6 @@
-import type { JourneySession } from '../../journey/types.js';
+import type { JourneySession } from '../../journey/types';
 
-import type { LandingEntitlement } from './types-landing.js';
+import type { LandingEntitlement } from './types-landing';
 
 /** Seeds purchase + vehicle session so emergency limits resolve from landing entitlement. */
 export function applyLandingEntitlementToSession(

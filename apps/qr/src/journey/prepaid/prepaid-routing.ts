@@ -1,4 +1,4 @@
-import { journeyPaths } from '../constants.js';
+import { journeyPaths } from '../constants';
 
 export const prepaidJourneyPaths = {
   welcome: `${journeyPaths.prepaid}/welcome`,

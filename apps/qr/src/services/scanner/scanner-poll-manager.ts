@@ -5,11 +5,11 @@ import {
   type ParkStatus,
 } from '@autolokate/api-client';
 
-import { getQrBootstrapClient } from '@/platform/api/qr-api-client.js';
-import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository.js';
-import { parkSessionRepository } from '@/platform/storage/repositories/park-session-repository.js';
+import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
+import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
+import { parkSessionRepository } from '@/platform/storage/repositories/park-session-repository';
 
-import { scannerLogger } from './scanner-logger.js';
+import { scannerLogger } from './scanner-logger';
 import {
   delay,
   EMERGENCY_POLL_INITIAL_MS,
@@ -20,7 +20,7 @@ import {
   PARK_POLL_TIMEOUT_MS,
   withTimeout,
   SCANNER_REQUEST_TIMEOUT_MS,
-} from './scanner-network.js';
+} from './scanner-network';
 
 type PollListener<T> = (status: T) => void;
 

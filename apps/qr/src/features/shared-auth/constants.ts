@@ -2,7 +2,7 @@
 export {
   SHARED_AUTH_PROGRESS_TOTAL,
   authRouteProgressByPath,
-} from '../../journey/progress/auth-route-progress.js';
+} from '../../journey/progress/auth-route-progress';
 
 /** @deprecated Use authRouteProgressByPath paths */
 export const AUTH_MOBILE_STEP = 1;

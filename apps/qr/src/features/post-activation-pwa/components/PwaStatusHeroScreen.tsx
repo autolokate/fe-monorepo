@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { AlHeading, AlText } from '@autolokate/ui';
 
-import { PwaFade, PwaHeroReveal, PwaRevealItem } from './PwaMotion.js';
-import { PwaScanShell } from './PwaScanShell.js';
+import { PwaFade, PwaHeroReveal, PwaRevealItem } from './PwaMotion';
+import { PwaScanShell } from './PwaScanShell';
 
 import './pwa-status-hero-screen.css';
 

@@ -1,6 +1,6 @@
-import { PwaScanProvider } from '../features/post-activation-pwa/context/PwaScanContext.js';
-import { JourneyProvider, type JourneyProviderProps } from '../journey/JourneyContext.js';
-import { ToastHost } from './feedback/index.js';
+import { PwaScanProvider } from '../features/post-activation-pwa/context/PwaScanContext';
+import { JourneyProvider, type JourneyProviderProps } from '../journey/JourneyContext';
+import { ToastHost } from './feedback/index';
 
 export type AutolokateRootProviderProps = JourneyProviderProps;
 

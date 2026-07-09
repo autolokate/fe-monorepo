@@ -7,9 +7,9 @@ import { useForm } from 'react-hook-form';
 import {
   createClawbackSchema,
   type CreateClawbackFormValues,
-} from '@/features/finance/create-clawback-schema.js';
-import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations.js';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
+} from '@/features/finance/create-clawback-schema';
+import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
 
 export type CreateClawbackSheetProps = {
   open: boolean;

@@ -1,16 +1,16 @@
 import { attachQr as attachQrApi } from '@autolokate/api-client';
 
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
-import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error.js';
-import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code.js';
-import { isAttachedQrLifecycleStatus } from '@/platform/qr/qr-status.js';
-import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository.js';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
-import { compactPlate } from '@/services/vehicle/vehicle-plate.js';
-import { readPurchaseJourneyState } from '@/journey/state/purchase-journey-state-machine.js';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
+import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
+import { isAttachedQrLifecycleStatus } from '@/platform/qr/qr-status';
+import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
+import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
+import { compactPlate } from '@/services/vehicle/vehicle-plate';
+import { readPurchaseJourneyState } from '@/journey/state/purchase-journey-state-machine';
 
-import { mapQrAttachApiError, type QrAttachError } from './qr-attach-errors.js';
-import { qrAttachLogger } from './qr-attach-logger.js';
+import { mapQrAttachApiError, type QrAttachError } from './qr-attach-errors';
+import { qrAttachLogger } from './qr-attach-logger';
 
 export type AttachPurchaseQrResult =
   | {

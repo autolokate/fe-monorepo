@@ -1,9 +1,9 @@
 import { AlOtpInput } from '@autolokate/ui';
 
-import { FlowStepShell, type FlowStepCaptureProgress } from '@/components/flow-step-shell/index.js';
-import { OTP_LENGTH } from '@/features/shared-auth/auth-flow/auth-flow.validation.js';
-import { formatMobileLocal } from '@/shared/format-mobile.js';
-import type { EmergencyOtpState, EmergencyScreenNavigationProps } from '../../types.js';
+import { FlowStepShell, type FlowStepCaptureProgress } from '@/components/flow-step-shell/index';
+import { OTP_LENGTH } from '@/features/shared-auth/auth-flow/auth-flow.validation';
+import { formatMobileLocal } from '@/shared/format-mobile';
+import type { EmergencyOtpState, EmergencyScreenNavigationProps } from '../../types';
 
 import '@/components/auth-step-shell/auth-step-shell.css';
 import '../../emergency.css';

@@ -1,4 +1,4 @@
-import { LOGO_ASPECT_RATIO, type BrandLogoProps } from '../types.js';
+import { LOGO_ASPECT_RATIO, type BrandLogoProps } from '../types';
 
 const DEFAULT_LABEL = 'Autolokate';
 

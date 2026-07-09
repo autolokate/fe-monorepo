@@ -1,6 +1,6 @@
-import type { ApiClient } from './client.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope } from './envelope.js';
+import type { ApiClient } from './client';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope } from './envelope';
 
 export type QrStatus =
   | 'MANUFACTURED'

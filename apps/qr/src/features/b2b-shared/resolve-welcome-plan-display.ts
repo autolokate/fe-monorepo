@@ -1,11 +1,11 @@
-import type { PurchasePlanId, PurchaseRiderCount } from '../qr-purchase/types-checkout.js';
-import { getPurchasePlanById } from '@/services/plan/plan-service.js';
+import type { PurchasePlanId, PurchaseRiderCount } from '../qr-purchase/types-checkout';
+import { getPurchasePlanById } from '@/services/plan/plan-service';
 import {
   B2B_INCLUDES_LABEL,
   B2B_RIDER_ROW_LABEL,
   B2B_SECURE_FEATURES,
   B2B_SHIELD_FEATURES,
-} from './b2b-welcome-copy.js';
+} from './b2b-welcome-copy';
 
 export type WelcomePlanDisplay = {
   planName: string;

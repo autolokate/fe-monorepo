@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlQuickActionProps } from './QuickAction.types.js';
+import type { AlQuickActionProps } from './QuickAction.types';
 import './QuickAction.css';
 
 export function AlQuickAction({

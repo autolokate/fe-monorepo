@@ -1,2 +1,2 @@
-export { AlContactCard } from './ContactCard.js';
-export type { AlContactCardProps } from './ContactCard.types.js';
+export { AlContactCard } from './ContactCard';
+export type { AlContactCardProps } from './ContactCard.types';

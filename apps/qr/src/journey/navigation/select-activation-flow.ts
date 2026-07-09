@@ -1,12 +1,12 @@
 import type { NavigateFunction } from 'react-router-dom';
 
-import { extractQrCodeParam } from '@/platform/qr/parse-qr-url.js';
-import { saveQrCode } from '@/storage/index.js';
+import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
+import { saveQrCode } from '@/storage/index';
 
-import { authJourneyPaths } from '../auth/auth-routing.js';
-import { b2b2cJourneyPaths } from '../b2b2c/b2b2c-routing.js';
-import { prepaidJourneyPaths } from '../prepaid/prepaid-routing.js';
-import type { ActivationFlowId, JourneyPhase, JourneySession } from '../types.js';
+import { authJourneyPaths } from '../auth/auth-routing';
+import { b2b2cJourneyPaths } from '../b2b2c/b2b2c-routing';
+import { prepaidJourneyPaths } from '../prepaid/prepaid-routing';
+import type { ActivationFlowId, JourneyPhase, JourneySession } from '../types';
 
 export type SelectActivationFlowDeps = {
   setSelectedFlow: (flow: ActivationFlowId) => void;

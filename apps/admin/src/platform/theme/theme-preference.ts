@@ -1,7 +1,7 @@
 import {
   resolveScheduledTheme,
   type ThemeMode,
-} from '@/platform/theme/resolve-scheduled-theme.js';
+} from '@/platform/theme/resolve-scheduled-theme';
 
 export type ThemePreference = ThemeMode | 'auto';
 

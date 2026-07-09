@@ -2,24 +2,24 @@ import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { setThemeMode } from '@autolokate/design-system';
 import { AlButton, AlHeading, AlStack, AlText } from '@autolokate/ui';
 
-import type { PrepaidScreenState } from '@/features/qr-prepaid/types.js';
-import { PR01PrepaidEntryScreen } from '@/features/qr-prepaid/screens/pr01-prepaid-entry/index.js';
-import { PR02ActivationCodeScreen } from '@/features/qr-prepaid/screens/pr02-activation-code/index.js';
-import { PR03CodeValidationScreen } from '@/features/qr-prepaid/screens/pr03-code-validation/index.js';
-import { demoMobileDisplay, demoOtp } from '@/features/shared-auth/data/demo-data.js';
+import type { PrepaidScreenState } from '@/features/qr-prepaid/types';
+import { PR01PrepaidEntryScreen } from '@/features/qr-prepaid/screens/pr01-prepaid-entry/index';
+import { PR02ActivationCodeScreen } from '@/features/qr-prepaid/screens/pr02-activation-code/index';
+import { PR03CodeValidationScreen } from '@/features/qr-prepaid/screens/pr03-code-validation/index';
+import { demoMobileDisplay, demoOtp } from '@/features/shared-auth/data/demo-data';
 import {
   A1MobileScreen,
   A2OtpScreen,
   A3VehicleOwnerScreen,
   S0SplashScreen,
-} from '@/features/shared-auth/screens/index.js';
-import { L1PrivacyPolicyScreen } from '@/features/shared-legal/screens/l1-privacy-policy/index.js';
-import { L2TermsConditionsScreen } from '@/features/shared-legal/screens/l2-terms-conditions/index.js';
-import type { AuthMobileState, AuthOtpState } from '@/features/shared-auth/types.js';
-import { R01VehicleNumberScreen } from '@/features/purchase-activation/screens/r01-vehicle-number/index.js';
-import { R02VehicleDetailsScreen } from '@/features/purchase-activation/screens/r02-vehicle-details/index.js';
-import { R05AccountCreationScreen } from '@/features/purchase-activation/screens/r05-account-creation/index.js';
-import { R06LegalConsentScreen } from '@/features/purchase-activation/screens/r06-legal-consent/index.js';
+} from '@/features/shared-auth/screens/index';
+import { L1PrivacyPolicyScreen } from '@/features/shared-legal/screens/l1-privacy-policy/index';
+import { L2TermsConditionsScreen } from '@/features/shared-legal/screens/l2-terms-conditions/index';
+import type { AuthMobileState, AuthOtpState } from '@/features/shared-auth/types';
+import { R01VehicleNumberScreen } from '@/features/purchase-activation/screens/r01-vehicle-number/index';
+import { R02VehicleDetailsScreen } from '@/features/purchase-activation/screens/r02-vehicle-details/index';
+import { R05AccountCreationScreen } from '@/features/purchase-activation/screens/r05-account-creation/index';
+import { R06LegalConsentScreen } from '@/features/purchase-activation/screens/r06-legal-consent/index';
 import {
   E01RiderPromptScreen,
   E02RiderMobileScreen,
@@ -31,30 +31,30 @@ import {
   E08ContactNameScreen,
   E09ContactsSummaryScreen,
   E10RidersSummaryScreen,
-} from '@/features/emergency/screens/index.js';
-import { R03VehicleNumberScreen } from '@/features/qr-purchase/screens/r03-vehicle-number/index.js';
-import { R04FetchingVehicleScreen } from '@/features/qr-purchase/screens/r04-fetching-vehicle/index.js';
-import { R04bFetchFailedScreen } from '@/features/qr-purchase/screens/r04b-fetch-failed/index.js';
-import { R05ConfirmVehicleScreen } from '@/features/qr-purchase/screens/r05-confirm-vehicle/index.js';
-import { R08OrderSummaryScreen } from '@/features/qr-purchase/screens/r08-order-summary/index.js';
-import { R08bPromoAppliedScreen } from '@/features/qr-purchase/screens/r08b-promo-applied/index.js';
-import { R08cInvalidPromoScreen } from '@/features/qr-purchase/screens/r08c-invalid-promo/index.js';
-import { R06ChoosePlanScreen } from '@/features/qr-purchase/screens/r06-choose-plan/index.js';
-import { DEFAULT_PURCHASE_PLAN_ID } from '@/features/qr-purchase/data/purchase-plans.js';
-import type { PurchasePlanId } from '@/features/qr-purchase/types-checkout.js';
-import { R07RiderCoverScreen } from '@/features/qr-purchase/screens/r07-rider-cover/index.js';
-import { R09ProcessingPaymentScreen } from '@/features/qr-purchase/screens/r09-processing-payment/index.js';
-import { R09bStillConfirmingScreen } from '@/features/qr-purchase/screens/r09b-still-confirming/index.js';
-import { R10PaymentSuccessScreen } from '@/features/qr-purchase/screens/r10-payment-success/index.js';
-import { R10bPaymentFailedScreen } from '@/features/qr-purchase/screens/r10b-payment-failed/index.js';
-import { R10cPaymentUnconfirmedScreen } from '@/features/qr-purchase/screens/r10c-payment-unconfirmed/index.js';
-import { PrepaidWelcomeScreen } from '@/features/qr-prepaid/screens/prepaid-welcome/index.js';
-import { PartnerWelcomeScreen } from '@/features/qr-b2b2c/screens/partner-welcome/index.js';
-import { DevCompletedPreview } from '@/dev/DevCompletedPreview.js';
-import { JourneyProvider } from '@/journey/JourneyContext.js';
-import type { PurchaseVehiclePlateState } from '@/features/qr-purchase/types-vehicle.js';
-import { demoPlate } from '@/features/purchase-activation/data/demo-data.js';
-import type { ScreenViewState } from '@/types/flow.js';
+} from '@/features/emergency/screens/index';
+import { R03VehicleNumberScreen } from '@/features/qr-purchase/screens/r03-vehicle-number/index';
+import { R04FetchingVehicleScreen } from '@/features/qr-purchase/screens/r04-fetching-vehicle/index';
+import { R04bFetchFailedScreen } from '@/features/qr-purchase/screens/r04b-fetch-failed/index';
+import { R05ConfirmVehicleScreen } from '@/features/qr-purchase/screens/r05-confirm-vehicle/index';
+import { R08OrderSummaryScreen } from '@/features/qr-purchase/screens/r08-order-summary/index';
+import { R08bPromoAppliedScreen } from '@/features/qr-purchase/screens/r08b-promo-applied/index';
+import { R08cInvalidPromoScreen } from '@/features/qr-purchase/screens/r08c-invalid-promo/index';
+import { R06ChoosePlanScreen } from '@/features/qr-purchase/screens/r06-choose-plan/index';
+import { DEFAULT_PURCHASE_PLAN_ID } from '@/features/qr-purchase/data/purchase-plans';
+import type { PurchasePlanId } from '@/features/qr-purchase/types-checkout';
+import { R07RiderCoverScreen } from '@/features/qr-purchase/screens/r07-rider-cover/index';
+import { R09ProcessingPaymentScreen } from '@/features/qr-purchase/screens/r09-processing-payment/index';
+import { R09bStillConfirmingScreen } from '@/features/qr-purchase/screens/r09b-still-confirming/index';
+import { R10PaymentSuccessScreen } from '@/features/qr-purchase/screens/r10-payment-success/index';
+import { R10bPaymentFailedScreen } from '@/features/qr-purchase/screens/r10b-payment-failed/index';
+import { R10cPaymentUnconfirmedScreen } from '@/features/qr-purchase/screens/r10c-payment-unconfirmed/index';
+import { PrepaidWelcomeScreen } from '@/features/qr-prepaid/screens/prepaid-welcome/index';
+import { PartnerWelcomeScreen } from '@/features/qr-b2b2c/screens/partner-welcome/index';
+import { DevCompletedPreview } from '@/dev/DevCompletedPreview';
+import { JourneyProvider } from '@/journey/JourneyContext';
+import type { PurchaseVehiclePlateState } from '@/features/qr-purchase/types-vehicle';
+import { demoPlate } from '@/features/purchase-activation/data/demo-data';
+import type { ScreenViewState } from '@/types/flow';
 
 const demoMobile = demoMobileDisplay;
 

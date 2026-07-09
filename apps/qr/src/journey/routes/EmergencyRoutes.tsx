@@ -13,11 +13,11 @@ import {
   E08ContactNameScreen,
   E09ContactsSummaryScreen,
   E10RidersSummaryScreen,
-} from '../../features/emergency/screens/index.js';
+} from '../../features/emergency/screens/index';
 import {
   pickDeviceContactWithStatus,
   shouldShowAddFromContactsCTA,
-} from '../../utils/device-contact-picker.js';
+} from '../../utils/device-contact-picker';
 import {
   canAddEmergencyContact,
   canAddRider,
@@ -25,35 +25,35 @@ import {
   getEntitledRiderSlots,
   getRiderPromptDescription,
   shouldEnterRiderPrompt,
-} from '../../features/emergency/emergency-limits.js';
+} from '../../features/emergency/emergency-limits';
 import {
   isValidEmergencyName,
   isValidMobile,
   normalizeMobile,
   clampMobileInput,
-} from '../../features/emergency/emergency.validation.js';
+} from '../../features/emergency/emergency.validation';
 import {
   OTP_LENGTH,
   RESEND_COOLDOWN_SECONDS,
-} from '../../features/shared-auth/auth-flow/auth-flow.validation.js';
-import { useEmergencyContacts, useRiders } from '@/hooks/emergency/index.js';
-import { reportEmergencyApiError } from '@/platform/feedback/report-emergency-api-error.js';
-import type { EmergencyApiError } from '@/services/emergency/emergency-api-errors.js';
-import { readEmergencyApiUserMessage } from '@/services/emergency/emergency-api-errors.js';
-import { emergencyContactLogger } from '@/services/emergency/emergency-contact-logger.js';
-import { riderLogger } from '@/services/rider/rider-logger.js';
-import type { PurchaseCheckoutSession } from '../../features/qr-purchase/types-checkout.js';
+} from '../../features/shared-auth/auth-flow/auth-flow.validation';
+import { useEmergencyContacts, useRiders } from '@/hooks/emergency/index';
+import { reportEmergencyApiError } from '@/platform/feedback/report-emergency-api-error';
+import type { EmergencyApiError } from '@/services/emergency/emergency-api-errors';
+import { readEmergencyApiUserMessage } from '@/services/emergency/emergency-api-errors';
+import { emergencyContactLogger } from '@/services/emergency/emergency-contact-logger';
+import { riderLogger } from '@/services/rider/rider-logger';
+import type { PurchaseCheckoutSession } from '../../features/qr-purchase/types-checkout';
 import type {
   EmergencyContact,
   EmergencyNameFormState,
   EmergencyRiderPromptState,
   EmergencySession,
   RelationshipId,
-} from '../../features/emergency/types.js';
-import { getCompletedPath, getEmergencyFlowBackPath } from '../activation-routing.js';
-import { resolveEmergencyFoundationContext } from '../emergency/emergency-foundation.js';
-import { emergencyJourneyPaths } from '../emergency/emergency-routing.js';
-import { useJourney } from '../JourneyContext.js';
+} from '../../features/emergency/types';
+import { getCompletedPath, getEmergencyFlowBackPath } from '../activation-routing';
+import { resolveEmergencyFoundationContext } from '../emergency/emergency-foundation';
+import { emergencyJourneyPaths } from '../emergency/emergency-routing';
+import { useJourney } from '../JourneyContext';
 
 function mapOtpErrorKind(error: EmergencyApiError): 'wrong' | 'expired' {
   if (error.code === 'unauthorized') {

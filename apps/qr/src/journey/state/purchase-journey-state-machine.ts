@@ -1,17 +1,17 @@
 import type { QrResolution } from '@autolokate/api-client';
 
-import { purchaseJourneyPaths } from '@/journey/purchase/purchase-routing.js';
-import { journeyPaths } from '@/journey/constants.js';
-import type { JourneySession } from '@/journey/types.js';
-import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code.js';
+import { purchaseJourneyPaths } from '@/journey/purchase/purchase-routing';
+import { journeyPaths } from '@/journey/constants';
+import type { JourneySession } from '@/journey/types';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import {
   isActivatedQrLifecycleStatus,
   isAttachedQrLifecycleStatus,
   isDistributedQrLifecycleStatus,
-} from '@/platform/qr/qr-status.js';
-import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository.js';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
-import { compactPlate } from '@/services/vehicle/vehicle-plate.js';
+} from '@/platform/qr/qr-status';
+import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
+import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
+import { compactPlate } from '@/services/vehicle/vehicle-plate';
 
 export const PURCHASE_JOURNEY_KIND = {
   FULL_ACTIVATION: 'full_activation',

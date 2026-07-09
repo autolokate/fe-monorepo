@@ -4,8 +4,8 @@ import {
   pollCheckoutPayment,
   runCheckoutPayment,
   type CheckoutParams,
-} from '@/services/checkout/checkout-service.js';
-import { checkoutLogger } from '@/services/checkout/checkout-logger.js';
+} from '@/services/checkout/checkout-service';
+import { checkoutLogger } from '@/services/checkout/checkout-logger';
 
 const POLL_INITIAL_MS = 1000;
 const POLL_MAX_MS = 8000;

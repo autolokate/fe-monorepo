@@ -4,22 +4,22 @@ import {
   extractQrCodeParam,
   hasLegacyQrEntryParams,
   parseQrFromSearchParams,
-} from '@/platform/qr/parse-qr-url.js';
-import type { QrDecodeResult, QrDispatchError, QrPayload } from '@/platform/qr/qr-dispatch-contract.js';
-import { getQrBootstrapClient } from '@/platform/api/qr-api-client.js';
+} from '@/platform/qr/parse-qr-url';
+import type { QrDecodeResult, QrDispatchError, QrPayload } from '@/platform/qr/qr-dispatch-contract';
+import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
 
-import { seedActivationFromQrPayload } from '@/services/activation/activation-service.js';
-import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code.js';
-import { saveQrCode, saveResolvedQr, getResolvedQr, type StoredQrResolve } from '@/storage/index.js';
+import { seedActivationFromQrPayload } from '@/services/activation/activation-service';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
+import { saveQrCode, saveResolvedQr, getResolvedQr, type StoredQrResolve } from '@/storage/index';
 
-import { clearResolvedQrCache, peekResolvedQr, rememberResolvedQr } from './qr-cache.js';
-import { mapQrApiError, mapQrStatusError } from './qr-errors.js';
+import { clearResolvedQrCache, peekResolvedQr, rememberResolvedQr } from './qr-cache';
+import { mapQrApiError, mapQrStatusError } from './qr-errors';
 import {
   isActivatedQrResolution,
   isExpiredQrStatus,
   mapResolutionToPayload,
-} from './qr-mapper.js';
-import { qrLogger } from './qr-logger.js';
+} from './qr-mapper';
+import { qrLogger } from './qr-logger';
 
 export type ResolveQrCodeResult =
   | { ok: true; payload: QrPayload; resolution: QrResolution }

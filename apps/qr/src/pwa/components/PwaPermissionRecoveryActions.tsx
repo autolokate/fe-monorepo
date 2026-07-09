@@ -1,8 +1,8 @@
-import type { PermissionKind } from '../permission-recovery.js';
+import type { PermissionKind } from '../permission-recovery';
 import {
   getPermissionSettingsInstructions,
   openPermissionSettings,
-} from '../permission-recovery.js';
+} from '../permission-recovery';
 
 import './PwaPermissionRecoveryActions.css';
 

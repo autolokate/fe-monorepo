@@ -1,2 +1,2 @@
-export { AlToggle } from './Toggle.js';
-export type { AlToggleProps } from './Toggle.types.js';
+export { AlToggle } from './Toggle';
+export type { AlToggleProps } from './Toggle.types';

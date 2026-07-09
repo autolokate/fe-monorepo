@@ -1,7 +1,7 @@
-import type { ApiClient } from './client.js';
-import type { RcRecordDto } from './vehicles.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope } from './envelope.js';
+import type { ApiClient } from './client';
+import type { RcRecordDto } from './vehicles';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope } from './envelope';
 
 export type ParkOtpRequestBody = {
   phone: string;

@@ -1,9 +1,9 @@
 import { getTokenManager } from '@autolokate/auth';
 
-import type { JourneySession, PersistedJourneyState } from '@/journey/types.js';
-import { AUTH_COMPLETED } from '@/features/shared-auth/types.js';
+import type { JourneySession, PersistedJourneyState } from '@/journey/types';
+import { AUTH_COMPLETED } from '@/features/shared-auth/types';
 
-import { logout } from './auth-service.js';
+import { logout } from './auth-service';
 
 /** Clear in-memory and persisted auth tokens only. */
 export function clearLocalAuthSession(): void {

@@ -1,4 +1,4 @@
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './Skeleton.css';
 
 export type AlSkeletonProps = {

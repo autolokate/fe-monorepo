@@ -7,9 +7,9 @@ import { useForm } from 'react-hook-form';
 import {
   fulfilPartnerReorderSchema,
   type FulfilPartnerReorderFormValues,
-} from '@/features/qr-batches/fulfil-reorder-schema.js';
-import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
+} from '@/features/qr-batches/fulfil-reorder-schema';
+import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
 
 export type FulfilPartnerReorderSheetProps = {
   open: boolean;

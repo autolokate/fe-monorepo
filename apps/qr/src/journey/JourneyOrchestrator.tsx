@@ -1,14 +1,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import { AppLaunchSplash } from '../platform/AppLaunchSplash.js';
-import { AutolokateRootProvider } from '../platform/AutolokateRootProvider.js';
-import { ThemeProvider } from '../platform/theme/ThemeProvider.js';
-import { AuthSessionRegistrar } from '../platform/auth/AuthSessionRegistrar.js';
-import { DeviceRegistrationRegistrar } from '../platform/device/DeviceRegistrationRegistrar.js';
-import { PwaScanRoutes } from '../features/post-activation-pwa/routes/PwaScanRoutes.js';
-import { PwaAppShell } from '../pwa/index.js';
-import { JourneyRoutes } from './routes/JourneyRoutes.js';
-import { JourneyRouteTracker } from './resume/JourneyRouteTracker.js';
+import { AppLaunchSplash } from '../platform/AppLaunchSplash';
+import { AutolokateRootProvider } from '../platform/AutolokateRootProvider';
+import { ThemeProvider } from '../platform/theme/ThemeProvider';
+import { AuthSessionRegistrar } from '../platform/auth/AuthSessionRegistrar';
+import { DeviceRegistrationRegistrar } from '../platform/device/DeviceRegistrationRegistrar';
+import { PwaScanRoutes } from '../features/post-activation-pwa/routes/PwaScanRoutes';
+import { PwaAppShell } from '../pwa/index';
+import { JourneyRoutes } from './routes/JourneyRoutes';
+import { JourneyRouteTracker } from './resume/JourneyRouteTracker';
 
 import './journey.css';
 

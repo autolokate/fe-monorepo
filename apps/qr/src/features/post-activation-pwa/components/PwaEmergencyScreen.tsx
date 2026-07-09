@@ -2,11 +2,11 @@ import type { ReactNode } from 'react';
 import { AlIcon } from '@autolokate/icons';
 import { AlHeading, AlSosHoldButton, AlText, type AlSosHoldButtonProps } from '@autolokate/ui';
 
-import { usePwaScan } from '../context/PwaScanContext.js';
-import { useResolveStoredLocationName } from '../hooks/use-resolve-stored-location-name.js';
-import { formatPwaLocationLabel } from '../utils/format-pwa-location.js';
-import { PwaFade, PwaRevealItem } from './PwaMotion.js';
-import { PwaScanShell } from './PwaScanShell.js';
+import { usePwaScan } from '../context/PwaScanContext';
+import { useResolveStoredLocationName } from '../hooks/use-resolve-stored-location-name';
+import { formatPwaLocationLabel } from '../utils/format-pwa-location';
+import { PwaFade, PwaRevealItem } from './PwaMotion';
+import { PwaScanShell } from './PwaScanShell';
 
 import './pwa-emergency-screen.css';
 

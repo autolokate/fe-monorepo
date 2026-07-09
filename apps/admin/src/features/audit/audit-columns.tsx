@@ -2,7 +2,7 @@ import type { AuditEventDto } from '@autolokate/api-client';
 import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
-import { formatAuditField } from '@/platform/utils/audit-field.js';
+import { formatAuditField } from '@/platform/utils/audit-field';
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString();

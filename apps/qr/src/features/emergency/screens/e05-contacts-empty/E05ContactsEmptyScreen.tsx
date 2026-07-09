@@ -1,10 +1,10 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlText } from '@autolokate/ui';
 
-import { EmptyStateHero } from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import { E0_CONTACTS_EMPTY_DESCRIPTION } from '../../emergency-limits.js';
-import type { EmergencyScreenNavigationProps } from '../../types.js';
+import { EmptyStateHero } from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import { E0_CONTACTS_EMPTY_DESCRIPTION } from '../../emergency-limits';
+import type { EmergencyScreenNavigationProps } from '../../types';
 
 import '../../emergency.css';
 

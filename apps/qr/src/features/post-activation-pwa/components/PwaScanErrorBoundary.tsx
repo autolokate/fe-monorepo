@@ -1,7 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlButton, AlHeading, AlText } from '@autolokate/ui';
 
-import { logPhotoDiagnostic, readPhotoDiagnostics } from '../utils/pwa-photo-diagnostics.js';
+import { logPhotoDiagnostic, readPhotoDiagnostics } from '../utils/pwa-photo-diagnostics';
 
 type PwaScanErrorBoundaryProps = {
   children: ReactNode;

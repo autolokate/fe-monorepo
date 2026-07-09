@@ -1,1 +1,1 @@
-export { useVehicleLookup } from './useVehicleLookup.js';
+export { useVehicleLookup } from './useVehicleLookup';

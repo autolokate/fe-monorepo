@@ -1,4 +1,4 @@
-import { formatAuditField } from '@/platform/utils/audit-field.js';
+import { formatAuditField } from '@/platform/utils/audit-field';
 
 export function actionTone(action: string): 'active' | 'pending' | 'inactive' {
   if (action.includes('APPROVED') || action.includes('PAID') || action.includes('MINTED')) {

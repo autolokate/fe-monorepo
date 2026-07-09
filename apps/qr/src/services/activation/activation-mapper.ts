@@ -1,14 +1,14 @@
 import type { ActivationPreviewDto } from '@autolokate/api-client';
 import { formatInrFromPaise } from '@autolokate/utils';
 
-import type { LandingEntitlement } from '@/features/b2b-shared/types-landing.js';
-import type { PurchaseRiderCount } from '@/features/qr-purchase/types-checkout.js';
+import type { LandingEntitlement } from '@/features/b2b-shared/types-landing';
+import type { PurchaseRiderCount } from '@/features/qr-purchase/types-checkout';
 import {
   ACTIVATION_PREVIEW_CHANNEL,
   type PartnerActivationKind,
-} from '@/platform/activation/activation-channel.js';
-import type { QrB2b2cPayload, QrPrepaidPayload } from '@/platform/qr/qr-dispatch-contract.js';
-import { mapApiTierToPurchasePlanId } from '@/services/plan/plan-mapper.js';
+} from '@/platform/activation/activation-channel';
+import type { QrB2b2cPayload, QrPrepaidPayload } from '@/platform/qr/qr-dispatch-contract';
+import { mapApiTierToPurchasePlanId } from '@/services/plan/plan-mapper';
 
 export type ActivationFlowKind = 'prepaid' | 'b2b2c';
 

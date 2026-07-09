@@ -1,6 +1,6 @@
 import { getTokenManager } from '@autolokate/auth';
 
-import { revokeAndClearAuthSession } from './auth-session.js';
+import { revokeAndClearAuthSession } from './auth-session';
 
 export type AuthSessionValidity = 'valid' | 'logged_out';
 

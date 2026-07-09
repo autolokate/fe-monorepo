@@ -1,7 +1,7 @@
 import { lookupVehicle as lookupVehicleApi } from '@autolokate/api-client';
 import type { AlVehicleRcField } from '@autolokate/ui';
 
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
 
 import {
   clearInflightLookup,
@@ -9,11 +9,11 @@ import {
   peekVehicleLookup,
   rememberVehicleLookup,
   setInflightLookup,
-} from './vehicle-cache.js';
-import { mapVehicleLookupApiError } from './vehicle-errors.js';
-import { mapRcRecordToFields, mapRcRecordToVehicleSession } from './vehicle-mapper.js';
-import { compactPlate, normalizePlate, VAHAN_FETCH_HOLD_MS } from './vehicle-plate.js';
-import { vehicleLogger } from './vehicle-logger.js';
+} from './vehicle-cache';
+import { mapVehicleLookupApiError } from './vehicle-errors';
+import { mapRcRecordToFields, mapRcRecordToVehicleSession } from './vehicle-mapper';
+import { compactPlate, normalizePlate, VAHAN_FETCH_HOLD_MS } from './vehicle-plate';
+import { vehicleLogger } from './vehicle-logger';
 
 export type VehicleLookupStatus = 'success' | 'not-found' | 'error';
 
@@ -99,4 +99,4 @@ export async function lookupVehicleByPlate(plate: string): Promise<VehicleLookup
   }
 }
 
-export { normalizePlate, compactPlate, isPlateEntryReady, VAHAN_FETCH_HOLD_MS } from './vehicle-plate.js';
+export { normalizePlate, compactPlate, isPlateEntryReady, VAHAN_FETCH_HOLD_MS } from './vehicle-plate';

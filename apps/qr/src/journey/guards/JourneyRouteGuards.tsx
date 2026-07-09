@@ -1,12 +1,12 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
 
-import { AUTH_COMPLETED } from '../../features/shared-auth/types.js';
+import { AUTH_COMPLETED } from '../../features/shared-auth/types';
 
-import { authJourneyPaths } from '../auth/auth-routing.js';
-import { getPostAuthActivationPath } from '../activation-routing.js';
-import { useJourney } from '../JourneyContext.js';
-import type { ActivationFlowId } from '../types.js';
+import { authJourneyPaths } from '../auth/auth-routing';
+import { getPostAuthActivationPath } from '../activation-routing';
+import { useJourney } from '../JourneyContext';
+import type { ActivationFlowId } from '../types';
 
 export type RequireSelectedFlowProps = {
   children: ReactNode;

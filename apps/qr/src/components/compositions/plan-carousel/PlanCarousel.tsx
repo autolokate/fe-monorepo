@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { AlIcon } from '@autolokate/icons';
 import { AlPlanCard } from '@autolokate/ui';
 
-import type { PurchasePlanDefinition, PurchasePlanId } from '@/features/qr-purchase/types-checkout.js';
-import { PURCHASE_PLANS } from '@/features/qr-purchase/data/purchase-plans.js';
+import type { PurchasePlanDefinition, PurchasePlanId } from '@/features/qr-purchase/types-checkout';
+import { PURCHASE_PLANS } from '@/features/qr-purchase/data/purchase-plans';
 
 import './plan-carousel.css';
 

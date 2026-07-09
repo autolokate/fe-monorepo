@@ -1,4 +1,4 @@
-import type { PwaGeoPoint } from '../context/pwa-scan-types.js';
+import type { PwaGeoPoint } from '../context/pwa-scan-types';
 
 /** Location chip / map card — human-readable place when available. */
 export function formatPwaLocationLabel(

@@ -4,7 +4,7 @@ import { AlVehicleRcCard } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 const vehicleFields = [
   { label: 'Owner', value: 'Shibu Shrivastva' },

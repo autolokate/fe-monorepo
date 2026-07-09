@@ -6,11 +6,11 @@ import type {
   PurchasePaymentStatus,
   PurchasePlanId,
   PurchaseRiderCount,
-} from '@/features/qr-purchase/types-checkout.js';
-import { getPurchasePlanById } from '@/services/plan/plan-service.js';
-import { mapPurchasePlanIdToApiTier } from '@/services/plan/plan-mapper.js';
+} from '@/features/qr-purchase/types-checkout';
+import { getPurchasePlanById } from '@/services/plan/plan-service';
+import { mapPurchasePlanIdToApiTier } from '@/services/plan/plan-mapper';
 
-import { PAYMENT_OUTCOME } from './payment-outcome.js';
+import { PAYMENT_OUTCOME } from './payment-outcome';
 
 export type CheckoutParams = {
   planId: PurchasePlanId;

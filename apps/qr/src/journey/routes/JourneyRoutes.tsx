@@ -1,19 +1,19 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { emergencyJourneyPaths } from '../emergency/emergency-routing.js';
-import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect.js';
+import { emergencyJourneyPaths } from '../emergency/emergency-routing';
+import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
 import {
   RequireAuthCompleted,
   RequireSelectedFlow,
   RequireSelectedFlowMatch,
-} from '../guards/JourneyRouteGuards.js';
-import { JourneyCompletedScreen } from '../screens/JourneyCompletedScreen.js';
-import { journeyPaths } from '../constants.js';
-import { B2b2cRoutes } from './B2b2cRoutes.js';
-import { EmergencyRoutes } from './EmergencyRoutes.js';
-import { PrepaidRoutes } from './PrepaidRoutes.js';
-import { PurchaseRoutes } from './PurchaseRoutes.js';
-import { JourneySharedAuthRoute } from './JourneySharedAuthRoute.js';
+} from '../guards/JourneyRouteGuards';
+import { JourneyCompletedScreen } from '../screens/JourneyCompletedScreen';
+import { journeyPaths } from '../constants';
+import { B2b2cRoutes } from './B2b2cRoutes';
+import { EmergencyRoutes } from './EmergencyRoutes';
+import { PrepaidRoutes } from './PrepaidRoutes';
+import { PurchaseRoutes } from './PurchaseRoutes';
+import { JourneySharedAuthRoute } from './JourneySharedAuthRoute';
 
 function PurchaseActivationRoute() {
   return (

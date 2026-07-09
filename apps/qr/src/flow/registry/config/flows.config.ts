@@ -1,7 +1,7 @@
-import type { StepId } from '@/types/flow.js';
+import type { StepId } from '@/types/flow';
 
-import type { FlowConfig } from './types.js';
-import { SHARED_PIPELINE_STEP_IDS } from './shared-pipeline.config.js';
+import type { FlowConfig } from './types';
+import { SHARED_PIPELINE_STEP_IDS } from './shared-pipeline.config';
 
 const withSharedPipeline = (
   prefix: readonly StepId[],

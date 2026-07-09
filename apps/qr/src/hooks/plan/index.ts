@@ -1,1 +1,1 @@
-export { usePlans } from './usePlans.js';
+export { usePlans } from './usePlans';

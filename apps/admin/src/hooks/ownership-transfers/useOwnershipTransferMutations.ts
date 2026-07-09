@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { showSuccessToast } from '@/platform/feedback/toast.js';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { showSuccessToast } from '@/platform/feedback/toast';
 import {
   submitApproveOwnershipTransfer,
   submitInitiateOwnershipTransfer,
-} from '@/services/ownership-transfers/ownership-transfer-service.js';
+} from '@/services/ownership-transfers/ownership-transfer-service';
 
 export function useOwnershipTransferMutations() {
   const initiateMutation = useMutation({

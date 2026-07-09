@@ -6,10 +6,10 @@ export {
   sharedFlowRoutes,
   sharedStepIds,
   stepIdByPath,
-} from './routes.schema.js';
+} from './routes.schema';
 export type {
   PrepaidFlowRoute,
   PurchaseFlowRoute,
   RouteDefinition,
   SharedFlowRoute,
-} from './routes.schema.js';
+} from './routes.schema';

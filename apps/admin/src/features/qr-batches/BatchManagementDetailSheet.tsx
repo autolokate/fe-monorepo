@@ -15,20 +15,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   qrCodeActionSchema,
   type QrCodeActionFormValues,
-} from '@/features/qr-batches/create-batch-schema.js';
-import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
+} from '@/features/qr-batches/create-batch-schema';
+import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
 import {
   AdminDetailField,
   AdminDetailGrid,
   AdminDetailSection,
-} from '@/platform/components/AdminDetailField.js';
+} from '@/platform/components/AdminDetailField';
 import {
   canRunBatchLifecycleAction,
   describeBatchLifecycleStatus,
   getBatchLifecycleActions,
   type BatchLifecycleActionId,
-} from '@/services/qr-batches/batch-lifecycle.js';
-import { batchStatusTone } from '@/platform/utils/batch-status.js';
+} from '@/services/qr-batches/batch-lifecycle';
+import { batchStatusTone } from '@/platform/utils/batch-status';
 
 import './qr-batches.css';
 

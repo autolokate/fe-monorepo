@@ -7,9 +7,9 @@ import {
   InitiateTransferSheet,
   TransferCompletedPanel,
   TransferInitiatedPanel,
-} from '@/features/ownership-transfers/OwnershipTransferSheets.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
-import { useAdminPermission } from '@/platform/rbac/useAdminPermission.js';
+} from '@/features/ownership-transfers/OwnershipTransferSheets';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 export function OwnershipTransfersPage() {
   const canWrite = useAdminPermission('qr-lifecycle:write');

@@ -1,15 +1,15 @@
 import { validatePromo as validatePromoApi } from '@autolokate/api-client';
 
-import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout.js';
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
-import { mapPurchasePlanIdToApiTier } from '@/services/plan/plan-mapper.js';
-import { buildCheckoutParamsKey } from '@/services/checkout/checkout-mapper.js';
-import { updateCheckoutState } from '@/services/checkout/checkout-cache.js';
-import type { CheckoutParams } from '@/services/checkout/checkout-mapper.js';
+import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
+import { mapPurchasePlanIdToApiTier } from '@/services/plan/plan-mapper';
+import { buildCheckoutParamsKey } from '@/services/checkout/checkout-mapper';
+import { updateCheckoutState } from '@/services/checkout/checkout-cache';
+import type { CheckoutParams } from '@/services/checkout/checkout-mapper';
 
-import { mapPromoApiError, type PromoError } from './promo-errors.js';
-import { mapPromoPreviewToSummary } from './promo-mapper.js';
-import { promoLogger } from './promo-logger.js';
+import { mapPromoApiError, type PromoError } from './promo-errors';
+import { mapPromoPreviewToSummary } from './promo-mapper';
+import { promoLogger } from './promo-logger';
 
 export type ValidatePromoCheckoutInput = {
   purchaseQrCode: string;

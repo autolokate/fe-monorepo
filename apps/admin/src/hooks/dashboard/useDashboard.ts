@@ -1,11 +1,11 @@
 import { useQueries } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
-import { dashboardQueryDefinitions } from '@/hooks/dashboard/dashboard-query-definitions.js';
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { computeDashboardMetrics } from '@/services/dashboard/dashboard-metrics.js';
-import type { DashboardSnapshot } from '@/services/dashboard/dashboard-service.js';
+import { dashboardQueryDefinitions } from '@/hooks/dashboard/dashboard-query-definitions';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { computeDashboardMetrics } from '@/services/dashboard/dashboard-metrics';
+import type { DashboardSnapshot } from '@/services/dashboard/dashboard-service';
 
 export function useDashboard() {
   const [inventoryQuery, promosQuery, auditQuery] = useQueries({

@@ -1,12 +1,12 @@
-export type { FeatureDefinition } from '../registry.js';
-export { featureRegistry } from '../registry.js';
+export type { FeatureDefinition } from '../registry';
+export { featureRegistry } from '../registry';
 export type {
   PurchaseScreenId,
   PurchaseScreenInventoryEntry,
   PurchaseScreenState,
   PurchaseStepId,
-} from './types.js';
-export { PURCHASE_FLOW_STEP_COUNT } from './types.js';
-export * from './screens/index.js';
+} from './types';
+export { PURCHASE_FLOW_STEP_COUNT } from './types';
+export * from './screens/index';
 
 export const featureId = 'qr-purchase' as const;

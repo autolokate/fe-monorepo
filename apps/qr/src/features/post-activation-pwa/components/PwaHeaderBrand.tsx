@@ -1,6 +1,6 @@
 import { AlLogo } from '@autolokate/brand';
 
-import { useThemeMode } from '@/hooks/useThemeMode.js';
+import { useThemeMode } from '@/hooks/useThemeMode';
 
 /** PWA scan header — theme-aware Autolokate logo. */
 export function PwaHeaderBrand() {

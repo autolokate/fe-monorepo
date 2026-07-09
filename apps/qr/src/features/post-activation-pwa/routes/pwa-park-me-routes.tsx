@@ -16,23 +16,23 @@ import {
 import {
   isPlateEntryReady,
   normalizePlate,
-} from '@/services/vehicle/index.js';
-import { useParkVehicleLookup, useParkCheckingFlow, useParkTrackerPoll } from '../../../hooks/scanner/index.js';
-import { reportUserError } from '../../../platform/feedback/report-user-error.js';
-import { scannerLogger } from '../../../services/scanner/index.js';
-import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
-import { PWA_PARK_ME_LOOKUP_COPY, parkMeTimelineSteps } from '../data/pwa-content.js';
-import { usePwaScan } from '../context/PwaScanContext.js';
-import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard.js';
-import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary.js';
-import { usePwaPhotoCapture } from '../hooks/use-pwa-photo-capture.js';
-import { useGeolocationCapture, requestMediaPermissions } from '../hooks/use-geolocation.js';
-import { useResolveStoredLocationName } from '../hooks/use-resolve-stored-location-name.js';
-import { PwaPermissionRecoveryActions, queryPermissionState } from '../../../pwa/index.js';
-import { PwaScanShell } from '../components/PwaScanShell.js';
-import { PwaFade } from '../components/PwaMotion.js';
-import { formatPwaLocationDetail } from '../utils/format-pwa-location.js';
-import { formatReporterModelSummary } from '../utils/pwa-vehicle-utils.js';
+} from '@/services/vehicle/index';
+import { useParkVehicleLookup, useParkCheckingFlow, useParkTrackerPoll } from '../../../hooks/scanner/index';
+import { reportUserError } from '../../../platform/feedback/report-user-error';
+import { scannerLogger } from '../../../services/scanner/index';
+import { pwaScanPaths } from '../constants/pwa-scan-paths';
+import { PWA_PARK_ME_LOOKUP_COPY, parkMeTimelineSteps } from '../data/pwa-content';
+import { usePwaScan } from '../context/PwaScanContext';
+import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard';
+import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary';
+import { usePwaPhotoCapture } from '../hooks/use-pwa-photo-capture';
+import { useGeolocationCapture, requestMediaPermissions } from '../hooks/use-geolocation';
+import { useResolveStoredLocationName } from '../hooks/use-resolve-stored-location-name';
+import { PwaPermissionRecoveryActions, queryPermissionState } from '../../../pwa/index';
+import { PwaScanShell } from '../components/PwaScanShell';
+import { PwaFade } from '../components/PwaMotion';
+import { formatPwaLocationDetail } from '../utils/format-pwa-location';
+import { formatReporterModelSummary } from '../utils/pwa-vehicle-utils';
 
 import '../styles/pwa-scan.css';
 

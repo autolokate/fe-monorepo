@@ -14,17 +14,17 @@ import {
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths.js';
-import { dashboardBatchColumns } from '@/features/dashboard/dashboard-batch-columns.js';
+import { adminPaths } from '@/app/routes/admin-paths';
+import { dashboardBatchColumns } from '@/features/dashboard/dashboard-batch-columns';
 import {
   INVENTORY_STATE_FILTERS,
   type InventoryStateFilter as InventoryFilterValue,
-} from '@/features/inventory/inventory-filters.js';
-import { useDashboard } from '@/hooks/dashboard/useDashboard.js';
-import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
-import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
-import { MetricSkeleton } from '@/platform/components/MetricSkeleton.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
+} from '@/features/inventory/inventory-filters';
+import { useDashboard } from '@/hooks/dashboard/useDashboard';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
+import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { MetricSkeleton } from '@/platform/components/MetricSkeleton';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './dashboard.css';
 

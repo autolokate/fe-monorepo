@@ -1,5 +1,5 @@
-import { DEFAULT_PURCHASE_PLAN_ID } from '../qr-purchase/data/purchase-plans.js';
-import type { PurchasePlanId, PurchaseRiderCount } from '../qr-purchase/types-checkout.js';
+import { DEFAULT_PURCHASE_PLAN_ID } from '../qr-purchase/data/purchase-plans';
+import type { PurchasePlanId, PurchaseRiderCount } from '../qr-purchase/types-checkout';
 
 export type EmergencyPlanLimits = {
   /** Maximum emergency contacts allowed for the purchased plan. */

@@ -3,17 +3,17 @@ import { AlStack } from '@autolokate/ui';
 import {
   AddContactRow,
   EmergencyContactRow,
-} from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout.js';
+} from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout';
 import {
   canAddRider,
   getEntitledRiderSlots,
   getRidersMaxReachedMessage,
   getRidersSummaryDescription,
   type EmergencyFlowKind,
-} from '../../emergency-limits.js';
-import type { EmergencyRider, EmergencyScreenNavigationProps } from '../../types.js';
+} from '../../emergency-limits';
+import type { EmergencyRider, EmergencyScreenNavigationProps } from '../../types';
 
 export type E10RidersSummaryScreenProps = EmergencyScreenNavigationProps & {
   riders: EmergencyRider[];

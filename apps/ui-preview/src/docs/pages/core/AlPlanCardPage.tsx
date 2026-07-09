@@ -4,7 +4,7 @@ import { AlPlanCard, AlStack } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 const secureFeatures = [
   'Automatic crash detection',

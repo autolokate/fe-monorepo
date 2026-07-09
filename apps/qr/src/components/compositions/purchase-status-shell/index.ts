@@ -1,2 +1,2 @@
-export { PurchaseStatusShell } from './PurchaseStatusShell.js';
-export type { PurchaseStatusAmbient, PurchaseStatusShellProps } from './PurchaseStatusShell.js';
+export { PurchaseStatusShell } from './PurchaseStatusShell';
+export type { PurchaseStatusAmbient, PurchaseStatusShellProps } from './PurchaseStatusShell';

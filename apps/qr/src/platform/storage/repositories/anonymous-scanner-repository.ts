@@ -1,5 +1,5 @@
-import { qrStorageRepository } from './qr-storage-repository.js';
-import { parkSessionRepository } from './park-session-repository.js';
+import { qrStorageRepository } from './qr-storage-repository';
+import { parkSessionRepository } from './park-session-repository';
 
 const STORAGE_KEY = 'al-scanner-emergency-v1';
 

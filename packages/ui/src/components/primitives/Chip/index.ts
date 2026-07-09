@@ -1,7 +1,7 @@
-export { AlChip } from './Chip.js';
+export { AlChip } from './Chip';
 export type {
   AlChipButtonProps,
   AlChipProps,
   AlChipSpanProps,
   AlChipVariant,
-} from './Chip.types.js';
+} from './Chip.types';

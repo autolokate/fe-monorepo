@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlPlanCardProps } from './PlanCard.types.js';
+import type { AlPlanCardProps } from './PlanCard.types';
 import './PlanCard.css';
 
 export function AlPlanCard({

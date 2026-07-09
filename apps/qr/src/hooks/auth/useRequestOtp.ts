@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
-import { mapAuthApiError } from '@/services/auth/auth-errors.js';
-import { sendOtp, type SendOtpInput } from '@/services/auth/auth-service.js';
+import { mapAuthApiError } from '@/services/auth/auth-errors';
+import { sendOtp, type SendOtpInput } from '@/services/auth/auth-service';
 
 export function useRequestOtp() {
   const [isPending, setIsPending] = useState(false);

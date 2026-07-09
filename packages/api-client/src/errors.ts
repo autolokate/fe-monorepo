@@ -1,4 +1,4 @@
-import { ApiError } from './client.js';
+import { ApiError } from './client';
 
 export type NormalizedErrorCode =
   | 'validation'

@@ -1,7 +1,7 @@
 import type { ChangeEvent, ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
-import { AlInput } from '../forms/Input/index.js';
+import { cn } from '../../utils/cn';
+import { AlInput } from '../forms/Input/index';
 import './SearchInput.css';
 
 function SearchIcon() {

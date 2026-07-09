@@ -1,5 +1,5 @@
-import { ActivationCompleteHaloIcon, ActivityIcon, ArrowLeftIcon, BellIcon, CameraIcon, CarIcon, CheckIcon, ChevronDownIcon, ChevronRightIcon, CircleCheckIcon, CircleUserIcon, CircleXIcon, CreditCardIcon, EllipsisIcon, FetchFailedHaloIcon, HeartIcon, HouseIcon, MapPinIcon, PaymentSuccessHaloIcon, PaymentUnconfirmedHaloIcon, PhoneIcon, PlusIcon, ReceiptTextIcon, ScanLineIcon, ShieldCheckIcon, SmileIcon, SquareParkingIcon, StoreIcon, TriangleAlertIcon, UserIcon, UsersIcon } from './index.js';
-import type { AlIconName } from '../iconNames.js';
+import { ActivationCompleteHaloIcon, ActivityIcon, ArrowLeftIcon, BellIcon, CameraIcon, CarIcon, CheckIcon, ChevronDownIcon, ChevronRightIcon, CircleCheckIcon, CircleUserIcon, CircleXIcon, CreditCardIcon, EllipsisIcon, FetchFailedHaloIcon, HeartIcon, HouseIcon, MapPinIcon, PaymentSuccessHaloIcon, PaymentUnconfirmedHaloIcon, PhoneIcon, PlusIcon, ReceiptTextIcon, ScanLineIcon, ShieldCheckIcon, SmileIcon, SquareParkingIcon, StoreIcon, TriangleAlertIcon, UserIcon, UsersIcon } from './index';
+import type { AlIconName } from '../iconNames';
 
 export const iconComponentMap: Record<AlIconName, typeof ArrowLeftIcon> = {
   'arrow-left': ArrowLeftIcon,

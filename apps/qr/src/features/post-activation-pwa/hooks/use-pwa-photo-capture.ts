@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
 
-import { reportUserError } from '@/platform/feedback/report-user-error.js';
-import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository.js';
-import { parkSessionRepository } from '@/platform/storage/repositories/park-session-repository.js';
-import { uploadScanPhotoForSlot, scannerLogger, type ScanUploadKind } from '@/services/scanner/index.js';
+import { reportUserError } from '@/platform/feedback/report-user-error';
+import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
+import { parkSessionRepository } from '@/platform/storage/repositories/park-session-repository';
+import { uploadScanPhotoForSlot, scannerLogger, type ScanUploadKind } from '@/services/scanner/index';
 
-import { usePwaScan, type PwaSessionPatch } from '../context/PwaScanContext.js';
-import { useCameraCapture } from './use-camera-capture.js';
-import { logPhotoDiagnostic } from '../utils/pwa-photo-diagnostics.js';
+import { usePwaScan, type PwaSessionPatch } from '../context/PwaScanContext';
+import { useCameraCapture } from './use-camera-capture';
+import { logPhotoDiagnostic } from '../utils/pwa-photo-diagnostics';
 
 type PhotoField = 'parkMePhotos' | 'sosPhotos';
 type PhotoIdField = 'parkMePhotoIds' | 'sosPhotoIds';

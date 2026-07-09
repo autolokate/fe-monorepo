@@ -1,5 +1,5 @@
-import type { StoredTokenPair, TokenRefreshHandler, TokenStorage } from './types.js';
-import { createSessionTokenStorage } from './token-storage.js';
+import type { StoredTokenPair, TokenRefreshHandler, TokenStorage } from './types';
+import { createSessionTokenStorage } from './token-storage';
 
 const EXPIRY_BUFFER_MS = 30_000;
 

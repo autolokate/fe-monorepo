@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { PrepaidWelcomeScreen } from '../../features/qr-prepaid/screens/prepaid-welcome/index.js';
-import { prepaidJourneyPaths } from '../prepaid/prepaid-routing.js';
+import { PrepaidWelcomeScreen } from '../../features/qr-prepaid/screens/prepaid-welcome/index';
+import { prepaidJourneyPaths } from '../prepaid/prepaid-routing';
 
 export function PrepaidRoutes() {
   return (

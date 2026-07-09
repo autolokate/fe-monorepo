@@ -1,6 +1,6 @@
 import { AlText } from '@autolokate/ui';
 
-import type { OrderSummaryTotals } from '@/features/qr-purchase/types-checkout.js';
+import type { OrderSummaryTotals } from '@/features/qr-purchase/types-checkout';
 
 import './order-summary-card.css';
 

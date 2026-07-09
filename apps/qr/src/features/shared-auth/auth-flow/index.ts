@@ -1,1 +1,1 @@
-export { AUTH_COMPLETED } from '../types.js';
+export { AUTH_COMPLETED } from '../types';

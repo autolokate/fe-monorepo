@@ -1,2 +1,2 @@
-export { PlanCarousel } from './PlanCarousel.js';
-export type { PlanCarouselProps } from './PlanCarousel.js';
+export { PlanCarousel } from './PlanCarousel';
+export type { PlanCarouselProps } from './PlanCarousel';

@@ -1,6 +1,6 @@
 import type { AlIconName } from '@autolokate/icons';
 
-import type { RelationshipId } from '../types.js';
+import type { RelationshipId } from '../types';
 
 export type RelationshipOption = {
   id: RelationshipId;

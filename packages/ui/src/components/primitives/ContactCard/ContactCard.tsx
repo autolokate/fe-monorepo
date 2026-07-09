@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlContactCardProps } from './ContactCard.types.js';
+import type { AlContactCardProps } from './ContactCard.types';
 import './ContactCard.css';
 
 /** Figma AlContactCard — 723:2194 */

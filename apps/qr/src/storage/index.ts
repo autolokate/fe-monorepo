@@ -22,4 +22,4 @@ export {
   type StoredCheckout,
   type StoredQrResolve,
   type StoredVehicle,
-} from './purchase-storage.js';
+} from './purchase-storage';

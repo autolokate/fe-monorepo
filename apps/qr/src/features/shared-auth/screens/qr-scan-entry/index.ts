@@ -1,1 +1,1 @@
-export { QrScanEntryScreen, type QrScanEntryScreenProps } from './QrScanEntryScreen.js';
+export { QrScanEntryScreen, type QrScanEntryScreenProps } from './QrScanEntryScreen';

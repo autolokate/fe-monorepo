@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import {
   formatPromoDiscount,
   getPromoLifecycleStatus,
-} from '@/services/promos/promo-metrics.js';
+} from '@/services/promos/promo-metrics';
 
 function formatDateTime(value: string | null): string {
   if (!value) {

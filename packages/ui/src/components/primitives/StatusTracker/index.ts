@@ -1,2 +1,2 @@
-export { AlStatusTracker } from './StatusTracker.js';
-export type { AlStatusTrackerProps } from './StatusTracker.types.js';
+export { AlStatusTracker } from './StatusTracker';
+export type { AlStatusTrackerProps } from './StatusTracker.types';

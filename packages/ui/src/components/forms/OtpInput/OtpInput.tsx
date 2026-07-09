@@ -1,14 +1,14 @@
 import { useId, useEffect, useRef } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlOtpInputProps } from './OtpInput.types.js';
+import type { AlOtpInputProps } from './OtpInput.types';
 import {
   buildOtpDigits,
   handleOtpChange,
   handleOtpKeyDown,
   handleOtpPaste,
-} from './OtpInput.utils.js';
+} from './OtpInput.utils';
 import './OtpInput.css';
 
 export function AlOtpInput({

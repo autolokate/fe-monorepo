@@ -2,9 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { setThemeMode } from '@autolokate/design-system';
 
-import { App } from '@/app/App.js';
-import { validateEnv } from '@/config/env.js';
-import { applyEffectiveTheme } from '@/platform/theme/theme-preference.js';
+import { App } from '@/app/App';
+import { validateEnv } from '@/config/env';
+import { applyEffectiveTheme } from '@/platform/theme/theme-preference';
 
 import '@/styles/globals.css';
 

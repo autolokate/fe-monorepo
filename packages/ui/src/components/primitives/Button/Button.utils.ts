@@ -1,4 +1,4 @@
-import type { AlButtonSize, AlButtonVariant } from './Button.types.js';
+import type { AlButtonSize, AlButtonVariant } from './Button.types';
 
 export function normalizeButtonVariant(variant: AlButtonVariant) {
   if (variant === 'danger' || variant === 'destructive') {

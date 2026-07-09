@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-import { usePwaScan } from '../context/PwaScanContext.js';
-import { reverseGeocodeLocation } from '../utils/reverse-geocode.js';
+import { usePwaScan } from '../context/PwaScanContext';
+import { reverseGeocodeLocation } from '../utils/reverse-geocode';
 
 /** Backfill place name when session has coordinates but no resolved label yet. */
 export function useResolveStoredLocationName() {

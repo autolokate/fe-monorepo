@@ -7,16 +7,16 @@ import {
   PlanActivationCardSkeleton,
   WelcomeActivationErrorPanel,
   WelcomeActivationShell,
-} from '@/components/compositions/welcome-activation/index.js';
-import { applyLandingEntitlementToSession } from '@/features/b2b-shared/apply-landing-entitlement.js';
-import { getWelcomeShellPresentation } from '@/features/b2b-shared/get-welcome-shell-presentation.js';
-import { resolveWelcomePlanDisplay } from '@/features/b2b-shared/resolve-welcome-plan-display.js';
-import { useActivationPreview } from '@/hooks/activation/index.js';
-import { journeyPaths } from '@/journey/constants.js';
-import { useJourney } from '@/journey/JourneyContext.js';
-import { authMobileUrl } from '@/journey/auth/auth-routing.js';
-import { resolvePartnerVariantFromRiderCount } from '@/journey/state/partner-journey-state-machine.js';
-import { readStoredActivationQrCode } from '@/services/activation/activation-service.js';
+} from '@/components/compositions/welcome-activation/index';
+import { applyLandingEntitlementToSession } from '@/features/b2b-shared/apply-landing-entitlement';
+import { getWelcomeShellPresentation } from '@/features/b2b-shared/get-welcome-shell-presentation';
+import { resolveWelcomePlanDisplay } from '@/features/b2b-shared/resolve-welcome-plan-display';
+import { useActivationPreview } from '@/hooks/activation/index';
+import { journeyPaths } from '@/journey/constants';
+import { useJourney } from '@/journey/JourneyContext';
+import { authMobileUrl } from '@/journey/auth/auth-routing';
+import { resolvePartnerVariantFromRiderCount } from '@/journey/state/partner-journey-state-machine';
+import { readStoredActivationQrCode } from '@/services/activation/activation-service';
 
 export type PartnerLandingVariant = 'plan-only' | 'plan-rider';
 

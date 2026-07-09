@@ -12,4 +12,4 @@ export {
   type PurchaseJourneyState,
   type PurchaseRouteAccess,
   type PurchaseRouteId,
-} from './purchase-journey-state-machine.js';
+} from './purchase-journey-state-machine';

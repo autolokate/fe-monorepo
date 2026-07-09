@@ -1,4 +1,4 @@
-import type { ScreenInventoryEntry } from '@/types/flow.js';
+import type { ScreenInventoryEntry } from '@/types/flow';
 
 export const sharedLegalScreenInventory = [
   {

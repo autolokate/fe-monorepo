@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   toInventoryQueryState,
   type InventoryStateFilter,
-} from '@/features/inventory/inventory-filters.js';
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { computeInventoryMetrics } from '@/services/inventory/inventory-metrics.js';
-import { fetchQrInventory } from '@/services/inventory/inventory-service.js';
+} from '@/features/inventory/inventory-filters';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { computeInventoryMetrics } from '@/services/inventory/inventory-metrics';
+import { fetchQrInventory } from '@/services/inventory/inventory-service';
 
 export const inventoryQueryKeys = {
   all: ['admin', 'inventory'] as const,

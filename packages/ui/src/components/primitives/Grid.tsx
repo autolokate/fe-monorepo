@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
-import type { StackGap } from './Stack.js';
+import { cn } from '../../utils/cn';
+import type { StackGap } from './Stack';
 import './Grid.css';
 
 export type GridColumns = 1 | 2 | 3 | 4 | 'auto';

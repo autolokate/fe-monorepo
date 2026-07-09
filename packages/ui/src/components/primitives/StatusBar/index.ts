@@ -1,2 +1,2 @@
-export { AlStatusBar, StatusBar } from './StatusBar.js';
-export type { StatusBarProps } from './StatusBar.types.js';
+export { AlStatusBar, StatusBar } from './StatusBar';
+export type { StatusBarProps } from './StatusBar.types';

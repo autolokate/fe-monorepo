@@ -6,6 +6,6 @@ export {
   VAHAN_FETCH_HOLD_MS,
   type VehicleLookupResult,
   type VehicleLookupStatus,
-} from './vehicle-service.js';
-export { mapRcRecordToFields, mapRcRecordToVehicleSession } from './vehicle-mapper.js';
-export { clearVehicleLookupCache } from './vehicle-cache.js';
+} from './vehicle-service';
+export { mapRcRecordToFields, mapRcRecordToVehicleSession } from './vehicle-mapper';
+export { clearVehicleLookupCache } from './vehicle-cache';

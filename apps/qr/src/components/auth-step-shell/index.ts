@@ -1,2 +1,2 @@
-export { AuthStepShell } from './AuthStepShell.js';
-export type { AuthStepShellProps, AuthStepShellVariant } from './AuthStepShell.js';
+export { AuthStepShell } from './AuthStepShell';
+export type { AuthStepShellProps, AuthStepShellVariant } from './AuthStepShell';

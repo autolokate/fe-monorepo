@@ -1,11 +1,11 @@
 import { registerDeviceToken } from '@autolokate/api-client';
 import { getTokenManager } from '@autolokate/auth';
 
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
 
-import { deviceLogger } from './device-logger.js';
-import { detectDevicePlatform } from './device-platform.js';
-import { getFcmToken } from './fcm-token-provider.js';
+import { deviceLogger } from './device-logger';
+import { detectDevicePlatform } from './device-platform';
+import { getFcmToken } from './fcm-token-provider';
 
 const MAX_ATTEMPTS = 3;
 const RETRY_BASE_MS = 400;

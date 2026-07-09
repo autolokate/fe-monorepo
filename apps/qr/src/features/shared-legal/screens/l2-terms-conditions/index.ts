@@ -1,1 +1,1 @@
-export { L2TermsConditionsScreen } from './L2TermsConditionsScreen.js';
+export { L2TermsConditionsScreen } from './L2TermsConditionsScreen';

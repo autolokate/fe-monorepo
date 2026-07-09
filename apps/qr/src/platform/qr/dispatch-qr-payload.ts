@@ -1,16 +1,16 @@
-import type { PwaScanSession } from '../../features/post-activation-pwa/context/pwa-scan-types.js';
-import { prepaidJourneyPaths } from '../../journey/prepaid/prepaid-routing.js';
-import { selectActivationFlow } from '../../journey/navigation/select-activation-flow.js';
-import type { FlowDispatchDeps } from '../entry/flow-dispatcher.js';
-import { dispatchPlatformFlow } from '../entry/flow-dispatcher.js';
+import type { PwaScanSession } from '../../features/post-activation-pwa/context/pwa-scan-types';
+import { prepaidJourneyPaths } from '../../journey/prepaid/prepaid-routing';
+import { selectActivationFlow } from '../../journey/navigation/select-activation-flow';
+import type { FlowDispatchDeps } from '../entry/flow-dispatcher';
+import { dispatchPlatformFlow } from '../entry/flow-dispatcher';
 
-import { saveQrCode } from '@/storage/index.js';
-import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository.js';
-import { seedPartnerActivationContext } from '@/services/activation/activation-service.js';
-import { resolveB2bEntitlementCodeFromQrCode } from '@/services/activation/activation-mapper.js';
-import { resolvePartnerWelcomePath } from '@/journey/state/partner-journey-state-machine.js';
+import { saveQrCode } from '@/storage/index';
+import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
+import { seedPartnerActivationContext } from '@/services/activation/activation-service';
+import { resolveB2bEntitlementCodeFromQrCode } from '@/services/activation/activation-mapper';
+import { resolvePartnerWelcomePath } from '@/journey/state/partner-journey-state-machine';
 
-import type { QrActivatedPayload, QrPayload } from './qr-dispatch-contract.js';
+import type { QrActivatedPayload, QrPayload } from './qr-dispatch-contract';
 
 export type QrDispatchDeps = FlowDispatchDeps & {
   updatePwaSession: (patch: Partial<PwaScanSession>) => void;

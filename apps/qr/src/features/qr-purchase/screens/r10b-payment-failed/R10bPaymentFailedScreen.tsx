@@ -1,6 +1,6 @@
 import { AlIcon } from '@autolokate/icons';
 
-import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index.js';
+import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index';
 
 export type R10bPaymentFailedScreenProps = {
   onRetry?: () => void;

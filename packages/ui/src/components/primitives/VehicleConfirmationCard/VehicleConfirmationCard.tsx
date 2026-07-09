@@ -1,7 +1,7 @@
-import { cn } from '../../../utils/cn.js';
-import { CarIconGlyph } from '../icons/CarIconGlyph.js';
+import { cn } from '../../../utils/cn';
+import { CarIconGlyph } from '../icons/CarIconGlyph';
 
-import type { AlVehicleConfirmationCardProps } from './VehicleConfirmationCard.types.js';
+import type { AlVehicleConfirmationCardProps } from './VehicleConfirmationCard.types';
 import './VehicleConfirmationCard.css';
 
 /** Figma icon/shield-check · 18:11 */

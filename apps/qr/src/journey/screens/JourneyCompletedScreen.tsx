@@ -7,10 +7,10 @@ import {
   getActivationCompleteChipLabel,
   getActivationCompleteSubtitle,
   getActivationCompleteTitle,
-} from '../../features/qr-purchase/data/purchase-pricing.js';
-import { resolvePurchasePlanId } from '../../features/emergency/emergency-limits.js';
-import { useJourney } from '../JourneyContext.js';
-import { journeyPaths } from '../constants.js';
+} from '../../features/qr-purchase/data/purchase-pricing';
+import { resolvePurchasePlanId } from '../../features/emergency/emergency-limits';
+import { useJourney } from '../JourneyContext';
+import { journeyPaths } from '../constants';
 
 import './completion-experience/completion-experience.css';
 

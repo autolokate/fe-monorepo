@@ -1,14 +1,14 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
-import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary.js';
+import { pwaScanPaths } from '../constants/pwa-scan-paths';
+import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary';
 import {
   PwaLoadingRoute,
   PwaVehicleFoundRoute,
   PwaVerifyMobileRoute,
   PwaVerifyOtpRoute,
   PwaVerifyNameRoute,
-} from './pwa-shared-routes.js';
+} from './pwa-shared-routes';
 import {
   PwaParkMeVehicleNumberRoute,
   PwaParkMeLookingUpRoute,
@@ -21,7 +21,7 @@ import {
   PwaParkMeStatusCallingRoute,
   PwaParkMeStatusResolvedRoute,
   PwaParkMePhotoNotClearRoute,
-} from './pwa-park-me-routes.js';
+} from './pwa-park-me-routes';
 import {
   PwaSosRoute,
   PwaSosHoldingRoute,
@@ -37,8 +37,8 @@ import {
   PwaSosResolvedRoute,
   PwaSosAlertCancelledRoute,
   PwaSosContactsOnlyRoute,
-} from './pwa-sos-routes.js';
-import { PwaScanQrEntryRedirect } from './PwaScanQrEntry.js';
+} from './pwa-sos-routes';
+import { PwaScanQrEntryRedirect } from './PwaScanQrEntry';
 
 /** Post-Activation PWA — all 30 frames under /pwa/scan/*. Provider mounted at AutolokateRootProvider. */
 export function PwaScanRoutes() {

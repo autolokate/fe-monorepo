@@ -1,1 +1,1 @@
-export { L1PrivacyPolicyScreen } from './L1PrivacyPolicyScreen.js';
+export { L1PrivacyPolicyScreen } from './L1PrivacyPolicyScreen';

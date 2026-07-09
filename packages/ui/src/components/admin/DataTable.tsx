@@ -25,12 +25,12 @@ import {
   type ReactNode,
 } from 'react';
 
-import { cn } from '../../utils/cn.js';
-import { AlButton } from '../primitives/Button/index.js';
-import { AlScreenSpinner } from '../primitives/ScreenSpinner/index.js';
-import { AlCheckbox } from '../forms/Checkbox/index.js';
-import { AlEmptyState } from './EmptyState.js';
-import { AlErrorState } from './EmptyState.js';
+import { cn } from '../../utils/cn';
+import { AlButton } from '../primitives/Button/index';
+import { AlScreenSpinner } from '../primitives/ScreenSpinner/index';
+import { AlCheckbox } from '../forms/Checkbox/index';
+import { AlEmptyState } from './EmptyState';
+import { AlErrorState } from './EmptyState';
 import {
   copyCellValue,
   exportTableToCsv,
@@ -39,9 +39,9 @@ import {
   saveDataTablePrefs,
   type DataTableDensity,
   type DataTablePrefs,
-} from './data-table-utils.js';
-import { AlSearchInput } from './SearchInput.js';
-import { AlToolbar } from './SearchInput.js';
+} from './data-table-utils';
+import { AlSearchInput } from './SearchInput';
+import { AlToolbar } from './SearchInput';
 import './DataTable.css';
 
 function SortIcon() {

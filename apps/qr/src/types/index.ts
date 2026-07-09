@@ -22,6 +22,6 @@ export type {
   StepDefinition,
   StepId,
   StepKind,
-} from './flow.js';
+} from './flow';
 
-export { SHARED_FLOW_STEP_COUNT } from './flow.js';
+export { SHARED_FLOW_STEP_COUNT } from './flow';

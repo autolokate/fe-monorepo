@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma R10c halo — node 579:1642, 240×240 amber blur + credit card. */
 export function PaymentUnconfirmedHaloIcon({

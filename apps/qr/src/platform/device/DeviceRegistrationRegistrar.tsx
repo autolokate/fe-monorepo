@@ -1,4 +1,4 @@
-import { useRegisterDevice } from '@/hooks/device/useRegisterDevice.js';
+import { useRegisterDevice } from '@/hooks/device/useRegisterDevice';
 
 /** Mount-only — registers device for push when a session exists; renders nothing. */
 export function DeviceRegistrationRegistrar() {

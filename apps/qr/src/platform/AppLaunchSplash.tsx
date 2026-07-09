@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 
-import { S0SplashScreen } from '@/features/shared-auth/screens/s0-splash/index.js';
+import { S0SplashScreen } from '@/features/shared-auth/screens/s0-splash/index';
 
 type AppLaunchSplashProps = {
   children: ReactNode;

@@ -4,15 +4,15 @@ import {
   isIosNonSafariBrowser,
   isIosSafari,
   isStandaloneDisplay,
-} from '../device-detection.js';
-import { usePwaInstall } from '../use-pwa-install.js';
-import { PwaInstallBanner } from './PwaInstallBanner.js';
+} from '../device-detection';
+import { usePwaInstall } from '../use-pwa-install';
+import { PwaInstallBanner } from './PwaInstallBanner';
 import {
   dismissIosInstallSheet,
   PwaIosInstallSheet,
   PwaIosSafariInstallBanner,
   shouldShowIosInstallSheet,
-} from './PwaIosInstallSheet.js';
+} from './PwaIosInstallSheet';
 
 /** Platform-aware install guidance — Android prompt vs iOS Safari / Chrome paths. */
 export function PwaInstallPrompt() {

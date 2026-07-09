@@ -1,2 +1,2 @@
-export { useCheckout } from './useCheckout.js';
-export { usePaymentPolling } from './usePaymentPolling.js';
+export { useCheckout } from './useCheckout';
+export { usePaymentPolling } from './usePaymentPolling';

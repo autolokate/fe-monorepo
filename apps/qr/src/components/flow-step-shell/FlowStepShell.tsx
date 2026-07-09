@@ -9,10 +9,10 @@ import {
   AlText,
 } from '@autolokate/ui';
 
-import { PURCHASE_FLOW_STEP_COUNT } from '../../features/qr-purchase/types.js';
-import { PREPAID_FLOW_STEP_COUNT } from '../../features/qr-prepaid/types.js';
-import { EMERGENCY_FLOW_STEP_COUNT } from '../../features/emergency/types.js';
-import { SHARED_FLOW_STEP_COUNT } from '../../types/flow.js';
+import { PURCHASE_FLOW_STEP_COUNT } from '../../features/qr-purchase/types';
+import { PREPAID_FLOW_STEP_COUNT } from '../../features/qr-prepaid/types';
+import { EMERGENCY_FLOW_STEP_COUNT } from '../../features/emergency/types';
+import { SHARED_FLOW_STEP_COUNT } from '../../types/flow';
 
 import '../step-shell-chrome/step-shell-chrome.css';
 import './flow-step-shell.css';

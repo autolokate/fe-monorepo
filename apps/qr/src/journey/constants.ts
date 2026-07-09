@@ -1,4 +1,4 @@
-import type { ActivationFlowId } from './types.js';
+import type { ActivationFlowId } from './types';
 
 export const JOURNEY_STORAGE_KEY = 'al-journey-v1';
 export const SELECTED_FLOW_KEY = 'al-selected-flow';

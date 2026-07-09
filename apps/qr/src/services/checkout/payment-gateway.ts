@@ -1,4 +1,4 @@
-import { env } from '@/config/env.js';
+import { env } from '@/config/env';
 
 /** Razorpay publishable key (key_id) for Checkout.js — never the key_secret. */
 export function getRazorpayPublishableKey(): string | null {

@@ -3,12 +3,12 @@ import { AlIcon } from '@autolokate/icons';
 import { AlLogo } from '@autolokate/brand';
 import { AlButton, AlHeading, AlIconButton, AlScreenBg, AlScreenSpinner, AlText } from '@autolokate/ui';
 
-import { useThemeMode } from '@/hooks/useThemeMode.js';
+import { useThemeMode } from '@/hooks/useThemeMode';
 import {
   extractQrCodeFromScan,
   isQrCodeScannerSupported,
   useQrCodeScanner,
-} from '../../hooks/use-qr-code-scanner.js';
+} from '../../hooks/use-qr-code-scanner';
 
 import './qr-scan-entry.css';
 

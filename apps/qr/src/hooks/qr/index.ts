@@ -1,3 +1,3 @@
-export { useQrResolve } from './useQrResolve.js';
-export { useQrAttach } from './useQrAttach.js';
-export { useQrJourneyEntry } from './useQrJourneyEntry.js';
+export { useQrResolve } from './useQrResolve';
+export { useQrAttach } from './useQrAttach';
+export { useQrJourneyEntry } from './useQrJourneyEntry';

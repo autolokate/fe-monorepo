@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
-import { PWA_UPDATE_DISMISS_KEY } from './constants.js';
+import { PWA_UPDATE_DISMISS_KEY } from './constants';
 
 export function usePwaUpdate() {
   const [dismissed, setDismissed] = useState(false);

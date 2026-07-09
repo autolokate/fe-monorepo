@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma R03 chip Vector — layout_Z3X5HC 10×7, viewBox 0 0 12 9, node 170:38. */
 const CHECK_VIEWBOX_WIDTH = 12;

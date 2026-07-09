@@ -1,7 +1,7 @@
 import { normalizeApiError } from '@autolokate/api-client';
 
-import type { QrDispatchError, QrDispatchErrorCode } from '@/platform/qr/qr-dispatch-contract.js';
-import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error.js';
+import type { QrDispatchError, QrDispatchErrorCode } from '@/platform/qr/qr-dispatch-contract';
+import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error';
 
 function inactiveMessage(message: string): boolean {
   const lower = message.toLowerCase();

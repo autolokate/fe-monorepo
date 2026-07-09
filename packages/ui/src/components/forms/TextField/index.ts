@@ -1,2 +1,2 @@
-export { AlTextField } from './TextField.js';
-export type { AlTextFieldProps, AlTextFieldState } from './TextField.types.js';
+export { AlTextField } from './TextField';
+export type { AlTextFieldProps, AlTextFieldState } from './TextField.types';

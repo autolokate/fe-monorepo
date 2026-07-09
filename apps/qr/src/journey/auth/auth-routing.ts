@@ -1,5 +1,5 @@
-import { journeyPaths } from '../constants.js';
-import { purchaseJourneyPaths } from '../purchase/purchase-routing.js';
+import { journeyPaths } from '../constants';
+import { purchaseJourneyPaths } from '../purchase/purchase-routing';
 
 /** Query flag: land on mobile auth form (skip QR scan) after welcome / in-flow auth. */
 export const AUTH_ENTRY_QUERY = {

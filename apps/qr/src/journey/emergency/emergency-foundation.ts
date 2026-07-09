@@ -1,8 +1,8 @@
-import { getEmergencyPlanLimits, resolvePurchasePlanId } from '../../features/emergency/emergency-limits.js';
-import type { EmergencyPlanLimits } from '../../features/emergency/emergency-limits.js';
-import type { PurchasePlanId, PurchaseRiderCount } from '../../features/qr-purchase/types-checkout.js';
-import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository.js';
-import type { ActivationFlowId, JourneySession } from '../types.js';
+import { getEmergencyPlanLimits, resolvePurchasePlanId } from '../../features/emergency/emergency-limits';
+import type { EmergencyPlanLimits } from '../../features/emergency/emergency-limits';
+import type { PurchasePlanId, PurchaseRiderCount } from '../../features/qr-purchase/types-checkout';
+import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository';
+import type { ActivationFlowId, JourneySession } from '../types';
 
 export type EmergencyFoundationContext = {
   planId: PurchasePlanId;

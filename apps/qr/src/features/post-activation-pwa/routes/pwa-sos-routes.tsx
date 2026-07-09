@@ -12,29 +12,29 @@ import {
   AlText,
 } from '@autolokate/ui';
 
-import { PwaEmergencyScreen } from '../components/PwaEmergencyScreen.js';
-import { PwaScanShell } from '../components/PwaScanShell.js';
-import { PwaStatusHeroScreen } from '../components/PwaStatusHeroScreen.js';
-import { PwaFade } from '../components/PwaMotion.js';
-import { PWA_SOS_HOLD_MS, pwaScanPaths } from '../constants/pwa-scan-paths.js';
+import { PwaEmergencyScreen } from '../components/PwaEmergencyScreen';
+import { PwaScanShell } from '../components/PwaScanShell';
+import { PwaStatusHeroScreen } from '../components/PwaStatusHeroScreen';
+import { PwaFade } from '../components/PwaMotion';
+import { PWA_SOS_HOLD_MS, pwaScanPaths } from '../constants/pwa-scan-paths';
 import {
   PWA_SOS_HOLD_ENGAGE_MS,
   type PwaSosHoldNavigationState,
-} from '../constants/pwa-sos-hold.js';
-import { sosTimelineSteps } from '../data/pwa-content.js';
-import { usePwaScan } from '../context/PwaScanContext.js';
-import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard.js';
-import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary.js';
-import { usePwaPhotoCapture } from '../hooks/use-pwa-photo-capture.js';
-import { useGeolocationCapture } from '../hooks/use-geolocation.js';
-import { useHoldProgressFrom } from '../hooks/use-hold-progress-from.js';
+} from '../constants/pwa-sos-hold';
+import { sosTimelineSteps } from '../data/pwa-content';
+import { usePwaScan } from '../context/PwaScanContext';
+import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard';
+import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary';
+import { usePwaPhotoCapture } from '../hooks/use-pwa-photo-capture';
+import { useGeolocationCapture } from '../hooks/use-geolocation';
+import { useHoldProgressFrom } from '../hooks/use-hold-progress-from';
 import {
   useEmergencySendingFlow,
   useEmergencyTrackerPoll,
   useEmergencyContactsOnlySubmit,
   useEmergencyCancelAlert,
-} from '../../../hooks/scanner/index.js';
-import { PwaPermissionRecoveryActions, queryPermissionState } from '../../../pwa/index.js';
+} from '../../../hooks/scanner/index';
+import { PwaPermissionRecoveryActions, queryPermissionState } from '../../../pwa/index';
 
 import '../styles/pwa-scan.css';
 

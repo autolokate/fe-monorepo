@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlChipProps } from './Chip.types.js';
+import type { AlChipProps } from './Chip.types';
 import './Chip.css';
 
 export function AlChip({

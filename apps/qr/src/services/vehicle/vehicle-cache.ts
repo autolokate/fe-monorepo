@@ -1,4 +1,4 @@
-import type { VehicleLookupResult } from './vehicle-service.js';
+import type { VehicleLookupResult } from './vehicle-service';
 
 const CACHE_TTL_MS = 60_000;
 

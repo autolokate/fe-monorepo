@@ -1,8 +1,8 @@
 import { createLogger } from '@autolokate/auth';
 
-import { env } from '@/config/env.js';
-import { mapAdminApiError, type AdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { showErrorToast } from '@/platform/feedback/toast.js';
+import { env } from '@/config/env';
+import { mapAdminApiError, type AdminApiError } from '@/platform/errors/admin-api-errors';
+import { showErrorToast } from '@/platform/feedback/toast';
 
 const logger = createLogger({ enabled: env.enableLogs, namespace: 'admin-api' });
 

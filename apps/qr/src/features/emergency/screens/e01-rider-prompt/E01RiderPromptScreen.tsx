@@ -1,14 +1,14 @@
 import { AlIcon } from '@autolokate/icons';
 
-import { AlOfflineChip, EmptyStateHero } from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import { DEFAULT_PURCHASE_PLAN_ID } from '@/features/qr-purchase/data/purchase-plans.js';
+import { AlOfflineChip, EmptyStateHero } from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import { DEFAULT_PURCHASE_PLAN_ID } from '@/features/qr-purchase/data/purchase-plans';
 import {
   getEntitledRiderSlots,
   getRiderPromptDescription,
   getRiderPromptOfflineDescription,
-} from '../../emergency-limits.js';
-import type { EmergencyRiderPromptState, EmergencyScreenNavigationProps } from '../../types.js';
+} from '../../emergency-limits';
+import type { EmergencyRiderPromptState, EmergencyScreenNavigationProps } from '../../types';
 
 import '../../emergency.css';
 

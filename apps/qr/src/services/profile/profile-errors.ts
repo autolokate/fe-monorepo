@@ -1,6 +1,6 @@
 import { normalizeApiError } from '@autolokate/api-client';
 
-import type { AuthVehicleOwnerState } from '@/features/shared-auth/types.js';
+import type { AuthVehicleOwnerState } from '@/features/shared-auth/types';
 
 export type MappedProfileError = { type: 'offline' } | { type: 'save_failed' };
 

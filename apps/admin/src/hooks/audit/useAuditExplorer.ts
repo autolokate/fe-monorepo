@@ -1,12 +1,12 @@
-import type { AuditExplorerFilters } from '@/features/audit/audit-filters.js';
-import { toAuditQueryParams } from '@/features/audit/audit-filters.js';
+import type { AuditExplorerFilters } from '@/features/audit/audit-filters';
+import { toAuditQueryParams } from '@/features/audit/audit-filters';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
-import { auditQueryKeys } from '@/hooks/audit/audit-query-keys.js';
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { fetchAuditEventsPage } from '@/services/audit/audit-events-service.js';
+import { auditQueryKeys } from '@/hooks/audit/audit-query-keys';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { fetchAuditEventsPage } from '@/services/audit/audit-events-service';
 
 export function useAuditExplorer(filters: AuditExplorerFilters) {
   const queryParams = useMemo(() => toAuditQueryParams(filters), [filters]);

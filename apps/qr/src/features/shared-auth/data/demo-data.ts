@@ -1,10 +1,10 @@
-import { formatMobileLocal } from '@/shared/format-mobile.js';
+import { formatMobileLocal } from '@/shared/format-mobile';
 
 /** Valid demo mobile — only 9999999999 passes validation. */
 export const demoMobileRaw = '9999999999';
 
 /** Figma display format for mobile numbers. */
-export { formatMobileLocal as formatMobileForDisplay } from '@/shared/format-mobile.js';
+export { formatMobileLocal as formatMobileForDisplay } from '@/shared/format-mobile';
 
 export const demoMobileDisplay = formatMobileLocal(demoMobileRaw);
 

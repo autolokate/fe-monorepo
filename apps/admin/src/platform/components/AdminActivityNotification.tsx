@@ -3,14 +3,14 @@ import { AlIconButton, AlStatusBadge, AlText } from '@autolokate/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths.js';
-import { useRecentAuditEvents } from '@/hooks/audit/useRecentAuditEvents.js';
+import { adminPaths } from '@/app/routes/admin-paths';
+import { useRecentAuditEvents } from '@/hooks/audit/useRecentAuditEvents';
 import {
   actionTone,
   formatActivityDetail,
   formatRelativeTime,
-} from '@/platform/components/activity-feed-utils.js';
-import { useAdminPermission } from '@/platform/rbac/useAdminPermission.js';
+} from '@/platform/components/activity-feed-utils';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 function BellIcon() {
   return (

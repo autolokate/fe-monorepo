@@ -1,9 +1,9 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlVehicleRcCard } from '@autolokate/ui';
 
-import { EmptyStateHero } from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import type { PurchaseActivationScreenProps } from '../../types.js';
+import { EmptyStateHero } from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import type { PurchaseActivationScreenProps } from '../../types';
 
 export type R02VehicleDetailsScreenProps = PurchaseActivationScreenProps;
 

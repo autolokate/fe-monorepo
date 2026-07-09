@@ -1,4 +1,4 @@
-import type { DashboardSnapshot } from '@/services/dashboard/dashboard-service.js';
+import type { DashboardSnapshot } from '@/services/dashboard/dashboard-service';
 
 export type DashboardMetrics = {
   batchCount: number;

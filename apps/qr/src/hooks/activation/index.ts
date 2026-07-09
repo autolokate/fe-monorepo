@@ -1,2 +1,2 @@
-export { useActivationPreview } from './useActivationPreview.js';
-export { useRedeemActivation } from './useRedeemActivation.js';
+export { useActivationPreview } from './useActivationPreview';
+export { useRedeemActivation } from './useRedeemActivation';

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './Badge.css';
 
 export type AlBadgeVariant = 'neutral' | 'success' | 'warning' | 'danger' | 'info';

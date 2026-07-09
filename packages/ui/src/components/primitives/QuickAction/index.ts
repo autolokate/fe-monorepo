@@ -1,2 +1,2 @@
-export { AlQuickAction } from './QuickAction.js';
-export type { AlQuickActionProps } from './QuickAction.types.js';
+export { AlQuickAction } from './QuickAction';
+export type { AlQuickActionProps } from './QuickAction.types';

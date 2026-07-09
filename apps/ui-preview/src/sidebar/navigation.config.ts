@@ -1,4 +1,4 @@
-import type { DocNavGroup } from './Sidebar.types.js';
+import type { DocNavGroup } from './Sidebar.types';
 
 export const DOCS_VERSION = 'v4.0.0-rc2';
 

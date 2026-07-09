@@ -1,4 +1,4 @@
-import type { ScreenViewState } from '../../types/flow.js';
+import type { ScreenViewState } from '../../types/flow';
 
 export type PurchaseActivationNavigationProps = {
   onContinue?: () => void;

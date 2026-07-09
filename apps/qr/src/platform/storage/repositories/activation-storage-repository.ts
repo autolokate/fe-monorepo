@@ -1,6 +1,6 @@
 import type { ActivationPreviewDto } from '@autolokate/api-client';
 
-import type { PartnerActivationKind } from '@/platform/activation/activation-channel.js';
+import type { PartnerActivationKind } from '@/platform/activation/activation-channel';
 
 const STORAGE_KEY = 'al-partner-activation-v1';
 

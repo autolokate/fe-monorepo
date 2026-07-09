@@ -9,19 +9,19 @@ import {
 } from '@autolokate/design-system';
 import { AlText } from '@autolokate/ui';
 
-import { isCompositionPage, isCoreComponentPage } from './data.js';
-import { TokenGrid } from './components/TokenGrid.js';
-import { BrandPage } from './pages/BrandPage.js';
-import { CoreComponentsPage } from './pages/core/CoreComponentsPage.js';
-import { IconsPage } from './pages/IconsPage.js';
-import { InstallationPage } from './pages/InstallationPage.js';
-import { OverviewPage } from './pages/OverviewPage.js';
-import { ScreenBackgroundsPage } from './pages/ScreenBackgroundsPage.js';
-import { UsagePage } from './pages/UsagePage.js';
-import { CompositionIndexPage } from './pages/compositions/CompositionIndexPage.js';
-import { CompositionsPage } from './pages/compositions/CompositionsPage.js';
-import { AdminComponentsPage } from './pages/admin/AdminComponentsPage.js';
-import type { DocPageId } from './types.js';
+import { isCompositionPage, isCoreComponentPage } from './data';
+import { TokenGrid } from './components/TokenGrid';
+import { BrandPage } from './pages/BrandPage';
+import { CoreComponentsPage } from './pages/core/CoreComponentsPage';
+import { IconsPage } from './pages/IconsPage';
+import { InstallationPage } from './pages/InstallationPage';
+import { OverviewPage } from './pages/OverviewPage';
+import { ScreenBackgroundsPage } from './pages/ScreenBackgroundsPage';
+import { UsagePage } from './pages/UsagePage';
+import { CompositionIndexPage } from './pages/compositions/CompositionIndexPage';
+import { CompositionsPage } from './pages/compositions/CompositionsPage';
+import { AdminComponentsPage } from './pages/admin/AdminComponentsPage';
+import type { DocPageId } from './types';
 
 function getTypographyPreviewStyle(token: string): CSSProperties {
   if (token.includes('-family')) {

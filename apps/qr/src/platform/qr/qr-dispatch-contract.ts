@@ -1,4 +1,4 @@
-import type { PlatformFlowId } from '../entry/types.js';
+import type { PlatformFlowId } from '../entry/types';
 
 /** QR payload types — document-only contract; no backend or scanner implementation. */
 export type QrPayloadType = 'purchase' | 'prepaid' | 'b2b2c' | 'activated';

@@ -1,14 +1,14 @@
 import type { VehicleSummaryDto } from '@autolokate/api-client';
 import { getVehicleById, listVehicles } from '@autolokate/api-client';
 
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
-import { compactPlate } from '@/services/vehicle/vehicle-plate.js';
-import type { StoredAttachResult } from '@/storage/index.js';
-import { getAttachResult } from '@/storage/index.js';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
+import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
+import { compactPlate } from '@/services/vehicle/vehicle-plate';
+import type { StoredAttachResult } from '@/storage/index';
+import { getAttachResult } from '@/storage/index';
 
-import { mapVehicleApiError, type VehicleLoadError } from './vehicle-errors.js';
-import { vehicleLogger } from './vehicle-logger.js';
+import { mapVehicleApiError, type VehicleLoadError } from './vehicle-errors';
+import { vehicleLogger } from './vehicle-logger';
 
 export type SyncVehiclesAfterPaymentResult =
   | { ok: true; vehicleId: string; subscriptionId: string | null }

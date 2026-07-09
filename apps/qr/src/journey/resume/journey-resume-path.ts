@@ -1,9 +1,9 @@
-import { AUTH_COMPLETED } from '@/features/shared-auth/types.js';
+import { AUTH_COMPLETED } from '@/features/shared-auth/types';
 
-import { getPostAuthActivationPath } from '../activation-routing.js';
-import { authJourneyPaths } from '../auth/auth-routing.js';
-import { journeyPaths } from '../constants.js';
-import type { JourneyPhase, PersistedJourneyState } from '../types.js';
+import { getPostAuthActivationPath } from '../activation-routing';
+import { authJourneyPaths } from '../auth/auth-routing';
+import { journeyPaths } from '../constants';
+import type { JourneyPhase, PersistedJourneyState } from '../types';
 
 const BARE_ENTRY_PATHS = new Set<string>([
   journeyPaths.entry,

@@ -1,5 +1,5 @@
-import { IconSvg } from '../IconSvg.js';
-import type { IconProps } from '../types.js';
+import { IconSvg } from '../IconSvg';
+import type { IconProps } from '../types';
 
 /** Figma icon/heart — node 603:1895 (E3 relation grid · Spouse). */
 export function HeartIcon(props: IconProps) {

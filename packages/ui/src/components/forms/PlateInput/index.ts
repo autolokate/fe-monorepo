@@ -1,3 +1,3 @@
-export { AlPlateInput } from './PlateInput.js';
-export { formatPlateInput } from './PlateInput.utils.js';
-export type { AlPlateInputProps } from './PlateInput.types.js';
+export { AlPlateInput } from './PlateInput';
+export { formatPlateInput } from './PlateInput.utils';
+export type { AlPlateInputProps } from './PlateInput.types';

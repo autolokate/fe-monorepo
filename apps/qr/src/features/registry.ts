@@ -1,5 +1,5 @@
-import type { ProductAreaId } from '../types/flow.js';
-import type { RegisteredFlowId } from '../flow/registry/build-registry.js';
+import type { ProductAreaId } from '../types/flow';
+import type { RegisteredFlowId } from '../flow/registry/build-registry';
 
 export type FeatureDefinition = {
   id: ProductAreaId;

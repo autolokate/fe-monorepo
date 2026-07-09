@@ -4,7 +4,7 @@ import {
   getActivationRevision,
   redeemActivationEntitlement,
   type RedeemActivationResult,
-} from '@/services/activation/activation-service.js';
+} from '@/services/activation/activation-service';
 
 export function useRedeemActivation() {
   const [isPending, setIsPending] = useState(false);

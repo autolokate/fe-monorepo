@@ -3,7 +3,7 @@ import { AlButton } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function renderButtonState(state: ShowcaseState) {
   const loading = state === 'loading';

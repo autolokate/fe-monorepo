@@ -1,6 +1,6 @@
-import type { StepDefinition, StepId } from '@/types/flow.js';
+import type { StepDefinition, StepId } from '@/types/flow';
 
-import { sharedPipelineStepConfig } from './shared-pipeline.config.js';
+import { sharedPipelineStepConfig } from './shared-pipeline.config';
 
 /** Flow-specific step definitions — referenced by flow config entries. */
 export const flowSpecificStepConfig = {

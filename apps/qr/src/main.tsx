@@ -7,11 +7,11 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { setThemeMode } from '@autolokate/design-system';
 
-import { validateEnv } from './config/env.js';
-import { AppStartupErrorBoundary } from './platform/AppStartupErrorBoundary.js';
-import { applyEffectiveTheme } from './platform/theme/theme-preference.js';
-import { ScreenDevApp } from './dev/ScreenDevApp.js';
-import { JourneyOrchestrator } from './journey/index.js';
+import { validateEnv } from './config/env';
+import { AppStartupErrorBoundary } from './platform/AppStartupErrorBoundary';
+import { applyEffectiveTheme } from './platform/theme/theme-preference';
+import { ScreenDevApp } from './dev/ScreenDevApp';
+import { JourneyOrchestrator } from './journey/index';
 
 const initialTheme = applyEffectiveTheme();
 setThemeMode(initialTheme);

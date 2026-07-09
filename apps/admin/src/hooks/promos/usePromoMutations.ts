@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { promosQueryKeys } from '@/hooks/promos/promo-query-keys.js';
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { showSuccessToast } from '@/platform/feedback/toast.js';
-import { createPromo } from '@/services/promos/admin-promos-service.js';
+import { promosQueryKeys } from '@/hooks/promos/promo-query-keys';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { showSuccessToast } from '@/platform/feedback/toast';
+import { createPromo } from '@/services/promos/admin-promos-service';
 
 export function usePromoMutations() {
   const queryClient = useQueryClient();

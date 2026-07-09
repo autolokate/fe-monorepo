@@ -1,8 +1,8 @@
 import { AlButton, AlIconButton } from '@autolokate/ui';
 
-import { AdminActivityNotification } from '@/platform/components/AdminActivityNotification.js';
-import { ThemeToggleButton } from '@/platform/theme/ThemeToggleButton.js';
-import { useAdminAuth } from '@/providers/AdminAuthProvider.js';
+import { AdminActivityNotification } from '@/platform/components/AdminActivityNotification';
+import { ThemeToggleButton } from '@/platform/theme/ThemeToggleButton';
+import { useAdminAuth } from '@/providers/AdminAuthProvider';
 
 export type AdminHeaderProps = {
   onOpenCommandPalette: () => void;

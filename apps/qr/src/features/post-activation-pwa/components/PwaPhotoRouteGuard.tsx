@@ -1,9 +1,9 @@
 import { type ReactNode, useEffect } from 'react';
 import { AlText } from '@autolokate/ui';
 
-import { PwaPermissionRecoveryActions } from '../../../pwa/index.js';
-import { usePwaScan } from '../context/PwaScanContext.js';
-import { logPhotoDiagnostic } from '../utils/pwa-photo-diagnostics.js';
+import { PwaPermissionRecoveryActions } from '../../../pwa/index';
+import { usePwaScan } from '../context/PwaScanContext';
+import { logPhotoDiagnostic } from '../utils/pwa-photo-diagnostics';
 
 type PwaPhotoRouteGuardProps = {
   routeId: string;

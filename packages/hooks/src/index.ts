@@ -1,2 +1,2 @@
-export { useAsync, type AsyncState, type AsyncStatus, type UseAsyncOptions } from './useAsync.js';
-export { useDebounce } from './useDebounce.js';
+export { useAsync, type AsyncState, type AsyncStatus, type UseAsyncOptions } from './useAsync';
+export { useDebounce } from './useDebounce';

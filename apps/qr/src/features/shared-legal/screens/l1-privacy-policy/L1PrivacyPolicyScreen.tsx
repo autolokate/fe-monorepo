@@ -1,8 +1,8 @@
 import { AlButton, AlHeading, AlScreenBg, AlStack, AlText } from '@autolokate/ui';
 
-import { LegalReaderHeader } from '../../components/LegalReaderHeader.js';
-import { legalLastUpdated, privacyPolicySections } from '../../data/legal-content.js';
-import type { L1PrivacyPolicyScreenProps } from '@/features/shared-auth/types.js';
+import { LegalReaderHeader } from '../../components/LegalReaderHeader';
+import { legalLastUpdated, privacyPolicySections } from '../../data/legal-content';
+import type { L1PrivacyPolicyScreenProps } from '@/features/shared-auth/types';
 
 import './legal-reader.css';
 

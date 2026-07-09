@@ -1,7 +1,7 @@
-import { cn } from '../../../utils/cn.js';
-import { RetakeIcon } from '../../icons/RetakeIcon.js';
+import { cn } from '../../../utils/cn';
+import { RetakeIcon } from '../../icons/RetakeIcon';
 
-import type { AlScenePhotoCardProps } from './ScenePhotoCard.types.js';
+import type { AlScenePhotoCardProps } from './ScenePhotoCard.types';
 import './ScenePhotoCard.css';
 
 /** Figma 847:278 · 928:2267 — single photo capture cell. */

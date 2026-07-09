@@ -1,1 +1,1 @@
-export { VahanPreviewChips } from './VahanPreviewChips.js';
+export { VahanPreviewChips } from './VahanPreviewChips';

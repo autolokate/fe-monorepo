@@ -1,7 +1,7 @@
-import type { EmergencyDomainError } from '@/services/emergency/emergency-api-errors.js';
-import { readEmergencyApiUserMessage } from '@/services/emergency/emergency-api-errors.js';
+import type { EmergencyDomainError } from '@/services/emergency/emergency-api-errors';
+import { readEmergencyApiUserMessage } from '@/services/emergency/emergency-api-errors';
 
-import { showErrorToast } from './toast.js';
+import { showErrorToast } from './toast';
 
 type Logger = {
   warn: (event: string, context?: Record<string, unknown>) => void;

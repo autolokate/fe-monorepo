@@ -1,8 +1,8 @@
-import type { B2b2cLandingSession, PrepaidLandingSession } from '../features/b2b-shared/types-landing.js';
-import type { EmergencySession } from '../features/emergency/types.js';
-import type { PurchaseCheckoutSession } from '../features/qr-purchase/types-checkout.js';
-import type { AuthLanguageId } from '../features/shared-auth/types.js';
-import type { AUTH_COMPLETED } from '../features/shared-auth/types.js';
+import type { B2b2cLandingSession, PrepaidLandingSession } from '../features/b2b-shared/types-landing';
+import type { EmergencySession } from '../features/emergency/types';
+import type { PurchaseCheckoutSession } from '../features/qr-purchase/types-checkout';
+import type { AuthLanguageId } from '../features/shared-auth/types';
+import type { AUTH_COMPLETED } from '../features/shared-auth/types';
 import type { AlVehicleRcField } from '@autolokate/ui';
 
 /** Consumer activation flows available on Flow Entry. */
@@ -36,7 +36,7 @@ export type VehicleSession = {
   confirmed?: boolean;
 };
 
-export type { PurchaseCheckoutSession } from '../features/qr-purchase/types-checkout.js';
+export type { PurchaseCheckoutSession } from '../features/qr-purchase/types-checkout';
 
 export type JourneySession = {
   auth?: AuthSession;

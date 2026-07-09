@@ -11,32 +11,32 @@ import {
   AlText,
 } from '@autolokate/ui';
 
-import { A1MobileScreen } from '../../shared-auth/screens/a1-mobile/index.js';
-import { A3VehicleOwnerScreen } from '../../shared-auth/screens/a3-vehicle-owner/index.js';
-import { formatMobileLocal } from '@/shared/format-mobile.js';
+import { A1MobileScreen } from '../../shared-auth/screens/a1-mobile/index';
+import { A3VehicleOwnerScreen } from '../../shared-auth/screens/a3-vehicle-owner/index';
+import { formatMobileLocal } from '@/shared/format-mobile';
 import {
   clampMobileInput,
   isValidMobile,
   OTP_LENGTH,
   RESEND_COOLDOWN_SECONDS,
-} from '../../shared-auth/auth-flow/auth-flow.validation.js';
-import type { AuthMobileState, AuthOtpState } from '../../shared-auth/types.js';
-import { PWA_BOOTSTRAP_MS } from '../constants/pwa-scan-paths.js';
-import { pwaScanPaths } from '../constants/pwa-scan-paths.js';
-import { PWA_LOADING_COPY } from '../data/pwa-content.js';
-import { usePwaScan } from '../context/PwaScanContext.js';
-import type { PwaFlowIntent } from '../context/pwa-scan-types.js';
-import { PwaScanShell } from '../components/PwaScanShell.js';
-import { PwaVerifyShell } from '../components/PwaVerifyShell.js';
-import { PwaFade, PwaSpringPress } from '../components/PwaMotion.js';
-import { useQrResolve } from '../../../hooks/qr/useQrResolve.js';
-import { useParkOtp } from '../../../hooks/scanner/index.js';
-import { reportUserError } from '../../../platform/feedback/report-user-error.js';
-import { scannerLogger } from '../../../services/scanner/index.js';
+} from '../../shared-auth/auth-flow/auth-flow.validation';
+import type { AuthMobileState, AuthOtpState } from '../../shared-auth/types';
+import { PWA_BOOTSTRAP_MS } from '../constants/pwa-scan-paths';
+import { pwaScanPaths } from '../constants/pwa-scan-paths';
+import { PWA_LOADING_COPY } from '../data/pwa-content';
+import { usePwaScan } from '../context/PwaScanContext';
+import type { PwaFlowIntent } from '../context/pwa-scan-types';
+import { PwaScanShell } from '../components/PwaScanShell';
+import { PwaVerifyShell } from '../components/PwaVerifyShell';
+import { PwaFade, PwaSpringPress } from '../components/PwaMotion';
+import { useQrResolve } from '../../../hooks/qr/useQrResolve';
+import { useParkOtp } from '../../../hooks/scanner/index';
+import { reportUserError } from '../../../platform/feedback/report-user-error';
+import { scannerLogger } from '../../../services/scanner/index';
 import {
   applyActivatedQrToPwaSession,
   isQrEntryUrl,
-} from '../../../platform/index.js';
+} from '../../../platform/index';
 
 import '../styles/pwa-scan.css';
 

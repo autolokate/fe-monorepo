@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { reverseGeocodeLocation } from '../utils/reverse-geocode.js';
+import { reverseGeocodeLocation } from '../utils/reverse-geocode';
 
 export type GeoResult = {
   lat: number;

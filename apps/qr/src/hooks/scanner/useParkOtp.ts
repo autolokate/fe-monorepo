@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { requestParkBystanderOtp, verifyParkBystanderOtp } from '@/services/scanner/index.js';
+import { requestParkBystanderOtp, verifyParkBystanderOtp } from '@/services/scanner/index';
 
 export function useParkOtp() {
   const [isRequesting, setIsRequesting] = useState(false);

@@ -1,2 +1,2 @@
-export { validatePromoCheckout, type ValidatePromoCheckoutInput } from './promo-service.js';
-export { clearPromoPreviewCache } from './promo-cache.js';
+export { validatePromoCheckout, type ValidatePromoCheckoutInput } from './promo-service';
+export { clearPromoPreviewCache } from './promo-cache';

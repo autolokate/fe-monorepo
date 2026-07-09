@@ -1,8 +1,8 @@
 import { useId } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlSelectProps } from './Select.types.js';
+import type { AlSelectProps } from './Select.types';
 import '../Input/Input.css';
 import './Select.css';
 

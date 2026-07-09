@@ -1,50 +1,50 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths.js';
-import { RequireAuth } from '@/app/routes/RequireAuth.js';
-import { AdminShellLayout } from '@/layouts/AdminShellLayout.js';
-import { LoginPage } from '@/features/auth/LoginPage.js';
-import { AdminPageLoader } from '@/platform/components/AdminPageLoader.js';
+import { adminPaths } from '@/app/routes/admin-paths';
+import { RequireAuth } from '@/app/routes/RequireAuth';
+import { AdminShellLayout } from '@/layouts/AdminShellLayout';
+import { LoginPage } from '@/features/auth/LoginPage';
+import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
 
 const DashboardPage = lazy(() =>
-  import('@/features/dashboard/DashboardPage.js').then((module) => ({
+  import('@/features/dashboard/DashboardPage').then((module) => ({
     default: module.DashboardPage,
   })),
 );
 
 const QrInventoryPage = lazy(() =>
-  import('@/features/inventory/QrInventoryPage.js').then((module) => ({
+  import('@/features/inventory/QrInventoryPage').then((module) => ({
     default: module.QrInventoryPage,
   })),
 );
 
 const QrBatchManagementPage = lazy(() =>
-  import('@/features/qr-batches/QrBatchManagementPage.js').then((module) => ({
+  import('@/features/qr-batches/QrBatchManagementPage').then((module) => ({
     default: module.QrBatchManagementPage,
   })),
 );
 
 const PromoManagementPage = lazy(() =>
-  import('@/features/promos/PromoManagementPage.js').then((module) => ({
+  import('@/features/promos/PromoManagementPage').then((module) => ({
     default: module.PromoManagementPage,
   })),
 );
 
 const AuditEventsPage = lazy(() =>
-  import('@/features/audit/AuditEventsPage.js').then((module) => ({
+  import('@/features/audit/AuditEventsPage').then((module) => ({
     default: module.AuditEventsPage,
   })),
 );
 
 const FinanceOperationsPage = lazy(() =>
-  import('@/features/finance/FinanceOperationsPage.js').then((module) => ({
+  import('@/features/finance/FinanceOperationsPage').then((module) => ({
     default: module.FinanceOperationsPage,
   })),
 );
 
 const OwnershipTransfersPage = lazy(() =>
-  import('@/features/ownership-transfers/OwnershipTransfersPage.js').then((module) => ({
+  import('@/features/ownership-transfers/OwnershipTransfersPage').then((module) => ({
     default: module.OwnershipTransfersPage,
   })),
 );

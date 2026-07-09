@@ -1,2 +1,2 @@
-export { R10PaymentSuccessScreen } from './R10PaymentSuccessScreen.js';
-export type { R10PaymentSuccessScreenProps } from './R10PaymentSuccessScreen.js';
+export { R10PaymentSuccessScreen } from './R10PaymentSuccessScreen';
+export type { R10PaymentSuccessScreenProps } from './R10PaymentSuccessScreen';

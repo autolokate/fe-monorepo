@@ -1,2 +1,2 @@
-export { AlLogo } from './AutolokateLogo.js';
-export { AlBrandMark } from './AutolokateMark.js';
+export { AlLogo } from './AutolokateLogo';
+export { AlBrandMark } from './AutolokateMark';

@@ -1,2 +1,2 @@
-export { AlScreenSpinner } from './ScreenSpinner.js';
-export type { AlScreenSpinnerProps } from './ScreenSpinner.types.js';
+export { AlScreenSpinner } from './ScreenSpinner';
+export type { AlScreenSpinnerProps } from './ScreenSpinner.types';

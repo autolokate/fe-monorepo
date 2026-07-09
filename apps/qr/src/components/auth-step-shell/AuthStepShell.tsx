@@ -9,7 +9,7 @@ import {
   AlText,
 } from '@autolokate/ui';
 
-import type { RouteProgressConfig } from '../../journey/progress/route-progress.types.js';
+import type { RouteProgressConfig } from '../../journey/progress/route-progress.types';
 
 import '../compositions/validation-feedback/validation-feedback.css';
 import '../step-shell-chrome/step-shell-chrome.css';

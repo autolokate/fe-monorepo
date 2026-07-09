@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlButton, AlOtpInput, AlStack, AlText, AlTextField } from '@autolokate/ui';
-import { formatAdminLoginMobile } from '@/services/auth/admin-auth-format.js';
+import { formatAdminLoginMobile } from '@/services/auth/admin-auth-format';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { adminPaths } from '@/app/routes/admin-paths.js';
-import { useAdminAuth } from '@/providers/AdminAuthProvider.js';
+import { adminPaths } from '@/app/routes/admin-paths';
+import { useAdminAuth } from '@/providers/AdminAuthProvider';
 
 const phoneSchema = z.object({
   phone: z

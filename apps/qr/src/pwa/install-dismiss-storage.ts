@@ -1,4 +1,4 @@
-import { PWA_INSTALL_DISMISS_KEY, PWA_INSTALL_DISMISS_MS } from './constants.js';
+import { PWA_INSTALL_DISMISS_KEY, PWA_INSTALL_DISMISS_MS } from './constants';
 
 export function readPwaInstallDismissedRecently(): boolean {
   try {

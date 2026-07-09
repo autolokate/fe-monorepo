@@ -1,6 +1,6 @@
 import type { AlIconName } from '@autolokate/icons';
-import type { DocPageId } from '../docs/types.js';
-export type { DocPageId } from '../docs/types.js';
+import type { DocPageId } from '../docs/types';
+export type { DocPageId } from '../docs/types';
 
 export type DocNavGroupId =
   | 'overview'

@@ -1,9 +1,9 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlAvatar, AlContactCard } from '@autolokate/ui';
 
-import { formatMobileIntl } from '@/shared/format-mobile.js';
-import { CONTACT_RELATIONSHIP_OPTIONS } from '@/features/emergency/data/relationships.js';
-import type { EmergencyContact, EmergencyRider } from '@/features/emergency/types.js';
+import { formatMobileIntl } from '@/shared/format-mobile';
+import { CONTACT_RELATIONSHIP_OPTIONS } from '@/features/emergency/data/relationships';
+import type { EmergencyContact, EmergencyRider } from '@/features/emergency/types';
 
 import './emergency-contact-row.css';
 

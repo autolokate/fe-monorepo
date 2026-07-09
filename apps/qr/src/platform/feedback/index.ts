@@ -1,4 +1,4 @@
-export { ToastHost } from './ToastHost.js';
-export { showErrorToast } from './toast.js';
-export { reportUserError } from './report-user-error.js';
-export { reportEmergencyApiError } from './report-emergency-api-error.js';
+export { ToastHost } from './ToastHost';
+export { showErrorToast } from './toast';
+export { reportUserError } from './report-user-error';
+export { reportEmergencyApiError } from './report-emergency-api-error';

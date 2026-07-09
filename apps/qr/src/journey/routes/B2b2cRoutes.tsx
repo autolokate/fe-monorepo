@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-import { PartnerWelcomeScreen } from '../../features/qr-b2b2c/screens/partner-welcome/index.js';
-import { b2b2cJourneyPaths } from '../b2b2c/b2b2c-routing.js';
+import { PartnerWelcomeScreen } from '../../features/qr-b2b2c/screens/partner-welcome/index';
+import { b2b2cJourneyPaths } from '../b2b2c/b2b2c-routing';
 
 export function B2b2cRoutes() {
   return (

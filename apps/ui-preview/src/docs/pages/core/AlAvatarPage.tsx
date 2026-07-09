@@ -3,7 +3,7 @@ import { AlAvatar } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function renderAvatarState(state: ShowcaseState) {
   const opacity = state === 'disabled' ? 0.5 : 1;

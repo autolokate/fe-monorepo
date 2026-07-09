@@ -1,4 +1,4 @@
-import type { PurchasePlanDefinition } from '@/features/qr-purchase/types-checkout.js';
+import type { PurchasePlanDefinition } from '@/features/qr-purchase/types-checkout';
 
 const CACHE_TTL_MS = 5 * 60_000;
 

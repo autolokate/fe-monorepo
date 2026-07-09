@@ -1,6 +1,6 @@
-export type { FlowEngine, FlowEngineConfig, FlowEngineFactory } from './engine/index.js';
-export type { GuardCatalog } from './guards/index.js';
-export { guardCatalog } from './guards/index.js';
+export type { FlowEngine, FlowEngineConfig, FlowEngineFactory } from './engine/index';
+export type { GuardCatalog } from './guards/index';
+export { guardCatalog } from './guards/index';
 export type {
   FlowConfig,
   FlowConfigEntry,
@@ -9,7 +9,7 @@ export type {
   RegisteredFlowId,
   SharedPipelineStepId,
   SharedStepCatalog,
-} from './registry/index.js';
+} from './registry/index';
 export {
   buildFlowRegistry,
   flowRegistry,
@@ -17,4 +17,4 @@ export {
   SHARED_PIPELINE_STEP_IDS,
   sharedPipelineStepConfig,
   stepsConfig,
-} from './registry/index.js';
+} from './registry/index';

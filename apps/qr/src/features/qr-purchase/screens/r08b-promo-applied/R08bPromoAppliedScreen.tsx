@@ -1,8 +1,8 @@
-import { AuthStepShell } from '@/components/auth-step-shell/index.js';
-import { OrderSummaryCard } from '@/components/compositions/order-summary-card/index.js';
-import { PromoCodeField } from '@/components/compositions/promo-code-field/index.js';
-import type { PurchasePlanId, PurchaseRiderCount } from '../../types-checkout.js';
-import { buildOrderSummary } from '../../data/purchase-pricing.js';
+import { AuthStepShell } from '@/components/auth-step-shell/index';
+import { OrderSummaryCard } from '@/components/compositions/order-summary-card/index';
+import { PromoCodeField } from '@/components/compositions/promo-code-field/index';
+import type { PurchasePlanId, PurchaseRiderCount } from '../../types-checkout';
+import { buildOrderSummary } from '../../data/purchase-pricing';
 
 import '../purchase-phase-b.css';
 

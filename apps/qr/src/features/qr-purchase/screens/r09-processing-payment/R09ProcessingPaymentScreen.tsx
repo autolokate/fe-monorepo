@@ -1,6 +1,6 @@
 import { AlScreenSpinner } from '@autolokate/ui';
 
-import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index.js';
+import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index';
 
 /** R09 · Processing payment — Figma 192:25 */
 export function R09ProcessingPaymentScreen() {

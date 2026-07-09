@@ -1,4 +1,4 @@
-import { journeyPaths } from '../constants.js';
+import { journeyPaths } from '../constants';
 
 /** URL paths for the emergency suffix inside the journey orchestrator. */
 export const emergencyJourneyPaths = {

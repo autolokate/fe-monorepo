@@ -4,9 +4,9 @@ import { AlPlateInput, AlText } from '@autolokate/ui';
 import {
   EmptyStateHero,
   FormFieldStack,
-} from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import type { R01VehicleNumberScreenProps } from '../../types.js';
+} from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import type { R01VehicleNumberScreenProps } from '../../types';
 // Moved from shared-auth — Purchase activation (Figma 170:25)
 
 export type { R01VehicleNumberScreenProps };

@@ -1,18 +1,18 @@
 import type { NavigateFunction } from 'react-router-dom';
 
-import type { PwaScanSession } from '@/features/post-activation-pwa/context/pwa-scan-types.js';
+import type { PwaScanSession } from '@/features/post-activation-pwa/context/pwa-scan-types';
 import type { QrResolution } from '@autolokate/api-client';
 
-import { resetPurchaseCheckoutSession, selectActivationFlow } from '@/journey/navigation/select-activation-flow.js';
-import type { ActivationFlowId, JourneyPhase, JourneySession } from '@/journey/types.js';
-import { dispatchQrPayload, type QrDispatchDeps } from '@/platform/qr/dispatch-qr-payload.js';
-import { extractQrCodeParam } from '@/platform/qr/parse-qr-url.js';
-import type { QrDispatchError } from '@/platform/qr/qr-dispatch-contract.js';
+import { resetPurchaseCheckoutSession, selectActivationFlow } from '@/journey/navigation/select-activation-flow';
+import type { ActivationFlowId, JourneyPhase, JourneySession } from '@/journey/types';
+import { dispatchQrPayload, type QrDispatchDeps } from '@/platform/qr/dispatch-qr-payload';
+import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
+import type { QrDispatchError } from '@/platform/qr/qr-dispatch-contract';
 import {
   isActivatedQrLifecycleStatus,
   isAttachedQrLifecycleStatus,
   isDistributedQrLifecycleStatus,
-} from '@/platform/qr/qr-status.js';
+} from '@/platform/qr/qr-status';
 import {
   PARTNER_JOURNEY_TARGET,
   resolvePartnerFlowId,
@@ -20,17 +20,17 @@ import {
   resolvePartnerVariantFromRiderCount,
   resolvePartnerWelcomePath,
   resolveQrJourneyTarget,
-} from '@/journey/state/partner-journey-state-machine.js';
-import { saveQrCode } from '@/storage/index.js';
+} from '@/journey/state/partner-journey-state-machine';
+import { saveQrCode } from '@/storage/index';
 
-import { mapResolutionToPayload } from './qr-mapper.js';
-import { resolveQrCode } from './qr-service.js';
-import { seedAttachedPurchaseFromResolve } from './seed-attached-purchase-from-resolve.js';
+import { mapResolutionToPayload } from './qr-mapper';
+import { resolveQrCode } from './qr-service';
+import { seedAttachedPurchaseFromResolve } from './seed-attached-purchase-from-resolve';
 import {
   loadPartnerActivationPreviewAtEntry,
   seedPartnerActivationContext,
-} from '@/services/activation/activation-service.js';
-import { resolveB2bEntitlementCodeFromQrCode } from '@/services/activation/activation-mapper.js';
+} from '@/services/activation/activation-service';
+import { resolveB2bEntitlementCodeFromQrCode } from '@/services/activation/activation-mapper';
 
 export type QrJourneyEntryPoint = 'auth-mobile' | 'scanner';
 

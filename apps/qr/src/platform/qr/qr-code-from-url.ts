@@ -1,6 +1,6 @@
-import { getQrCode, saveQrCode } from '@/storage/index.js';
+import { getQrCode, saveQrCode } from '@/storage/index';
 
-import { QR_URL_PARAMS, readQrCodeFromSearchParams } from './qr-url-params.js';
+import { QR_URL_PARAMS, readQrCodeFromSearchParams } from './qr-url-params';
 
 /**
  * Read QR code: URL `qr_code` first, then legacy `code`, then localStorage backup.

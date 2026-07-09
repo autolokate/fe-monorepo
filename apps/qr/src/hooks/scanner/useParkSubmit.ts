@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { pwaScanPaths } from '@/features/post-activation-pwa/constants/pwa-scan-paths.js';
-import { usePwaScan } from '@/features/post-activation-pwa/context/PwaScanContext.js';
-import { reportUserError } from '@/platform/feedback/report-user-error.js';
+import { pwaScanPaths } from '@/features/post-activation-pwa/constants/pwa-scan-paths';
+import { usePwaScan } from '@/features/post-activation-pwa/context/PwaScanContext';
+import { reportUserError } from '@/platform/feedback/report-user-error';
 import {
   scannerJourneyStateMachine,
   scannerLogger,
   submitParkReport,
   subscribeParkStatusPoll,
-} from '@/services/scanner/index.js';
+} from '@/services/scanner/index';
 
 /** Submit park report on mount (checking route) and navigate tracker screens from poll. */
 export function useParkCheckingFlow() {

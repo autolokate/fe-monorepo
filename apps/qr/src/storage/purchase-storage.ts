@@ -10,8 +10,8 @@ import type {
 } from '@autolokate/api-client';
 import type { AlVehicleRcField } from '@autolokate/ui';
 
-import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout.js';
-import type { AuthLanguageId } from '@/features/shared-auth/types.js';
+import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout';
+import type { AuthLanguageId } from '@/features/shared-auth/types';
 
 /**
  * Purchase QR code uses **localStorage** so it survives auth navigation and matches

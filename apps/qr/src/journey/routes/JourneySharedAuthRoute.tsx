@@ -1,16 +1,16 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useRedeemActivation } from '@/hooks/activation/index.js';
-import { reportUserError } from '@/platform/feedback/index.js';
-import { getAuthFlowBackPath, getPostAuthActivationPath } from '../activation-routing.js';
-import { resetPurchaseCheckoutSession } from '../navigation/select-activation-flow.js';
-import { readPurchaseJourneyState } from '@/journey/state/purchase-journey-state-machine.js';
-import { ensureAttachedPurchaseContext } from '@/services/qr/seed-attached-purchase-from-resolve.js';
-import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository.js';
-import { activationLogger } from '@/services/activation/activation-logger.js';
-import { useJourney } from '../JourneyContext.js';
-import { AuthRoutes } from './AuthRoutes.js';
+import { useRedeemActivation } from '@/hooks/activation/index';
+import { reportUserError } from '@/platform/feedback/index';
+import { getAuthFlowBackPath, getPostAuthActivationPath } from '../activation-routing';
+import { resetPurchaseCheckoutSession } from '../navigation/select-activation-flow';
+import { readPurchaseJourneyState } from '@/journey/state/purchase-journey-state-machine';
+import { ensureAttachedPurchaseContext } from '@/services/qr/seed-attached-purchase-from-resolve';
+import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
+import { activationLogger } from '@/services/activation/activation-logger';
+import { useJourney } from '../JourneyContext';
+import { AuthRoutes } from './AuthRoutes';
 
 export function JourneySharedAuthRoute() {
   const navigate = useNavigate();
@@ -70,4 +70,4 @@ export function JourneySharedAuthRoute() {
   return <AuthRoutes onAuthCompleted={handleAuthCompleted} />;
 }
 
-export { authJourneyPaths } from '../auth/auth-routing.js';
+export { authJourneyPaths } from '../auth/auth-routing';

@@ -6,7 +6,7 @@ import {
 } from '@autolokate/api-client';
 import { getTokenManager } from '@autolokate/auth';
 
-import { env } from '@/config/env.js';
+import { env } from '@/config/env';
 
 let bootstrapClient: ApiClient | null = null;
 let authenticatedClient: ApiClient | null = null;

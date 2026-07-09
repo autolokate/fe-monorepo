@@ -4,7 +4,7 @@ import { AlChip } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function renderChipState(state: ShowcaseState) {
   const variant = state === 'active' || state === 'loading' ? 'green' : 'neutral';

@@ -1,4 +1,4 @@
-import type { ActivationFlowId } from '../../journey/types.js';
+import type { ActivationFlowId } from '../../journey/types';
 
 /** All platform entry flows — activation journeys + post-activation scanner. */
 export type PlatformFlowId = ActivationFlowId | 'postActivation';

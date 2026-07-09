@@ -1,7 +1,7 @@
 import type { TokenManager } from '@autolokate/auth';
 
-import { endpoints } from './endpoints.js';
-import { readEnvelopeMeta } from './envelope.js';
+import { endpoints } from './endpoints';
+import { readEnvelopeMeta } from './envelope';
 
 export type ApiClientConfig = {
   baseUrl: string;
@@ -37,7 +37,7 @@ export class ApiError extends Error {
   }
 }
 
-import type { ApiErrorEnvelope } from './envelope.js';
+import type { ApiErrorEnvelope } from './envelope';
 
 type ErrorBody = {
   message?: string;

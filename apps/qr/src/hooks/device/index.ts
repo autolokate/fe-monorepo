@@ -1,1 +1,1 @@
-export { useRegisterDevice } from './useRegisterDevice.js';
+export { useRegisterDevice } from './useRegisterDevice';

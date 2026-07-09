@@ -1,2 +1,2 @@
-export type { BootstrapConfig, BootstrapPhase } from './bootstrap.js';
-export { bootstrapSequence, defaultBootstrapConfig } from './bootstrap.js';
+export type { BootstrapConfig, BootstrapPhase } from './bootstrap';
+export { bootstrapSequence, defaultBootstrapConfig } from './bootstrap';

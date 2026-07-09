@@ -1,7 +1,7 @@
-import { peekLastResolvedPurchaseCode } from '@/services/qr/qr-cache.js';
-import { getAttachResult, getQrCode, getResolvedQr, saveQrCode } from '@/storage/index.js';
+import { peekLastResolvedPurchaseCode } from '@/services/qr/qr-cache';
+import { getAttachResult, getQrCode, getResolvedQr, saveQrCode } from '@/storage/index';
 
-import { readQrCodeFromSearchParams } from './qr-url-params.js';
+import { readQrCodeFromSearchParams } from './qr-url-params';
 
 /**
  * Canonical purchase QR code for attach / orders.

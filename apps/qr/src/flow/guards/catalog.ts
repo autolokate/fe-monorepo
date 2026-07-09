@@ -1,4 +1,4 @@
-import type { FlowGuardDefinition, GuardId } from '../../types/flow.js';
+import type { FlowGuardDefinition, GuardId } from '../../types/flow';
 
 /** Guard catalog — pure definitions, no runtime evaluation yet */
 export const guardCatalog: Record<GuardId, FlowGuardDefinition> = {

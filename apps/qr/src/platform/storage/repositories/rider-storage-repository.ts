@@ -1,4 +1,4 @@
-import type { EmergencyRider } from '@/features/emergency/types.js';
+import type { EmergencyRider } from '@/features/emergency/types';
 
 const STORAGE_KEY = 'al-subscription-riders-v1';
 

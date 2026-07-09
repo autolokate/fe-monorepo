@@ -5,7 +5,7 @@ import type {
   GuardId,
   GuardResult,
   StepId,
-} from '../../types/flow.js';
+} from '../../types/flow';
 
 /**
  * Flow engine contract — implementation deferred until screen phase.

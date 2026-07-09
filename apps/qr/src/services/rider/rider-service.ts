@@ -7,23 +7,23 @@ import {
   verifyRiderOtp as verifyRiderOtpApi,
 } from '@autolokate/api-client';
 
-import type { EmergencyRider, RelationshipId } from '@/features/emergency/types.js';
-import type { ActivationFlowId } from '@/journey/types.js';
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
-import { riderStorageRepository } from '@/platform/storage/repositories/rider-storage-repository.js';
+import type { EmergencyRider, RelationshipId } from '@/features/emergency/types';
+import type { ActivationFlowId } from '@/journey/types';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
+import { riderStorageRepository } from '@/platform/storage/repositories/rider-storage-repository';
 import {
   requireActiveSubscriptionIdAsync,
   type SubscriptionResolveError,
-} from '@/services/subscription/resolve-subscription-id.js';
-import { tryResolveSubscriptionFromVehicles } from '@/services/vehicle/vehicle-sync-service.js';
+} from '@/services/subscription/resolve-subscription-id';
+import { tryResolveSubscriptionFromVehicles } from '@/services/vehicle/vehicle-sync-service';
 
 import {
   isEmergencyTransientError,
   mapEmergencyApiError,
   type EmergencyApiError,
-} from '../emergency/emergency-api-errors.js';
-import { mapApiRelationToLabel, mapRiderDtos } from './rider-mapper.js';
-import { riderLogger } from './rider-logger.js';
+} from '../emergency/emergency-api-errors';
+import { mapApiRelationToLabel, mapRiderDtos } from './rider-mapper';
+import { riderLogger } from './rider-logger';
 
 const MAX_ATTEMPTS = 3;
 const RETRY_BASE_MS = 400;

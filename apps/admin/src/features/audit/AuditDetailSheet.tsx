@@ -6,8 +6,8 @@ import {
   AdminDetailGrid,
   AdminDetailSection,
   formatMetadataEntries,
-} from '@/platform/components/AdminDetailField.js';
-import { formatAuditField } from '@/platform/utils/audit-field.js';
+} from '@/platform/components/AdminDetailField';
+import { formatAuditField } from '@/platform/utils/audit-field';
 
 export type AuditDetailSheetProps = {
   event: AuditEventDto | null;

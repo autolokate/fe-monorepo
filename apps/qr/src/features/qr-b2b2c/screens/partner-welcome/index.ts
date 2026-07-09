@@ -1,1 +1,1 @@
-export { PartnerWelcomeScreen } from './PartnerWelcomeScreen.js';
+export { PartnerWelcomeScreen } from './PartnerWelcomeScreen';

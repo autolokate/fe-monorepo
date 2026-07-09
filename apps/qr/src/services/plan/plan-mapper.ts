@@ -5,7 +5,7 @@ import type {
   PurchasePlanDefinition,
   PurchasePlanId,
   PurchaseRiderOption,
-} from '@/features/qr-purchase/types-checkout.js';
+} from '@/features/qr-purchase/types-checkout';
 
 /** Canonical carousel order — matches Figma R06. */
 export const PURCHASE_PLAN_ORDER: readonly PurchasePlanId[] = [

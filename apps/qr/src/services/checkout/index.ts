@@ -10,5 +10,5 @@ export {
   peekOrderId,
   type PrepareCheckoutResult,
   type PaymentFlowResult,
-} from './checkout-service.js';
-export { type CheckoutParams } from './checkout-mapper.js';
+} from './checkout-service';
+export { type CheckoutParams } from './checkout-mapper';

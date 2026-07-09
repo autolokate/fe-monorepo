@@ -6,7 +6,7 @@ import {
   saveQrCode,
   saveResolvedQr,
   type StoredQrResolve,
-} from '@/storage/index.js';
+} from '@/storage/index';
 
 /** Read/write QR code and resolve snapshots. */
 export const qrStorageRepository = {

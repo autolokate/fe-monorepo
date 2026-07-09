@@ -1,6 +1,6 @@
-export type { FeatureDefinition } from '../registry.js';
-export { featureRegistry } from '../registry.js';
-export { AUTH_COMPLETED } from './types.js';
+export type { FeatureDefinition } from '../registry';
+export { featureRegistry } from '../registry';
+export { AUTH_COMPLETED } from './types';
 export type {
   A1MobileScreenProps,
   A2OtpScreenProps,
@@ -16,7 +16,7 @@ export type {
   R05AccountCreationScreenProps,
   R06LegalConsentScreenProps,
   S0SplashScreenProps,
-} from './types.js';
-export * from './screens/index.js';
+} from './types';
+export * from './screens/index';
 
 export const featureId = 'shared-auth' as const;

@@ -1,8 +1,8 @@
 import type {
   AuthMobileState,
   AuthOtpState,
-} from '@/features/shared-auth/types.js';
-import type { MappedAuthError } from '@/services/auth/auth-errors.js';
+} from '@/features/shared-auth/types';
+import type { MappedAuthError } from '@/services/auth/auth-errors';
 
 export function applyMobileSendError(error: MappedAuthError): AuthMobileState {
   if (error.type === 'offline') {

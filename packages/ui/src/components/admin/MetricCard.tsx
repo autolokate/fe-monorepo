@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { AlHeading, AlStack, AlText } from '../primitives/index.js';
+import { AlHeading, AlStack, AlText } from '../primitives/index';
 import './MetricCard.css';
 
 export type AlMetricCardProps = {

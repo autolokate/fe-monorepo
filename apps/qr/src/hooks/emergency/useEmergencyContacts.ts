@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import type { EmergencyContact } from '@/features/emergency/types.js';
+import type { EmergencyContact } from '@/features/emergency/types';
 import {
   createEmergencyContact,
   deleteEmergencyContact,
@@ -14,7 +14,7 @@ import {
   type EmergencyContactListResult,
   type EmergencyContactOtpResult,
   type EmergencyContactVerifyResult,
-} from '@/services/emergency/emergency-contact-service.js';
+} from '@/services/emergency/emergency-contact-service';
 
 export function useEmergencyContacts() {
   const [revision, setRevision] = useState(() => getEmergencyContactsRevision());

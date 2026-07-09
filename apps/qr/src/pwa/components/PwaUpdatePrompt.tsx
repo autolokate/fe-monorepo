@@ -1,6 +1,6 @@
 import { AlButton } from '@autolokate/ui';
 
-import { usePwaUpdate } from '../use-pwa-update.js';
+import { usePwaUpdate } from '../use-pwa-update';
 
 import './PwaUpdatePrompt.css';
 

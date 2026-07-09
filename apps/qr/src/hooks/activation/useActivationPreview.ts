@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import type { LandingEntitlement, WelcomeViewState } from '@/features/b2b-shared/types-landing.js';
+import type { LandingEntitlement, WelcomeViewState } from '@/features/b2b-shared/types-landing';
 import {
   getActivationRevision,
   loadActivationPreview,
   readStoredActivationPreviewCode,
   readStoredActivationQrCode,
   type ActivationFlowKind,
-} from '@/services/activation/activation-service.js';
+} from '@/services/activation/activation-service';
 
 export type UseActivationPreviewOptions = {
   code?: string | null | undefined;

@@ -4,7 +4,7 @@ import { AlCheckbox } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function CheckboxStatePreview({ state }: { state: ShowcaseState }) {
   const [checked, setChecked] = useState(state === 'active');

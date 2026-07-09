@@ -75,7 +75,7 @@ export type L1PrivacyPolicyScreenProps = LegalReaderNavigationProps;
 
 export type L2TermsConditionsScreenProps = LegalReaderNavigationProps;
 
-import type { ScreenViewState } from '../../types/flow.js';
+import type { ScreenViewState } from '../../types/flow';
 
 /** @deprecated Use A1MobileScreen */
 export type R03MobileNumberScreenProps = AuthNavigationProps & {
@@ -95,4 +95,4 @@ export type R04OtpVerificationScreenProps = AuthNavigationProps & {
 };
 
 /** @deprecated Purchase activation */
-export type { R01VehicleNumberScreenProps, R05AccountCreationScreenProps, R06LegalConsentScreenProps } from '../purchase-activation/types.js';
+export type { R01VehicleNumberScreenProps, R05AccountCreationScreenProps, R06LegalConsentScreenProps } from '../purchase-activation/types';

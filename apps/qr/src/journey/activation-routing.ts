@@ -1,14 +1,14 @@
-import { shouldEnterRiderPrompt } from '../features/emergency/emergency-limits.js';
+import { shouldEnterRiderPrompt } from '../features/emergency/emergency-limits';
 
-import { authJourneyPaths, defaultActivationAfterAuth } from './auth/auth-routing.js';
-import { journeyPaths } from './constants.js';
-import { emergencyJourneyPaths } from './emergency/emergency-routing.js';
-import { resolveEmergencyFoundationContext } from './emergency/emergency-foundation.js';
-import { b2b2cJourneyPaths } from './b2b2c/b2b2c-routing.js';
-import { prepaidJourneyPaths } from './prepaid/prepaid-routing.js';
-import { purchaseJourneyPaths } from './purchase/purchase-routing.js';
-import { resolvePurchaseEntryPath } from '@/journey/state/purchase-journey-state-machine.js';
-import type { ActivationFlowId, JourneySession } from './types.js';
+import { authJourneyPaths, defaultActivationAfterAuth } from './auth/auth-routing';
+import { journeyPaths } from './constants';
+import { emergencyJourneyPaths } from './emergency/emergency-routing';
+import { resolveEmergencyFoundationContext } from './emergency/emergency-foundation';
+import { b2b2cJourneyPaths } from './b2b2c/b2b2c-routing';
+import { prepaidJourneyPaths } from './prepaid/prepaid-routing';
+import { purchaseJourneyPaths } from './purchase/purchase-routing';
+import { resolvePurchaseEntryPath } from '@/journey/state/purchase-journey-state-machine';
+import type { ActivationFlowId, JourneySession } from './types';
 
 /** First activation step after AUTH_COMPLETED. */
 export type ActivationEntry = {

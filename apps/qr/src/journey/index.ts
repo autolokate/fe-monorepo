@@ -1,7 +1,7 @@
-export { JourneyOrchestrator } from './JourneyOrchestrator.js';
-export { JourneyProvider, useJourney } from './JourneyContext.js';
-export { AutolokateRootProvider } from '../platform/AutolokateRootProvider.js';
-export { journeyPaths, flowLabels, SELECTED_FLOW_KEY, JOURNEY_STORAGE_KEY } from './constants.js';
+export { JourneyOrchestrator } from './JourneyOrchestrator';
+export { JourneyProvider, useJourney } from './JourneyContext';
+export { AutolokateRootProvider } from '../platform/AutolokateRootProvider';
+export { journeyPaths, flowLabels, SELECTED_FLOW_KEY, JOURNEY_STORAGE_KEY } from './constants';
 export {
   activationEntryByFlow,
   EMERGENCY_SUFFIX_STEP_IDS,
@@ -11,14 +11,14 @@ export {
   getCompletedPath,
   getEmergencyHandoffPath,
   getPurchasePostPaymentEmergencyPath,
-} from './activation-routing.js';
+} from './activation-routing';
 export {
   getNextPurchasePath,
   getPrevPurchasePath,
   purchaseJourneyPaths,
   purchaseStepPathSequence,
-} from './purchase/purchase-routing.js';
-export { resolvePurchaseEntryPath } from './state/purchase-journey-state-machine.js';
+} from './purchase/purchase-routing';
+export { resolvePurchaseEntryPath } from './state/purchase-journey-state-machine';
 export type {
   ActivationFlowId,
   AuthStatus,
@@ -26,4 +26,4 @@ export type {
   JourneyPhase,
   JourneySession,
   PersistedJourneyState,
-} from './types.js';
+} from './types';

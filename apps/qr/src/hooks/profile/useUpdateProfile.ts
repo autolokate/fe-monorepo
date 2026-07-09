@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
-import { mapProfileApiError } from '@/services/profile/profile-errors.js';
-import { saveOwnerName, type SaveOwnerNameInput } from '@/services/profile/profile-service.js';
+import { mapProfileApiError } from '@/services/profile/profile-errors';
+import { saveOwnerName, type SaveOwnerNameInput } from '@/services/profile/profile-service';
 
 export function useUpdateProfile() {
   const [isPending, setIsPending] = useState(false);

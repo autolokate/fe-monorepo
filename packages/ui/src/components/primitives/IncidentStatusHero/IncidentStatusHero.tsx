@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlIncidentStatusHeroProps, AlIncidentStatusHeroScene } from './IncidentStatusHero.types.js';
+import type { AlIncidentStatusHeroProps, AlIncidentStatusHeroScene } from './IncidentStatusHero.types';
 import './IncidentStatusHero.css';
 
 function CouldntSendHero() {

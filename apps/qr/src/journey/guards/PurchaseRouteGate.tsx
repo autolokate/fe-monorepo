@@ -1,15 +1,15 @@
 import { useEffect, type ReactNode } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { isAttachedQrLifecycleStatus } from '@/platform/qr/qr-status.js';
-import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository.js';
-import { ensureAttachedPurchaseContext } from '@/services/qr/seed-attached-purchase-from-resolve.js';
+import { isAttachedQrLifecycleStatus } from '@/platform/qr/qr-status';
+import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
+import { ensureAttachedPurchaseContext } from '@/services/qr/seed-attached-purchase-from-resolve';
 
 import {
   evaluatePurchaseRouteAccess,
   type PurchaseRouteId,
-} from '../state/purchase-journey-state-machine.js';
-import { useJourney } from '../JourneyContext.js';
+} from '../state/purchase-journey-state-machine';
+import { useJourney } from '../JourneyContext';
 
 type PurchaseRouteGateProps = {
   routeId: PurchaseRouteId;

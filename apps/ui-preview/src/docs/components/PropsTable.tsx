@@ -1,4 +1,4 @@
-import type { PropRow } from '../types.js';
+import type { PropRow } from '../types';
 
 export function PropsTable({ rows }: { rows: PropRow[] }) {
   return (

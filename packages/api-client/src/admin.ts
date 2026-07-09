@@ -1,6 +1,6 @@
-import type { ApiClient } from './client.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope, readEnvelopeMeta } from './envelope.js';
+import type { ApiClient } from './client';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope, readEnvelopeMeta } from './envelope';
 
 /** OpenAPI `BatchSummaryDto.status` */
 export type QrBatchStatus =

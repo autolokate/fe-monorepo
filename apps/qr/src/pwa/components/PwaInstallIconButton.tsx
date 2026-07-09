@@ -1,4 +1,4 @@
-import { usePwaInstall } from '../use-pwa-install.js';
+import { usePwaInstall } from '../use-pwa-install';
 
 import './PwaInstallIconButton.css';
 

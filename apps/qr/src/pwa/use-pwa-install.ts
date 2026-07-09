@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   readPwaInstallDismissedRecently,
   writePwaInstallDismissedAt,
-} from './install-dismiss-storage.js';
+} from './install-dismiss-storage';
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;

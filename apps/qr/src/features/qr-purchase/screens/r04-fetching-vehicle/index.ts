@@ -1,1 +1,1 @@
-export { R04FetchingVehicleScreen } from './R04FetchingVehicleScreen.js';
+export { R04FetchingVehicleScreen } from './R04FetchingVehicleScreen';

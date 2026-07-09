@@ -1,6 +1,6 @@
 import type { CreateOrderBody } from '@autolokate/api-client';
 
-import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code.js';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 
 /**
  * QR `code` for POST /v1/orders (CreateOrderBodyDto.code).

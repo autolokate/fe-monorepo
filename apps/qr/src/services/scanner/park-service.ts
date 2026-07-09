@@ -6,22 +6,22 @@ import {
   toE164IndianMobile,
 } from '@autolokate/api-client';
 
-import { getQrBootstrapClient } from '@/platform/api/qr-api-client.js';
-import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository.js';
-import { parkSessionRepository } from '@/platform/storage/repositories/park-session-repository.js';
-import { compactPlate, normalizePlate } from '@/services/vehicle/vehicle-plate.js';
+import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
+import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
+import { parkSessionRepository } from '@/platform/storage/repositories/park-session-repository';
+import { compactPlate, normalizePlate } from '@/services/vehicle/vehicle-plate';
 
-import { mapBystanderRcToLookupResult } from './park-mapper.js';
+import { mapBystanderRcToLookupResult } from './park-mapper';
 import {
   delay,
   SCANNER_MAX_ATTEMPTS,
   SCANNER_RETRY_BASE_MS,
   withTimeout,
   SCANNER_REQUEST_TIMEOUT_MS,
-} from './scanner-network.js';
-import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors.js';
-import { stopParkStatusPoll } from './scanner-poll-manager.js';
-import { scannerLogger } from './scanner-logger.js';
+} from './scanner-network';
+import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors';
+import { stopParkStatusPoll } from './scanner-poll-manager';
+import { scannerLogger } from './scanner-logger';
 
 export type ParkOtpRequestResult = { ok: true } | { ok: false; error: ScannerApiError };
 

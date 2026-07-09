@@ -9,22 +9,22 @@ import {
 } from '@autolokate/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { BatchManagementDetailSheet } from '@/features/qr-batches/BatchManagementDetailSheet.js';
-import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet.js';
-import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters.js';
-import { useInventoryColumns } from '@/features/inventory/inventory-columns.js';
-import { useQrInventory } from '@/hooks/inventory/useQrInventory.js';
-import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
-import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
-import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
-import { AdminMoreActions } from '@/platform/components/AdminMoreActions.js';
-import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
-import { buildPageSummary } from '@/platform/components/build-page-summary.js';
+import { BatchManagementDetailSheet } from '@/features/qr-batches/BatchManagementDetailSheet';
+import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet';
+import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters';
+import { useInventoryColumns } from '@/features/inventory/inventory-columns';
+import { useQrInventory } from '@/hooks/inventory/useQrInventory';
+import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
+import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminMoreActions } from '@/platform/components/AdminMoreActions';
+import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { buildPageSummary } from '@/platform/components/build-page-summary';
 import {
   useCanRunQrLifecycleMutations,
   useCanWriteInventoryMutations,
-} from '@/platform/rbac/module-write-permissions.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
+} from '@/platform/rbac/module-write-permissions';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './inventory.css';
 

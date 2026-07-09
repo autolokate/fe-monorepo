@@ -1,4 +1,4 @@
-import { journeyPaths } from '../constants.js';
+import { journeyPaths } from '../constants';
 
 export const b2b2cJourneyPaths = {
   welcome: `${journeyPaths.b2b2c}/welcome`,

@@ -7,22 +7,22 @@ import {
   type ReactNode,
 } from 'react';
 
-import { AUTH_COMPLETED } from '../features/shared-auth/types.js';
+import { AUTH_COMPLETED } from '../features/shared-auth/types';
 
-import { reconcileAuthSession, revokeAndClearAuthSession, createAuthFailureSessionPatch } from '../services/auth/auth-session.js';
-import { resetQrJourneyStorage } from '@/platform/storage/reset-qr-journey-storage.js';
+import { reconcileAuthSession, revokeAndClearAuthSession, createAuthFailureSessionPatch } from '../services/auth/auth-session';
+import { resetQrJourneyStorage } from '@/platform/storage/reset-qr-journey-storage';
 import {
   loadJourneyState,
   persistSelectedFlow,
   saveJourneyState,
-} from './persistence.js';
+} from './persistence';
 import type {
   ActivationFlowId,
   JourneyContextValue,
   JourneyPhase,
   JourneySession,
   PersistedJourneyState,
-} from './types.js';
+} from './types';
 
 const JourneyContext = createContext<JourneyContextValue | null>(null);
 

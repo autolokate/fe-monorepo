@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { resolveQrCode, resolveQrEntry, refreshQrResolution } from '@/services/qr/qr-service.js';
+import { resolveQrCode, resolveQrEntry, refreshQrResolution } from '@/services/qr/qr-service';
 
 export function useQrResolve() {
   const [isPending, setIsPending] = useState(false);

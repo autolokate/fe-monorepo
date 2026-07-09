@@ -1,2 +1,2 @@
-export type { LayoutDefinition, LayoutId } from './inventory.js';
-export { layoutInventory } from './inventory.js';
+export type { LayoutDefinition, LayoutId } from './inventory';
+export { layoutInventory } from './inventory';

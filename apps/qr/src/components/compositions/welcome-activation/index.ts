@@ -1,7 +1,7 @@
-export { PartnerActivationCard } from './PartnerActivationCard.js';
-export { PlanActivationCard, PlanActivationCardSkeleton } from './PlanActivationCard.js';
+export { PartnerActivationCard } from './PartnerActivationCard';
+export { PlanActivationCard, PlanActivationCardSkeleton } from './PlanActivationCard';
 export {
   PartnerActivationCardSkeleton,
   WelcomeActivationErrorPanel,
   WelcomeActivationShell,
-} from './WelcomeActivationShell.js';
+} from './WelcomeActivationShell';

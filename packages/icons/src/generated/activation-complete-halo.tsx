@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma R15 halo — node 171:62, 240×240 radial green + shield-check. */
 export function ActivationCompleteHaloIcon({

@@ -1,4 +1,4 @@
-import type { PurchasePlanId, PurchaseRiderCount } from '../../qr-purchase/types-checkout.js';
+import type { PurchasePlanId, PurchaseRiderCount } from '../../qr-purchase/types-checkout';
 
 /** Demo: transient R0 load failure for Shield + 2 riders on first attempt; retry succeeds. */
 export function shouldSimulateRiderPromptLoadFailure(

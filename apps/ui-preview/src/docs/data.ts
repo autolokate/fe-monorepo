@@ -1,5 +1,5 @@
 import type { AlIconName } from '@autolokate/icons';
-import type { CompositionPageId, CoreComponentPageId, DocPageId } from './types.js';
+import type { CompositionPageId, CoreComponentPageId, DocPageId } from './types';
 
 export const compositionPages: CompositionPageId[] = [
   'composition-index',

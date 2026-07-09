@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma R10 halo — node 193:28, green glow + ring + large green check. */
 export function PaymentSuccessHaloIcon({

@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory.js';
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { showSuccessToast } from '@/platform/feedback/toast.js';
+import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { showSuccessToast } from '@/platform/feedback/toast';
 import {
   createBatch,
   fulfilPartnerReorderById,
@@ -12,7 +12,7 @@ import {
   replaceCode,
   retireCode,
   runAutoDetachSweep,
-} from '@/services/qr-batches/qr-batch-service.js';
+} from '@/services/qr-batches/qr-batch-service';
 
 export function useQrBatchMutations() {
   const queryClient = useQueryClient();

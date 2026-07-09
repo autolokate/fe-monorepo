@@ -1,12 +1,12 @@
 import { AlPermissionSheet } from '@autolokate/ui';
 
-import type { QrAttachError } from '@/services/qr/qr-attach-errors.js';
+import type { QrAttachError } from '@/services/qr/qr-attach-errors';
 
 import {
   buildPurchaseSupportMailto,
   PURCHASE_SUPPORT_EMAIL,
-} from '../constants/purchase-support.js';
-import { resolveAttachErrorPresentation } from '../utils/attach-error-presentation.js';
+} from '../constants/purchase-support';
+import { resolveAttachErrorPresentation } from '../utils/attach-error-presentation';
 import './purchase-attach-error-sheet.css';
 
 export type PurchaseAttachErrorSheetProps = {

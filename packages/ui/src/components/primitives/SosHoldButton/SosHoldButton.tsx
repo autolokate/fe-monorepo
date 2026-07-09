@@ -1,10 +1,10 @@
 import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 
-import { cn } from '../../../utils/cn.js';
-import { startSosAlertTone, stopSosAlertTone, preloadSosAlertTone } from '../../../utils/sos-alert-tone.js';
+import { cn } from '../../../utils/cn';
+import { startSosAlertTone, stopSosAlertTone, preloadSosAlertTone } from '../../../utils/sos-alert-tone';
 
-import type { AlSosHoldButtonProps } from './SosHoldButton.types.js';
+import type { AlSosHoldButtonProps } from './SosHoldButton.types';
 import './SosHoldButton.css';
 
 const HOLD_CIRCUMFERENCE = 2 * Math.PI * 110;

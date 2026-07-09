@@ -1,9 +1,9 @@
 import {
   useThemeContext,
   type ThemeContextValue,
-} from '../platform/theme/ThemeProvider.js';
-import type { ThemeMode } from '../platform/theme/resolve-scheduled-theme.js';
-import type { ThemePreference } from '../platform/theme/theme-preference.js';
+} from '../platform/theme/ThemeProvider';
+import type { ThemeMode } from '../platform/theme/resolve-scheduled-theme';
+import type { ThemePreference } from '../platform/theme/theme-preference';
 
 export type { ThemeMode, ThemePreference };
 

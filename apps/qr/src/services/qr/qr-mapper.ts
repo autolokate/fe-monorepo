@@ -1,23 +1,23 @@
 import type { QrJourney, QrResolution, QrStatus } from '@autolokate/api-client';
 
-import type { ActivationFlowId } from '@/journey/types.js';
+import type { ActivationFlowId } from '@/journey/types';
 import {
   isActivatedQrLifecycleStatus,
   isExpiredQrLifecycleStatus,
   QR_STATUS,
-} from '@/platform/qr/qr-status.js';
+} from '@/platform/qr/qr-status';
 import type {
   QrActivatedPayload,
   QrB2b2cPayload,
   QrPayload,
   QrPrepaidPayload,
   QrPurchasePayload,
-} from '@/platform/qr/qr-dispatch-contract.js';
+} from '@/platform/qr/qr-dispatch-contract';
 import {
   formatQrPublicVehicleSummary,
   isQrVehicleProtected,
-} from '@/features/post-activation-pwa/utils/pwa-vehicle-utils.js';
-import { formatApiTierLabel } from '@/services/plan/plan-mapper.js';
+} from '@/features/post-activation-pwa/utils/pwa-vehicle-utils';
+import { formatApiTierLabel } from '@/services/plan/plan-mapper';
 
 /** Map backend journey to existing activation flow ids — no new flow types. */
 export function mapQrJourneyToActivationFlow(journey: QrJourney): ActivationFlowId | null {

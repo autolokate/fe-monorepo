@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { StatusBarProps } from './StatusBar.types.js';
+import type { StatusBarProps } from './StatusBar.types';
 import './StatusBar.css';
 
 function DefaultStatusIcons() {

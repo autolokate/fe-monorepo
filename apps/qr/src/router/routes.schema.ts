@@ -1,4 +1,4 @@
-import type { ProductAreaId, ScreenId, SharedStepId, StepId } from '../types/flow.js';
+import type { ProductAreaId, ScreenId, SharedStepId, StepId } from '../types/flow';
 
 /** Every route maps to exactly one StepId. */
 export type RouteDefinition = {

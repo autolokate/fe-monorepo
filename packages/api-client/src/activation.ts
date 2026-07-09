@@ -1,7 +1,7 @@
-import type { ApiClient } from './client.js';
-import type { ApiPlanTier } from './plans.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope } from './envelope.js';
+import type { ApiClient } from './client';
+import type { ApiPlanTier } from './plans';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope } from './envelope';
 
 export type ActivationPreviewPartner = {
   name: string;

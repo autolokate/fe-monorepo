@@ -1,9 +1,9 @@
-import { RECENT_AUDIT_PARAMS, auditQueryKeys } from '@/hooks/audit/audit-query-keys.js';
-import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory.js';
-import { promosQueryKeys } from '@/hooks/promos/promo-query-keys.js';
-import { fetchAuditEvents } from '@/services/audit/audit-events-service.js';
-import { fetchQrInventory } from '@/services/inventory/inventory-service.js';
-import { fetchAdminPromos } from '@/services/promos/admin-promos-service.js';
+import { RECENT_AUDIT_PARAMS, auditQueryKeys } from '@/hooks/audit/audit-query-keys';
+import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
+import { promosQueryKeys } from '@/hooks/promos/promo-query-keys';
+import { fetchAuditEvents } from '@/services/audit/audit-events-service';
+import { fetchQrInventory } from '@/services/inventory/inventory-service';
+import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
 
 export const dashboardQueryDefinitions = [
   {

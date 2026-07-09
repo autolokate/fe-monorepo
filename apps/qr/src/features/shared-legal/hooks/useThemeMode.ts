@@ -1,1 +1,1 @@
-export { useThemeMode, type ThemeMode } from '@/hooks/useThemeMode.js';
+export { useThemeMode, type ThemeMode } from '@/hooks/useThemeMode';

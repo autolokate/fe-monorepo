@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { getAuthRouteProgress } from './auth-route-progress.js';
-import { getPurchaseRouteProgress } from './purchase-route-progress.js';
-import type { RouteProgressConfig } from './route-progress.types.js';
+import { getAuthRouteProgress } from './auth-route-progress';
+import { getPurchaseRouteProgress } from './purchase-route-progress';
+import type { RouteProgressConfig } from './route-progress.types';
 
 export function useAuthRouteProgress(): RouteProgressConfig | null {
   const { pathname } = useLocation();

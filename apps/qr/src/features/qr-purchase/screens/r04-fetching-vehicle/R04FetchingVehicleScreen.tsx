@@ -1,7 +1,7 @@
 import { AlScreenSpinner } from '@autolokate/ui';
 
-import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index.js';
-import type { PurchaseFetchingScreenProps } from '../../types-vehicle.js';
+import { PurchaseStatusShell } from '@/components/compositions/purchase-status-shell/index';
+import type { PurchaseFetchingScreenProps } from '../../types-vehicle';
 
 /** R04 · Fetching details — Figma 179:25 */
 export function R04FetchingVehicleScreen({

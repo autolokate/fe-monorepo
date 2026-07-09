@@ -1,4 +1,4 @@
-export { AlButton } from './Button.js';
+export { AlButton } from './Button';
 export type {
   AlButtonCoreVariant,
   AlButtonIconPosition,
@@ -6,4 +6,4 @@ export type {
   AlButtonRadius,
   AlButtonSize,
   AlButtonVariant,
-} from './Button.types.js';
+} from './Button.types';

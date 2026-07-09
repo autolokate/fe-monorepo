@@ -3,8 +3,8 @@ import {
   cancelEmergencyAlert,
 } from '@autolokate/api-client';
 
-import { getQrBootstrapClient } from '@/platform/api/qr-api-client.js';
-import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository.js';
+import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
+import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
 
 import {
   delay,
@@ -12,10 +12,10 @@ import {
   SCANNER_RETRY_BASE_MS,
   withTimeout,
   SCANNER_REQUEST_TIMEOUT_MS,
-} from './scanner-network.js';
-import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors.js';
-import { stopEmergencyAlertPoll } from './scanner-poll-manager.js';
-import { scannerLogger } from './scanner-logger.js';
+} from './scanner-network';
+import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors';
+import { stopEmergencyAlertPoll } from './scanner-poll-manager';
+import { scannerLogger } from './scanner-logger';
 
 export type EmergencySubmitResult =
   | { ok: true; alertId: string; incidentId: string }

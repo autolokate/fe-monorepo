@@ -3,10 +3,10 @@ import {
   semanticDark,
   semanticLight,
   type SemanticColorToken,
-} from './tokens/colors.js';
-import { motion } from './tokens/motion.js';
-import { spacing } from './tokens/spacing.js';
-import { typography } from './tokens/typography.js';
+} from './tokens/colors';
+import { motion } from './tokens/motion';
+import { spacing } from './tokens/spacing';
+import { typography } from './tokens/typography';
 
 export type ThemeMode = 'light' | 'dark';
 

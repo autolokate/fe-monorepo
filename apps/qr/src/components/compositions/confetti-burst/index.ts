@@ -1,2 +1,2 @@
-export { ConfettiBurst } from './ConfettiBurst.js';
-export type { ConfettiBurstProps } from './ConfettiBurst.js';
+export { ConfettiBurst } from './ConfettiBurst';
+export type { ConfettiBurstProps } from './ConfettiBurst';

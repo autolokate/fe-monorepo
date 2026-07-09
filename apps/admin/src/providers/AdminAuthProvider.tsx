@@ -10,9 +10,9 @@ import {
   type ReactNode,
 } from 'react';
 
-import { normalizeAdminRole, type AdminRole } from '@/platform/rbac/permissions.js';
-import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries.js';
-import { getAdminApiClient, getAdminBootstrapClient, tokenManager } from '@/platform/api/admin-api-client.js';
+import { normalizeAdminRole, type AdminRole } from '@/platform/rbac/permissions';
+import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries';
+import { getAdminApiClient, getAdminBootstrapClient, tokenManager } from '@/platform/api/admin-api-client';
 
 export type AdminAuthState = {
   isAuthenticated: boolean;

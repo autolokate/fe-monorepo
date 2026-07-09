@@ -5,10 +5,10 @@ export {
   isVehiclePurchaseStepBlocked,
   readPurchaseJourneyState,
   resolvePurchaseEntryPath,
-} from '@/journey/state/purchase-journey-state-machine.js';
+} from '@/journey/state/purchase-journey-state-machine';
 
 /** @deprecated Use resolvePurchaseEntryPath */
-export { resolvePurchaseEntryPath as getPurchasePostAuthPath } from '@/journey/state/purchase-journey-state-machine.js';
+export { resolvePurchaseEntryPath as getPurchasePostAuthPath } from '@/journey/state/purchase-journey-state-machine';
 
 /** @deprecated Use isVehiclePurchaseStepBlocked */
-export { isVehiclePurchaseStepBlocked as shouldSkipVehiclePurchaseSteps } from '@/journey/state/purchase-journey-state-machine.js';
+export { isVehiclePurchaseStepBlocked as shouldSkipVehiclePurchaseSteps } from '@/journey/state/purchase-journey-state-machine';

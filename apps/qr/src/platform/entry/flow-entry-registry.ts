@@ -1,7 +1,7 @@
-import { flowLabels } from '../../journey/constants.js';
-import type { ActivationFlowId } from '../../journey/types.js';
+import { flowLabels } from '../../journey/constants';
+import type { ActivationFlowId } from '../../journey/types';
 
-import type { FlowEntryDefinition, PlatformFlowId } from './types.js';
+import type { FlowEntryDefinition, PlatformFlowId } from './types';
 
 /** Canonical registry of all Autolokate PWA entry flows. */
 export const FLOW_ENTRY_REGISTRY: readonly FlowEntryDefinition[] = [

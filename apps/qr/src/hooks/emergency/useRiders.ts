@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 
-import type { EmergencyRider } from '@/features/emergency/types.js';
-import type { ActivationFlowId } from '@/journey/types.js';
+import type { EmergencyRider } from '@/features/emergency/types';
+import type { ActivationFlowId } from '@/journey/types';
 import {
   createRider,
   deleteRider,
@@ -15,7 +15,7 @@ import {
   type RiderListResult,
   type RiderOtpResult,
   type RiderVerifyResult,
-} from '@/services/rider/rider-service.js';
+} from '@/services/rider/rider-service';
 
 export function useRiders(selectedFlow: ActivationFlowId | null) {
   const [revision, setRevision] = useState(() => getRidersRevision());

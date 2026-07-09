@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { showSuccessToast } from '@/platform/feedback/toast.js';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { showSuccessToast } from '@/platform/feedback/toast';
 import {
   submitClawback,
   submitSettlementBatch,
-} from '@/services/finance/finance-service.js';
+} from '@/services/finance/finance-service';
 
 export function useFinanceMutations() {
   const clawbackMutation = useMutation({

@@ -1,8 +1,8 @@
-import type { AnyFlowId, FlowDefinition } from '../../types/flow.js';
+import type { AnyFlowId, FlowDefinition } from '../../types/flow';
 
-import { flowsConfig } from './config/flows.config.js';
-import { stepsConfig } from './config/steps.config.js';
-import type { FlowConfigEntry } from './config/types.js';
+import { flowsConfig } from './config/flows.config';
+import { stepsConfig } from './config/steps.config';
+import type { FlowConfigEntry } from './config/types';
 
 function assertStepsExist(stepIds: readonly string[]): void {
   for (const stepId of stepIds) {

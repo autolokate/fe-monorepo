@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { logout } from '@/services/auth/auth-service.js';
+import { logout } from '@/services/auth/auth-service';
 
 export function useLogout() {
   const [isPending, setIsPending] = useState(false);

@@ -3,8 +3,8 @@ import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-rou
 
 import { AlScreenBg, AlScreenSpinner } from '@autolokate/ui';
 
-import { L1PrivacyPolicyScreen } from '../../features/shared-legal/screens/l1-privacy-policy/index.js';
-import { L2TermsConditionsScreen } from '../../features/shared-legal/screens/l2-terms-conditions/index.js';
+import { L1PrivacyPolicyScreen } from '../../features/shared-legal/screens/l1-privacy-policy/index';
+import { L2TermsConditionsScreen } from '../../features/shared-legal/screens/l2-terms-conditions/index';
 import {
   clampMobileInput,
   formatMobileInput,
@@ -12,39 +12,39 @@ import {
   normalizeMobile,
   OTP_LENGTH,
   RESEND_COOLDOWN_SECONDS,
-} from '../../features/shared-auth/auth-flow/auth-flow.validation.js';
-import { A1MobileScreen } from '../../features/shared-auth/screens/a1-mobile/index.js';
-import { A2OtpScreen } from '../../features/shared-auth/screens/a2-otp/index.js';
-import { A3VehicleOwnerScreen } from '../../features/shared-auth/screens/a3-vehicle-owner/index.js';
-import { QrScanEntryScreen } from '../../features/shared-auth/screens/qr-scan-entry/index.js';
+} from '../../features/shared-auth/auth-flow/auth-flow.validation';
+import { A1MobileScreen } from '../../features/shared-auth/screens/a1-mobile/index';
+import { A2OtpScreen } from '../../features/shared-auth/screens/a2-otp/index';
+import { A3VehicleOwnerScreen } from '../../features/shared-auth/screens/a3-vehicle-owner/index';
+import { QrScanEntryScreen } from '../../features/shared-auth/screens/qr-scan-entry/index';
 import type {
   AuthMobileState,
   AuthOtpState,
   AuthVehicleOwnerState,
-} from '../../features/shared-auth/types.js';
-import { useRequestOtp } from '../../hooks/auth/useRequestOtp.js';
-import { useVerifyOtp } from '../../hooks/auth/useVerifyOtp.js';
-import { useUpdateProfile } from '../../hooks/profile/useUpdateProfile.js';
-import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url.js';
-import { extractQrCodeParam } from '@/platform/qr/parse-qr-url.js';
-import { QR_URL_PARAMS } from '@/platform/qr/qr-url-params.js';
-import { reportUserError } from '@/platform/feedback/index.js';
-import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanContext.js';
-import { useQrJourneyEntry } from '../../hooks/qr/useQrJourneyEntry.js';
-import { authLogger } from '@/services/auth/auth-logger.js';
-import { qrLogger } from '@/services/qr/qr-logger.js';
-import { ensureValidAuthSession } from '@/services/auth/ensure-valid-auth-session.js';
-import { loadLegalDocuments } from '@/services/legal/legal-service.js';
-import { applyVehicleOwnerSaveError } from '../../services/profile/profile-errors.js';
-import { authJourneyPaths, authMobileUrl, isAuthMobileContinueEntry } from '../auth/auth-routing.js';
-import { getAuthFlowBackPath } from '../activation-routing.js';
-import { resolveJourneyResumePath } from '../resume/journey-resume-path.js';
-import { useJourney } from '../JourneyContext.js';
+} from '../../features/shared-auth/types';
+import { useRequestOtp } from '../../hooks/auth/useRequestOtp';
+import { useVerifyOtp } from '../../hooks/auth/useVerifyOtp';
+import { useUpdateProfile } from '../../hooks/profile/useUpdateProfile';
+import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
+import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
+import { QR_URL_PARAMS } from '@/platform/qr/qr-url-params';
+import { reportUserError } from '@/platform/feedback/index';
+import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanContext';
+import { useQrJourneyEntry } from '../../hooks/qr/useQrJourneyEntry';
+import { authLogger } from '@/services/auth/auth-logger';
+import { qrLogger } from '@/services/qr/qr-logger';
+import { ensureValidAuthSession } from '@/services/auth/ensure-valid-auth-session';
+import { loadLegalDocuments } from '@/services/legal/legal-service';
+import { applyVehicleOwnerSaveError } from '../../services/profile/profile-errors';
+import { authJourneyPaths, authMobileUrl, isAuthMobileContinueEntry } from '../auth/auth-routing';
+import { getAuthFlowBackPath } from '../activation-routing';
+import { resolveJourneyResumePath } from '../resume/journey-resume-path';
+import { useJourney } from '../JourneyContext';
 import {
   applyMobileSendError,
   applyOtpVerifyError,
   delay,
-} from './auth-route-helpers.js';
+} from './auth-route-helpers';
 
 function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();

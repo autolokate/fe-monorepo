@@ -6,7 +6,7 @@ import {
 } from '@autolokate/api-client';
 import { createTokenManager, createSessionTokenStorage } from '@autolokate/auth';
 
-import { env } from '@/config/env.js';
+import { env } from '@/config/env';
 
 const ADMIN_TOKEN_KEY = 'al-admin-auth-tokens-v1';
 

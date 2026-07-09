@@ -1,6 +1,6 @@
 import type { QrResolution } from '@autolokate/api-client';
 
-import { getResolvedQr } from '@/storage/index.js';
+import { getResolvedQr } from '@/storage/index';
 
 /** Ephemeral resolve cache — hydrated from session storage when available. */
 let lastResolved: { code: string; resolution: QrResolution } | null = null;

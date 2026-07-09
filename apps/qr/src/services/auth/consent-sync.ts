@@ -1,8 +1,8 @@
 import { grantConsent, type ApiClient } from '@autolokate/api-client';
 
-import { getLegalNoticeVersion } from '@/storage/index.js';
+import { getLegalNoticeVersion } from '@/storage/index';
 
-import { authLogger } from './auth-logger.js';
+import { authLogger } from './auth-logger';
 
 const MAX_ATTEMPTS = 3;
 const RETRY_BASE_MS = 400;

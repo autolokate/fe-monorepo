@@ -1,4 +1,4 @@
-import { type BrandLogoProps } from '../types.js';
+import { type BrandLogoProps } from '../types';
 
 const DEFAULT_LABEL = 'Autolokate';
 

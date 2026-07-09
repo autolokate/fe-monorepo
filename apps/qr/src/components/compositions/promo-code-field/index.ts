@@ -1,2 +1,2 @@
-export { PromoCodeField } from './PromoCodeField.js';
-export type { PromoCodeFieldProps } from './PromoCodeField.js';
+export { PromoCodeField } from './PromoCodeField';
+export type { PromoCodeFieldProps } from './PromoCodeField';

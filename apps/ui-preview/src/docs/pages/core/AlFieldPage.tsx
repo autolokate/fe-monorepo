@@ -3,7 +3,7 @@ import { AlField } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function renderFieldState(state: ShowcaseState) {
   return (

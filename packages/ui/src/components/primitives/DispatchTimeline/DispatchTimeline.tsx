@@ -1,14 +1,14 @@
 import type { CSSProperties } from 'react';
 
-import { cn } from '../../../utils/cn.js';
-import { CircleCheckIconGlyph } from '../icons/CircleCheckIconGlyph.js';
+import { cn } from '../../../utils/cn';
+import { CircleCheckIconGlyph } from '../icons/CircleCheckIconGlyph';
 
 import type {
   AlDispatchTimelineActiveGlyph,
   AlDispatchTimelineProps,
   AlDispatchTimelineStep,
   AlDispatchTimelineVariant,
-} from './DispatchTimeline.types.js';
+} from './DispatchTimeline.types';
 import './DispatchTimeline.css';
 
 const PARK_ME_CONNECTORS = [40, 34, 40, 34, 40];

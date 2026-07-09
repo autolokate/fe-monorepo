@@ -1,6 +1,6 @@
 import type { CreatePromoBody } from '@autolokate/api-client';
 
-import { toIsoDateTime, type CreatePromoFormValues } from '@/features/promos/create-promo-schema.js';
+import { toIsoDateTime, type CreatePromoFormValues } from '@/features/promos/create-promo-schema';
 
 export function toCreatePromoBody(values: CreatePromoFormValues): CreatePromoBody {
   return {

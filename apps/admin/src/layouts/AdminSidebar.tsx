@@ -3,8 +3,8 @@ import { ActivityIcon, CircleUserIcon, CreditCardIcon, HouseIcon, ReceiptTextIco
 import { AlText } from '@autolokate/ui';
 import { NavLink } from 'react-router-dom';
 
-import { adminNavRoutes } from '@/app/routes/admin-paths.js';
-import { useAdminAuth } from '@/providers/AdminAuthProvider.js';
+import { adminNavRoutes } from '@/app/routes/admin-paths';
+import { useAdminAuth } from '@/providers/AdminAuthProvider';
 
 const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/dashboard': HouseIcon,

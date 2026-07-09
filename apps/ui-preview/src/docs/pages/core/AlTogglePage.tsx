@@ -4,7 +4,7 @@ import { AlToggle } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function ToggleStatePreview({ state }: { state: ShowcaseState }) {
   const [checked, setChecked] = useState(state === 'active' || state === 'loading');

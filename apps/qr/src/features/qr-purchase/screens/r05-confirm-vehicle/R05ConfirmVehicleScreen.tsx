@@ -1,8 +1,8 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlVehicleRcCard } from '@autolokate/ui';
 
-import { AuthStepShell } from '@/components/auth-step-shell/index.js';
-import type { PurchaseConfirmVehicleScreenProps } from '../../types-vehicle.js';
+import { AuthStepShell } from '@/components/auth-step-shell/index';
+import type { PurchaseConfirmVehicleScreenProps } from '../../types-vehicle';
 
 import '../purchase-vehicle.css';
 

@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlScreenSpinnerProps } from './ScreenSpinner.types.js';
+import type { AlScreenSpinnerProps } from './ScreenSpinner.types';
 import './ScreenSpinner.css';
 
 const SIZE_MAP = {

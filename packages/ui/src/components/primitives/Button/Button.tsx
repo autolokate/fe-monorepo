@@ -1,7 +1,7 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlButtonProps } from './Button.types.js';
-import { normalizeButtonSize, normalizeButtonVariant } from './Button.utils.js';
+import type { AlButtonProps } from './Button.types';
+import { normalizeButtonSize, normalizeButtonVariant } from './Button.utils';
 import './Button.css';
 
 function Spinner() {

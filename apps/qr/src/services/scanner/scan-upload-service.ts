@@ -6,19 +6,19 @@ import {
   type ScanUploadTargetDto,
 } from '@autolokate/api-client';
 
-import { getQrBootstrapClient } from '@/platform/api/qr-api-client.js';
-import { env } from '@/config/env.js';
+import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
+import { env } from '@/config/env';
 
-import { parseDataUrl } from './data-url.js';
+import { parseDataUrl } from './data-url';
 import {
   delay,
   SCANNER_MAX_ATTEMPTS,
   SCANNER_RETRY_BASE_MS,
   withTimeout,
   SCANNER_REQUEST_TIMEOUT_MS,
-} from './scanner-network.js';
-import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors.js';
-import { scannerLogger } from './scanner-logger.js';
+} from './scanner-network';
+import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors';
+import { scannerLogger } from './scanner-logger';
 
 export type ScanUploadKind = 'park' | 'emergency';
 

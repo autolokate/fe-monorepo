@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { authJourneyPaths } from '@/journey/auth/auth-routing.js';
-import { useJourney } from '@/journey/JourneyContext.js';
-import { setQrAuthFailureHandler } from '@/platform/api/qr-api-client.js';
+import { authJourneyPaths } from '@/journey/auth/auth-routing';
+import { useJourney } from '@/journey/JourneyContext';
+import { setQrAuthFailureHandler } from '@/platform/api/qr-api-client';
 
 /**
  * Registers global auth-failure handling (refresh exhaustion → logout path).

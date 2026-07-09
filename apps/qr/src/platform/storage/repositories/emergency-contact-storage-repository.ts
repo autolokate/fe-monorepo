@@ -1,4 +1,4 @@
-import type { EmergencyContact } from '@/features/emergency/types.js';
+import type { EmergencyContact } from '@/features/emergency/types';
 
 const STORAGE_KEY = 'al-emergency-contacts-v1';
 

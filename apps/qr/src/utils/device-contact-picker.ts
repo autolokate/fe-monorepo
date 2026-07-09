@@ -1,4 +1,4 @@
-import { isIosDevice } from '../pwa/device-detection.js';
+import { isIosDevice } from '../pwa/device-detection';
 
 export type DevicePickedContact = {
   name: string;

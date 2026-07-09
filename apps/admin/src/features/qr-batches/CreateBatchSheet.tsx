@@ -8,9 +8,9 @@ import {
   CHANNEL_OPTIONS,
   createBatchSchema,
   type CreateBatchFormValues,
-} from '@/features/qr-batches/create-batch-schema.js';
-import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
-import { useAdminFormSubmit } from '@/platform/forms/use-admin-form-submit.js';
+} from '@/features/qr-batches/create-batch-schema';
+import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { useAdminFormSubmit } from '@/platform/forms/use-admin-form-submit';
 
 export type CreateBatchSheetProps = {
   open: boolean;

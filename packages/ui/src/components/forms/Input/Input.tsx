@@ -1,8 +1,8 @@
 import { useId } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlInputProps } from './Input.types.js';
+import type { AlInputProps } from './Input.types';
 import './Input.css';
 
 export function AlInput({

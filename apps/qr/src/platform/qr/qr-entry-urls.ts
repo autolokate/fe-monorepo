@@ -1,4 +1,4 @@
-import { env } from '@/config/env.js';
+import { env } from '@/config/env';
 
 /**
  * QR sticker entry base — this app's own deployed origin (qr-staging.<apex> in staging,

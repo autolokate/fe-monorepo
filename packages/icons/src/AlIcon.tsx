@@ -1,7 +1,7 @@
-import { iconComponentMap } from './generated/map.js';
-import type { AlIconProps } from './iconNames.js';
+import { iconComponentMap } from './generated/map';
+import type { AlIconProps } from './iconNames';
 
-export type { AlIconName, AlIconProps, AlIconSize } from './iconNames.js';
+export type { AlIconName, AlIconProps, AlIconSize } from './iconNames';
 
 export function AlIcon({ name, size = 24, className, 'aria-label': ariaLabel }: AlIconProps) {
   const IconComponent = iconComponentMap[name];

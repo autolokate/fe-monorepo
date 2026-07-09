@@ -1,4 +1,4 @@
-import { journeyPaths } from '../constants.js';
+import { journeyPaths } from '../constants';
 
 /** Canonical URL segments for the purchase journey. */
 export const PURCHASE_ROUTE_SEGMENTS = {

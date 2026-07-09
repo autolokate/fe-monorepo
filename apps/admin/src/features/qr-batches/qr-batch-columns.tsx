@@ -2,7 +2,7 @@ import type { BatchSummaryDto } from '@autolokate/api-client';
 import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
-import { batchStatusTone } from '@/platform/utils/batch-status.js';
+import { batchStatusTone } from '@/platform/utils/batch-status';
 
 function formatDateTime(value: string | null): string {
   if (!value) {

@@ -7,12 +7,12 @@ import {
   type ReactNode,
 } from 'react';
 
-import { defaultPwaScanSession, type PwaScanSession } from './pwa-scan-types.js';
+import { defaultPwaScanSession, type PwaScanSession } from './pwa-scan-types';
 import {
   loadPwaScanSession,
   savePwaScanSession,
   type SavePwaScanSessionResult,
-} from '../storage/pwa-scan-storage.js';
+} from '../storage/pwa-scan-storage';
 
 export type PwaSessionPatch =
   | Partial<PwaScanSession>

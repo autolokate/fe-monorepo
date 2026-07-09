@@ -5,7 +5,7 @@ import { AlBottomNav, AlStack, AlText } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 const navItems = [
   { id: 'home', label: 'Home', icon: <AlIcon name="house" size={20} aria-hidden /> },

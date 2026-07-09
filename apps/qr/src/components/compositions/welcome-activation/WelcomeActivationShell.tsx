@@ -6,7 +6,7 @@ import type { AlScreenBgVariant } from '@autolokate/ui';
 import {
   B2B_ERROR_MESSAGE,
   B2B_ERROR_TITLE,
-} from '@/features/b2b-shared/b2b-welcome-copy.js';
+} from '@/features/b2b-shared/b2b-welcome-copy';
 import '../../step-shell-chrome/step-shell-chrome.css';
 import './welcome-activation-shell.css';
 import './partner-activation-card.css';

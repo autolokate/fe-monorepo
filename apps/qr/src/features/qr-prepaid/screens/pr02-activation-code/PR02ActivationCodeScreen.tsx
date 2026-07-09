@@ -3,10 +3,10 @@ import { AlInput, AlText } from '@autolokate/ui';
 import {
   FormFieldStack,
   InlineStatusBanner,
-} from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import type { PrepaidScreenState } from '../../types.js';
-import { demoActivationCode } from '../../data/activation-data.js';
+} from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import type { PrepaidScreenState } from '../../types';
+import { demoActivationCode } from '../../data/activation-data';
 
 export type PR02ActivationCodeScreenProps = {
   state?: PrepaidScreenState;

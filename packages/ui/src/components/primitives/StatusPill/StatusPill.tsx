@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlStatusPillProps } from './StatusPill.types.js';
+import type { AlStatusPillProps } from './StatusPill.types';
 import './StatusPill.css';
 
 export function AlStatusPill({ label, variant, className, ...props }: AlStatusPillProps) {

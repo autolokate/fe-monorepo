@@ -1,4 +1,4 @@
-import type { OrderSummaryTotals } from '@/features/qr-purchase/types-checkout.js';
+import type { OrderSummaryTotals } from '@/features/qr-purchase/types-checkout';
 import type { OrderStatus } from '@autolokate/api-client';
 
 export type CheckoutEphemeral = {

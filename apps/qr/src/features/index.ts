@@ -1,2 +1,2 @@
-export type { FeatureDefinition, FeatureRegistry } from './registry.js';
-export { featureRegistry } from './registry.js';
+export type { FeatureDefinition, FeatureRegistry } from './registry';
+export { featureRegistry } from './registry';

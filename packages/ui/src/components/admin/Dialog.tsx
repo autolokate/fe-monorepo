@@ -1,8 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import type { ReactNode } from 'react';
 
-import { AlButton } from '../primitives/Button/index.js';
-import { AlHeading, AlStack, AlText } from '../primitives/index.js';
+import { AlButton } from '../primitives/Button/index';
+import { AlHeading, AlStack, AlText } from '../primitives/index';
 import './Dialog.css';
 
 export type AlSheetProps = {

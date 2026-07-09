@@ -1,9 +1,9 @@
 import { getLegalDocuments } from '@autolokate/api-client';
 
-import { getQrBootstrapClient } from '@/platform/api/qr-api-client.js';
-import { getLegalNoticeVersion, saveLegalNoticeVersion } from '@/storage/index.js';
+import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
+import { getLegalNoticeVersion, saveLegalNoticeVersion } from '@/storage/index';
 
-import { authLogger } from '../auth/auth-logger.js';
+import { authLogger } from '../auth/auth-logger';
 
 export type LoadLegalDocumentsResult =
   | { ok: true; noticeVersion: string | null; documents: Awaited<ReturnType<typeof getLegalDocuments>>['documents'] }

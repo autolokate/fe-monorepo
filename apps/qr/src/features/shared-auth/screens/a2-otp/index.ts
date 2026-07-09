@@ -1,1 +1,1 @@
-export { A2OtpScreen } from './A2OtpScreen.js';
+export { A2OtpScreen } from './A2OtpScreen';

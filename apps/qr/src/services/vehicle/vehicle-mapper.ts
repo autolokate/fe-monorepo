@@ -2,9 +2,9 @@ import type { RcRecordDto } from '@autolokate/api-client';
 import type { AlVehicleRcField } from '@autolokate/ui';
 import { formatVehicleRegistration } from '@autolokate/utils';
 
-import type { VehicleSession } from '@/journey/types.js';
+import type { VehicleSession } from '@/journey/types';
 
-import { normalizePlate } from './vehicle-plate.js';
+import { normalizePlate } from './vehicle-plate';
 
 function formatRcDate(value: string | null): string | null {
   if (!value?.trim()) {

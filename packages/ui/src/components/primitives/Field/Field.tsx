@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlFieldProps } from './Field.types.js';
+import type { AlFieldProps } from './Field.types';
 import './Field.css';
 
 export function AlField({ label, value, tone = 'default', className, ...props }: AlFieldProps) {

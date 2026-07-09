@@ -11,7 +11,7 @@ import {
   type StoredAttachResult,
   type StoredCheckout,
   type StoredVehicle,
-} from '@/storage/index.js';
+} from '@/storage/index';
 
 /** Read/write purchase journey blobs (vehicle, attach, checkout). */
 export const purchaseStorageRepository = {

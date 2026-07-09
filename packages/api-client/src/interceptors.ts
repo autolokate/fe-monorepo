@@ -1,5 +1,5 @@
-import type { ApiClient } from './client.js';
-import { refreshToken as refreshTokenApi } from './auth.js';
+import type { ApiClient } from './client';
+import { refreshToken as refreshTokenApi } from './auth';
 
 import type { TokenManager, TokenRefreshHandler } from '@autolokate/auth';
 

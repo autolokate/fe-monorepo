@@ -1,4 +1,4 @@
-import { useAdminAnyPermission } from '@/platform/rbac/useAdminPermission.js';
+import { useAdminAnyPermission } from '@/platform/rbac/useAdminPermission';
 
 /** POST /admin/v1/qr-batches and inventory-related batch mutations. */
 export function useCanWriteInventoryMutations(): boolean {

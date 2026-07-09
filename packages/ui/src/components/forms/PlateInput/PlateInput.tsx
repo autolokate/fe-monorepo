@@ -1,9 +1,9 @@
 import { useId } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlPlateInputProps } from './PlateInput.types.js';
-import { formatPlateInput } from './PlateInput.utils.js';
+import type { AlPlateInputProps } from './PlateInput.types';
+import { formatPlateInput } from './PlateInput.utils';
 import './PlateInput.css';
 
 export function AlPlateInput({

@@ -3,7 +3,7 @@ import { AlStepProgress } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function renderStepProgressState(state: ShowcaseState) {
   const step =

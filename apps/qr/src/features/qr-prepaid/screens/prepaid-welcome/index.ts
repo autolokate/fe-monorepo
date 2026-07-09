@@ -1,1 +1,1 @@
-export { PrepaidWelcomeScreen } from './PrepaidWelcomeScreen.js';
+export { PrepaidWelcomeScreen } from './PrepaidWelcomeScreen';

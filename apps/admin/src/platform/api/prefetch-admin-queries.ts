@@ -1,5 +1,5 @@
-import { dashboardQueryDefinitions } from '@/hooks/dashboard/dashboard-query-definitions.js';
-import { queryClient } from '@/providers/QueryProvider.js';
+import { dashboardQueryDefinitions } from '@/hooks/dashboard/dashboard-query-definitions';
+import { queryClient } from '@/providers/QueryProvider';
 
 /** Warm shared React Query caches after authentication. */
 export async function prefetchAdminQueries(): Promise<void> {

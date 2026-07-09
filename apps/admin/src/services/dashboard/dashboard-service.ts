@@ -1,9 +1,9 @@
 import type { AdminPromoDto, AuditEventDto, BatchSummaryDto } from '@autolokate/api-client';
 
-import { RECENT_AUDIT_PARAMS } from '@/hooks/audit/audit-query-keys.js';
-import { fetchAuditEvents } from '@/services/audit/audit-events-service.js';
-import { fetchQrInventory } from '@/services/inventory/inventory-service.js';
-import { fetchAdminPromos } from '@/services/promos/admin-promos-service.js';
+import { RECENT_AUDIT_PARAMS } from '@/hooks/audit/audit-query-keys';
+import { fetchAuditEvents } from '@/services/audit/audit-events-service';
+import { fetchQrInventory } from '@/services/inventory/inventory-service';
+import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
 
 export type DashboardSnapshot = {
   inventory: BatchSummaryDto[];

@@ -1,11 +1,11 @@
 import { AlOtpInput } from '@autolokate/ui';
 
-import { AuthStepShell } from '@/components/auth-step-shell/index.js';
-import { useAuthRouteProgress } from '@/journey/progress/index.js';
-import { AlSmsFallback } from '@/components/compositions/index.js';
-import { formatMobileLocal } from '@/shared/format-mobile.js';
-import { OTP_LENGTH } from '../../auth-flow/auth-flow.validation.js';
-import type { A2OtpScreenProps } from '../../types.js';
+import { AuthStepShell } from '@/components/auth-step-shell/index';
+import { useAuthRouteProgress } from '@/journey/progress/index';
+import { AlSmsFallback } from '@/components/compositions/index';
+import { formatMobileLocal } from '@/shared/format-mobile';
+import { OTP_LENGTH } from '../../auth-flow/auth-flow.validation';
+import type { A2OtpScreenProps } from '../../types';
 
 /** A2 · OTP — Figma 103:324 · 557:1647 */
 export function A2OtpScreen({

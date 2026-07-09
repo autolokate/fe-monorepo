@@ -5,8 +5,8 @@ import {
   ApiError,
 } from '@autolokate/api-client';
 
-import type { PurchasePaymentStatus } from '@/features/qr-purchase/types-checkout.js';
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
+import type { PurchasePaymentStatus } from '@/features/qr-purchase/types-checkout';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
 
 import {
   clearCheckoutCache,
@@ -22,8 +22,8 @@ import {
   setInflightPayment,
   setInflightPrepare,
   updateCheckoutState,
-} from './checkout-cache.js';
-import { mapCheckoutApiError, type CheckoutError } from './checkout-errors.js';
+} from './checkout-cache';
+import { mapCheckoutApiError, type CheckoutError } from './checkout-errors';
 import {
   buildCheckoutParamsKey,
   createIdempotencyKey,
@@ -31,16 +31,16 @@ import {
   mapOrderToSummary,
   mapPaymentOutcomeToStatus,
   type CheckoutParams,
-} from './checkout-mapper.js';
-import { checkoutLogger } from './checkout-logger.js';
-import { isPendingPaymentOutcome } from './payment-outcome.js';
-import { getRazorpayPublishableKey } from './payment-gateway.js';
-import { patchCheckout, clearCheckout } from '@/storage/index.js';
-import { openRazorpayCheckout } from './razorpay-checkout.js';
+} from './checkout-mapper';
+import { checkoutLogger } from './checkout-logger';
+import { isPendingPaymentOutcome } from './payment-outcome';
+import { getRazorpayPublishableKey } from './payment-gateway';
+import { patchCheckout, clearCheckout } from '@/storage/index';
+import { openRazorpayCheckout } from './razorpay-checkout';
 import {
   formatCreateOrderBodyForLog,
   resolveOrderQrCode,
-} from './resolve-order-qr-code.js';
+} from './resolve-order-qr-code';
 
 export type PrepareCheckoutResult =
   | { ok: true; revision: number }
@@ -446,7 +446,7 @@ export function getCheckoutSummary(): ReturnType<typeof peekCheckoutSummary> {
   return peekCheckoutSummary();
 }
 
-export type { CheckoutParams } from './checkout-mapper.js';
+export type { CheckoutParams } from './checkout-mapper';
 export {
   clearCheckoutCache,
   resetCheckoutPaymentAttempt,

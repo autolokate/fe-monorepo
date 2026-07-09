@@ -4,7 +4,7 @@ import { getTokenManager } from '@autolokate/auth';
 import {
   refreshDeviceRegistration,
   registerDevice,
-} from '@/services/device/device-service.js';
+} from '@/services/device/device-service';
 
 /**
  * Headless device registration — no UI.

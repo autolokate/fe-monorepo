@@ -1,4 +1,4 @@
-import type { PrepaidScreenId, PrepaidScreenInventoryEntry } from '../types.js';
+import type { PrepaidScreenId, PrepaidScreenInventoryEntry } from '../types';
 
 export const prepaidScreenInventory: Record<PrepaidScreenId, PrepaidScreenInventoryEntry> = {
   PrepaidEntry: {

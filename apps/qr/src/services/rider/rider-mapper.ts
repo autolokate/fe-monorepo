@@ -1,8 +1,8 @@
 import type { RiderDto } from '@autolokate/api-client';
 
-import type { EmergencyRider } from '@/features/emergency/types.js';
+import type { EmergencyRider } from '@/features/emergency/types';
 
-import { mapApiRelationToLabel, mapApiRelationToId } from '../emergency/emergency-contact-mapper.js';
+import { mapApiRelationToLabel, mapApiRelationToId } from '../emergency/emergency-contact-mapper';
 
 /** Map masked API rider into journey session shape. */
 export function mapRiderDto(dto: RiderDto): EmergencyRider {

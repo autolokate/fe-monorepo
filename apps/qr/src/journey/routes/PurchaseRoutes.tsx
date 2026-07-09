@@ -7,8 +7,8 @@ import { formatPlateInput } from '@autolokate/ui';
 import {
   isPlateEntryReady,
   normalizePlate,
-} from '../../services/vehicle/index.js';
-import { useVehicleLookup } from '../../hooks/vehicle/index.js';
+} from '../../services/vehicle/index';
+import { useVehicleLookup } from '../../hooks/vehicle/index';
 import {
   R03VehicleNumberScreen,
   R04FetchingVehicleScreen,
@@ -24,55 +24,55 @@ import {
   R10PaymentSuccessScreen,
   R10bPaymentFailedScreen,
   R10cPaymentUnconfirmedScreen,
-} from '../../features/qr-purchase/screens/index.js';
-import type { PurchaseVehiclePlateState } from '../../features/qr-purchase/types-vehicle.js';
+} from '../../features/qr-purchase/screens/index';
+import type { PurchaseVehiclePlateState } from '../../features/qr-purchase/types-vehicle';
 import type {
   PurchasePlanId,
   PurchaseRiderCount,
-} from '../../features/qr-purchase/types-checkout.js';
-import { DEFAULT_PURCHASE_PLAN_ID } from '../../features/qr-purchase/data/purchase-plans.js';
-import { buildOrderSummary } from '../../features/qr-purchase/data/purchase-pricing.js';
-import { normalizePromoCode } from '../../features/qr-purchase/data/purchase-promo.js';
-import { usePlans } from '../../hooks/plan/index.js';
-import { getRiderOptionsForPlan, isPlanRiderEligible } from '@/services/plan/plan-mapper.js';
-import { getPurchasePlansCatalog } from '@/services/plan/plan-service.js';
-import { useCheckout } from '../../hooks/checkout/index.js';
-import { usePaymentPolling } from '../../hooks/checkout/index.js';
-import { useQrAttach } from '../../hooks/qr/index.js';
-import { getStoredPurchaseQrResolve } from '@/services/qr/qr-service.js';
+} from '../../features/qr-purchase/types-checkout';
+import { DEFAULT_PURCHASE_PLAN_ID } from '../../features/qr-purchase/data/purchase-plans';
+import { buildOrderSummary } from '../../features/qr-purchase/data/purchase-pricing';
+import { normalizePromoCode } from '../../features/qr-purchase/data/purchase-promo';
+import { usePlans } from '../../hooks/plan/index';
+import { getRiderOptionsForPlan, isPlanRiderEligible } from '@/services/plan/plan-mapper';
+import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
+import { useCheckout } from '../../hooks/checkout/index';
+import { usePaymentPolling } from '../../hooks/checkout/index';
+import { useQrAttach } from '../../hooks/qr/index';
+import { getStoredPurchaseQrResolve } from '@/services/qr/qr-service';
 import {
   getCheckoutSummary,
   peekOrderId,
   resetCheckoutForRetry,
   type CheckoutParams,
-} from '../../services/checkout/index.js';
-import { syncVehiclesAfterPayment } from '@/services/vehicle/vehicle-sync-service.js';
-import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url.js';
-import { reportUserError } from '@/platform/feedback/index.js';
-import { getPurchasePostPaymentEmergencyPath } from '../activation-routing.js';
-import { persistPurchaseSelections, persistVehicleContext } from '@/services/purchase/purchase-context-service.js';
-import { resetPurchaseFlowState } from '@/services/purchase/reset-purchase-flow-state.js';
-import { isPageReload } from '@/platform/navigation/is-page-reload.js';
-import { checkoutLogger } from '@/services/checkout/checkout-logger.js';
-import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code.js';
-import { clearPromoPreviewCache, validatePromoCheckout } from '@/services/promo/index.js';
-import { promoLogger } from '@/services/promo/promo-logger.js';
-import { planLogger } from '@/services/plan/plan-logger.js';
-import { PurchaseAttachErrorSheet } from '../../features/qr-purchase/components/PurchaseAttachErrorSheet.js';
-import { isPurchaseAttachReady, resetAttachAttemptCache } from '@/services/qr/qr-attach-service.js';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
+} from '../../services/checkout/index';
+import { syncVehiclesAfterPayment } from '@/services/vehicle/vehicle-sync-service';
+import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
+import { reportUserError } from '@/platform/feedback/index';
+import { getPurchasePostPaymentEmergencyPath } from '../activation-routing';
+import { persistPurchaseSelections, persistVehicleContext } from '@/services/purchase/purchase-context-service';
+import { resetPurchaseFlowState } from '@/services/purchase/reset-purchase-flow-state';
+import { isPageReload } from '@/platform/navigation/is-page-reload';
+import { checkoutLogger } from '@/services/checkout/checkout-logger';
+import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code';
+import { clearPromoPreviewCache, validatePromoCheckout } from '@/services/promo/index';
+import { promoLogger } from '@/services/promo/promo-logger';
+import { planLogger } from '@/services/plan/plan-logger';
+import { PurchaseAttachErrorSheet } from '../../features/qr-purchase/components/PurchaseAttachErrorSheet';
+import { isPurchaseAttachReady, resetAttachAttemptCache } from '@/services/qr/qr-attach-service';
+import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
 import {
   PURCHASE_ROUTE_ID,
-} from '@/journey/state/purchase-journey-state-machine.js';
-import { PurchaseRouteGate } from '../guards/PurchaseRouteGate.js';
-import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect.js';
-import type { QrAttachError } from '@/services/qr/qr-attach-errors.js';
-import { qrAttachLogger } from '@/services/qr/qr-attach-logger.js';
-import { qrLogger } from '@/services/qr/qr-logger.js';
-import { vehicleLogger } from '@/services/vehicle/vehicle-logger.js';
-import { authJourneyPaths } from '../auth/auth-routing.js';
-import { useJourney } from '../JourneyContext.js';
-import { purchaseJourneyPaths, legacyPurchasePathRedirects, PURCHASE_ROUTE_SEGMENTS } from '../purchase/purchase-routing.js';
+} from '@/journey/state/purchase-journey-state-machine';
+import { PurchaseRouteGate } from '../guards/PurchaseRouteGate';
+import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
+import type { QrAttachError } from '@/services/qr/qr-attach-errors';
+import { qrAttachLogger } from '@/services/qr/qr-attach-logger';
+import { qrLogger } from '@/services/qr/qr-logger';
+import { vehicleLogger } from '@/services/vehicle/vehicle-logger';
+import { authJourneyPaths } from '../auth/auth-routing';
+import { useJourney } from '../JourneyContext';
+import { purchaseJourneyPaths, legacyPurchasePathRedirects, PURCHASE_ROUTE_SEGMENTS } from '../purchase/purchase-routing';
 
 function PurchaseSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();

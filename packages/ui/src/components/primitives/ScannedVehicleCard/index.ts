@@ -1,2 +1,2 @@
-export { AlScannedVehicleCard } from './ScannedVehicleCard.js';
-export type { AlScannedVehicleCardProps } from './ScannedVehicleCard.types.js';
+export { AlScannedVehicleCard } from './ScannedVehicleCard';
+export type { AlScannedVehicleCardProps } from './ScannedVehicleCard.types';

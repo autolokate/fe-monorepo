@@ -1,2 +1,2 @@
-export { useEmergencyContacts } from './useEmergencyContacts.js';
-export { useRiders } from './useRiders.js';
+export { useEmergencyContacts } from './useEmergencyContacts';
+export { useRiders } from './useRiders';

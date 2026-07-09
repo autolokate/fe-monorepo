@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './Heading.css';
 
 export type AlHeadingVariant = 'h1' | 'h2' | 'h3' | 'h4';

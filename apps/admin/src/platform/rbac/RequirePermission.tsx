@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 
 import { AlErrorState } from '@autolokate/ui';
 
-import type { AdminPermission } from '@/platform/rbac/permissions.js';
-import { useAdminPermission } from '@/platform/rbac/useAdminPermission.js';
+import type { AdminPermission } from '@/platform/rbac/permissions';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 export type RequirePermissionProps = {
   permission: AdminPermission;

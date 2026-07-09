@@ -1,1 +1,1 @@
-export { useUpdateProfile } from './useUpdateProfile.js';
+export { useUpdateProfile } from './useUpdateProfile';

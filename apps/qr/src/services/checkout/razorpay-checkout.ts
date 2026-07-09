@@ -1,4 +1,4 @@
-import { checkoutLogger } from './checkout-logger.js';
+import { checkoutLogger } from './checkout-logger';
 
 const RAZORPAY_CHECKOUT_URL = 'https://checkout.razorpay.com/v1/checkout.js';
 

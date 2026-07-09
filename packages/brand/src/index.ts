@@ -1,4 +1,4 @@
-export { AlBrandMark, AlLogo } from './logo/index.js';
+export { AlBrandMark, AlLogo } from './logo/index';
 export {
   BRAND_BLACK,
   BRAND_WHITE,
@@ -8,4 +8,4 @@ export {
   getBrandFill,
   type AlBrandLogoProps,
   type BrandVariant,
-} from './types.js';
+} from './types';

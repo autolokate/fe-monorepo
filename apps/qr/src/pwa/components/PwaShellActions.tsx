@@ -1,6 +1,6 @@
-import { ThemeToggleButton } from '@/platform/theme/ThemeToggleButton.js';
+import { ThemeToggleButton } from '@/platform/theme/ThemeToggleButton';
 
-import { PwaInstallIconButton } from './PwaInstallIconButton.js';
+import { PwaInstallIconButton } from './PwaInstallIconButton';
 
 import './PwaShellActions.css';
 

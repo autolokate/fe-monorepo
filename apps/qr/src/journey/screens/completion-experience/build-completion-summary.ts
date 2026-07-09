@@ -1,7 +1,7 @@
-import { getEmergencyPlanLimits, resolvePurchasePlanId } from '@/features/emergency/emergency-limits.js';
-import { getPurchasePlan } from '@/features/qr-purchase/data/purchase-plans.js';
-import { AUTH_COMPLETED } from '@/features/shared-auth/types.js';
-import type { JourneySession } from '../../types.js';
+import { getEmergencyPlanLimits, resolvePurchasePlanId } from '@/features/emergency/emergency-limits';
+import { getPurchasePlan } from '@/features/qr-purchase/data/purchase-plans';
+import { AUTH_COMPLETED } from '@/features/shared-auth/types';
+import type { JourneySession } from '../../types';
 
 export type CompletionSummary = {
   planName: string;

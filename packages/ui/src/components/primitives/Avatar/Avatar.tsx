@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlAvatarProps } from './Avatar.types.js';
+import type { AlAvatarProps } from './Avatar.types';
 import './Avatar.css';
 
 export function AlAvatar({

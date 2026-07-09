@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './Container.css';
 
 export type ContainerWidth = 'narrow' | 'wide' | 'full';

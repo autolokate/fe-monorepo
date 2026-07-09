@@ -5,11 +5,11 @@ import {
   AdminDetailField,
   AdminDetailGrid,
   AdminDetailSection,
-} from '@/platform/components/AdminDetailField.js';
+} from '@/platform/components/AdminDetailField';
 import {
   formatPromoDiscount,
   getPromoLifecycleStatus,
-} from '@/services/promos/promo-metrics.js';
+} from '@/services/promos/promo-metrics';
 
 export type PromoDetailSheetProps = {
   promo: AdminPromoDto | null;

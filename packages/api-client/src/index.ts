@@ -5,7 +5,7 @@ export {
   createAuthenticatedApiClient,
   type ApiClientConfig,
   type ApiRequestOptions,
-} from './client.js';
+} from './client';
 export {
   getOrSwitchSession,
   getProfile,
@@ -22,14 +22,14 @@ export {
   type SessionRoles,
   type TokenPair,
   type VerifyOtpBody,
-} from './auth.js';
-export { grantConsent, listConsents, type ConsentItem, type ConsentPurpose } from './consent.js';
+} from './auth';
+export { grantConsent, listConsents, type ConsentItem, type ConsentPurpose } from './consent';
 export {
   registerDeviceToken,
   type DevicePlatform,
   type DeviceRegistered,
   type RegisterDeviceBody,
-} from './devices.js';
+} from './devices';
 export {
   attachQr,
   resolveQr,
@@ -42,10 +42,10 @@ export {
   type QrPublicVehicle,
   type QrResolution,
   type QrStatus,
-} from './qr.js';
-export { getLegalDocuments, type LegalDocuments } from './legal.js';
-export { lookupVehicle, listVehicles, getVehicleById, type RcRecordDto, type VehicleDetailDto, type VehicleSummaryDto } from './vehicles.js';
-export { listPlans, type ApiPlanTier, type PlanOptionDto, type PlanPeriod, type RiderOptionDto } from './plans.js';
+} from './qr';
+export { getLegalDocuments, type LegalDocuments } from './legal';
+export { lookupVehicle, listVehicles, getVehicleById, type RcRecordDto, type VehicleDetailDto, type VehicleSummaryDto } from './vehicles';
+export { listPlans, type ApiPlanTier, type PlanOptionDto, type PlanPeriod, type RiderOptionDto } from './plans';
 export {
   createOrder,
   payOrder,
@@ -58,12 +58,12 @@ export {
   type PaymentOutcome,
   type PaymentOutcomeDto,
   type PaymentRefDto,
-} from './orders.js';
+} from './orders';
 export {
   validatePromo,
   type PromoPreviewDto,
   type ValidatePromoBody,
-} from './promos.js';
+} from './promos';
 export {
   previewActivation,
   redeemActivation,
@@ -74,7 +74,7 @@ export {
   type RedeemActivationBody,
   type RedeemActivationB2b2cBody,
   type RedeemActivationB2bBody,
-} from './activation.js';
+} from './activation';
 export {
   listEmergencyContacts,
   requestEmergencyContactOtp,
@@ -88,7 +88,7 @@ export {
   type RequestEmergencyContactOtpBody,
   type VerifyEmergencyContactOtpBody,
   type CreateEmergencyContactBody,
-} from './emergency-contacts.js';
+} from './emergency-contacts';
 export {
   listSubscriptionRiders,
   requestRiderOtp,
@@ -102,7 +102,7 @@ export {
   type RequestRiderOtpBody,
   type VerifyRiderOtpBody,
   type CreateRiderBody,
-} from './riders.js';
+} from './riders';
 export {
   requestParkOtp,
   verifyParkOtp,
@@ -138,11 +138,11 @@ export {
   type EmergencyDispatchPath,
   type AlertStatusDto,
   type CancelAlertResponseDto,
-} from './scanner.js';
-export { normalizeApiError, type NormalizedApiError, type NormalizedErrorCode } from './errors.js';
-export { wireTokenRefresh } from './interceptors.js';
-export { unwrapEnvelope, readEnvelopeMeta, type ApiEnvelope, type ApiErrorEnvelope } from './envelope.js';
-export { endpoints, type EndpointGroup } from './endpoints.js';
+} from './scanner';
+export { normalizeApiError, type NormalizedApiError, type NormalizedErrorCode } from './errors';
+export { wireTokenRefresh } from './interceptors';
+export { unwrapEnvelope, readEnvelopeMeta, type ApiEnvelope, type ApiErrorEnvelope } from './envelope';
+export { endpoints, type EndpointGroup } from './endpoints';
 export {
   createAdminPromo,
   createQrBatch,
@@ -183,5 +183,5 @@ export {
   type QueryAuditEventsParams,
   type ReplacedDto,
   type RetiredDto,
-} from './admin.js';
+} from './admin';
 export type { Plan, User, Vehicle } from '@autolokate/types';

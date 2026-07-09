@@ -1,4 +1,4 @@
-import type { PurchasePlanId, PurchaseRiderCount } from '../qr-purchase/types-checkout.js';
+import type { PurchasePlanId, PurchaseRiderCount } from '../qr-purchase/types-checkout';
 
 /** Figma AlPartnerCard + plan activation card content. */
 export type LandingEntitlement = {

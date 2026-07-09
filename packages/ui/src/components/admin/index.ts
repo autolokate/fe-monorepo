@@ -7,19 +7,19 @@ export {
   type AlPageHeaderActionProps,
   type AlPageHeaderProps,
   type AlSectionHeaderProps,
-} from './PageHeader.js';
+} from './PageHeader';
 export {
   AlEmptyState,
   AlErrorState,
   type AlEmptyStateProps,
   type AlErrorStateProps,
-} from './EmptyState.js';
+} from './EmptyState';
 export {
   AlMetricCard,
   AlStatCard,
   type AlMetricCardProps,
   type AlStatCardProps,
-} from './MetricCard.js';
+} from './MetricCard';
 export {
   AlFilterBar,
   AlSearchInput,
@@ -27,22 +27,22 @@ export {
   type AlFilterBarProps,
   type AlSearchInputProps,
   type AlToolbarProps,
-} from './SearchInput.js';
+} from './SearchInput';
 export {
   AlBadge,
   AlStatusBadge,
   type AlBadgeProps,
   type AlBadgeVariant,
   type AlStatusBadgeProps,
-} from './Badge.js';
-export { AlBreadcrumb, type AlBreadcrumbItem, type AlBreadcrumbProps } from './Breadcrumb.js';
-export { AlTabs, type AlTabItem, type AlTabsProps } from './Tabs.js';
+} from './Badge';
+export { AlBreadcrumb, type AlBreadcrumbItem, type AlBreadcrumbProps } from './Breadcrumb';
+export { AlTabs, type AlTabItem, type AlTabsProps } from './Tabs';
 export {
   AlProgress,
   AlSkeleton,
   type AlProgressProps,
   type AlSkeletonProps,
-} from './Skeleton.js';
+} from './Skeleton';
 export {
   AlDataTable,
   type AlDataTableProps,
@@ -50,17 +50,17 @@ export {
   type DataTableDensity,
   type RowSelectionState,
   type SortingState,
-} from './DataTable.js';
+} from './DataTable';
 export {
   AlConfirmationDialog,
   AlDeleteDialog,
   AlSheet,
   type AlConfirmationDialogProps,
   type AlSheetProps,
-} from './Dialog.js';
+} from './Dialog';
 export {
   AlPageContent,
   AlPageLayout,
   type AlPageContentProps,
   type AlPageLayoutProps,
-} from './PageLayout.js';
+} from './PageLayout';

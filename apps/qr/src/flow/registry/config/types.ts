@@ -1,4 +1,4 @@
-import type { GuardId, ProductAreaId, StepId } from '@/types/flow.js';
+import type { GuardId, ProductAreaId, StepId } from '@/types/flow';
 
 /** Config shape for a registered flow — registry is built from this at compile time. */
 export type FlowConfigEntry = {

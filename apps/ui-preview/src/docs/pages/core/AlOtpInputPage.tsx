@@ -4,7 +4,7 @@ import { AlHeading, AlOtpInput, AlStack, AlText } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 import './al-otp-input-page.css';
 

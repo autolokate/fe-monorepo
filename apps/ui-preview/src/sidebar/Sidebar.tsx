@@ -8,8 +8,8 @@ import {
   AlText,
 } from '@autolokate/ui';
 
-import { DOCS_VERSION, navigationGroups } from './navigation.config.js';
-import type { DocPageId } from './Sidebar.types.js';
+import { DOCS_VERSION, navigationGroups } from './navigation.config';
+import type { DocPageId } from './Sidebar.types';
 import './Sidebar.css';
 
 type SidebarProps = {

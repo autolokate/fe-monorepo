@@ -1,8 +1,8 @@
-import type { ActivationFlowId } from '@/journey/types.js';
-import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository.js';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
-import { peekSubscriptionId } from '@/services/activation/activation-service.js';
-import { tryResolveSubscriptionFromVehicles } from '@/services/vehicle/vehicle-sync-service.js';
+import type { ActivationFlowId } from '@/journey/types';
+import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository';
+import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
+import { peekSubscriptionId } from '@/services/activation/activation-service';
+import { tryResolveSubscriptionFromVehicles } from '@/services/vehicle/vehicle-sync-service';
 
 export type SubscriptionResolveError = {
   code: 'missing';

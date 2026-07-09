@@ -4,8 +4,8 @@ import { AlRelationGrid } from '@autolokate/ui';
 import {
   CONTACT_RELATIONSHIP_OPTIONS,
   type RelationshipOption,
-} from '@/features/emergency/data/relationships.js';
-import type { RelationshipId } from '@/features/emergency/types.js';
+} from '@/features/emergency/data/relationships';
+import type { RelationshipId } from '@/features/emergency/types';
 
 export type RelationshipSelectorProps = {
   value?: RelationshipId;

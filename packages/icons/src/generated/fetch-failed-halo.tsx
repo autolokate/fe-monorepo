@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma R04b halo — node 579:1667, 240×240 amber blur + circle-x. */
 export function FetchFailedHaloIcon({

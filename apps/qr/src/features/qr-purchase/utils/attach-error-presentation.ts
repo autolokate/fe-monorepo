@@ -1,4 +1,4 @@
-import type { QrAttachError } from '@/services/qr/qr-attach-errors.js';
+import type { QrAttachError } from '@/services/qr/qr-attach-errors';
 
 export type AttachErrorPresentation = {
   title: string;

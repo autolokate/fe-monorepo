@@ -4,10 +4,10 @@ import { setThemeMode, type ThemeMode } from '@autolokate/design-system';
 import { AlButton, AlHeading, AlText } from '@autolokate/ui';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
-import { AppContent } from './docs/AppContent.js';
-import type { DocPageId } from './docs/types.js';
-import { navigationGroups } from './sidebar/navigation.config.js';
-import { DocsSidebar } from './sidebar/Sidebar.js';
+import { AppContent } from './docs/AppContent';
+import type { DocPageId } from './docs/types';
+import { navigationGroups } from './sidebar/navigation.config';
+import { DocsSidebar } from './sidebar/Sidebar';
 
 const pageDescriptions: Record<DocPageId, string> = {
   overview: 'Figma-aligned Autolokate Consumer App design system',

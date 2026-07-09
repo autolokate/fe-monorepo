@@ -1,9 +1,9 @@
 import type { AlVehicleRcField } from '@autolokate/ui';
 
-import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout.js';
-import type { AuthLanguageId } from '@/features/shared-auth/types.js';
-import { normalizePlate } from '@/services/vehicle/index.js';
-import { getVehicle, patchVehicle, saveVehicle, type StoredVehicle } from '@/storage/index.js';
+import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout';
+import type { AuthLanguageId } from '@/features/shared-auth/types';
+import { normalizePlate } from '@/services/vehicle/index';
+import { getVehicle, patchVehicle, saveVehicle, type StoredVehicle } from '@/storage/index';
 
 export type PersistVehicleContextInput = {
   registration: string;

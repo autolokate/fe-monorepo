@@ -1,14 +1,14 @@
 import type { QrResolution } from '@autolokate/api-client';
 
-import { b2b2cJourneyPaths } from '@/journey/b2b2c/b2b2c-routing.js';
-import { prepaidJourneyPaths } from '@/journey/prepaid/prepaid-routing.js';
-import type { ActivationFlowId } from '@/journey/types.js';
+import { b2b2cJourneyPaths } from '@/journey/b2b2c/b2b2c-routing';
+import { prepaidJourneyPaths } from '@/journey/prepaid/prepaid-routing';
+import type { ActivationFlowId } from '@/journey/types';
 import {
   type PartnerActivationKind,
   resolvePartnerKindFromJourney,
-} from '@/platform/activation/activation-channel.js';
-import { isPostActivationQrResolution } from '@/journey/state/purchase-journey-state-machine.js';
-import { isActivatedQrResolution } from '@/services/qr/qr-mapper.js';
+} from '@/platform/activation/activation-channel';
+import { isPostActivationQrResolution } from '@/journey/state/purchase-journey-state-machine';
+import { isActivatedQrResolution } from '@/services/qr/qr-mapper';
 
 export const PARTNER_JOURNEY_TARGET = {
   PURCHASE: 'purchase',

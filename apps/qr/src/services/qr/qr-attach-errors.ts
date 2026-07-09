@@ -1,6 +1,6 @@
 import { ApiError, normalizeApiError } from '@autolokate/api-client';
 
-import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error.js';
+import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error';
 
 export type QrAttachErrorCode =
   | 'already_attached'

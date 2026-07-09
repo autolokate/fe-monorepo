@@ -1,11 +1,11 @@
-import { pwaScanPaths } from '../../features/post-activation-pwa/constants/pwa-scan-paths.js';
+import { pwaScanPaths } from '../../features/post-activation-pwa/constants/pwa-scan-paths';
 import {
   selectActivationFlow,
   type SelectActivationFlowDeps,
-} from '../../journey/navigation/select-activation-flow.js';
+} from '../../journey/navigation/select-activation-flow';
 
-import { isActivationFlowId } from './flow-entry-registry.js';
-import type { FlowDispatchSource, PlatformFlowId } from './types.js';
+import { isActivationFlowId } from './flow-entry-registry';
+import type { FlowDispatchSource, PlatformFlowId } from './types';
 
 export type FlowDispatchRequest = {
   flowId: PlatformFlowId;

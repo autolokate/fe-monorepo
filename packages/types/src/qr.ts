@@ -1,4 +1,4 @@
-import type { PlanTier } from './plan.js';
+import type { PlanTier } from './plan';
 
 export type QrSession = {
   plate?: string;

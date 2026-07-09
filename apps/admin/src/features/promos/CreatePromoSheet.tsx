@@ -8,9 +8,9 @@ import {
   createPromoSchema,
   defaultPromoValidity,
   type CreatePromoFormValues,
-} from '@/features/promos/create-promo-schema.js';
-import { usePromoMutations } from '@/hooks/promos/usePromoMutations.js';
-import { toCreatePromoBody } from '@/features/promos/promo-form-mapper.js';
+} from '@/features/promos/create-promo-schema';
+import { usePromoMutations } from '@/hooks/promos/usePromoMutations';
+import { toCreatePromoBody } from '@/features/promos/promo-form-mapper';
 
 import './promos.css';
 

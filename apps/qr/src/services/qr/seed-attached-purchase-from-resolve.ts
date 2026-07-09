@@ -1,12 +1,12 @@
-import type { StoredQrResolve } from '@/storage/index.js';
+import type { StoredQrResolve } from '@/storage/index';
 import type { QrResolution } from '@autolokate/api-client';
 
-import type { JourneySession } from '@/journey/types.js';
-import { DEFAULT_PURCHASE_PLAN_ID } from '@/features/qr-purchase/data/purchase-plans.js';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository.js';
-import { normalizePlate } from '@/services/vehicle/index.js';
+import type { JourneySession } from '@/journey/types';
+import { DEFAULT_PURCHASE_PLAN_ID } from '@/features/qr-purchase/data/purchase-plans';
+import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
+import { normalizePlate } from '@/services/vehicle/index';
 
-import { mapQrPublicVehicleToFields } from './map-qr-public-vehicle-fields.js';
+import { mapQrPublicVehicleToFields } from './map-qr-public-vehicle-fields';
 
 function toQrResolution(stored: StoredQrResolve): QrResolution {
   return {

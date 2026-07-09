@@ -1,6 +1,6 @@
-import { journeyPaths } from '../constants.js';
+import { journeyPaths } from '../constants';
 
-import type { RouteProgressConfig } from './route-progress.types.js';
+import type { RouteProgressConfig } from './route-progress.types';
 
 /** Shared Auth sub-flow — Mobile (1), OTP (2), Name (3). Figma: 3 segment bars only. */
 export const SHARED_AUTH_PROGRESS_TOTAL = 3;

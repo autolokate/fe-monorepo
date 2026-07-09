@@ -1,4 +1,4 @@
-import type { PwaGeoPoint } from '../context/pwa-scan-types.js';
+import type { PwaGeoPoint } from '../context/pwa-scan-types';
 
 type BigDataCloudReverseGeocode = {
   locality?: string;

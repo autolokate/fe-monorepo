@@ -6,7 +6,7 @@ import {
   type QrJourneyEntryDeps,
   type QrJourneyEntryPoint,
   type QrJourneyEntryResult,
-} from '@/services/qr/qr-journey-entry.js';
+} from '@/services/qr/qr-journey-entry';
 
 export function useQrJourneyEntry() {
   const [isPending, setIsPending] = useState(false);

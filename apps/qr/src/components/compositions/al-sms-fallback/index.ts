@@ -1,2 +1,2 @@
-export { AlSmsFallback } from './AlSmsFallback.js';
-export type { AlSmsFallbackProps } from './AlSmsFallback.js';
+export { AlSmsFallback } from './AlSmsFallback';
+export type { AlSmsFallbackProps } from './AlSmsFallback';

@@ -7,20 +7,20 @@ import {
   verifyEmergencyContactOtp as verifyEmergencyContactOtpApi,
 } from '@autolokate/api-client';
 
-import type { EmergencyContact, RelationshipId } from '@/features/emergency/types.js';
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
-import { emergencyContactStorageRepository } from '@/platform/storage/repositories/emergency-contact-storage-repository.js';
+import type { EmergencyContact, RelationshipId } from '@/features/emergency/types';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
+import { emergencyContactStorageRepository } from '@/platform/storage/repositories/emergency-contact-storage-repository';
 
 import {
   isEmergencyTransientError,
   mapEmergencyApiError,
   type EmergencyApiError,
-} from './emergency-api-errors.js';
+} from './emergency-api-errors';
 import {
   mapApiRelationToLabel,
   mapEmergencyContactDtos,
-} from './emergency-contact-mapper.js';
-import { emergencyContactLogger } from './emergency-contact-logger.js';
+} from './emergency-contact-mapper';
+import { emergencyContactLogger } from './emergency-contact-logger';
 
 const MAX_ATTEMPTS = 3;
 const RETRY_BASE_MS = 400;

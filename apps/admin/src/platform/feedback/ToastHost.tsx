@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { registerToastListener, type ToastPayload } from '@/platform/feedback/toast.js';
+import { registerToastListener, type ToastPayload } from '@/platform/feedback/toast';
 
 import './toast.css';
 

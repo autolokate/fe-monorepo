@@ -1,2 +1,2 @@
-export { InlineConsentBlock } from './InlineConsentBlock.js';
-export type { InlineConsentBlockProps } from './InlineConsentBlock.js';
+export { InlineConsentBlock } from './InlineConsentBlock';
+export type { InlineConsentBlockProps } from './InlineConsentBlock';

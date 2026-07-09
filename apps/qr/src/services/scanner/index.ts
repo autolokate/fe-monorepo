@@ -9,7 +9,7 @@ export {
   type ParkVehicleLookupResult,
   type ParkSubmitResult,
   type ParkSubmitInput,
-} from './park-service.js';
+} from './park-service';
 export {
   submitScannerEmergency,
   cancelScannerEmergency,
@@ -17,14 +17,14 @@ export {
   type EmergencySubmitResult,
   type EmergencySubmitInput,
   type EmergencyCancelResult,
-} from './scanner-emergency-service.js';
+} from './scanner-emergency-service';
 export {
   subscribeParkStatusPoll,
   subscribeEmergencyAlertPoll,
   stopParkStatusPoll,
   stopEmergencyAlertPoll,
   stopAllScannerPolls,
-} from './scanner-poll-manager.js';
+} from './scanner-poll-manager';
 export {
   uploadScanPhoto,
   uploadScanPhotoForSlot,
@@ -32,7 +32,7 @@ export {
   uploadEmergencyScenePhotosBestEffort,
   type ScanUploadKind,
   type ScanUploadResult,
-} from './scan-upload-service.js';
-export { scannerJourneyStateMachine } from './scanner-journey-state-machine.js';
-export { mapScannerApiError, isScannerTransientError, type ScannerApiError } from './scanner-api-errors.js';
-export { scannerLogger } from './scanner-logger.js';
+} from './scan-upload-service';
+export { scannerJourneyStateMachine } from './scanner-journey-state-machine';
+export { mapScannerApiError, isScannerTransientError, type ScannerApiError } from './scanner-api-errors';
+export { scannerLogger } from './scanner-logger';

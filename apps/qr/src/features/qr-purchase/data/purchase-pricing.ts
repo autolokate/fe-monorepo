@@ -4,11 +4,11 @@ import type {
   OrderSummaryTotals,
   PurchasePlanId,
   PurchaseRiderCount,
-} from '../types-checkout.js';
+} from '../types-checkout';
 
-import { getPurchasePlan } from './purchase-plans.js';
-import { buildCheckoutParamsKey } from '@/services/checkout/checkout-mapper.js';
-import { peekCheckoutSummary, readCheckoutState } from '@/services/checkout/checkout-cache.js';
+import { getPurchasePlan } from './purchase-plans';
+import { buildCheckoutParamsKey } from '@/services/checkout/checkout-mapper';
+import { peekCheckoutSummary, readCheckoutState } from '@/services/checkout/checkout-cache';
 
 export function formatInr(amount: number, suffix = ''): string {
   const formatted = amount.toLocaleString('en-IN');

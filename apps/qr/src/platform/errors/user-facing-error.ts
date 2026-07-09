@@ -1,6 +1,6 @@
 import { ApiError, normalizeApiError } from '@autolokate/api-client';
 
-import { isTechnicalErrorCode, messageForApiCode } from './api-code-messages.js';
+import { isTechnicalErrorCode, messageForApiCode } from './api-code-messages';
 
 type DomainError = {
   code?: string;

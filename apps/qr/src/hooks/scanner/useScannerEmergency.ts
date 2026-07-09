@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { pwaScanPaths } from '@/features/post-activation-pwa/constants/pwa-scan-paths.js';
-import type { PwaSosPhotoIds } from '@/features/post-activation-pwa/context/pwa-scan-types.js';
-import { usePwaScan } from '@/features/post-activation-pwa/context/PwaScanContext.js';
-import { reportUserError } from '@/platform/feedback/report-user-error.js';
-import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository.js';
+import { pwaScanPaths } from '@/features/post-activation-pwa/constants/pwa-scan-paths';
+import type { PwaSosPhotoIds } from '@/features/post-activation-pwa/context/pwa-scan-types';
+import { usePwaScan } from '@/features/post-activation-pwa/context/PwaScanContext';
+import { reportUserError } from '@/platform/feedback/report-user-error';
+import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
 import {
   cancelScannerEmergency,
   scannerJourneyStateMachine,
@@ -13,7 +13,7 @@ import {
   stopEmergencyAlertPoll,
   submitScannerEmergency,
   subscribeEmergencyAlertPoll,
-} from '@/services/scanner/index.js';
+} from '@/services/scanner/index';
 
 function collectScenePhotoIds(photoIds: PwaSosPhotoIds): string[] {
   return Object.values(photoIds).filter((value): value is string => Boolean(value));

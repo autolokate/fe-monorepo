@@ -1,1 +1,1 @@
-export { R04bFetchFailedScreen } from './R04bFetchFailedScreen.js';
+export { R04bFetchFailedScreen } from './R04bFetchFailedScreen';

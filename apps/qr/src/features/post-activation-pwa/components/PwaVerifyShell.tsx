@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { AlHeading, AlText } from '@autolokate/ui';
 
-import { PwaScanShell } from './PwaScanShell.js';
+import { PwaScanShell } from './PwaScanShell';
 
 import './pwa-verify-shell.css';
 

@@ -1,2 +1,2 @@
-export { AlOtpInput } from './OtpInput.js';
-export type { AlOtpInputProps, AlOtpInputState } from './OtpInput.types.js';
+export { AlOtpInput } from './OtpInput';
+export type { AlOtpInputProps, AlOtpInputState } from './OtpInput.types';

@@ -8,10 +8,10 @@ import {
 } from '@autolokate/ui';
 import { useState } from 'react';
 
-import { ClawbackResultPanel, CreateClawbackSheet } from '@/features/finance/CreateClawbackSheet.js';
-import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations.js';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
-import { useAdminAnyPermission, useAdminPermission } from '@/platform/rbac/useAdminPermission.js';
+import { ClawbackResultPanel, CreateClawbackSheet } from '@/features/finance/CreateClawbackSheet';
+import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
+import { useAdminAnyPermission, useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 function SettlementResultPanel({ result }: { result: SettlementBatchResultDto }) {
   return (

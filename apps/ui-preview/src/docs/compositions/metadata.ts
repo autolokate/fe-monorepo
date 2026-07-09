@@ -1,4 +1,4 @@
-import type { CompositionPageId } from '../types.js';
+import type { CompositionPageId } from '../types';
 
 export type SpacingRhythmEntry = {
   token: string;

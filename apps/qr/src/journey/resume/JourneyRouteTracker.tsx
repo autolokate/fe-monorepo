@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { useJourney } from '../JourneyContext.js';
-import { shouldTrackJourneyRoute } from './journey-resume-path.js';
+import { useJourney } from '../JourneyContext';
+import { shouldTrackJourneyRoute } from './journey-resume-path';
 
 /** Persists the last in-journey pathname for authenticated resume. */
 export function JourneyRouteTracker() {

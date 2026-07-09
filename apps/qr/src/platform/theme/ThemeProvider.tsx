@@ -14,12 +14,12 @@ import {
   resolveEffectiveTheme,
   writeThemePreference,
   type ThemePreference,
-} from './theme-preference.js';
+} from './theme-preference';
 import {
   msUntilNextThemeChange,
   resolveScheduledTheme,
   type ThemeMode,
-} from './resolve-scheduled-theme.js';
+} from './resolve-scheduled-theme';
 
 export type ThemeContextValue = {
   themeMode: ThemeMode;

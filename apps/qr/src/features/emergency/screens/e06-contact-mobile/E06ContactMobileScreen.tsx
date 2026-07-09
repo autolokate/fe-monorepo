@@ -1,9 +1,9 @@
 import { AlTextField } from '@autolokate/ui';
 
-import { FormFieldStack } from '@/components/compositions/index.js';
-import { FlowStepShell } from '@/components/flow-step-shell/index.js';
-import { MOBILE_INPUT_DISPLAY_MAX } from '@/features/shared-auth/auth-flow/auth-flow.validation.js';
-import type { EmergencyMobileState, EmergencyScreenNavigationProps } from '../../types.js';
+import { FormFieldStack } from '@/components/compositions/index';
+import { FlowStepShell } from '@/components/flow-step-shell/index';
+import { MOBILE_INPUT_DISPLAY_MAX } from '@/features/shared-auth/auth-flow/auth-flow.validation';
+import type { EmergencyMobileState, EmergencyScreenNavigationProps } from '../../types';
 
 import '../../../../components/auth-step-shell/auth-step-shell.css';
 

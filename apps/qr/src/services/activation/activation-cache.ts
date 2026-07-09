@@ -1,6 +1,6 @@
-import type { LandingEntitlement } from '@/features/b2b-shared/types-landing.js';
+import type { LandingEntitlement } from '@/features/b2b-shared/types-landing';
 
-import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository.js';
+import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository';
 
 export type ActivationEphemeral = {
   activationCode: string | null;

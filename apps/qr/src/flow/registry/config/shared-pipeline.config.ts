@@ -1,4 +1,4 @@
-import type { SharedStepId, StepDefinition } from '@/types/flow.js';
+import type { SharedStepId, StepDefinition } from '@/types/flow';
 
 /** Active shared auth pipeline — QR entry assumed before onboarding. */
 export const SHARED_PIPELINE_STEP_IDS = [

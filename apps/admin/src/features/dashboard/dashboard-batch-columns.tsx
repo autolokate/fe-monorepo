@@ -1,7 +1,7 @@
 import type { BatchSummaryDto } from '@autolokate/api-client';
 import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
 
-import { batchStatusTone } from '@/platform/utils/batch-status.js';
+import { batchStatusTone } from '@/platform/utils/batch-status';
 
 function formatShortDate(value: string | null): string {
   if (!value) {

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { lookupParkReporterVehicle } from '@/services/scanner/index.js';
+import { lookupParkReporterVehicle } from '@/services/scanner/index';
 
 export function useParkVehicleLookup() {
   const [isPending, setIsPending] = useState(false);

@@ -3,8 +3,8 @@ import { AlIcon } from '@autolokate/icons';
 import { AlGrid, AlHeading, AlStack, AlText } from '@autolokate/ui';
 import { motion, useReducedMotion } from 'framer-motion';
 
-import { CopyButton } from '../components/CopyButton.js';
-import { figmaIcons, iconSizes, isIconSize, type IconSize } from '../data.js';
+import { CopyButton } from '../components/CopyButton';
+import { figmaIcons, iconSizes, isIconSize, type IconSize } from '../data';
 
 export function IconsPage() {
   const prefersReducedMotion = useReducedMotion();

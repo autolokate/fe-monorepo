@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import { AlIcon } from '@autolokate/icons';
 import { AlIconButton, AlScreenBg, type AlScreenBgVariant } from '@autolokate/ui';
 
-import { PwaCtaReveal } from './PwaMotion.js';
-import { PwaHeaderBrand } from './PwaHeaderBrand.js';
+import { PwaCtaReveal } from './PwaMotion';
+import { PwaHeaderBrand } from './PwaHeaderBrand';
 
 import './pwa-scan-shell.css';
 

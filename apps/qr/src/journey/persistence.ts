@@ -1,7 +1,7 @@
-import { AUTH_COMPLETED } from '../features/shared-auth/types.js';
+import { AUTH_COMPLETED } from '../features/shared-auth/types';
 
-import { JOURNEY_STORAGE_KEY, SELECTED_FLOW_KEY } from './constants.js';
-import type { ActivationFlowId, AuthStatus, JourneySession, PersistedJourneyState } from './types.js';
+import { JOURNEY_STORAGE_KEY, SELECTED_FLOW_KEY } from './constants';
+import type { ActivationFlowId, AuthStatus, JourneySession, PersistedJourneyState } from './types';
 
 const defaultState: PersistedJourneyState = {
   selectedFlow: null,

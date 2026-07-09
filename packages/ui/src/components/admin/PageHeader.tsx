@@ -1,4 +1,4 @@
-import { AlButton, AlHeading, AlStack, AlText } from '../primitives/index.js';
+import { AlButton, AlHeading, AlStack, AlText } from '../primitives/index';
 import type { ReactNode } from 'react';
 import './PageHeader.css';
 

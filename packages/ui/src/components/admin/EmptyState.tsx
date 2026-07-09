@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
-import { AlButton, AlHeading, AlStack, AlText } from '../primitives/index.js';
+import { cn } from '../../utils/cn';
+import { AlButton, AlHeading, AlStack, AlText } from '../primitives/index';
 import './EmptyState.css';
 
 export type AlEmptyStateProps = {

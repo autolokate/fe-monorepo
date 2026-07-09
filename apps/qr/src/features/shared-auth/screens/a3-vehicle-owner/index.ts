@@ -1,1 +1,1 @@
-export { A3VehicleOwnerScreen } from './A3VehicleOwnerScreen.js';
+export { A3VehicleOwnerScreen } from './A3VehicleOwnerScreen';

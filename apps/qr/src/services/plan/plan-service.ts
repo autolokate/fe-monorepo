@@ -1,7 +1,7 @@
 import { listPlans as listPlansApi } from '@autolokate/api-client';
 
-import type { PurchasePlanDefinition, PurchasePlanId } from '@/features/qr-purchase/types-checkout.js';
-import { getQrApiClient } from '@/platform/api/qr-api-client.js';
+import type { PurchasePlanDefinition, PurchasePlanId } from '@/features/qr-purchase/types-checkout';
+import { getQrApiClient } from '@/platform/api/qr-api-client';
 
 import {
   clearInflightPlansLoad,
@@ -11,14 +11,14 @@ import {
   purchasePlansCatalog,
   rememberPlansCatalog,
   setInflightPlansLoad,
-} from './plan-cache.js';
-import { mapPlanApiError, type PlanLoadError } from './plan-errors.js';
+} from './plan-cache';
+import { mapPlanApiError, type PlanLoadError } from './plan-errors';
 import {
   mapPlanOptionToDefinition,
   PURCHASE_PLAN_ORDER,
   sortPlansByCarouselOrder,
-} from './plan-mapper.js';
-import { planLogger } from './plan-logger.js';
+} from './plan-mapper';
+import { planLogger } from './plan-logger';
 
 export type LoadPlansResult =
   | { ok: true; plans: PurchasePlanDefinition[] }

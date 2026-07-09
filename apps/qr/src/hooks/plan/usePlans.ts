@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { ensurePlansLoaded, getPlansRevision } from '@/services/plan/plan-service.js';
+import { ensurePlansLoaded, getPlansRevision } from '@/services/plan/plan-service';
 
 export function usePlans() {
   const [revision, setRevision] = useState(() => getPlansRevision());

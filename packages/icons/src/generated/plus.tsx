@@ -1,5 +1,5 @@
-import { IconSvg } from '../IconSvg.js';
-import type { IconProps } from '../types.js';
+import { IconSvg } from '../IconSvg';
+import type { IconProps } from '../types';
 
 export function PlusIcon(props: IconProps) {
   return (

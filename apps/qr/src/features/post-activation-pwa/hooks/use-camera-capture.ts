@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 
-import { compressCaptureImage } from '../utils/compress-capture-image.js';
-import { logPhotoDiagnostic } from '../utils/pwa-photo-diagnostics.js';
+import { compressCaptureImage } from '../utils/compress-capture-image';
+import { logPhotoDiagnostic } from '../utils/pwa-photo-diagnostics';
 
 export type CameraCaptureResult = {
   dataUrl: string;

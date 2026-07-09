@@ -13,12 +13,12 @@ import { getTokenManager } from '@autolokate/auth';
 import {
   getQrApiClient,
   getQrBootstrapClient,
-} from '@/platform/api/qr-api-client.js';
+} from '@/platform/api/qr-api-client';
 
-import { authLogger } from './auth-logger.js';
-import { grantSignupConsents } from './consent-sync.js';
-import { registerDevice } from '../device/device-service.js';
-import { mapProfileToJourney, type ProfileJourneyPatch } from '../profile/profile-mapper.js';
+import { authLogger } from './auth-logger';
+import { grantSignupConsents } from './consent-sync';
+import { registerDevice } from '../device/device-service';
+import { mapProfileToJourney, type ProfileJourneyPatch } from '../profile/profile-mapper';
 
 export type SendOtpInput = {
   mobileDigits: string;

@@ -1,7 +1,7 @@
 import type { EmergencyContactDto } from '@autolokate/api-client';
 
-import { CONTACT_RELATIONSHIP_OPTIONS } from '@/features/emergency/data/relationships.js';
-import type { EmergencyContact, RelationshipId } from '@/features/emergency/types.js';
+import { CONTACT_RELATIONSHIP_OPTIONS } from '@/features/emergency/data/relationships';
+import type { EmergencyContact, RelationshipId } from '@/features/emergency/types';
 
 export function mapApiRelationToId(relation: string | null): RelationshipId {
   if (!relation?.trim()) {

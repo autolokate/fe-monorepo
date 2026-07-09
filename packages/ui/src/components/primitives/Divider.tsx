@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './Divider.css';
 
 export type DividerOrientation = 'horizontal' | 'vertical';

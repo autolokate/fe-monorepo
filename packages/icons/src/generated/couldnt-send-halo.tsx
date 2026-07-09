@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma 875:2219 — couldn't send alert halo + triangle. */
 export function CouldntSendHaloIcon({

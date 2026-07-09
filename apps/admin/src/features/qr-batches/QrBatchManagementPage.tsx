@@ -9,26 +9,26 @@ import {
 } from '@autolokate/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { BatchManagementDetailSheet } from '@/features/qr-batches/BatchManagementDetailSheet.js';
-import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet.js';
+import { BatchManagementDetailSheet } from '@/features/qr-batches/BatchManagementDetailSheet';
+import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet';
 import {
   FulfilPartnerReorderSheet,
   ReorderFulfilResultPanel,
-} from '@/features/qr-batches/FulfilPartnerReorderSheet.js';
-import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters.js';
-import { useQrBatchColumns } from '@/features/qr-batches/qr-batch-columns.js';
-import { useQrBatches } from '@/hooks/qr-batches/useQrBatches.js';
-import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
-import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
-import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
-import { AdminMoreActions } from '@/platform/components/AdminMoreActions.js';
-import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
-import { buildPageSummary } from '@/platform/components/build-page-summary.js';
+} from '@/features/qr-batches/FulfilPartnerReorderSheet';
+import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters';
+import { useQrBatchColumns } from '@/features/qr-batches/qr-batch-columns';
+import { useQrBatches } from '@/hooks/qr-batches/useQrBatches';
+import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
+import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminMoreActions } from '@/platform/components/AdminMoreActions';
+import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { buildPageSummary } from '@/platform/components/build-page-summary';
 import {
   useCanRunQrLifecycleMutations,
   useCanWriteInventoryMutations,
-} from '@/platform/rbac/module-write-permissions.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
+} from '@/platform/rbac/module-write-permissions';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './qr-batches.css';
 

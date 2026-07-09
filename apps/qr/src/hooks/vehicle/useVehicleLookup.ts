@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { lookupVehicleByPlate } from '@/services/vehicle/vehicle-service.js';
+import { lookupVehicleByPlate } from '@/services/vehicle/vehicle-service';
 
 export function useVehicleLookup() {
   const [isPending, setIsPending] = useState(false);

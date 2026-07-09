@@ -1,7 +1,7 @@
 import { AlButton, AlPermissionSheet } from '@autolokate/ui';
 
-import { isIosChrome, isIosEdge } from '../device-detection.js';
-import { readPwaInstallDismissedRecently, writePwaInstallDismissedAt } from '../install-dismiss-storage.js';
+import { isIosChrome, isIosEdge } from '../device-detection';
+import { readPwaInstallDismissedRecently, writePwaInstallDismissedAt } from '../install-dismiss-storage';
 
 import './PwaIosInstallSheet.css';
 

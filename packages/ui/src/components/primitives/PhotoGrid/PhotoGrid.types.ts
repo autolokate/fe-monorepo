@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import type { AlScenePhotoCardProps } from '../ScenePhotoCard/ScenePhotoCard.types.js';
+import type { AlScenePhotoCardProps } from '../ScenePhotoCard/ScenePhotoCard.types';
 
 export type AlPhotoGridLayout = 'dual' | 'quad' | 'stacked' | 'review' | 'review-quad';
 

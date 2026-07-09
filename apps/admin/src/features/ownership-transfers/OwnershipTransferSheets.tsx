@@ -9,9 +9,9 @@ import {
   initiateTransferSchema,
   type ApproveTransferFormValues,
   type InitiateTransferFormValues,
-} from '@/features/ownership-transfers/ownership-transfer-schemas.js';
-import { useOwnershipTransferMutations } from '@/hooks/ownership-transfers/useOwnershipTransferMutations.js';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
+} from '@/features/ownership-transfers/ownership-transfer-schemas';
+import { useOwnershipTransferMutations } from '@/hooks/ownership-transfers/useOwnershipTransferMutations';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
 
 export type InitiateTransferSheetProps = {
   open: boolean;

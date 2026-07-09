@@ -4,8 +4,8 @@ import {
   B2B_WELCOME_LOADING_CTA,
   B2B_WELCOME_SUCCESS_CTA,
   B2B_WELCOME_TITLE,
-} from './b2b-welcome-copy.js';
-import type { WelcomeViewState } from './types-landing.js';
+} from './b2b-welcome-copy';
+import type { WelcomeViewState } from './types-landing';
 
 export type WelcomeShellPresentation = {
   title: string;

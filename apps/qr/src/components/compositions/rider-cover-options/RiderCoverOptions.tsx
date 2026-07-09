@@ -1,7 +1,7 @@
 import { AlIcon } from '@autolokate/icons';
 import { formatInrFromPaise } from '@autolokate/utils';
 
-import type { PurchaseRiderOption } from '@/features/qr-purchase/types-checkout.js';
+import type { PurchaseRiderOption } from '@/features/qr-purchase/types-checkout';
 
 import './rider-cover-options.css';
 

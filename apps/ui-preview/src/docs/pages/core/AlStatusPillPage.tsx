@@ -3,7 +3,7 @@ import { AlStatusPill } from '@autolokate/ui';
 import {
   CoreComponentShowcase,
   type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+} from '../../components/CoreComponentShowcase';
 
 function renderStatusPillState(state: ShowcaseState) {
   const variant =
