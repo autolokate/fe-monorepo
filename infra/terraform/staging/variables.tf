@@ -5,9 +5,9 @@ variable "region" {
 }
 
 variable "instance_type" {
-  description = "EC2 type for the frontend box (Caddy + Next.js website blue/green). Starts at t4g.nano (Graviton, 512 MB) to keep cost minimal; bump to t4g.micro if the brief blue/green double-run (both website slots up during a cutover) causes memory pressure — it's a one-line change + apply, not a rebuild."
+  description = "EC2 type for the frontend box (Caddy + Next.js website blue/green). Bumped from t4g.nano to t4g.micro (Graviton, 1 GB) during initial bring-up (2026-07-09): ap-south-1 had no t4g.nano capacity in any AZ at the time (RunInstances InsufficientInstanceCapacity), while t4g.micro had capacity in ap-south-1b — see the availability_zone comment on aws_subnet.public. t4g.micro also gives the brief blue/green double-run (both website slots up during a cutover) more memory headroom."
   type        = string
-  default     = "t4g.nano"
+  default     = "t4g.micro"
 }
 
 variable "vpc_cidr" {

@@ -19,6 +19,11 @@ resource "aws_internet_gateway" "main" {
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 4, 0)
+  # Pinned (not left to AWS's default placement): confirmed via a live capacity probe (2026-07-09)
+  # that ap-south-1b has Graviton (t4g) capacity when 1a/1c don't. An AZ with no capacity for the
+  # instance_type below manifests as an apparently-hung `aws_instance` create — the AWS provider
+  # retries InsufficientInstanceCapacity far longer and more silently than the raw `aws` CLI does.
+  availability_zone       = "${var.region}b"
   map_public_ip_on_launch = true
   tags                    = { Name = "${local.name}-public" }
 }
