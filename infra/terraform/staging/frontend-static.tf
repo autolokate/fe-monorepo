@@ -3,14 +3,28 @@
 # "Flexible" SSL via a per-hostname Configuration Rule (edge TLS to the browser, plain HTTP CF->S3) —
 # see outputs.tf for the exact endpoints to point the CNAMEs at. The website app (SSR) is NOT here; it
 # runs as a container on the box (docker-compose.yml) behind Caddy in Full-strict.
+#
+# Bucket name MUST equal the custom domain exactly (docs.aws.amazon.com/AmazonS3/latest/userguide/
+# website-hosting-custom-domain-walkthrough.html, Step 2: "These bucket names must match your domain
+# name exactly"). Cloudflare's proxy forwards the client's original Host header to the S3 origin
+# unchanged — Host-header rewrite (Origin Rules) is Enterprise-only on Cloudflare, unavailable on our
+# Free plan — and S3's virtual-hosted-style website routing resolves the bucket FROM that Host header,
+# so a bucket named anything other than the exact hostname 404s with NoSuchBucket.
 locals {
-  static_sites = toset(["admin", "qr"])
+  static_sites = {
+    admin = "admin-staging.${var.app_domain}"
+    qr    = "qr-staging.${var.app_domain}"
+  }
 }
 
 resource "aws_s3_bucket" "static" {
   for_each = local.static_sites
-  bucket   = "${local.name}-${each.value}"
-  tags     = { Name = "${local.name}-${each.value}" }
+  bucket   = each.value
+  tags     = { Name = each.value }
+  # Disposable staging infra: deploy-staging.yml fully re-syncs (`--delete`) on every deploy anyway, and
+  # this bucket name changing forces a replace — force_destroy lets Terraform delete the old, non-empty
+  # bucket instead of failing with BucketNotEmpty.
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_website_configuration" "static" {
