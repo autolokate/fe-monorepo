@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_ENVIRONMENT?: string;
   readonly VITE_ENABLE_LOGS?: string;
   readonly VITE_RAZORPAY_KEY?: string;
+  readonly VITE_QR_ENTRY_BASE_URL?: string;
 }
 
 interface ImportMeta {

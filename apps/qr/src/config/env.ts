@@ -5,13 +5,15 @@ export type AppEnv = {
   environment: AppEnvironment;
   enableLogs: boolean;
   razorpayKey: string | null;
+  qrEntryBaseUrl: string;
 };
 
 type EnvKey =
   | 'VITE_API_BASE_URL'
   | 'VITE_ENVIRONMENT'
   | 'VITE_ENABLE_LOGS'
-  | 'VITE_RAZORPAY_KEY';
+  | 'VITE_RAZORPAY_KEY'
+  | 'VITE_QR_ENTRY_BASE_URL';
 
 function readRaw(key: EnvKey): string | undefined {
   const value: string | undefined = import.meta.env[key];
@@ -34,6 +36,20 @@ function resolveApiBaseUrl(): string {
   );
 }
 
+/**
+ * Base host for QR-sticker entry links (`buildQrAuthMobileUrl`). These point back into THIS app, so the
+ * base is its own deployed origin — which is already correct per environment (qr-staging.<apex> in
+ * staging, qr.<apex> in prod). VITE_QR_ENTRY_BASE_URL overrides it when links must embed a fixed
+ * canonical host regardless of where they're generated.
+ */
+function resolveQrEntryBaseUrl(): string {
+  const value = readRaw('VITE_QR_ENTRY_BASE_URL');
+  if (value) {
+    return value;
+  }
+  return typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
+}
+
 function parseEnvironment(value: string | undefined): AppEnvironment {
   if (value === 'production' || value === 'staging' || value === 'development') {
     return value;
@@ -47,6 +63,7 @@ export const env: AppEnv = Object.freeze({
   environment: parseEnvironment(readRaw('VITE_ENVIRONMENT')),
   enableLogs: readRaw('VITE_ENABLE_LOGS') === 'true',
   razorpayKey: readRaw('VITE_RAZORPAY_KEY') ?? null,
+  qrEntryBaseUrl: resolveQrEntryBaseUrl(),
 });
 
 /** Call once at startup to fail fast on missing configuration. */
