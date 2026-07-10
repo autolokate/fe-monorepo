@@ -32,6 +32,8 @@ export default defineConfig({
         'icons/icon-512.png',
         'icons/icon-192-maskable.png',
         'icons/icon-512-maskable.png',
+        // Dedicated FCM SW (separate scope); must stay at site root for getToken().
+        'firebase-messaging-sw.js',
       ],
       manifest: false,
       workbox: {

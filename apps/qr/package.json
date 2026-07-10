@@ -22,6 +22,7 @@
     "@autolokate/types": "workspace:*",
     "@autolokate/ui": "workspace:*",
     "@autolokate/utils": "workspace:*",
+    "firebase": "^12.16.0",
     "framer-motion": "^12.40.0",
     "jsqr": "^1.4.0",
     "lottie-react": "^2.4.1",

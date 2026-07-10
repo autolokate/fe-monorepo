@@ -1,6 +1,6 @@
 /**
  * Pluggable FCM token source.
- * Default returns null until the platform push SDK is integrated — only this module changes then.
+ * Wired at startup via `installFirebaseMessaging()` → Firebase web `getToken()`.
  */
 export type FcmTokenProvider = () => Promise<string | null>;
 
