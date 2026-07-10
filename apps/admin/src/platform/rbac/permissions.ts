@@ -9,7 +9,7 @@ export type AdminRole =
 
 /** API session role strings that map to an internal admin role. */
 function resolveApiRoleAlias(normalized: string): AdminRole | null {
-  if (normalized === 'OPERATOR') {
+  if (normalized === 'ADMIN') {
     return 'SUPER_ADMIN';
   }
   return null;

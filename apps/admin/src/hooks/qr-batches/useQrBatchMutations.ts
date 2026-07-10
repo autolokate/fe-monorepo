@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
+import { qrBatchCodesQueryKeys } from '@/hooks/qr-batches/qr-batch-codes-query-keys';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { showSuccessToast } from '@/platform/feedback/toast';
@@ -19,6 +20,14 @@ export function useQrBatchMutations() {
 
   const invalidateInventory = async () => {
     await queryClient.invalidateQueries({ queryKey: inventoryQueryKeys.all });
+  };
+
+  const invalidateBatchCodes = async (batchId?: string) => {
+    if (batchId) {
+      await queryClient.invalidateQueries({ queryKey: qrBatchCodesQueryKeys.batch(batchId) });
+      return;
+    }
+    await queryClient.invalidateQueries({ queryKey: qrBatchCodesQueryKeys.all });
   };
 
   const createBatchMutation = useMutation({
@@ -40,6 +49,7 @@ export function useQrBatchMutations() {
     retry: 0,
     onSuccess: async (batch) => {
       await invalidateInventory();
+      await invalidateBatchCodes(batch.id);
       showSuccessToast(`Codes generated for ${batch.batchCode}.`);
     },
     onError: (error) => {
@@ -53,6 +63,7 @@ export function useQrBatchMutations() {
     retry: 0,
     onSuccess: async (batch) => {
       await invalidateInventory();
+      await invalidateBatchCodes(batch.id);
       showSuccessToast(`Batch ${batch.batchCode} provisioned.`);
     },
     onError: (error) => {
@@ -76,7 +87,8 @@ export function useQrBatchMutations() {
   const replaceMutation = useMutation({
     mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) => replaceCode(code, signal),
     retry: 0,
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
+      await invalidateBatchCodes();
       showSuccessToast(`Replaced ${result.oldCode} with ${result.newCode}.`);
     },
     onError: (error) => {
@@ -87,7 +99,8 @@ export function useQrBatchMutations() {
   const retireMutation = useMutation({
     mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) => retireCode(code, signal),
     retry: 0,
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
+      await invalidateBatchCodes();
       showSuccessToast(`Retired QR code ${result.code}.`);
     },
     onError: (error) => {

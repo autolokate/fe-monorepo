@@ -1,15 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { BatchSummaryDto } from '@autolokate/api-client';
 import { AlButton, AlInput, AlSelect, AlSheet, AlStack, AlText } from '@autolokate/ui';
-import { useEffect, useRef, type ChangeEvent } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import {
   CHANNEL_OPTIONS,
+  PLAN_TIER_OPTIONS,
   createBatchSchema,
   type CreateBatchFormValues,
 } from '@/features/qr-batches/create-batch-schema';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { useSkus } from '@/hooks/qr-batches/useSkus';
 import { useAdminFormSubmit } from '@/platform/forms/use-admin-form-submit';
 
 export type CreateBatchSheetProps = {
@@ -18,35 +20,111 @@ export type CreateBatchSheetProps = {
   onCreated?: (batch: BatchSummaryDto) => void;
 };
 
+const DEFAULT_VALUES: CreateBatchFormValues = {
+  channel: 'B2C',
+  skuId: '',
+  totalCount: 500,
+  planTier: undefined,
+};
+
+/** Map B2B plan enum → fixed catalog sku_code. */
+function b2bSkuCodeForPlan(
+  planTier: CreateBatchFormValues['planTier'],
+): string | null {
+  if (planTier === 'SECURE') return 'SKU-B2B-SECURE';
+  if (planTier === 'SHIELD') return 'SKU-B2B-SHIELD';
+  if (planTier === 'SHIELD_PLUS') return 'SKU-B2B-SHIELDPLUS';
+  return null;
+}
+
 export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchSheetProps) {
   const abortRef = useRef<AbortController | null>(null);
   const { createBatchMutation, mapMutationError } = useQrBatchMutations();
 
   const form = useForm<CreateBatchFormValues>({
     resolver: zodResolver(createBatchSchema),
-    defaultValues: {
-      channel: 'B2C',
-      skuId: '',
-      totalCount: 500,
-    },
+    defaultValues: DEFAULT_VALUES,
   });
+
+  const channel = useWatch({ control: form.control, name: 'channel' }) ?? 'B2C';
+  const planTier = useWatch({ control: form.control, name: 'planTier' });
+  const skusQuery = useSkus(channel, open);
+
+  const channelSkus = useMemo(
+    () => (skusQuery.data ?? []).filter((sku) => sku.channel === channel),
+    [channel, skusQuery.data],
+  );
+
+  // B2B: pin SKU to the selected plan; open channels: full channel list.
+  const skuOptions = useMemo(() => {
+    if (channel !== 'B2B') {
+      return channelSkus.map((sku) => ({
+        value: sku.id,
+        label: sku.skuCode,
+      }));
+    }
+    const wanted = b2bSkuCodeForPlan(planTier);
+    return channelSkus
+      .filter((sku) => (wanted ? sku.skuCode === wanted : true))
+      .map((sku) => ({
+        value: sku.id,
+        label: sku.skuCode,
+      }));
+  }, [channel, channelSkus, planTier]);
 
   useEffect(() => {
     if (!open) {
       abortRef.current?.abort();
       abortRef.current = null;
-      form.reset({
-        channel: 'B2C',
-        skuId: '',
-        totalCount: 500,
-      });
+      form.reset(DEFAULT_VALUES);
     }
   }, [form, open]);
+
+  useEffect(() => {
+    if (channel !== 'B2B') {
+      form.setValue('planTier', undefined);
+      void form.clearErrors('planTier');
+    }
+    form.setValue('skuId', '');
+    void form.clearErrors('skuId');
+  }, [channel, form]);
+
+  // B2B: auto-select the plan-pinned SKU when the catalog loads / plan changes.
+  useEffect(() => {
+    if (channel !== 'B2B') return;
+    const wanted = b2bSkuCodeForPlan(planTier);
+    if (!wanted) {
+      form.setValue('skuId', '');
+      return;
+    }
+    const match = channelSkus.find((sku) => sku.skuCode === wanted);
+    form.setValue('skuId', match?.id ?? '');
+    if (match) void form.clearErrors('skuId');
+  }, [channel, channelSkus, form, planTier]);
 
   const submitError =
     createBatchMutation.isError
       ? mapMutationError(createBatchMutation.error).userMessage
       : null;
+
+  const skuHelper = skusQuery.isError
+    ? 'Could not load SKUs. Retry by reopening this sheet.'
+    : skusQuery.isFetching
+      ? `Loading ${channel} SKUs…`
+      : channel === 'B2B'
+        ? !planTier
+          ? 'Select a plan tier — the matching B2B SKU is applied automatically.'
+          : skuOptions.length === 0
+            ? `No ${b2bSkuCodeForPlan(planTier)} in catalog. Run scripts/seed-skus.sql.`
+            : 'Pinned to the selected plan tier (ops catalog).'
+        : skuOptions.length === 0
+          ? `No active ${channel} SKUs. Seed the catalog first.`
+          : `Only ${channel} SKUs — changes when you switch channel.`;
+
+  const canSubmit =
+    !createBatchMutation.isPending &&
+    skuOptions.length > 0 &&
+    (channel !== 'B2B' || Boolean(planTier));
 
   const { onSubmit, handleFormKeyDown } = useAdminFormSubmit({
     form,
@@ -62,6 +140,9 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
             channel: values.channel,
             skuId: values.skuId,
             totalCount: values.totalCount,
+            ...(values.channel === 'B2B' && values.planTier
+              ? { planTier: values.planTier }
+              : {}),
           },
           signal: controller.signal,
         });
@@ -78,14 +159,14 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
       open={open}
       onOpenChange={onOpenChange}
       title="Create batch"
-      description="Set up a new QR batch in draft status."
+      description="Set up a new QR batch in draft status. The server mints the batch code; sticker codes stay short and opaque."
       footer={
         <AlStack gap="sm" direction="row">
           <AlButton
             type="submit"
             form="create-batch-form"
             loading={createBatchMutation.isPending}
-            disabled={createBatchMutation.isPending}
+            disabled={!canSubmit}
           >
             Create batch
           </AlButton>
@@ -127,19 +208,49 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
             )}
           />
 
+          {channel === 'B2B' ? (
+            <Controller
+              control={form.control}
+              name="planTier"
+              render={({ field, fieldState }) => (
+                <AlSelect
+                  label="Plan tier"
+                  placeholder="Select plan tier"
+                  options={[...PLAN_TIER_OPTIONS]}
+                  value={field.value ?? ''}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                    field.onChange(event.target.value || undefined);
+                  }}
+                  errorText={fieldState.error?.message}
+                  helperText="Embedded in the ops batch code (e.g. B2B-500-10072026-SECURE)."
+                />
+              )}
+            />
+          ) : null}
+
           <Controller
             control={form.control}
             name="skuId"
             render={({ field, fieldState }) => (
-              <AlInput
-                label="SKU ID"
-                mono
+              <AlSelect
+                label="SKU"
+                placeholder={
+                  channel === 'B2B' && !planTier
+                    ? 'Select plan tier first'
+                    : 'Select SKU'
+                }
+                options={skuOptions}
                 value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
+                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                  field.onChange(event.target.value);
+                }}
+                disabled={
+                  skusQuery.isFetching ||
+                  skuOptions.length === 0 ||
+                  (channel === 'B2B' && !planTier)
+                }
                 errorText={fieldState.error?.message}
-                helperText="UUID of the SKU this batch is manufactured for."
-                autoComplete="off"
+                helperText={skuHelper}
               />
             )}
           />

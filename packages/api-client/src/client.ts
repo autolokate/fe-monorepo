@@ -87,6 +87,59 @@ export class ApiClient {
     return this.request<T>(path, { ...options, method: 'GET' });
   }
 
+  /**
+   * GET a non-JSON body (e.g. CSV export). Uses the same auth/refresh path as
+   * {@link request}, but returns a Blob + optional filename from Content-Disposition.
+   */
+  async getBlob(
+    path: string,
+    options: Omit<ApiRequestOptions, 'method' | 'body'> & { accept?: string } = {},
+  ): Promise<{ blob: Blob; filename: string | null }> {
+    const { accept = 'application/octet-stream', headers = {}, signal, skipAuth = false, skipAuthRetry = false } =
+      options;
+    const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+    const token = skipAuth ? null : this.getAccessToken();
+    const requestInit: RequestInit = {
+      method: 'GET',
+      headers: {
+        Accept: accept,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(this.correlationId ? { 'X-Correlation-Id': this.correlationId } : {}),
+        ...headers,
+      },
+      ...(signal !== undefined ? { signal } : {}),
+    };
+
+    let response = await this.fetchImpl(url, requestInit);
+
+    if (response.status === 401 && !skipAuthRetry && this.shouldAttemptRefresh(path)) {
+      const refreshed = await this.tokenManager?.refresh();
+      if (refreshed) {
+        const retryToken = this.getAccessToken();
+        response = await this.fetchImpl(url, {
+          ...requestInit,
+          headers: {
+            ...requestInit.headers,
+            ...(retryToken ? { Authorization: `Bearer ${retryToken}` } : {}),
+          },
+        });
+      } else {
+        this.onAuthFailure?.();
+      }
+    }
+
+    if (!response.ok) {
+      throw await this.parseError(response);
+    }
+
+    const disposition = response.headers.get('Content-Disposition');
+    const filenameMatch = disposition?.match(/filename="([^"]+)"/i);
+    return {
+      blob: await response.blob(),
+      filename: filenameMatch?.[1] ?? null,
+    };
+  }
+
   async post<T>(
     path: string,
     body?: unknown,

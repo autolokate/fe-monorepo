@@ -1,6 +1,7 @@
 import type { ApiClient } from './client';
 import { endpoints } from './endpoints';
 import { unwrapEnvelope, readEnvelopeMeta } from './envelope';
+import type { ApiPlanTier } from './plans';
 
 /** OpenAPI `BatchSummaryDto.status` */
 export type QrBatchStatus =
@@ -105,11 +106,26 @@ export type AuditEventDto = {
   at: string;
 };
 
-/** OpenAPI `CreateBatchDto` */
+/** OpenAPI `CreateBatchDto` — `planTier` required when `channel` is `B2B` (ops batch_code). */
 export type CreateBatchBody = {
   channel: QrBatchChannel;
   skuId: string;
   totalCount: number;
+  planTier?: ApiPlanTier;
+};
+
+/** OpenAPI `SkuSummaryDto` — active catalog row for the create-batch picker. */
+export type SkuSummaryDto = {
+  id: string;
+  skuCode: string;
+  channel: QrBatchChannel;
+  prepaid: boolean;
+  listPricePaise: number;
+};
+
+/** Query for `GET /admin/v1/skus`. */
+export type ListSkusQuery = {
+  channel?: QrBatchChannel;
 };
 
 /** OpenAPI `ReplacedDto` */
@@ -191,6 +207,36 @@ export type ListQrInventoryQuery = {
   state?: QrBatchStatus;
 };
 
+/** OpenAPI `BatchCodeDto.status` */
+export type QrCodeStatus =
+  | 'MANUFACTURED'
+  | 'PROVISIONED'
+  | 'DISTRIBUTED'
+  | 'ATTACHED'
+  | 'ATTACHED_UNPAID'
+  | 'ACTIVATED'
+  | 'LAPSED'
+  | 'TRANSFERRED'
+  | 'CANCELLED'
+  | 'REPLACED_LOST'
+  | 'RETIRED';
+
+/** OpenAPI `BatchCodeDto` — opaque sticker drill-down (non-PII). */
+export type BatchCodeDto = {
+  id: string;
+  code: string;
+  status: QrCodeStatus;
+  createdAt: string;
+  activatedAt: string | null;
+  retiredAt: string | null;
+};
+
+export type ListQrBatchCodesQuery = {
+  status?: QrCodeStatus;
+  cursor?: string;
+  limit?: number;
+};
+
 export type QueryAuditEventsParams = {
   action?: AuditAction;
   targetType?: string;
@@ -212,6 +258,14 @@ export type PaginationDto = {
 /** Paginated audit events response with envelope meta. */
 export type AuditEventsPageResult = {
   events: AuditEventDto[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** Paginated batch codes response with envelope meta. */
+export type QrBatchCodesPageResult = {
+  codes: BatchCodeDto[];
   pagination: PaginationDto | null;
   requestId: string | null;
   correlationId: string | null;
@@ -241,6 +295,64 @@ export async function listQrInventory(
   return unwrapEnvelope(response) as BatchSummaryDto[];
 }
 
+/** GET /admin/v1/qr-batches/{id}/codes — data only. */
+export async function listQrBatchCodes(
+  client: ApiClient,
+  batchId: string,
+  query: ListQrBatchCodesQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<BatchCodeDto[]> {
+  const page = await listQrBatchCodesPage(client, batchId, query, options);
+  return page.codes;
+}
+
+/** GET /admin/v1/qr-batches/{id}/codes — includes pagination meta. */
+export async function listQrBatchCodesPage(
+  client: ApiClient,
+  batchId: string,
+  query: ListQrBatchCodesQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<QrBatchCodesPageResult> {
+  const path = `${endpoints.admin.qrBatchCodes(batchId)}${buildQuery({
+    status: query.status,
+    cursor: query.cursor,
+    limit: query.limit,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    codes: unwrapEnvelope(response) as BatchCodeDto[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/qr-batches/{id}/codes/export — print-house CSV download. */
+export async function exportQrBatchCodesCsv(
+  client: ApiClient,
+  batchId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<{ blob: Blob; filename: string }> {
+  const { blob, filename } = await client.getBlob(endpoints.admin.exportQrBatchCodes(batchId), {
+    accept: 'text/csv',
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return {
+    blob,
+    filename: filename ?? `qr-batch-${batchId}-print.csv`,
+  };
+}
+
 /** GET /admin/v1/promos */
 export async function listAdminPromos(
   client: ApiClient,
@@ -262,6 +374,19 @@ export async function createAdminPromo(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as AdminPromoDto;
+}
+
+/** GET /admin/v1/skus */
+export async function listSkus(
+  client: ApiClient,
+  query: ListSkusQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<SkuSummaryDto[]> {
+  const path = `${endpoints.admin.skus}${buildQuery({ channel: query.channel })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as SkuSummaryDto[];
 }
 
 /** POST /admin/v1/qr-batches */

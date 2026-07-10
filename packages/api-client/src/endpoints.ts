@@ -100,6 +100,11 @@ export const endpoints = {
       `/admin/v1/qr-batches/${encodeURIComponent(id)}/generate`,
     provisionQrBatch: (id: string) =>
       `/admin/v1/qr-batches/${encodeURIComponent(id)}/provision`,
+    qrBatchCodes: (id: string) =>
+      `/admin/v1/qr-batches/${encodeURIComponent(id)}/codes`,
+    exportQrBatchCodes: (id: string) =>
+      `/admin/v1/qr-batches/${encodeURIComponent(id)}/codes/export`,
+    skus: '/admin/v1/skus',
     replaceQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/replace`,
     retireQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/retire`,
     settlementBatch: '/admin/v1/settlement-batch',

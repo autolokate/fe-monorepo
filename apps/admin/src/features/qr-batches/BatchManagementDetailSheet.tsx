@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { BatchCodesSection } from '@/features/qr-batches/BatchCodesSection';
 import {
   qrCodeActionSchema,
   type QrCodeActionFormValues,
@@ -216,6 +217,11 @@ export function BatchManagementDetailSheet({
               <AdminDetailField label="Provisioned at" value={formatDateTime(batch.provisionedAt)} />
             ) : null}
           </AdminDetailSection>
+
+          <BatchCodesSection
+            batchId={batch.id}
+            enabled={batch.generatedCount > 0 || batch.status !== 'DRAFT'}
+          />
 
           <AdminDetailSection title="Batch lifecycle" description={describeBatchLifecycleStatus(batch.status)}>
             {canWrite ? (
