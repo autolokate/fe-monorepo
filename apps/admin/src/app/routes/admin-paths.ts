@@ -8,6 +8,7 @@ export const adminPaths = {
   auditEvents: '/audit-events',
   finance: '/finance',
   ownershipTransfers: '/ownership-transfers',
+  users: '/users',
 } as const;
 
 export type AdminRouteMeta = {
@@ -58,6 +59,12 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.ownershipTransfers,
     label: 'Ownership Transfers',
     description: 'Initiate and approve ownership transfers',
+    nav: true,
+  },
+  {
+    path: adminPaths.users,
+    label: 'Users & Roles',
+    description: 'Grant and revoke the ADMIN role',
     nav: true,
   },
 ];

@@ -1,0 +1,17 @@
+.admin-user-lookup,
+.admin-user-account {
+  padding: var(--al-space-md);
+  border-radius: var(--al-admin-radius-control);
+  background: var(--al-color-surface-elevated);
+  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+}
+
+.admin-user-lookup form {
+  max-width: 28rem;
+}
+
+.admin-user-account__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--al-space-2);
+}

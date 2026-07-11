@@ -20,3 +20,9 @@ export const adminReorderIdSchema = z.string().trim().min(1, 'Reorder ID is requ
 
 /** OpenAPI ownership transfer id (uuid path param) */
 export const adminTransferIdSchema = adminUuidSchema;
+
+/** OpenAPI `AdminUserLookupQueryDto.phone`: E.164 (`^\+[1-9]\d{6,14}$`) */
+export const adminPhoneE164Schema = z
+  .string()
+  .trim()
+  .regex(/^\+[1-9]\d{6,14}$/, 'Enter an E.164 phone number, e.g. +919876543210.');

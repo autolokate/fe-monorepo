@@ -34,7 +34,9 @@ export type AdminPermission =
   | 'partners:read'
   | 'partners:write'
   | 'settings:read'
-  | 'settings:write';
+  | 'settings:write'
+  | 'users:read'
+  | 'users:write';
 
 const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
   SUPER_ADMIN: [
@@ -57,6 +59,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'partners:write',
     'settings:read',
     'settings:write',
+    // Role grant/revoke is SUPER_ADMIN-only (14-roles §14.6) — no other tier may escalate privilege.
+    'users:read',
+    'users:write',
   ],
   OPS: [
     'dashboard:view',

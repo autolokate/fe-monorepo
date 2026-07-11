@@ -49,6 +49,12 @@ const OwnershipTransfersPage = lazy(() =>
   })),
 );
 
+const UsersPage = lazy(() =>
+  import('@/features/users/UsersPage').then((module) => ({
+    default: module.UsersPage,
+  })),
+);
+
 function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
@@ -68,6 +74,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.auditEvents} element={<AuditEventsPage />} />
             <Route path={adminPaths.finance} element={<FinanceOperationsPage />} />
             <Route path={adminPaths.ownershipTransfers} element={<OwnershipTransfersPage />} />
+            <Route path={adminPaths.users} element={<UsersPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to={adminPaths.dashboard} replace />} />
