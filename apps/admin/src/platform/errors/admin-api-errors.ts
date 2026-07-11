@@ -29,3 +29,18 @@ export function mapAdminApiError(error: unknown): AdminApiError {
     requestId: normalized.requestId,
   };
 }
+
+/**
+ * The message to show beside a form's submit button.
+ *
+ * On a 400 the server's own text is the authoritative one — it names the invariant that was broken
+ * ("default plan tier must be on the Sku's offered tiers", "features must not be empty") and is written
+ * to be read by an admin. The generic `userMessage` would throw that away, so prefer the server's.
+ */
+export function resolveSubmitErrorMessage(error: unknown): string {
+  const mapped = mapAdminApiError(error);
+  if (mapped.code === 'validation' && mapped.message.trim().length > 0) {
+    return mapped.message;
+  }
+  return mapped.userMessage;
+}
