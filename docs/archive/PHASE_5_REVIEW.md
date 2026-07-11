@@ -1,6 +1,6 @@
 # Phase 5.5 Review — Cross-Flow Architecture Audit
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Scope:** Shared flow (R01–R06) + Purchase flow (P01–P06)  
 **Status:** Review complete — **do not proceed to B2B** until recommended changes are triaged  
 **Date:** 2026-06-17  
@@ -95,7 +95,7 @@ Low-risk fixes applied in this review: Figma copy alignment (P01, P04, P06), CSS
 
 ## Promotion review
 
-Decision key: **Keep local** → screen markup only · **Onboarding composition** → `apps/onboarding/src/components/compositions/` · **@autolokate/ui** → core DS after 2+ flows
+Decision key: **Keep local** → screen markup only · **Onboarding composition** → `apps/qr/src/components/compositions/` · **@autolokate/ui** → core DS after 2+ flows
 
 | Candidate | Decision | Reasoning |
 |-----------|----------|-----------|
@@ -158,7 +158,7 @@ Decision key: **Keep local** → screen markup only · **Onboarding composition*
 
 ## Responsive review
 
-Test matrix: **320 · 360 · 375 · 390 · 414** via dev preview (`pnpm --filter @autolokate/onboarding dev`).
+Test matrix: **320 · 360 · 375 · 390 · 414** via dev preview (`pnpm --filter @autolokate/qr dev`).
 
 | Check | R01–R06 | P01–P06 | Notes |
 |-------|---------|---------|-------|
@@ -271,9 +271,9 @@ Shared screens align with DS input patterns (`487:36`). R02 `AlVehicleRcCard` ma
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding lint    # ✓
-pnpm --filter @autolokate/onboarding build  # ✓
-pnpm --filter @autolokate/onboarding dev      # Shared + Purchase + theme + viewport QA
+pnpm --filter @autolokate/qr lint    # ✓
+pnpm --filter @autolokate/qr build  # ✓
+pnpm --filter @autolokate/qr dev      # Shared + Purchase + theme + viewport QA
 ```
 
 ---

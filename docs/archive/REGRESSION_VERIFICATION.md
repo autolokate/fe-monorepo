@@ -36,7 +36,7 @@
 
 | Theme | Mechanism | Status |
 |-------|-----------|--------|
-| Dark | `al-onboarding-theme` + design tokens | ✅ Token-based |
+| Dark | `al-qr-theme` + design tokens | ✅ Token-based |
 | Light | Theme toggle in dev/shell | ✅ No hardening changes |
 
 ---

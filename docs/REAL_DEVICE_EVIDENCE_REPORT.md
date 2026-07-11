@@ -1,7 +1,7 @@
 # Real Device Evidence Report
 
 **Date:** 2026-06-21  
-**Target:** `https://onboarding-lemon-six.vercel.app`  
+**Target:** `https://qr-staging.autolokate.com`  
 **References:** `REAL_DEVICE_SIGNOFF_V2.md`, `IOS_INSTALL_REPORT.md`, `IOS_CONTACT_PICKER_REPORT.md`, `RIDER_LOOP_FIX_REPORT.md`  
 **Auditor:** Static / remote checks only — **no physical devices connected in this session**
 

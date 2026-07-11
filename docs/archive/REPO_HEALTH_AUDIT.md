@@ -245,7 +245,7 @@ Used in 3 PWA verify routes but all within the same feature. Promotion candidate
 
 ## 7. Session Fields — No Issues
 
-The `JourneySession` type in `apps/onboarding/src/journey/types.ts` does not contain `purchase.permissions`, `purchase.permissionOutcome`, or `purchase.activationComplete`. These R14/R15 session fields were never merged into the main type. Session shape is clean.
+The `JourneySession` type in `apps/qr/src/journey/types.ts` does not contain `purchase.permissions`, `purchase.permissionOutcome`, or `purchase.activationComplete`. These R14/R15 session fields were never merged into the main type. Session shape is clean.
 
 Deprecated type fields (`plate`, `mobile`, `legalAccepted`) are annotated `@deprecated` inline. No action required unless types are cleaned.
 
@@ -271,7 +271,7 @@ No duplicate icon implementations found across features. `@autolokate/icons` is 
 | # | Item | Path |
 |---|------|------|
 | S1 | `AuthFlowApp` + `AuthCompletedView` + `SharedAuthSegment` | `features/shared-auth/auth-flow/` |
-| S2 | Dead `AuthFlowApp` export | `apps/onboarding/src/index.ts` |
+| S2 | Dead `AuthFlowApp` export | `apps/qr/src/index.ts` |
 | S3 | `PurchaseStepShell` component | `journey/components/purchase-step-shell/` |
 | S4 | `HomeScreen` | `journey/screens/HomeScreen.tsx` |
 | S5 | `EmergencyPlaceholderScreen` | `journey/screens/EmergencyPlaceholderScreen.tsx` |
@@ -284,7 +284,7 @@ No duplicate icon implementations found across features. `@autolokate/icons` is 
 |---|------|------|
 | C1 | Hardcoded hex colors | `features/post-activation-pwa/components/pwa-emergency-screen.css` |
 | C2 | Add comment to `purchaseStepPathSequence` | `journey/purchase/purchase-routing.ts` — clarify intentional branch-path omission |
-| C3 | Deprecated `@deprecated` types cleanup | `apps/onboarding/src/journey/types.ts` — `plate`, `mobile`, `legalAccepted` |
+| C3 | Deprecated `@deprecated` types cleanup | `apps/qr/src/journey/types.ts` — `plate`, `mobile`, `legalAccepted` |
 
 ### No Action Required
 

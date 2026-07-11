@@ -7,7 +7,7 @@
 
 ## Production Build Output
 
-Command: `cd apps/onboarding && pnpm run build`
+Command: `cd apps/qr && pnpm run build`
 
 | Asset | Size | Gzip |
 |-------|-----:|-----:|

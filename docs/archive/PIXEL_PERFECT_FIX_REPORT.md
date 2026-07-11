@@ -10,7 +10,7 @@
 
 **Screen:** A2 (Auth OTP Verification)  
 **Figma node:** `103:324`  
-**File:** `apps/onboarding/src/components/auth-step-shell/auth-step-shell.css`  
+**File:** `apps/qr/src/components/auth-step-shell/auth-step-shell.css`  
 **Selector:** `.ob-auth-otp-desc`
 
 | | Before | After |
@@ -25,7 +25,7 @@
 
 **Screen:** E0 (No Contacts Yet)  
 **Figma node:** `373:37`  
-**File:** `apps/onboarding/src/features/emergency/emergency.css`  
+**File:** `apps/qr/src/features/emergency/emergency.css`  
 **Selector:** `.ob-emergency-trust-row`
 
 | | Before | After |
@@ -40,7 +40,7 @@
 
 **Screen:** All screens using `footerSecondaryLabel` (E0 "Enter a number instead", R0 "Skip for now")  
 **Figma nodes:** `373:37`, `375:37`  
-**File:** `apps/onboarding/src/components/flow-step-shell/flow-step-shell.css`  
+**File:** `apps/qr/src/components/flow-step-shell/flow-step-shell.css`  
 **Selector:** `.ob-shell__footer-secondary-link`
 
 | | Before | After |
@@ -56,7 +56,7 @@
 
 **Screen:** R07 (Rider Cover Selection)  
 **Figma node:** `186:25`  
-**File:** `apps/onboarding/src/features/qr-purchase/screens/purchase-phase-b.css`  
+**File:** `apps/qr/src/features/qr-purchase/screens/purchase-phase-b.css`  
 **Selector:** `.ob-purchase-skip-link`
 
 | | Before | After |
@@ -71,7 +71,7 @@
 
 **Screen:** R08 (Order Summary)  
 **Figma node:** `190:25`  
-**File:** `apps/onboarding/src/features/qr-purchase/screens/purchase-phase-b.css`  
+**File:** `apps/qr/src/features/qr-purchase/screens/purchase-phase-b.css`  
 **Selector:** `.ob-purchase-gateway-note`
 
 | | Before | After |
@@ -86,7 +86,7 @@
 
 **Screen:** E0 (No Contacts Yet), R0 (Rider Prompt)  
 **Figma node:** `373:37` (E0 illustration gap=14)  
-**File:** `apps/onboarding/src/components/flow-step-shell/flow-step-shell.css`  
+**File:** `apps/qr/src/components/flow-step-shell/flow-step-shell.css`  
 **Selector:** `.ob-state-panel`
 
 | | Before | After |
@@ -102,8 +102,8 @@
 **Screen:** E0 (No Contacts Yet)  
 **Figma node:** `373:37`  
 **Files:**
-- `apps/onboarding/src/features/emergency/screens/e05-contacts-empty/E05ContactsEmptyScreen.tsx`
-- `apps/onboarding/src/features/emergency/emergency.css`
+- `apps/qr/src/features/emergency/screens/e05-contacts-empty/E05ContactsEmptyScreen.tsx`
+- `apps/qr/src/features/emergency/emergency.css`
 
 **Change in TSX:** `message="No contacts yet"` (string → uses AlText body defaults) changed to `message={<p className="ob-emergency-hero-message">No contacts yet</p>}`
 
@@ -134,7 +134,7 @@
 
 **Screen:** R08 (Order Summary — promo code field)  
 **Figma node:** `190:25`  
-**File:** `apps/onboarding/src/components/compositions/promo-code-field/promo-code-field.css`
+**File:** `apps/qr/src/components/compositions/promo-code-field/promo-code-field.css`
 
 | Selector | Before | After |
 |----------|--------|-------|
@@ -154,7 +154,7 @@
 
 **Screen:** E5 (Contacts Summary — "Add another contact" row)  
 **Figma node:** `373:64`  
-**File:** `apps/onboarding/src/components/compositions/add-contact-row/add-contact-row.css`
+**File:** `apps/qr/src/components/compositions/add-contact-row/add-contact-row.css`
 
 **CSS added:**
 ```css
@@ -179,7 +179,7 @@
 
 **Screen:** R08 (Order Summary card)  
 **Figma node:** `190:25`  
-**File:** `apps/onboarding/src/components/compositions/order-summary-card/order-summary-card.css`
+**File:** `apps/qr/src/components/compositions/order-summary-card/order-summary-card.css`
 
 | Selector | Before | After |
 |----------|--------|-------|
@@ -197,7 +197,7 @@
 
 **Screen:** R07 (Rider Cover Selection)  
 **Figma node:** `186:25`  
-**File:** `apps/onboarding/src/components/compositions/rider-cover-options/rider-cover-options.css`  
+**File:** `apps/qr/src/components/compositions/rider-cover-options/rider-cover-options.css`  
 **Selector:** `.ob-rider-cover-option__subtitle`
 
 | | Before | After |
@@ -212,15 +212,15 @@
 
 | File | Changes |
 |------|---------|
-| `apps/onboarding/src/components/auth-step-shell/auth-step-shell.css` | Fix #1 |
-| `apps/onboarding/src/features/emergency/emergency.css` | Fix #2, #7 |
-| `apps/onboarding/src/components/flow-step-shell/flow-step-shell.css` | Fix #3, #6 |
-| `apps/onboarding/src/features/qr-purchase/screens/purchase-phase-b.css` | Fix #4, #5 |
-| `apps/onboarding/src/features/emergency/screens/e05-contacts-empty/E05ContactsEmptyScreen.tsx` | Fix #7 (TSX) |
-| `apps/onboarding/src/components/compositions/promo-code-field/promo-code-field.css` | Fix #8 |
-| `apps/onboarding/src/components/compositions/add-contact-row/add-contact-row.css` | Fix #9 |
-| `apps/onboarding/src/components/compositions/order-summary-card/order-summary-card.css` | Fix #10 |
-| `apps/onboarding/src/components/compositions/rider-cover-options/rider-cover-options.css` | Fix #11 |
+| `apps/qr/src/components/auth-step-shell/auth-step-shell.css` | Fix #1 |
+| `apps/qr/src/features/emergency/emergency.css` | Fix #2, #7 |
+| `apps/qr/src/components/flow-step-shell/flow-step-shell.css` | Fix #3, #6 |
+| `apps/qr/src/features/qr-purchase/screens/purchase-phase-b.css` | Fix #4, #5 |
+| `apps/qr/src/features/emergency/screens/e05-contacts-empty/E05ContactsEmptyScreen.tsx` | Fix #7 (TSX) |
+| `apps/qr/src/components/compositions/promo-code-field/promo-code-field.css` | Fix #8 |
+| `apps/qr/src/components/compositions/add-contact-row/add-contact-row.css` | Fix #9 |
+| `apps/qr/src/components/compositions/order-summary-card/order-summary-card.css` | Fix #10 |
+| `apps/qr/src/components/compositions/rider-cover-options/rider-cover-options.css` | Fix #11 |
 
 ---
 

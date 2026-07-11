@@ -3,7 +3,7 @@
 Production landing screen for choosing a consumer QR activation journey.
 
 **Figma file:** `FtHCUnE0HH586PtG5yJyG0`  
-**Build verified:** `pnpm --filter @autolokate/onboarding build`
+**Build verified:** `pnpm --filter @autolokate/qr build`
 
 ---
 

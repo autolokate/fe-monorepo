@@ -8,7 +8,7 @@
 
 ## Configuration
 
-File: `apps/onboarding/vite.config.ts`
+File: `apps/qr/vite.config.ts`
 
 | Setting | Value |
 |---------|-------|
@@ -83,7 +83,7 @@ Client hook: `src/pwa/use-pwa-update.ts` (`virtual:pwa-register/react`)
 ## Build Command
 
 ```bash
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ```
 
 Prebuild regenerates icons; Vite PWA plugin emits SW.

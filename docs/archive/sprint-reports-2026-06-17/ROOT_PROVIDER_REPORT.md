@@ -35,7 +35,7 @@ BrowserRouter
 | Item | Detail |
 |------|--------|
 | Component | `AutolokateRootProvider` |
-| Path | `apps/onboarding/src/platform/AutolokateRootProvider.tsx` |
+| Path | `apps/qr/src/platform/AutolokateRootProvider.tsx` |
 | Props | Same as `JourneyProviderProps` (`initialPhase`, `children`) |
 | Nesting order | Journey outer, PWA inner (per UNIFIED_PWA_PROVIDER_PLAN.md P0) |
 

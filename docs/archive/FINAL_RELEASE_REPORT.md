@@ -45,7 +45,7 @@ The app is shippable today for demo, stakeholder review, user testing, and QA si
 ### Session Architecture (Locked)
 - `al-journey-v1` sessionStorage — journey state ✅
 - `al-selected-flow` localStorage — flow selection ✅
-- `al-onboarding-theme` localStorage — theme ✅
+- `al-qr-theme` localStorage — theme ✅
 - `al-pwa-scan-v1` sessionStorage — PWA scan state ✅
 
 ---
@@ -110,7 +110,7 @@ The app is shippable today for demo, stakeholder review, user testing, and QA si
 - [x] All screen states implemented (loading, error, empty, success, disabled)
 - [x] All post-payment guards active
 - [x] All Figma screens verified PIXEL PERFECT
-- [x] TypeScript clean (0 errors, apps/onboarding + packages/ui)
+- [x] TypeScript clean (0 errors, apps/qr + packages/ui)
 - [x] No hardcoded hex colors (all `var(--al-*)`)
 - [x] Safe area insets on all sticky footers
 - [x] `prefers-reduced-motion` on all verified spinner animations

@@ -26,7 +26,7 @@
 
 ### Implementation
 
-```23:64:apps/onboarding/src/features/post-activation-pwa/hooks/use-geolocation.ts
+```23:64:apps/qr/src/features/post-activation-pwa/hooks/use-geolocation.ts
   const requestLocation = useCallback((): Promise<GeoResult | null> => {
     // ...
       navigator.geolocation.getCurrentPosition(
@@ -54,7 +54,7 @@
 | User chooses contacts-only | `sosStatus: 'contacts-only'` | `sosContactsOnly` |
 | Retry | “Turn on location” CTA | Back to `sosAllowLocation` |
 
-```395:428:apps/onboarding/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx
+```395:428:apps/qr/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx
 export function PwaSosLocationUnavailableRoute() {
   // ...
   description="Responders can't reach the spot without it. Turn it on to send help, or alert their contacts only."
@@ -88,7 +88,7 @@ Session flag: `locationDenied` on `PwaScanSession`.
 
 ### Primary capture path — file input
 
-```23:27:apps/onboarding/src/features/post-activation-pwa/hooks/use-camera-capture.ts
+```23:27:apps/qr/src/features/post-activation-pwa/hooks/use-camera-capture.ts
     input.type = 'file';
     input.accept = 'image/*';
     input.capture = 'environment';
@@ -106,7 +106,7 @@ Used via `usePwaPhotoCapture` on Park Me (2 photos) and SOS (4 scene photos).
 
 ### Preflight path — getUserMedia (Park Me only)
 
-```70:79:apps/onboarding/src/features/post-activation-pwa/hooks/use-geolocation.ts
+```70:79:apps/qr/src/features/post-activation-pwa/hooks/use-geolocation.ts
 export async function requestMediaPermissions(): Promise<boolean> {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -127,7 +127,7 @@ Invoked from `PwaParkMePermissionsRoute` on “Allow access”.
 | Stores grant flag | PASS | `permissionsGranted` on session |
 | “Not now” skip | PASS | Navigates to photos without preflight |
 
-```227:231:apps/onboarding/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx
+```227:231:apps/qr/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx
   const handleAllow = async () => {
     const granted = await requestMediaPermissions();
     updateSession({ permissionsGranted: granted });

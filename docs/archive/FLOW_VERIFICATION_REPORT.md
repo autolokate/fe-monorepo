@@ -165,7 +165,7 @@
 | Refresh mid-emergency | Restores from `al-journey-v1` | ✅ |
 | Tab close + reopen | sessionStorage cleared — restart from `/journey` | ✅ Expected |
 | Selected flow (new tab) | localStorage `al-selected-flow` persists | ✅ |
-| Theme (new tab) | localStorage `al-onboarding-theme` persists | ✅ |
+| Theme (new tab) | localStorage `al-qr-theme` persists | ✅ |
 | PWA scan refresh | Restores from `al-pwa-scan-v1` | ✅ |
 | After payment success back-nav | `redirectIfPaymentSucceeded` guard prevents going back to pre-payment screens | ✅ |
 

@@ -65,7 +65,7 @@ Static code-path audit, provider mount analysis, cross-flow trace, and productio
 | Check | Result | Notes |
 |-------|--------|-------|
 | **Cross-navigation** | ✅ | Providers remain mounted; route components swap only |
-| **Theme persistence** | ✅ | `localStorage` `al-onboarding-theme` + `data-theme` on `<html>`; independent of providers |
+| **Theme persistence** | ✅ | `localStorage` `al-qr-theme` + `data-theme` on `<html>`; independent of providers |
 | **Session persistence** | ✅ | Dual keys unchanged; writes via existing provider methods |
 | **Back navigation** | ✅ | React Router history; browser back from PWA → `/journey` preserves context |
 | **Refresh behavior** | ✅ | Full reload hydrates both sessions from `sessionStorage` at provider init |

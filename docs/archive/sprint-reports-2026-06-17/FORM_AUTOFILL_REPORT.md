@@ -73,7 +73,7 @@ contactDraft: {
 
 ## Files changed
 
-- `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx` — E0, E1, E3 draft handling
+- `apps/qr/src/journey/routes/EmergencyRoutes.tsx` — E0, E1, E3 draft handling
 
 No screen-level autofill hacks. E06/E08 screens already accept controlled `mobileValue` / `nameValue` from route state.
 

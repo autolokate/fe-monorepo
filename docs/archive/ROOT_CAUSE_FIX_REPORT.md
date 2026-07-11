@@ -75,19 +75,19 @@ The split gutter:
 ## Shared Files Changed
 
 ```
-apps/onboarding/src/components/step-shell-chrome/touch-target-layout.css
-apps/onboarding/src/components/step-shell-chrome/step-shell-chrome.css
-apps/onboarding/src/components/auth-step-shell/AuthStepShell.tsx
-apps/onboarding/src/components/flow-step-shell/FlowStepShell.tsx
-apps/onboarding/src/components/flow-step-shell/flow-step-shell.css
-apps/onboarding/src/components/compositions/welcome-activation/welcome-activation-shell.css
-apps/onboarding/src/components/compositions/welcome-activation/WelcomeActivationShell.tsx
-apps/onboarding/src/components/compositions/inline-consent-block/inline-consent-block.css
-apps/onboarding/src/components/compositions/purchase-status-shell/PurchaseStatusShell.tsx
-apps/onboarding/src/features/post-activation-pwa/components/pwa-scan-shell.css
-apps/onboarding/src/features/post-activation-pwa/components/PwaScanShell.tsx
-apps/onboarding/src/features/shared-legal/components/LegalReaderHeader.tsx
-apps/onboarding/src/journey/screens/flow-entry-screen.css
+apps/qr/src/components/step-shell-chrome/touch-target-layout.css
+apps/qr/src/components/step-shell-chrome/step-shell-chrome.css
+apps/qr/src/components/auth-step-shell/AuthStepShell.tsx
+apps/qr/src/components/flow-step-shell/FlowStepShell.tsx
+apps/qr/src/components/flow-step-shell/flow-step-shell.css
+apps/qr/src/components/compositions/welcome-activation/welcome-activation-shell.css
+apps/qr/src/components/compositions/welcome-activation/WelcomeActivationShell.tsx
+apps/qr/src/components/compositions/inline-consent-block/inline-consent-block.css
+apps/qr/src/components/compositions/purchase-status-shell/PurchaseStatusShell.tsx
+apps/qr/src/features/post-activation-pwa/components/pwa-scan-shell.css
+apps/qr/src/features/post-activation-pwa/components/PwaScanShell.tsx
+apps/qr/src/features/shared-legal/components/LegalReaderHeader.tsx
+apps/qr/src/journey/screens/flow-entry-screen.css
 ```
 
 ---
@@ -95,7 +95,7 @@ apps/onboarding/src/journey/screens/flow-entry-screen.css
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build  # ✅
+pnpm --filter @autolokate/qr build  # ✅
 ```
 
 Grep: no remaining `--ob-touch-inline-bleed` or `--ob-shell-frame-padding-inline` split system.

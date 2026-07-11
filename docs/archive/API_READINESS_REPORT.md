@@ -24,7 +24,7 @@
 
 ## 1. Mobile Validation
 
-**File:** `apps/onboarding/src/features/shared-auth/auth-flow/auth-flow.validation.ts`
+**File:** `apps/qr/src/features/shared-auth/auth-flow/auth-flow.validation.ts`
 
 **Current behavior:** `isValidMobile(value)` returns `normalizeMobile(value) === '9999999999'`. Only one phone number is "valid" in the entire demo.
 
@@ -59,7 +59,7 @@
 
 ## 3. Vahan Vehicle Lookup (Purchase + PWA)
 
-**File:** `apps/onboarding/src/features/qr-purchase/data/vahan-demo.ts :: fetchVahanDetails(plate: string)`
+**File:** `apps/qr/src/features/qr-purchase/data/vahan-demo.ts :: fetchVahanDetails(plate: string)`
 
 **Current behavior:** Waits 3 seconds (simulated), then returns `demoVehicleFields` for `MH 12 AB 3456`, error for `MH 12 AB 0000`, not-found for any other input.
 
@@ -84,7 +84,7 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 
 ## 4. Plan Data
 
-**File:** `apps/onboarding/src/features/qr-purchase/data/purchase-plans.ts`
+**File:** `apps/qr/src/features/qr-purchase/data/purchase-plans.ts`
 
 **Current behavior:** `PURCHASE_PLANS` is a static in-file constant array. `getPurchasePlan(id)` is a synchronous lookup. R06 (`ChoosePlanScreen`) imports and renders this directly.
 
@@ -101,7 +101,7 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 ## 5. Payment Processing
 
 **Files:**
-- `apps/onboarding/src/features/qr-purchase/data/purchase-payment-demo.ts :: getDemoPaymentOutcome(planId)` — maps plan to outcome
+- `apps/qr/src/features/qr-purchase/data/purchase-payment-demo.ts :: getDemoPaymentOutcome(planId)` — maps plan to outcome
 - `journey/routes/PurchaseRoutes.tsx :: R09Route` — inline `useEffect` with `setTimeout` driving the outcome
 
 **Current behavior:** `setTimeout(PAYMENT_PROCESSING_MS)` fires, then calls `getDemoPaymentOutcome(planId)` to determine success/failed/unconfirmed/confirming. Routes accordingly.
@@ -135,7 +135,7 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 
 ## 7. Prepaid + B2B2C Entitlement
 
-**File:** `apps/onboarding/src/features/b2b-shared/fetch-landing-entitlement.ts :: fetchLandingEntitlement(loader, options)`
+**File:** `apps/qr/src/features/b2b-shared/fetch-landing-entitlement.ts :: fetchLandingEntitlement(loader, options)`
 
 **Current behavior:** Wraps any `loader()` with a fake 2-second delay. Supports `?demo=error` query override. `useWelcomeLanding()` hook calls it with `getDemoPrepaidLandingEntitlement` (static object).
 

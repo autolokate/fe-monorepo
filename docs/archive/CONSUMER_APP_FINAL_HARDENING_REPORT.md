@@ -1,8 +1,8 @@
 # Consumer App — Final Hardening Report (Sprint 3)
 
 **Date:** 2026-06-17  
-**Scope:** `@autolokate/onboarding` production hardening — design-system compliance, dead-code removal, lint/build zero-warning target  
-**Verify:** `pnpm --filter @autolokate/onboarding lint && pnpm --filter @autolokate/onboarding build`
+**Scope:** `@autolokate/qr` production hardening — design-system compliance, dead-code removal, lint/build zero-warning target  
+**Verify:** `pnpm --filter @autolokate/qr lint && pnpm --filter @autolokate/qr build`
 
 ---
 
@@ -16,19 +16,19 @@ Sprint 3 completes production hardening for the consumer onboarding app. All int
 
 | Path | Reason |
 |------|--------|
-| `apps/onboarding/src/journey/screens/HomeScreen.tsx` | Orphan — `/journey/home` redirects to flow entry |
-| `apps/onboarding/src/journey/screens/EmergencyPlaceholderScreen.tsx` | Orphan — emergency routes fully implemented |
-| `apps/onboarding/src/journey/screens/ActivationPlaceholderScreen.tsx` | Orphan — prepaid/b2b2c have real route trees |
-| `apps/onboarding/src/journey/routes/QrScanRoute.tsx` | Never mounted in `JourneyRoutes` |
-| `apps/onboarding/src/features/shared-auth/auth-flow/AuthFlowApp.tsx` | Dead standalone auth runtime |
-| `apps/onboarding/src/features/shared-auth/auth-flow/AuthCompletedView.tsx` | AuthFlowApp-only |
-| `apps/onboarding/src/features/shared-auth/auth-flow/SharedAuthSegment.tsx` | Zero consumers |
-| `apps/onboarding/src/features/shared-auth/auth-flow/auth-flow.css` | AuthFlowApp-only styles |
-| `apps/onboarding/src/components/onboarding-step-shell/OnboardingStepShell.tsx` | Superseded by `FlowStepShell`; zero consumers |
-| `apps/onboarding/src/components/onboarding-step-shell/index.ts` | Barrel for removed shell |
-| `apps/onboarding/src/components/purchase-step-shell/PurchaseStepShell.tsx` | Superseded by `FlowStepShell`; zero consumers |
-| `apps/onboarding/src/components/purchase-step-shell/index.ts` | Barrel for removed shell |
-| `apps/onboarding/src/components/purchase-step-shell/purchase-step-shell.css` | Orphan CSS after shell removal |
+| `apps/qr/src/journey/screens/HomeScreen.tsx` | Orphan — `/journey/home` redirects to flow entry |
+| `apps/qr/src/journey/screens/EmergencyPlaceholderScreen.tsx` | Orphan — emergency routes fully implemented |
+| `apps/qr/src/journey/screens/ActivationPlaceholderScreen.tsx` | Orphan — prepaid/b2b2c have real route trees |
+| `apps/qr/src/journey/routes/QrScanRoute.tsx` | Never mounted in `JourneyRoutes` |
+| `apps/qr/src/features/shared-auth/auth-flow/AuthFlowApp.tsx` | Dead standalone auth runtime |
+| `apps/qr/src/features/shared-auth/auth-flow/AuthCompletedView.tsx` | AuthFlowApp-only |
+| `apps/qr/src/features/shared-auth/auth-flow/SharedAuthSegment.tsx` | Zero consumers |
+| `apps/qr/src/features/shared-auth/auth-flow/auth-flow.css` | AuthFlowApp-only styles |
+| `apps/qr/src/components/onboarding-step-shell/OnboardingStepShell.tsx` | Superseded by `FlowStepShell`; zero consumers |
+| `apps/qr/src/components/onboarding-step-shell/index.ts` | Barrel for removed shell |
+| `apps/qr/src/components/purchase-step-shell/PurchaseStepShell.tsx` | Superseded by `FlowStepShell`; zero consumers |
+| `apps/qr/src/components/purchase-step-shell/index.ts` | Barrel for removed shell |
+| `apps/qr/src/components/purchase-step-shell/purchase-step-shell.css` | Orphan CSS after shell removal |
 
 **Runtime routes removed from `PurchaseRoutes`:** `p01-plan-selection` … `p06-payment-success` (P01–P06 legacy dev graph). P01–P06 **screen files retained** for `?dev=1` preview only.
 
@@ -125,7 +125,7 @@ Sprint 3 completes production hardening for the consumer onboarding app. All int
 
 ## Export / Catalog Cleanup
 
-- **`apps/onboarding/src/index.ts`:** Removed `AuthFlowApp`, `OnboardingStepShell`, `PurchaseStepShell`, P01–P06 screen exports
+- **`apps/qr/src/index.ts`:** Removed `AuthFlowApp`, `OnboardingStepShell`, `PurchaseStepShell`, P01–P06 screen exports
 - **`features/qr-purchase/screens/index.ts`:** Production barrel exports R03–R10c only
 - **`components/compositions/index.ts`:** Removed unused `compositionInventory` / `corePromotionCandidates` barrel exports (types retained)
 - **`journey/purchase/purchase-routing.ts`:** Removed legacy `p01`–`p06` path constants
@@ -136,8 +136,8 @@ Sprint 3 completes production hardening for the consumer onboarding app. All int
 ## Verification Commands
 
 ```bash
-pnpm --filter @autolokate/onboarding lint
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr lint
+pnpm --filter @autolokate/qr build
 ```
 
 Both pass as of this report.

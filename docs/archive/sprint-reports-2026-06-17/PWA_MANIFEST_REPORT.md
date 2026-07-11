@@ -1,14 +1,14 @@
 # PWA Manifest Report
 
 **Date:** 2026-06-17  
-**App:** `apps/onboarding`  
+**App:** `apps/qr`  
 **Status:** COMPLETE
 
 ---
 
 ## Summary
 
-Production web app manifest added at `apps/onboarding/public/manifest.webmanifest`, linked from `index.html`, and copied to `dist/` on build.
+Production web app manifest added at `apps/qr/public/manifest.webmanifest`, linked from `index.html`, and copied to `dist/` on build.
 
 ---
 

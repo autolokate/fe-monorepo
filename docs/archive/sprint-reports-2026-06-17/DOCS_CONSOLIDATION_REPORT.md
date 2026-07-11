@@ -104,7 +104,7 @@ docs/
 memory/
 └── MEMORY.md
 
-apps/onboarding/scripts/
+apps/qr/scripts/
 ├── visual-truth-capture.mjs           # re-generate full matrix
 └── recapture-completed-screens.mjs    # Completed-only captures
 ```

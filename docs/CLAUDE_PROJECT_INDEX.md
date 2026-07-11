@@ -1,7 +1,7 @@
 # Autolokate Onboarding — Claude Project Index
 
 **Generated:** 2026-06-19 · **Updated:** 2026-06-17 (project lockdown — **BASELINE LOCKED**)  
-**Scope:** Full read-only audit of `apps/onboarding/src/journey/`, `apps/onboarding/src/features/`, `packages/ui/`, `packages/icons/`, `packages/design-system/`, `docs/`
+**Scope:** Full read-only audit of `apps/qr/src/journey/`, `apps/qr/src/features/`, `packages/ui/`, `packages/icons/`, `packages/design-system/`, `docs/`
 
 ---
 
@@ -225,7 +225,7 @@ Isolated from journey. Separate context (`PwaScanContext`), separate session (`p
 |-----|-------|----------|
 | `al-journey-v1` | `sessionStorage` | Full `PersistedJourneyState` (flow, authStatus, session) |
 | `al-selected-flow` | `localStorage` | Last selected `ActivationFlowId` |
-| `al-onboarding-theme` | `localStorage` | `'dark'` \| `'light'` |
+| `al-qr-theme` | `localStorage` | `'dark'` \| `'light'` |
 | `al-pwa-scan-v1` | `sessionStorage` | PWA scan context |
 
 ### 4.2 JourneySession Shape
@@ -317,7 +317,7 @@ Tokens exported from `packages/design-system/src/index.ts`:
 - **Motion:** `motion`, `motionDuration`, `motionEasing`, `motionScale`, `alAnimations`, `alMotionDurations`, `alMotionEasings`
 - **Theme:** `applyTheme`, `getThemeMode`, `setThemeMode`, `theme`, `themes`, `ThemeMode`
 
-**Theme:** Dark + Light. Set at `/journey` entry via `useThemeMode()`. Persisted in `al-onboarding-theme`.
+**Theme:** Dark + Light. Set at `/journey` entry via `useThemeMode()`. Persisted in `al-qr-theme`.
 
 ---
 
@@ -511,4 +511,4 @@ Long-term source-of-truth documents live in **`docs/`** root. All intermediate a
 
 **Historical reports:** `docs/archive/` (185+ files, including prior signoffs, audits, and `THEMING.md`)
 
-> Re-run captures: `apps/onboarding/scripts/recapture-completed-screens.mjs` (Completed only) or `visual-truth-capture.mjs` (full matrix)
+> Re-run captures: `apps/qr/scripts/recapture-completed-screens.mjs` (Completed only) or `visual-truth-capture.mjs` (full matrix)

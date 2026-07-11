@@ -1,6 +1,7 @@
 packages:
   - 'apps/*'
   - '!apps/website-backup'
+  - '!apps/onboarding'
   - 'packages/*'
 
 # Dependency build-script policy (pnpm 11 `allowBuilds`; default-deny, strict).

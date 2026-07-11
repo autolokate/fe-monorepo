@@ -11,7 +11,7 @@
 
 Replaced the placeholder completion screen with a **premium activation-complete experience**: protected `AlScreenBg`, success halo hero, CSS confetti burst, staggered entrance animations, subtle hero float, and a three-item status checklist derived from journey session state.
 
-**Animation strategy:** CSS-only (no Lottie package in `@autolokate/onboarding`). Lottie/Compottie is documented in `docs/THEMING.md` for future hero moments but is **not installed** in this app.
+**Animation strategy:** CSS-only (no Lottie package in `@autolokate/qr`). Lottie/Compottie is documented in `docs/THEMING.md` for future hero moments but is **not installed** in this app.
 
 ---
 
@@ -154,8 +154,8 @@ Completed screen also calls `setPhase('completed')` on mount for direct deep-lin
 
 | Command | Result |
 |---------|--------|
-| `pnpm --filter @autolokate/onboarding lint` | ✅ Pass |
-| `pnpm --filter @autolokate/onboarding build` | ✅ Pass |
+| `pnpm --filter @autolokate/qr lint` | ✅ Pass |
+| `pnpm --filter @autolokate/qr build` | ✅ Pass |
 
 ### Manual smoke
 

@@ -104,9 +104,9 @@ Status hero screens (component-driven):
 - `packages/icons/src/assets/pwa-reconstruction/*.svg`
 
 **Routes:**
-- `apps/onboarding/src/features/post-activation-pwa/routes/pwa-shared-routes.tsx` (Frame 01)
-- `apps/onboarding/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx` (09b, timelines)
-- `apps/onboarding/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx` (heroes, timelines, resolved tint)
+- `apps/qr/src/features/post-activation-pwa/routes/pwa-shared-routes.tsx` (Frame 01)
+- `apps/qr/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx` (09b, timelines)
+- `apps/qr/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx` (heroes, timelines, resolved tint)
 
 ---
 

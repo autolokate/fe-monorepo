@@ -38,7 +38,7 @@ All 6 journey flow entry points present with correct guards:
 |-----|-------|---------|
 | `al-journey-v1` | sessionStorage | ✅ |
 | `al-selected-flow` | localStorage | ✅ |
-| `al-onboarding-theme` | localStorage | ✅ |
+| `al-qr-theme` | localStorage | ✅ |
 | `al-pwa-scan-v1` | sessionStorage | ✅ |
 
 - `clearJourney()` resets `{ selectedFlow: null, authStatus: 'pending', session: {} }` and calls `setPhase('home')` ✅
@@ -83,7 +83,7 @@ No imports from emergency in qr-purchase.
 
 | Hook | Location | Cross-feature coupling |
 |------|----------|----------------------|
-| `useThemeMode` | `apps/onboarding/src/hooks/` | None |
+| `useThemeMode` | `apps/qr/src/hooks/` | None |
 | `useRouteProgress` | `journey/progress/` | Journey-internal only |
 | `use-welcome-landing` | `features/b2b-shared/` | None |
 | `use-camera-capture` | `features/post-activation-pwa/hooks/` | PWA-internal only |
@@ -103,7 +103,7 @@ No imports from emergency in qr-purchase.
 
 ## 5. Emergency Plan Limits ✅ PASS
 
-In `apps/onboarding/src/features/emergency/emergency-limits.ts`:
+In `apps/qr/src/features/emergency/emergency-limits.ts`:
 
 | Plan | Max Contacts | Max Riders |
 |------|-------------|------------|

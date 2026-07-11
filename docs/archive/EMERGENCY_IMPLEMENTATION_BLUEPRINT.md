@@ -1,6 +1,6 @@
 # Emergency + Rider — Implementation Blueprint
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-18  
 **Mode:** Audit only — no implementation, no route changes, no code changes  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/) (`FtHCUnE0HH586PtG5yJyG0`)  

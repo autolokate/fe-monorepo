@@ -10,7 +10,7 @@
 | Command | Result |
 |---------|--------|
 | `npm run build` | ✅ 12/12 packages, exit 0 |
-| TypeScript (`tsc -p apps/onboarding`) | ✅ Passed via build |
+| TypeScript (`tsc -p apps/qr`) | ✅ Passed via build |
 | Linter (changed files) | ✅ No errors |
 
 ---

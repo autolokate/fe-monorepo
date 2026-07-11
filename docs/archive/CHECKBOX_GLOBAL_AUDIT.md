@@ -94,10 +94,10 @@ column-gap: 12px;
 - `packages/ui/src/components/forms/Checkbox/Checkbox.types.ts`
 - `packages/ui/src/components/forms/Checkbox/Checkbox.tsx`
 - `packages/ui/src/components/forms/Checkbox/Checkbox.css`
-- `apps/onboarding/src/components/compositions/inline-consent-block/InlineConsentBlock.tsx`
-- `apps/onboarding/src/components/compositions/inline-consent-block/inline-consent-block.css`
-- `apps/onboarding/src/components/step-shell-chrome/touch-target-layout.css`
-- `apps/onboarding/src/components/step-shell-chrome/step-shell-chrome.css`
+- `apps/qr/src/components/compositions/inline-consent-block/InlineConsentBlock.tsx`
+- `apps/qr/src/components/compositions/inline-consent-block/inline-consent-block.css`
+- `apps/qr/src/components/step-shell-chrome/touch-target-layout.css`
+- `apps/qr/src/components/step-shell-chrome/step-shell-chrome.css`
 
 ---
 

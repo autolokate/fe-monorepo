@@ -268,7 +268,7 @@ Of the **16 requested frames**, **14 have UI implementations** (R03b is an inlin
 
 | # | Finding |
 |---|---------|
-| 1. Exists in code? | **No** — no `R10c*.tsx`, no screen folder, no mentions in `apps/onboarding/src` |
+| 1. Exists in code? | **No** — no `R10c*.tsx`, no screen folder, no mentions in `apps/qr/src` |
 | 2. Reachable in journey? | **No** — no route, no session branch |
 | 3. Figma node id | `579:1638` |
 | 4. Visual parity % | **0%** |
@@ -419,11 +419,11 @@ R10c ── NOT IN CODE
 
 | Area | Path |
 |------|------|
-| Purchase routes | `apps/onboarding/src/journey/routes/PurchaseRoutes.tsx` |
-| Path constants | `apps/onboarding/src/journey/purchase/purchase-routing.ts` |
-| Session types | `apps/onboarding/src/features/qr-purchase/types-checkout.ts` |
-| Demo payment | `apps/onboarding/src/features/qr-purchase/data/purchase-payment-demo.ts` |
-| Dev preview | `apps/onboarding/src/dev/ScreenDevApp.tsx` |
+| Purchase routes | `apps/qr/src/journey/routes/PurchaseRoutes.tsx` |
+| Path constants | `apps/qr/src/journey/purchase/purchase-routing.ts` |
+| Session types | `apps/qr/src/features/qr-purchase/types-checkout.ts` |
+| Demo payment | `apps/qr/src/features/qr-purchase/data/purchase-payment-demo.ts` |
+| Dev preview | `apps/qr/src/dev/ScreenDevApp.tsx` |
 | Figma inventory (archived) | `docs/archive/PURCHASE_FIGMA_AUDIT.md` |
 | Phase A signoff | `docs/PHASE_A_VISUAL_SIGNOFF.md` |
 | Phase B impl (archived) | `docs/archive/PHASE_B_IMPLEMENTATION.md` |

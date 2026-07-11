@@ -92,7 +92,7 @@ All **30 routes** remain functional. Non-rebuilt screens still implement correct
 
 ```
 pnpm --filter @autolokate/ui build        ✅
-pnpm --filter @autolokate/onboarding build ✅
+pnpm --filter @autolokate/qr build ✅
 node docs/audit-screenshots/capture-live.mjs ✅ (30/30)
 ```
 

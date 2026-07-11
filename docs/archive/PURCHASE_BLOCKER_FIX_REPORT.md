@@ -20,8 +20,8 @@ Two route-guard blockers are resolved. After `paymentStatus === 'success'`, chec
 
 | File | Change |
 |------|--------|
-| `apps/onboarding/src/journey/routes/PurchaseRoutes.tsx` | Post-payment redirect helpers · R08/R08b/R09 guards · `startPayment()` success guard |
-| `apps/onboarding/src/features/qr-purchase/types-checkout.ts` | `permissionsStepReached?: boolean` — routing flag only (set on R10 → R14) |
+| `apps/qr/src/journey/routes/PurchaseRoutes.tsx` | Post-payment redirect helpers · R08/R08b/R09 guards · `startPayment()` success guard |
+| `apps/qr/src/features/qr-purchase/types-checkout.ts` | `permissionsStepReached?: boolean` — routing flag only (set on R10 → R14) |
 
 ### New helpers
 
@@ -148,7 +148,7 @@ These are **not** overwritten when `paymentStatus === 'success'`:
 ## Build verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ```
 
 **Result:** ✅ Pass

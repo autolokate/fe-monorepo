@@ -63,7 +63,7 @@ All respect `prefers-reduced-motion`.
 
 ## Files
 
-- `apps/onboarding/.../PwaMotion.tsx`
+- `apps/qr/.../PwaMotion.tsx`
 - `packages/ui/.../DispatchTimeline.css`
 - `packages/ui/.../VehicleConfirmationCard.css`
 - `packages/ui/.../StatusTracker.css`

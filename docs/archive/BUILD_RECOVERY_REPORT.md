@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-17  
 **Reference:** [`CONSUMER_APP_FINAL_SIGNOFF.md`](./CONSUMER_APP_FINAL_SIGNOFF.md) P0 blockers  
-**Scope:** `@autolokate/onboarding` — build recovery + emergency back-navigation fix
+**Scope:** `@autolokate/qr` — build recovery + emergency back-navigation fix
 
 ---
 
@@ -22,9 +22,9 @@ All Sprint 4 **P0 blockers addressed in scope** are resolved:
 
 | File | Issue | Fix |
 |------|-------|-----|
-| `apps/onboarding/src/components/flow-step-shell/FlowStepShell.tsx` | Imported deleted `../purchase-step-shell/purchase-step-shell.css` | Removed import; styles already covered by `flow-step-shell.css` + `step-shell-chrome.css` |
+| `apps/qr/src/components/flow-step-shell/FlowStepShell.tsx` | Imported deleted `../purchase-step-shell/purchase-step-shell.css` | Removed import; styles already covered by `flow-step-shell.css` + `step-shell-chrome.css` |
 
-**Note:** The user-reported `step-shell-chrome.css` error was a downstream Vite failure. The file exists at `apps/onboarding/src/components/step-shell-chrome/step-shell-chrome.css` and is correctly referenced from:
+**Note:** The user-reported `step-shell-chrome.css` error was a downstream Vite failure. The file exists at `apps/qr/src/components/step-shell-chrome/step-shell-chrome.css` and is correctly referenced from:
 
 - `FlowStepShell.tsx`
 - `AuthStepShell.tsx`
@@ -37,7 +37,7 @@ All Sprint 4 **P0 blockers addressed in scope** are resolved:
 
 ## CSS / style import audit
 
-Full scan of `apps/onboarding/src` for style imports:
+Full scan of `apps/qr/src` for style imports:
 
 | Import type | Count | Broken |
 |-------------|-------|--------|
@@ -150,8 +150,8 @@ Commands run **2026-06-17** after fixes:
 
 | Command | Result |
 |---------|--------|
-| `pnpm --filter @autolokate/onboarding lint` | ✅ **Pass** (0 errors, 0 warnings) |
-| `pnpm --filter @autolokate/onboarding build` | ✅ **Pass** |
+| `pnpm --filter @autolokate/qr lint` | ✅ **Pass** (0 errors, 0 warnings) |
+| `pnpm --filter @autolokate/qr build` | ✅ **Pass** |
 | `pnpm build` (turbo monorepo) | ✅ **Pass** (12/12 tasks) |
 
 ### TypeScript

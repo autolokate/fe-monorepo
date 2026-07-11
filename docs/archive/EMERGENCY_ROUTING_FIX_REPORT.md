@@ -11,7 +11,7 @@
 
 `EmergencyRoutes.tsx` child routes now use **relative** paths under parent `/journey/emergency/*`, matching the working `PurchaseRoutes` pattern. `emergencyJourneyPaths` full URLs and all `navigate()` calls are unchanged.
 
-**Build:** `pnpm --filter @autolokate/onboarding build` — ✅ pass  
+**Build:** `pnpm --filter @autolokate/qr build` — ✅ pass  
 **Runtime:** All four plans verified in browser @ `http://127.0.0.1:5173`
 
 ---
@@ -123,7 +123,7 @@ No `patchPurchase`, `clearJourney`, or session wipe on handoff.
 ## Build verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ```
 
 ```
@@ -137,7 +137,7 @@ pnpm --filter @autolokate/onboarding build
 
 | File | Change |
 |------|--------|
-| `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx` | Relative child `path` props; `path="*"` fallback |
+| `apps/qr/src/journey/routes/EmergencyRoutes.tsx` | Relative child `path` props; `path="*"` fallback |
 
 ---
 

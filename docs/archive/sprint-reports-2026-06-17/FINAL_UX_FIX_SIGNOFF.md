@@ -48,9 +48,9 @@ Applies to A1 mobile login in dark and light themes at 320–414px widths.
 ## Build verification
 
 ```
-apps/onboarding — tsc + vite build — PASS
+apps/qr — tsc + vite build — PASS
 packages/ui — lint PASS (forms)
-apps/onboarding — lint PASS (pwa, shells, emergency routes)
+apps/qr — lint PASS (pwa, shells, emergency routes)
 ```
 
 ---
@@ -60,7 +60,7 @@ apps/onboarding — lint PASS (pwa, shells, emergency routes)
 | Package | Changes |
 |---------|---------|
 | `@autolokate/ui` | TextField, Input, OtpInput, PlateInput |
-| `@autolokate/onboarding` | PWA install, emergency picker, shells, consent, promo field |
+| `@autolokate/qr` | PWA install, emergency picker, shells, consent, promo field |
 | `@autolokate/icons` | No changes |
 | `@autolokate/design-system` | No token changes — existing tokens used |
 

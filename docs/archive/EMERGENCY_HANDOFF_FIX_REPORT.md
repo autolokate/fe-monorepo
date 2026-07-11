@@ -12,7 +12,7 @@ R10 Payment Success was a **terminal dead-end** — `R10PaymentSuccessScreen` re
 
 **Fix:** Wire `R10Route` to call `setPhase('emergency')` and navigate via plan-aware `getEmergencyHandoffPath(session)`. Purchase session fields are preserved; emergency limits continue reading `session.purchase.selectedPlanId`.
 
-**Build:** `pnpm --filter @autolokate/onboarding build` — ✅ pass
+**Build:** `pnpm --filter @autolokate/qr build` — ✅ pass
 
 ---
 
@@ -99,10 +99,10 @@ export function getEmergencyHandoffPath(
 
 | File | Change |
 |------|--------|
-| `apps/onboarding/src/journey/activation-routing.ts` | Plan-aware `getEmergencyHandoffPath(session)` |
-| `apps/onboarding/src/journey/routes/PurchaseRoutes.tsx` | R10 `onContinue` → emergency; P06 passes `session` |
-| `apps/onboarding/src/journey/purchase/purchase-routing.ts` | Comment: R10 → Emergency (not terminal) |
-| `apps/onboarding/src/router/routes.schema.ts` | R10 label updated |
+| `apps/qr/src/journey/activation-routing.ts` | Plan-aware `getEmergencyHandoffPath(session)` |
+| `apps/qr/src/journey/routes/PurchaseRoutes.tsx` | R10 `onContinue` → emergency; P06 passes `session` |
+| `apps/qr/src/journey/purchase/purchase-routing.ts` | Comment: R10 → Emergency (not terminal) |
+| `apps/qr/src/router/routes.schema.ts` | R10 label updated |
 
 **Not modified:** `R10PaymentSuccessScreen.tsx`, any emergency screen component, any other purchase screen component.
 
@@ -189,7 +189,7 @@ R4 (riders summary) appears when entitled rider slots > 0 and user completes rid
 
 ## Manual QA checklist
 
-Run `pnpm --filter @autolokate/onboarding dev`, complete purchase for each plan, tap **Continue** on R10:
+Run `pnpm --filter @autolokate/qr dev`, complete purchase for each plan, tap **Continue** on R10:
 
 - [ ] **Safe** — lands on E0; description shows 1 contact max  
 - [ ] **Secure** — lands on R0; rider prompt copy reflects entitled slots  

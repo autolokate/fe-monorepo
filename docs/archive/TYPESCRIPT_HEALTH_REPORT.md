@@ -71,7 +71,7 @@ Compile-time coupling only. No runtime impact. Acceptable for monolith onboardin
 
 | Package | typecheck | Notes |
 |---------|-----------|-------|
-| `@autolokate/onboarding` | ✅ | Primary app |
+| `@autolokate/qr` | ✅ | Primary app |
 | `@autolokate/ui` | ✅ | Via workspace build |
 | `@autolokate/icons` | ✅ | |
 | `@autolokate/design-system` | ✅ | |

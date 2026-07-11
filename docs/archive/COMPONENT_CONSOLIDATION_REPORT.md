@@ -11,7 +11,7 @@
 | Reusable UI | `@autolokate/ui` | 2+ uses → promoted |
 | Icons | `@autolokate/icons` | All icon glyphs |
 | Tokens | `@autolokate/design-system` | Colors, spacing, typography |
-| Domain compositions | `apps/onboarding/src/components/compositions/` | Business logic allowed |
+| Domain compositions | `apps/qr/src/components/compositions/` | Business logic allowed |
 
 ---
 

@@ -135,6 +135,6 @@ packages/ui/src/components/primitives/ScannerHubCard/*
 packages/ui/src/components/primitives/ScannedVehicleCard/*
 packages/icons/src/generated/{camera,activity,chevron-right,triangle-alert}.tsx
 packages/icons/src/iconNames.ts
-apps/onboarding/src/features/post-activation-pwa/data/pwa-demo-data.ts
-apps/onboarding/src/features/post-activation-pwa/routes/*
+apps/qr/src/features/post-activation-pwa/data/pwa-demo-data.ts
+apps/qr/src/features/post-activation-pwa/routes/*
 ```

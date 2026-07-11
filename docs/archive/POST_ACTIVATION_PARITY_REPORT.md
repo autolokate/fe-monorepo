@@ -99,8 +99,8 @@
 
 ```
 pnpm --filter @autolokate/ui build         ✅
-pnpm --filter @autolokate/onboarding build ✅
-pnpm --filter @autolokate/onboarding typecheck ✅
+pnpm --filter @autolokate/qr build ✅
+pnpm --filter @autolokate/qr typecheck ✅
 ```
 
 Console warnings: Vite chunk size advisory only (pre-existing pattern with Lottie bundle).

@@ -84,8 +84,8 @@ Each route now uses:
 
 ## Files changed (Phase 3)
 
-- `apps/onboarding/src/features/post-activation-pwa/components/PwaScanShell.tsx`
-- `apps/onboarding/src/features/post-activation-pwa/components/pwa-scan-shell.css`
-- `apps/onboarding/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx`
+- `apps/qr/src/features/post-activation-pwa/components/PwaScanShell.tsx`
+- `apps/qr/src/features/post-activation-pwa/components/pwa-scan-shell.css`
+- `apps/qr/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx`
 - `packages/ui/src/components/primitives/DispatchTimeline/DispatchTimeline.tsx`
 - `packages/ui/src/components/primitives/StatusTracker/StatusTracker.css`

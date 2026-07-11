@@ -1,6 +1,6 @@
 # Phase 10 — Purchase Flow Alignment
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-17  
 **Scope:** Orchestration integration only — reuse existing P01–P06 screens, no redesign, no new UI components, no design-system changes  
 **Baseline:** [PHASE_9_JOURNEY_ORCHESTRATOR.md](./PHASE_9_JOURNEY_ORCHESTRATOR.md)
@@ -109,7 +109,7 @@ Payment processing auto-navigates to P06 after **1.8s** (orchestration-only simu
 | `al-selected-flow` | `localStorage` | `purchase` | Survives browser close; required for purchase route access |
 | `al-journey-v1` | `sessionStorage` | `authStatus: AUTH_COMPLETED` | Required for activation segment; cleared on tab close |
 | `al-journey-v1` | `sessionStorage` | `selectedFlow` | Mirrors localStorage on save |
-| `al-onboarding-theme` | `localStorage` | `light` \| `dark` | Applies to purchase screens via DS tokens |
+| `al-qr-theme` | `localStorage` | `light` \| `dark` | Applies to purchase screens via DS tokens |
 
 ### Write points
 
@@ -181,7 +181,7 @@ Purchase screens render inside `.journey-frame` (`min(100%, 24.5625rem)`) with e
 | **390px** | Same |
 | **414px** | Same; max-width cap at 393px logical frame |
 
-**Verify manually:** Run `pnpm --filter @autolokate/onboarding dev`, complete auth → purchase path, resize devtools at each width.
+**Verify manually:** Run `pnpm --filter @autolokate/qr dev`, complete auth → purchase path, resize devtools at each width.
 
 ---
 
@@ -192,7 +192,7 @@ Purchase screens render inside `.journey-frame` (`min(100%, 24.5625rem)`) with e
 | **Light** | `data-theme="light"` + `setThemeMode('light')` | DS surface/on-surface tokens on all P01–P06 |
 | **Dark** | `data-theme="dark"` + `setThemeMode('dark')` | Same components, dark token set |
 
-Theme is set on Home before purchase entry and persists via `al-onboarding-theme`. Purchase segment inherits without additional wiring.
+Theme is set on Home before purchase entry and persists via `al-qr-theme`. Purchase segment inherits without additional wiring.
 
 ---
 
@@ -211,9 +211,9 @@ Theme is set on Home before purchase entry and persists via `al-onboarding-theme
 ## 10. Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding lint
-pnpm --filter @autolokate/onboarding build
-pnpm --filter @autolokate/onboarding dev
+pnpm --filter @autolokate/qr lint
+pnpm --filter @autolokate/qr build
+pnpm --filter @autolokate/qr dev
 ```
 
 ### Smoke path

@@ -54,7 +54,7 @@ BrowserRouter
 
 ### Parent route — exists and matches
 
-```79:79:apps/onboarding/src/journey/routes/JourneyRoutes.tsx
+```79:79:apps/qr/src/journey/routes/JourneyRoutes.tsx
         <Route path="/journey/emergency/*" element={<EmergencyActivationRoute />} />
 ```
 
@@ -71,7 +71,7 @@ Runtime with seeded `authStatus: 'AUTH_COMPLETED'` + `selectedFlow: 'purchase'`:
 
 ### Child routes — registered but **never match**
 
-```660:676:apps/onboarding/src/journey/routes/EmergencyRoutes.tsx
+```660:676:apps/qr/src/journey/routes/EmergencyRoutes.tsx
 export function EmergencyRoutes() {
   return (
     <EmergencySegmentBootstrap>
@@ -97,7 +97,7 @@ export function EmergencyRoutes() {
 
 ### Working reference — PurchaseRoutes (same pattern, correct paths)
 
-```661:672:apps/onboarding/src/journey/routes/PurchaseRoutes.tsx
+```661:672:apps/qr/src/journey/routes/PurchaseRoutes.tsx
       <Routes>
         <Route index element={<Navigate to={purchaseJourneyPaths.r03Vehicle} replace />} />
         <Route path="r03-vehicle" element={<R03Route />} />
@@ -252,7 +252,7 @@ When parent `/journey/emergency/*` matches URL `/journey/emergency/rider-prompt`
 
 ## 10. Exact fix (routing only — no UI changes)
 
-**File:** `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx`
+**File:** `apps/qr/src/journey/routes/EmergencyRoutes.tsx`
 
 Change child `Route` `path` props from full `emergencyJourneyPaths.*` URLs to **relative segments**, mirroring `PurchaseRoutes`:
 

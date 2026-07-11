@@ -13,7 +13,7 @@ P0 and P1 parity blockers from the final signoff audit are **resolved**. OTP cop
 
 **Final readiness score: 91% — APPROVED for dark-theme Figma signoff** with documented residual drift on hero absolute positioning (scroll-shell architecture) and intentional language-switcher omission.
 
-**Build:** `pnpm --filter @autolokate/onboarding build` — ✅ pass
+**Build:** `pnpm --filter @autolokate/qr build` — ✅ pass
 
 ---
 
@@ -203,7 +203,7 @@ Residual hero positioning drift is architectural (scroll shell) and does not blo
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 # Dev preview: http://127.0.0.1:5173/?dev=1
 # Emergency → E03 (R2 OTP), E01 offline state, E07 (E2 OTP)
 ```

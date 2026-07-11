@@ -91,7 +91,7 @@ apps/ui-preview/src/docs/pages/core/al-otp-input-page.css   (new)
 docs/DS_RC2_1_REPORT.md   (this file)
 ```
 
-**Not modified:** `apps/onboarding/**` · flow architecture · any other component
+**Not modified:** `apps/qr/**` · flow architecture · any other component
 
 ---
 

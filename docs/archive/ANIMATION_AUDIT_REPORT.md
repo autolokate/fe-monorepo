@@ -116,11 +116,11 @@
 ## Files changed
 
 ```
-apps/onboarding/.../PwaMotion.tsx
-apps/onboarding/.../PwaScanShell.tsx
-apps/onboarding/.../PwaStatusHeroScreen.tsx
-apps/onboarding/.../PwaEmergencyScreen.tsx
-apps/onboarding/.../pwa-scan.css
+apps/qr/.../PwaMotion.tsx
+apps/qr/.../PwaScanShell.tsx
+apps/qr/.../PwaStatusHeroScreen.tsx
+apps/qr/.../PwaEmergencyScreen.tsx
+apps/qr/.../pwa-scan.css
 packages/ui/.../SosHoldButton/*
 packages/ui/.../DispatchTimeline/*
 packages/ui/.../StatusTracker/StatusTracker.css

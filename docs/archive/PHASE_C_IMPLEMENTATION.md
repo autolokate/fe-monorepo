@@ -194,7 +194,7 @@ Dev preview (`ScreenDevApp` → **Purchase · Phase C**) supports **320 / 360 / 
 ## File map
 
 ```
-apps/onboarding/src/features/qr-purchase/
+apps/qr/src/features/qr-purchase/
 ├── types-checkout.ts              ← payment + permission session types
 ├── data/
 │   ├── purchase-payment-demo.ts   ← Shield+ fail rule · 3s hold
@@ -206,14 +206,14 @@ apps/onboarding/src/features/qr-purchase/
     ├── r14-permissions/
     └── r15-activation-complete/
 
-apps/onboarding/src/components/compositions/
+apps/qr/src/components/compositions/
 └── permission-row/
 
 packages/icons/src/generated/
 ├── payment-success-halo.tsx
 └── activation-complete-halo.tsx
 
-apps/onboarding/src/journey/
+apps/qr/src/journey/
 ├── purchase/purchase-routing.ts
 └── routes/PurchaseRoutes.tsx      ← R09–R15 orchestration
 ```
@@ -236,7 +236,7 @@ apps/onboarding/src/journey/
 ## Build verification
 
 ```bash
-pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/onboarding build
+pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/qr build
 ```
 
 All pass after Phase C implementation.

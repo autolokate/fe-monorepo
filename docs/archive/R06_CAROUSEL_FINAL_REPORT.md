@@ -39,9 +39,9 @@
 
 ## Files changed
 
-- `apps/onboarding/src/components/compositions/plan-carousel/PlanCarousel.tsx`
-- `apps/onboarding/src/components/compositions/plan-carousel/plan-carousel.css`
-- `apps/onboarding/src/features/qr-purchase/screens/r06-choose-plan/R06ChoosePlanScreen.tsx`
+- `apps/qr/src/components/compositions/plan-carousel/PlanCarousel.tsx`
+- `apps/qr/src/components/compositions/plan-carousel/plan-carousel.css`
+- `apps/qr/src/features/qr-purchase/screens/r06-choose-plan/R06ChoosePlanScreen.tsx`
 
 ## Before / after (behavioral)
 

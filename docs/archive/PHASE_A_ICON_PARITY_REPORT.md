@@ -149,10 +149,10 @@ Uses the same `VahanPreviewChips` composition as R03. Chip nodes `579:1709`–`5
 ## Build verification
 
 ```
-pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/onboarding build
+pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/qr build
 ✓ packages/icons
 ✓ packages/ui
-✓ apps/onboarding
+✓ apps/qr
 ```
 
 ---

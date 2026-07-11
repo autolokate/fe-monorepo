@@ -5,7 +5,7 @@
 **Matrix:** [`SCREEN_PARITY_MATRIX.md`](./SCREEN_PARITY_MATRIX.md)  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/) · `FtHCUnE0HH586PtG5yJyG0`  
 **Date:** 2026-06-17  
-**Verified:** `pnpm --filter @autolokate/onboarding build` ✅
+**Verified:** `pnpm --filter @autolokate/qr build` ✅
 
 ---
 

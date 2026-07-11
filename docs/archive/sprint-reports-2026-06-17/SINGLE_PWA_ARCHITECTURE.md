@@ -12,11 +12,11 @@ Autolokate is **one Progressive Web App**, not four separate apps. The four cons
 
 | What it is | What it is not |
 |------------|----------------|
-| One deployable PWA (`apps/onboarding`) | Four separate products |
+| One deployable PWA (`apps/qr`) | Four separate products |
 | One platform, multiple entry journeys | Separate architectures per flow |
 | Shared auth + shared UI + shared design tokens | Isolated design systems |
 
-**Deployable artifact:** `@autolokate/onboarding` — Vite + React 19 + React Router 7.
+**Deployable artifact:** `@autolokate/qr` — Vite + React 19 + React Router 7.
 
 ---
 
@@ -48,7 +48,7 @@ main.tsx
         └── *               → JourneyRoutes + JourneyProvider  (activation journeys)
 ```
 
-**File:** `apps/onboarding/src/journey/JourneyOrchestrator.tsx`
+**File:** `apps/qr/src/journey/JourneyOrchestrator.tsx`
 
 Post-activation PWA is mounted **outside** `JourneyProvider`. Journey session does not leak into PWA and vice versa.
 
@@ -77,21 +77,21 @@ Post-activation PWA is mounted **outside** `JourneyProvider`. Journey session do
 | `/pwa/scan/park-me/*` | Park Me flow |
 | `/pwa/scan/sos/*` | SOS emergency flow |
 
-**Path constants:** `apps/onboarding/src/features/post-activation-pwa/constants/pwa-scan-paths.ts`
+**Path constants:** `apps/qr/src/features/post-activation-pwa/constants/pwa-scan-paths.ts`
 
 ### Journey orchestration (unchanged)
 
-Runtime navigation is **imperative** via React Router + route components. A declarative flow registry exists as catalog metadata (`apps/onboarding/src/flow/registry/`) but is not the runtime engine.
+Runtime navigation is **imperative** via React Router + route components. A declarative flow registry exists as catalog metadata (`apps/qr/src/flow/registry/`) but is not the runtime engine.
 
 **Key orchestration files:**
 
 | Concern | Path |
 |---------|------|
-| Journey context + session | `apps/onboarding/src/journey/JourneyContext.tsx` |
-| Flow selection from entry | `apps/onboarding/src/journey/navigation/select-activation-flow.ts` |
-| Post-auth routing | `apps/onboarding/src/journey/activation-routing.ts` |
-| Route guards | `apps/onboarding/src/journey/guards/JourneyRouteGuards.tsx` |
-| Auth completion wrapper | `apps/onboarding/src/journey/routes/JourneySharedAuthRoute.tsx` |
+| Journey context + session | `apps/qr/src/journey/JourneyContext.tsx` |
+| Flow selection from entry | `apps/qr/src/journey/navigation/select-activation-flow.ts` |
+| Post-auth routing | `apps/qr/src/journey/activation-routing.ts` |
+| Route guards | `apps/qr/src/journey/guards/JourneyRouteGuards.tsx` |
+| Auth completion wrapper | `apps/qr/src/journey/routes/JourneySharedAuthRoute.tsx` |
 
 **Flow selection behavior (preserved):**
 
@@ -108,8 +108,8 @@ Two isolated session stores — **by design in Phase 1**:
 
 | Store | Key | Provider | Schema |
 |-------|-----|----------|--------|
-| Journey | `sessionStorage` → `al-journey-v1` | `JourneyProvider` | `apps/onboarding/src/journey/types.ts` |
-| PWA scan | `sessionStorage` → `al-pwa-scan-v1` | `PwaScanProvider` | `apps/onboarding/src/features/post-activation-pwa/context/pwa-scan-types.ts` |
+| Journey | `sessionStorage` → `al-journey-v1` | `JourneyProvider` | `apps/qr/src/journey/types.ts` |
+| PWA scan | `sessionStorage` → `al-pwa-scan-v1` | `PwaScanProvider` | `apps/qr/src/features/post-activation-pwa/context/pwa-scan-types.ts` |
 
 Selected flow persists in `localStorage` → `al-selected-flow`.
 
@@ -123,7 +123,7 @@ Every QR activation journey shares the same auth suffix:
 shared.mobile → shared.otp → shared.account (vehicle owner)
 ```
 
-Defined in `apps/onboarding/src/flow/registry/config/shared-pipeline.config.ts`.
+Defined in `apps/qr/src/flow/registry/config/shared-pipeline.config.ts`.
 
 Post-auth paths diverge by `selectedFlow` via `getPostAuthActivationPath()` in `activation-routing.ts`.
 
@@ -201,7 +201,7 @@ Exact URL shapes are **TBD at implementation time**. Phase 2 preserves **flow or
 @autolokate/utils          ← validation, formatting
 ```
 
-All feature modules in `apps/onboarding/src/features/` depend on `@autolokate/ui` and `@autolokate/design-system`.
+All feature modules in `apps/qr/src/features/` depend on `@autolokate/ui` and `@autolokate/design-system`.
 
 ### In-app module dependencies
 
@@ -246,15 +246,15 @@ activation-routing
 
 | Concern | Path |
 |---------|------|
-| App entry | `apps/onboarding/src/main.tsx` |
-| Top router | `apps/onboarding/src/journey/JourneyOrchestrator.tsx` |
-| Dev entry screen | `apps/onboarding/src/journey/screens/FlowEntryScreen.tsx` |
-| Journey routes | `apps/onboarding/src/journey/routes/JourneyRoutes.tsx` |
-| PWA routes | `apps/onboarding/src/features/post-activation-pwa/routes/PwaScanRoutes.tsx` |
-| Journey session schema | `apps/onboarding/src/journey/types.ts` |
-| PWA session schema | `apps/onboarding/src/features/post-activation-pwa/context/pwa-scan-types.ts` |
-| Flow registry | `apps/onboarding/src/flow/registry/config/flows.config.ts` |
-| Route catalog (schema) | `apps/onboarding/src/router/routes.schema.ts` |
+| App entry | `apps/qr/src/main.tsx` |
+| Top router | `apps/qr/src/journey/JourneyOrchestrator.tsx` |
+| Dev entry screen | `apps/qr/src/journey/screens/FlowEntryScreen.tsx` |
+| Journey routes | `apps/qr/src/journey/routes/JourneyRoutes.tsx` |
+| PWA routes | `apps/qr/src/features/post-activation-pwa/routes/PwaScanRoutes.tsx` |
+| Journey session schema | `apps/qr/src/journey/types.ts` |
+| PWA session schema | `apps/qr/src/features/post-activation-pwa/context/pwa-scan-types.ts` |
+| Flow registry | `apps/qr/src/flow/registry/config/flows.config.ts` |
+| Route catalog (schema) | `apps/qr/src/router/routes.schema.ts` |
 | Module map | `docs/PLATFORM_MODULE_MAP.md` |
 | QR entry strategy | `docs/QR_ENTRY_STRATEGY.md` |
 

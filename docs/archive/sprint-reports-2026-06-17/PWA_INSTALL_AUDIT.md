@@ -1,7 +1,7 @@
 # PWA Install Audit
 
 **Date:** 2026-06-17  
-**Scope:** Autolokate Onboarding app (`apps/onboarding`) — installability, manifest, service worker, icons, standalone  
+**Scope:** Autolokate Onboarding app (`apps/qr`) — installability, manifest, service worker, icons, standalone  
 **Method:** Static codebase audit (no physical device install tests executed in this pass)  
 **Deploy target:** Vercel (`vercel.json` SPA rewrite → `/index.html`)
 
@@ -41,7 +41,7 @@ The app runs as a **mobile web SPA** over HTTPS on Vercel. It is **not** a compl
 
 **Evidence:** Repo-wide search returns **0** manifest files. `index.html` has no `<link rel="manifest">`.
 
-```1:6:apps/onboarding/index.html
+```1:6:apps/qr/index.html
 <!doctype html>
 <html lang="en">
   <head>
@@ -63,7 +63,7 @@ The app runs as a **mobile web SPA** over HTTPS on Vercel. It is **not** a compl
 
 **Available brand assets:** SVG only in `packages/brand/src/assets/` (`al-logo-*.svg`, `al-mark-*.svg`). SVGs are not sufficient for platform install manifests without raster exports.
 
-**`public/` folder:** Does not exist under `apps/onboarding`. Vite has no static icon directory for PWA assets.
+**`public/` folder:** Does not exist under `apps/qr`. Vite has no static icon directory for PWA assets.
 
 ---
 
@@ -85,7 +85,7 @@ The app runs as a **mobile web SPA** over HTTPS on Vercel. It is **not** a compl
 | Manifest `theme_color` | FAIL — no manifest |
 | Status bar styling (iOS) | FAIL — no `apple-mobile-web-app-status-bar-style` |
 
-Theme is applied at runtime via `data-theme` on `<html>` from `localStorage` (`al-onboarding-theme`), but OS browser chrome is **not** themed for install/standalone.
+Theme is applied at runtime via `data-theme` on `<html>` from `localStorage` (`al-qr-theme`), but OS browser chrome is **not** themed for install/standalone.
 
 ---
 
@@ -235,8 +235,8 @@ Vercel deploys new hashed JS bundles; browsers fetch fresh assets on navigation 
 
 ## References
 
-- `apps/onboarding/index.html`
-- `apps/onboarding/vercel.json`
+- `apps/qr/index.html`
+- `apps/qr/vercel.json`
 - `docs/archive/POST_ACTIVATION_PARITY_REPORT.md` — known gap: “Service worker / offline PWA manifest”
 - `packages/brand/src/assets/` — SVG logos only
 

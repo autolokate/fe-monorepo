@@ -18,12 +18,12 @@ After fixing icon generation to apply the same `variant="dark"` treatment as `Al
 
 | File | Path | Status |
 |------|------|--------|
-| icon-192 | `apps/onboarding/public/icons/icon-192.png` | ✅ Opened |
-| icon-512 | `apps/onboarding/public/icons/icon-512.png` | ✅ Opened |
-| icon-192-maskable | `apps/onboarding/public/icons/icon-192-maskable.png` | ✅ Opened |
-| icon-512-maskable | `apps/onboarding/public/icons/icon-512-maskable.png` | ✅ Opened |
-| apple-touch-icon | `apps/onboarding/public/apple-touch-icon.png` | ✅ Opened |
-| apple-touch-icon (copy) | `apps/onboarding/public/icons/apple-touch-icon.png` | ✅ Opened |
+| icon-192 | `apps/qr/public/icons/icon-192.png` | ✅ Opened |
+| icon-512 | `apps/qr/public/icons/icon-512.png` | ✅ Opened |
+| icon-192-maskable | `apps/qr/public/icons/icon-192-maskable.png` | ✅ Opened |
+| icon-512-maskable | `apps/qr/public/icons/icon-512-maskable.png` | ✅ Opened |
+| apple-touch-icon | `apps/qr/public/apple-touch-icon.png` | ✅ Opened |
+| apple-touch-icon (copy) | `apps/qr/public/icons/apple-touch-icon.png` | ✅ Opened |
 | Source asset | `packages/brand/src/assets/autolokate_dark.png` | ✅ Opened |
 
 **Note:** `apple-touch-icon.png` lives at `public/` (linked from `index.html`); a copy also exists at `public/icons/` for audit tooling.
@@ -53,7 +53,7 @@ filter: variant === 'dark' ? 'brightness(0) invert(1)' : undefined,
 
 ## Fix Applied
 
-Updated `apps/onboarding/scripts/generate-pwa-icons.mjs`:
+Updated `apps/qr/scripts/generate-pwa-icons.mjs`:
 
 - Source remains **`autolokate_dark.png`** (no redraw)
 - Before compositing, apply **`brightness(0) invert(1)`** equivalent (white mark, preserved alpha)
@@ -107,7 +107,7 @@ Generated to `docs/assets/pwa-icon-audit/`:
 Regenerate comparisons:
 
 ```bash
-pnpm --filter @autolokate/onboarding exec node scripts/generate-pwa-icon-comparisons.mjs
+pnpm --filter @autolokate/qr exec node scripts/generate-pwa-icon-comparisons.mjs
 ```
 
 ---

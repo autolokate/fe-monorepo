@@ -229,7 +229,7 @@ Branch paths (R04b, R08b, R10b) remain outside linear sequence helpers.
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ```
 
 **Result:** ✅ Pass

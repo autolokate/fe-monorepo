@@ -16,7 +16,7 @@ Fixed dark viewport treatment, payment navigation, emergency handoff determinism
 Dark mode used a **circular** ambient tint (`border-radius: 50%` on `.al-screen-bg__tint`) that created a visible rounded shell boundary against the flat `#0a0a0c` canvas — unlike Figma’s full-bleed dark frames.
 
 ### Fix
-- Added `apps/onboarding/src/styles/screen-viewport.css`
+- Added `apps/qr/src/styles/screen-viewport.css`
 - Dark theme: rectangular full-viewport ambient gradient (ellipse at top), `border-radius: 0`
 - `html`, `body`, `#root` share flat `--al-color-background` edge-to-edge
 - Step chrome frames use transparent background in dark mode (no nested “card” surface)
@@ -24,8 +24,8 @@ Dark mode used a **circular** ambient tint (`border-radius: 50%` on `.al-screen-
 ### Files changed
 | File | Change |
 |------|--------|
-| `apps/onboarding/src/styles/screen-viewport.css` | New — dark viewport + selection styles |
-| `apps/onboarding/src/main.tsx` | Import viewport styles |
+| `apps/qr/src/styles/screen-viewport.css` | New — dark viewport + selection styles |
+| `apps/qr/src/main.tsx` | Import viewport styles |
 
 ### Before / after
 | Before | After |

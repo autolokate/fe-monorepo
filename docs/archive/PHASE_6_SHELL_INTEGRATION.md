@@ -13,7 +13,7 @@ Onboarding and purchase step shells now wrap all screen chrome in **`AlScreenBg 
 
 **No individual screen files were modified.** R01–R06 and P01–P06 inherit the integration through `OnboardingStepShell` and `PurchaseStepShell`.
 
-**QA:** `pnpm --filter @autolokate/onboarding build` ✓ · `lint` ✓
+**QA:** `pnpm --filter @autolokate/qr build` ✓ · `lint` ✓
 
 ---
 
@@ -71,7 +71,7 @@ Toggle via `ScreenDevApp` theme controls or `data-theme` on `<html>`.
 Capture via onboarding dev shell:
 
 ```bash
-pnpm --filter @autolokate/onboarding dev
+pnpm --filter @autolokate/qr dev
 ```
 
 Open `ScreenDevApp` → select screen → set viewport → toggle Light/Dark → hide panel for clean capture.
@@ -116,9 +116,9 @@ Open `ScreenDevApp` → select screen → set viewport → toggle Light/Dark →
 ## 4. Files changed
 
 ```
-apps/onboarding/src/components/onboarding-step-shell/OnboardingStepShell.tsx
-apps/onboarding/src/components/onboarding-step-shell/onboarding-step-shell.css
-apps/onboarding/src/components/purchase-step-shell/PurchaseStepShell.tsx
+apps/qr/src/components/onboarding-step-shell/OnboardingStepShell.tsx
+apps/qr/src/components/onboarding-step-shell/onboarding-step-shell.css
+apps/qr/src/components/purchase-step-shell/PurchaseStepShell.tsx
 
 docs/PHASE_6_SHELL_INTEGRATION.md
 ```

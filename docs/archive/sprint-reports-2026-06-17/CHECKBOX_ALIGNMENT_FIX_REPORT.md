@@ -26,7 +26,7 @@ The Figma spec requires the **22×22 visual box top** to align with the **first 
 
 ## Fix
 
-**File:** `apps/onboarding/src/components/compositions/inline-consent-block/inline-consent-block.css`
+**File:** `apps/qr/src/components/compositions/inline-consent-block/inline-consent-block.css`
 
 | Before | After |
 |--------|-------|

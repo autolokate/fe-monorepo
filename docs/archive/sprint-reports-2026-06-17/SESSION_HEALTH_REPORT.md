@@ -12,7 +12,7 @@
 | `al-journey-v1` | sessionStorage | JourneyProvider |
 | `al-selected-flow` | localStorage | JourneyProvider |
 | `al-pwa-scan-v1` | sessionStorage | PwaScanProvider |
-| `al-onboarding-theme` | localStorage | App root |
+| `al-qr-theme` | localStorage | App root |
 
 **Verified:** No new keys. No schema merge.
 
@@ -50,7 +50,7 @@ Full page reload remounts providers and re-hydrates from `sessionStorage` for bo
 
 ## Theme persistence
 
-Independent of providers: `al-onboarding-theme` + `data-theme` on `<html>`. Survives route changes and refresh.
+Independent of providers: `al-qr-theme` + `data-theme` on `<html>`. Survives route changes and refresh.
 
 ---
 

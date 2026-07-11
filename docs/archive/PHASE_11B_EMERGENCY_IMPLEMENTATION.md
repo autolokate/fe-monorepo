@@ -1,6 +1,6 @@
 # Phase 11b — Emergency + Rider Implementation
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-17  
 **Source of truth:** [PHASE_11_EMERGENCY_AUDIT.md](./PHASE_11_EMERGENCY_AUDIT.md)  
 **Figma section:** `371:1275` · Consumer · Emergency + Rider  
@@ -163,15 +163,15 @@ Ambient: `AlScreenBg variant="protected"` (green radial) on all emergency screen
 
 `ScreenDevApp.tsx` — Emergency (Phase 11b) group with **E01–E09** and state toggles for all 19 frames.
 
-Run: `pnpm --filter @autolokate/onboarding dev` with dev preview entry (see `main.tsx`).
+Run: `pnpm --filter @autolokate/qr dev` with dev preview entry (see `main.tsx`).
 
 ---
 
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding lint
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr lint
+pnpm --filter @autolokate/qr build
 ```
 
 Both pass as of Phase 11b signoff.

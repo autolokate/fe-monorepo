@@ -7,7 +7,7 @@
 
 ## 1. TypeScript ✅ PASS
 
-- `apps/onboarding/tsconfig.json` — **0 errors**
+- `apps/qr/tsconfig.json` — **0 errors**
 - `packages/ui/tsconfig.json` — **0 errors**
 
 ---
@@ -26,7 +26,7 @@ The single `console.error` in `PwaScanErrorBoundary.tsx:33` is the correct patte
 
 ## 3. TODO / FIXME / HACK Comments ✅ CLEAN
 
-Zero found in `apps/onboarding/src/` (TypeScript and CSS files combined).
+Zero found in `apps/qr/src/` (TypeScript and CSS files combined).
 
 ---
 

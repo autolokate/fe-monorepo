@@ -3,7 +3,7 @@
 **Date:** 2026-06-19  
 **Scope:** All active onboarding + post-activation PWA screens  
 **Method:** Shared-component root-cause analysis (not per-screenshot patching)  
-**Build:** `pnpm --filter @autolokate/ui build && pnpm --filter @autolokate/onboarding build` ✅
+**Build:** `pnpm --filter @autolokate/ui build && pnpm --filter @autolokate/qr build` ✅
 
 ---
 
@@ -75,14 +75,14 @@ Loading, vehicle, verify (3), park-me (11), SOS (14) under `/pwa/scan/*`
 
 | File | Change |
 |------|--------|
-| `apps/onboarding/src/components/step-shell-chrome/touch-target-layout.css` | **NEW** — 16px content gutter = 4px frame + 12px inset bleed |
-| `apps/onboarding/src/components/step-shell-chrome/step-shell-chrome.css` | Gutter on frame/header/body/footer; removed back negative margin; removed body `overflow-x: hidden` |
-| `apps/onboarding/src/components/compositions/inline-consent-block/inline-consent-block.css` | CSS grid `48px \| 1fr`; removed negative margins |
+| `apps/qr/src/components/step-shell-chrome/touch-target-layout.css` | **NEW** — 16px content gutter = 4px frame + 12px inset bleed |
+| `apps/qr/src/components/step-shell-chrome/step-shell-chrome.css` | Gutter on frame/header/body/footer; removed back negative margin; removed body `overflow-x: hidden` |
+| `apps/qr/src/components/compositions/inline-consent-block/inline-consent-block.css` | CSS grid `48px \| 1fr`; removed negative margins |
 | `packages/ui/src/components/forms/Checkbox/*` | `layout="icon-only"` variant; 48×48 control without label duplication |
 | `packages/ui/src/components/forms/TextField/*` | Filled detection + `:placeholder-shown` active border |
 | `packages/ui/src/components/forms/Input/Input.css` | 1.5px default border |
-| `apps/onboarding/src/features/post-activation-pwa/components/pwa-scan-shell.css` | Import gutter; remove back `-4px`; inset on header/main/footer |
-| `apps/onboarding/src/journey/activation-routing.ts` | `getAuthFlowBackPath()` for flow-aware auth back |
+| `apps/qr/src/features/post-activation-pwa/components/pwa-scan-shell.css` | Import gutter; remove back `-4px`; inset on header/main/footer |
+| `apps/qr/src/journey/activation-routing.ts` | `getAuthFlowBackPath()` for flow-aware auth back |
 
 ---
 

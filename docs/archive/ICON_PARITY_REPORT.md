@@ -206,7 +206,7 @@ These Figma elements are **not** `@autolokate/icons` glyphs by design:
 
 ```bash
 pnpm --filter @autolokate/icons build      # ✅
-pnpm --filter @autolokate/onboarding build # ✅
+pnpm --filter @autolokate/qr build # ✅
 ```
 
 Registry count: **27** `AlIconName` values (23 UI + 4 halos).

@@ -19,7 +19,7 @@ Define how to achieve **one session** for Autolokate PWA without breaking Purcha
 | Journey | `al-journey-v1` (sessionStorage) | `PersistedJourneyState` | `journey/persistence.ts` |
 | Journey flow | `al-selected-flow` (localStorage) | `ActivationFlowId` | `journey/persistence.ts` |
 | PWA | `al-pwa-scan-v1` (sessionStorage) | `PwaScanSession` | `post-activation-pwa/storage/pwa-scan-storage.ts` |
-| Theme | `al-onboarding-theme` (localStorage) | `'light' \| 'dark'` | App root |
+| Theme | `al-qr-theme` (localStorage) | `'light' \| 'dark'` | App root |
 
 **No cross-reads.** Journey code never reads `al-pwa-scan-v1`. PWA code never reads `al-journey-v1`.
 
@@ -222,7 +222,7 @@ clearScannerSlice(): void;     // maps to resetSession
 | `al-selected-flow` | All phases | Selected activation flow |
 | `al-autolokate-v2` | S1+ | Sliced unified state (no photos) |
 | `al-autolokate-photos-v1` | S1+ | Park Me + SOS photos |
-| `al-onboarding-theme` | All phases | Theme (unchanged) |
+| `al-qr-theme` | All phases | Theme (unchanged) |
 
 ---
 

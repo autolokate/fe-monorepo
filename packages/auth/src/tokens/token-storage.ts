@@ -36,7 +36,7 @@ function removeSessionStorage(key: string): void {
   }
 }
 
-/** Browser sessionStorage-backed token storage (onboarding PWA default). */
+/** Browser sessionStorage-backed token storage (QR PWA default). */
 export function createSessionTokenStorage(
   key: string = TOKEN_STORAGE_KEY,
 ): TokenStorage {

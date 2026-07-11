@@ -156,7 +156,7 @@ Persisted via existing `al-journey-v1` sessionStorage.
 ## File map
 
 ```
-apps/onboarding/src/features/qr-purchase/
+apps/qr/src/features/qr-purchase/
 ├── data/vahan-demo.ts
 ├── types-vehicle.ts
 └── screens/
@@ -166,11 +166,11 @@ apps/onboarding/src/features/qr-purchase/
     ├── r04b-fetch-failed/
     └── r05-confirm-vehicle/
 
-apps/onboarding/src/components/compositions/
+apps/qr/src/components/compositions/
 ├── vahan-preview-chips/
 └── purchase-status-shell/
 
-apps/onboarding/src/journey/
+apps/qr/src/journey/
 ├── purchase/purchase-routing.ts   ← r03–r05 paths prepended
 ├── routes/PurchaseRoutes.tsx      ← route orchestration
 ├── activation-routing.ts          ← purchase entry → r03
@@ -201,7 +201,7 @@ packages/ui/src/components/
 
 ```bash
 cd packages/ui && pnpm run build
-cd apps/onboarding && pnpm run build
+cd apps/qr && pnpm run build
 ```
 
 Both pass after Phase A implementation.

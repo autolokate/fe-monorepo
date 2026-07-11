@@ -149,7 +149,7 @@ Post-payment back guard is reactive (not proactive via `useBlocker`) — 1-frame
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| TypeScript: `apps/onboarding` | ✅ 0 errors | Verified 2026-06-20 (baseline + post-fix) |
+| TypeScript: `apps/qr` | ✅ 0 errors | Verified 2026-06-20 (baseline + post-fix) |
 | TypeScript: `packages/ui` | ✅ 0 errors | Verified 2026-06-20 |
 | Dead CSS rules | ✅ Cleaned | `.ob-purchase-plan-context`, `.ob-shell__cta-secondary` deleted |
 | Dead exports | ✅ Cleaned | `LanguagePickerSheet`, `LanguageSwitcher`, `ConfettiBurst` re-export removed |

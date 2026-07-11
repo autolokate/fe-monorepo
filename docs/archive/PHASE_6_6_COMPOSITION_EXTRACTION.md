@@ -1,6 +1,6 @@
 # Phase 6.6 — Composition Extraction
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Scope:** P0 refactors from [Phase 6.5 Composition Audit](./PHASE_6_5_COMPOSITION_AUDIT.md)  
 **Mode:** Refactor only — no Prepaid, B2B, B2B2C, or Emergency flows  
 **Date:** 2026-06-17
@@ -150,12 +150,12 @@ New composition infrastructure: **~97 LOC** (components + banner CSS). Net proje
 
 | Component | Path | Exported from |
 |-----------|------|-------------|
-| **FlowStepShell** | `components/flow-step-shell/` | `@autolokate/onboarding` |
+| **FlowStepShell** | `components/flow-step-shell/` | `@autolokate/qr` |
 | **InlineStatusBanner** | `components/compositions/inline-status-banner/` | `components/compositions` |
 | **EmptyStateHero** | `components/compositions/empty-state-hero/` | `components/compositions` |
 | **FormFieldStack** | `components/compositions/form-field-stack/` | `components/compositions` |
-| OnboardingStepShell *(compat)* | `components/onboarding-step-shell/` | `@autolokate/onboarding` |
-| PurchaseStepShell *(compat)* | `components/purchase-step-shell/` | `@autolokate/onboarding` |
+| OnboardingStepShell *(compat)* | `components/onboarding-step-shell/` | `@autolokate/qr` |
+| PurchaseStepShell *(compat)* | `components/purchase-step-shell/` | `@autolokate/qr` |
 
 **Still in inventory only (not implemented):** PlanCarousel, CheckoutSummary, RiderSelectorRow, LegalConsentBlock, VehicleSummary, etc.
 
@@ -205,15 +205,15 @@ New composition infrastructure: **~97 LOC** (components + banner CSS). Net proje
 ### Build
 
 ```bash
-pnpm --filter @autolokate/onboarding lint    # ✓
-pnpm --filter @autolokate/onboarding build  # ✓
+pnpm --filter @autolokate/qr lint    # ✓
+pnpm --filter @autolokate/qr build  # ✓
 ```
 
 ---
 
 ## QA matrix
 
-**Dev preview:** `pnpm --filter @autolokate/onboarding dev`
+**Dev preview:** `pnpm --filter @autolokate/qr dev`
 
 | Viewport | Shared R01–R06 | Purchase P01–P06 |
 |----------|----------------|------------------|

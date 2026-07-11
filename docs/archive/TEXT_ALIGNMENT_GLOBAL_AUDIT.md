@@ -111,12 +111,12 @@ PWA status screens use the same **16px** content gutter (`849:321` title @ x:16)
 
 ## Files Changed
 
-- `apps/onboarding/src/components/step-shell-chrome/touch-target-layout.css`
-- `apps/onboarding/src/components/step-shell-chrome/step-shell-chrome.css`
-- `apps/onboarding/src/components/compositions/welcome-activation/welcome-activation-shell.css`
-- `apps/onboarding/src/components/flow-step-shell/flow-step-shell.css`
-- `apps/onboarding/src/journey/screens/flow-entry-screen.css`
-- `apps/onboarding/src/features/post-activation-pwa/components/pwa-scan-shell.css`
+- `apps/qr/src/components/step-shell-chrome/touch-target-layout.css`
+- `apps/qr/src/components/step-shell-chrome/step-shell-chrome.css`
+- `apps/qr/src/components/compositions/welcome-activation/welcome-activation-shell.css`
+- `apps/qr/src/components/flow-step-shell/flow-step-shell.css`
+- `apps/qr/src/journey/screens/flow-entry-screen.css`
+- `apps/qr/src/features/post-activation-pwa/components/pwa-scan-shell.css`
 
 ---
 

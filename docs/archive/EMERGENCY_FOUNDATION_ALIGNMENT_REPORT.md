@@ -1,6 +1,6 @@
 # Emergency + Rider — Foundation Alignment Report (Phase E1)
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-18  
 **Source of truth:** [EMERGENCY_IMPLEMENTATION_BLUEPRINT.md](./EMERGENCY_IMPLEMENTATION_BLUEPRINT.md)  
 **Mode:** Foundation alignment only — no emergency screen UI built or restyled
@@ -254,7 +254,7 @@ Shield inherits Secure features including "2 contacts" — verify inherited copy
 ## 7. Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ```
 
 **Result:** ✅ Pass (2026-06-18)

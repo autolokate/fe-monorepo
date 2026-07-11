@@ -1,6 +1,6 @@
 # Phase 11 — Emergency + Rider Audit
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-17  
 **Mode:** Audit only — no screen implementation  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/) (`FtHCUnE0HH586PtG5yJyG0`)  

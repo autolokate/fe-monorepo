@@ -132,7 +132,7 @@ Card internals (all plans): padding **18×20**, gap **14**, radius **20**, badge
 ## How to re-verify
 
 ```bash
-pnpm --filter @autolokate/onboarding dev --port 5175 --host 127.0.0.1
+pnpm --filter @autolokate/qr dev --port 5175 --host 127.0.0.1
 # Open http://127.0.0.1:5175/?dev=1
 # R06 · Choose plan → View state: safe / secure / shield / shield-plus @ 390px dark
 ```

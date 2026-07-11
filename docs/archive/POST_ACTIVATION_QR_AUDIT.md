@@ -418,11 +418,11 @@ Use before marking any PWA screen complete.
 
 | Asset | Path | Relevance |
 |-------|------|-----------|
-| Dev QR shell | `apps/onboarding/src/features/qr-activation/screens/qr-scan/QrScanScreen.tsx` | Wrong flow; camera placeholder only |
-| Auth screens | `apps/onboarding/src/features/shared-auth/screens/` | Pattern reuse for 03–05 |
-| Vehicle confirm | `apps/onboarding/src/features/qr-purchase/screens/r05-confirm/` | Pattern for 08/08b |
+| Dev QR shell | `apps/qr/src/features/qr-activation/screens/qr-scan/QrScanScreen.tsx` | Wrong flow; camera placeholder only |
+| Auth screens | `apps/qr/src/features/shared-auth/screens/` | Pattern reuse for 03–05 |
+| Vehicle confirm | `apps/qr/src/features/qr-purchase/screens/r05-confirm/` | Pattern for 08/08b |
 | Fetching | `r04-fetching/` | Pattern for 07, 17 |
-| Status shell | `apps/onboarding/src/components/compositions/purchase-status-shell/` | Pattern for 16, 18, 22 |
+| Status shell | `apps/qr/src/components/compositions/purchase-status-shell/` | Pattern for 16, 18, 22 |
 | Halos | `packages/icons/src/generated/*-halo.tsx` | May need PWA-specific halos |
 | Design tokens | `packages/design-system/`, `AlScreenBg` | emergency + protected ambients |
 

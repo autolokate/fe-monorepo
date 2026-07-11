@@ -1,8 +1,8 @@
 # Composition Promotion Candidates
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Updated:** Phase 5 purchase flow  
-**Rule:** Implement in `apps/onboarding/src/components/compositions/` first. Promote to `@autolokate/ui` only after stable reuse across 2+ flows.
+**Rule:** Implement in `apps/qr/src/components/compositions/` first. Promote to `@autolokate/ui` only after stable reuse across 2+ flows.
 
 ---
 
@@ -63,5 +63,5 @@ Before moving to `@autolokate/ui`:
 
 ## Source of truth
 
-Machine-readable inventory: `apps/onboarding/src/components/compositions/inventory.ts`  
+Machine-readable inventory: `apps/qr/src/components/compositions/inventory.ts`  
 Promotion filter: `corePromotionCandidates` export

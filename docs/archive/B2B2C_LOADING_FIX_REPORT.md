@@ -2,7 +2,7 @@
 
 **Issue:** `/journey/b2b2c/welcome` remained in loading state indefinitely.  
 **Scope:** Welcome-screen state transition only (no auth / emergency / UI redesign).  
-**Build:** `pnpm --filter @autolokate/onboarding build` ✓
+**Build:** `pnpm --filter @autolokate/qr build` ✓
 
 ---
 

@@ -1,6 +1,6 @@
 # Purchase Flow Implementation — Phase 5
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Product area:** Consumer · QR Activation + Purchase  
 **Status:** Awaiting review before B2B  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/Autolokate-%C2%B7-Consumer-App?node-id=5-2)
@@ -11,7 +11,7 @@
 
 Phase 5 adds **six purchase-specific screens** (P01–P06) under `features/qr-purchase/screens/`. Shared screens R01–R06 are **imported, not duplicated**. All UI uses `@autolokate/ui`, `@autolokate/icons`, and `@autolokate/design-system` — no local buttons, inputs, chips, or duplicate plan components.
 
-**Preview:** `pnpm --filter @autolokate/onboarding dev` → **Purchase (Phase 5)** section
+**Preview:** `pnpm --filter @autolokate/qr dev` → **Purchase (Phase 5)** section
 
 ---
 
@@ -162,9 +162,9 @@ Dev preview viewport controls: **320 · 360 · 375 · 390 · 414**
 ## Build verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build   # ✓
-pnpm --filter @autolokate/onboarding lint    # ✓
-pnpm --filter @autolokate/onboarding dev     # Preview shared + purchase
+pnpm --filter @autolokate/qr build   # ✓
+pnpm --filter @autolokate/qr lint    # ✓
+pnpm --filter @autolokate/qr dev     # Preview shared + purchase
 ```
 
 ---

@@ -10,7 +10,7 @@
 
 | Dimension | Current state | Unified target | Merge readiness |
 |-----------|---------------|----------------|-----------------|
-| Product | One deployable (`apps/onboarding`) | Same | ✅ Already one product |
+| Product | One deployable (`apps/qr`) | Same | ✅ Already one product |
 | Route tree | Split: `/journey/*` + `/pwa/scan/*` | Single namespace | ⚠️ Risky — 62+ routes, different guards |
 | Provider | `JourneyProvider` + `PwaScanProvider` | One root provider | ⚠️ Risky — 40+ hook call sites |
 | Session | `al-journey-v1` + `al-pwa-scan-v1` | One storage key | ❌ Breaking — schema + quota conflicts |
@@ -166,7 +166,7 @@ Single persisted document, single hydration on app boot, no data loss when cross
 | `al-journey-v1` | sessionStorage | Journey | Low — no binary photos |
 | `al-selected-flow` | localStorage | Journey | Trivial |
 | `al-pwa-scan-v1` | sessionStorage | PWA | **High** — base64 photos (parkMe + sos) |
-| `al-onboarding-theme` | localStorage | App root | Trivial — shared already |
+| `al-qr-theme` | localStorage | App root | Trivial — shared already |
 
 **PWA storage:** `pwa-scan-storage.ts` implements quota detection (`QuotaExceededError`) and photo byte estimation. Journey persistence has no quota handling.
 
@@ -342,7 +342,7 @@ QR entry can be added **without** session merge by dispatching to existing route
 | `@autolokate/design-system` + `@autolokate/ui` | Already shared |
 | Auth **validation** utilities | Already shared, no session coupling |
 | Auth **screen components** (A1/A2/A3) | Already shared with props; session write stays caller-owned |
-| Theme key (`al-onboarding-theme`) | Already app-wide |
+| Theme key (`al-qr-theme`) | Already app-wide |
 | Route **aliases** (parallel old + new URLs) | Additive, no behavior change |
 | QR dispatch layer at root | New code path calling existing entry functions |
 | Documentation / module map | Zero runtime risk |

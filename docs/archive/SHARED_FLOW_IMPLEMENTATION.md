@@ -1,6 +1,6 @@
 # Shared Flow Implementation — Phase 4
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Scope:** Shared · Auth + Legal (R01–R06)  
 **Status:** Awaiting review  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/Autolokate-%C2%B7-Consumer-App?node-id=5-2)
@@ -11,7 +11,7 @@
 
 Phase 4 delivers **six presentational screens** for the shared onboarding pipeline. Each screen supports view states (`default`, `loading`, `error`, `empty`, `success`) with **no business logic**, **no API integration**, and **no routing**. All UI uses `@autolokate/ui`, `@autolokate/icons`, and `@autolokate/design-system` only.
 
-**Preview:** `pnpm --filter @autolokate/onboarding dev`
+**Preview:** `pnpm --filter @autolokate/qr dev`
 
 ---
 
@@ -147,9 +147,9 @@ Typography and dimensions follow RC1 audits: [`VEHICLE_INFO_AUDIT.md`](VEHICLE_I
 ## Build verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build   # ✓
-pnpm --filter @autolokate/onboarding lint    # ✓
-pnpm --filter @autolokate/onboarding dev     # Screen preview
+pnpm --filter @autolokate/qr build   # ✓
+pnpm --filter @autolokate/qr lint    # ✓
+pnpm --filter @autolokate/qr dev     # Screen preview
 ```
 
 ---

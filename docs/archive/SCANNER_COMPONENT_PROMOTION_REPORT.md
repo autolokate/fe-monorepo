@@ -54,7 +54,7 @@ Promoted **`AlVehicleConfirmationCard`** (`variant="scanner"`) as a new core pri
 | **02** Vehicle found hub | `/pwa/scan/vehicle` | `AlScannedVehicleCard` (unchanged — hub, not verification) |
 | Onboarding / purchase RC confirm | — | **Not used** — no cross-flow reuse |
 
-**Wired in:** `apps/onboarding/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx`
+**Wired in:** `apps/qr/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx`
 
 ---
 

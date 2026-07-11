@@ -1,6 +1,6 @@
 # Phase 7 — Consumer · QR Activation — B2B (Pre-Paid)
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Flow ID:** `prepaid`  
 **Product area:** `qr-prepaid`  
 **Date:** 2026-06-17  
@@ -196,7 +196,7 @@ features/qr-prepaid/
 
 ## Responsive QA
 
-**Command:** `pnpm --filter @autolokate/onboarding dev`
+**Command:** `pnpm --filter @autolokate/qr dev`
 
 | Viewport | PR01 | PR02 | PR03 |
 |----------|------|------|------|
@@ -253,9 +253,9 @@ Prepaid state toggles: `default` · `loading` · `error` · `success`
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding lint    # ✓
-pnpm --filter @autolokate/onboarding build  # ✓
-pnpm --filter @autolokate/onboarding dev      # PR01–PR03 + shared + purchase QA
+pnpm --filter @autolokate/qr lint    # ✓
+pnpm --filter @autolokate/qr build  # ✓
+pnpm --filter @autolokate/qr dev      # PR01–PR03 + shared + purchase QA
 ```
 
 ---

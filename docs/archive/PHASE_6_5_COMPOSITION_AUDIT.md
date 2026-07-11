@@ -1,11 +1,11 @@
 # Phase 6.5 — Shared Composition Audit
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Scope:** R01–R06 (shared) + P01–P06 (purchase)  
 **Objective:** Audit reusable compositions before Prepaid implementation  
 **Mode:** Audit only — no new components, no screen modifications  
 **Date:** 2026-06-17  
-**Prior art:** [Phase 5 Review](./PHASE_5_REVIEW.md) · [Phase 6 Shell Integration](./PHASE_6_SHELL_INTEGRATION.md) · `apps/onboarding/src/components/compositions/inventory.ts`
+**Prior art:** [Phase 5 Review](./PHASE_5_REVIEW.md) · [Phase 6 Shell Integration](./PHASE_6_SHELL_INTEGRATION.md) · `apps/qr/src/components/compositions/inventory.ts`
 
 ---
 
@@ -33,7 +33,7 @@ A composition inventory (`inventory.ts`) already maps 13 candidates; **none are 
 | Check | Method |
 |-------|--------|
 | Repeated JSX | Manual review of all 12 `*Screen.tsx` files + shell components |
-| Repeated CSS | Grep across `apps/onboarding/src/**/*.css` |
+| Repeated CSS | Grep across `apps/qr/src/**/*.css` |
 | Layout / state / footer / header patterns | Cross-reference shells + screen children |
 | DS compliance | Import analysis, grep for local `Button`/`Input`, inline styles, hex/rgb colors |
 | Classification | A = onboarding composition · B = keep local · C = future `@autolokate/ui` core |
@@ -134,7 +134,7 @@ A composition inventory (`inventory.ts`) already maps 13 candidates; **none are 
 | **LegalConsentBlock** | `LegalConsentBlock` | Same checkbox + link pattern in 3+ flows with identical props |
 | **Generic status hero** | `ActivationSuccess` / `PaymentStatusHero` | Converge P05/P06/R01/R02 heroes to one prop-driven API |
 
-**No immediate `@autolokate/ui` promotions recommended.** Onboarding compositions should stabilize in `apps/onboarding/src/components/compositions/` first.
+**No immediate `@autolokate/ui` promotions recommended.** Onboarding compositions should stabilize in `apps/qr/src/components/compositions/` first.
 
 ---
 
@@ -244,7 +244,7 @@ Icons consistently from `@autolokate/icons`. Shells additionally use `AlScreenBg
 
 | Check | Result | Notes |
 |-------|--------|-------|
-| Hardcoded colors (`#`, `rgb`, `rgba`) in source CSS | **PASS** | None in `apps/onboarding/src/**/*.css` |
+| Hardcoded colors (`#`, `rgb`, `rgba`) in source CSS | **PASS** | None in `apps/qr/src/**/*.css` |
 | Hardcoded spacing (raw `px`) in screen/shell CSS | **PASS** | All spacing via `var(--al-space-*)` |
 | Semantic color usage | **PASS** | Banners use `color-mix(in srgb, var(--al-color-danger|success) …)` |
 | Typography tokens | **PASS** | `--al-text-*` for legal copy and banners |
@@ -355,9 +355,9 @@ All 12 screens comply. `PurchaseStepShell` adds `hideFooter` and imports purchas
 ## Verification commands
 
 ```bash
-pnpm --filter @autolokate/onboarding lint
-pnpm --filter @autolokate/onboarding build
-pnpm --filter @autolokate/onboarding dev   # Shared + Purchase state QA
+pnpm --filter @autolokate/qr lint
+pnpm --filter @autolokate/qr build
+pnpm --filter @autolokate/qr dev   # Shared + Purchase state QA
 ```
 
 ---

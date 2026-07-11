@@ -275,4 +275,4 @@ Compared implementation against Figma nodes **170:25** (R03), **179:25** (R04), 
 
 ---
 
-**Build:** `packages/ui` + `apps/onboarding` pass.
+**Build:** `packages/ui` + `apps/qr` pass.

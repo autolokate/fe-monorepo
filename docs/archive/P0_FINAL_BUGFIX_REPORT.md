@@ -40,7 +40,7 @@ Header area appeared as a separate black square block on some mobile screens —
 All PWA screens using `PwaScanShell` / `AlScreenBg` (loading, vehicle hub, auth, Park Me, SOS, status timelines).
 
 ### Fix
-- `apps/onboarding/.../components/pwa-scan-shell.css` — unified shell `background-color: var(--al-color-background)`; header/frame/main set to `transparent`; footer gradients use `color-mix(in srgb, var(--al-color-background) …)`.
+- `apps/qr/.../components/pwa-scan-shell.css` — unified shell `background-color: var(--al-color-background)`; header/frame/main set to `transparent`; footer gradients use `color-mix(in srgb, var(--al-color-background) …)`.
 - `packages/ui/.../ScreenBg/ScreenBg.css` — `.al-screen-bg.pwa-scan-shell { min-height: 100dvh }`.
 
 ### Screenshots
@@ -170,7 +170,7 @@ See dedicated `archive/IOS_SOS_LOADER_REPORT.md`.
 
 ```
 pnpm --filter @autolokate/ui build        ✓
-pnpm --filter @autolokate/onboarding build ✓
+pnpm --filter @autolokate/qr build ✓
 ```
 
 ---

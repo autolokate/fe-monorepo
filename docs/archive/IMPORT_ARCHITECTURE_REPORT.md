@@ -6,7 +6,7 @@
 
 ## Path Aliases Added
 
-### TypeScript (`apps/onboarding/tsconfig.json`)
+### TypeScript (`apps/qr/tsconfig.json`)
 
 ```json
 {
@@ -19,7 +19,7 @@
 }
 ```
 
-### Vite (`apps/onboarding/vite.config.ts`)
+### Vite (`apps/qr/vite.config.ts`)
 
 ```ts
 alias: {

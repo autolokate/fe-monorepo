@@ -77,7 +77,7 @@ All other historical AUDIT · PARITY · RECOVERY · REPORT · SIGNOFF docs:
 | iOS contacts | `shouldShowAddFromContactsCTA()` false — manual mobile entry only |
 | Android contacts | Native Contact Picker API when supported |
 | Rider skip | Confirmation sheet → `riderSkipped: true` → `/journey/completed` |
-| QR entry | `/journey?type=purchase\|prepaid\|b2b2c\|activated&…` |
+| QR entry | `/journey/auth/mobile?qr_code=…` (resolve via API) |
 | Provider tree | `AutolokateRootProvider` = `JourneyProvider` + `PwaScanProvider` |
 | UI | Figma parity locked — no spacing/typography/layout changes without Figma update |
 

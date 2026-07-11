@@ -7,7 +7,7 @@
 ## Target Structure — Verified ✅
 
 ```
-apps/onboarding/src/
+apps/qr/src/
 ├── app/                    # App bootstrap
 ├── components/
 │   ├── compositions/       # Domain-specific reusable UI

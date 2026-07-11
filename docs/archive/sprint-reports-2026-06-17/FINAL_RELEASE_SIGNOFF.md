@@ -1,7 +1,7 @@
 # Final Release Sign-Off
 
 **Date:** 2026-06-21  
-**Build target:** `https://onboarding-lemon-six.vercel.app`  
+**Build target:** `https://qr-staging.autolokate.com`  
 **Evidence report:** `REAL_DEVICE_EVIDENCE_REPORT.md`  
 **Prior code reports:** `REAL_DEVICE_SIGNOFF_V2.md`, `IOS_INSTALL_REPORT.md`, `IOS_CONTACT_PICKER_REPORT.md`, `RIDER_LOOP_FIX_REPORT.md`
 

@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-17  
 **Audit type:** Real Device PWA Readiness (static codebase audit + platform mapping)  
-**Scope:** `apps/onboarding` — install layer, permissions, flows, UX  
+**Scope:** `apps/qr` — install layer, permissions, flows, UX  
 **Constraints honored:** No flow, business rule, or architecture changes made  
 
 ---
@@ -108,7 +108,7 @@ Based on source review and prior **PIXEL PERFECT / VERIFIED** signoffs:
 |-----|---------|------------------|
 | `al-journey-v1` | sessionStorage | Same tab |
 | `al-pwa-scan-v1` | sessionStorage | Same tab |
-| `al-onboarding-theme` | localStorage | Yes |
+| `al-qr-theme` | localStorage | Yes |
 | `al-selected-flow` | localStorage | Yes |
 
 ---
@@ -155,7 +155,7 @@ Based on source review and prior **PIXEL PERFECT / VERIFIED** signoffs:
 
 Recommended sequence (implementation — out of scope for this audit):
 
-1. Add `apps/onboarding/public/` with icons (192, 512, maskable, apple-touch-icon, favicon).
+1. Add `apps/qr/public/` with icons (192, 512, maskable, apple-touch-icon, favicon).
 2. Add `manifest.webmanifest` (`name`, `short_name`, `start_url`, `scope`, `display: standalone`, `theme_color`, `background_color`, icons).
 3. Integrate `vite-plugin-pwa` (or equivalent) — app shell precache + offline fallback page.
 4. Update `index.html`: manifest link, theme-color, Apple meta, `viewport-fit=cover`.

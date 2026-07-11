@@ -11,7 +11,7 @@
 
 Fixed plan carousel interaction without redesigning layout. Cards no longer jump on tap, the centered card auto-selects after scroll, and the CTA stays synced with selection (label + price).
 
-**Verification:** `pnpm --filter @autolokate/onboarding lint` and `build` pass.
+**Verification:** `pnpm --filter @autolokate/qr lint` and `build` pass.
 
 ---
 
@@ -187,9 +187,9 @@ Test via `?dev=1` → **R06 · Choose plan** → viewport buttons → scroll + t
 
 | File | Change |
 |------|--------|
-| `apps/onboarding/src/components/compositions/plan-carousel/PlanCarousel.tsx` | Scroll-end detection, debounce, tap handler, programmatic scroll guards |
-| `apps/onboarding/src/components/compositions/plan-carousel/plan-carousel.css` | Fixed slot height, scale-only selection, ring cross-fade, tap spring |
-| `apps/onboarding/src/features/qr-purchase/screens/r06-choose-plan/R06ChoosePlanScreen.tsx` | `ctaHelper={plan.priceLabel}` for price sync |
+| `apps/qr/src/components/compositions/plan-carousel/PlanCarousel.tsx` | Scroll-end detection, debounce, tap handler, programmatic scroll guards |
+| `apps/qr/src/components/compositions/plan-carousel/plan-carousel.css` | Fixed slot height, scale-only selection, ring cross-fade, tap spring |
+| `apps/qr/src/features/qr-purchase/screens/r06-choose-plan/R06ChoosePlanScreen.tsx` | `ctaHelper={plan.priceLabel}` for price sync |
 
 ---
 

@@ -16,7 +16,7 @@
 
 ### Utility
 
-`apps/onboarding/src/utils/device-contact-picker.ts`
+`apps/qr/src/utils/device-contact-picker.ts`
 
 | Export | Behavior |
 |--------|----------|
@@ -27,7 +27,7 @@ Mobile normalization accepts 10-digit Indian numbers, `+91` prefix, and leading 
 
 ### Wiring — Emergency E0
 
-`apps/onboarding/src/journey/routes/EmergencyRoutes.tsx` → `E0Route`
+`apps/qr/src/journey/routes/EmergencyRoutes.tsx` → `E0Route`
 
 | User action | Result |
 |-------------|--------|

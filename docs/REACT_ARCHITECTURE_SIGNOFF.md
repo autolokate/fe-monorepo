@@ -1,7 +1,7 @@
 # React Architecture Signoff
 
 **Date:** 2026-06-17  
-**App:** `apps/onboarding`  
+**App:** `apps/qr`  
 **Verdict:** **PASS** (with documented large-file and effect-count notes)
 
 ---
@@ -96,8 +96,8 @@ No excessive memoization anti-patterns identified.
 |-------|----------------|
 | `@autolokate/ui` | Buttons, fields, OTP, chips, cards, sheets |
 | `@autolokate/icons` | Iconography |
-| `apps/onboarding/components/compositions/` | Flow-specific layout shells |
-| `apps/onboarding/features/*/screens/` | Screen compositions |
+| `apps/qr/components/compositions/` | Flow-specific layout shells |
+| `apps/qr/features/*/screens/` | Screen compositions |
 
 No duplicate primitive UI components in app layer.
 

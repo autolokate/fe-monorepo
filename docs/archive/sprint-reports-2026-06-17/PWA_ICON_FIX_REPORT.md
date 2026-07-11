@@ -128,7 +128,7 @@ Delta < 0.01 — **no visual distortion**.
 Regenerate:
 
 ```bash
-pnpm --filter @autolokate/onboarding generate:pwa-icons
+pnpm --filter @autolokate/qr generate:pwa-icons
 ```
 
 ---
@@ -137,10 +137,10 @@ pnpm --filter @autolokate/onboarding generate:pwa-icons
 
 | File | Change |
 |------|--------|
-| `apps/onboarding/scripts/generate-pwa-icons.mjs` | Source → `autolokate_dark.png`; proportional fit; safe-zone math |
-| `apps/onboarding/public/icons/*.png` | Regenerated |
-| `apps/onboarding/public/apple-touch-icon.png` | Regenerated |
-| `apps/onboarding/public/favicon-*` | Regenerated |
+| `apps/qr/scripts/generate-pwa-icons.mjs` | Source → `autolokate_dark.png`; proportional fit; safe-zone math |
+| `apps/qr/public/icons/*.png` | Regenerated |
+| `apps/qr/public/apple-touch-icon.png` | Regenerated |
+| `apps/qr/public/favicon-*` | Regenerated |
 
 **Not changed:** SVG brand files, logo components, manifest fields, app UI, Figma screens.
 

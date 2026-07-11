@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-21  
 **Sprint:** P0 iOS Contact Support + Rider Confirmation  
-**Build:** `@autolokate/onboarding` — production build verified
+**Build:** `@autolokate/qr` — production build verified
 
 ---
 

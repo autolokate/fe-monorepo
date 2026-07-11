@@ -101,5 +101,5 @@ Happy path unchanged: mobile `9999999999`, OTP `123456`, reporter plate `MH 12 A
 ```
 pnpm --filter @autolokate/icons build   ✅
 pnpm --filter @autolokate/ui build      ✅
-pnpm --filter @autolokate/onboarding build ✅
+pnpm --filter @autolokate/qr build ✅
 ```

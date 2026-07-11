@@ -165,9 +165,9 @@ Post-fix verification (390px dark, Secure selected):
 
 | File | Changes |
 |------|---------|
-| `apps/onboarding/src/components/compositions/plan-carousel/plan-carousel.css` | Figma px values for viewport, slides, card, ring, typography, colors |
-| `apps/onboarding/src/components/compositions/plan-carousel/PlanCarousel.tsx` | Viewport wrapper; `scrollTo` center math (`offsetLeft − (clientWidth − slideWidth) / 2`); hint copy spacing |
-| `apps/onboarding/src/components/auth-step-shell/auth-step-shell.css` | `.ob-auth-shell--plan-screen` heading, stack, footer, CTA spacing |
+| `apps/qr/src/components/compositions/plan-carousel/plan-carousel.css` | Figma px values for viewport, slides, card, ring, typography, colors |
+| `apps/qr/src/components/compositions/plan-carousel/PlanCarousel.tsx` | Viewport wrapper; `scrollTo` center math (`offsetLeft − (clientWidth − slideWidth) / 2`); hint copy spacing |
+| `apps/qr/src/components/auth-step-shell/auth-step-shell.css` | `.ob-auth-shell--plan-screen` heading, stack, footer, CTA spacing |
 
 **Not modified:** `PurchaseRoutes.tsx`, session types, pricing logic, plan data.
 
@@ -183,7 +183,7 @@ Post-fix verification (390px dark, Secure selected):
 - [x] Selection ring **2px #1FA24A** matches card bounds
 - [x] Internal card layout matches AlPlanCardW measurements
 - [x] Helper text → CTA vertical rhythm via fixed carousel + auto footer
-- [x] Build passes (`pnpm --filter @autolokate/onboarding build`)
+- [x] Build passes (`pnpm --filter @autolokate/qr build`)
 
 ---
 

@@ -27,7 +27,7 @@ No P0 or P1 blockers remain. All critical visual gaps identified in prior sessio
 
 ### C1 — PWA Emergency CSS: Hardcoded Hex → Design Tokens
 
-**File:** `apps/onboarding/src/features/post-activation-pwa/components/pwa-emergency-screen.css`
+**File:** `apps/qr/src/features/post-activation-pwa/components/pwa-emergency-screen.css`
 
 **Root cause:** SOS screen contained 5 hardcoded hex values; light-mode overrides and location chip styles referenced `#4a4a4a`, `#0a0a0a`, `#1a1a1a`, `#ffffff`.
 
@@ -44,8 +44,8 @@ No P0 or P1 blockers remain. All critical visual gaps identified in prior sessio
 ### E0 — Emergency Trust Row Position Correction
 
 **Files:**
-- `apps/onboarding/src/features/emergency/screens/e05-contacts-empty/E05ContactsEmptyScreen.tsx`
-- `apps/onboarding/src/features/emergency/emergency.css`
+- `apps/qr/src/features/emergency/screens/e05-contacts-empty/E05ContactsEmptyScreen.tsx`
+- `apps/qr/src/features/emergency/emergency.css`
 
 **Root cause:** Trust row was rendered as a sibling of `EmptyStateHero` with `margin-block-start: auto`, pushing it to the bottom of the screen. Figma `373:37` shows the trust row at y≈540 — directly below the hero illustration within the vertically centred content group.
 

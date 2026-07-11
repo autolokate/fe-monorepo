@@ -1,7 +1,7 @@
 # Full Repository Audit
 
 **Date:** 2026-06-20  
-**Scope:** Entire monorepo — `apps/onboarding`, `packages/*`, build output, routing, state, CSS, design system  
+**Scope:** Entire monorepo — `apps/qr`, `packages/*`, build output, routing, state, CSS, design system  
 **Truth hierarchy:** Figma → Screenshots → Audit Reports → Implementation Reports  
 **Constraints honored:** No journey architecture, business rules, plan limits, payment logic, session schema, route order, flow order, guard logic, or Figma UX changes
 

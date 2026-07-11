@@ -42,7 +42,7 @@ JourneyOrchestrator
 ```
 
 - **Session:** `sessionStorage` key `al-pwa-scan-v1` — not shared with `al-journey-v1`
-- **Feature root:** `apps/onboarding/src/features/post-activation-pwa/`
+- **Feature root:** `apps/qr/src/features/post-activation-pwa/`
 
 ---
 
@@ -145,7 +145,7 @@ JourneyOrchestrator
 
 ```bash
 pnpm --filter @autolokate/ui build        # PASS
-pnpm --filter @autolokate/onboarding build # PASS
+pnpm --filter @autolokate/qr build # PASS
 ```
 
 ---

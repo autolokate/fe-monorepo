@@ -1,6 +1,6 @@
 # Emergency Entry Flow Verification
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-18  
 **Mode:** Audit only — no code changes  
 **Figma:** Section `371:1275` · Consumer · Emergency + Rider  
@@ -349,12 +349,12 @@ Audit-only — fixes documented, not applied.
 
 | Concern | File |
 |---------|------|
-| R10 handoff | `apps/onboarding/src/journey/activation-routing.ts` → `getEmergencyHandoffPath()` |
-| Plan limits | `apps/onboarding/src/features/emergency/emergency-limits.ts` |
-| R0 state machine | `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx` → `R0Route` |
-| R0 UI | `apps/onboarding/src/features/emergency/screens/e01-rider-prompt/E01RiderPromptScreen.tsx` |
+| R10 handoff | `apps/qr/src/journey/activation-routing.ts` → `getEmergencyHandoffPath()` |
+| Plan limits | `apps/qr/src/features/emergency/emergency-limits.ts` |
+| R0 state machine | `apps/qr/src/journey/routes/EmergencyRoutes.tsx` → `R0Route` |
+| R0 UI | `apps/qr/src/features/emergency/screens/e01-rider-prompt/E01RiderPromptScreen.tsx` |
 | R4 / E0 / E5 UI | `e10-riders-summary`, `e05-contacts-empty`, `e09-contacts-summary` |
-| R10 Continue | `apps/onboarding/src/journey/routes/PurchaseRoutes.tsx` → `R10Route` |
+| R10 Continue | `apps/qr/src/journey/routes/PurchaseRoutes.tsx` → `R10Route` |
 
 ---
 

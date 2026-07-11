@@ -1,6 +1,6 @@
 # Emergency + Rider — Final Figma Signoff Audit
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-18  
 **Figma:** Section `371:1275` · Consumer · Emergency + Rider · READY FOR DEV  
 **File:** `FtHCUnE0HH586PtG5yJyG0`  

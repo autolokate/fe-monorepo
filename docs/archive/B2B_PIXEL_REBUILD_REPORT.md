@@ -2,7 +2,7 @@
 
 **Scope:** UI only — welcome screens (Prepaid + B2B2C). No routing, Auth, or Emergency changes.  
 **Reference:** [`B2B_VISUAL_PARITY_AUDIT.md`](B2B_VISUAL_PARITY_AUDIT.md) · Figma `FtHCUnE0HH586PtG5yJyG0`  
-**Verified:** `pnpm --filter @autolokate/onboarding build` · dark mode · Playwright @ 393px + responsive widths
+**Verified:** `pnpm --filter @autolokate/qr build` · dark mode · Playwright @ 393px + responsive widths
 
 ---
 

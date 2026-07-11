@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-17  
 **Mode:** Audit only — no code changes  
-**App:** `@autolokate/onboarding` · `apps/onboarding`  
+**App:** `@autolokate/qr` · `apps/qr`  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/) · `FtHCUnE0HH586PtG5yJyG0`  
 **Prior sprints:** Asset recovery (S1) · Pixel parity (S2) · Code hardening (S3)
 
@@ -186,8 +186,8 @@ References: [`SCREEN_PARITY_MATRIX.md`](./archive/SCREEN_PARITY_MATRIX.md) · [`
 
 | Command | Result |
 |---------|--------|
-| `pnpm --filter @autolokate/onboarding lint` | ✅ Pass (0 errors) |
-| `pnpm --filter @autolokate/onboarding build` | ❌ **Fail** |
+| `pnpm --filter @autolokate/qr lint` | ✅ Pass (0 errors) |
+| `pnpm --filter @autolokate/qr build` | ❌ **Fail** |
 | `tsc -p tsconfig.json` | ✅ Pass |
 
 **Build failure (P0):** `FlowStepShell.tsx` imports deleted `../purchase-step-shell/purchase-step-shell.css` (removed in Sprint 3 hardening). Vite cannot resolve the asset.

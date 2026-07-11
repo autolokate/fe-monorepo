@@ -117,7 +117,7 @@ These were **not duplicated** — optional props added with unchanged defaults:
 
 ## Inventory update recommendation
 
-Add to `apps/onboarding/src/components/compositions/inventory.ts` on next composition pass:
+Add to `apps/qr/src/components/compositions/inventory.ts` on next composition pass:
 
 ```typescript
 ScannerHubCard: { promoteToCore: true, usedInFlows: ['pwa-scan'] }

@@ -1,7 +1,7 @@
 # Final Screen Verification — Post-Activation PWA
 
 **Date:** 2026-06-17  
-**Build:** `@autolokate/onboarding` production build ✓  
+**Build:** `@autolokate/qr` production build ✓  
 **Preview:** `http://127.0.0.1:5175/pwa/scan/*`
 
 ---

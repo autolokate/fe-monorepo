@@ -16,7 +16,7 @@ Phase 1 delivers **one root provider mount** and **shared entry orchestration ab
 
 ### 1. AutolokateRootProvider
 
-**File:** `apps/onboarding/src/platform/AutolokateRootProvider.tsx`
+**File:** `apps/qr/src/platform/AutolokateRootProvider.tsx`
 
 Nests existing providers:
 
@@ -33,7 +33,7 @@ AutolokateRootProvider
 
 ### 2. Unified Flow Dispatcher
 
-**File:** `apps/onboarding/src/platform/entry/flow-dispatcher.ts`
+**File:** `apps/qr/src/platform/entry/flow-dispatcher.ts`
 
 | Function | Purpose |
 |----------|---------|
@@ -57,7 +57,7 @@ AutolokateRootProvider
 
 ### 3. Unified Entry Registry
 
-**File:** `apps/onboarding/src/platform/entry/flow-entry-registry.ts`
+**File:** `apps/qr/src/platform/entry/flow-entry-registry.ts`
 
 | Export | Contents |
 |--------|----------|
@@ -69,7 +69,7 @@ AutolokateRootProvider
 
 ### 4. QR Dispatch Contract (interfaces only)
 
-**File:** `apps/onboarding/src/platform/qr/qr-dispatch-contract.ts`
+**File:** `apps/qr/src/platform/qr/qr-dispatch-contract.ts`
 
 | Export | Type |
 |--------|------|
@@ -83,7 +83,7 @@ AutolokateRootProvider
 
 ### 5. Platform public API
 
-**File:** `apps/onboarding/src/platform/index.ts`
+**File:** `apps/qr/src/platform/index.ts`
 
 Re-exports all platform modules. Also re-exported from `journey/index.ts`:
 

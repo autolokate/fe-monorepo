@@ -194,11 +194,11 @@ Verified token paths at widths **320, 360, 375, 390, 393, 414** via ScreenDevApp
 Screenshots were not captured in CI for this pass. Reproduce locally:
 
 ```bash
-pnpm --filter @autolokate/onboarding dev --port 5199
+pnpm --filter @autolokate/qr dev --port 5199
 ```
 
 1. Open `/?dev=screens` — toggle **Light** in dev panel  
-2. PWA: `http://127.0.0.1:5199/pwa/scan/vehicle` with `localStorage.setItem('al-onboarding-theme','light')`
+2. PWA: `http://127.0.0.1:5199/pwa/scan/vehicle` with `localStorage.setItem('al-qr-theme','light')`
 
 **Before:** Dark `#1a1a1a` cards on `#f4f6f9` canvas; invisible white icons on tinted surfaces; muted text stuck at `#8a8a8a` on wrong backgrounds.  
 **After:** Semantic surfaces/text; icons inherit `currentColor` or signal tokens; contrast meets design-system roles in both themes.

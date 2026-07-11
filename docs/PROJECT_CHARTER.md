@@ -2,7 +2,7 @@
 
 **Effective:** 2026-06-17  
 **Status:** **BASELINE LOCKED**  
-**Repository:** `autolokate-web` (Onboarding + Activation + Post-Activation PWA)
+**Repository:** `autolokate-web` (QR PWA + Activation + Post-Activation)
 
 ---
 
@@ -27,10 +27,10 @@ This monorepo delivers:
 
 | Entry | Path |
 |-------|------|
-| Journey | `/journey` (QR dispatch via `?type=…`) |
+| QR journey | `/journey/auth/mobile?qr_code=…` |
 | Post-activation PWA | `/pwa/scan/*` |
 
-**Deploy reference:** `https://onboarding-lemon-six.vercel.app`
+**Deploy reference:** `https://qr-staging.autolokate.com`
 
 ---
 
@@ -141,7 +141,7 @@ Treat this repository as the **canonical implementation**. New projects should i
 
 | Area | Reference location |
 |------|-------------------|
-| Folder structure | `apps/onboarding/src/` |
+| Folder structure | `apps/qr/src/` |
 | Component ownership | `packages/ui/`, `CLAUDE_PROJECT_INDEX.md` §8 |
 | Design system usage | `packages/design-system/` |
 | Provider patterns | `AutolokateRootProvider`, `JourneyProvider`, `PwaScanProvider` |

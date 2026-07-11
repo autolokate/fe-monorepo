@@ -1,6 +1,6 @@
 # Emergency + Rider — Phase E2 Implementation
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-18  
 **Figma:** Section `371:1275` · Consumer · Emergency + Rider · READY FOR DEV  
 **Inputs:** [EMERGENCY_IMPLEMENTATION_BLUEPRINT.md](./EMERGENCY_IMPLEMENTATION_BLUEPRINT.md) · [EMERGENCY_FOUNDATION_ALIGNMENT_REPORT.md](./EMERGENCY_FOUNDATION_ALIGNMENT_REPORT.md)
@@ -19,7 +19,7 @@ Phase E2 delivers **10 Figma-aligned screens** (R0–R4, E0–E3, E5) with **req
 | `AlContactCard` in `@autolokate/ui` | ✅ |
 | Plan limits from `selectedPlanId` | ✅ |
 | OTP / mobile validation (shared auth) | ✅ |
-| Build | ✅ `pnpm --filter @autolokate/onboarding build` |
+| Build | ✅ `pnpm --filter @autolokate/qr build` |
 
 ---
 
@@ -245,7 +245,7 @@ Screen dev app includes emergency screens **E01–E10** with state toggles:
 - R4: 1 rider vs 2-of-2 max
 
 ```bash
-pnpm --filter @autolokate/onboarding dev
+pnpm --filter @autolokate/qr dev
 ```
 
 ---

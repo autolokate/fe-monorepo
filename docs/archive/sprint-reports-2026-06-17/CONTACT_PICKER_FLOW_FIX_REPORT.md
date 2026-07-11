@@ -57,7 +57,7 @@ Picker populates **draft state only**. Each step advance requires an explicit fo
 
 ## Fix
 
-**File:** `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx`
+**File:** `apps/qr/src/journey/routes/EmergencyRoutes.tsx`
 
 ### E0 — after picker success
 

@@ -360,7 +360,7 @@ Rechecked against Figma section `167:434` and Phase A–C signoff docs. No new p
 ## 8. Build verification
 
 ```bash
-pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/onboarding build
+pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/qr build
 ```
 
 **Status at audit:** ✅ Pass
@@ -398,11 +398,11 @@ The Consumer · QR Activation + Purchase journey is **functionally complete for 
 
 | Area | Primary files |
 |------|---------------|
-| Journey router | `apps/onboarding/src/journey/routes/JourneyRoutes.tsx` |
-| Purchase routes | `apps/onboarding/src/journey/routes/PurchaseRoutes.tsx` |
-| Path constants | `apps/onboarding/src/journey/purchase/purchase-routing.ts` |
-| Session | `apps/onboarding/src/journey/JourneyContext.tsx` · `persistence.ts` |
+| Journey router | `apps/qr/src/journey/routes/JourneyRoutes.tsx` |
+| Purchase routes | `apps/qr/src/journey/routes/PurchaseRoutes.tsx` |
+| Path constants | `apps/qr/src/journey/purchase/purchase-routing.ts` |
+| Session | `apps/qr/src/journey/JourneyContext.tsx` · `persistence.ts` |
 | Demo rules | `vahan-demo.ts` · `purchase-payment-demo.ts` · `auth-flow.validation.ts` |
 | Phase docs (archived) | `docs/archive/PHASE_A_*` · `docs/archive/PHASE_B_IMPLEMENTATION.md` · `docs/archive/PHASE_C_IMPLEMENTATION.md` |
 | Figma audit (archived) | `docs/archive/PURCHASE_FIGMA_AUDIT.md` |
-| Dev preview | `apps/onboarding/src/dev/ScreenDevApp.tsx` |
+| Dev preview | `apps/qr/src/dev/ScreenDevApp.tsx` |

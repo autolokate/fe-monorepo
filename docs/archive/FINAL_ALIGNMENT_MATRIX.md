@@ -1,7 +1,7 @@
 # Final Alignment Matrix
 
 **Date:** 2026-06-19  
-**Build:** `pnpm --filter @autolokate/onboarding build` ✅
+**Build:** `pnpm --filter @autolokate/qr build` ✅
 
 ---
 

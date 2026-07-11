@@ -161,10 +161,10 @@ All P0 and P1 mismatches (including icon parity) have been resolved. Remaining P
 ## Build Verification
 
 ```
-pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/onboarding build
+pnpm --filter @autolokate/icons --filter @autolokate/ui --filter @autolokate/qr build
 ✓ packages/icons — tsc --build
 ✓ packages/ui — tsc --build
-✓ apps/onboarding — tsc + vite build
+✓ apps/qr — tsc + vite build
 ```
 
 ---

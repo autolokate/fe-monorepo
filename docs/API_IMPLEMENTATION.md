@@ -1,6 +1,6 @@
 # API Implementation
 
-**Single source of truth** for backend integration on the Autolokate onboarding PWA.  
+**Single source of truth** for backend integration on the Autolokate QR PWA.  
 Update this document when each phase completes — do not create separate report files.
 
 **OpenAPI:** `https://malisa-noninclusive-davin.ngrok-free.dev/openapi.json`  
@@ -10,7 +10,7 @@ Update this document when each phase completes — do not create separate report
 
 ## Executive Summary
 
-The onboarding PWA has a **locked UI** and a **layered integration architecture**. Authentication, purchase checkout, prepaid/B2B activation preview/redeem, and post-payment QR attach are production-ready. Most other domains still use mock data.
+The QR PWA has a **locked UI** and a **layered integration architecture**. Authentication, purchase checkout, prepaid/B2B activation preview/redeem, and post-payment QR attach are production-ready. Most other domains still use mock data.
 
 **Coverage:** 19 of ~35 consumer API operations integrated (**54%**).
 
@@ -152,8 +152,8 @@ sequenceDiagram
 ### Dependency graph
 
 ```
-apps/onboarding/hooks/auth
-    → apps/onboarding/services/auth/*
+apps/qr/hooks/auth
+    → apps/qr/services/auth/*
     → @autolokate/api-client
     → @autolokate/auth
 
@@ -209,7 +209,7 @@ Must NOT contain: React, JourneySession, env reads, token storage.
 
 App-domain enums and formatters. OpenAPI DTOs live in api-client; mappers bridge to journey fields.
 
-### `apps/onboarding`
+### `apps/qr`
 
 | Path | Role |
 |------|------|
@@ -229,7 +229,7 @@ App-domain enums and formatters. OpenAPI DTOs live in api-client; mappers bridge
 | `src/hooks/profile/*` | `useUpdateProfile` |
 | `src/services/device/*` | FCM device registration (headless) |
 | `src/hooks/device/*` | `useRegisterDevice` (headless) |
-| `src/platform/api/onboarding-api-client.ts` | Client factory + `onAuthFailure` |
+| `src/platform/api/qr-api-client.ts` | Client factory + `onAuthFailure` |
 | `src/platform/auth/AuthSessionRegistrar.tsx` | Refresh-failure redirect (no UI) |
 | `src/platform/device/DeviceRegistrationRegistrar.tsx` | Session-restore device register (no UI) |
 | `src/config/env.ts` | Sole `import.meta.env` reader |
@@ -329,7 +329,7 @@ Session schema is **locked** — services map DTOs to existing fields only.
 
 | File | Purpose |
 |------|---------|
-| `apps/onboarding/.env.example` | Template |
+| `apps/qr/.env.example` | Template |
 | `.env.development` / `.env.production` | Committed defaults |
 | `.env.local` | Gitignored overrides |
 
@@ -339,7 +339,7 @@ Session schema is **locked** — services map DTOs to existing fields only.
 | `VITE_ENVIRONMENT` | No (defaults from `PROD`) |
 | `VITE_ENABLE_LOGS` | No |
 
-**Single reader:** `apps/onboarding/src/config/env.ts` — validated in `main.tsx` via `validateEnv()`.
+**Single reader:** `apps/qr/src/config/env.ts` — validated in `main.tsx` via `validateEnv()`.
 
 ---
 
@@ -450,7 +450,7 @@ Session schema is **locked** — services map DTOs to existing fields only.
 |---------|:----:|:---------:|:-----:|
 | `@autolokate/auth` | — | ✅ | ✅ |
 | `@autolokate/api-client` | — | ✅ | ✅ |
-| `@autolokate/onboarding` | ✅ | ✅ | ✅ |
+| `@autolokate/qr` | ✅ | ✅ | ✅ |
 
 *Re-run after each phase; update table here.*
 

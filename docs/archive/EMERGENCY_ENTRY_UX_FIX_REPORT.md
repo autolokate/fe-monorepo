@@ -1,6 +1,6 @@
 # Emergency Entry UX Fix — Report
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-18  
 **Source audit:** `docs/EMERGENCY_ENTRY_FLOW_VERIFICATION.md`  
 **Scope:** R0 entry loading UX + plan-aware handoff routing only  
@@ -12,7 +12,7 @@
 
 Removed the **forced 600ms loading state** on every R0 mount when purchase session already contains `selectedPlanId` and `riderCount`. Updated `getEmergencyHandoffPath()` to skip R0 when rider entitlement is zero (not only for Safe plan).
 
-Build: `pnpm --filter @autolokate/onboarding build` ✅
+Build: `pnpm --filter @autolokate/qr build` ✅
 
 ---
 
@@ -48,8 +48,8 @@ Build: `pnpm --filter @autolokate/onboarding build` ✅
 
 | File | Change |
 |------|--------|
-| `apps/onboarding/src/journey/activation-routing.ts` | `getEmergencyHandoffPath()` uses `shouldEnterRiderPrompt(planId, riderCount)` instead of `planId === 'safe'` only |
-| `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx` | `resolveR0InitialViewState()` + `hasRiderEntitlementInPurchaseSession()`; skip async delay when session entitlement is known and `loadAttempt === 0` |
+| `apps/qr/src/journey/activation-routing.ts` | `getEmergencyHandoffPath()` uses `shouldEnterRiderPrompt(planId, riderCount)` instead of `planId === 'safe'` only |
+| `apps/qr/src/journey/routes/EmergencyRoutes.tsx` | `resolveR0InitialViewState()` + `hasRiderEntitlementInPurchaseSession()`; skip async delay when session entitlement is known and `loadAttempt === 0` |
 
 **Unchanged:** `E01RiderPromptScreen`, `FlowStepShell`, route paths, emergency limits math, Figma copy.
 
@@ -119,7 +119,7 @@ Build: `pnpm --filter @autolokate/onboarding build` ✅
 ### Build verification
 
 ```
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ✓ tsc + vite build (2026-06-18)
 ```
 

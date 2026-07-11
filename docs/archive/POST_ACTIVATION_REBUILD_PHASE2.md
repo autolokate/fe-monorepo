@@ -124,7 +124,7 @@ Shared Figma 848:278 composition:
 
 ## Files changed (Phase 2)
 
-- `apps/onboarding/src/features/post-activation-pwa/components/PwaEmergencyScreen.tsx`
-- `apps/onboarding/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx`
+- `apps/qr/src/features/post-activation-pwa/components/PwaEmergencyScreen.tsx`
+- `apps/qr/src/features/post-activation-pwa/routes/pwa-sos-routes.tsx`
 - `packages/ui/src/components/primitives/SosHoldButton/*`
 - `packages/ui/src/components/primitives/ScreenSpinner/*`

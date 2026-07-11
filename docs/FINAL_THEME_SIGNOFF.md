@@ -85,7 +85,7 @@ Onboarding bundle: CSS ~162 KB, JS ~1082 KB (unchanged order of magnitude post-t
 | Timeline active step | White icon on amber | Black on amber (Figma) |
 | Status heroes | Fixed `#0A0A0C` glyphs | Theme-aware on-surface |
 
-Reproduce: `@autolokate/onboarding` dev server, toggle `data-theme="light"`, routes in PWA_LIGHT_THEME_REPORT.md.
+Reproduce: `@autolokate/qr` dev server, toggle `data-theme="light"`, routes in PWA_LIGHT_THEME_REPORT.md.
 
 ---
 

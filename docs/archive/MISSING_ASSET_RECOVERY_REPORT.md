@@ -186,8 +186,8 @@ Items that remain out of parity after Sprint 1. None are blocking icon-registry 
 | `packages/icons/src/iconNames.ts` | Registered 4 names |
 | `packages/icons/src/generated/map.ts` | Mapped 4 components |
 | `packages/icons/src/generated/index.ts` | Exported 4 components |
-| `apps/onboarding/.../R10cPaymentUnconfirmedScreen.tsx` | `payment-unconfirmed-halo` |
-| `apps/onboarding/.../relationships.ts` | Figma icon mappings |
+| `apps/qr/.../R10cPaymentUnconfirmedScreen.tsx` | `payment-unconfirmed-halo` |
+| `apps/qr/.../relationships.ts` | Figma icon mappings |
 
 ---
 
@@ -195,7 +195,7 @@ Items that remain out of parity after Sprint 1. None are blocking icon-registry 
 
 ```bash
 pnpm --filter @autolokate/icons build      # ✅ pass
-pnpm --filter @autolokate/onboarding build # ✅ pass
+pnpm --filter @autolokate/qr build # ✅ pass
 ```
 
 ---

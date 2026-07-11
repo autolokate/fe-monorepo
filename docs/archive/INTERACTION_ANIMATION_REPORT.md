@@ -1,6 +1,6 @@
 # Sprint 4.3 — Interaction Animation Report
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Goal:** Improve tactile feel with motion only — no layout changes.  
 **Date:** June 2026  
 **Status:** ✅ Complete
@@ -11,7 +11,7 @@
 
 Sprint 4.3 adds GPU-friendly CSS motion across cards, carousels, step shells, buttons, and loading states. All animations use `transform`, `opacity`, and `box-shadow` only (no layout-affecting properties). Every animated surface includes a `prefers-reduced-motion: reduce` fallback.
 
-**Verification:** `pnpm --filter @autolokate/onboarding lint` and `build` pass.
+**Verification:** `pnpm --filter @autolokate/qr lint` and `build` pass.
 
 ---
 
@@ -27,7 +27,7 @@ Sprint 4.3 adds GPU-friendly CSS motion across cards, carousels, step shells, bu
 
 ### Shared motion tokens
 
-Defined in `apps/onboarding/src/styles/interaction-motion.css` and imported from `main.tsx`:
+Defined in `apps/qr/src/styles/interaction-motion.css` and imported from `main.tsx`:
 
 | Token | Value | Use |
 |-------|-------|-----|
@@ -212,8 +212,8 @@ Already respects `prefers-reduced-motion` (confetti hidden, hero/checklist/foote
 
 | File | Purpose |
 |------|---------|
-| `apps/onboarding/src/styles/interaction-motion.css` | Shared tokens, step enter, list stagger, loading breathe |
-| `apps/onboarding/src/components/compositions/emergency-contact-row/emergency-contact-row.css` | Contact row hook (width only; list motion in shared CSS) |
+| `apps/qr/src/styles/interaction-motion.css` | Shared tokens, step enter, list stagger, loading breathe |
+| `apps/qr/src/components/compositions/emergency-contact-row/emergency-contact-row.css` | Contact row hook (width only; list motion in shared CSS) |
 
 ### Onboarding app
 

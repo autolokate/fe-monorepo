@@ -83,8 +83,8 @@ Dev preview @ 390px, filled state:
 | File | Change |
 |------|--------|
 | `packages/ui/src/components/forms/PlateInput/PlateInput.css` | Remove focus outline; keep plate shadow |
-| `apps/onboarding/src/components/auth-step-shell/auth-step-shell.css` | Purchase ambient tokens, typography, overflow scope, body gap |
-| `apps/onboarding/src/features/qr-purchase/screens/purchase-vehicle.css` | Stack min-width, filled plate text color, trust alignment |
+| `apps/qr/src/components/auth-step-shell/auth-step-shell.css` | Purchase ambient tokens, typography, overflow scope, body gap |
+| `apps/qr/src/features/qr-purchase/screens/purchase-vehicle.css` | Stack min-width, filled plate text color, trust alignment |
 
 ---
 
@@ -126,8 +126,8 @@ None block signoff at 98%.
 ## Verification commands
 
 ```bash
-pnpm --filter @autolokate/onboarding lint
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr lint
+pnpm --filter @autolokate/qr build
 ```
 
 Manual: `http://localhost:5173/journey/purchase/r03-vehicle?dev=1` → R03 · Vehicle number → states empty/filled/error/loading @ 390px.

@@ -33,7 +33,7 @@
 | `packages/ui/src/components/primitives/Button/Button.css` | Tap highlight + `:focus:not(:focus-visible)` |
 | `packages/ui/src/components/primitives/IconButton.css` | Tap highlight + `:focus:not(:focus-visible)` |
 | `packages/ui/src/components/primitives/Chip/Chip.css` | Tap highlight + `:focus:not(:focus-visible)` |
-| `apps/onboarding/src/components/auth-step-shell/auth-step-shell.css` | Mobile field focus-within active border |
+| `apps/qr/src/components/auth-step-shell/auth-step-shell.css` | Mobile field focus-within active border |
 
 ### Screens affected
 

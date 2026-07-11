@@ -45,7 +45,7 @@ Browser default selection highlight (opaque blue/gray) on dark-themed inputs.
 
 ## Fix
 
-Global rules in `apps/onboarding/src/styles/screen-viewport.css`:
+Global rules in `apps/qr/src/styles/screen-viewport.css`:
 
 - `::selection` / `::-moz-selection` with `color-mix` focus token
 - Input-specific overrides for auth mobile field

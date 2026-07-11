@@ -76,5 +76,5 @@
 
 ```
 pnpm --filter @autolokate/ui build        ✓
-pnpm --filter @autolokate/onboarding build ✓
+pnpm --filter @autolokate/qr build ✓
 ```

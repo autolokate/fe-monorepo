@@ -1,7 +1,7 @@
 # Real Device Test Matrix
 
 **Date:** 2026-06-17  
-**App:** Autolokate Onboarding PWA (`apps/onboarding`)  
+**App:** Autolokate Onboarding PWA (`apps/qr`)  
 **Method:** Code-derived matrix + manual QA protocol  
 **Legend:**  
 - **CODE** — behavior implemented in source; not executed on hardware this pass  
@@ -85,7 +85,7 @@ Entry: `/journey` → four cards via `FLOW_ENTRY_REGISTRY`.
 |----|---------------|--------|
 | ACT-05 | Flow selection persisted (`al-selected-flow`) | CODE |
 | ACT-06 | Journey session persist (`al-journey-v1`) | CODE |
-| ACT-07 | Theme persist (`al-onboarding-theme`) | CODE |
+| ACT-07 | Theme persist (`al-qr-theme`) | CODE |
 | ACT-08 | Logged-out / fresh session | CODE |
 | ACT-09 | Mid-flow refresh restore | CODE |
 | ACT-10 | Phone restart (sessionStorage cleared) | CODE — expect fresh session |

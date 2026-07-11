@@ -2,7 +2,7 @@
 
 **Phase:** 3 — Architecture only  
 **Status:** Awaiting approval before screen / route / UI implementation  
-**App:** `@autolokate/onboarding` (renamed from `apps/pwa`)  
+**App:** `@autolokate/qr` (renamed from `apps/pwa`)  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/Autolokate-%C2%B7-Consumer-App?node-id=5-2)
 
 ---
@@ -31,8 +31,8 @@ The onboarding application is a production React app scaffold with **feature-fir
 ## Folder structure
 
 ```
-apps/onboarding/
-├── package.json                 # @autolokate/onboarding
+apps/qr/
+├── package.json                 # @autolokate/qr
 ├── tsconfig.json
 └── src/
     ├── index.ts                 # Public architecture exports
@@ -348,7 +348,7 @@ Compositions flagged `promoteToCore: true` should graduate to `@autolokate/ui` o
 | **AlEmergencyContactSummary** | Contact list pattern — emergency + future flows |
 | **AlLegalConsentBlock** | Standard legal checkbox + links — all flows |
 
-**Rule:** Implement first in `apps/onboarding/src/components/compositions/`. Promote to `@autolokate/ui` only after API stabilizes across flows.
+**Rule:** Implement first in `apps/qr/src/components/compositions/`. Promote to `@autolokate/ui` only after API stabilizes across flows.
 
 ---
 
@@ -356,7 +356,7 @@ Compositions flagged `promoteToCore: true` should graduate to `@autolokate/ui` o
 
 ```mermaid
 graph TD
-  subgraph app ["apps/onboarding"]
+  subgraph app ["apps/qr"]
     APP[app/bootstrap]
     FLOW[flow/engine + registry]
     FEAT[features/*]
@@ -431,8 +431,8 @@ React and router **intentionally omitted** until UI phase approval.
 
 | Action | Detail |
 |--------|--------|
-| Rename | `apps/pwa` → `apps/onboarding` |
-| Package | `@autolokate/onboarding` with typecheck build |
+| Rename | `apps/pwa` → `apps/qr` |
+| Package | `@autolokate/qr` with typecheck build |
 | Scaffold | Full feature-first folder tree |
 | Flow registry | 7 flows + shared step catalog |
 | Inventories | Screens, compositions, providers, layouts, routes |
@@ -452,8 +452,8 @@ React and router **intentionally omitted** until UI phase approval.
 
 ### Naming migration checklist
 
-- [x] Directory: `apps/pwa` → `apps/onboarding`
-- [x] Package: `@autolokate/onboarding`
+- [x] Directory: `apps/pwa` → `apps/qr`
+- [x] Package: `@autolokate/qr`
 - [ ] CI/deploy configs — update when deployment pipeline is defined
 - [ ] Environment variables — `VITE_API_BASE_URL` etc. in Phase 4
 - [ ] Remove `apps/qr-flow` — pending approval
@@ -475,8 +475,8 @@ React and router **intentionally omitted** until UI phase approval.
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build    # TypeScript architecture compile
-pnpm --filter @autolokate/onboarding lint     # ESLint pass
+pnpm --filter @autolokate/qr build    # TypeScript architecture compile
+pnpm --filter @autolokate/qr lint     # ESLint pass
 ```
 
 ---

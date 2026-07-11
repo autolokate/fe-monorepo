@@ -6,20 +6,12 @@ Monorepo for Autolokate web applications and shared packages.
 
 ```
 autolokate-web/
-├── apps/           # Deployable applications
-│   ├── website/    # Marketing / public website
-│   ├── pwa/        # Progressive web app
-│   ├── qr-flow/    # QR-based user flows
-│   └── admin/      # Internal admin dashboard
-├── packages/       # Shared libraries
-│   ├── ui/             # Shared UI primitives
-│   ├── design-system/  # Tokens, themes, and design foundations
-│   ├── icons/          # Icon assets and components
-│   ├── api-client/     # API client and request utilities
-│   ├── auth/           # Authentication logic
-│   ├── hooks/          # Shared React hooks
-│   ├── utils/          # General utilities
-│   └── types/          # Shared TypeScript types
+├── apps/
+│   ├── qr/           # QR PWA — consumer activation, purchase, SOS, Park Me
+│   ├── website/      # Marketing / public website
+│   ├── admin/        # Internal admin dashboard
+│   └── ui-preview/   # Design system preview
+├── packages/         # Shared libraries (ui, api-client, auth, design-system, …)
 ├── package.json
 ├── pnpm-workspace.yaml
 └── turbo.json
@@ -36,15 +28,21 @@ autolokate-web/
 pnpm install
 ```
 
+## Local development
+
+| App | Command | Notes |
+|-----|---------|-------|
+| QR PWA | `pnpm --filter @autolokate/qr dev` | API URL in `apps/qr/.env.development` |
+| Admin | `pnpm --filter @autolokate/admin dev` | API URL in `apps/admin/.env.development` |
+| Website | `pnpm --filter @autolokate/website dev` | |
+
+**Staging QR PWA:** https://qr-staging.autolokate.com/
+
 ## Scripts
 
-| Command       | Description                          |
-| ------------- | ------------------------------------ |
-| `pnpm dev`    | Run dev servers across the workspace |
-| `pnpm build`  | Build all packages and apps          |
-| `pnpm lint`   | Lint all packages and apps           |
-| `pnpm clean`  | Clean build artifacts                |
-
-## Adding packages
-
-Each app or package under `apps/` and `packages/` will get its own `package.json` when scaffolded. pnpm workspaces and Turborepo will wire them together automatically.
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Run dev servers across the workspace |
+| `pnpm build` | Build all packages and apps |
+| `pnpm lint` | Lint all packages and apps |
+| `pnpm clean` | Clean build artifacts |

@@ -116,9 +116,9 @@
 
 ## Files changed (Phase 1)
 
-- `apps/onboarding/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx`
-- `apps/onboarding/src/features/post-activation-pwa/components/PwaScanShell.tsx`
-- `apps/onboarding/src/features/post-activation-pwa/utils/pwa-vehicle-utils.ts`
+- `apps/qr/src/features/post-activation-pwa/routes/pwa-park-me-routes.tsx`
+- `apps/qr/src/features/post-activation-pwa/components/PwaScanShell.tsx`
+- `apps/qr/src/features/post-activation-pwa/utils/pwa-vehicle-utils.ts`
 - `packages/ui/src/components/primitives/ScannedVehicleCard/*`
 - `packages/ui/src/components/primitives/ScenePhotoCard/*`
 - `packages/ui/src/components/primitives/PhotoGrid/*`

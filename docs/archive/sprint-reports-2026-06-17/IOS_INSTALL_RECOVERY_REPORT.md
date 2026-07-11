@@ -29,11 +29,11 @@ Platform-aware routing in `PwaInstallPrompt` replaces the Android-only banner mo
 
 | File | Role |
 |------|------|
-| `apps/onboarding/src/pwa/device-detection.ts` | `isIosDevice`, `isIosSafari`, `isIosNonSafariBrowser`, `isAndroidDevice`, `isStandaloneDisplay` |
-| `apps/onboarding/src/pwa/components/PwaInstallPrompt.tsx` | Platform router — **Android banner never shown on iOS** |
-| `apps/onboarding/src/pwa/components/PwaIosInstallSheet.tsx` | `AlPermissionSheet` with Safari install steps |
-| `apps/onboarding/src/pwa/components/PwaIosInstallSheet.css` | Figma-aligned sheet styling |
-| `apps/onboarding/src/journey/screens/FlowEntryScreen.tsx` | Mount point: `PwaInstallPrompt` |
+| `apps/qr/src/pwa/device-detection.ts` | `isIosDevice`, `isIosSafari`, `isIosNonSafariBrowser`, `isAndroidDevice`, `isStandaloneDisplay` |
+| `apps/qr/src/pwa/components/PwaInstallPrompt.tsx` | Platform router — **Android banner never shown on iOS** |
+| `apps/qr/src/pwa/components/PwaIosInstallSheet.tsx` | `AlPermissionSheet` with Safari install steps |
+| `apps/qr/src/pwa/components/PwaIosInstallSheet.css` | Figma-aligned sheet styling |
+| `apps/qr/src/journey/screens/FlowEntryScreen.tsx` | Mount point: `PwaInstallPrompt` |
 
 ### iOS Chrome / Edge sheet copy
 

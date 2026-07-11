@@ -3,7 +3,7 @@
 Phase B2B foundation for **Consumer · QR Activation — B2B (Pre-Paid)** and **Consumer · QR Activation — B2B2C**.
 
 **Figma file:** `FtHCUnE0HH586PtG5yJyG0`  
-**Build verified:** `pnpm --filter @autolokate/onboarding build`
+**Build verified:** `pnpm --filter @autolokate/qr build`
 
 ---
 
@@ -223,18 +223,18 @@ Toggle: Home screen Dark / Light buttons (`THEME_KEY` persistence).
 
 | Area | Path |
 |------|------|
-| Flow Hub | `apps/onboarding/src/journey/screens/FlowHubScreen.tsx` |
-| Journey routes | `apps/onboarding/src/journey/routes/JourneyRoutes.tsx` |
-| Prepaid routes | `apps/onboarding/src/journey/routes/PrepaidRoutes.tsx` |
-| B2B2C routes | `apps/onboarding/src/journey/routes/B2b2cRoutes.tsx` |
-| Auth handoff | `apps/onboarding/src/journey/routes/JourneySharedAuthRoute.tsx` |
-| Post-auth routing | `apps/onboarding/src/journey/activation-routing.ts` |
-| Prepaid welcome | `apps/onboarding/src/features/qr-prepaid/screens/prepaid-welcome/` |
-| Partner welcome | `apps/onboarding/src/features/qr-b2b2c/screens/partner-welcome/` |
-| Welcome compositions | `apps/onboarding/src/components/compositions/welcome-activation/` |
-| Shared B2B helpers | `apps/onboarding/src/features/b2b-shared/` |
-| Prepaid config | `apps/onboarding/src/features/qr-prepaid/data/prepaid-landing-config.ts` |
-| Partner config | `apps/onboarding/src/features/qr-b2b2c/data/partner-landing-config.ts` |
+| Flow Hub | `apps/qr/src/journey/screens/FlowHubScreen.tsx` |
+| Journey routes | `apps/qr/src/journey/routes/JourneyRoutes.tsx` |
+| Prepaid routes | `apps/qr/src/journey/routes/PrepaidRoutes.tsx` |
+| B2B2C routes | `apps/qr/src/journey/routes/B2b2cRoutes.tsx` |
+| Auth handoff | `apps/qr/src/journey/routes/JourneySharedAuthRoute.tsx` |
+| Post-auth routing | `apps/qr/src/journey/activation-routing.ts` |
+| Prepaid welcome | `apps/qr/src/features/qr-prepaid/screens/prepaid-welcome/` |
+| Partner welcome | `apps/qr/src/features/qr-b2b2c/screens/partner-welcome/` |
+| Welcome compositions | `apps/qr/src/components/compositions/welcome-activation/` |
+| Shared B2B helpers | `apps/qr/src/features/b2b-shared/` |
+| Prepaid config | `apps/qr/src/features/qr-prepaid/data/prepaid-landing-config.ts` |
+| Partner config | `apps/qr/src/features/qr-b2b2c/data/partner-landing-config.ts` |
 
 ---
 

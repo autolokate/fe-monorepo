@@ -26,7 +26,7 @@ All components that should be in `@autolokate/ui` per the inventory are present:
 
 ## 2. App-Level Compositions — Status ✅ (by design)
 
-The following components live in `apps/onboarding/src/components/compositions/` and are used across 2+ screens within the same app. These are app-specific compositions, NOT promoted to `@autolokate/ui` because they are specific to this onboarding flow and contain business/domain logic that should not live in a generic UI package:
+The following components live in `apps/qr/src/components/compositions/` and are used across 2+ screens within the same app. These are app-specific compositions, NOT promoted to `@autolokate/ui` because they are specific to this onboarding flow and contain business/domain logic that should not live in a generic UI package:
 
 | Component | Usages | Decision |
 |-----------|--------|----------|
@@ -107,4 +107,4 @@ All imports from shared packages use package names (`@autolokate/ui`, `@autoloka
 
 ## 6. No Duplicate Inline SVGs in App Code
 
-Zero inline SVG definitions found in `apps/onboarding/src/`. All icon usages import from `@autolokate/icons`. ✅
+Zero inline SVG definitions found in `apps/qr/src/`. All icon usages import from `@autolokate/icons`. ✅

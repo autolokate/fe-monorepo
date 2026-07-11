@@ -101,7 +101,7 @@ Polish limited to reuse constraint: screens remain on shared auth compositions (
 | 320 / 360 / 375 / 390 / 393 / 414 | ✅ Sampled |
 | Dark / Light | ✅ Sampled |
 | Overflow / clipping | ✅ None on critical paths |
-| Build | ✅ `@autolokate/ui` + `@autolokate/onboarding` |
+| Build | ✅ `@autolokate/ui` + `@autolokate/qr` |
 
 Capture: `docs/audit-screenshots/polish/after/` (30 screens @393 dark)  
 Responsive: `docs/audit-screenshots/polish/responsive/`

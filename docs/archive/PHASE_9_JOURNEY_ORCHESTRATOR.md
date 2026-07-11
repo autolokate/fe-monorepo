@@ -1,6 +1,6 @@
 # Phase 9 — Journey Orchestrator
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-17  
 **Scope:** Architecture + navigation only — no activation UI, B2B2C screens, emergency screens, or design-system changes  
 **Baseline:** [FLOW_ALIGNMENT_REPORT.md](./FLOW_ALIGNMENT_REPORT.md) (58 / 100 pre-Phase-9)
@@ -82,7 +82,7 @@ home → flow-select → shared-auth → activation → emergency → completed
 |-----|---------|-------|--------|
 | `al-journey-v1` | `sessionStorage` | Full journey blob | `{ selectedFlow, authStatus, session }` |
 | `al-selected-flow` | `localStorage` | `selectedFlow` | `purchase` \| `prepaid` \| `b2b2c` |
-| `al-onboarding-theme` | `localStorage` | Theme | `light` \| `dark` |
+| `al-qr-theme` | `localStorage` | Theme | `light` \| `dark` |
 
 ### Context API (`useJourney`)
 
@@ -204,7 +204,7 @@ flowchart LR
 ## 6. Module layout
 
 ```
-apps/onboarding/src/journey/
+apps/qr/src/journey/
 ├── JourneyOrchestrator.tsx    # BrowserRouter + JourneyProvider + routes
 ├── JourneyContext.tsx         # Phase + persistence context
 ├── activation-routing.ts      # Entry paths + emergency contract
@@ -222,7 +222,7 @@ apps/onboarding/src/journey/
     ├── EmergencyPlaceholderScreen.tsx
     └── JourneyCompletedScreen.tsx
 
-apps/onboarding/src/features/shared-auth/auth-flow/
+apps/qr/src/features/shared-auth/auth-flow/
 ├── SharedAuthSegment.tsx      # Extracted R01–R06 (onAuthCompleted hook)
 └── AuthFlowApp.tsx            # Standalone + AUTH_COMPLETED terminal
 ```
@@ -251,7 +251,7 @@ apps/onboarding/src/features/shared-auth/auth-flow/
 
 - **Shows:** Three consumer flow options (labels from `flowLabels`) + Light/Dark theme toggle.
 - **No header, no browser chrome** — full-viewport AL layout using existing `AlButton`, `AlHeading`, `AlStack`, `AlText`.
-- **Theme:** `setThemeMode` + `data-theme` + `al-onboarding-theme` persistence.
+- **Theme:** `setThemeMode` + `data-theme` + `al-qr-theme` persistence.
 
 ---
 
@@ -296,9 +296,9 @@ Dev preview remains isolated from journey persistence.
 ## 11. Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding lint
-pnpm --filter @autolokate/onboarding build
-pnpm --filter @autolokate/onboarding dev
+pnpm --filter @autolokate/qr lint
+pnpm --filter @autolokate/qr build
+pnpm --filter @autolokate/qr dev
 ```
 
 **Manual smoke path:**

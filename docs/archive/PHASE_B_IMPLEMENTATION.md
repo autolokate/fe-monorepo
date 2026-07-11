@@ -105,7 +105,7 @@ Persisted via existing `al-journey-v1` sessionStorage.
 | `shield` | Shield | ₹1,999/yr | — | 340px |
 | `shield-plus` | Shield+ | ₹2,999/yr | — | 340px |
 
-Source: `apps/onboarding/src/features/qr-purchase/data/purchase-plans.ts`
+Source: `apps/qr/src/features/qr-purchase/data/purchase-plans.ts`
 
 Default selection: **Secure** (`DEFAULT_PURCHASE_PLAN_ID`).
 
@@ -239,7 +239,7 @@ Dev preview (`ScreenDevApp` → **Purchase · Phase B**) supports viewports **32
 ## File map
 
 ```
-apps/onboarding/src/features/qr-purchase/
+apps/qr/src/features/qr-purchase/
 ├── types-checkout.ts
 ├── data/
 │   ├── purchase-plans.ts      ← 4-plan catalog
@@ -251,13 +251,13 @@ apps/onboarding/src/features/qr-purchase/
     ├── r08-order-summary/
     └── r08b-promo-applied/
 
-apps/onboarding/src/components/compositions/
+apps/qr/src/components/compositions/
 ├── plan-carousel/
 ├── rider-cover-options/
 ├── promo-code-field/
 └── order-summary-card/
 
-apps/onboarding/src/journey/
+apps/qr/src/journey/
 ├── purchase/purchase-routing.ts   ← r06–r08b paths
 ├── routes/PurchaseRoutes.tsx      ← R06–R08b route orchestration
 └── progress/purchase-route-progress.ts
@@ -286,7 +286,7 @@ packages/ui/src/components/primitives/PlanCard/
 ## Build verification
 
 ```bash
-pnpm --filter @autolokate/ui --filter @autolokate/onboarding build
+pnpm --filter @autolokate/ui --filter @autolokate/qr build
 ```
 
 Both packages pass after Phase B implementation.

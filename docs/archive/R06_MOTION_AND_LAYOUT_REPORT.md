@@ -142,7 +142,7 @@ All motion respects `prefers-reduced-motion: reduce`.
 Animated GIF export requires `ffmpeg` (not available in audit environment). Motion is implemented in CSS and can be recorded locally:
 
 ```bash
-pnpm --filter @autolokate/onboarding dev --port 5175 --host 127.0.0.1
+pnpm --filter @autolokate/qr dev --port 5175 --host 127.0.0.1
 # Open ?dev=1 → R06 · Choose plan → tap adjacent cards to observe:
 #   · 220ms scale + glow on select
 #   · 180ms check pop
@@ -171,8 +171,8 @@ Screenshot sequence above documents static end-states for all four plans.
 ## Re-verify
 
 ```bash
-pnpm --filter @autolokate/onboarding build
-pnpm --filter @autolokate/onboarding dev --port 5175 --host 127.0.0.1
+pnpm --filter @autolokate/qr build
+pnpm --filter @autolokate/qr dev --port 5175 --host 127.0.0.1
 ```
 
 Dev preview: **R06 · Choose plan** → View state `safe | secure | shield | shield-plus` @ **390px** dark.

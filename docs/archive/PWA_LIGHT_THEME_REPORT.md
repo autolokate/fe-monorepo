@@ -1,7 +1,7 @@
 # PWA Light Theme Report
 
 **Date:** 2026-06-17  
-**Feature:** `apps/onboarding/src/features/post-activation-pwa`  
+**Feature:** `apps/qr/src/features/post-activation-pwa`  
 **Routes:** 32 active paths under `/pwa/scan/*`
 
 ---
@@ -132,7 +132,7 @@ http://127.0.0.1:5199/pwa/scan/park-me/confirm-protected
 Set theme:
 
 ```js
-localStorage.setItem('al-onboarding-theme', 'light');
+localStorage.setItem('al-qr-theme', 'light');
 document.documentElement.setAttribute('data-theme', 'light');
 location.reload();
 ```

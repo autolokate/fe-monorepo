@@ -1,7 +1,7 @@
 # Real Device Sign-Off
 
 **Date:** 2026-06-17  
-**Build:** `@autolokate/onboarding` — Vite 6 + vite-plugin-pwa 1.3.0  
+**Build:** `@autolokate/qr` — Vite 6 + vite-plugin-pwa 1.3.0  
 **Method:** Build verification + static audit (physical device lab not run in this pass)
 
 ---
@@ -54,8 +54,8 @@ The **PWA install layer is implemented and production-build verified**. All P0 b
 
 **Added only:**
 
-- `apps/onboarding/public/*`
-- `apps/onboarding/src/pwa/*`
+- `apps/qr/public/*`
+- `apps/qr/src/pwa/*`
 - `PwaAppShell` wrapper in `JourneyOrchestrator`
 - `PwaInstallBanner` on flow entry
 - Permission recovery actions on Park Me / SOS permission surfaces

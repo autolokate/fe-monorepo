@@ -352,11 +352,11 @@ All paths relative to `docs/assets/b2b-visual-parity-audit/`.
 
 | Path |
 |------|
-| `apps/onboarding/src/features/qr-prepaid/screens/prepaid-welcome/PrepaidWelcomeScreen.tsx` |
-| `apps/onboarding/src/features/qr-b2b2c/screens/partner-welcome/PartnerWelcomeScreen.tsx` |
-| `apps/onboarding/src/components/compositions/welcome-activation/*` |
-| `apps/onboarding/src/features/qr-prepaid/data/prepaid-landing-config.ts` |
-| `apps/onboarding/src/features/qr-b2b2c/data/partner-landing-config.ts` |
+| `apps/qr/src/features/qr-prepaid/screens/prepaid-welcome/PrepaidWelcomeScreen.tsx` |
+| `apps/qr/src/features/qr-b2b2c/screens/partner-welcome/PartnerWelcomeScreen.tsx` |
+| `apps/qr/src/components/compositions/welcome-activation/*` |
+| `apps/qr/src/features/qr-prepaid/data/prepaid-landing-config.ts` |
+| `apps/qr/src/features/qr-b2b2c/data/partner-landing-config.ts` |
 | `packages/design-system/src/tokens/*` |
 
 **No code was modified during this audit.**

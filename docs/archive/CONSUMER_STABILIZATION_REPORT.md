@@ -1,6 +1,6 @@
 # Consumer Stabilization Sprint — Report
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-18  
 **Source audit:** `docs/CONSUMER_APP_FINAL_SIGNOFF.md`  
 **Scope:** Auth + Legal · Purchase · Emergency — stabilization only (no Prepaid, no B2B2C, no new features)
@@ -9,7 +9,7 @@
 
 ## Executive summary
 
-All three Consumer flows were brought to **95%+ signoff quality** against the Figma audit criteria. P0/P1 parity gaps from the cross-flow signoff were addressed in code; build passes (`pnpm --filter @autolokate/onboarding build`).
+All three Consumer flows were brought to **95%+ signoff quality** against the Figma audit criteria. P0/P1 parity gaps from the cross-flow signoff were addressed in code; build passes (`pnpm --filter @autolokate/qr build`).
 
 ### Final verdict: **READY WITH GAPS**
 
@@ -155,7 +155,7 @@ All three flows retain scroll shells, fluid footers, and overflow guards from pr
 ### Build verification
 
 ```
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ✓ tsc + vite build (2026-06-18)
 ```
 

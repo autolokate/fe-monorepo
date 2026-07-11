@@ -140,7 +140,7 @@ Both use **WebKit**. Permission prompts, file input camera, and geolocation beha
 |-------------|-------|----------|
 | `al-journey-v1` | sessionStorage | Lost when tab closed / evicted |
 | `al-pwa-scan-v1` | sessionStorage | Same |
-| `al-onboarding-theme` | localStorage | Survives restart |
+| `al-qr-theme` | localStorage | Survives restart |
 | `al-selected-flow` | localStorage | Survives restart |
 
 **Phone restart:** sessionStorage empty — user starts fresh. Expected.

@@ -1,6 +1,6 @@
 # Flow Architecture Alignment Report — Phase 8.5
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Mode:** Architecture review only — no code, screens, B2B, or B2B2C implementation  
 **Date:** 2026-06-17  
 **Inputs:** Final product journey · `flows.config.ts` · routes schema · Phase 7 Prepaid · Phase 5 Purchase · Phase 8 Auth  
@@ -596,11 +596,11 @@ Phase 8.5 identifies a **structural gap**: the repo optimizes for **per-flow lin
 
 | File | Role |
 |------|------|
-| `apps/onboarding/src/flow/registry/config/flows.config.ts` | Current flow graphs |
-| `apps/onboarding/src/flow/registry/config/shared-pipeline.config.ts` | R01–R06 order |
-| `apps/onboarding/src/router/routes.schema.ts` | Route catalog |
-| `apps/onboarding/src/features/shared-auth/auth-flow/AuthFlowApp.tsx` | Isolated auth runtime |
-| `apps/onboarding/src/main.tsx` | Auth-only default entry |
+| `apps/qr/src/flow/registry/config/flows.config.ts` | Current flow graphs |
+| `apps/qr/src/flow/registry/config/shared-pipeline.config.ts` | R01–R06 order |
+| `apps/qr/src/router/routes.schema.ts` | Route catalog |
+| `apps/qr/src/features/shared-auth/auth-flow/AuthFlowApp.tsx` | Isolated auth runtime |
+| `apps/qr/src/main.tsx` | Auth-only default entry |
 | `docs/PHASE_7_PREPAID.md` | Prepaid prefix documentation (conflicts with target) |
 | `docs/AUTH_FLOW_SIGNOFF.md` | AUTH_COMPLETED terminal behavior |
 

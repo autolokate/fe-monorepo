@@ -22,7 +22,7 @@
 
 ## 2. TypeScript
 
-- **apps/onboarding:** 0 errors
+- **apps/qr:** 0 errors
 - **packages/ui:** 0 errors
 - **Status:** ✅ CLEAN
 

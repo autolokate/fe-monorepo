@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-17  
 **Themes:** `data-theme="dark"` | `data-theme="light"` on `<html>`  
-**Storage key:** `al-onboarding-theme`
+**Storage key:** `al-qr-theme`
 
 Legend: **P** = Parity confirmed · **F** = Fixed this sprint · **A** = Accepted exception
 

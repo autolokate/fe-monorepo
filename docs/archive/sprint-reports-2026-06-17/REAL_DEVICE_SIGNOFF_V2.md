@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-17  
 **Sprint:** P0 iOS Contact Picker + Rider Loop + iOS Install  
-**Build:** `@autolokate/onboarding` — production build verified  
+**Build:** `@autolokate/qr` — production build verified  
 **References:** `FINAL_PWA_READINESS.md`, `REAL_DEVICE_SIGNOFF.md`, `VISUAL_TRUTH_MATRIX_V2.md`
 
 ---
@@ -38,7 +38,7 @@ All three P0 issues are resolved in code. Production build passes. Physical devi
 
 ## Manual QA checklist
 
-Execute on **https://onboarding-lemon-six.vercel.app** (or staging) after deploy.
+Execute on **https://qr-staging.autolokate.com** (or staging) after deploy.
 
 ### Install
 

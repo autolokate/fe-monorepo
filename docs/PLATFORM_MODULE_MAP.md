@@ -13,7 +13,7 @@ This document classifies every major platform area, its ownership, entry points,
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Autolokate PWA (single app)                  │
-│                   apps/onboarding (deployable)                   │
+│                   apps/qr (deployable)                   │
 ├─────────────────────────────────────────────────────────────────┤
 │  Journey Orchestrator                                            │
 │  ├── /journey/*          Activation journeys (JourneyProvider)   │
@@ -155,7 +155,7 @@ Activation is three journey variants sharing auth and emergency suffix. Grouped 
 | **Shells** | AuthStepShell, FlowStepShell (onboarding compositions) |
 | **Depends on** | `@autolokate/design-system`, `@autolokate/icons` |
 
-Onboarding-specific compositions live in `apps/onboarding/src/components/compositions/` — not exported from `@autolokate/ui`.
+Onboarding-specific compositions live in `apps/qr/src/components/compositions/` — not exported from `@autolokate/ui`.
 
 ---
 
@@ -252,7 +252,7 @@ Cross-cutting infrastructure — not a user-facing module but owns routing glue.
 1. **Screen logic** lives in `features/<module>/screens/`.
 2. **Route wiring** lives in `journey/routes/` — feature folders do not self-mount routes.
 3. **Cross-journey routing decisions** live in `journey/activation-routing.ts` — not in individual screens.
-4. **Reusable UI** goes to `packages/ui/`; onboarding-only compositions stay in `apps/onboarding/src/components/`.
+4. **Reusable UI** goes to `packages/ui/`; onboarding-only compositions stay in `apps/qr/src/components/`.
 5. **Session mutations** go through `JourneyContext.updateSession()` or `PwaScanContext` — not ad-hoc storage.
 6. **New flows** register in `flow/registry/config/flows.config.ts` (catalog) and `features/registry.ts` (index).
 

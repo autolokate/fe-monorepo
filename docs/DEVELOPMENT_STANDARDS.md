@@ -95,7 +95,7 @@ Target: **0 stray console calls** in application source.
 
 | Pattern | Status |
 |---------|--------|
-| `@/` alias (`apps/onboarding/src/`) | **Preferred** for cross-feature imports |
+| `@/` alias (`apps/qr/src/`) | **Preferred** for cross-feature imports |
 | `@autolokate/ui`, `@autolokate/icons`, etc. | **Required** for shared packages |
 | Relative `../` within same feature | Acceptable |
 | `../../../../` deep relative | **Forbidden** |
@@ -194,7 +194,7 @@ All future apps/modules must implement before release:
 | Camera | Photo capture hooks |
 | Location | Geolocation hooks |
 | Permission recovery | `PwaPermissionRecoveryActions` |
-| Theme persistence | `al-onboarding-theme` in `localStorage` |
+| Theme persistence | `al-qr-theme` in `localStorage` |
 
 ---
 
