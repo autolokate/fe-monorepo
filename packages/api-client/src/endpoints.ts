@@ -108,6 +108,10 @@ export const endpoints = {
     replaceQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/replace`,
     retireQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/retire`,
     settlementBatch: '/admin/v1/settlement-batch',
+    users: '/admin/v1/users',
+    userRoles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/roles`,
+    userRole: (userId: string, role: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,
   },
 } as const;
 

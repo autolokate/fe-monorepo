@@ -26,6 +26,7 @@ export {
 export { grantConsent, listConsents, type ConsentItem, type ConsentPurpose } from './consent';
 export {
   registerDeviceToken,
+  unregisterDeviceToken,
   type DevicePlatform,
   type DeviceRegistered,
   type RegisterDeviceBody,
@@ -146,7 +147,10 @@ export { endpoints, type EndpointGroup } from './endpoints';
 export {
   createAdminPromo,
   createQrBatch,
+  findAdminUserByPhone,
   generateQrBatchCodes,
+  grantUserRole,
+  revokeUserRole,
   listAdminPromos,
   listQrInventory,
   listQrBatchCodes,
@@ -172,6 +176,9 @@ export {
   type TransferCompletedDto,
   type SettlementBatchResultDto,
   type ReorderFulfilResultDto,
+  type AdminUserDto,
+  type AdminUserRoleDto,
+  type GrantableUserRole,
   type AdminPromoDto,
   type AuditAction,
   type AuditEventDto,

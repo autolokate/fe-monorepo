@@ -21,3 +21,16 @@ export async function registerDeviceToken(
   const response = await client.post<unknown>(endpoints.devices.token, body);
   return unwrapEnvelope(response) as DeviceRegistered;
 }
+
+/**
+ * DELETE /v1/devices/token — unregister THIS device's push target.
+ *
+ * Fired when the browser's Firebase Installation ID is retired (`onUnregistered`), so the server
+ * stops targeting a dead installation instead of waiting for a send to 404. Idempotent.
+ */
+export async function unregisterDeviceToken(
+  client: ApiClient,
+  body: { fcmToken: string },
+): Promise<void> {
+  await client.delete<unknown>(endpoints.devices.token, { body });
+}

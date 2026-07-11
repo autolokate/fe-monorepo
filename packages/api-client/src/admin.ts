@@ -571,3 +571,64 @@ export async function queryAuditEventsPage(
     correlationId: meta?.correlationId ?? null,
   };
 }
+
+/** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */
+export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
+
+/** OpenAPI `AdminUserRoleDto` — one ACTIVE grant on an account. */
+export type AdminUserRoleDto = {
+  role: string;
+  scopeRef: string | null;
+  grantedAt: string;
+};
+
+/** OpenAPI `AdminUserDto` — an account and its ACTIVE roles. Never carries PII. */
+export type AdminUserDto = {
+  id: string;
+  roles: AdminUserRoleDto[];
+};
+
+/**
+ * GET /admin/v1/users?phone= — resolve ONE account by its OTP-verified phone.
+ * The server matches on a keyed-HMAC blind index, so the number never round-trips as PII.
+ * Throws `not_found` when no account carries that number.
+ */
+export async function findAdminUserByPhone(
+  client: ApiClient,
+  phone: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserDto> {
+  const path = `${endpoints.admin.users}${buildQuery({ phone })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserDto;
+}
+
+/** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent). */
+export async function grantUserRole(
+  client: ApiClient,
+  userId: string,
+  role: GrantableUserRole,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.userRoles(userId),
+    { role },
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as AdminUserDto;
+}
+
+/** DELETE /admin/v1/users/{userId}/roles/{role} — revoke a platform role (idempotent; `last_admin` 409 guards). */
+export async function revokeUserRole(
+  client: ApiClient,
+  userId: string,
+  role: GrantableUserRole,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserDto> {
+  const response = await client.delete<unknown>(endpoints.admin.userRole(userId, role), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserDto;
+}

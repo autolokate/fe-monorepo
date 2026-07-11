@@ -84,7 +84,6 @@ export type SessionRoles = {
   availableRoles: string[];
   staffId?: string;
   locationId?: string;
-  operatorId?: string;
   accessToken?: string;
   expiresAt?: string;
 };

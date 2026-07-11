@@ -99,14 +99,17 @@ export class ApiClient {
       options;
     const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
     const token = skipAuth ? null : this.getAccessToken();
+    // Held in its own binding: `RequestInit.headers` widens to `HeadersInit` (which may be an array or
+    // a Headers instance), and spreading that into an object would yield a map of indices.
+    const requestHeaders: Record<string, string> = {
+      Accept: accept,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(this.correlationId ? { 'X-Correlation-Id': this.correlationId } : {}),
+      ...headers,
+    };
     const requestInit: RequestInit = {
       method: 'GET',
-      headers: {
-        Accept: accept,
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(this.correlationId ? { 'X-Correlation-Id': this.correlationId } : {}),
-        ...headers,
-      },
+      headers: requestHeaders,
       ...(signal !== undefined ? { signal } : {}),
     };
 
@@ -119,7 +122,7 @@ export class ApiClient {
         response = await this.fetchImpl(url, {
           ...requestInit,
           headers: {
-            ...requestInit.headers,
+            ...requestHeaders,
             ...(retryToken ? { Authorization: `Bearer ${retryToken}` } : {}),
           },
         });
@@ -164,7 +167,12 @@ export class ApiClient {
     return this.request<T>(path, { ...options, method: 'PATCH', body });
   }
 
-  async delete<T>(path: string, options: Omit<ApiRequestOptions, 'method' | 'body'> = {}): Promise<T> {
+  /** `body` is optional: `DELETE /v1/devices/token` identifies the row by a body field rather than
+   *  putting the device's push token in the URL, where it would reach access logs. */
+  async delete<T>(
+    path: string,
+    options: Omit<ApiRequestOptions, 'method'> = {},
+  ): Promise<T> {
     return this.request<T>(path, { ...options, method: 'DELETE' });
   }
 
