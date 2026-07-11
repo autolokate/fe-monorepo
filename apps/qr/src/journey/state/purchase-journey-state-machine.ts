@@ -1,17 +1,17 @@
 import type { QrResolution } from '@autolokate/api-client';
 
-import { purchaseJourneyPaths } from '@/journey/purchase/purchase-routing';
+import { loadJourneyState } from '@/journey/persistence';
+import { purchaseJourneyPaths, purchaseVehicleConfirmationPath } from '@/journey/purchase/purchase-routing';
 import { journeyPaths } from '@/journey/constants';
 import type { JourneySession } from '@/journey/types';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
+import { getVehicle } from '@/storage/index';
 import {
   isActivatedQrLifecycleStatus,
   isAttachedQrLifecycleStatus,
   isDistributedQrLifecycleStatus,
 } from '@/platform/qr/qr-status';
 import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
-import { compactPlate } from '@/services/vehicle/vehicle-plate';
 
 export const PURCHASE_JOURNEY_KIND = {
   FULL_ACTIVATION: 'full_activation',
@@ -96,61 +96,51 @@ export function isVehiclePurchaseStepBlocked(searchParams?: URLSearchParams): bo
   return readPurchaseJourneyState(searchParams).skipsVehicleSteps;
 }
 
+/** Vehicle confirm on R05 unlocks checkout — attach API success/failure must never block. */
+function isVehicleConfirmedForCheckout(session: JourneySession): boolean {
+  if (session.vehicle?.confirmed) {
+    return true;
+  }
+  if (getVehicle()?.confirmedAt) {
+    return true;
+  }
+  return Boolean(loadJourneyState().session.vehicle?.confirmed);
+}
+
 /**
  * True when checkout screens are reachable.
  * ATTACHED: stored resolve is sufficient — attach API must not run again.
- * DISTRIBUTED: vehicle confirmed and POST /attach succeeded for current QR + plate.
+ * DISTRIBUTED: vehicle confirmed on R05 — attach is attempted but non-blocking on failure.
  */
 export function isPurchaseCheckoutUnlocked(
   session: JourneySession,
   searchParams?: URLSearchParams,
 ): boolean {
   const state = readPurchaseJourneyState(searchParams);
-  if (!state.hasStoredResolve || !state.qrCode) {
-    return false;
+
+  if (state.skipsAttachApi && state.hasStoredResolve) {
+    return true;
   }
 
-  const stored = qrStorageRepository.readResolved();
-  if (!stored || stored.qrCode !== state.qrCode) {
-    return false;
-  }
-
-  if (state.skipsAttachApi) {
-    return stored.qrCode === state.qrCode;
-  }
-
-  if (!session.vehicle?.confirmed) {
-    return false;
-  }
-
-  return isDistributedAttachComplete(state.qrCode, session);
+  return isVehicleConfirmedForCheckout(session);
 }
 
-function isDistributedAttachComplete(qrCode: string, session: JourneySession): boolean {
-  const registration =
-    purchaseStorageRepository.readVehicle()?.registration ?? session.vehicle?.plate?.trim() ?? null;
-  if (!registration) {
-    return false;
-  }
-
-  const compactRegistration = compactPlate(registration);
-  if (compactRegistration.length < 5) {
-    return false;
-  }
-
-  const attach = purchaseStorageRepository.readAttachResult();
-  if (!attach?.vehicleId || attach.purchaseQrCode !== qrCode) {
-    return false;
-  }
-
-  return compactPlate(attach.registration) === compactRegistration;
-}
-
-function checkoutFallbackPath(_routeId: PurchaseRouteId, state: PurchaseJourneyState): string {
+function checkoutFallbackPath(
+  routeId: PurchaseRouteId,
+  state: PurchaseJourneyState,
+  session: JourneySession,
+): string {
   if (state.skipsVehicleSteps) {
     return journeyPaths.root;
   }
-  return purchaseJourneyPaths.vehicleConfirmation;
+  if (routeId === PURCHASE_ROUTE_ID.choosePlan) {
+    const registration = session.vehicle?.plate ?? getVehicle()?.registration;
+    if (registration?.trim()) {
+      return purchaseVehicleConfirmationPath(registration);
+    }
+    return purchaseJourneyPaths.vehicleDetails;
+  }
+  return purchaseJourneyPaths.choosePlan;
 }
 
 /** Central gate for purchase route segments. */
@@ -166,15 +156,11 @@ export function evaluatePurchaseRouteAccess(
   }
 
   if (CHECKOUT_ROUTE_IDS.has(routeId)) {
-    if (
-      routeId === PURCHASE_ROUTE_ID.choosePlan &&
-      state.skipsAttachApi &&
-      state.hasStoredResolve
-    ) {
-      return { allowed: true, redirectTo: null };
-    }
+    const hasPlanSelection =
+      Boolean(session.purchase?.selectedPlanId) ||
+      Boolean(getVehicle()?.selectedPlanId);
 
-    if (!session.purchase?.selectedPlanId && routeId !== PURCHASE_ROUTE_ID.choosePlan) {
+    if (!hasPlanSelection && routeId !== PURCHASE_ROUTE_ID.choosePlan) {
       return { allowed: false, redirectTo: purchaseJourneyPaths.choosePlan };
     }
 
@@ -182,7 +168,7 @@ export function evaluatePurchaseRouteAccess(
       return { allowed: true, redirectTo: null };
     }
 
-    return { allowed: false, redirectTo: checkoutFallbackPath(routeId, state) };
+    return { allowed: false, redirectTo: checkoutFallbackPath(routeId, state, session) };
   }
 
   if (routeId === PURCHASE_ROUTE_ID.vehicleConfirmation && state.skipsAttachApi) {

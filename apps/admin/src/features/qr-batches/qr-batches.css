@@ -26,3 +26,23 @@
   justify-content: center;
   padding-block: var(--al-space-2);
 }
+
+.qr-batch-detail-summary,
+.qr-batch-detail-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--al-space-4);
+}
+
+.qr-batch-codes-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-3);
+}
+
+@media (max-width: 960px) {
+  .qr-batch-detail-summary,
+  .qr-batch-detail-actions {
+    grid-template-columns: 1fr;
+  }
+}

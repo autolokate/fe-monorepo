@@ -10,7 +10,7 @@
 Command run on all main packages:
 
 ```bash
-cd apps/qr && pnpm exec tsc --noEmit
+cd apps/onboarding && pnpm exec tsc --noEmit
 cd packages/ui && pnpm exec tsc --noEmit
 cd packages/icons && pnpm exec tsc --noEmit
 cd packages/design-system && pnpm exec tsc --noEmit
@@ -29,7 +29,7 @@ cd apps/ui-preview && pnpm exec tsc --noEmit
 | `@ts-ignore` | **0** in application source |
 | `@ts-expect-error` | **0** |
 | `eslint-disable` (non-deprecated) | **0** in src |
-| `: any` / `as any` / `<any>` | **0** matches in `apps/qr/src` and `packages/` |
+| `: any` / `as any` / `<any>` | **0** matches in `apps/onboarding/src` and `packages/` |
 | `Record<string, any>` | **0** |
 
 **Allowed exception:** `routes.schema.ts` line 133 — `eslint-disable @typescript-eslint/no-deprecated` for catalog entries documenting relocated purchase screens (intentional catalog retention).

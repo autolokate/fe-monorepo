@@ -25,6 +25,12 @@ const QrBatchManagementPage = lazy(() =>
   })),
 );
 
+const BatchManagementDetailPage = lazy(() =>
+  import('@/features/qr-batches/BatchManagementDetailPage').then((module) => ({
+    default: module.BatchManagementDetailPage,
+  })),
+);
+
 const PromoManagementPage = lazy(() =>
   import('@/features/promos/PromoManagementPage').then((module) => ({
     default: module.PromoManagementPage,
@@ -69,7 +75,9 @@ export function AdminRoutes() {
             <Route path={adminPaths.root} element={<Navigate to={adminPaths.dashboard} replace />} />
             <Route path={adminPaths.dashboard} element={<DashboardPage />} />
             <Route path={adminPaths.inventory} element={<QrInventoryPage />} />
+            <Route path={`${adminPaths.inventory}/:batchId`} element={<BatchManagementDetailPage />} />
             <Route path={adminPaths.qrBatches} element={<QrBatchManagementPage />} />
+            <Route path={`${adminPaths.qrBatches}/:batchId`} element={<BatchManagementDetailPage />} />
             <Route path={adminPaths.promos} element={<PromoManagementPage />} />
             <Route path={adminPaths.auditEvents} element={<AuditEventsPage />} />
             <Route path={adminPaths.finance} element={<FinanceOperationsPage />} />

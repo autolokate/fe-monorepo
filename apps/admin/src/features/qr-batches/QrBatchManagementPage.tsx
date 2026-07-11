@@ -7,9 +7,10 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { BatchManagementDetailSheet } from '@/features/qr-batches/BatchManagementDetailSheet';
+import { adminQrBatchPath } from '@/app/routes/admin-paths';
 import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet';
 import {
   FulfilPartnerReorderSheet,
@@ -33,6 +34,7 @@ import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import './qr-batches.css';
 
 export function QrBatchManagementPage() {
+  const navigate = useNavigate();
   const {
     data,
     metrics,
@@ -48,8 +50,6 @@ export function QrBatchManagementPage() {
   const canRunLifecycle = useCanRunQrLifecycleMutations();
   const { sweepMutation } = useQrBatchMutations();
 
-  const [selectedBatch, setSelectedBatch] = useState<BatchSummaryDto | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [sweepConfirmOpen, setSweepConfirmOpen] = useState(false);
   const [fulfilReorderOpen, setFulfilReorderOpen] = useState(false);
@@ -57,24 +57,15 @@ export function QrBatchManagementPage() {
     null,
   );
 
-  const openBatch = useCallback((batch: BatchSummaryDto) => {
-    setSelectedBatch(batch);
-    setDetailOpen(true);
-  }, []);
+  const openBatch = useCallback(
+    (batch: BatchSummaryDto) => {
+      navigate(adminQrBatchPath(batch.id), { state: { batch } });
+    },
+    [navigate],
+  );
 
   const columns = useQrBatchColumns();
   const batches = data ?? [];
-
-  useEffect(() => {
-    if (!selectedBatch?.id || !data) {
-      return;
-    }
-    const updated = data.find((batch) => batch.id === selectedBatch.id);
-    if (!updated) {
-      return;
-    }
-    setSelectedBatch((current) => (current?.id === updated.id && current !== updated ? updated : current));
-  }, [data, selectedBatch?.id]);
 
   const handleBatchCreated = useCallback(
     (batch: BatchSummaryDto) => {
@@ -82,10 +73,6 @@ export function QrBatchManagementPage() {
     },
     [openBatch],
   );
-
-  const handleBatchUpdated = useCallback((batch: BatchSummaryDto) => {
-    setSelectedBatch(batch);
-  }, []);
 
   const pageDescription = useMemo(() => {
     if (isLoading || !metrics) {
@@ -199,14 +186,6 @@ export function QrBatchManagementPage() {
           open={createOpen}
           onOpenChange={setCreateOpen}
           onCreated={handleBatchCreated}
-        />
-
-        <BatchManagementDetailSheet
-          batch={selectedBatch}
-          open={detailOpen}
-          onOpenChange={setDetailOpen}
-          canWrite={canRunLifecycle}
-          onBatchUpdated={handleBatchUpdated}
         />
 
         <FulfilPartnerReorderSheet

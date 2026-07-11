@@ -3,6 +3,7 @@ import type { PurchasePlanDefinition } from '@/features/qr-purchase/types-checko
 const CACHE_TTL_MS = 5 * 60_000;
 
 type CacheState = {
+  qrCode: string | null;
   plans: PurchasePlanDefinition[];
   expiresAt: number;
   revision: number;
@@ -18,16 +19,23 @@ export function getPlansRevision(): number {
   return cache?.revision ?? 0;
 }
 
-export function peekPlansCatalog(): PurchasePlanDefinition[] | null {
+export function peekPlansCatalog(qrCode: string | null): PurchasePlanDefinition[] | null {
   if (!cache || cache.expiresAt <= Date.now()) {
+    return null;
+  }
+  if (cache.qrCode !== qrCode) {
     return null;
   }
   return cache.plans;
 }
 
-export function rememberPlansCatalog(plans: PurchasePlanDefinition[]): void {
+export function rememberPlansCatalog(
+  plans: PurchasePlanDefinition[],
+  qrCode: string | null,
+): void {
   const revision = (cache?.revision ?? 0) + 1;
   cache = {
+    qrCode,
     plans,
     expiresAt: Date.now() + CACHE_TTL_MS,
     revision,

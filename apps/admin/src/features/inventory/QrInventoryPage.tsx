@@ -7,9 +7,10 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { BatchManagementDetailSheet } from '@/features/qr-batches/BatchManagementDetailSheet';
+import { adminInventoryBatchPath } from '@/app/routes/admin-paths';
 import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet';
 import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters';
 import { useInventoryColumns } from '@/features/inventory/inventory-columns';
@@ -29,6 +30,7 @@ import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import './inventory.css';
 
 export function QrInventoryPage() {
+  const navigate = useNavigate();
   const {
     data,
     metrics,
@@ -44,29 +46,18 @@ export function QrInventoryPage() {
   const canRunLifecycle = useCanRunQrLifecycleMutations();
   const { sweepMutation } = useQrBatchMutations();
 
-  const [selectedBatch, setSelectedBatch] = useState<BatchSummaryDto | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [sweepConfirmOpen, setSweepConfirmOpen] = useState(false);
 
-  const openBatch = useCallback((batch: BatchSummaryDto) => {
-    setSelectedBatch(batch);
-    setSheetOpen(true);
-  }, []);
+  const openBatch = useCallback(
+    (batch: BatchSummaryDto) => {
+      navigate(adminInventoryBatchPath(batch.id), { state: { batch } });
+    },
+    [navigate],
+  );
 
   const columns = useInventoryColumns();
   const batches = data ?? [];
-
-  useEffect(() => {
-    if (!selectedBatch?.id || !data) {
-      return;
-    }
-    const updated = data.find((batch) => batch.id === selectedBatch.id);
-    if (!updated) {
-      return;
-    }
-    setSelectedBatch((current) => (current?.id === updated.id && current !== updated ? updated : current));
-  }, [data, selectedBatch?.id]);
 
   const handleBatchCreated = useCallback(
     (batch: BatchSummaryDto) => {
@@ -74,10 +65,6 @@ export function QrInventoryPage() {
     },
     [openBatch],
   );
-
-  const handleBatchUpdated = useCallback((batch: BatchSummaryDto) => {
-    setSelectedBatch(batch);
-  }, []);
 
   const pageDescription = useMemo(() => {
     if (isLoading || !metrics) {
@@ -180,14 +167,6 @@ export function QrInventoryPage() {
           open={createOpen}
           onOpenChange={setCreateOpen}
           onCreated={handleBatchCreated}
-        />
-
-        <BatchManagementDetailSheet
-          batch={selectedBatch}
-          open={sheetOpen}
-          onOpenChange={setSheetOpen}
-          canWrite={canRunLifecycle}
-          onBatchUpdated={handleBatchUpdated}
         />
 
         <AlConfirmationDialog

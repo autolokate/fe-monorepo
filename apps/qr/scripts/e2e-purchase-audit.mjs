@@ -425,7 +425,7 @@ async function main() {
   });
 
   // 1. Open mobile auth with qr_code (URL-first QR source; no FlowEntry resolve)
-  await page.goto(`${BASE}/journey/auth/mobile?qr_code=${encodeURIComponent(QR_CODE)}`, {
+  await page.goto(`${BASE}/q/${encodeURIComponent(QR_CODE)}`, {
     waitUntil: 'networkidle',
     timeout: 60000,
   });
@@ -468,7 +468,7 @@ async function main() {
 
   // R03 vehicle
   if (!page.url().includes('r03-vehicle')) {
-    await page.goto(`${BASE}/journey/purchase/vehicle-details`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/vehicle`, { waitUntil: 'networkidle' });
   }
   await page.waitForTimeout(2000);
 

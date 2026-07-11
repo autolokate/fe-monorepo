@@ -197,6 +197,30 @@ export async function attachPurchaseQr(
       return success;
     } catch (error) {
       const mapped = mapQrAttachApiError(error);
+      if (mapped.code === 'already_attached') {
+        const storedAttach = purchaseStorageRepository.readAttachResult();
+        const success: AttachPurchaseQrResult = {
+          ok: true,
+          attachEventId: storedAttach?.attachEventId ?? 'already-attached',
+          vehicleId: storedAttach?.vehicleId ?? 'already-attached',
+          qrStatus: storedAttach?.qrStatus ?? 'ATTACHED',
+          subscriptionId: storedAttach?.subscriptionId ?? null,
+        };
+
+        purchaseStorageRepository.writeAttachResult({
+          attachEventId: success.attachEventId,
+          vehicleId: success.vehicleId,
+          qrStatus: success.qrStatus,
+          subscriptionId: success.subscriptionId,
+          purchaseQrCode,
+          registration,
+        });
+
+        lastAttachResult = success;
+        qrAttachLogger.info('qr_attach_already_attached', { qrCode: purchaseQrCode });
+        return success;
+      }
+
       purchaseStorageRepository.clearAttachResult();
       lastAttachResult = null;
       qrAttachLogger.warn('qr_attach_failed', { qrCode: purchaseQrCode, error: mapped });

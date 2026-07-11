@@ -60,7 +60,7 @@ export type EmergencySuffixStepId = (typeof EMERGENCY_SUFFIX_STEP_IDS)[number];
 
 export const emergencyEntry: ActivationEntry = {
   stepId: EMERGENCY_SUFFIX_STEP_IDS[0],
-  path: `${journeyPaths.emergency}/rider-prompt`,
+  path: emergencyJourneyPaths.riderPrompt,
   label: 'Emergency + Rider entry',
 };
 

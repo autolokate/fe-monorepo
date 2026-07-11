@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "pnpm --filter \"@autolokate/qr^...\" build",
     "dev": "vite",
     "build": "tsc -p tsconfig.json && vite build",
     "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",

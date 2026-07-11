@@ -8,15 +8,8 @@ packages:
 # esbuild (Vite), sharp (qr PWA icon generation), unrs-resolver (ESLint import
 # resolver native binary) all need their native builds; everything else stays blocked.
 allowBuilds:
-  '@firebase/util': true
+  '@firebase/util': set this to true or false
   esbuild: true
-  protobufjs: true
+  protobufjs: set this to true or false
   sharp: true
   unrs-resolver: true
-
-minimumReleaseAgeExclude:
-  - '@firebase/app-compat@0.5.15'
-  - '@firebase/app@0.15.1'
-  - '@firebase/remote-config-compat@0.2.27'
-  - '@firebase/remote-config@0.9.0'
-  - firebase@12.16.0

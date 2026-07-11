@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AlScreenBg, AlScreenSpinner } from '@autolokate/ui';
 
@@ -27,6 +27,7 @@ import type {
 import { useRequestOtp } from '../../hooks/auth/useRequestOtp';
 import { useVerifyOtp } from '../../hooks/auth/useVerifyOtp';
 import { useUpdateProfile } from '../../hooks/profile/useUpdateProfile';
+import { isAppStartupComplete } from '@/platform/app-startup-state';
 import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
 import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
 import { QR_URL_PARAMS } from '@/platform/qr/qr-url-params';
@@ -35,7 +36,7 @@ import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanCo
 import { useQrJourneyEntry } from '../../hooks/qr/useQrJourneyEntry';
 import { authLogger } from '@/services/auth/auth-logger';
 import { qrLogger } from '@/services/qr/qr-logger';
-import { ensureValidAuthSession } from '@/services/auth/ensure-valid-auth-session';
+import { ensureValidAuthSession, hasAuthTokens } from '@/services/auth/ensure-valid-auth-session';
 import { loadLegalDocuments } from '@/services/legal/legal-service';
 import { applyVehicleOwnerSaveError } from '../../services/profile/profile-errors';
 import { authJourneyPaths, authMobileUrl, isAuthMobileContinueEntry } from '../auth/auth-routing';
@@ -45,7 +46,6 @@ import { useJourney } from '../JourneyContext';
 import {
   applyMobileSendError,
   applyOtpVerifyError,
-  delay,
 } from './auth-route-helpers';
 
 function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
@@ -91,6 +91,44 @@ function MobileRoute() {
     bootstrapRef.current = true;
 
     void (async () => {
+      if (isAppStartupComplete()) {
+        const signedIn = (await ensureValidAuthSession()) === 'valid';
+
+        if (signedIn && !qrCode) {
+          const resumePath = resolveJourneyResumePath(
+            { selectedFlow, authStatus, session, lastRoutePath },
+            phase,
+            lastRoutePath,
+          );
+          void navigate(resumePath, { replace: true });
+          return;
+        }
+
+        if (!qrCode) {
+          if (authContinue && selectedFlow) {
+            setEntryMode('form');
+            return;
+          }
+
+          if (hasAuthTokens()) {
+            const resumePath = resolveJourneyResumePath(
+              { selectedFlow, authStatus, session, lastRoutePath },
+              phase,
+              lastRoutePath,
+            );
+            void navigate(resumePath, { replace: true });
+            return;
+          }
+
+          resetForNewQrEntry();
+          setEntryMode('scan');
+          return;
+        }
+
+        setEntryMode('form');
+        return;
+      }
+
       const sessionValidity = await ensureValidAuthSession();
       if (sessionValidity === 'logged_out') {
         markAuthLoggedOut();
@@ -114,8 +152,17 @@ function MobileRoute() {
           return;
         }
 
+        if (hasAuthTokens()) {
+          const resumePath = resolveJourneyResumePath(
+            { selectedFlow, authStatus, session, lastRoutePath },
+            phase,
+            lastRoutePath,
+          );
+          void navigate(resumePath, { replace: true });
+          return;
+        }
+
         resetForNewQrEntry();
-        markAuthLoggedOut();
         setEntryMode('scan');
         return;
       }
@@ -304,7 +351,7 @@ export type AuthRoutesProps = {
   onAuthCompleted?: () => void | Promise<void>;
 };
 
-function OtpRoute() {
+function OtpRoute({ onAuthCompleted }: AuthRoutesProps) {
   const navigate = useNavigate();
   const { session, updateSession, selectedFlow } = useJourney();
   const auth = session.auth ?? {};
@@ -391,8 +438,13 @@ function OtpRoute() {
         ...result.data.journeyPatch,
       },
     });
-    await delay(400);
-    void navigate(authJourneyPaths.vehicleOwner);
+
+    if (result.data.isNewUser) {
+      void navigate(authJourneyPaths.vehicleOwner);
+      return;
+    }
+
+    await onAuthCompleted?.();
   };
 
   const handleResend = async () => {
@@ -404,7 +456,7 @@ function OtpRoute() {
       setOtpState('resend-failed');
       return;
     }
-    const result = await requestOtp({ mobileDigits: mobile });
+    const result = await requestOtp({ mobileDigits: mobile, channel: 'sms' });
     if (!result.ok) {
       if (result.error.type === 'offline') {
         setOtpState('offline');
@@ -578,19 +630,34 @@ function TermsRoute() {
   );
 }
 
+function resolveAuthRouteContent(
+  pathname: string,
+  onAuthCompleted?: () => void | Promise<void>,
+): ReactNode {
+  const path = pathname.replace(/\/+$/, '') || '/';
+
+  switch (path) {
+    case authJourneyPaths.mobile:
+      return <MobileRoute />;
+    case authJourneyPaths.otp:
+      return <OtpRoute onAuthCompleted={onAuthCompleted} />;
+    case authJourneyPaths.vehicleOwner:
+      return <VehicleOwnerRoute onAuthCompleted={onAuthCompleted} />;
+    case authJourneyPaths.privacy:
+      return <PrivacyRoute />;
+    case authJourneyPaths.terms:
+      return <TermsRoute />;
+    default:
+      return <PreserveSearchRedirect to={authJourneyPaths.mobile} />;
+  }
+}
+
 export function AuthRoutes({ onAuthCompleted }: AuthRoutesProps) {
+  const { pathname } = useLocation();
+
   return (
     <AuthSegmentBootstrap>
-      <Routes>
-        <Route index element={<PreserveSearchRedirect to="mobile" />} />
-        <Route path="splash" element={<PreserveSearchRedirect to="mobile" />} />
-        <Route path="mobile" element={<MobileRoute />} />
-        <Route path="otp" element={<OtpRoute />} />
-        <Route path="vehicle-owner" element={<VehicleOwnerRoute onAuthCompleted={onAuthCompleted} />} />
-        <Route path="legal/privacy" element={<PrivacyRoute />} />
-        <Route path="legal/terms" element={<TermsRoute />} />
-        <Route path="*" element={<PreserveSearchRedirect to="mobile" />} />
-      </Routes>
+      {resolveAuthRouteContent(pathname, onAuthCompleted)}
     </AuthSegmentBootstrap>
   );
 }

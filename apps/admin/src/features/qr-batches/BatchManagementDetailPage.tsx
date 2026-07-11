@@ -1,9 +1,11 @@
 import type { BatchSummaryDto, ReplacedDto, RetiredDto } from '@autolokate/api-client';
 import {
+  AlBreadcrumb,
   AlButton,
   AlConfirmationDialog,
+  AlErrorState,
   AlInput,
-  AlSheet,
+  AlPageHeader,
   AlStack,
   AlStatusBadge,
   AlText,
@@ -11,18 +13,25 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { BatchCodesSection } from '@/features/qr-batches/BatchCodesSection';
 import {
   qrCodeActionSchema,
   type QrCodeActionFormValues,
 } from '@/features/qr-batches/create-batch-schema';
+import { useQrBatchById } from '@/hooks/qr-batches/useQrBatchById';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
 import {
   AdminDetailField,
   AdminDetailGrid,
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
+import {
+  useCanRunQrLifecycleMutations,
+} from '@/platform/rbac/module-write-permissions';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import {
   canRunBatchLifecycleAction,
   describeBatchLifecycleStatus,
@@ -30,15 +39,12 @@ import {
   type BatchLifecycleActionId,
 } from '@/services/qr-batches/batch-lifecycle';
 import { batchStatusTone } from '@/platform/utils/batch-status';
+import { adminPaths } from '@/app/routes/admin-paths';
 
 import './qr-batches.css';
 
-export type BatchManagementDetailSheetProps = {
-  batch: BatchSummaryDto | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  canWrite: boolean;
-  onBatchUpdated?: (batch: BatchSummaryDto) => void;
+type BatchDetailLocationState = {
+  batch?: BatchSummaryDto;
 };
 
 function formatDateTime(value: string | null): string {
@@ -65,18 +71,33 @@ type PendingLifecycleAction = {
 
 type PendingQrAction = 'replace' | 'retire';
 
-export function BatchManagementDetailSheet({
-  batch,
-  open,
-  onOpenChange,
-  canWrite,
-  onBatchUpdated,
-}: BatchManagementDetailSheetProps) {
+function resolveListContext(pathname: string): { listPath: string; listLabel: string } {
+  if (pathname.startsWith(adminPaths.inventory)) {
+    return { listPath: adminPaths.inventory, listLabel: 'QR Inventory' };
+  }
+  return { listPath: adminPaths.qrBatches, listLabel: 'QR Batch Management' };
+}
+
+export function BatchManagementDetailPage() {
+  const { batchId } = useParams<{ batchId: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const locationState = location.state as BatchDetailLocationState | null;
+  const { listPath, listLabel } = resolveListContext(location.pathname);
+
+  const canWrite = useCanRunQrLifecycleMutations();
   const abortRef = useRef<AbortController | null>(null);
+  const [batchOverride, setBatchOverride] = useState<BatchSummaryDto | null>(null);
   const [pendingLifecycle, setPendingLifecycle] = useState<PendingLifecycleAction | null>(null);
   const [pendingQrAction, setPendingQrAction] = useState<PendingQrAction | null>(null);
   const [replaceResult, setReplaceResult] = useState<ReplacedDto | null>(null);
   const [retireResult, setRetireResult] = useState<RetiredDto | null>(null);
+
+  const { batch: fetchedBatch, isLoading, userErrorMessage, refresh } = useQrBatchById(
+    batchId,
+    locationState?.batch ?? null,
+  );
+  const batch = batchOverride ?? fetchedBatch;
 
   const { generateMutation, provisionMutation, replaceMutation, retireMutation, mapMutationError } =
     useQrBatchMutations();
@@ -86,7 +107,12 @@ export function BatchManagementDetailSheet({
     defaultValues: { code: '' },
   });
 
-  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
   const generateMutationRef = useRef(generateMutation);
   const provisionMutationRef = useRef(provisionMutation);
   const replaceMutationRef = useRef(replaceMutation);
@@ -98,29 +124,54 @@ export function BatchManagementDetailSheet({
   retireMutationRef.current = retireMutation;
 
   useEffect(() => {
-    if (wasOpenRef.current && !open) {
-      abortRef.current?.abort();
-      abortRef.current = null;
-      setPendingLifecycle(null);
-      setPendingQrAction(null);
-      setReplaceResult(null);
-      setRetireResult(null);
-      qrForm.reset({ code: '' });
-      generateMutationRef.current.reset();
-      provisionMutationRef.current.reset();
-      replaceMutationRef.current.reset();
-      retireMutationRef.current.reset();
+    setBatchOverride(null);
+    setPendingLifecycle(null);
+    setPendingQrAction(null);
+    setReplaceResult(null);
+    setRetireResult(null);
+    qrForm.reset({ code: '' });
+    generateMutationRef.current.reset();
+    provisionMutationRef.current.reset();
+    replaceMutationRef.current.reset();
+    retireMutationRef.current.reset();
+  }, [batchId, qrForm]);
+
+  useEffect(() => {
+    if (fetchedBatch && batchOverride?.id === fetchedBatch.id) {
+      setBatchOverride(null);
     }
-    wasOpenRef.current = open;
-  }, [open, qrForm]);
+  }, [batchOverride?.id, fetchedBatch]);
 
   const lifecycleActions = useMemo(
     () => (batch ? getBatchLifecycleActions(batch) : []),
     [batch],
   );
 
+  if (isLoading && !batch) {
+    return (
+      <RequirePermission permission="inventory:view">
+        <AdminPageLoader label="Loading batch…" />
+      </RequirePermission>
+    );
+  }
+
   if (!batch) {
-    return null;
+    return (
+      <RequirePermission permission="inventory:view">
+        <AlErrorState
+          title={userErrorMessage ? 'Something went wrong' : 'Batch not found'}
+          message={userErrorMessage ?? 'This batch may have been removed or the link is invalid.'}
+          onRetry={
+            userErrorMessage
+              ? refresh
+              : () => {
+                  navigate(listPath);
+                }
+          }
+          retryLabel={userErrorMessage ? 'Try again' : 'Back to list'}
+        />
+      </RequirePermission>
+    );
   }
 
   const lifecyclePending = generateMutation.isPending || provisionMutation.isPending;
@@ -151,7 +202,7 @@ export function BatchManagementDetailSheet({
         actionId === 'generate'
           ? await generateMutation.mutateAsync({ batchId: batch.id, signal: controller.signal })
           : await provisionMutation.mutateAsync({ batchId: batch.id, signal: controller.signal });
-      onBatchUpdated?.(updated);
+      setBatchOverride(updated);
       setPendingLifecycle(null);
     } catch {
       setPendingLifecycle(null);
@@ -189,14 +240,27 @@ export function BatchManagementDetailSheet({
   });
 
   return (
-    <>
-      <AlSheet
-        open={open}
-        onOpenChange={onOpenChange}
-        title={batch.batchCode}
-        description={`${batch.channel} · ${describeBatchLifecycleStatus(batch.status)}`}
-      >
-        <AlStack gap="md">
+    <RequirePermission permission="inventory:view">
+      <AlStack gap="md">
+        <AlPageHeader
+          title={batch.batchCode}
+          description={`${batch.channel} · ${describeBatchLifecycleStatus(batch.status)}`}
+          breadcrumbs={
+            <AlBreadcrumb
+              items={[
+                {
+                  label: listLabel,
+                  onClick: () => {
+                    navigate(listPath);
+                  },
+                },
+                { label: batch.batchCode, current: true },
+              ]}
+            />
+          }
+        />
+
+        <div className="qr-batch-detail-summary">
           <AdminDetailSection title="Overview">
             <AlStatusBadge label={batch.status} status={batchStatusTone(batch.status)} />
             <AdminDetailGrid>
@@ -217,12 +281,15 @@ export function BatchManagementDetailSheet({
               <AdminDetailField label="Provisioned at" value={formatDateTime(batch.provisionedAt)} />
             ) : null}
           </AdminDetailSection>
+        </div>
 
-          <BatchCodesSection
-            batchId={batch.id}
-            enabled={batch.generatedCount > 0 || batch.status !== 'DRAFT'}
-          />
+        <BatchCodesSection
+          batchId={batch.id}
+          enabled={batch.generatedCount > 0 || batch.status !== 'DRAFT'}
+          layout="page"
+        />
 
+        <div className="qr-batch-detail-actions">
           <AdminDetailSection title="Batch lifecycle" description={describeBatchLifecycleStatus(batch.status)}>
             {canWrite ? (
               lifecycleActions.length > 0 ? (
@@ -328,8 +395,8 @@ export function BatchManagementDetailSheet({
               </div>
             ) : null}
           </AdminDetailSection>
-        </AlStack>
-      </AlSheet>
+        </div>
+      </AlStack>
 
       <AlConfirmationDialog
         open={pendingLifecycle !== null}
@@ -369,6 +436,6 @@ export function BatchManagementDetailSheet({
           void runQrAction();
         }}
       />
-    </>
+    </RequirePermission>
   );
 }

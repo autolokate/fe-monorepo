@@ -1,9 +1,9 @@
 import {
-  getProfile,
   logoutSession,
   requestOtp as requestOtpApi,
   toE164IndianMobile,
   verifyOtp as verifyOtpApi,
+  type OtpChannel,
   type Profile,
   type RequestOtpResult,
   type TokenPair,
@@ -22,6 +22,7 @@ import { mapProfileToJourney, type ProfileJourneyPatch } from '../profile/profil
 
 export type SendOtpInput = {
   mobileDigits: string;
+  channel?: OtpChannel;
 };
 
 export type VerifyOtpInput = {
@@ -34,6 +35,7 @@ export type VerifyOtpResult = {
   tokens: TokenPair;
   profile: Profile | null;
   journeyPatch: ProfileJourneyPatch;
+  isNewUser: boolean;
 };
 
 /** Send OTP to the given 10-digit Indian mobile. */
@@ -41,6 +43,7 @@ export async function sendOtp(input: SendOtpInput): Promise<RequestOtpResult> {
   const client = getQrBootstrapClient();
   return requestOtpApi(client, {
     phone: toE164IndianMobile(input.mobileDigits),
+    ...(input.channel ? { channel: input.channel } : {}),
   });
 }
 
@@ -57,12 +60,12 @@ export async function verifyOtp(input: VerifyOtpInput): Promise<VerifyOtpResult>
 
   tokenManager.save(tokens);
 
-  let profile: Profile | null = null;
-  try {
-    profile = await getProfile(authenticated);
-    authLogger.info('profile_synced', { hasName: Boolean(profile.name) });
-  } catch (error) {
-    authLogger.warn('profile_sync_failed', { error });
+  const isNewUser = tokens.isNewUser === true;
+
+  if (isNewUser) {
+    authLogger.info('profile_fetch_skipped', { reason: 'new_user' });
+  } else {
+    authLogger.info('profile_fetch_skipped', { reason: 'existing_user_from_verify' });
   }
 
   if (input.consentAccepted) {
@@ -73,8 +76,9 @@ export async function verifyOtp(input: VerifyOtpInput): Promise<VerifyOtpResult>
 
   return {
     tokens,
-    profile,
-    journeyPatch: mapProfileToJourney(profile),
+    profile: null,
+    journeyPatch: mapProfileToJourney(null),
+    isNewUser,
   };
 }
 

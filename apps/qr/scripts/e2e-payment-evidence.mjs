@@ -287,7 +287,7 @@ async function main() {
   await page.waitForTimeout(2000);
 
   if (!page.url().includes('/auth/mobile')) {
-    await page.goto(`${BASE}/journey/auth/mobile`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/scan`, { waitUntil: 'networkidle' });
   }
   await page.getByLabel('Mobile number').fill(PHONE);
   await acceptConsent(page);
@@ -304,7 +304,7 @@ async function main() {
   }
 
   if (!page.url().includes('r03-vehicle')) {
-    await page.goto(`${BASE}/journey/purchase/vehicle-details`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/vehicle`, { waitUntil: 'networkidle' });
   }
   await page.waitForTimeout(1500);
   await page.getByLabel('Vehicle registration plate').fill(PLATE);

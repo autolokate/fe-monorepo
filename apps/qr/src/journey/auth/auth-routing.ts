@@ -22,13 +22,13 @@ export function authMobileUrl(options?: { continueAuth?: boolean }): string {
 }
 
 export const authJourneyPaths = {
-  mobile: `${journeyPaths.auth}/mobile`,
-  otp: `${journeyPaths.auth}/otp`,
-  vehicleOwner: `${journeyPaths.auth}/vehicle-owner`,
-  privacy: `${journeyPaths.auth}/legal/privacy`,
-  terms: `${journeyPaths.auth}/legal/terms`,
-  /** @deprecated Removed from active graph — redirects to mobile */
-  splash: `${journeyPaths.auth}/splash`,
+  mobile: journeyPaths.auth,
+  otp: journeyPaths.otp,
+  vehicleOwner: journeyPaths.profile,
+  privacy: journeyPaths.legalPrivacy,
+  terms: journeyPaths.legalTerms,
+  /** @deprecated Removed from active graph — redirects to auth */
+  splash: journeyPaths.auth,
 } as const;
 
 /** Active shared auth sequence (QR scan entry assumed before auth). */

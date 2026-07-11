@@ -3,7 +3,7 @@
   "short_name": "Autolokate",
   "description": "Vehicle protection activation, emergency SOS, and Park Me reporting.",
   "id": "/",
-  "start_url": "/journey/auth/mobile",
+  "start_url": "/auth",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",

@@ -11,6 +11,14 @@ export const adminPaths = {
   users: '/users',
 } as const;
 
+export function adminInventoryBatchPath(batchId: string): string {
+  return `${adminPaths.inventory}/${batchId}`;
+}
+
+export function adminQrBatchPath(batchId: string): string {
+  return `${adminPaths.qrBatches}/${batchId}`;
+}
+
 export type AdminRouteMeta = {
   path: string;
   label: string;

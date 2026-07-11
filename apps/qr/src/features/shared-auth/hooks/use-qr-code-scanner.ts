@@ -377,9 +377,13 @@ export function extractQrCodeFromScan(raw: string): string | null {
 
   try {
     const url = new URL(trimmed);
-    const fromQr = url.searchParams.get('qr_code')?.trim();
+    const fromQr = url.searchParams.get('q')?.trim();
     if (fromQr) {
       return fromQr;
+    }
+    const legacyQr = url.searchParams.get('qr_code')?.trim();
+    if (legacyQr) {
+      return legacyQr;
     }
     const legacy = url.searchParams.get('code')?.trim();
     if (legacy) {

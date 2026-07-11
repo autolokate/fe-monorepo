@@ -5,6 +5,7 @@ import { AUTH_COMPLETED } from '../../features/shared-auth/types';
 
 import { authJourneyPaths } from '../auth/auth-routing';
 import { getPostAuthActivationPath } from '../activation-routing';
+import { hasAuthTokens } from '@/services/auth/ensure-valid-auth-session';
 import { useJourney } from '../JourneyContext';
 import type { ActivationFlowId } from '../types';
 
@@ -22,7 +23,7 @@ export function RequireSelectedFlow({
 
   if (!selectedFlow) {
     const redirect =
-      authStatus === AUTH_COMPLETED
+      authStatus === AUTH_COMPLETED || hasAuthTokens()
         ? (fallbackPath ?? getPostAuthActivationPath(null))
         : authJourneyPaths.mobile;
     return <Navigate to={redirect} replace />;
@@ -40,7 +41,7 @@ export function RequireAuthCompleted({ children }: RequireAuthCompletedProps) {
   const { authStatus } = useJourney();
   const location = useLocation();
 
-  if (authStatus !== AUTH_COMPLETED) {
+  if (authStatus !== AUTH_COMPLETED && !hasAuthTokens()) {
     return <Navigate to={authJourneyPaths.mobile} replace state={{ from: location.pathname }} />;
   }
 
@@ -58,7 +59,7 @@ export function RequireSelectedFlowMatch({ flow, children }: RequireSelectedFlow
 
   if (!selectedFlow) {
     const redirect =
-      authStatus === AUTH_COMPLETED
+      authStatus === AUTH_COMPLETED || hasAuthTokens()
         ? getPostAuthActivationPath(null)
         : authJourneyPaths.mobile;
     return <Navigate to={redirect} replace />;

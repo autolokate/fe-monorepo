@@ -23,7 +23,7 @@ export {
   type QrDispatchDeps,
 } from './qr/dispatch-qr-payload';
 export {
-  buildQrAuthMobileUrl,
+  buildQrDeepLinkUrl,
   QR_ENTRY_BASE_URL,
 } from './qr/qr-entry-urls';
 export {

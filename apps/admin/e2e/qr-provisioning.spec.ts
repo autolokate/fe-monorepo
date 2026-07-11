@@ -33,13 +33,10 @@ test.describe('QR batch provisioning', () => {
     await showState(page, '3 · form filled (B2C + SKU + count)');
     await dialog.getByRole('button', { name: 'Create batch' }).click();
 
-    // Detail sheet opens on the new batch (title = human batchCode). The sheet's own title is the
-    // only h4 — the section titles ("Overview", "Codes in batch", …) are h3.
-    const detail = page.getByRole('dialog').filter({ hasText: 'Batch lifecycle' });
-    await expect(detail).toBeVisible({ timeout: 20_000 });
-    // `{channel}-{skuLabel}-{totalCount}-{ddmmyyyy}`, plus the `-2`, `-3`, … collision suffix a
-    // same-day re-run of the identical batch gets (generateBatchCode `collisionN`).
-    await expect(detail.getByRole('heading', { level: 4 })).toHaveText(
+    // Detail page opens on the new batch (title = human batchCode).
+    await expect(page).toHaveURL(/\/qr-batches\/[^/]+$/, { timeout: 20_000 });
+    const detail = page.locator('main');
+    await expect(detail.getByRole('heading', { level: 2 })).toHaveText(
       new RegExp(`^B2C-[A-Z0-9]+-${String(totalCount)}-\\d{8}(?:-\\d+)?$`),
     );
     // The BATCH badge is the Overview section's direct child; each row in "Codes in batch" carries
@@ -66,9 +63,9 @@ test.describe('QR batch provisioning', () => {
     await provisionConfirm.getByRole('button', { name: 'Provision batch' }).click();
 
     await expect(batchStatus).toHaveText('PROVISIONED', { timeout: 30_000 });
-    await showState(page, '8 · PROVISIONED (detail sheet)');
+    await showState(page, '8 · PROVISIONED (detail page)');
 
-    await detail.getByRole('button', { name: 'Close panel' }).click();
+    await detail.getByRole('button', { name: 'QR Batch Management' }).click();
     await expect(page.getByRole('cell', { name: 'PROVISIONED' }).first()).toBeVisible();
     await showState(page, '9 · list shows PROVISIONED');
 

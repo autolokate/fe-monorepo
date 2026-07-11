@@ -26,12 +26,26 @@ export type PlanOptionDto = {
   riderOptions: RiderOptionDto[];
 };
 
+export type ListPlansParams = {
+  tier?: ApiPlanTier;
+  /** Purchase QR sticker code — scopes plan catalog to the scanned QR. */
+  code?: string;
+};
+
 /** GET /v1/plans — list currently-effective plans (one per tier). */
 export async function listPlans(
   client: ApiClient,
-  tier?: ApiPlanTier,
+  params?: ListPlansParams,
 ): Promise<PlanOptionDto[]> {
-  const query = tier ? `?${new URLSearchParams({ tier }).toString()}` : '';
+  const search = new URLSearchParams();
+  if (params?.tier) {
+    search.set('tier', params.tier);
+  }
+  const code = params?.code?.trim();
+  if (code) {
+    search.set('code', code);
+  }
+  const query = search.toString() ? `?${search.toString()}` : '';
   const response = await client.get<unknown>(`${endpoints.plans.list}${query}`);
   return unwrapEnvelope(response) as PlanOptionDto[];
 }

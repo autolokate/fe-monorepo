@@ -3,14 +3,20 @@ import { AUTH_COMPLETED } from '@/features/shared-auth/types';
 import { getPostAuthActivationPath } from '../activation-routing';
 import { authJourneyPaths } from '../auth/auth-routing';
 import { journeyPaths } from '../constants';
+import { isPurchaseRoutePath } from '../purchase/purchase-routing';
 import type { JourneyPhase, PersistedJourneyState } from '../types';
 
 const BARE_ENTRY_PATHS = new Set<string>([
   journeyPaths.entry,
+  journeyPaths.auth,
+  journeyPaths.root,
+  journeyPaths.qrDeepLinkPrefix,
+  '/',
+  '/scan',
+  // Legacy entry URLs (redirect only — not resume targets)
   '/journey/auth/mobile',
   '/journey/auth',
   '/journey',
-  '/',
 ]);
 
 /** Paths that must not be used as a resume target (entry / auth bootstrap). */
@@ -19,7 +25,19 @@ export function isJourneyResumePath(path: string): boolean {
   if (!normalized || BARE_ENTRY_PATHS.has(normalized)) {
     return false;
   }
-  return normalized.startsWith('/journey/') || normalized.startsWith('/pwa/scan/');
+  if (normalized.startsWith(`${journeyPaths.qrDeepLinkPrefix}/`)) {
+    return false;
+  }
+  return (
+    normalized.startsWith('/journey/') ||
+    normalized.startsWith('/pwa/scan/') ||
+    normalized.startsWith('/emergency/') ||
+    normalized.startsWith('/prepaid/') ||
+    normalized.startsWith('/b2b2c/') ||
+    normalized === journeyPaths.otp ||
+    normalized === journeyPaths.profile ||
+    isPurchaseRoutePath(normalized)
+  );
 }
 
 /** Persist only in-journey routes worth restoring after a direct entry URL visit. */

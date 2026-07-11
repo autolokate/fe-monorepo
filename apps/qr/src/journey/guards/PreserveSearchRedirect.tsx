@@ -5,7 +5,7 @@ type PreserveSearchRedirectProps = {
   to: string;
 };
 
-/** Redirect while keeping `?qr_code=` and other entry query params from the scanned URL. */
+/** Redirect while keeping `?q=` / legacy `?qr_code=` and other entry query params. */
 export function PreserveSearchRedirect({ to }: PreserveSearchRedirectProps) {
   const location = useLocation();
 

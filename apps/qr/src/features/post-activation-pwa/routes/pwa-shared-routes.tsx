@@ -21,7 +21,6 @@ import {
   RESEND_COOLDOWN_SECONDS,
 } from '../../shared-auth/auth-flow/auth-flow.validation';
 import type { AuthMobileState, AuthOtpState } from '../../shared-auth/types';
-import { PWA_BOOTSTRAP_MS } from '../constants/pwa-scan-paths';
 import { pwaScanPaths } from '../constants/pwa-scan-paths';
 import { PWA_LOADING_COPY } from '../data/pwa-content';
 import { usePwaScan } from '../context/PwaScanContext';
@@ -49,35 +48,26 @@ export function PwaLoadingRoute() {
   const [searchParams] = useSearchParams();
   const { updateSession } = usePwaScan();
   const { resolveEntry } = useQrResolve();
-  const qrHandledRef = useRef(false);
+  const bootstrapRef = useRef(false);
 
   useEffect(() => {
-    if (qrHandledRef.current || !isQrEntryUrl(searchParams)) {
+    if (bootstrapRef.current) {
       return;
     }
+    bootstrapRef.current = true;
 
     void (async () => {
-      const result = await resolveEntry(searchParams);
-      if (!result.ok || result.payload.type !== 'activated') {
-        return;
+      if (isQrEntryUrl(searchParams)) {
+        const result = await resolveEntry(searchParams);
+        if (result.ok && result.payload.type === 'activated') {
+          applyActivatedQrToPwaSession(result.payload, updateSession);
+        }
       }
 
-      qrHandledRef.current = true;
-      applyActivatedQrToPwaSession(result.payload, updateSession);
+      updateSession({ bootstrapComplete: true });
+      void navigate(pwaScanPaths.vehicle, { replace: true });
     })();
-  }, [resolveEntry, searchParams, updateSession]);
-
-  const finishBootstrap = useCallback(() => {
-    updateSession({ bootstrapComplete: true });
-    void navigate(pwaScanPaths.vehicle, { replace: true });
-  }, [navigate, updateSession]);
-
-  useEffect(() => {
-    const timer = window.setTimeout(finishBootstrap, PWA_BOOTSTRAP_MS);
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [finishBootstrap]);
+  }, [navigate, resolveEntry, searchParams, updateSession]);
 
   return (
     <PwaScanShell variant="protected">
