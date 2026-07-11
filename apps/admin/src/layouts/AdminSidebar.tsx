@@ -1,5 +1,5 @@
 import { AlBrandMark } from '@autolokate/brand';
-import { ActivityIcon, CircleUserIcon, CreditCardIcon, HouseIcon, ReceiptTextIcon, ScanLineIcon } from '@autolokate/icons';
+import { ActivityIcon, CircleUserIcon, CreditCardIcon, HouseIcon, ReceiptTextIcon, ScanLineIcon, StoreIcon } from '@autolokate/icons';
 import { AlText } from '@autolokate/ui';
 import { NavLink } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/dashboard': HouseIcon,
   '/inventory': ScanLineIcon,
   '/qr-batches': ReceiptTextIcon,
+  '/catalog': StoreIcon,
   '/promos': CreditCardIcon,
   '/audit-events': ActivityIcon,
   '/finance': CreditCardIcon,

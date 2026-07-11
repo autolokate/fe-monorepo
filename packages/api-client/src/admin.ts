@@ -114,18 +114,118 @@ export type CreateBatchBody = {
   planTier?: ApiPlanTier;
 };
 
-/** OpenAPI `SkuSummaryDto` — active catalog row for the create-batch picker. */
+/**
+ * OpenAPI `SkuSummaryDto` — a catalog row. Carries the SHELF (`offeredTiers`), because the shelf is a
+ * server-enforced money control, not a display hint: a tier that is not on it cannot be sold against this
+ * Sku's stock ([09-sales-channels § Routing]). The console must be able to see and edit it.
+ */
 export type SkuSummaryDto = {
   id: string;
   skuCode: string;
   channel: QrBatchChannel;
   prepaid: boolean;
   listPricePaise: number;
+  /** The sellable shelf. Empty is never legitimate — it sells nothing (fail-closed). */
+  offeredTiers: ApiPlanTier[];
+  defaultPlanId: string | null;
+  /** Server-derived from the default plan row; never sent by a client. */
+  defaultPlanVersion: number | null;
+  riderDefault: number;
+  sponsorOrgId: string | null;
+  /** Eligible for NEW batches. Does NOT gate the sell path — stickers already printed keep selling. */
+  active: boolean;
 };
 
 /** Query for `GET /admin/v1/skus`. */
 export type ListSkusQuery = {
   channel?: QrBatchChannel;
+  /** Default false — the picker only wants Skus you may still manufacture against. */
+  includeInactive?: boolean;
+};
+
+/** Body for `POST /admin/v1/skus`. `defaultPlanVersion` is absent on purpose — the server derives it. */
+export type CreateSkuBody = {
+  skuCode: string;
+  channel: QrBatchChannel;
+  defaultPlanId: string;
+  offeredTiers: ApiPlanTier[];
+  listPricePaise: number;
+  prepaid: boolean;
+  riderDefault?: number;
+  sponsorOrgId?: string;
+  active?: boolean;
+};
+
+/**
+ * Body for `PATCH /admin/v1/skus/{skuId}` — the MUTABLE set only. `skuCode`, `channel`, `prepaid` and
+ * `sponsorOrgId` are immutable after create: a QrBatch freezes its `(channel, sku_id)` at generate, so
+ * flipping a channel would retroactively rewrite the journey of every sticker already printed.
+ */
+export type UpdateSkuBody = {
+  defaultPlanId?: string;
+  offeredTiers?: ApiPlanTier[];
+  listPricePaise?: number;
+  riderDefault?: number;
+  active?: boolean;
+};
+
+/** OpenAPI `AdminPlanDto` — one plan VERSION, including superseded/retired ones (the console needs history). */
+export type AdminPlanDto = {
+  id: string;
+  tier: ApiPlanTier;
+  version: number;
+  name: string;
+  pricePaise: number;
+  riderEligible: boolean;
+  period: 'YEARLY';
+  effectiveFrom: string | null;
+  effectiveTo: string | null;
+  isEffectiveNow: boolean;
+};
+
+/** Query for `GET /admin/v1/plans`. */
+export type ListAdminPlansQuery = {
+  tier?: ApiPlanTier;
+};
+
+/**
+ * Body for `POST /admin/v1/plans` — mints a NEW `(tier, version)`. `version` is absent on purpose: plans are
+ * IMMUTABLE, so a price/name change is a new row, and the server derives `version = max+1` under a lock.
+ * `retireCurrent` stamps the outgoing version's `effective_to` in the same transaction.
+ */
+export type CreatePlanBody = {
+  tier: ApiPlanTier;
+  name: string;
+  pricePaise: number;
+  riderEligible: boolean;
+  period: 'YEARLY';
+  effectiveFrom?: string;
+  retireCurrent?: boolean;
+};
+
+/**
+ * Body for `PATCH /admin/v1/plans/{planId}` — LIFECYCLE ONLY (publish / retire). Price, tier and name are
+ * absent by design: a live Subscription pins `(plan_id, plan_version)`, so editing a price in place would
+ * retro-reprice customers who already paid. The server rejects a body naming them.
+ */
+export type UpdatePlanBody = {
+  effectiveFrom?: string | null;
+  effectiveTo?: string | null;
+};
+
+/** OpenAPI `PlanFeaturesDto` — the plan card's copy, keyed by the PLAN VERSION it was authored for. */
+export type PlanFeaturesDto = {
+  planId: string;
+  features: string[];
+  badge: string | null;
+  includesLabel: string | null;
+};
+
+/** Body for `PATCH /admin/v1/plans/{planId}/features`. An empty `features` renders a blank card → rejected. */
+export type UpdatePlanFeaturesBody = {
+  features: string[];
+  badge?: string | null;
+  includesLabel?: string | null;
 };
 
 /** OpenAPI `ReplacedDto` */
@@ -382,11 +482,109 @@ export async function listSkus(
   query: ListSkusQuery = {},
   options: { signal?: AbortSignal } = {},
 ): Promise<SkuSummaryDto[]> {
-  const path = `${endpoints.admin.skus}${buildQuery({ channel: query.channel })}`;
+  const path = `${endpoints.admin.skus}${buildQuery({
+    channel: query.channel,
+    includeInactive: query.includeInactive ? 'true' : undefined,
+  })}`;
   const response = await client.get<unknown>(path, {
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as SkuSummaryDto[];
+}
+
+/** POST /admin/v1/skus */
+export async function createSku(
+  client: ApiClient,
+  body: CreateSkuBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<SkuSummaryDto> {
+  const response = await client.post<unknown>(endpoints.admin.skus, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as SkuSummaryDto;
+}
+
+/** PATCH /admin/v1/skus/{skuId} */
+export async function updateSku(
+  client: ApiClient,
+  skuId: string,
+  body: UpdateSkuBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<SkuSummaryDto> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.sku(skuId),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as SkuSummaryDto;
+}
+
+/** GET /admin/v1/plans — every version, including superseded/retired ones. */
+export async function listAdminPlans(
+  client: ApiClient,
+  query: ListAdminPlansQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPlanDto[]> {
+  const path = `${endpoints.admin.plans}${buildQuery({ tier: query.tier })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminPlanDto[];
+}
+
+/** POST /admin/v1/plans — mint a new (tier, version). */
+export async function createPlanVersion(
+  client: ApiClient,
+  body: CreatePlanBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPlanDto> {
+  const response = await client.post<unknown>(endpoints.admin.plans, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminPlanDto;
+}
+
+/** PATCH /admin/v1/plans/{planId} — lifecycle only (publish / retire). */
+export async function updatePlan(
+  client: ApiClient,
+  planId: string,
+  body: UpdatePlanBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPlanDto> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.plan(planId),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as AdminPlanDto;
+}
+
+/** GET /admin/v1/plans/{planId}/features */
+export async function getPlanFeatures(
+  client: ApiClient,
+  planId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<PlanFeaturesDto> {
+  const response = await client.get<unknown>(
+    endpoints.admin.planFeatures(planId),
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as PlanFeaturesDto;
+}
+
+/** PATCH /admin/v1/plans/{planId}/features */
+export async function updatePlanFeatures(
+  client: ApiClient,
+  planId: string,
+  body: UpdatePlanFeaturesBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<PlanFeaturesDto> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.planFeatures(planId),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as PlanFeaturesDto;
 }
 
 /** POST /admin/v1/qr-batches */

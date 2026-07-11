@@ -27,6 +27,8 @@ export type AdminPermission =
   | 'promos:write'
   | 'promo:view'
   | 'promo:write'
+  | 'catalog:read'
+  | 'catalog:write'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -51,6 +53,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'promos:write',
     'promo:view',
     'promo:write',
+    // Catalog writes move money: a price, a shelf, a default plan. SUPER_ADMIN only.
+    'catalog:read',
+    'catalog:write',
     'audit:read',
     'audit:view',
     'settlements:write',
@@ -71,6 +76,10 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'qr-batches:read',
     'qr-batches:write',
     'qr-lifecycle:write',
+    // READ, not write: OPS manufactures batches AGAINST a Sku, so it has to be able to see which Sku it is
+    // picking and what that Sku actually sells (its shelf) — `GET /admin/v1/skus` is an OPS route in the
+    // locked contract. Authoring the catalog (prices, shelves) stays with FINANCE.
+    'catalog:read',
     'promos:read',
     'promo:view',
     'audit:read',
@@ -78,9 +87,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'partners:read',
   ],
   SUPPORT: ['dashboard:view', 'inventory:view', 'inventory:read', 'audit:read', 'audit:view', 'partners:read'],
-  FINANCE: ['dashboard:view', 'audit:read', 'audit:view', 'settlements:write', 'clawbacks:write', 'promos:read', 'promo:view'],
+  FINANCE: ['dashboard:view', 'audit:read', 'audit:view', 'settlements:write', 'clawbacks:write', 'promos:read', 'promo:view', 'catalog:read'],
   PARTNER_MANAGER: ['dashboard:view', 'inventory:view', 'inventory:read', 'partners:read', 'partners:write', 'audit:read', 'audit:view'],
-  READ_ONLY: ['dashboard:view', 'inventory:view', 'inventory:read', 'qr-batches:read', 'promos:read', 'promo:view', 'audit:read', 'audit:view', 'partners:read'],
+  READ_ONLY: ['dashboard:view', 'inventory:view', 'inventory:read', 'qr-batches:read', 'promos:read', 'promo:view', 'catalog:read', 'audit:read', 'audit:view', 'partners:read'],
 };
 
 export function normalizeAdminRole(role: string | null | undefined): AdminRole {

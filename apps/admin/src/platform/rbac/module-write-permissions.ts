@@ -14,3 +14,8 @@ export function useCanRunQrLifecycleMutations(): boolean {
 export function useCanWritePromoMutations(): boolean {
   return useAdminAnyPermission(['promo:write', 'promos:write']);
 }
+
+/** POST/PATCH /admin/v1/plans and /admin/v1/skus — minting plan versions, editing shelves and prices. */
+export function useCanWriteCatalogMutations(): boolean {
+  return useAdminAnyPermission(['catalog:write']);
+}

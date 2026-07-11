@@ -4,6 +4,7 @@ export const adminPaths = {
   dashboard: '/dashboard',
   inventory: '/inventory',
   qrBatches: '/qr-batches',
+  catalog: '/catalog',
   promos: '/promos',
   auditEvents: '/audit-events',
   finance: '/finance',
@@ -35,6 +36,12 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.qrBatches,
     label: 'QR Batch Management',
     description: 'Create and manage QR batches',
+    nav: true,
+  },
+  {
+    path: adminPaths.catalog,
+    label: 'Catalog',
+    description: 'Plan versions and the SKU shelves that sell them',
     nav: true,
   },
   {

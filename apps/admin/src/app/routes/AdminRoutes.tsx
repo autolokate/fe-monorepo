@@ -25,6 +25,12 @@ const QrBatchManagementPage = lazy(() =>
   })),
 );
 
+const CatalogPage = lazy(() =>
+  import('@/features/catalog/CatalogPage').then((module) => ({
+    default: module.CatalogPage,
+  })),
+);
+
 const PromoManagementPage = lazy(() =>
   import('@/features/promos/PromoManagementPage').then((module) => ({
     default: module.PromoManagementPage,
@@ -70,6 +76,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.dashboard} element={<DashboardPage />} />
             <Route path={adminPaths.inventory} element={<QrInventoryPage />} />
             <Route path={adminPaths.qrBatches} element={<QrBatchManagementPage />} />
+            <Route path={adminPaths.catalog} element={<CatalogPage />} />
             <Route path={adminPaths.promos} element={<PromoManagementPage />} />
             <Route path={adminPaths.auditEvents} element={<AuditEventsPage />} />
             <Route path={adminPaths.finance} element={<FinanceOperationsPage />} />

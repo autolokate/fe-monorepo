@@ -11,7 +11,7 @@ const COMMAND_GROUPS = [
   },
   {
     heading: 'Operations',
-    paths: [adminPaths.inventory, adminPaths.qrBatches, adminPaths.promos],
+    paths: [adminPaths.inventory, adminPaths.qrBatches, adminPaths.catalog, adminPaths.promos],
   },
   {
     heading: 'Compliance',
