@@ -76,7 +76,9 @@ async function boot(browser, appUrl, tokens, fcmConfig) {
   page.on('console', (m) => {
     const t = m.text();
     if (/fcm_|register_|device_/.test(t)) {
-      logs.push({ atMs: Date.now() - t0.v, t: t.replace('[onboarding-device] ', '') });
+      // Strip whatever namespace deviceLogger is configured with, so renaming it can't
+      // silently break every assertion below.
+      logs.push({ atMs: Date.now() - t0.v, t: t.replace(/^\[[^\]]+\]\s*/, '') });
     }
   });
 
