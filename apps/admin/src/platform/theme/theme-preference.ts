@@ -5,7 +5,7 @@ import {
 
 export type ThemePreference = ThemeMode | 'auto';
 
-/** Shared with onboarding — one theme preference across Autolokate web apps. */
+/** Shared with QR PWA — one theme preference across Autolokate web apps. */
 export const THEME_PREFERENCE_KEY = 'al-qr-theme';
 
 export function readThemePreference(): ThemePreference {

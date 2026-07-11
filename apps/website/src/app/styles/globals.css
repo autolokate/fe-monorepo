@@ -2,7 +2,7 @@
 
 /* Autolokate FE — light + dark themes.
    Theme is selected via `data-theme` on <html> (see ThemeProvider), matching
-   the onboarding / ui-preview apps and the shared design-system tokens. */
+   the QR PWA / ui-preview apps and the shared design-system tokens. */
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
