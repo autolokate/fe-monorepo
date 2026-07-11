@@ -10,6 +10,7 @@
     "generate:pwa-icon-comparisons": "node scripts/generate-pwa-icon-comparisons.mjs",
     "prebuild": "node scripts/generate-pwa-icons.mjs",
     "lint": "eslint .",
+    "test:fid": "node e2e/fid-registration.test.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

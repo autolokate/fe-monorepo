@@ -1,6 +1,6 @@
 import { setFcmTokenProvider } from './fcm-token-provider';
 import {
-  fetchWebFcmToken,
+  resolveWebInstallationId,
   listenForForegroundMessages,
 } from './firebase-messaging';
 
@@ -9,6 +9,6 @@ import {
  * Call once at app startup (before auth restore / DeviceRegistrationRegistrar).
  */
 export function installFirebaseMessaging(): void {
-  setFcmTokenProvider(() => fetchWebFcmToken());
+  setFcmTokenProvider(() => resolveWebInstallationId());
   void listenForForegroundMessages();
 }

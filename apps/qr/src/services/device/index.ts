@@ -5,7 +5,7 @@ export {
   type FcmTokenProvider,
 } from './fcm-token-provider';
 export {
-  fetchWebFcmToken,
+  resolveWebInstallationId,
   listenForForegroundMessages,
 } from './firebase-messaging';
 export { installFirebaseMessaging } from './install-firebase-messaging';
