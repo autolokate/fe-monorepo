@@ -4,5 +4,5 @@ import { env } from '@/config/env';
 
 export const qrAttachLogger = createLogger({
   enabled: env.enableLogs,
-  namespace: 'onboarding-qr-attach',
+  namespace: 'qr-qr-attach',
 });

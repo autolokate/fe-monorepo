@@ -4,5 +4,5 @@ import { env } from '@/config/env';
 
 export const deviceLogger = createLogger({
   enabled: env.enableLogs,
-  namespace: 'onboarding-device',
+  namespace: 'qr-device',
 });

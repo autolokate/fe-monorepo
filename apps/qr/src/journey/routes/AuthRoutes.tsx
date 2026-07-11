@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AlScreenBg, AlScreenSpinner } from '@autolokate/ui';
+
+import { PreserveSearchRedirect } from '../guards/PreserveSearchRedirect';
 
 import { L1PrivacyPolicyScreen } from '../../features/shared-legal/screens/l1-privacy-policy/index';
 import { L2TermsConditionsScreen } from '../../features/shared-legal/screens/l2-terms-conditions/index';
@@ -580,14 +582,14 @@ export function AuthRoutes({ onAuthCompleted }: AuthRoutesProps) {
   return (
     <AuthSegmentBootstrap>
       <Routes>
-        <Route index element={<Navigate to="mobile" replace />} />
-        <Route path="splash" element={<Navigate to="mobile" replace />} />
+        <Route index element={<PreserveSearchRedirect to="mobile" />} />
+        <Route path="splash" element={<PreserveSearchRedirect to="mobile" />} />
         <Route path="mobile" element={<MobileRoute />} />
         <Route path="otp" element={<OtpRoute />} />
         <Route path="vehicle-owner" element={<VehicleOwnerRoute onAuthCompleted={onAuthCompleted} />} />
         <Route path="legal/privacy" element={<PrivacyRoute />} />
         <Route path="legal/terms" element={<TermsRoute />} />
-        <Route path="*" element={<Navigate to="mobile" replace />} />
+        <Route path="*" element={<PreserveSearchRedirect to="mobile" />} />
       </Routes>
     </AuthSegmentBootstrap>
   );

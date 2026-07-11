@@ -20,11 +20,11 @@ function DownloadIcon() {
   );
 }
 
-/** Always-visible install control when the browser offers add-to-home-screen. */
+/** Top-right install control — native prompt on Android, iOS guidance on tap. */
 export function PwaInstallIconButton({ className }: PwaInstallIconButtonProps) {
-  const { canInstall, promptInstall } = usePwaInstall();
+  const { canShowInstallControl, openInstallGuidance } = usePwaInstall();
 
-  if (!canInstall) {
+  if (!canShowInstallControl) {
     return null;
   }
 
@@ -34,9 +34,7 @@ export function PwaInstallIconButton({ className }: PwaInstallIconButtonProps) {
       className={className ? `pwa-install-icon ${className}` : 'pwa-install-icon'}
       aria-label="Install Autolokate app"
       title="Install app"
-      onClick={() => {
-        void promptInstall();
-      }}
+      onClick={openInstallGuidance}
     >
       <DownloadIcon />
     </button>

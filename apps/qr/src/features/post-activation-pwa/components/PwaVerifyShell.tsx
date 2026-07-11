@@ -14,7 +14,7 @@ export type PwaVerifyShellProps = {
   children: ReactNode;
 };
 
-/** PWA-native verify frame — replaces onboarding AuthStepShell chrome for 03–05. */
+/** PWA-native verify frame — replaces shared AuthStepShell chrome for 03–05. */
 export function PwaVerifyShell({
   title,
   description,

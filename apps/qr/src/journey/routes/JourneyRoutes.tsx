@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { emergencyJourneyPaths } from '../emergency/emergency-routing';
+import { PreserveSearchRedirect } from '../guards/PreserveSearchRedirect';
 import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
 import {
   RequireAuthCompleted,
@@ -39,11 +40,11 @@ export function JourneyRoutes() {
   return (
     <div className="journey-frame">
       <Routes>
-        <Route path="/" element={<Navigate to={journeyPaths.entry} replace />} />
-        <Route path="/journey" element={<Navigate to={journeyPaths.entry} replace />} />
-        <Route path="/journey/home" element={<Navigate to={journeyPaths.entry} replace />} />
-        <Route path="/journey/flow-hub" element={<Navigate to={journeyPaths.entry} replace />} />
-        <Route path="/journey/qr-scan" element={<Navigate to={journeyPaths.entry} replace />} />
+        <Route path="/" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+        <Route path="/journey" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+        <Route path="/journey/home" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+        <Route path="/journey/flow-hub" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+        <Route path="/journey/qr-scan" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
         <Route path="/journey/auth/*" element={<JourneySharedAuthRoute />} />
         <Route
           path="/journey/purchase/qr-scan"
@@ -59,7 +60,7 @@ export function JourneyRoutes() {
         />
         <Route path="/journey/emergency/*" element={<EmergencyActivationRoute />} />
         <Route path="/journey/completed" element={<JourneyCompletedScreen />} />
-        <Route path="*" element={<Navigate to={journeyPaths.entry} replace />} />
+        <Route path="*" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
       </Routes>
     </div>
   );

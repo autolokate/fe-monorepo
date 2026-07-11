@@ -4,5 +4,5 @@ import { env } from '@/config/env';
 
 export const emergencyContactLogger = createLogger({
   enabled: env.enableLogs,
-  namespace: 'onboarding-emergency-contacts',
+  namespace: 'qr-emergency-contacts',
 });

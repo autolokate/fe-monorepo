@@ -20,6 +20,6 @@ export const prepaidScreenInventory: Record<PrepaidScreenId, PrepaidScreenInvent
     stepId: 'prepaid.code-validation',
     featureFolder: 'features/qr-prepaid/screens/pr03-code-validation',
     figmaRef: 'Pre-paid · Code validation',
-    description: 'Validate code before merging into shared onboarding',
+    description: 'Validate code before merging into shared activation',
   },
 };

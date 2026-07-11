@@ -22,7 +22,7 @@ import {
 import { clearVehicleLookupCache } from '@/services/vehicle/vehicle-cache';
 
 /**
- * Wipe onboarding journey blobs before a new QR activation.
+ * Wipe QR journey blobs before a new QR activation.
  * Preserves UI prefs (theme, PWA install dismiss) — not journey data.
  */
 export function resetQrJourneyStorage(): void {

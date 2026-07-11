@@ -4,5 +4,5 @@ import { env } from '@/config/env';
 
 export const riderLogger = createLogger({
   enabled: env.enableLogs,
-  namespace: 'onboarding-riders',
+  namespace: 'qr-riders',
 });

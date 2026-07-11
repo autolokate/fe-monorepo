@@ -50,6 +50,32 @@ function resolveQrEntryBaseUrl(): string {
   return typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
 }
 
+function assertStagingQrEntryHost(): void {
+  const environment = parseEnvironment(readRaw('VITE_ENVIRONMENT'));
+  if (environment !== 'staging') {
+    return;
+  }
+
+  const override = readRaw('VITE_QR_ENTRY_BASE_URL');
+  if (!override) {
+    return;
+  }
+
+  try {
+    const host = new URL(override).hostname;
+    if (host === 'qr.autolokate.com') {
+      throw new Error(
+        '[qr] VITE_QR_ENTRY_BASE_URL must not point at production qr.autolokate.com in staging builds.',
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('[qr]')) {
+      throw error;
+    }
+    throw new Error('[qr] VITE_QR_ENTRY_BASE_URL must be a valid absolute URL.');
+  }
+}
+
 function parseEnvironment(value: string | undefined): AppEnvironment {
   if (value === 'production' || value === 'staging' || value === 'development') {
     return value;
@@ -68,5 +94,6 @@ export const env: AppEnv = Object.freeze({
 
 /** Call once at startup to fail fast on missing configuration. */
 export function validateEnv(): AppEnv {
+  assertStagingQrEntryHost();
   return env;
 }

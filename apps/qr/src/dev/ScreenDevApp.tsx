@@ -807,7 +807,7 @@ export function ScreenDevApp() {
       {showChrome ? (
         <aside className="ob-dev__panel">
           <AlStack gap="md">
-            <AlHeading variant="h3">Onboarding · Dev preview</AlHeading>
+            <AlHeading variant="h3">QR · Dev preview</AlHeading>
             <AlText tone="muted">Shared + Purchase + Prepaid + Emergency — no routing or API</AlText>
             <AlText variant="label">Shared Auth (Figma 91:268)</AlText>
             <AlStack gap="xs">

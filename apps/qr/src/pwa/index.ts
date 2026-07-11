@@ -7,6 +7,7 @@ export {
   type PermissionRecoveryState,
 } from './permission-recovery';
 export { useOnlineStatus } from './use-online-status';
+export { PwaInstallProvider, usePwaInstallContext } from './PwaInstallProvider';
 export { usePwaInstall } from './use-pwa-install';
 export { usePwaUpdate } from './use-pwa-update';
 export {

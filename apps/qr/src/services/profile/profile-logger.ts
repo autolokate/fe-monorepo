@@ -4,5 +4,5 @@ import { env } from '@/config/env';
 
 export const profileLogger = createLogger({
   enabled: env.enableLogs,
-  namespace: 'onboarding-profile',
+  namespace: 'qr-profile',
 });

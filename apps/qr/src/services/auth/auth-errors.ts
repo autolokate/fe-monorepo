@@ -32,7 +32,7 @@ function mapNormalizedCode(code: NormalizedErrorCode): MappedAuthError['type'] {
   }
 }
 
-/** Map normalized API errors into existing onboarding auth UI states. */
+/** Map normalized API errors into existing auth UI states. */
 export function mapAuthApiError(error: unknown): MappedAuthError {
   const normalized = normalizeApiError(error);
 

@@ -23,7 +23,7 @@ export type SharedFlowId = 'shared' | 'auth' | 'legal';
 export type AnyFlowId = FlowId | SharedFlowId;
 
 /**
- * Shared onboarding pipeline — defined once in config, referenced by all QR flows.
+ * Shared QR activation pipeline — defined once in config, referenced by all QR flows.
  * R01 → R06
  */
 export type SharedStepId =

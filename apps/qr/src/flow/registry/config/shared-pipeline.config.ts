@@ -1,6 +1,6 @@
 import type { SharedStepId, StepDefinition } from '@/types/flow';
 
-/** Active shared auth pipeline — QR entry assumed before onboarding. */
+/** Active shared auth pipeline — QR scan entry assumed before auth. */
 export const SHARED_PIPELINE_STEP_IDS = [
   'shared.mobile',
   'shared.otp',

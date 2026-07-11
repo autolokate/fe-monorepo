@@ -32,7 +32,7 @@ export function applyActivatedQrToPwaSession(
   });
 }
 
-/** Route a decoded QR payload into the correct onboarding or PWA flow. */
+/** Route a decoded QR payload into the correct activation or PWA flow. */
 export function dispatchQrPayload(payload: QrPayload, deps: QrDispatchDeps): void {
   if (payload.type === 'activated') {
     applyActivatedQrToPwaSession(payload, deps.updatePwaSession);

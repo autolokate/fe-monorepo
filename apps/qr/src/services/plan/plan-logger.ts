@@ -4,5 +4,5 @@ import { env } from '@/config/env';
 
 export const planLogger = createLogger({
   enabled: env.enableLogs,
-  namespace: 'onboarding-plan',
+  namespace: 'qr-plan',
 });

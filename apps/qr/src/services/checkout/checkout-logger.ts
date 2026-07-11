@@ -4,5 +4,5 @@ import { env } from '@/config/env';
 
 export const checkoutLogger = createLogger({
   enabled: env.enableLogs,
-  namespace: 'onboarding-checkout',
+  namespace: 'qr-checkout',
 });

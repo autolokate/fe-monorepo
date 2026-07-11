@@ -1,5 +1,5 @@
 /**
- * Canonical mobile display formatters for onboarding flows.
+ * Canonical mobile display formatters for QR PWA flows.
  * Local: "98765 43210" · Intl: "+91 98765 43210"
  */
 

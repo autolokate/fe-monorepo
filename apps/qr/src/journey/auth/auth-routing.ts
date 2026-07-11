@@ -31,7 +31,7 @@ export const authJourneyPaths = {
   splash: `${journeyPaths.auth}/splash`,
 } as const;
 
-/** Active shared auth sequence (QR entry assumed before onboarding). */
+/** Active shared auth sequence (QR scan entry assumed before auth). */
 export const authStepPathSequence = [
   authJourneyPaths.mobile,
   authJourneyPaths.otp,

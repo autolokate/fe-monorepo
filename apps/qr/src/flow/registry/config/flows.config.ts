@@ -13,7 +13,7 @@ export const flowsConfig = [
   {
     id: 'shared',
     productArea: 'shared-auth',
-    label: 'Shared · Onboarding Pipeline',
+    label: 'Shared · Activation Pipeline',
     stepIds: SHARED_PIPELINE_STEP_IDS,
   },
   {
