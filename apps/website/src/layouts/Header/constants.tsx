@@ -30,6 +30,7 @@ const LOGO_ON_LIGHT_BG = "/brand/al-logo-light.svg";
 export function Logo({ className, priority = false, tone = "auto" }: LogoProps) {
   if (tone === "on-dark") {
     return (
+      // eslint-disable-next-line @next/next/no-img-element -- static brand SVG; next/image does not optimize SVG (served as-is), so it yields no LCP/bandwidth benefit
       <img
         src={LOGO_ON_DARK_BG}
         alt="Autolokate"
@@ -43,6 +44,7 @@ export function Logo({ className, priority = false, tone = "auto" }: LogoProps) 
   }
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element -- static brand SVG; next/image does not optimize SVG (served as-is), so it yields no LCP/bandwidth benefit
     <img
       src={LOGO_ON_LIGHT_BG}
       alt="Autolokate"

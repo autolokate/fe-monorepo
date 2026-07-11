@@ -10,6 +10,7 @@ interface BrandWordmarkProps {
 export function BrandWordmark({ className }: BrandWordmarkProps) {
   return (
     <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG; next/image does not optimize SVG (served as-is), so it yields no LCP/bandwidth benefit */}
       <img
         src={LOGO_ON_DARK_BG}
         alt="Autolokate"
@@ -18,6 +19,7 @@ export function BrandWordmark({ className }: BrandWordmarkProps) {
         draggable={false}
         className={cn("theme-dark-only block h-8 w-auto sm:h-9", className)}
       />
+      {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG; next/image does not optimize SVG (served as-is), so it yields no LCP/bandwidth benefit */}
       <img
         src={LOGO_ON_LIGHT_BG}
         alt="Autolokate"
