@@ -1,8 +1,11 @@
 import type { QrResolution } from '@autolokate/api-client';
 
 import { loadJourneyState } from '@/journey/persistence';
-import { purchaseJourneyPaths, purchaseVehicleConfirmationPath } from '@/journey/purchase/purchase-routing';
-import { journeyPaths } from '@/journey/constants';
+import {
+  purchaseJourneyPathsFor,
+  purchaseVehicleConfirmationPath,
+} from '@/journey/purchase/purchase-routing';
+import { buildQrEntryPath, parseJourneyIdFromPathname } from '@/journey/routing/journey-url-routing';
 import type { JourneySession } from '@/journey/types';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { getVehicle } from '@/storage/index';
@@ -69,27 +72,37 @@ export type PurchaseRouteAccess = {
 };
 
 /** Derive purchase journey mode from the stored QR resolve snapshot. */
-export function readPurchaseJourneyState(searchParams?: URLSearchParams): PurchaseJourneyState {
+export function readPurchaseJourneyState(
+  searchParams?: URLSearchParams,
+  journeyId?: string | null,
+): PurchaseJourneyState {
   const stored = qrStorageRepository.readResolved();
   const skipsVehicleSteps = Boolean(stored && isAttachedQrLifecycleStatus(stored.qrStatus));
+  const resolvedJourneyId =
+    journeyId?.trim() ||
+    resolvePurchaseQrCode(searchParams) ||
+    stored?.qrCode ||
+    null;
+  const paths = resolvedJourneyId ? purchaseJourneyPathsFor(resolvedJourneyId) : purchaseJourneyPathsFor('_');
 
   return {
     kind: skipsVehicleSteps
       ? PURCHASE_JOURNEY_KIND.RESUME_CHECKOUT
       : PURCHASE_JOURNEY_KIND.FULL_ACTIVATION,
-    entryPath: skipsVehicleSteps
-      ? purchaseJourneyPaths.choosePlan
-      : purchaseJourneyPaths.vehicleDetails,
+    entryPath: skipsVehicleSteps ? paths.choosePlan : paths.vehicleDetails,
     skipsVehicleSteps,
     skipsAttachApi: skipsVehicleSteps,
     hasStoredResolve: Boolean(stored),
-    qrCode: resolvePurchaseQrCode(searchParams) ?? stored?.qrCode ?? null,
+    qrCode: resolvedJourneyId,
   };
 }
 
 /** First purchase screen after shared auth completes. */
-export function resolvePurchaseEntryPath(searchParams?: URLSearchParams): string {
-  return readPurchaseJourneyState(searchParams).entryPath;
+export function resolvePurchaseEntryPath(
+  searchParams?: URLSearchParams,
+  journeyId?: string | null,
+): string {
+  return readPurchaseJourneyState(searchParams, journeyId).entryPath;
 }
 
 export function isVehiclePurchaseStepBlocked(searchParams?: URLSearchParams): boolean {
@@ -130,17 +143,20 @@ function checkoutFallbackPath(
   state: PurchaseJourneyState,
   session: JourneySession,
 ): string {
+  const journeyId = state.qrCode ?? '_';
+  const paths = purchaseJourneyPathsFor(journeyId);
+
   if (state.skipsVehicleSteps) {
-    return journeyPaths.root;
+    return journeyId !== '_' ? buildQrEntryPath(journeyId) : '/q';
   }
   if (routeId === PURCHASE_ROUTE_ID.choosePlan) {
     const registration = session.vehicle?.plate ?? getVehicle()?.registration;
     if (registration?.trim()) {
-      return purchaseVehicleConfirmationPath(registration);
+      return purchaseVehicleConfirmationPath(journeyId, registration);
     }
-    return purchaseJourneyPaths.vehicleDetails;
+    return paths.vehicleDetails;
   }
-  return purchaseJourneyPaths.choosePlan;
+  return paths.choosePlan;
 }
 
 /** Central gate for purchase route segments. */
@@ -148,11 +164,13 @@ export function evaluatePurchaseRouteAccess(
   routeId: PurchaseRouteId,
   session: JourneySession,
   searchParams?: URLSearchParams,
+  journeyId?: string | null,
 ): PurchaseRouteAccess {
-  const state = readPurchaseJourneyState(searchParams);
+  const state = readPurchaseJourneyState(searchParams, journeyId);
+  const paths = purchaseJourneyPathsFor(state.qrCode ?? journeyId ?? '_');
 
   if (state.skipsVehicleSteps && VEHICLE_STEP_ROUTE_IDS.has(routeId)) {
-    return { allowed: false, redirectTo: purchaseJourneyPaths.choosePlan };
+    return { allowed: false, redirectTo: paths.choosePlan };
   }
 
   if (CHECKOUT_ROUTE_IDS.has(routeId)) {
@@ -161,7 +179,7 @@ export function evaluatePurchaseRouteAccess(
       Boolean(getVehicle()?.selectedPlanId);
 
     if (!hasPlanSelection && routeId !== PURCHASE_ROUTE_ID.choosePlan) {
-      return { allowed: false, redirectTo: purchaseJourneyPaths.choosePlan };
+      return { allowed: false, redirectTo: paths.choosePlan };
     }
 
     if (isPurchaseCheckoutUnlocked(session, searchParams)) {
@@ -172,7 +190,7 @@ export function evaluatePurchaseRouteAccess(
   }
 
   if (routeId === PURCHASE_ROUTE_ID.vehicleConfirmation && state.skipsAttachApi) {
-    return { allowed: false, redirectTo: purchaseJourneyPaths.choosePlan };
+    return { allowed: false, redirectTo: paths.choosePlan };
   }
 
   return { allowed: true, redirectTo: null };

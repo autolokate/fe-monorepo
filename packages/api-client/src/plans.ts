@@ -15,7 +15,10 @@ export type RiderOptionDto = {
 
 /** Plan catalog row from GET /v1/plans. */
 export type PlanOptionDto = {
+  /** Plan-version id — pass to POST /v1/cart as planId. */
+  id: string;
   tier: ApiPlanTier;
+  version: string;
   name: string;
   pricePaise: number;
   period: PlanPeriod;

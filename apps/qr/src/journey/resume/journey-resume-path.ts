@@ -1,19 +1,20 @@
 import { AUTH_COMPLETED } from '@/features/shared-auth/types';
 
 import { getPostAuthActivationPath } from '../activation-routing';
-import { authJourneyPaths } from '../auth/auth-routing';
+import { buildAuthPaths } from '../auth/auth-routing';
 import { journeyPaths } from '../constants';
 import { isPurchaseRoutePath } from '../purchase/purchase-routing';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
+import { parseJourneyIdFromPathname, ROUTE_NAMESPACE } from '../routing/journey-url-routing';
 import type { JourneyPhase, PersistedJourneyState } from '../types';
 
 const BARE_ENTRY_PATHS = new Set<string>([
   journeyPaths.entry,
-  journeyPaths.auth,
   journeyPaths.root,
   journeyPaths.qrDeepLinkPrefix,
   '/',
   '/scan',
-  // Legacy entry URLs (redirect only — not resume targets)
+  '/auth',
   '/journey/auth/mobile',
   '/journey/auth',
   '/journey',
@@ -31,11 +32,13 @@ export function isJourneyResumePath(path: string): boolean {
   return (
     normalized.startsWith('/journey/') ||
     normalized.startsWith('/pwa/scan/') ||
-    normalized.startsWith('/emergency/') ||
-    normalized.startsWith('/prepaid/') ||
-    normalized.startsWith('/b2b2c/') ||
-    normalized === journeyPaths.otp ||
-    normalized === journeyPaths.profile ||
+    normalized.startsWith(`${ROUTE_NAMESPACE.scan}/`) ||
+    normalized.startsWith(`${ROUTE_NAMESPACE.onboarding}/`) ||
+    normalized.startsWith(`${ROUTE_NAMESPACE.emergency}/`) ||
+    normalized.startsWith(`${ROUTE_NAMESPACE.prepaid}/`) ||
+    normalized.startsWith(`${ROUTE_NAMESPACE.b2b2c}/`) ||
+    normalized === '/otp' ||
+    normalized === '/profile' ||
     isPurchaseRoutePath(normalized)
   );
 }
@@ -50,24 +53,36 @@ export function resolveJourneyResumePath(
   persisted: PersistedJourneyState,
   _phase: JourneyPhase,
   lastRoutePath?: string | null,
+  journeyId?: string | null,
 ): string {
+  const resolvedJourneyId =
+    journeyId?.trim() ||
+    (lastRoutePath ? parseJourneyIdFromPathname(lastRoutePath) : null) ||
+    resolvePurchaseQrCode();
+
   if (lastRoutePath && isJourneyResumePath(lastRoutePath)) {
     return lastRoutePath;
   }
 
   const { authStatus, selectedFlow, session } = persisted;
 
-  if (authStatus === AUTH_COMPLETED) {
-    return getPostAuthActivationPath(selectedFlow, session);
+  if (resolvedJourneyId) {
+    const auth = buildAuthPaths(resolvedJourneyId);
+
+    if (authStatus === AUTH_COMPLETED) {
+      return getPostAuthActivationPath(selectedFlow, resolvedJourneyId, session);
+    }
+
+    if (session.auth?.otpVerified) {
+      return auth.vehicleOwner;
+    }
+
+    if (session.auth?.mobile) {
+      return auth.otp;
+    }
+
+    return getPostAuthActivationPath(selectedFlow, resolvedJourneyId, session);
   }
 
-  if (session.auth?.otpVerified) {
-    return authJourneyPaths.vehicleOwner;
-  }
-
-  if (session.auth?.mobile) {
-    return authJourneyPaths.otp;
-  }
-
-  return getPostAuthActivationPath(selectedFlow, session);
+  return journeyPaths.entry;
 }

@@ -59,7 +59,7 @@ export function QrBatchManagementPage() {
 
   const openBatch = useCallback(
     (batch: BatchSummaryDto) => {
-      navigate(adminQrBatchPath(batch.id), { state: { batch } });
+      void navigate(adminQrBatchPath(batch.id), { state: { batch } });
     },
     [navigate],
   );

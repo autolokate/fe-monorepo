@@ -1,4 +1,5 @@
-import { pwaScanPaths } from '../../features/post-activation-pwa/constants/pwa-scan-paths';
+import { buildScanPaths } from '@/journey/routing/journey-url-routing';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import {
   selectActivationFlow,
   type SelectActivationFlowDeps,
@@ -20,7 +21,11 @@ export type FlowDispatchDeps = SelectActivationFlowDeps;
  */
 export function dispatchPlatformFlow(request: FlowDispatchRequest, deps: FlowDispatchDeps): void {
   if (!isActivationFlowId(request.flowId)) {
-    void deps.navigate(pwaScanPaths.loading);
+    const qrCode = resolvePurchaseQrCode();
+    if (qrCode) {
+      void deps.navigate(buildScanPaths(qrCode).loading);
+      return;
+    }
     return;
   }
 

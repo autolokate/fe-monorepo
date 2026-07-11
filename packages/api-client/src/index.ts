@@ -58,8 +58,10 @@ export {
   createOrder,
   payOrder,
   getOrderPayment,
+  getOrderInvoice,
   type CreateOrderBody,
   type OrderDto,
+  type OrderInvoiceDto,
   type OrderStatus,
   type PayOrderBody,
   type PayOrderMode,
@@ -67,6 +69,12 @@ export {
   type PaymentOutcomeDto,
   type PaymentRefDto,
 } from './orders';
+export {
+  createCart,
+  getCart,
+  type CartDto,
+  type CreateCartBody,
+} from './cart';
 export {
   validatePromo,
   type PromoPreviewDto,

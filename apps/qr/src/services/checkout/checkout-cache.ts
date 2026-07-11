@@ -2,6 +2,12 @@ import type { OrderSummaryTotals } from '@/features/qr-purchase/types-checkout';
 import type { OrderStatus } from '@autolokate/api-client';
 
 export type CheckoutEphemeral = {
+  cartId: string | null;
+  cartExpiresAt: string | null;
+  planPricePaise: number | null;
+  riderCoverPaise: number | null;
+  discountPaise: number | null;
+  appliedPromoCode: string | null;
   orderId: string | null;
   orderStatus: OrderStatus | null;
   paymentRef: string | null;
@@ -16,6 +22,12 @@ export type CheckoutEphemeral = {
 };
 
 let state: CheckoutEphemeral = {
+  cartId: null,
+  cartExpiresAt: null,
+  planPricePaise: null,
+  riderCoverPaise: null,
+  discountPaise: null,
+  appliedPromoCode: null,
   orderId: null,
   orderStatus: null,
   paymentRef: null,
@@ -34,6 +46,10 @@ let inflightPayment: Promise<unknown> | null = null;
 
 export function getCheckoutRevision(): number {
   return state.revision;
+}
+
+export function peekCartId(): string | null {
+  return state.cartId;
 }
 
 export function peekCheckoutSummary(): OrderSummaryTotals | null {
@@ -77,6 +93,12 @@ export function resetCheckoutPaymentAttempt(): void {
 
 export function clearCheckoutCache(): void {
   state = {
+    cartId: null,
+    cartExpiresAt: null,
+    planPricePaise: null,
+    riderCoverPaise: null,
+    discountPaise: null,
+    appliedPromoCode: null,
     orderId: null,
     orderStatus: null,
     paymentRef: null,
@@ -107,6 +129,27 @@ export function getInflightPayment(): Promise<unknown> | null {
 
 export function setInflightPayment(promise: Promise<unknown> | null): void {
   inflightPayment = promise;
+}
+
+export function clearCartPricingCache(): void {
+  updateCheckoutState({
+    cartId: null,
+    cartExpiresAt: null,
+    planPricePaise: null,
+    riderCoverPaise: null,
+    discountPaise: null,
+    appliedPromoCode: null,
+    orderId: null,
+    orderStatus: null,
+    paymentRef: null,
+    providerOrderId: null,
+    razorpayKeyId: null,
+    createIdempotencyKey: null,
+    payIdempotencyKey: null,
+    orderSummary: null,
+    totalPaise: null,
+    paramsKey: null,
+  });
 }
 
 export function readCheckoutState(): CheckoutEphemeral {

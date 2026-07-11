@@ -10,6 +10,8 @@ import './payment-success-hero.css';
 export type R10PaymentSuccessScreenProps = {
   selectedPlanId: PurchasePlanId;
   paidAmountInr: number;
+  invoiceUrl?: string | null;
+  onViewInvoice?: () => void;
   onContinue?: () => void;
 };
 
@@ -17,12 +19,16 @@ export type R10PaymentSuccessScreenProps = {
 export function R10PaymentSuccessScreen({
   selectedPlanId,
   paidAmountInr,
+  invoiceUrl,
+  onViewInvoice,
   onContinue,
 }: R10PaymentSuccessScreenProps) {
   return (
     <PurchaseStatusShell
       title="Payment successful"
       description={getPaymentSuccessDescription(selectedPlanId, paidAmountInr)}
+      secondaryFooterLabel={invoiceUrl ? 'Download tax invoice' : undefined}
+      onSecondaryFooter={invoiceUrl ? onViewInvoice : undefined}
       celebration={
         <ConfettiLottie className="ob-purchase-success-hero__confetti" />
       }

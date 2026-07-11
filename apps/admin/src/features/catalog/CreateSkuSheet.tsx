@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto, SkuSummaryDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSelect, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
@@ -116,16 +116,18 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
   });
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="xl"
       title="New SKU"
       description="A SKU is a shelf: the tiers you list here are the only ones sellable against its stock."
       footer={
-        <AlStack gap="sm" direction="row">
+        <div className="admin-modal-actions">
           <AlButton
             type="submit"
             form="create-sku-form"
+            size="sm"
             loading={createSkuMutation.isPending}
             disabled={createSkuMutation.isPending}
           >
@@ -134,6 +136,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
           <AlButton
             type="button"
             variant="secondary"
+            size="sm"
             disabled={createSkuMutation.isPending}
             onClick={() => {
               onOpenChange(false);
@@ -141,7 +144,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
           >
             Cancel
           </AlButton>
-        </AlStack>
+        </div>
       }
     >
       <form
@@ -151,7 +154,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
         }}
         onKeyDown={handleFormKeyDown}
       >
-        <AlStack gap="lg">
+        <AlStack gap="md">
           <Controller
             control={form.control}
             name="skuCode"
@@ -234,7 +237,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 errorText={fieldState.error?.message}
-                helperText="What the sticker costs. Sent to the API as paise."
+                helperText="What the sticker costs. Up to 2 decimal places."
                 autoComplete="off"
               />
             )}
@@ -267,7 +270,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
             name="sponsorOrgId"
             render={({ field, fieldState }) => (
               <AlInput
-                label="Sponsor org ID"
+                label="Sponsor organization"
                 mono
                 value={field.value}
                 onChange={field.onChange}
@@ -312,6 +315,6 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
           {submitError ? <AlText role="alert">{submitError}</AlText> : null}
         </AlStack>
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }

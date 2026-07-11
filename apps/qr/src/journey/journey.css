@@ -52,3 +52,19 @@
   gap: var(--al-space-sm);
   margin-block-start: auto;
 }
+
+/* Full-screen route bootstrap — spinner centered like splash / PWA loading */
+.qr-route-loader.al-screen-bg {
+  min-height: 100dvh;
+}
+
+.qr-route-loader.al-screen-bg .al-screen-bg__content {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  max-width: 24.5625rem;
+  margin-inline: auto;
+}

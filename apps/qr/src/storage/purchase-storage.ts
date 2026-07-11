@@ -14,9 +14,7 @@ import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/
 import type { AuthLanguageId } from '@/features/shared-auth/types';
 
 /**
- * Purchase QR code uses **localStorage** so it survives auth navigation and matches
- * the scanner / manual entry path (`localStorage.qr_code`).
- *
+ * Purchase QR code uses **sessionStorage** — journey id is carried in the URL path.
  * Other purchase blobs stay in sessionStorage (same-tab journey scope).
  */
 export const PURCHASE_STORAGE_KEYS = {
@@ -153,8 +151,8 @@ function readPlainStringFrom(storage: Storage, key: string): string | null {
   }
 }
 
-function readQrCodeFromLocal(): string | null {
-  const store = local();
+function readQrCodeFromSession(): string | null {
+  const store = session();
   if (!store) {
     return null;
   }
@@ -163,9 +161,9 @@ function readQrCodeFromLocal(): string | null {
 
 /** Clears persisted QR code — only for explicit new-QR / full journey reset. */
 export function clearQrCodeFromStorage(): void {
-  const localStore = local();
-  if (localStore) {
-    removeFrom(localStore, PURCHASE_STORAGE_KEYS.qrCode);
+  const sessionStore = session();
+  if (sessionStore) {
+    removeFrom(sessionStore, PURCHASE_STORAGE_KEYS.qrCode);
   }
 }
 
@@ -174,19 +172,19 @@ export function saveQrCode(code: string): void {
   if (!trimmed) {
     return;
   }
-  const localStore = local();
-  if (!localStore) {
+  const sessionStore = session();
+  if (!sessionStore) {
     return;
   }
   try {
-    localStore.setItem(PURCHASE_STORAGE_KEYS.qrCode, trimmed);
+    sessionStore.setItem(PURCHASE_STORAGE_KEYS.qrCode, trimmed);
   } catch {
     // ignore
   }
 }
 
 export function getQrCode(): string | null {
-  return readQrCodeFromLocal();
+  return readQrCodeFromSession();
 }
 
 export function saveLegalNoticeVersion(version: string): void {

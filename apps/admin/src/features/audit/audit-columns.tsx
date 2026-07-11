@@ -18,6 +18,16 @@ function actionTone(action: string): 'active' | 'pending' | 'inactive' {
   return 'pending';
 }
 
+function formatActor(event: AuditEventDto): string {
+  if (event.actorAdminId) {
+    return 'Admin user';
+  }
+  if (event.actorAccountId) {
+    return 'Account';
+  }
+  return 'System';
+}
+
 export function useAuditColumns(): ColumnDef<AuditEventDto>[] {
   return useMemo(
     () => [
@@ -34,19 +44,14 @@ export function useAuditColumns(): ColumnDef<AuditEventDto>[] {
         ),
       },
       {
-        accessorKey: 'actorAdminId',
-        header: 'Actor (admin)',
-        cell: ({ row }) => formatAuditField(row.original.actorAdminId),
+        id: 'actor',
+        header: 'Actor',
+        cell: ({ row }) => formatActor(row.original),
       },
       {
         accessorKey: 'targetType',
         header: 'Entity type',
         cell: ({ row }) => formatAuditField(row.original.targetType),
-      },
-      {
-        accessorKey: 'targetId',
-        header: 'Target ID',
-        cell: ({ row }) => formatAuditField(row.original.targetId),
       },
     ],
     [],

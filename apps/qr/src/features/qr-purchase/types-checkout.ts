@@ -32,6 +32,8 @@ export type PurchaseRiderOption = {
 
 export type PurchasePlanDefinition = {
   id: PurchasePlanId;
+  /** Backend plan-version id for POST /v1/cart. */
+  planVersionId: string;
   name: string;
   priceLabel: string;
   priceInr: number;

@@ -91,8 +91,48 @@ ok &= assertShape(
 
 ok &= assertShape(
   'CreateOrderBodyDto (api-client)',
-  { properties: { code: 'string', planTier: 'string', riderCount: 'number', promoCode: 'string' } },
+  { properties: { cartId: 'string' } },
   schemaProps(spec, 'CreateOrderBodyDto'),
+);
+
+ok &= assertShape(
+  'CreateCartBodyDto (api-client)',
+  { properties: { code: 'string', planId: 'string', riderCount: 'number', promoCode: 'string' } },
+  schemaProps(spec, 'CreateCartBodyDto'),
+);
+
+ok &= assertShape(
+  'CartDto (api-client)',
+  {
+    properties: {
+      cartId: 'string',
+      planPricePaise: 'number',
+      riderCoverPaise: 'number',
+      subtotalPaise: 'number',
+      gstPaise: 'number',
+      discountPaise: 'number',
+      totalPaise: 'number',
+      appliedPromoCode: 'string',
+      expiresAt: 'string',
+    },
+  },
+  schemaProps(spec, 'CartDto'),
+);
+
+ok &= assertShape(
+  'OrderDto (api-client)',
+  {
+    properties: {
+      orderId: 'string',
+      subtotalPaise: 'number',
+      gstPaise: 'number',
+      discountPaise: 'number',
+      totalPaise: 'number',
+      appliedPromoCode: 'string',
+      status: 'string',
+    },
+  },
+  schemaProps(spec, 'OrderDto'),
 );
 
 ok &= assertShape(
@@ -117,7 +157,7 @@ ok &= assertShape(
 
 ok &= assertShape(
   'PayOrderBodyDto (api-client)',
-  { properties: { mode: 'string', setupMandate: 'boolean', mandateConsent: 'boolean' } },
+  { properties: { setupMandate: 'boolean', mandateConsent: 'boolean' } },
   schemaProps(spec, 'PayOrderBodyDto'),
 );
 

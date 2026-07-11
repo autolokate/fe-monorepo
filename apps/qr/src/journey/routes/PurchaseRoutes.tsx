@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { formatPlateInput } from '@autolokate/ui';
+import { usePurchaseRouteHydration, PurchaseRouteHydrationProvider } from '../../hooks/purchase/usePurchaseRouteHydration';
+import { AlScreenBg, AlScreenSpinner, formatPlateInput } from '@autolokate/ui';
 
 import {
   isPlateEntryReady,
@@ -32,6 +33,7 @@ import type {
   PurchaseRiderCount,
 } from '../../features/qr-purchase/types-checkout';
 import { DEFAULT_PURCHASE_PLAN_ID } from '../../features/qr-purchase/data/purchase-plans';
+import { getVehicle } from '@/storage/index';
 import { buildOrderSummary } from '../../features/qr-purchase/data/purchase-pricing';
 import { normalizePromoCode } from '../../features/qr-purchase/data/purchase-promo';
 import { usePlans } from '../../hooks/plan/index';
@@ -39,6 +41,7 @@ import { getRiderOptionsForPlan, isPlanRiderEligible } from '@/services/plan/pla
 import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
 import { useCheckout } from '../../hooks/checkout/index';
 import { usePaymentPolling } from '../../hooks/checkout/index';
+import { useCartPricing } from '../../hooks/checkout/index';
 import { useQrAttach } from '../../hooks/qr/index';
 import { getStoredPurchaseQrResolve, resolveQrCode } from '@/services/qr/qr-service';
 import {
@@ -47,8 +50,10 @@ import {
   resetCheckoutForRetry,
   type CheckoutParams,
 } from '../../services/checkout/index';
+import { fetchOrderInvoiceUrl } from '@/services/checkout/invoice-service';
 import { syncVehiclesAfterPayment } from '@/services/vehicle/vehicle-sync-service';
 import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
+import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser-back';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { reportUserError } from '@/platform/feedback/index';
 import { getPurchasePostPaymentEmergencyPath } from '../activation-routing';
@@ -69,14 +74,38 @@ import { qrLogger } from '@/services/qr/qr-logger';
 import { vehicleLogger } from '@/services/vehicle/vehicle-logger';
 import { authJourneyPaths } from '../auth/auth-routing';
 import { useJourney } from '../JourneyContext';
-import { purchaseJourneyPaths, legacyPurchasePathRedirects, purchaseVehicleConfirmationPath, purchaseVehicleLookupPath, parsePurchaseVehicleConfirmationPath, parsePurchaseVehicleLookupPath } from '../purchase/purchase-routing';
+import {
+  purchaseJourneyPaths,
+  legacyPurchasePathRedirectsForActiveJourney,
+  purchaseVehicleConfirmationPath,
+  purchaseVehicleLookupPath,
+} from '../purchase/purchase-paths-runtime';
+import {
+  parsePurchaseVehicleConfirmationPath,
+  parsePurchaseVehicleLookupPath,
+  PURCHASE_ROUTE_SEGMENTS,
+} from '../purchase/purchase-routing';
+import { stripOnboardingPrefix } from '../routing/journey-url-routing';
+
+function PurchaseRouteLoader({ label = 'Loading order' }: { label?: string }) {
+  return (
+    <AlScreenBg variant="protected" className="qr-route-loader">
+      <AlScreenSpinner size="lg" animated aria-label={label} />
+    </AlScreenBg>
+  );
+}
 
 function PurchaseSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();
+  const { isHydrating, plansReady } = usePurchaseRouteHydration();
 
   useEffect(() => {
     setPhase('activation');
   }, [setPhase]);
+
+  if (isHydrating && !plansReady) {
+    return <PurchaseRouteLoader />;
+  }
 
   return children;
 }
@@ -84,8 +113,10 @@ function PurchaseSegmentBootstrap({ children }: { children: ReactNode }) {
 function usePurchaseCheckout() {
   const { session, updateSession } = useJourney();
   const purchase = session.purchase;
-  const planId = purchase?.selectedPlanId ?? DEFAULT_PURCHASE_PLAN_ID;
-  const riderCount = purchase?.riderCount ?? 1;
+  const storedVehicle = getVehicle();
+  const planId =
+    purchase?.selectedPlanId ?? storedVehicle?.selectedPlanId ?? DEFAULT_PURCHASE_PLAN_ID;
+  const riderCount = purchase?.riderCount ?? storedVehicle?.riderCount ?? 1;
 
   const patchPurchase = useCallback(
     (patch: Partial<NonNullable<typeof session.purchase>>) => {
@@ -268,12 +299,14 @@ function startPayment(
     return;
   }
 
-  const summary = buildOrderSummary({
-    planId: params.planId,
-    riderCount: params.riderCount,
-    promoApplied: params.promoApplied,
-    promoCode: params.promoCode,
-  });
+  const summary =
+    getCheckoutSummary() ??
+    buildOrderSummary({
+      planId: params.planId,
+      riderCount: params.riderCount,
+      promoApplied: params.promoApplied,
+      promoCode: params.promoCode,
+    });
 
   flushSync(() => {
     patchPurchase({
@@ -691,6 +724,13 @@ function RiderCoverRoute() {
 function OrderSummaryRoute() {
   const navigate = useNavigate();
   const { planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
+  const { plansRevision, plansReady } = usePurchaseRouteHydration();
+  const checkoutParams = buildCheckoutParams(planId, riderCount, {
+    ...purchase,
+    promoApplied: false,
+    promoCode: null,
+  });
+  const { cartReady, cartRevision } = useCartPricing(checkoutParams);
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
   const [promoApplying, setPromoApplying] = useState(false);
 
@@ -698,8 +738,13 @@ function OrderSummaryRoute() {
     redirectIfPaymentSucceeded(navigate, purchase);
   }, [navigate, purchase]);
 
+  if (!plansReady || !cartReady) {
+    return <PurchaseRouteLoader />;
+  }
+
   return (
     <R08OrderSummaryScreen
+      key={`${plansRevision}-${cartRevision}`}
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoInput}
@@ -733,6 +778,12 @@ function OrderSummaryRoute() {
 function OrderSummaryInvalidPromoRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
+  const checkoutParams = buildCheckoutParams(planId, riderCount, {
+    ...purchase,
+    promoApplied: false,
+    promoCode: null,
+  });
+  const { cartReady, cartRevision } = useCartPricing(checkoutParams);
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
   const [promoApplying, setPromoApplying] = useState(false);
 
@@ -745,8 +796,13 @@ function OrderSummaryInvalidPromoRoute() {
     }
   }, [navigate, purchase, session.purchase?.promoCode, session.purchase?.promoInvalid]);
 
+  if (!cartReady) {
+    return <PurchaseRouteLoader />;
+  }
+
   return (
     <R08cInvalidPromoScreen
+      key={cartRevision}
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoInput}
@@ -784,6 +840,8 @@ function OrderSummaryPromoAppliedRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
   const promoCode = purchase?.promoCode ?? '';
+  const checkoutParams = buildCheckoutParams(planId, riderCount, purchase);
+  const { cartReady, cartRevision } = useCartPricing(checkoutParams);
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -794,8 +852,13 @@ function OrderSummaryPromoAppliedRoute() {
     }
   }, [navigate, purchase, session.purchase?.promoApplied, session.purchase?.promoCode, session.purchase?.promoInvalid]);
 
+  if (!cartReady) {
+    return <PurchaseRouteLoader />;
+  }
+
   return (
     <R08bPromoAppliedScreen
+      key={cartRevision}
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoCode}
@@ -879,6 +942,9 @@ function ProcessingPaymentRoute() {
             });
             void navigate(purchaseJourneyPaths.orderSummaryInvalidPromo, { replace: true });
             return;
+          }
+          if (result.error.code === 'cart_stale' || result.error.code === 'catalog_stale') {
+            resetCheckoutForRetry();
           }
           void navigate(
             getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
@@ -984,6 +1050,7 @@ function PaymentSuccessRoute() {
   const { setPhase, session, updateSession } = useJourney();
   const { planId, purchase } = usePurchaseCheckout();
   const vehiclesSyncedRef = useRef(false);
+  const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
   const paidAmountInr = purchase?.paidAmountInr ?? 0;
 
   useEffect(() => {
@@ -1011,10 +1078,30 @@ function PaymentSuccessRoute() {
     });
   }, [session.purchase?.paymentStatus]);
 
+  useEffect(() => {
+    const orderId = peekOrderId();
+    if (session.purchase?.paymentStatus !== 'success' || !orderId || invoiceUrl) {
+      return;
+    }
+    void fetchOrderInvoiceUrl(orderId).then((url) => {
+      if (url) {
+        setInvoiceUrl(url);
+      }
+    });
+  }, [session.purchase?.paymentStatus, invoiceUrl]);
+
+  usePreventBrowserBack(session.purchase?.paymentStatus === 'success');
+
   return (
     <R10PaymentSuccessScreen
       selectedPlanId={planId}
       paidAmountInr={paidAmountInr}
+      invoiceUrl={invoiceUrl}
+      onViewInvoice={() => {
+        if (invoiceUrl) {
+          window.open(invoiceUrl, '_blank', 'noopener,noreferrer');
+        }
+      }}
       onContinue={() => {
         setPhase('emergency');
         const purchaseSession = session.purchase ?? {};
@@ -1127,9 +1214,9 @@ function PaymentUnconfirmedRoute() {
 }
 
 function resolvePurchaseRouteContent(pathname: string): ReactNode {
-  const path = pathname.replace(/\/+$/, '') || '/';
+  const path = stripOnboardingPrefix(pathname).replace(/\/+$/, '') || '/';
 
-  for (const [legacySegment, canonicalPath] of legacyPurchasePathRedirects) {
+  for (const [legacySegment, canonicalPath] of legacyPurchasePathRedirectsForActiveJourney()) {
     if (path === `/${legacySegment}`) {
       return <Navigate to={canonicalPath} replace />;
     }
@@ -1154,49 +1241,49 @@ function resolvePurchaseRouteContent(pathname: string): ReactNode {
   }
 
   switch (path) {
-    case purchaseJourneyPaths.vehicleDetails:
+    case `/${PURCHASE_ROUTE_SEGMENTS.vehicleDetails}`:
       return (
         <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleDetails}>
           <VehicleDetailsRoute />
         </PurchaseRouteGate>
       );
-    case purchaseJourneyPaths.vehicleLookupFailed:
+    case `/${PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed}`:
       return (
         <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleLookupFailed}>
           <VehicleLookupFailedRoute />
         </PurchaseRouteGate>
       );
-    case purchaseJourneyPaths.choosePlan:
+    case `/${PURCHASE_ROUTE_SEGMENTS.choosePlan}`:
       return (
         <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.choosePlan}>
           <ChoosePlanRoute />
         </PurchaseRouteGate>
       );
-    case purchaseJourneyPaths.riderCover:
+    case `/${PURCHASE_ROUTE_SEGMENTS.riderCover}`:
       return (
         <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.riderCover}>
           <RiderCoverRoute />
         </PurchaseRouteGate>
       );
-    case purchaseJourneyPaths.orderSummary:
+    case `/${PURCHASE_ROUTE_SEGMENTS.orderSummary}`:
       return (
         <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.orderSummary}>
           <OrderSummaryRoute />
         </PurchaseRouteGate>
       );
-    case purchaseJourneyPaths.orderSummaryPromoApplied:
+    case `/${PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied}`:
       return <OrderSummaryPromoAppliedRoute />;
-    case purchaseJourneyPaths.orderSummaryInvalidPromo:
+    case `/${PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo}`:
       return <OrderSummaryInvalidPromoRoute />;
-    case purchaseJourneyPaths.processingPayment:
+    case `/${PURCHASE_ROUTE_SEGMENTS.processingPayment}`:
       return <ProcessingPaymentRoute />;
-    case purchaseJourneyPaths.paymentStillConfirming:
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming}`:
       return <PaymentStillConfirmingRoute />;
-    case purchaseJourneyPaths.paymentSuccess:
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentSuccess}`:
       return <PaymentSuccessRoute />;
-    case purchaseJourneyPaths.paymentFailed:
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentFailed}`:
       return <PaymentFailedRoute />;
-    case purchaseJourneyPaths.paymentUnconfirmed:
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed}`:
       return <PaymentUnconfirmedRoute />;
     default:
       return <PurchaseIndexRedirect />;
@@ -1207,9 +1294,11 @@ export function PurchaseRoutes() {
   const { pathname } = useLocation();
 
   return (
-    <PurchaseSegmentBootstrap>
-      {resolvePurchaseRouteContent(pathname)}
-    </PurchaseSegmentBootstrap>
+    <PurchaseRouteHydrationProvider>
+      <PurchaseSegmentBootstrap>
+        {resolvePurchaseRouteContent(pathname)}
+      </PurchaseSegmentBootstrap>
+    </PurchaseRouteHydrationProvider>
   );
 }
 

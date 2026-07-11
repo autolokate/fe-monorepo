@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 
 import { adminNavRoutes } from '@/app/routes/admin-paths';
 import { useAdminAuth } from '@/providers/AdminAuthProvider';
+import { useTheme } from '@/providers/ThemeProvider';
 
 const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/dashboard': HouseIcon,
@@ -25,13 +26,15 @@ export type AdminSidebarProps = {
 
 export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminSidebarProps) {
   const { session, adminRole } = useAdminAuth();
+  const { themeMode } = useTheme();
   const activeRole = session?.role ?? adminRole;
+  const logoVariant = themeMode === 'dark' ? 'dark' : 'light';
 
   return (
     <div className={`admin-shell-sidebar ${collapsed ? 'is-collapsed' : ''}`.trim()}>
       <div className="admin-shell-sidebar__brand">
         <div className="admin-shell-sidebar__brand-mark">
-          <AlBrandMark size={20} aria-hidden />
+          <AlBrandMark size={20} variant={logoVariant} aria-hidden />
         </div>
         <div className="admin-shell-sidebar__brand-text">
           <AlText variant="label">Autolokate</AlText>

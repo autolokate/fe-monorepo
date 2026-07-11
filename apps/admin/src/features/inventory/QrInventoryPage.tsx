@@ -51,7 +51,7 @@ export function QrInventoryPage() {
 
   const openBatch = useCallback(
     (batch: BatchSummaryDto) => {
-      navigate(adminInventoryBatchPath(batch.id), { state: { batch } });
+      void navigate(adminInventoryBatchPath(batch.id), { state: { batch } });
     },
     [navigate],
   );

@@ -24,7 +24,7 @@ export function OwnershipTransfersPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Ownership Transfers"
-          description="Initiate and approve vehicle ownership transfers. Open a transfer from your workflow using the IDs returned below."
+          description="Initiate and approve vehicle ownership transfers."
           actions={
             canWrite ? (
               <>
@@ -51,6 +51,12 @@ export function OwnershipTransfersPage() {
           {initiatedResult ? <TransferInitiatedPanel result={initiatedResult} /> : null}
           {approvedResult ? <TransferCompletedPanel result={approvedResult} /> : null}
         </div>
+
+        {!initiatedResult && !approvedResult ? (
+          <p className="admin-empty-note admin-operations-empty">
+            Transfer status appears here after you initiate or approve a transfer.
+          </p>
+        ) : null}
 
         <InitiateTransferSheet
           open={initiateOpen}

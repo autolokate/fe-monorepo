@@ -1,5 +1,5 @@
 import type { PwaScanSession } from '../../features/post-activation-pwa/context/pwa-scan-types';
-import { prepaidJourneyPaths } from '../../journey/prepaid/prepaid-routing';
+import { buildB2b2cPaths, buildPrepaidPaths, buildScanPaths } from '@/journey/routing/journey-url-routing';
 import { selectActivationFlow } from '../../journey/navigation/select-activation-flow';
 import type { FlowDispatchDeps } from '../entry/flow-dispatcher';
 import { dispatchPlatformFlow } from '../entry/flow-dispatcher';
@@ -62,7 +62,7 @@ export function dispatchQrPayload(payload: QrPayload, deps: QrDispatchDeps): voi
     deps.updateSession?.({
       prepaid: { voucherId: entitlementCode },
     });
-    void deps.navigate(prepaidJourneyPaths.welcome);
+    void deps.navigate(buildPrepaidPaths(qrCode).welcome);
     return;
   }
 
@@ -78,6 +78,6 @@ export function dispatchQrPayload(payload: QrPayload, deps: QrDispatchDeps): voi
     b2b2c: { partnerId: qrCode, variant: payload.variant },
   });
   void deps.navigate(
-    resolvePartnerWelcomePath('b2b2c', payload.variant === 'plan-rider' ? 1 : 0),
+    resolvePartnerWelcomePath('b2b2c', payload.variant === 'plan-rider' ? 1 : 0, qrCode),
   );
 }

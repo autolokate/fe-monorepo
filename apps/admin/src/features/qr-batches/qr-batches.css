@@ -8,41 +8,241 @@
 .qr-batch-state-filter:focus-visible {
   outline: 2px solid var(--al-color-focus-ring);
   outline-offset: 2px;
-  border-radius: var(--al-radius-pill);
+  border-radius: var(--al-radius-sm);
 }
 
-.qr-batch-result-card {
+/* ── Compact batch summary ───────────────────────────────────────── */
+
+.qr-batch-detail-hero {
   display: flex;
   flex-direction: column;
   gap: var(--al-space-3);
-  padding: var(--al-space-3);
+  padding: var(--al-space-4);
   border-radius: var(--al-radius-sm);
   background: var(--al-color-surface);
   border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
 }
 
-.qr-batch-codes-load-more {
+.qr-batch-detail-hero__top {
   display: flex;
-  justify-content: center;
-  padding-block: var(--al-space-2);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--al-space-3);
+  flex-wrap: wrap;
 }
 
-.qr-batch-detail-summary,
-.qr-batch-detail-actions {
+.qr-batch-detail-hero__status {
+  display: flex;
+  align-items: center;
+  gap: var(--al-space-2);
+  flex-wrap: wrap;
+}
+
+.qr-batch-detail-hero__channel {
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-color-text);
+}
+
+.qr-batch-detail-hero__created {
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+  font-variant-numeric: tabular-nums;
+}
+
+.qr-batch-detail-hero__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--al-space-2);
+}
+
+.qr-batch-stat-inline {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--al-space-2);
+  padding: var(--al-space-1) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface-variant);
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.qr-batch-stat-inline__value {
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--al-color-text);
+}
+
+.qr-batch-stat-inline__label {
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.qr-batch-detail-hero__meta {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--al-space-4);
+  gap: var(--al-space-2) var(--al-space-4);
+  margin: 0;
 }
+
+.qr-batch-detail-hero__meta dt {
+  margin: 0 0 var(--al-space-1);
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.qr-batch-detail-hero__meta dd {
+  margin: 0;
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  color: var(--al-color-text);
+}
+
+.qr-batch-detail-hero__mono {
+  font-family: var(--al-text-mono-family);
+  word-break: break-all;
+}
+
+/* ── Compact action toolbar ──────────────────────────────────────── */
+
+.qr-batch-detail-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-3);
+  padding: var(--al-space-4);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface);
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.qr-batch-detail-toolbar__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--al-space-4);
+  flex-wrap: wrap;
+}
+
+.qr-batch-detail-toolbar__row--qr {
+  align-items: flex-end;
+}
+
+.qr-batch-detail-toolbar__copy {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.qr-batch-detail-toolbar__title {
+  margin: 0;
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  line-height: var(--al-text-label-line-height);
+  color: var(--al-color-text);
+}
+
+.qr-batch-detail-toolbar__hint {
+  margin: var(--al-space-1) 0 0;
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  line-height: var(--al-text-caption-line-height);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.qr-batch-detail-toolbar__controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--al-space-2);
+}
+
+.qr-batch-detail-toolbar__empty {
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+  white-space: nowrap;
+}
+
+.qr-batch-detail-toolbar__divider {
+  height: 1px;
+  background: var(--al-color-border-subtle);
+}
+
+.qr-batch-detail-toolbar__qr-form {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--al-space-2) var(--al-space-3);
+  flex: 1 1 20rem;
+  min-width: min(100%, 20rem);
+}
+
+/* QR code inline form — hide visible label, keep for a11y */
+.qr-batch-detail-toolbar__qr-form .al-field {
+  flex: 1 1 12rem;
+  min-width: 10rem;
+  margin: 0;
+}
+
+.qr-batch-detail-toolbar__qr-form .al-field__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.qr-batch-detail-toolbar__qr-form .admin-page-actions {
+  flex-shrink: 0;
+}
+
+.admin-result-panel--compact {
+  padding: var(--al-space-3);
+  gap: var(--al-space-2);
+}
+
+.admin-result-panel--compact .admin-detail-grid {
+  gap: var(--al-space-2) var(--al-space-3);
+}
+
+/* ── Codes table section ─────────────────────────────────────────── */
 
 .qr-batch-codes-page {
   display: flex;
   flex-direction: column;
-  gap: var(--al-space-3);
+  gap: var(--al-space-4);
 }
 
-@media (max-width: 960px) {
-  .qr-batch-detail-summary,
-  .qr-batch-detail-actions {
+.qr-batch-codes-load-more {
+  display: flex;
+  justify-content: center;
+  padding: var(--al-space-3) var(--al-space-4);
+  border-top: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  background: var(--al-color-surface);
+}
+
+@media (max-width: 768px) {
+  .qr-batch-detail-hero__meta {
     grid-template-columns: 1fr;
+  }
+
+  .qr-batch-detail-toolbar__row,
+  .qr-batch-detail-toolbar__row--qr {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qr-batch-detail-toolbar__qr-form {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

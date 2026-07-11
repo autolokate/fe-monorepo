@@ -24,6 +24,8 @@ import { emergencyContactLogger } from './emergency-contact-logger';
 
 const MAX_ATTEMPTS = 3;
 const RETRY_BASE_MS = 400;
+/** Skip redundant force-refetches (Strict Mode remount, route handoffs). */
+const FORCE_LOAD_DEDUPE_MS = 5_000;
 
 export type EmergencyContactListResult =
   | { ok: true; contacts: EmergencyContact[]; revision: number }
@@ -87,6 +89,13 @@ export async function loadEmergencyContacts(options?: {
   const stored = emergencyContactStorageRepository.read();
   if (!options?.force && stored.loadedAt) {
     return { ok: true, contacts: stored.contacts, revision: stored.revision };
+  }
+
+  if (options?.force && stored.loadedAt) {
+    const loadedMs = Date.parse(stored.loadedAt);
+    if (!Number.isNaN(loadedMs) && Date.now() - loadedMs < FORCE_LOAD_DEDUPE_MS) {
+      return { ok: true, contacts: stored.contacts, revision: stored.revision };
+    }
   }
 
   if (inflightList) {

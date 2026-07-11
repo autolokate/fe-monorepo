@@ -35,6 +35,7 @@ function buildPlaceholderCatalog(): PurchasePlanDefinition[] {
     }
     return {
       id,
+      planVersionId: '',
       name: id === 'shield-plus' ? 'Shield+' : id.charAt(0).toUpperCase() + id.slice(1),
       priceLabel: '—',
       priceInr: 0,

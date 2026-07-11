@@ -62,13 +62,6 @@ export function CatalogSkusTab({
 
   return (
     <AlStack gap="md">
-      <AlText variant="caption" tone="muted">
-        A SKU&apos;s shelf (`offeredTiers`) is a server-enforced money control, not a display hint: a tier
-        that is not on the shelf cannot be sold against that SKU&apos;s stock, and an empty shelf sells
-        nothing. The SKU&apos;s default plan must itself be on that shelf. &quot;Accepting new batches&quot;
-        controls manufacturing only — closing it does not stop stickers already printed from selling.
-      </AlText>
-
       {emptyShelfCount > 0 ? (
         <AlText role="alert">
           {emptyShelfCount === 1

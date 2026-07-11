@@ -30,6 +30,7 @@ export function UsersPage() {
   const abortRef = useRef<AbortController | null>(null);
 
   const [account, setAccount] = useState<AdminUserDto | null>(null);
+  const [lookupPhone, setLookupPhone] = useState<string | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingAction>(null);
 
@@ -48,8 +49,10 @@ export function UsersPage() {
     const controller = new AbortController();
     abortRef.current = controller;
     setAccount(null);
+    setLookupPhone(null);
     setLookupError(null);
     try {
+      setLookupPhone(values.phone);
       setAccount(
         await lookupMutation.mutateAsync({ phone: values.phone, signal: controller.signal }),
       );
@@ -96,16 +99,17 @@ export function UsersPage() {
                 errorText={form.formState.errors.phone?.message}
                 helperText="The number the person signs in with. Matched against an encrypted index — it is never stored by this screen."
               />
-              <AlStack gap="sm" direction="row">
+              <div className="admin-page-actions">
                 <AlButton
                   type="submit"
+                  size="sm"
                   loading={lookupMutation.isPending}
                   disabled={lookupMutation.isPending}
                 >
                   Find account
                 </AlButton>
-              </AlStack>
-              {lookupError ? <AlText role="alert">{lookupError}</AlText> : null}
+              </div>
+              {lookupError ? <p className="admin-inline-alert">{lookupError}</p> : null}
             </AlStack>
           </form>
         </section>
@@ -113,7 +117,7 @@ export function UsersPage() {
         {account ? (
           <section className="admin-user-account" aria-label="Account roles">
             <AlStack gap="md">
-              <AdminDetailField label="Account ID" value={account.id} mono />
+              <AdminDetailField label="Phone number" value={lookupPhone ?? '—'} mono />
 
               <AlStack gap="xs">
                 <AlText variant="caption" tone="muted">
@@ -135,10 +139,11 @@ export function UsersPage() {
               </AlStack>
 
               {canWrite ? (
-                <AlStack gap="sm" direction="row">
+                <div className="admin-page-actions">
                   {isAdmin ? (
                     <AlButton
                       type="button"
+                      size="sm"
                       variant="secondary"
                       disabled={mutating}
                       loading={revokeMutation.isPending}
@@ -151,6 +156,7 @@ export function UsersPage() {
                   ) : (
                     <AlButton
                       type="button"
+                      size="sm"
                       disabled={mutating}
                       loading={grantMutation.isPending}
                       onClick={() => {
@@ -160,7 +166,7 @@ export function UsersPage() {
                       Grant ADMIN
                     </AlButton>
                   )}
-                </AlStack>
+                </div>
               ) : null}
             </AlStack>
           </section>

@@ -1,6 +1,6 @@
 .al-metric-card,
 .al-stat-card {
-  padding: var(--al-space-5);
+  padding: var(--al-space-4);
   transition: box-shadow var(--al-motion-fast) var(--al-admin-ease-sidebar);
 }
 
@@ -25,8 +25,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: var(--al-admin-radius-control);
   background: var(--al-color-surface-elevated);
   color: var(--al-color-text-muted);

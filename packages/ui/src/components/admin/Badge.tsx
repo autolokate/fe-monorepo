@@ -21,7 +21,7 @@ export function AlBadge({ children, variant = 'neutral', className }: AlBadgePro
 
 export type AlStatusBadgeProps = {
   label: string;
-  status: 'active' | 'inactive' | 'pending' | 'error' | 'success';
+  status: 'active' | 'inactive' | 'pending' | 'error' | 'success' | 'info';
 };
 
 const STATUS_VARIANT: Record<AlStatusBadgeProps['status'], AlBadgeVariant> = {
@@ -30,6 +30,7 @@ const STATUS_VARIANT: Record<AlStatusBadgeProps['status'], AlBadgeVariant> = {
   inactive: 'neutral',
   pending: 'warning',
   error: 'danger',
+  info: 'info',
 };
 
 const STATUS_DOT: Record<AlStatusBadgeProps['status'], string> = {
@@ -38,6 +39,7 @@ const STATUS_DOT: Record<AlStatusBadgeProps['status'], string> = {
   inactive: 'neutral',
   pending: 'warning',
   error: 'danger',
+  info: 'info',
 };
 
 export function AlStatusBadge({ label, status }: AlStatusBadgeProps) {

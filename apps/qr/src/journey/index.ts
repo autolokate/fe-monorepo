@@ -1,7 +1,7 @@
 export { JourneyOrchestrator } from './JourneyOrchestrator';
 export { JourneyProvider, useJourney } from './JourneyContext';
 export { AutolokateRootProvider } from '../platform/AutolokateRootProvider';
-export { journeyPaths, flowLabels, SELECTED_FLOW_KEY, JOURNEY_STORAGE_KEY } from './constants';
+export { journeyPaths, flowLabels, JOURNEY_STORAGE_KEY } from './constants';
 export {
   activationEntryByFlow,
   EMERGENCY_SUFFIX_STEP_IDS,

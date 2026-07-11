@@ -27,12 +27,8 @@ export function formatRelativeTime(value: string): string {
   return date.toLocaleDateString();
 }
 
-export function formatActivityDetail(targetType: object | null, targetId: object | null): string {
+export function formatActivityDetail(targetType: object | null, _targetId: object | null): string {
   const target = formatAuditField(targetType);
-  const id = formatAuditField(targetId);
-  if (id !== '—') {
-    return `${target} · ${id}`;
-  }
   if (target !== '—') {
     return target;
   }

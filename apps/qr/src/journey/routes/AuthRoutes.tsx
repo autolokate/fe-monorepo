@@ -30,6 +30,7 @@ import { useUpdateProfile } from '../../hooks/profile/useUpdateProfile';
 import { isAppStartupComplete } from '@/platform/app-startup-state';
 import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
 import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { QR_URL_PARAMS } from '@/platform/qr/qr-url-params';
 import { reportUserError } from '@/platform/feedback/index';
 import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanContext';
@@ -42,6 +43,7 @@ import { applyVehicleOwnerSaveError } from '../../services/profile/profile-error
 import { authJourneyPaths, authMobileUrl, isAuthMobileContinueEntry } from '../auth/auth-routing';
 import { getAuthFlowBackPath } from '../activation-routing';
 import { resolveJourneyResumePath } from '../resume/journey-resume-path';
+import { stripOnboardingPrefix } from '../routing/journey-url-routing';
 import { useJourney } from '../JourneyContext';
 import {
   applyMobileSendError,
@@ -77,8 +79,9 @@ function MobileRoute() {
   } = useJourney();
   const { updateSession: updatePwaSession } = usePwaScan();
   const { enterFromSearchParams } = useQrJourneyEntry();
-  const qrHandledRef = useRef(false);
+  const qrResolvedRef = useRef<string | null>(null);
   const bootstrapRef = useRef(false);
+  const [bootstrapDone, setBootstrapDone] = useState(false);
   const [entryMode, setEntryMode] = useState<MobileEntryMode>('loading');
 
   const qrCode = extractQrCodeParam(searchParams);
@@ -107,6 +110,7 @@ function MobileRoute() {
         if (!qrCode) {
           if (authContinue && selectedFlow) {
             setEntryMode('form');
+            setBootstrapDone(true);
             return;
           }
 
@@ -122,10 +126,11 @@ function MobileRoute() {
 
           resetForNewQrEntry();
           setEntryMode('scan');
+          setBootstrapDone(true);
           return;
         }
 
-        setEntryMode('form');
+        setBootstrapDone(true);
         return;
       }
 
@@ -149,6 +154,7 @@ function MobileRoute() {
       if (!qrCode) {
         if (authContinue && selectedFlow) {
           setEntryMode('form');
+          setBootstrapDone(true);
           return;
         }
 
@@ -164,10 +170,11 @@ function MobileRoute() {
 
         resetForNewQrEntry();
         setEntryMode('scan');
+        setBootstrapDone(true);
         return;
       }
 
-      setEntryMode('form');
+      setBootstrapDone(true);
     })();
   }, [
     authContinue,
@@ -183,12 +190,22 @@ function MobileRoute() {
   ]);
 
   useEffect(() => {
-    if (entryMode !== 'form' || !qrCode || qrHandledRef.current) {
+    if (!bootstrapDone || !qrCode) {
       return;
     }
 
+    if (selectedFlow === 'purchase' && resolvePurchaseQrCode() === qrCode) {
+      setEntryMode('form');
+      return;
+    }
+
+    if (qrResolvedRef.current === qrCode) {
+      return;
+    }
+    qrResolvedRef.current = qrCode;
+
+    setEntryMode('loading');
     persistQrCodeFromUrl(searchParams);
-    qrHandledRef.current = true;
     void enterFromSearchParams(
       searchParams,
       { setSelectedFlow, setPhase, navigate, updateSession, updatePwaSession, resetForNewQrEntry },
@@ -196,15 +213,21 @@ function MobileRoute() {
     ).then((result) => {
       if (!result.ok) {
         reportUserError(qrLogger, 'auth_mobile_qr_entry_failed', result.error, result.error.message);
+        setEntryMode('form');
+        return;
+      }
+      if (result.staysOnAuthScreen) {
+        setEntryMode('form');
       }
     });
   }, [
+    bootstrapDone,
     enterFromSearchParams,
-    entryMode,
     navigate,
     qrCode,
     resetForNewQrEntry,
     searchParams,
+    selectedFlow,
     setPhase,
     setSelectedFlow,
     updatePwaSession,
@@ -215,8 +238,8 @@ function MobileRoute() {
     (code: string) => {
       const next = new URLSearchParams(searchParams);
       next.set(QR_URL_PARAMS.qrCode, code.trim());
-      qrHandledRef.current = false;
-      setEntryMode('form');
+      qrResolvedRef.current = null;
+      setEntryMode('loading');
       setSearchParams(next, { replace: true });
     },
     [searchParams, setSearchParams],
@@ -224,7 +247,7 @@ function MobileRoute() {
 
   if (entryMode === 'loading') {
     return (
-      <AlScreenBg variant="protected">
+      <AlScreenBg variant="protected" className="qr-route-loader">
         <AlScreenSpinner size="lg" animated aria-label="Loading" />
       </AlScreenBg>
     );
@@ -634,14 +657,14 @@ function resolveAuthRouteContent(
   pathname: string,
   onAuthCompleted?: () => void | Promise<void>,
 ): ReactNode {
-  const path = pathname.replace(/\/+$/, '') || '/';
+  const path = stripOnboardingPrefix(pathname).replace(/\/+$/, '') || '/';
 
   switch (path) {
-    case authJourneyPaths.mobile:
+    case '/auth':
       return <MobileRoute />;
-    case authJourneyPaths.otp:
+    case '/otp':
       return <OtpRoute onAuthCompleted={onAuthCompleted} />;
-    case authJourneyPaths.vehicleOwner:
+    case '/profile':
       return <VehicleOwnerRoute onAuthCompleted={onAuthCompleted} />;
     case authJourneyPaths.privacy:
       return <PrivacyRoute />;

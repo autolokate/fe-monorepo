@@ -9,33 +9,37 @@ export type PaymentOutcome = 'PAID' | 'FAILED' | 'UNCONFIRMED' | 'PENDING' | 'RE
 
 export type PayOrderMode = 'ONLINE' | 'CASH';
 
-/** Maps to OpenAPI `CreateOrderBodyDto` — required: code, planTier, riderCount; optional: promoCode. */
+/** Maps to OpenAPI `CreateOrderBodyDto` — required: cartId. */
 export type CreateOrderBody = {
-  code: string;
-  planTier: ApiPlanTier;
-  riderCount: number;
-  promoCode?: string;
+  cartId: string;
 };
 
 /** Maps to OpenAPI `OrderDto` — envelope `data` on POST /v1/orders. */
 export type OrderDto = {
   orderId: string;
+  subtotalPaise: number;
+  gstPaise: number;
+  discountPaise: number;
   totalPaise: number;
+  appliedPromoCode?: string;
   status: OrderStatus;
 };
 
-/** Maps to OpenAPI `PayOrderBodyDto` — required: mode. */
+/** Consumer self-pay — ONLINE-only; optional auto-renew mandate. */
 export type PayOrderBody = {
-  mode: PayOrderMode;
   setupMandate?: boolean;
   mandateConsent?: boolean;
+};
+
+/** GST tax invoice / receipt for a paid order. */
+export type OrderInvoiceDto = {
+  invoiceUrl: string;
 };
 
 /**
  * Maps to OpenAPI `PaymentRefDto` — envelope `data` on POST /v1/orders/{orderId}/pay.
  *
- * Only `paymentRef` is required. `providerOrderId` / `razorpayKeyId` are present
- * when `mode=ONLINE` and live Razorpay keys are configured on the backend:
+ * Consumer self-pay is ONLINE-only on the server. When Razorpay keys are configured:
  *  - providerOrderId → pass to the Razorpay SDK as `order_id`
  *  - razorpayKeyId   → pass to the Razorpay SDK as `key`
  */
@@ -79,4 +83,10 @@ export async function payOrder(
 export async function getOrderPayment(client: ApiClient, orderId: string): Promise<PaymentOutcomeDto> {
   const response = await client.get<unknown>(endpoints.orders.payment(orderId));
   return unwrapEnvelope(response) as PaymentOutcomeDto;
+}
+
+/** GET /v1/orders/{orderId}/invoice — GST tax invoice for a paid order. */
+export async function getOrderInvoice(client: ApiClient, orderId: string): Promise<OrderInvoiceDto> {
+  const response = await client.get<unknown>(endpoints.orders.invoice(orderId));
+  return unwrapEnvelope(response) as OrderInvoiceDto;
 }

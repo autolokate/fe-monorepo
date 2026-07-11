@@ -12,3 +12,4 @@ export {
   type PaymentFlowResult,
 } from './checkout-service';
 export { type CheckoutParams } from './checkout-mapper';
+export { priceCheckoutCart, type PriceCartResult } from '@/services/cart/index';

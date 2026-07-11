@@ -1,44 +1,82 @@
-import { journeyPaths } from '../constants';
-import { purchaseJourneyPaths } from '../purchase/purchase-routing';
+import {
+  buildAuthPaths,
+  LEGACY_FLAT_PATHS,
+  parseJourneyIdFromPathname,
+  ROUTE_NAMESPACE,
+} from '../routing/journey-url-routing';
 
-/** Query flag: land on mobile auth form (skip QR scan) after welcome / in-flow auth. */
-export const AUTH_ENTRY_QUERY = {
-  param: 'auth',
-  continueValue: 'continue',
-} as const;
+export { AUTH_ENTRY_QUERY, isAuthMobileContinueEntry } from './auth-entry-query';
 
-export function isAuthMobileContinueEntry(searchParams: URLSearchParams): boolean {
-  return searchParams.get(AUTH_ENTRY_QUERY.param) === AUTH_ENTRY_QUERY.continueValue;
-}
+/** Build auth paths for a journey id (QR code). */
+export { buildAuthPaths };
 
-export function authMobileUrl(options?: { continueAuth?: boolean }): string {
-  if (!options?.continueAuth) {
-    return authJourneyPaths.mobile;
+function readJourneyIdFromUrl(): string {
+  if (typeof window === 'undefined') {
+    return '_';
   }
-  const params = new URLSearchParams({
-    [AUTH_ENTRY_QUERY.param]: AUTH_ENTRY_QUERY.continueValue,
-  });
-  return `${authJourneyPaths.mobile}?${params.toString()}`;
+  return parseJourneyIdFromPathname(window.location.pathname) ?? '_';
 }
 
-export const authJourneyPaths = {
-  mobile: journeyPaths.auth,
-  otp: journeyPaths.otp,
-  vehicleOwner: journeyPaths.profile,
-  privacy: journeyPaths.legalPrivacy,
-  terms: journeyPaths.legalTerms,
-  /** @deprecated Removed from active graph — redirects to auth */
-  splash: journeyPaths.auth,
-} as const;
+/** Journey-scoped auth paths when `:journeyId` is in the URL; legacy flat paths otherwise. */
+export const authJourneyPaths = new Proxy(
+  {
+    mobile: LEGACY_FLAT_PATHS.auth,
+    otp: LEGACY_FLAT_PATHS.otp,
+    vehicleOwner: LEGACY_FLAT_PATHS.profile,
+    privacy: ROUTE_NAMESPACE.legalPrivacy,
+    terms: ROUTE_NAMESPACE.legalTerms,
+    splash: LEGACY_FLAT_PATHS.auth,
+  },
+  {
+    get(target, prop: string) {
+      const journeyId = parseJourneyIdFromPathname(
+        typeof window !== 'undefined' ? window.location.pathname : '',
+      );
+      if (
+        journeyId &&
+        (prop === 'mobile' || prop === 'otp' || prop === 'vehicleOwner')
+      ) {
+        const paths = buildAuthPaths(journeyId);
+        if (prop === 'mobile') {
+          return paths.mobile;
+        }
+        if (prop === 'otp') {
+          return paths.otp;
+        }
+        return paths.vehicleOwner;
+      }
+      if (prop in target) {
+        return target[prop as keyof typeof target];
+      }
+      const paths = buildAuthPaths(readJourneyIdFromUrl());
+      return paths[prop as keyof typeof paths];
+    },
+  },
+);
 
-/** Active shared auth sequence (QR scan entry assumed before auth). */
-export const authStepPathSequence = [
-  authJourneyPaths.mobile,
-  authJourneyPaths.otp,
-  authJourneyPaths.vehicleOwner,
-] as const;
+export function authMobileUrl(
+  journeyIdOrOptions: string | { continueAuth?: boolean },
+  options?: { continueAuth?: boolean },
+): string {
+  if (typeof journeyIdOrOptions === 'object') {
+    return authMobileUrl(readJourneyIdFromUrl(), journeyIdOrOptions);
+  }
+  const paths = buildAuthPaths(journeyIdOrOptions);
+  if (!options?.continueAuth) {
+    return paths.mobile;
+  }
+  const params = new URLSearchParams({ auth: 'continue' });
+  return `${paths.mobile}?${params.toString()}`;
+}
 
-/** @deprecated Legacy shared routes — purchase activation screens relocated */
+export const authStepPathSequence = (journeyId: string) =>
+  [
+    buildAuthPaths(journeyId).mobile,
+    buildAuthPaths(journeyId).otp,
+    buildAuthPaths(journeyId).vehicleOwner,
+  ] as const;
+
+/** @deprecated Legacy shared routes — dev preview only */
 export const legacySharedPaths = {
   r01VehicleNumber: '/shared/r01-vehicle-number',
   r02VehicleDetails: '/shared/r02-vehicle-details',
@@ -46,5 +84,9 @@ export const legacySharedPaths = {
   r06LegalConsent: '/shared/r06-legal-consent',
 } as const;
 
+export { LEGACY_FLAT_PATHS, ROUTE_NAMESPACE };
+
 /** First post-auth activation step when flow is not yet resolved. */
-export const defaultActivationAfterAuth = purchaseJourneyPaths.vehicleDetails;
+export function defaultActivationAfterAuth(journeyId: string): string {
+  return buildAuthPaths(journeyId).mobile;
+}

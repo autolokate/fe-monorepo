@@ -1,6 +1,6 @@
 import { AUTH_COMPLETED } from '../features/shared-auth/types';
 
-import { JOURNEY_STORAGE_KEY, SELECTED_FLOW_KEY } from './constants';
+import { JOURNEY_STORAGE_KEY } from './constants';
 import type { ActivationFlowId, AuthStatus, JourneySession, PersistedJourneyState } from './types';
 
 const defaultState: PersistedJourneyState = {
@@ -13,7 +13,7 @@ export function loadJourneyState(): PersistedJourneyState {
   try {
     const raw = window.sessionStorage.getItem(JOURNEY_STORAGE_KEY);
     if (!raw) {
-      return loadSelectedFlowOnly();
+      return { ...defaultState };
     }
     const parsed = JSON.parse(raw) as Partial<PersistedJourneyState>;
     return {
@@ -23,45 +23,25 @@ export function loadJourneyState(): PersistedJourneyState {
       lastRoutePath: parsed.lastRoutePath ?? null,
     };
   } catch {
-    return loadSelectedFlowOnly();
+    return { ...defaultState };
   }
-}
-
-function loadSelectedFlowOnly(): PersistedJourneyState {
-  try {
-    const flow = window.localStorage.getItem(SELECTED_FLOW_KEY);
-    if (flow === 'purchase' || flow === 'prepaid' || flow === 'b2b2c') {
-      return { ...defaultState, selectedFlow: flow };
-    }
-  } catch {
-    // Private browsing / storage disabled on mobile Safari
-  }
-  return { ...defaultState };
 }
 
 export function saveJourneyState(state: PersistedJourneyState): void {
   try {
     window.sessionStorage.setItem(JOURNEY_STORAGE_KEY, JSON.stringify(state));
-    if (state.selectedFlow) {
-      window.localStorage.setItem(SELECTED_FLOW_KEY, state.selectedFlow);
-    }
   } catch {
     // ignore quota / private mode failures
   }
 }
 
-export function persistSelectedFlow(flow: ActivationFlowId): void {
-  try {
-    window.localStorage.setItem(SELECTED_FLOW_KEY, flow);
-  } catch {
-    // ignore
-  }
+export function persistSelectedFlow(_flow: ActivationFlowId): void {
+  // Flow is derived from URL journey id + API resolve — no localStorage.
 }
 
 export function clearJourneyPersistence(): void {
   try {
     window.sessionStorage.removeItem(JOURNEY_STORAGE_KEY);
-    window.localStorage.removeItem(SELECTED_FLOW_KEY);
   } catch {
     // ignore
   }

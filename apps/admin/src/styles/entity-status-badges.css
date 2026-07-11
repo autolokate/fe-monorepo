@@ -1,0 +1,193 @@
+/* Per-entity status colors — each lifecycle state gets a distinct readable tone. */
+
+.admin-entity-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.1875rem 0.5625rem;
+  border-radius: var(--al-radius-pill);
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  font-weight: var(--al-font-weight-medium);
+  line-height: var(--al-text-caption-line-height);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.admin-entity-status-badge__dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: var(--al-radius-pill);
+  flex-shrink: 0;
+  background: currentColor;
+}
+
+/* —— QR sticker codes (BatchCodeDto.status) —— */
+
+.admin-entity-status-badge--qr-MANUFACTURED {
+  background: color-mix(in srgb, var(--al-color-text-muted) 14%, var(--al-color-surface));
+  color: var(--al-color-text-muted);
+}
+
+.admin-entity-status-badge--qr-PROVISIONED {
+  background: color-mix(in srgb, var(--al-signal-blue) 12%, var(--al-color-surface));
+  color: var(--al-signal-blue);
+}
+
+.admin-entity-status-badge--qr-DISTRIBUTED {
+  background: color-mix(in srgb, #7c3aed 14%, var(--al-color-surface));
+  color: #6d28d9;
+}
+
+.admin-entity-status-badge--qr-ATTACHED {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--qr-ATTACHED_UNPAID {
+  background: color-mix(in srgb, #ea580c 14%, var(--al-color-surface));
+  color: #ea580c;
+}
+
+.admin-entity-status-badge--qr-ACTIVATED {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
+.admin-entity-status-badge--qr-TRANSFERRED {
+  background: color-mix(in srgb, #0891b2 14%, var(--al-color-surface));
+  color: #0891b2;
+}
+
+.admin-entity-status-badge--qr-LAPSED {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+.admin-entity-status-badge--qr-CANCELLED {
+  background: color-mix(in srgb, var(--al-signal-red) 12%, var(--al-color-surface));
+  color: var(--al-signal-red);
+}
+
+.admin-entity-status-badge--qr-REPLACED_LOST {
+  background: color-mix(in srgb, var(--al-signal-red-bright) 14%, var(--al-color-surface));
+  color: var(--al-signal-red-bright);
+}
+
+.admin-entity-status-badge--qr-RETIRED {
+  background: var(--al-color-surface-elevated);
+  color: var(--al-color-text-muted);
+  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+}
+
+[data-theme='dark'] .admin-entity-status-badge--qr-PROVISIONED {
+  color: var(--al-signal-blue-bright);
+  background: color-mix(in srgb, var(--al-signal-blue-bright) 16%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--qr-DISTRIBUTED {
+  color: #a78bfa;
+  background: color-mix(in srgb, #a78bfa 16%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--qr-ATTACHED_UNPAID {
+  color: #fb923c;
+  background: color-mix(in srgb, #fb923c 16%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--qr-TRANSFERRED {
+  color: #22d3ee;
+  background: color-mix(in srgb, #22d3ee 14%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--qr-LAPSED {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--qr-REPLACED_LOST {
+  color: var(--al-signal-red-bright);
+}
+
+/* —— QR batches (BatchSummaryDto.status) —— */
+
+.admin-entity-status-badge--batch-DRAFT {
+  background: var(--al-color-surface-elevated);
+  color: var(--al-color-text-muted);
+  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+}
+
+.admin-entity-status-badge--batch-CODES_GENERATED {
+  background: color-mix(in srgb, var(--al-signal-blue) 12%, var(--al-color-surface));
+  color: var(--al-signal-blue);
+}
+
+.admin-entity-status-badge--batch-PRINTING {
+  background: color-mix(in srgb, #6366f1 14%, var(--al-color-surface));
+  color: #4f46e5;
+}
+
+.admin-entity-status-badge--batch-QA {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--batch-PROVISIONED {
+  background: color-mix(in srgb, #0891b2 14%, var(--al-color-surface));
+  color: #0891b2;
+}
+
+.admin-entity-status-badge--batch-REPRINT {
+  background: color-mix(in srgb, #ea580c 14%, var(--al-color-surface));
+  color: #ea580c;
+}
+
+.admin-entity-status-badge--batch-ALLOCATED {
+  background: color-mix(in srgb, #059669 12%, var(--al-color-surface));
+  color: #059669;
+}
+
+.admin-entity-status-badge--batch-IN_DISTRIBUTION {
+  background: color-mix(in srgb, #7c3aed 14%, var(--al-color-surface));
+  color: #6d28d9;
+}
+
+.admin-entity-status-badge--batch-DEPLETED {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+.admin-entity-status-badge--batch-SCRAPPED {
+  background: color-mix(in srgb, var(--al-signal-red) 12%, var(--al-color-surface));
+  color: var(--al-signal-red);
+}
+
+[data-theme='dark'] .admin-entity-status-badge--batch-CODES_GENERATED {
+  color: var(--al-signal-blue-bright);
+  background: color-mix(in srgb, var(--al-signal-blue-bright) 16%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--batch-PRINTING {
+  color: #818cf8;
+  background: color-mix(in srgb, #818cf8 16%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--batch-PROVISIONED {
+  color: #22d3ee;
+  background: color-mix(in srgb, #22d3ee 14%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--batch-REPRINT {
+  color: #fb923c;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--batch-ALLOCATED {
+  color: #34d399;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--batch-IN_DISTRIBUTION {
+  color: #a78bfa;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--batch-SCRAPPED {
+  color: var(--al-signal-red-bright);
+}

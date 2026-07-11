@@ -1,33 +1,44 @@
-import { journeyPaths } from '../constants';
+import { buildEmergencyPaths, parseJourneyIdFromPathname, ROUTE_NAMESPACE } from '../routing/journey-url-routing';
 
-/** URL paths for the emergency suffix inside the journey orchestrator. */
-export const emergencyJourneyPaths = {
-  riderPrompt: `${journeyPaths.emergency}/rider-prompt`,
-  riderMobile: `${journeyPaths.emergency}/rider-mobile`,
-  riderOtp: `${journeyPaths.emergency}/rider-otp`,
-  riderName: `${journeyPaths.emergency}/rider-name`,
-  ridersSummary: `${journeyPaths.emergency}/riders-summary`,
-  contactsEmpty: `${journeyPaths.emergency}/contacts-empty`,
-  contactMobile: `${journeyPaths.emergency}/contact-mobile`,
-  contactOtp: `${journeyPaths.emergency}/contact-otp`,
-  contactName: `${journeyPaths.emergency}/contact-name`,
-  contactsSummary: `${journeyPaths.emergency}/contacts-summary`,
-  /** Legacy Phase 9 placeholder — redirects to rider-prompt. */
-  legacyRiderSetup: `${journeyPaths.emergency}/rider-setup`,
-} as const;
+export { buildEmergencyPaths };
 
-export type EmergencyJourneyPath =
-  (typeof emergencyJourneyPaths)[keyof typeof emergencyJourneyPaths];
+function readJourneyIdFromUrl(): string {
+  if (typeof window === 'undefined') {
+    return '_';
+  }
+  return parseJourneyIdFromPathname(window.location.pathname) ?? '_';
+}
 
-export const emergencyStepPathSequence = [
-  emergencyJourneyPaths.riderPrompt,
-  emergencyJourneyPaths.riderMobile,
-  emergencyJourneyPaths.riderOtp,
-  emergencyJourneyPaths.riderName,
-  emergencyJourneyPaths.ridersSummary,
-  emergencyJourneyPaths.contactsEmpty,
-  emergencyJourneyPaths.contactMobile,
-  emergencyJourneyPaths.contactOtp,
-  emergencyJourneyPaths.contactName,
-  emergencyJourneyPaths.contactsSummary,
-] as const;
+export function emergencyJourneyPathsFor(journeyId: string) {
+  return buildEmergencyPaths(journeyId);
+}
+
+/** Journey-scoped emergency paths from URL (not localStorage). */
+export const emergencyJourneyPaths = new Proxy({} as ReturnType<typeof buildEmergencyPaths>, {
+  get(_target, prop: string) {
+    const paths = buildEmergencyPaths(readJourneyIdFromUrl());
+    return paths[prop as keyof typeof paths];
+  },
+});
+
+export type EmergencyJourneyPath = ReturnType<typeof buildEmergencyPaths>[keyof ReturnType<
+  typeof buildEmergencyPaths
+>];
+
+export function emergencyStepPathSequence(journeyId: string) {
+  const paths = buildEmergencyPaths(journeyId);
+  return [
+    paths.riderPrompt,
+    paths.riderMobile,
+    paths.riderOtp,
+    paths.riderName,
+    paths.ridersSummary,
+    paths.contactsEmpty,
+    paths.contactMobile,
+    paths.contactOtp,
+    paths.contactName,
+    paths.contactsSummary,
+  ] as const;
+}
+
+export { ROUTE_NAMESPACE };

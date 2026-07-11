@@ -1,0 +1,133 @@
+/**
+ * Admin modal forms — contrast, inputs, footers (theme colors unchanged).
+ */
+
+/* Readable muted text in both themes (admin-scoped only) */
+.al-page-layout,
+.al-modal {
+  --al-admin-hint-color: color-mix(in srgb, var(--al-color-on-surface) 68%, transparent);
+  --al-admin-label-color: color-mix(in srgb, var(--al-color-on-surface) 88%, transparent);
+}
+
+[data-theme='light'] .al-page-layout,
+[data-theme='light'] .al-modal {
+  --al-admin-hint-color: color-mix(in srgb, var(--al-color-on-surface) 58%, transparent);
+  --al-admin-label-color: color-mix(in srgb, var(--al-color-on-surface) 78%, transparent);
+}
+
+/* Modal copy */
+.al-modal__header .al-text--muted,
+.al-modal .al-text--muted {
+  color: var(--al-admin-hint-color);
+}
+
+.al-modal__header .al-heading {
+  color: var(--al-color-text);
+}
+
+/* Form fields inside admin */
+.al-page-layout .al-field__label,
+.al-modal .al-field__label {
+  color: var(--al-admin-label-color);
+  font-weight: var(--al-font-weight-medium);
+}
+
+.al-page-layout .al-field__hint,
+.al-modal .al-field__hint {
+  color: var(--al-admin-hint-color);
+  margin-top: var(--al-space-1);
+}
+
+.al-page-layout .al-field__input,
+.al-modal .al-field__input {
+  min-height: 2.25rem;
+  padding: 0 var(--al-space-3);
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  border: 1px solid var(--al-color-outline);
+  border-radius: var(--al-radius-sm);
+  background-color: var(--al-color-surface);
+}
+
+.al-page-layout .al-field__input:not(:placeholder-shown),
+.al-modal .al-field__input:not(:placeholder-shown),
+.al-page-layout .al-field--filled .al-field__input,
+.al-modal .al-field--filled .al-field__input {
+  border-width: 1px;
+  border-color: var(--al-color-outline);
+}
+
+.al-page-layout .al-field__input:focus,
+.al-modal .al-field__input:focus {
+  border-width: 1px;
+  border-color: var(--al-color-focus);
+  outline: 2px solid color-mix(in srgb, var(--al-color-focus) 22%, transparent);
+  outline-offset: 0;
+}
+
+.al-page-layout .al-field__input::placeholder,
+.al-modal .al-field__input::placeholder {
+  color: var(--al-admin-hint-color);
+  opacity: 1;
+}
+
+.al-page-layout .al-select,
+.al-modal .al-select {
+  min-height: 2.25rem;
+  padding-inline: var(--al-space-3);
+  font-size: var(--al-text-label-size);
+  border: 1px solid var(--al-color-outline);
+}
+
+/* Form layout inside modals */
+.al-modal .admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--al-space-3);
+}
+
+.al-modal .admin-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-3);
+}
+
+.al-modal .admin-detail-section + .admin-detail-section {
+  margin-top: 0;
+}
+
+.al-modal .al-stack {
+  gap: var(--al-space-3);
+}
+
+.al-modal .admin-form-error {
+  margin: 0;
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  color: var(--al-color-danger);
+  background: color-mix(in srgb, var(--al-color-danger) 10%, var(--al-color-surface));
+  border: 1px solid color-mix(in srgb, var(--al-color-danger) 28%, transparent);
+}
+
+/* Footer actions — compact, auto-width (never full bleed) */
+.al-modal__footer .admin-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--al-space-2);
+  width: 100%;
+}
+
+.al-modal__footer .admin-modal-actions .al-button {
+  width: auto;
+  min-width: 5.5rem;
+}
+
+@media (max-width: 640px) {
+  .al-modal .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

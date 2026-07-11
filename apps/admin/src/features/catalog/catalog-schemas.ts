@@ -16,6 +16,14 @@ const rupeeAmount = z
     message: 'Enter an amount in rupees — e.g. 999 or 999.50 (up to 2 decimals).',
   });
 
+/** Optional rupee field — empty means unset. */
+export const optionalRupeeAmount = z
+  .string()
+  .trim()
+  .refine((value) => value === '' || rupeesToPaise(value) !== null, {
+    message: 'Enter an amount in rupees — e.g. 999 or 999.50 (up to 2 decimals).',
+  });
+
 /**
  * `POST /admin/v1/plans` — mints a new `(tier, version)`.
  *

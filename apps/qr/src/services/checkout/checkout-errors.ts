@@ -5,6 +5,8 @@ import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error';
 export type CheckoutErrorCode =
   | 'offline'
   | 'promo_invalid'
+  | 'cart_stale'
+  | 'catalog_stale'
   | 'unavailable'
   | 'payment_failed'
   | 'payment_cancelled'
@@ -15,12 +17,41 @@ export type CheckoutError = {
   message: string;
 };
 
+const REFRESHABLE_CART_CODES = new Set(['cart_expired', 'cart_stale']);
+const CATALOG_STALE_CODES = new Set(['plan_version_superseded', 'tier_not_offered']);
+
+export function isRefreshableCartError(error: unknown): boolean {
+  return error instanceof ApiError && Boolean(error.code && REFRESHABLE_CART_CODES.has(error.code));
+}
+
+export function isCatalogStaleError(error: unknown): boolean {
+  return error instanceof ApiError && Boolean(error.code && CATALOG_STALE_CODES.has(error.code));
+}
+
+export function isRefreshableCheckoutError(error: unknown): boolean {
+  return isRefreshableCartError(error) || isCatalogStaleError(error);
+}
+
 /** Map API failures into existing purchase checkout UI branches only. */
 export function mapCheckoutApiError(error: unknown): CheckoutError {
   if (error instanceof ApiError && error.code === 'promo_invalid') {
     return {
       code: 'promo_invalid',
       message: resolveUserFacingMessage(error),
+    };
+  }
+
+  if (error instanceof ApiError && error.code && REFRESHABLE_CART_CODES.has(error.code)) {
+    return {
+      code: 'cart_stale',
+      message: 'Your cart expired. Review your order and try again.',
+    };
+  }
+
+  if (error instanceof ApiError && error.code && CATALOG_STALE_CODES.has(error.code)) {
+    return {
+      code: 'catalog_stale',
+      message: 'Plan pricing was updated. Review your order and try again.',
     };
   }
 

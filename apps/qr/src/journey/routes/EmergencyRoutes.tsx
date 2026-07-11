@@ -51,6 +51,7 @@ import type {
   RelationshipId,
 } from '../../features/emergency/types';
 import { getCompletedPath, getEmergencyFlowBackPath } from '../activation-routing';
+import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser-back';
 import { resolveEmergencyFoundationContext } from '../emergency/emergency-foundation';
 import { emergencyJourneyPaths } from '../emergency/emergency-routing';
 import { useJourney } from '../JourneyContext';
@@ -242,7 +243,7 @@ function R0Route() {
     setSkipConfirmOpen(false);
     patchEmergency({ riderSkipped: true, rider: undefined });
     setPhase('completed');
-    void navigate(getCompletedPath());
+    void navigate(getCompletedPath(), { replace: true });
   };
 
   return (
@@ -528,7 +529,7 @@ function R3Route() {
             rider: undefined,
             riders: result.riders,
           });
-          void navigate(emergencyJourneyPaths.ridersSummary);
+          void navigate(emergencyJourneyPaths.ridersSummary, { replace: true });
         });
       }}
     />
@@ -543,6 +544,8 @@ function R4Route() {
   const { refresh: refreshRiders } = useRiders(selectedFlow);
   const riders = emergency.riders ?? [];
   const contacts = emergency.contacts ?? [];
+
+  usePreventBrowserBack();
 
   useEffect(() => {
     let cancelled = false;
@@ -567,9 +570,7 @@ function R4Route() {
       planId={planId}
       purchasedRiderSlots={riderCount}
       flowKind={flowKind}
-      onBack={() => {
-        void navigate(emergencyJourneyPaths.riderName);
-      }}
+      showBack={false}
       onAddAnother={() => {
         if (!canAddRider(riders.length, planId, riderCount, flowKind)) {
           return;
@@ -586,7 +587,7 @@ function R4Route() {
       onContinue={() => {
         if (contacts.length > 0) {
           setPhase('completed');
-          void navigate(getCompletedPath());
+          void navigate(getCompletedPath(), { replace: true });
           return;
         }
         void navigate(emergencyJourneyPaths.contactsEmpty);
@@ -605,7 +606,7 @@ function E0Route() {
 
   useEffect(() => {
     let cancelled = false;
-    void refreshContacts(true).then((result) => {
+    void refreshContacts(false).then((result) => {
       if (cancelled || !result.ok) {
         if (!cancelled) {
           patchEmergency({ contacts: [] });
@@ -614,7 +615,7 @@ function E0Route() {
       }
       patchEmergency({ contacts: result.contacts });
       if (result.contacts.length > 0) {
-        void navigate(emergencyJourneyPaths.contactsSummary);
+        void navigate(emergencyJourneyPaths.contactsSummary, { replace: true });
       }
     });
     return () => {
@@ -670,12 +671,12 @@ function E0Route() {
           return;
         }
         if (emergency.riderSkipped) {
-          void navigate(getCompletedPath());
+          void navigate(getCompletedPath(), { replace: true });
           return;
         }
         const riders = emergency.riders ?? (emergency.rider ? [emergency.rider] : []);
         if (riders.length > 0) {
-          void navigate(emergencyJourneyPaths.ridersSummary);
+          void navigate(emergencyJourneyPaths.ridersSummary, { replace: true });
           return;
         }
         if (shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
@@ -936,7 +937,7 @@ function E3Route() {
             contacts: result.contacts,
             contactDraft: undefined,
           });
-          void navigate(emergencyJourneyPaths.contactsSummary);
+          void navigate(emergencyJourneyPaths.contactsSummary, { replace: true });
         });
       }}
     />
@@ -959,9 +960,16 @@ function E5Route() {
     flowKind,
   );
 
+  usePreventBrowserBack();
+
   useEffect(() => {
+    if (emergency.contacts !== undefined) {
+      setContacts(emergency.contacts);
+      return;
+    }
+
     let cancelled = false;
-    void refreshContacts(true).then((result) => {
+    void refreshContacts(false).then((result) => {
       if (cancelled) {
         return;
       }
@@ -972,7 +980,7 @@ function E5Route() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [emergency.contacts, patchEmergency, refreshContacts]);
 
   const goToRiderSetup = () => {
     patchEmergency({ riderSkipped: false });
@@ -994,9 +1002,7 @@ function E5Route() {
     <E09ContactsSummaryScreen
       contacts={contacts}
       planId={planId}
-      onBack={() => {
-        void navigate(emergencyJourneyPaths.contactsEmpty);
-      }}
+      showBack={false}
       onAddAnother={() => {
         if (!canAddEmergencyContact(contacts.length, planId)) {
           return;
@@ -1010,7 +1016,7 @@ function E5Route() {
           return;
         }
         setPhase('completed');
-        void navigate(getCompletedPath());
+        void navigate(getCompletedPath(), { replace: true });
       }}
     />
   );

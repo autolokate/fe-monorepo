@@ -117,7 +117,7 @@ export function BatchCodesSection({ batchId, enabled, layout = 'section' }: Batc
           error={userErrorMessage && codes.length > 0 ? userErrorMessage : null}
           onRetry={refresh}
           pageSize={20}
-          pageSizeOptions={[10, 20, 50]}
+          pageSizeOptions={[10, 20, 50, 100]}
           globalSearchPlaceholder="Search loaded codes…"
           emptyTitle="No codes found"
           emptyDescription={
@@ -152,7 +152,9 @@ export function BatchCodesSection({ batchId, enabled, layout = 'section' }: Batc
             title="Codes in batch"
             description="Opaque sticker codes appear after generate."
           />
-          <AlText tone="muted">Generate codes to list stickers in this batch.</AlText>
+          <AlText tone="muted" className="admin-empty-note">
+            Generate codes to list stickers in this batch.
+          </AlText>
         </section>
       );
     }
@@ -162,7 +164,9 @@ export function BatchCodesSection({ batchId, enabled, layout = 'section' }: Batc
         title="Codes in batch"
         description="Opaque sticker codes appear after generate."
       >
-        <AlText tone="muted">Generate codes to list stickers in this batch.</AlText>
+        <AlText tone="muted" className="admin-empty-note">
+          Generate codes to list stickers in this batch.
+        </AlText>
       </AdminDetailSection>
     );
   }
@@ -193,7 +197,7 @@ export function BatchCodesSection({ batchId, enabled, layout = 'section' }: Batc
       title="Codes in batch"
       description="Opaque sticker ids for this batch (newest first)."
     >
-      <div className="admin-sheet-actions">{exportButton}</div>
+      <div className="admin-page-actions">{exportButton}</div>
       {statusFilters}
       {codesTable}
     </AdminDetailSection>

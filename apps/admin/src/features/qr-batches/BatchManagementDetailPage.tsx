@@ -7,7 +7,6 @@ import {
   AlInput,
   AlPageHeader,
   AlStack,
-  AlStatusBadge,
   AlText,
 } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -26,7 +25,6 @@ import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
 import {
   AdminDetailField,
   AdminDetailGrid,
-  AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
 import {
   useCanRunQrLifecycleMutations,
@@ -38,7 +36,7 @@ import {
   getBatchLifecycleActions,
   type BatchLifecycleActionId,
 } from '@/services/qr-batches/batch-lifecycle';
-import { batchStatusTone } from '@/platform/utils/batch-status';
+import { BatchStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { adminPaths } from '@/app/routes/admin-paths';
 
 import './qr-batches.css';
@@ -54,11 +52,11 @@ function formatDateTime(value: string | null): string {
   return new Date(value).toLocaleString();
 }
 
-function StatBlock({ label, value }: { label: string; value: string }) {
+function StatInline({ label, value }: { label: string; value: string }) {
   return (
-    <div className="admin-detail-stat">
-      <span className="admin-detail-stat__value">{value}</span>
-      <span className="admin-detail-stat__label">{label}</span>
+    <div className="qr-batch-stat-inline">
+      <span className="qr-batch-stat-inline__value">{value}</span>
+      <span className="qr-batch-stat-inline__label">{label}</span>
     </div>
   );
 }
@@ -165,7 +163,7 @@ export function BatchManagementDetailPage() {
             userErrorMessage
               ? refresh
               : () => {
-                  navigate(listPath);
+                  void navigate(listPath);
                 }
           }
           retryLabel={userErrorMessage ? 'Try again' : 'Back to list'}
@@ -251,7 +249,7 @@ export function BatchManagementDetailPage() {
                 {
                   label: listLabel,
                   onClick: () => {
-                    navigate(listPath);
+                    void navigate(listPath);
                   },
                 },
                 { label: batch.batchCode, current: true },
@@ -260,71 +258,73 @@ export function BatchManagementDetailPage() {
           }
         />
 
-        <div className="qr-batch-detail-summary">
-          <AdminDetailSection title="Overview">
-            <AlStatusBadge label={batch.status} status={batchStatusTone(batch.status)} />
-            <AdminDetailGrid>
-              <AdminDetailField label="Channel" value={batch.channel} />
-              <AdminDetailField label="SKU ID" value={batch.skuId} mono />
-              <AdminDetailField label="Batch ID" value={batch.id} mono />
-              <AdminDetailField label="Created" value={formatDateTime(batch.createdAt)} />
-            </AdminDetailGrid>
-          </AdminDetailSection>
-
-          <AdminDetailSection title="Code counts">
-            <div className="admin-detail-stat-grid">
-              <StatBlock label="Total" value={batch.totalCount.toLocaleString()} />
-              <StatBlock label="Generated" value={batch.generatedCount.toLocaleString()} />
-              <StatBlock label="Provisioned" value={batch.provisionedCount.toLocaleString()} />
+        <section className="qr-batch-detail-hero" aria-label="Batch summary">
+          <div className="qr-batch-detail-hero__top">
+            <div className="qr-batch-detail-hero__status">
+              <BatchStatusBadge status={batch.status} />
+              <span className="qr-batch-detail-hero__channel">{batch.channel}</span>
             </div>
+            <span className="qr-batch-detail-hero__created">{formatDateTime(batch.createdAt)}</span>
+          </div>
+
+          <div className="qr-batch-detail-hero__stats">
+            <StatInline label="Total" value={batch.totalCount.toLocaleString()} />
+            <StatInline label="Generated" value={batch.generatedCount.toLocaleString()} />
+            <StatInline label="Provisioned" value={batch.provisionedCount.toLocaleString()} />
             {batch.provisionedAt ? (
-              <AdminDetailField label="Provisioned at" value={formatDateTime(batch.provisionedAt)} />
+              <StatInline label="Provisioned at" value={formatDateTime(batch.provisionedAt)} />
             ) : null}
-          </AdminDetailSection>
-        </div>
+          </div>
+        </section>
 
-        <BatchCodesSection
-          batchId={batch.id}
-          enabled={batch.generatedCount > 0 || batch.status !== 'DRAFT'}
-          layout="page"
-        />
-
-        <div className="qr-batch-detail-actions">
-          <AdminDetailSection title="Batch lifecycle" description={describeBatchLifecycleStatus(batch.status)}>
-            {canWrite ? (
-              lifecycleActions.length > 0 ? (
-                <div className="admin-sheet-actions">
-                  {lifecycleActions.map((action) => (
-                    <AlButton
-                      key={action.id}
-                      size="sm"
-                      variant={action.id === 'provision' ? 'primary' : 'secondary'}
-                      loading={lifecyclePending}
-                      disabled={lifecyclePending}
-                      onClick={() => {
-                        setPendingLifecycle({
-                          actionId: action.id,
-                          label: action.label,
-                          description: action.description,
-                        });
-                      }}
-                    >
-                      {action.label}
-                    </AlButton>
-                  ))}
-                </div>
+        <section className="qr-batch-detail-toolbar" aria-label="Batch actions">
+          <div className="qr-batch-detail-toolbar__row">
+            <div className="qr-batch-detail-toolbar__copy">
+              <h3 className="qr-batch-detail-toolbar__title">Batch lifecycle</h3>
+              <p className="qr-batch-detail-toolbar__hint">{describeBatchLifecycleStatus(batch.status)}</p>
+            </div>
+            <div className="qr-batch-detail-toolbar__controls">
+              {canWrite ? (
+                lifecycleActions.length > 0 ? (
+                  <div className="admin-page-actions">
+                    {lifecycleActions.map((action) => (
+                      <AlButton
+                        key={action.id}
+                        size="sm"
+                        variant={action.id === 'provision' ? 'primary' : 'secondary'}
+                        loading={lifecyclePending}
+                        disabled={lifecyclePending}
+                        onClick={() => {
+                          setPendingLifecycle({
+                            actionId: action.id,
+                            label: action.label,
+                            description: action.description,
+                          });
+                        }}
+                      >
+                        {action.label}
+                      </AlButton>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="qr-batch-detail-toolbar__empty">No actions for this status</span>
+                )
               ) : (
-                <AlText tone="muted">No lifecycle actions available for this status.</AlText>
-              )
-            ) : (
-              <AlText tone="muted">Write access required to run lifecycle actions.</AlText>
-            )}
-            {lifecycleError ? <AlText role="alert">{lifecycleError}</AlText> : null}
-          </AdminDetailSection>
+                <span className="qr-batch-detail-toolbar__empty">Write access required</span>
+              )}
+            </div>
+          </div>
+          {lifecycleError ? <p className="admin-inline-alert">{lifecycleError}</p> : null}
 
-          <AdminDetailSection title="QR code actions" description="Replace or retire individual codes in this batch.">
+          <div className="qr-batch-detail-toolbar__divider" role="presentation" />
+
+          <div className="qr-batch-detail-toolbar__row qr-batch-detail-toolbar__row--qr">
+            <div className="qr-batch-detail-toolbar__copy">
+              <h3 className="qr-batch-detail-toolbar__title">QR code actions</h3>
+              <p className="qr-batch-detail-toolbar__hint">Replace or retire a code in this batch</p>
+            </div>
             {canWrite ? (
-              <>
+              <div className="qr-batch-detail-toolbar__qr-form">
                 <AlInput
                   label="QR code"
                   mono
@@ -333,7 +333,7 @@ export function BatchManagementDetailPage() {
                   errorText={qrForm.formState.errors.code?.message}
                   {...qrForm.register('code')}
                 />
-                <div className="admin-sheet-actions">
+                <div className="admin-page-actions">
                   <AlButton
                     size="sm"
                     variant="secondary"
@@ -347,7 +347,7 @@ export function BatchManagementDetailPage() {
                       });
                     }}
                   >
-                    Replace code
+                    Replace
                   </AlButton>
                   <AlButton
                     size="sm"
@@ -362,40 +362,39 @@ export function BatchManagementDetailPage() {
                       });
                     }}
                   >
-                    Retire code
+                    Retire
                   </AlButton>
                 </div>
-              </>
+              </div>
             ) : (
-              <AlText tone="muted">Write access required for QR code actions.</AlText>
+              <span className="qr-batch-detail-toolbar__empty">Write access required</span>
             )}
-            {qrError ? <AlText role="alert">{qrError}</AlText> : null}
-            {replaceResult ? (
-              <div className="qr-batch-result-card">
-                <AlText variant="label">Replacement issued</AlText>
-                <AdminDetailGrid>
-                  <AdminDetailField label="Old code" value={replaceResult.oldCode} mono />
-                  <AdminDetailField label="New code" value={replaceResult.newCode} mono />
-                  <AdminDetailField label="Vehicle ID" value={replaceResult.vehicleId} mono />
-                  <AdminDetailField
-                    label="Subscription ID"
-                    value={replaceResult.subscriptionId ?? '—'}
-                    mono
-                  />
-                </AdminDetailGrid>
-              </div>
-            ) : null}
-            {retireResult ? (
-              <div className="qr-batch-result-card">
-                <AlText variant="label">Code retired</AlText>
-                <AdminDetailGrid>
-                  <AdminDetailField label="Code" value={retireResult.code} mono />
-                  <AdminDetailField label="QR code ID" value={retireResult.qrCodeId} mono />
-                </AdminDetailGrid>
-              </div>
-            ) : null}
-          </AdminDetailSection>
-        </div>
+          </div>
+          {qrError ? <p className="admin-inline-alert">{qrError}</p> : null}
+          {replaceResult ? (
+            <div className="admin-result-panel admin-result-panel--compact">
+              <AlText variant="label">Replacement issued</AlText>
+              <AdminDetailGrid>
+                <AdminDetailField label="Old code" value={replaceResult.oldCode} mono />
+                <AdminDetailField label="New code" value={replaceResult.newCode} mono />
+              </AdminDetailGrid>
+            </div>
+          ) : null}
+          {retireResult ? (
+            <div className="admin-result-panel admin-result-panel--compact">
+              <AlText variant="label">Code retired</AlText>
+              <AdminDetailGrid>
+                <AdminDetailField label="Code" value={retireResult.code} mono />
+              </AdminDetailGrid>
+            </div>
+          ) : null}
+        </section>
+
+        <BatchCodesSection
+          batchId={batch.id}
+          enabled={batch.generatedCount > 0 || batch.status !== 'DRAFT'}
+          layout="page"
+        />
       </AlStack>
 
       <AlConfirmationDialog
