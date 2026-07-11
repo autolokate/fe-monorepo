@@ -15,7 +15,7 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
   const json = (await response.json()) as Envelope<T> & { error?: { message?: string } };
   if (!response.ok) {
     throw new Error(
-      `API ${path} → ${response.status}: ${json.error?.message ?? JSON.stringify(json)}`,
+      `API ${path} → ${String(response.status)}: ${json.error?.message ?? JSON.stringify(json)}`,
     );
   }
   return json.data;

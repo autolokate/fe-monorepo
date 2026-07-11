@@ -9,6 +9,8 @@
   "include": [
     "src",
     "vite.config.ts",
+    "playwright.config.ts",
+    "e2e/**/*.ts",
     "../../packages/config/typescript/css-modules.d.ts"
   ],
   "references": [

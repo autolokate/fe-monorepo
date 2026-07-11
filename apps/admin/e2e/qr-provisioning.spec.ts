@@ -33,13 +33,19 @@ test.describe('QR batch provisioning', () => {
     await showState(page, '3 · form filled (B2C + SKU + count)');
     await dialog.getByRole('button', { name: 'Create batch' }).click();
 
-    // Detail sheet opens on the new batch (title = human batchCode).
+    // Detail sheet opens on the new batch (title = human batchCode). The sheet's own title is the
+    // only h4 — the section titles ("Overview", "Codes in batch", …) are h3.
     const detail = page.getByRole('dialog').filter({ hasText: 'Batch lifecycle' });
     await expect(detail).toBeVisible({ timeout: 20_000 });
-    await expect(detail.getByRole('heading')).toHaveText(
-      new RegExp(`^B2C-[A-Z0-9]+-${totalCount}-\\d{8}$`),
+    // `{channel}-{skuLabel}-{totalCount}-{ddmmyyyy}`, plus the `-2`, `-3`, … collision suffix a
+    // same-day re-run of the identical batch gets (generateBatchCode `collisionN`).
+    await expect(detail.getByRole('heading', { level: 4 })).toHaveText(
+      new RegExp(`^B2C-[A-Z0-9]+-${String(totalCount)}-\\d{8}(?:-\\d+)?$`),
     );
-    await expect(detail.locator('.al-status-badge', { hasText: 'DRAFT' })).toBeVisible();
+    // The BATCH badge is the Overview section's direct child; each row in "Codes in batch" carries
+    // its own per-code badge (inside a `td`), so an unscoped `.al-status-badge` is ambiguous.
+    const batchStatus = detail.locator('.admin-detail-section__body > .al-status-badge');
+    await expect(batchStatus).toHaveText('DRAFT');
     await showState(page, '4 · DRAFT batch created');
 
     await detail.getByRole('button', { name: 'Generate codes' }).click();
@@ -48,9 +54,7 @@ test.describe('QR batch provisioning', () => {
     await showState(page, '5 · Generate codes confirm');
     await generateConfirm.getByRole('button', { name: 'Generate codes' }).click();
 
-    await expect(detail.locator('.al-status-badge', { hasText: 'CODES_GENERATED' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(batchStatus).toHaveText('CODES_GENERATED', { timeout: 30_000 });
     await expect(detail.getByText('Codes in batch')).toBeVisible();
     await expect(detail.getByText(/^ALK-/).first()).toBeVisible({ timeout: 15_000 });
     await showState(page, '6 · CODES_GENERATED (+ codes list)');
@@ -61,9 +65,7 @@ test.describe('QR batch provisioning', () => {
     await showState(page, '7 · Provision batch confirm');
     await provisionConfirm.getByRole('button', { name: 'Provision batch' }).click();
 
-    await expect(detail.locator('.al-status-badge', { hasText: 'PROVISIONED' })).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(batchStatus).toHaveText('PROVISIONED', { timeout: 30_000 });
     await showState(page, '8 · PROVISIONED (detail sheet)');
 
     await detail.getByRole('button', { name: 'Close panel' }).click();

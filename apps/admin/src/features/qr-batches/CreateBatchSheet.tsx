@@ -46,7 +46,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
     defaultValues: DEFAULT_VALUES,
   });
 
-  const channel = useWatch({ control: form.control, name: 'channel' }) ?? 'B2C';
+  const channel = useWatch({ control: form.control, name: 'channel' });
   const planTier = useWatch({ control: form.control, name: 'planTier' });
   const skusQuery = useSkus(channel, open);
 
@@ -83,10 +83,10 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
   useEffect(() => {
     if (channel !== 'B2B') {
       form.setValue('planTier', undefined);
-      void form.clearErrors('planTier');
+      form.clearErrors('planTier');
     }
     form.setValue('skuId', '');
-    void form.clearErrors('skuId');
+    form.clearErrors('skuId');
   }, [channel, form]);
 
   // B2B: auto-select the plan-pinned SKU when the catalog loads / plan changes.
@@ -99,7 +99,9 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
     }
     const match = channelSkus.find((sku) => sku.skuCode === wanted);
     form.setValue('skuId', match?.id ?? '');
-    if (match) void form.clearErrors('skuId');
+    if (match) {
+      form.clearErrors('skuId');
+    }
   }, [channel, channelSkus, form, planTier]);
 
   const submitError =
@@ -107,6 +109,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
       ? mapMutationError(createBatchMutation.error).userMessage
       : null;
 
+  const pinnedSkuCode = b2bSkuCodeForPlan(planTier);
   const skuHelper = skusQuery.isError
     ? 'Could not load SKUs. Retry by reopening this sheet.'
     : skusQuery.isFetching
@@ -115,7 +118,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
         ? !planTier
           ? 'Select a plan tier — the matching B2B SKU is applied automatically.'
           : skuOptions.length === 0
-            ? `No ${b2bSkuCodeForPlan(planTier)} in catalog. Run scripts/seed-skus.sql.`
+            ? `No ${pinnedSkuCode ?? 'matching B2B SKU'} in catalog. Run scripts/seed-skus.sql.`
             : 'Pinned to the selected plan tier (ops catalog).'
         : skuOptions.length === 0
           ? `No active ${channel} SKUs. Seed the catalog first.`
