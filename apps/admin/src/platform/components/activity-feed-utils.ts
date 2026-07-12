@@ -1,15 +1,5 @@
 import { formatAuditField } from '@/platform/utils/audit-field';
 
-export function actionTone(action: string): 'active' | 'pending' | 'inactive' {
-  if (action.includes('APPROVED') || action.includes('PAID') || action.includes('MINTED')) {
-    return 'active';
-  }
-  if (action.includes('REJECTED') || action.includes('SCRAPPED') || action.includes('ERASURE')) {
-    return 'inactive';
-  }
-  return 'pending';
-}
-
 export function formatRelativeTime(value: string): string {
   const date = new Date(value);
   const deltaMs = Date.now() - date.getTime();

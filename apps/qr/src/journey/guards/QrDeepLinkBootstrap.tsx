@@ -6,7 +6,9 @@ import { usePwaScan } from '@/features/post-activation-pwa/context/PwaScanContex
 import { useQrJourneyEntry } from '@/hooks/qr/useQrJourneyEntry';
 import { reportUserError } from '@/platform/feedback/index';
 import { QR_URL_PARAMS } from '@/platform/qr/qr-url-params';
+import { hasAuthTokens } from '@/services/auth/ensure-valid-auth-session';
 import { qrLogger } from '@/services/qr/qr-logger';
+import { getPostAuthActivationPath } from '../activation-routing';
 import { scopedOnboardingPath } from '../routing/journey-url-routing';
 import { useJourney } from '../JourneyContext';
 
@@ -19,7 +21,8 @@ export function QrDeepLinkBootstrap({ qrCode }: QrDeepLinkBootstrapProps) {
   const navigate = useNavigate();
   const { enterFromCode } = useQrJourneyEntry();
   const { updateSession: updatePwaSession } = usePwaScan();
-  const { setSelectedFlow, setPhase, updateSession, resetForNewQrEntry } = useJourney();
+  const { setSelectedFlow, setPhase, updateSession, resetForNewQrEntry, selectedFlow, session } =
+    useJourney();
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -43,6 +46,16 @@ export function QrDeepLinkBootstrap({ qrCode }: QrDeepLinkBootstrapProps) {
         return;
       }
 
+      if (hasAuthTokens()) {
+        if (!selectedFlow) {
+          setSelectedFlow('purchase');
+        }
+        void navigate(getPostAuthActivationPath(selectedFlow ?? 'purchase', qrCode, session), {
+          replace: true,
+        });
+        return;
+      }
+
       if (result.staysOnAuthScreen) {
         const search = new URLSearchParams({ [QR_URL_PARAMS.qrCode]: qrCode }).toString();
         void navigate(
@@ -56,6 +69,8 @@ export function QrDeepLinkBootstrap({ qrCode }: QrDeepLinkBootstrapProps) {
     navigate,
     qrCode,
     resetForNewQrEntry,
+    selectedFlow,
+    session,
     setPhase,
     setSelectedFlow,
     updatePwaSession,

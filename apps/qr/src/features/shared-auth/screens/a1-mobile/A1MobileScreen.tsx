@@ -16,6 +16,7 @@ function resolveCtaHelper(
   mobileState: NonNullable<A1MobileScreenProps['mobileState']>,
   hasMobile: boolean,
   consentAccepted: boolean,
+  requireConsent: boolean,
 ): string | undefined {
   if (mobileState === 'offline') {
     return "Offline, we'll send the code once you're back";
@@ -26,7 +27,7 @@ function resolveCtaHelper(
   if (!hasMobile) {
     return 'Enter your number to continue';
   }
-  if (!consentAccepted) {
+  if (requireConsent && !consentAccepted) {
     return 'Accept the terms to continue';
   }
   return undefined;
@@ -49,15 +50,17 @@ export function A1MobileScreen({
   footerLabel = 'Get OTP',
   hideProgress = false,
   consentVariant = 'owner',
+  requireConsent = true,
 }: A1MobileScreenProps) {
   const navigate = useNavigate();
   const isOffline = mobileState === 'offline';
   const isError = mobileState === 'error';
   const isLoading = mobileState === 'loading';
   const hasMobile = mobileValue.replace(/\D/g, '').length > 0;
-  const canSubmit = hasMobile && consentAccepted && !isOffline && !isError && !isLoading;
+  const consentSatisfied = !requireConsent || consentAccepted;
+  const canSubmit = hasMobile && consentSatisfied && !isOffline && !isError && !isLoading;
 
-  const ctaHelper = resolveCtaHelper(mobileState, hasMobile, consentAccepted);
+  const ctaHelper = resolveCtaHelper(mobileState, hasMobile, consentAccepted, requireConsent);
   const progressConfig = useAuthRouteProgress();
   const handlePrivacyClick =
     onPrivacyClick ??
@@ -110,14 +113,16 @@ export function A1MobileScreen({
           Enter your 10-digit number, no 0 or +91 in front.
         </p>
       ) : null}
-      <InlineConsentBlock
-        checked={consentAccepted}
-        onChange={onConsentChange ?? (() => undefined)}
-        onPrivacyClick={handlePrivacyClick}
-        onTermsClick={handleTermsClick}
-        disabled={isOffline || isLoading || !onConsentChange}
-        variant={consentVariant}
-      />
+      {requireConsent ? (
+        <InlineConsentBlock
+          checked={consentAccepted}
+          onChange={onConsentChange ?? (() => undefined)}
+          onPrivacyClick={handlePrivacyClick}
+          onTermsClick={handleTermsClick}
+          disabled={isOffline || isLoading || !onConsentChange}
+          variant={consentVariant}
+        />
+      ) : null}
       <TrustRow />
       {isOffline ? (
         <div className="ob-auth-shell__offline-chip">

@@ -1,5 +1,5 @@
 import type { AuditEventDto } from '@autolokate/api-client';
-import { AlModal, AlStack, AlStatusBadge } from '@autolokate/ui';
+import { AlModal, AlStack } from '@autolokate/ui';
 
 import {
   AdminDetailField,
@@ -7,6 +7,7 @@ import {
   AdminDetailSection,
   formatMetadataEntries,
 } from '@/platform/components/AdminDetailField';
+import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
 import { formatAuditField } from '@/platform/utils/audit-field';
 
 export type AuditDetailSheetProps = {
@@ -47,7 +48,7 @@ export function AuditDetailSheet({ event, open, onOpenChange }: AuditDetailSheet
       <AlStack gap="md">
         <AdminDetailSection title="Summary">
           <div className="admin-modal-actions">
-            <AlStatusBadge label={event.action} status="pending" />
+            <AuditActionBadge action={event.action} />
           </div>
           <AdminDetailGrid>
             <AdminDetailField label="Timestamp" value={formatDateTime(event.at)} />

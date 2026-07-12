@@ -21,11 +21,7 @@ export function A3VehicleOwnerScreen({
   const hasName = nameValue.trim().length > 0;
   const canSubmit = hasName && !isLoading && !isError;
 
-  const ctaHelper = isError
-    ? "Couldn't save your name, check your connection and try again"
-    : !hasName
-      ? 'Enter your name to continue'
-      : undefined;
+  const ctaHelper = !hasName && !isError ? 'Enter your name to continue' : undefined;
   const progressConfig = useAuthRouteProgress();
 
   const resolvedFooterLabel = footerLabel ?? (isLoading ? 'Adding…' : 'Add my name');

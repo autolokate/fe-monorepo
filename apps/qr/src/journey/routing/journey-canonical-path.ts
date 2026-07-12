@@ -27,7 +27,7 @@ export function resolveJourneyCanonicalPath(context: CanonicalJourneyContext): s
 
   if (authStatus !== AUTH_COMPLETED && !hasAuthTokens()) {
     if (session.auth?.otpVerified) {
-      return paths.auth.vehicleOwner;
+      return session.auth.isNewUser ? paths.auth.vehicleOwner : paths.auth.mobile;
     }
     if (session.auth?.mobile) {
       return paths.auth.otp;
@@ -35,7 +35,7 @@ export function resolveJourneyCanonicalPath(context: CanonicalJourneyContext): s
     return paths.auth.mobile;
   }
 
-  if (authStatus !== AUTH_COMPLETED && hasAuthTokens() && !session.auth?.ownerName) {
+  if (authStatus !== AUTH_COMPLETED && hasAuthTokens() && session.auth?.isNewUser && !session.auth?.ownerName) {
     return paths.auth.vehicleOwner;
   }
 

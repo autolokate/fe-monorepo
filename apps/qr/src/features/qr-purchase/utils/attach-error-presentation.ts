@@ -14,6 +14,13 @@ export function resolveAttachErrorPresentation(error: QrAttachError): AttachErro
           error.message ||
           'This sticker is linked to another account or vehicle. Try a different QR code or contact us for help.',
       };
+    case 'vehicle_already_subscribed':
+      return {
+        title: 'Vehicle already protected',
+        description:
+          error.message ||
+          'This vehicle already has an active protection plan. Enter a different number and try again.',
+      };
     case 'missing_qr_code':
       return {
         title: 'QR code missing',

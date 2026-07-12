@@ -3,6 +3,7 @@ export type PurchaseVehiclePlateState = 'empty' | 'filled' | 'error' | 'loading'
 export type PurchaseVehicleScreenProps = {
   plateValue?: string;
   plateState?: PurchaseVehiclePlateState;
+  plateErrorMessage?: string;
   onPlateChange?: (value: string) => void;
   onContinue?: () => void;
   onBack?: () => void;

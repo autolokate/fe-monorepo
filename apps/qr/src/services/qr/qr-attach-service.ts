@@ -26,8 +26,14 @@ let inflightAttach: Promise<AttachPurchaseQrResult> | null = null;
 let lastAttachKey: string | null = null;
 let lastAttachResult: AttachPurchaseQrResult | null = null;
 
-/** Clear in-memory attach dedup so the user can retry after a failure. */
+/** Clear successful-result cache so a new plate can attach. Keeps in-flight coalescing intact. */
 export function resetAttachAttemptCache(): void {
+  lastAttachKey = null;
+  lastAttachResult = null;
+}
+
+/** Drop in-flight + cache (logout / journey reset). */
+export function clearAttachAttemptState(): void {
   inflightAttach = null;
   lastAttachKey = null;
   lastAttachResult = null;
@@ -97,10 +103,18 @@ const MISSING_QR_MESSAGE =
 /**
  * POST /v1/qr/{code}/attach after vehicle confirm (R05), before plans.
  * Skipped entirely when resolve status is ATTACHED.
+ * Pass `{ force: true }` from R05 so each "Looks right" hits the API (no memory cache).
  */
 export async function attachPurchaseQr(
   searchParams?: URLSearchParams,
+  options?: { force?: boolean },
 ): Promise<AttachPurchaseQrResult> {
+  if (options?.force) {
+    // Allow a fresh POST for a new plate, but do not cancel an identical in-flight request
+    // (StrictMode / double-tap would otherwise fire attach twice).
+    lastAttachResult = null;
+  }
+
   if (readPurchaseJourneyState(searchParams).skipsAttachApi) {
     qrAttachLogger.info('attach_skipped', { reason: 'qr_already_attached' });
     return {
@@ -119,6 +133,7 @@ export async function attachPurchaseQr(
   if (!purchaseQrCode) {
     const storedAttach = purchaseStorageRepository.readAttachResult();
     if (
+      !options?.force &&
       storedAttach?.purchaseQrCode &&
       compactRegistration &&
       compactPlate(storedAttach.registration) === compactRegistration
@@ -153,7 +168,7 @@ export async function attachPurchaseQr(
   }
 
   const attachKey = `${purchaseQrCode}:${compactRegistration}`;
-  if (lastAttachResult?.ok && lastAttachKey === attachKey) {
+  if (!options?.force && lastAttachResult?.ok && lastAttachKey === attachKey) {
     return lastAttachResult;
   }
 

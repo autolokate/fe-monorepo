@@ -4,7 +4,7 @@
   align-items: center;
   width: 100%;
   min-height: var(--al-comp-plate-input-height);
-  padding-inline-start: var(--al-comp-plate-input-padding-left);
+  padding-inline: var(--al-comp-plate-input-padding-left);
   border-radius: var(--al-comp-plate-input-radius);
   background-color: var(--al-color-plate-surface);
   box-shadow: var(--al-shadow-plate);
@@ -44,11 +44,13 @@
   outline: none;
 }
 
+/* Use ring shadow (not outline) so scroll shells with overflow don't clip the edge. */
 .al-plate-input:focus-within:not(.al-plate-input--error),
 .al-plate-input--filled:not(.al-plate-input--error) {
-  outline: 2px solid var(--al-color-on-surface);
-  outline-offset: 0;
-  box-shadow: var(--al-shadow-plate);
+  outline: none;
+  box-shadow:
+    var(--al-shadow-plate),
+    0 0 0 2px var(--al-color-on-surface);
 }
 
 .al-plate-input__value:focus-visible {

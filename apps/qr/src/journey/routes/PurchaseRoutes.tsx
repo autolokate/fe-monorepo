@@ -50,7 +50,7 @@ import {
   resetCheckoutForRetry,
   type CheckoutParams,
 } from '../../services/checkout/index';
-import { fetchOrderInvoiceUrl } from '@/services/checkout/invoice-service';
+import { openOrderInvoice, resolveCheckoutOrderId } from '@/services/checkout/invoice-service';
 import { syncVehiclesAfterPayment } from '@/services/vehicle/vehicle-sync-service';
 import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
 import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser-back';
@@ -72,8 +72,10 @@ import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
 import { qrAttachLogger } from '@/services/qr/qr-attach-logger';
 import { qrLogger } from '@/services/qr/qr-logger';
 import { vehicleLogger } from '@/services/vehicle/vehicle-logger';
-import { authJourneyPaths } from '../auth/auth-routing';
+import { getAuthFlowBackPath } from '../activation-routing';
+import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { useJourney } from '../JourneyContext';
+import { hasAuthTokens } from '@/services/auth/ensure-valid-auth-session';
 import {
   purchaseJourneyPaths,
   legacyPurchasePathRedirectsForActiveJourney,
@@ -323,13 +325,24 @@ function startPayment(
 
 function VehicleDetailsRoute() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { session, updateSession } = useJourney();
+  const { session, updateSession, selectedFlow } = useJourney();
+  const journeyId = useActiveJourneyId();
   const { purchase } = usePurchaseCheckout();
   const vehicle = session.vehicle ?? {};
 
+  const blockedMessage =
+    typeof (location.state as { vehicleBlockedMessage?: unknown } | null)?.vehicleBlockedMessage ===
+    'string'
+      ? (location.state as { vehicleBlockedMessage: string }).vehicleBlockedMessage
+      : null;
+
   const [plate, setPlate] = useState(() => formatPlateInput(vehicle.plate ?? ''));
   const [plateState, setPlateState] = useState<PurchaseVehiclePlateState>(() => {
+    if (blockedMessage) {
+      return 'error';
+    }
     if (vehicle.fetchStatus === 'not-found') {
       return 'error';
     }
@@ -338,12 +351,25 @@ function VehicleDetailsRoute() {
     }
     return 'empty';
   });
+  const [plateErrorMessage, setPlateErrorMessage] = useState<string | undefined>(() =>
+    blockedMessage ?? undefined,
+  );
 
   useEffect(() => {
-    if (vehicle.fetchStatus === 'not-found') {
+    if (!blockedMessage) {
+      return;
+    }
+    setPlateState('error');
+    setPlateErrorMessage(blockedMessage);
+    // Clear one-shot navigation state so refresh doesn't keep the attach error.
+    void navigate(location.pathname + location.search, { replace: true, state: null });
+  }, [blockedMessage, location.pathname, location.search, navigate]);
+
+  useEffect(() => {
+    if (vehicle.fetchStatus === 'not-found' && !plateErrorMessage) {
       setPlateState('error');
     }
-  }, [vehicle.fetchStatus]);
+  }, [plateErrorMessage, vehicle.fetchStatus]);
 
   useEffect(() => {
     redirectIfPaymentSucceeded(navigate, purchase);
@@ -380,6 +406,7 @@ function VehicleDetailsRoute() {
           fetchStatus: 'not-found',
         },
       });
+      setPlateErrorMessage(undefined);
       setPlateState('error');
       return;
     }
@@ -391,6 +418,7 @@ function VehicleDetailsRoute() {
         fetchStatus: 'fetching',
       },
     });
+    setPlateErrorMessage(undefined);
     void navigate(purchaseVehicleLookupPath(normalized));
   }, [navigate, plate, updateSession, vehicle]);
 
@@ -398,10 +426,12 @@ function VehicleDetailsRoute() {
     <R03VehicleNumberScreen
       plateValue={plate}
       plateState={plateState}
+      plateErrorMessage={plateErrorMessage}
       onPlateChange={(value) => {
         setPlate(value);
         if (plateState === 'error') {
           setPlateState(value.trim() ? 'filled' : 'empty');
+          setPlateErrorMessage(undefined);
           updateSession({
             vehicle: {
               ...vehicle,
@@ -414,8 +444,13 @@ function VehicleDetailsRoute() {
         }
       }}
       onBack={() => {
-        void navigate(authJourneyPaths.vehicleOwner);
+        // Logged-in users must not re-enter /auth via /q bootstrap.
+        if (hasAuthTokens()) {
+          return;
+        }
+        void navigate(getAuthFlowBackPath(selectedFlow, journeyId ?? undefined), { replace: true });
       }}
+      showBack={!hasAuthTokens()}
       onContinue={handleFetch}
     />
   );
@@ -538,8 +573,9 @@ function VehicleConfirmationRoute({ registrationNumber }: { registrationNumber: 
   const [searchParams] = useSearchParams();
   const { session, updateSession } = useJourney();
   const { purchase } = usePurchaseCheckout();
-  const { attachPurchaseQr } = useQrAttach();
+  const { attachPurchaseQr, isPending: isAttachPending } = useQrAttach();
   const vehicle = session.vehicle ?? {};
+  const attachStartedRef = useRef(false);
 
   const proceedToChoosePlan = useCallback(() => {
     persistVehicleContext({
@@ -568,7 +604,7 @@ function VehicleConfirmationRoute({ registrationNumber }: { registrationNumber: 
         },
       });
     });
-    void navigate(purchaseJourneyPaths.choosePlan);
+    void navigate(purchaseJourneyPaths.choosePlan, { replace: true });
   }, [
     navigate,
     session.auth?.languageId,
@@ -591,32 +627,87 @@ function VehicleConfirmationRoute({ registrationNumber }: { registrationNumber: 
   }, [navigate, purchase, registrationNumber, vehicle.fields, vehicle.fetchStatus, vehicle.plate]);
 
   const runAttach = useCallback(() => {
-    proceedToChoosePlan();
+    if (isAttachPending || attachStartedRef.current) {
+      return;
+    }
+    attachStartedRef.current = true;
 
-    void attachPurchaseQr(searchParams)
-      .then((result) => {
-        if (!result.ok) {
-          resetAttachAttemptCache();
-          qrAttachLogger.warn('purchase_attach_failed_non_blocking', {
-            code: result.error.code,
-            message: result.error.message,
-          });
-        }
-      })
-      .catch((error: unknown) => {
-        resetAttachAttemptCache();
-        qrAttachLogger.warn('purchase_attach_error_non_blocking', { error });
+    void (async () => {
+      // Persist plate before attach — attach reads registration from purchase storage.
+      persistVehicleContext({
+        registration: vehicle.plate ?? '',
+        fields: vehicle.fields,
+        ownerName: session.auth?.ownerName,
+        languageId: session.auth?.languageId,
+        selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
+        riderCount: 1,
       });
+
+      try {
+        const result = await attachPurchaseQr(searchParams, { force: true });
+        if (!result.ok) {
+          attachStartedRef.current = false;
+          resetAttachAttemptCache();
+          if (result.error.code === 'vehicle_already_subscribed') {
+            reportUserError(
+              qrAttachLogger,
+              'purchase_attach_vehicle_already_subscribed',
+              result.error,
+              result.error.message,
+            );
+            flushSync(() => {
+              updateSession({
+                vehicle: {
+                  ...vehicle,
+                  confirmed: false,
+                  fetchStatus: 'idle',
+                },
+              });
+            });
+            void navigate(purchaseJourneyPaths.vehicleDetails, {
+              replace: true,
+              state: {
+                vehicleBlockedMessage:
+                  result.error.message ||
+                  'This vehicle already has an active protection plan. Enter a different number and try again.',
+              },
+            });
+            return;
+          }
+
+          reportUserError(
+            qrAttachLogger,
+            'purchase_attach_failed',
+            result.error,
+            result.error.message,
+          );
+          return;
+        }
+        proceedToChoosePlan();
+      } catch (error: unknown) {
+        attachStartedRef.current = false;
+        resetAttachAttemptCache();
+        reportUserError(qrAttachLogger, 'purchase_attach_error', error);
+      }
+    })();
   }, [
     attachPurchaseQr,
+    isAttachPending,
+    navigate,
     proceedToChoosePlan,
     searchParams,
+    session.auth?.languageId,
+    session.auth?.ownerName,
+    updateSession,
+    vehicle,
   ]);
 
   return (
     <R05ConfirmVehicleScreen
       plate={vehicle.plate}
       fields={vehicle.fields}
+      footerLoading={isAttachPending}
+      footerLabel={isAttachPending ? 'Linking…' : 'Looks right'}
       onBack={() => {
         void navigate(purchaseJourneyPaths.vehicleDetails);
       }}
@@ -1050,8 +1141,9 @@ function PaymentSuccessRoute() {
   const { setPhase, session, updateSession } = useJourney();
   const { planId, purchase } = usePurchaseCheckout();
   const vehiclesSyncedRef = useRef(false);
-  const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
+  const [invoiceDownloading, setInvoiceDownloading] = useState(false);
   const paidAmountInr = purchase?.paidAmountInr ?? 0;
+  const orderId = resolveCheckoutOrderId();
 
   useEffect(() => {
     if (session.purchase?.paymentStatus !== 'success') {
@@ -1078,30 +1170,34 @@ function PaymentSuccessRoute() {
     });
   }, [session.purchase?.paymentStatus]);
 
-  useEffect(() => {
-    const orderId = peekOrderId();
-    if (session.purchase?.paymentStatus !== 'success' || !orderId || invoiceUrl) {
-      return;
-    }
-    void fetchOrderInvoiceUrl(orderId).then((url) => {
-      if (url) {
-        setInvoiceUrl(url);
-      }
-    });
-  }, [session.purchase?.paymentStatus, invoiceUrl]);
-
   usePreventBrowserBack(session.purchase?.paymentStatus === 'success');
 
   return (
     <R10PaymentSuccessScreen
       selectedPlanId={planId}
       paidAmountInr={paidAmountInr}
-      invoiceUrl={invoiceUrl}
-      onViewInvoice={() => {
-        if (invoiceUrl) {
-          window.open(invoiceUrl, '_blank', 'noopener,noreferrer');
-        }
-      }}
+      invoiceDownloading={invoiceDownloading}
+      onDownloadInvoice={
+        orderId
+          ? () => {
+              setInvoiceDownloading(true);
+              void openOrderInvoice(orderId)
+                .then((opened) => {
+                  if (!opened) {
+                    reportUserError(
+                      checkoutLogger,
+                      'order_invoice_open_failed',
+                      new Error('invoice_unavailable'),
+                      'Tax invoice is not available yet. Try again in a moment.',
+                    );
+                  }
+                })
+                .finally(() => {
+                  setInvoiceDownloading(false);
+                });
+            }
+          : undefined
+      }
       onContinue={() => {
         setPhase('emergency');
         const purchaseSession = session.purchase ?? {};

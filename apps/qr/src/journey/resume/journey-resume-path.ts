@@ -74,7 +74,10 @@ export function resolveJourneyResumePath(
     }
 
     if (session.auth?.otpVerified) {
-      return auth.vehicleOwner;
+      if (session.auth.isNewUser) {
+        return auth.vehicleOwner;
+      }
+      return getPostAuthActivationPath(selectedFlow, resolvedJourneyId, session);
     }
 
     if (session.auth?.mobile) {

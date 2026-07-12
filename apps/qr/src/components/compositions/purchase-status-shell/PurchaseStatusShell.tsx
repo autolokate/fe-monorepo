@@ -25,12 +25,15 @@ export type PurchaseStatusShellProps = {
   /** R04b — secondary action above primary CTA (Figma hotspot 658:2079). */
   secondaryFooterLabel?: string;
   onSecondaryFooter?: () => void;
+  secondaryFooterClassName?: string;
   footerLoading?: boolean;
   footerDisabled?: boolean;
   hideFooter?: boolean;
   onContinue?: () => void;
   /** Full-screen overlay (e.g. R10 confetti) — not clipped by body scroll. */
   celebration?: ReactNode;
+  /** Extra class on the screen root (e.g. R10 invoice link styling). */
+  shellClassName?: string;
 };
 
 /** Figma R04/R04b — centered Display title, no back, optional footer CTA. */
@@ -46,16 +49,18 @@ export function PurchaseStatusShell({
   footerVariant = 'primary',
   secondaryFooterLabel,
   onSecondaryFooter,
+  secondaryFooterClassName,
   footerLoading = false,
   footerDisabled = false,
   hideFooter = false,
   onContinue,
   celebration,
+  shellClassName,
 }: PurchaseStatusShellProps) {
   return (
     <AlScreenBg
       variant="protected"
-      className={`ob-step-chrome-screen ob-purchase-status-shell ob-purchase-status-shell--${ambient}${celebration ? ' ob-purchase-status-shell--celebration' : ''}`}
+      className={`ob-step-chrome-screen ob-purchase-status-shell ob-purchase-status-shell--${ambient}${celebration ? ' ob-purchase-status-shell--celebration' : ''}${shellClassName ? ` ${shellClassName}` : ''}`}
     >
       {celebration ? (
         <div className="ob-purchase-status-shell__celebration" aria-hidden>
@@ -90,7 +95,7 @@ export function PurchaseStatusShell({
             {secondaryFooterLabel && onSecondaryFooter ? (
               <button
                 type="button"
-                className="ob-purchase-status-shell__secondary-link"
+                className={`ob-purchase-status-shell__secondary-link${secondaryFooterClassName ? ` ${secondaryFooterClassName}` : ''}`}
                 onClick={onSecondaryFooter}
               >
                 {secondaryFooterLabel}

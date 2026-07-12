@@ -42,7 +42,9 @@ export function JourneySharedAuthRoute() {
         return;
       }
       setPhase('emergency');
-      void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session));
+      void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session), {
+        replace: true,
+      });
       return;
     }
 
@@ -58,7 +60,9 @@ export function JourneySharedAuthRoute() {
       ...attachedPatch,
     });
     setPhase('activation');
-    void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session));
+    void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session), {
+      replace: true,
+    });
   }, [
     completeAuth,
     journeyId,

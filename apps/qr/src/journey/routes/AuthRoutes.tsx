@@ -41,14 +41,16 @@ import { ensureValidAuthSession, hasAuthTokens } from '@/services/auth/ensure-va
 import { loadLegalDocuments } from '@/services/legal/legal-service';
 import { applyVehicleOwnerSaveError } from '../../services/profile/profile-errors';
 import { authJourneyPaths, authMobileUrl, isAuthMobileContinueEntry } from '../auth/auth-routing';
-import { getAuthFlowBackPath } from '../activation-routing';
+import { getAuthFlowBackPath, getPostAuthActivationPath } from '../activation-routing';
 import { resolveJourneyResumePath } from '../resume/journey-resume-path';
 import { stripOnboardingPrefix } from '../routing/journey-url-routing';
+import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { useJourney } from '../JourneyContext';
 import {
   applyMobileSendError,
   applyOtpVerifyError,
 } from './auth-route-helpers';
+import { shouldRequireSignupConsent } from '../auth/signup-consent-policy';
 
 function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();
@@ -77,6 +79,7 @@ function MobileRoute() {
     lastRoutePath,
     markAuthLoggedOut,
   } = useJourney();
+  const journeyId = useActiveJourneyId();
   const { updateSession: updatePwaSession } = usePwaScan();
   const { enterFromSearchParams } = useQrJourneyEntry();
   const qrResolvedRef = useRef<string | null>(null);
@@ -86,6 +89,27 @@ function MobileRoute() {
 
   const qrCode = extractQrCodeParam(searchParams);
   const authContinue = isAuthMobileContinueEntry(searchParams);
+
+  // Logged-in users must never see mobile auth unless tokens were cleared.
+  useEffect(() => {
+    if (!bootstrapDone || !hasAuthTokens()) {
+      return;
+    }
+    if (!selectedFlow) {
+      setSelectedFlow('purchase');
+    }
+    const flow = selectedFlow ?? 'purchase';
+    void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session), {
+      replace: true,
+    });
+  }, [
+    bootstrapDone,
+    journeyId,
+    navigate,
+    selectedFlow,
+    session,
+    setSelectedFlow,
+  ]);
 
   useEffect(() => {
     if (bootstrapRef.current) {
@@ -104,6 +128,18 @@ function MobileRoute() {
             lastRoutePath,
           );
           void navigate(resumePath, { replace: true });
+          return;
+        }
+
+        if (signedIn && qrCode) {
+          persistQrCodeFromUrl(searchParams);
+          if (!selectedFlow) {
+            setSelectedFlow('purchase');
+          }
+          void navigate(
+            getPostAuthActivationPath(selectedFlow ?? 'purchase', journeyId ?? qrCode, session),
+            { replace: true },
+          );
           return;
         }
 
@@ -151,6 +187,18 @@ function MobileRoute() {
         return;
       }
 
+      if (signedIn && qrCode) {
+        persistQrCodeFromUrl(searchParams);
+        if (!selectedFlow) {
+          setSelectedFlow('purchase');
+        }
+        void navigate(
+          getPostAuthActivationPath(selectedFlow ?? 'purchase', journeyId ?? qrCode, session),
+          { replace: true },
+        );
+        return;
+      }
+
       if (!qrCode) {
         if (authContinue && selectedFlow) {
           setEntryMode('form');
@@ -179,18 +227,32 @@ function MobileRoute() {
   }, [
     authContinue,
     authStatus,
+    journeyId,
     lastRoutePath,
     markAuthLoggedOut,
     navigate,
     phase,
     qrCode,
     resetForNewQrEntry,
+    searchParams,
     selectedFlow,
     session,
+    setSelectedFlow,
   ]);
 
   useEffect(() => {
     if (!bootstrapDone || !qrCode) {
+      return;
+    }
+
+    if (hasAuthTokens()) {
+      if (!selectedFlow) {
+        setSelectedFlow('purchase');
+      }
+      void navigate(
+        getPostAuthActivationPath(selectedFlow ?? 'purchase', journeyId ?? qrCode, session),
+        { replace: true },
+      );
       return;
     }
 
@@ -223,11 +285,13 @@ function MobileRoute() {
   }, [
     bootstrapDone,
     enterFromSearchParams,
+    journeyId,
     navigate,
     qrCode,
     resetForNewQrEntry,
     searchParams,
     selectedFlow,
+    session,
     setPhase,
     setSelectedFlow,
     updatePwaSession,
@@ -257,6 +321,14 @@ function MobileRoute() {
     return <QrScanEntryScreen onQrCodeDetected={handleQrCodeDetected} />;
   }
 
+  if (hasAuthTokens()) {
+    return (
+      <AlScreenBg variant="protected" className="qr-route-loader">
+        <AlScreenSpinner size="lg" animated aria-label="Continuing" />
+      </AlScreenBg>
+    );
+  }
+
   return <MobileAuthForm />;
 }
 
@@ -265,6 +337,7 @@ function MobileAuthForm() {
   const { session, updateSession, selectedFlow } = useJourney();
   const auth = session.auth ?? {};
   const { requestOtp, isPending: isRequestOtpPending } = useRequestOtp();
+  const requireConsent = shouldRequireSignupConsent(selectedFlow);
 
   const [mobile, setMobile] = useState(auth.mobileDisplay ?? '');
   const [consent, setConsent] = useState(auth.consentAccepted ?? false);
@@ -275,7 +348,7 @@ function MobileAuthForm() {
   useEffect(() => {
     const handleOnline = () => {
       if (mobileState === 'offline') {
-        setMobileState(mobile.trim() ? (consent ? 'ready' : 'filled') : 'empty');
+        setMobileState(mobile.trim() ? (requireConsent && !consent ? 'filled' : 'ready') : 'empty');
       }
     };
     const handleOffline = () => {
@@ -287,7 +360,7 @@ function MobileAuthForm() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [consent, mobile, mobileState]);
+  }, [consent, mobile, mobileState, requireConsent]);
 
   const syncMobileState = useCallback(
     (nextMobile: string, nextConsent: boolean) => {
@@ -300,9 +373,9 @@ function MobileAuthForm() {
         setMobileState('empty');
         return;
       }
-      setMobileState(nextConsent ? 'ready' : 'filled');
+      setMobileState(requireConsent && !nextConsent ? 'filled' : 'ready');
     },
-    [],
+    [requireConsent],
   );
 
   const handleContinue = async () => {
@@ -314,7 +387,7 @@ function MobileAuthForm() {
       setMobileState('error');
       return;
     }
-    if (!consent) {
+    if (requireConsent && !consent) {
       setMobileState('filled');
       return;
     }
@@ -330,7 +403,7 @@ function MobileAuthForm() {
         ...auth,
         mobile: mobileDigits,
         mobileDisplay: formatMobileInput(mobile),
-        consentAccepted: consent,
+        consentAccepted: requireConsent ? consent : false,
       },
     });
     void navigate(authJourneyPaths.otp);
@@ -340,6 +413,7 @@ function MobileAuthForm() {
     <A1MobileScreen
       mobileState={isRequestOtpPending ? 'loading' : mobileState}
       mobileValue={mobile}
+      requireConsent={requireConsent}
       onMobileChange={(value) => {
         const formatted = clampMobileInput(value);
         setMobile(formatted);
@@ -458,6 +532,7 @@ function OtpRoute({ onAuthCompleted }: AuthRoutesProps) {
       auth: {
         ...auth,
         otpVerified: true,
+        isNewUser: result.data.isNewUser,
         ...result.data.journeyPatch,
       },
     });
@@ -540,7 +615,7 @@ function OtpRoute({ onAuthCompleted }: AuthRoutesProps) {
 
 function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
   const navigate = useNavigate();
-  const { session, updateSession } = useJourney();
+  const { session, updateSession, selectedFlow } = useJourney();
   const auth = session.auth ?? {};
   const { updateProfile, isPending: isUpdateProfilePending } = useUpdateProfile();
 
@@ -549,9 +624,22 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
 
   useEffect(() => {
     if (!auth.otpVerified || !auth.mobile) {
-      void navigate(authJourneyPaths.mobile, { replace: true });
+      void navigate(authMobileUrl({ continueAuth: Boolean(selectedFlow) }), { replace: true });
+      return;
     }
-  }, [auth.mobile, auth.otpVerified, navigate]);
+    // Existing / returning users skip name — never park them on profile via back navigation.
+    if (auth.isNewUser === false || (hasAuthTokens() && auth.isNewUser !== true && auth.ownerName)) {
+      void onAuthCompleted?.();
+    }
+  }, [
+    auth.isNewUser,
+    auth.mobile,
+    auth.otpVerified,
+    auth.ownerName,
+    navigate,
+    onAuthCompleted,
+    selectedFlow,
+  ]);
 
   useEffect(() => {
     if (name.trim()) {
@@ -569,12 +657,24 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
     }
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       setNameState('error');
+      reportUserError(
+        authLogger,
+        'profile_name_save_offline',
+        new Error('offline'),
+        "Couldn't save your name, check your connection and try again",
+      );
       return;
     }
     setNameState('loading');
     const result = await updateProfile({ name: trimmed });
     if (!result.ok) {
       setNameState(applyVehicleOwnerSaveError(result.error));
+      reportUserError(
+        authLogger,
+        'profile_name_save_failed',
+        result.error,
+        "Couldn't save your name, check your connection and try again",
+      );
       return;
     }
     updateSession({
@@ -582,6 +682,7 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
         ...auth,
         ...result.data.journeyPatch,
         ownerName: result.data.journeyPatch.ownerName ?? trimmed,
+        isNewUser: false,
       },
     });
     await onAuthCompleted?.();
@@ -598,7 +699,8 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
         }
       }}
       onBack={() => {
-        void navigate(authJourneyPaths.otp);
+        // Never send a logged-in user back into OTP.
+        void navigate(getAuthFlowBackPath(selectedFlow), { replace: true });
       }}
       onContinue={() => {
         void handleContinue();

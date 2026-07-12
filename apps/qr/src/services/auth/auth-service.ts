@@ -8,7 +8,7 @@ import {
   type RequestOtpResult,
   type TokenPair,
 } from '@autolokate/api-client';
-import { getTokenManager } from '@autolokate/auth';
+import { getDeviceId, getTokenManager } from '@autolokate/auth';
 
 import {
   getQrApiClient,
@@ -17,7 +17,7 @@ import {
 
 import { authLogger } from './auth-logger';
 import { grantSignupConsents } from './consent-sync';
-import { registerDevice } from '../device/device-service';
+import { registerDevice, clearDeviceRegistrationState } from '../device/device-service';
 import { mapProfileToJourney, type ProfileJourneyPatch } from '../profile/profile-mapper';
 
 export type SendOtpInput = {
@@ -72,6 +72,7 @@ export async function verifyOtp(input: VerifyOtpInput): Promise<VerifyOtpResult>
     void grantSignupConsents(authenticated);
   }
 
+  // POST /v1/devices/token — { fcmToken, platform } once the session exists (non-blocking).
   void registerDevice();
 
   return {
@@ -86,6 +87,7 @@ export async function verifyOtp(input: VerifyOtpInput): Promise<VerifyOtpResult>
 export async function logout(): Promise<void> {
   const tokenManager = getTokenManager();
   if (!tokenManager.hasSession()) {
+    clearDeviceRegistrationState();
     tokenManager.clear();
     return;
   }
@@ -95,6 +97,7 @@ export async function logout(): Promise<void> {
   } catch (error) {
     authLogger.warn('logout_api_failed', { error });
   } finally {
+    clearDeviceRegistrationState();
     tokenManager.clear();
   }
 }

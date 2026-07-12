@@ -28,10 +28,9 @@ export function E08ContactNameScreen({
 }: E08ContactNameScreenProps) {
   const interactive = onNameChange !== undefined;
   const isSubmitting = formState === 'submitting';
-  const isError = formState === 'error';
   const hasName = nameValue.trim().length > 0;
   const isInvalid = interactive && (!hasName || !relation);
-  const showDisabledHelper = isInvalid && !isSubmitting && !isError;
+  const showDisabledHelper = isInvalid && !isSubmitting;
 
   return (
     <FlowStepShell
@@ -42,14 +41,8 @@ export function E08ContactNameScreen({
       footerLabel="Save contact"
       footerLoading={isSubmitting}
       footerDisabled={isInvalid || isSubmitting}
-      footerHelperText={
-        isError
-          ? 'We couldn’t save contact details'
-          : showDisabledHelper
-            ? 'Add a name to continue'
-            : undefined
-      }
-      footerHelperTone={isError ? 'warning' : 'muted'}
+      footerHelperText={showDisabledHelper ? 'Add a name to continue' : undefined}
+      footerHelperTone="muted"
       captureProgress={{ step: 3, total: 3 }}
       showBack={showBack}
       onBack={onBack}

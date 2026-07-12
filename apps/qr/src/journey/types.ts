@@ -25,6 +25,8 @@ export type AuthSession = {
   languageId?: AuthLanguageId;
   otpVerified?: boolean;
   ownerName?: string;
+  /** True only for first-time signup in this session (A3 name step). */
+  isNewUser?: boolean;
 };
 
 export type VehicleFetchStatus = 'idle' | 'fetching' | 'success' | 'not-found' | 'error';

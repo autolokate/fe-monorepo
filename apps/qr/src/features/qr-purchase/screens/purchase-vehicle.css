@@ -6,10 +6,14 @@
   gap: 20px;
   width: 100%;
   min-width: 0;
+  /* Keep the plate ring inside the shell (overflow:auto body clips outlines/shadows). */
+  padding-inline: 4px;
+  box-sizing: border-box;
 }
 
 .ob-r03-vehicle-stack .al-plate-input {
   flex-shrink: 0;
+  max-width: 100%;
 }
 
 .ob-r03-vehicle-stack .al-plate-input__value:not(:placeholder-shown) {

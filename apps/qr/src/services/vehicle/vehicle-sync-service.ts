@@ -89,14 +89,19 @@ export async function syncVehiclesAfterPayment(): Promise<SyncVehiclesAfterPayme
   const attach = getAttachResult();
   const vehicleId = attach?.vehicleId.trim() ?? '';
   if (!vehicleId) {
+    // Client skip — attach never produced a real id (e.g. ATTACHED resolve stub). Not an API failure.
     vehicleLogger.warn('sync_vehicles_skipped', { reason: 'missing_vehicle_id_from_attach' });
-    return { ok: false, error: { code: 'unavailable', message: 'Missing vehicle id.' } };
+    return {
+      ok: true,
+      vehicleId: '',
+      subscriptionId: attach?.subscriptionId ?? null,
+    };
   }
 
   const client = getQrApiClient();
 
   try {
-    const isSyntheticVehicleId = vehicleId.startsWith('resolved-');
+    const isSyntheticVehicleId = vehicleId.startsWith('resolved-') || vehicleId === 'attached-resolve' || vehicleId === 'already-attached';
     if (!isSyntheticVehicleId) {
       const detail = await getVehicleById(client, vehicleId);
       vehicleLogger.info('vehicle_detail_loaded', { vehicleId: detail.vehicleId, plate: detail.plate });
