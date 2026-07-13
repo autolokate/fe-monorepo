@@ -12,8 +12,9 @@ import type { AboutHeroCopy, AboutHeroFeature, AboutHeroStat } from "./types";
 export const ABOUT_HERO_BANNER_IMAGE = "/images/about/about_banner.png";
 
 export const ABOUT_HERO_COPY: AboutHeroCopy = {
-  badge: "About Autolokate",
-  headline: "Building a Safer India. Together.",
+  eyebrow: "About Autolokate",
+  headline: "Building a Safer India.",
+  headlineAccent: "Together.",
   subheading:
     "Autolokate is an AI-powered road safety platform that connects technology, people, and infrastructure to ensure faster help in every emergency.",
   primaryCta: { label: "Explore features", href: "#what-autolokate-offers" },

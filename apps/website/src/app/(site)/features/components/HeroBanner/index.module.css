@@ -19,7 +19,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/new-design/newDesignHeroBgMobile.png");
+  background-image: url("/images/new-design/featurePageBannerMobile.png");
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -29,12 +29,14 @@
   position: absolute;
   inset: 0;
   z-index: 1;
+  /* Mobile: darken the top where the copy sits, keep the phones below clear. */
   background-image: linear-gradient(
     180deg,
-    rgba(5, 5, 5, 0.9) 0%,
-    rgba(5, 5, 5, 0.55) 30%,
-    rgba(5, 5, 5, 0.3) 60%,
-    rgba(5, 5, 5, 0.55) 100%
+    rgba(5, 5, 5, 0.92) 0%,
+    rgba(5, 5, 5, 0.72) 26%,
+    rgba(5, 5, 5, 0.3) 46%,
+    rgba(5, 5, 5, 0.08) 62%,
+    rgba(5, 5, 5, 0) 100%
   );
 }
 
@@ -48,17 +50,18 @@
 
 @media (min-width: 1024px) {
   .bgImage {
-    background-image: url("/images/new-design/newDesignHeroBg.png");
-    background-position: center center;
+    background-image: url("/images/new-design/featurePageBannerWeb.png");
+    background-position: right center;
   }
 
   .bgScrim {
+    /* Desktop: darken the left where the copy sits, keep the phones on the right clear. */
     background-image: linear-gradient(
       90deg,
-      rgba(5, 5, 5, 0.96) 0%,
-      rgba(5, 5, 5, 0.82) 34%,
-      rgba(5, 5, 5, 0.4) 66%,
-      rgba(5, 5, 5, 0.6) 100%
+      rgba(5, 5, 5, 0.94) 0%,
+      rgba(5, 5, 5, 0.8) 34%,
+      rgba(5, 5, 5, 0.4) 62%,
+      rgba(5, 5, 5, 0.06) 100%
     );
   }
 }
@@ -68,25 +71,22 @@
   z-index: 10;
   margin-inline: auto;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 2.5rem;
+  align-items: flex-start;
   max-width: 80rem;
+  min-height: 40rem;
   padding: 4rem 1.25rem 2.5rem;
 }
 
 @media (min-width: 640px) {
   .inner {
+    min-height: 44rem;
     padding: 5rem 2rem 3rem;
   }
 }
 
 @media (min-width: 1024px) {
   .inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
     align-items: center;
-    gap: 3rem;
     min-height: min(84vh, 46rem);
     padding: 6.5rem 2.5rem 4rem;
   }
@@ -181,81 +181,3 @@
   letter-spacing: -0.01em;
 }
 
-/* ---------- Phone cluster ---------- */
-.phones {
-  position: relative;
-  width: 100%;
-  max-width: 620px;
-  margin-inline: auto;
-  aspect-ratio: 5 / 4;
-  animation: heroPhonesIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
-}
-
-.phone {
-  position: absolute;
-  height: auto;
-  border-radius: 12%;
-  filter: drop-shadow(0 30px 55px rgba(0, 0, 0, 0.55));
-}
-
-.phoneCenter {
-  width: 45%;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  z-index: 3;
-}
-
-.phoneLeft {
-  width: 39%;
-  left: 0;
-  top: 14%;
-  z-index: 2;
-  transform: rotate(-5deg);
-  transform-origin: bottom right;
-}
-
-.phoneRight {
-  width: 39%;
-  right: 0;
-  top: 14%;
-  z-index: 1;
-  transform: rotate(5deg);
-  transform-origin: bottom left;
-}
-
-/* Mobile: a single hero phone keeps the composition legible. */
-@media (max-width: 639.98px) {
-  .phones {
-    aspect-ratio: auto;
-    max-width: 268px;
-  }
-
-  .phoneLeft,
-  .phoneRight {
-    display: none;
-  }
-
-  .phoneCenter {
-    position: static;
-    width: 100%;
-    transform: none;
-  }
-}
-
-@keyframes heroPhonesIn {
-  0% {
-    opacity: 0;
-    transform: translateY(28px) scale(0.97);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .phones {
-    animation: none;
-  }
-}

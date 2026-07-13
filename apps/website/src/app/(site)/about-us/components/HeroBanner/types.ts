@@ -1,8 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 
 export interface AboutHeroCopy {
-  badge: string;
+  eyebrow: string;
   headline: string;
+  headlineAccent: string;
   subheading: string;
   primaryCta: { label: string; href: string };
   secondaryCta: { label: string; href: string };

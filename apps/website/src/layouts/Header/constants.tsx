@@ -4,6 +4,7 @@ import {
   Home,
   LayoutGrid,
   type LucideIcon,
+  Package,
   ScanLine,
   ShieldCheck,
   Smartphone,
@@ -131,6 +132,7 @@ export const primaryNavItems: HeaderNavItem[] = [
   { label: "Home", href: "/", icon: Home },
   { label: "How It Works", href: "/how-it-works", icon: ScanLine, shortLabel: "How" },
   { label: "Features", href: "/features", icon: LayoutGrid },
+  { label: "Products", href: "/products", icon: Package },
   { label: "Emergency & Safety", href: "/safety", icon: ShieldCheck, shortLabel: "Safety" },
   { label: "Pricing", href: "/pricing", icon: Tag },
 ];

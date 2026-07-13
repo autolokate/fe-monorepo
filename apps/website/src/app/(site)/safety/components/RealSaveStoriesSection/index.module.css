@@ -1,0 +1,269 @@
+/* RealSaveStoriesSection — social proof carousel.
+   Mobile: centered header, a 3-up stat row, a swipeable story carousel, link.
+   Desktop: stats column on the left beside the story carousel. */
+
+.section {
+  background-color: #ffffff;
+}
+
+.container {
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: 3rem 1.25rem 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 3.5rem 2rem 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 4.5rem 2.5rem 5rem;
+  }
+}
+
+/* ---------- Header ---------- */
+.header {
+  margin-inline: auto;
+  max-width: 46rem;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: ui-monospace, "Space Mono", SFMono-Regular, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--al-signal-green);
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: #0a0a0a;
+  text-wrap: balance;
+}
+
+/* ---------- Body layout ---------- */
+.body {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .body {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 2rem;
+  }
+}
+
+/* ---------- Stats ---------- */
+.stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .stats {
+    display: flex;
+    flex-direction: column;
+    width: 13.5rem;
+    flex-shrink: 0;
+    gap: 1rem;
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  border-radius: 1rem;
+  border: 1px solid #e6e8eb;
+  background-color: #ffffff;
+  padding: 1rem 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .stat {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.85rem;
+    text-align: left;
+    padding: 1.15rem 1.25rem;
+  }
+}
+
+.statIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--al-signal-green) 12%, #ffffff);
+  color: var(--al-signal-green);
+}
+
+.statValue {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #0a0a0a;
+}
+
+.statLabel {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: #6b7280;
+}
+
+/* ---------- Carousel ---------- */
+.carousel {
+  min-width: 0;
+  flex: 1;
+}
+
+.track {
+  margin: 0;
+  padding: 0.5rem 0.25rem 0.25rem;
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  min-width: 0;
+  width: 82%;
+}
+
+@media (min-width: 640px) {
+  .slide {
+    width: 55%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .slide {
+    width: calc((100% - 2rem) / 3);
+  }
+}
+
+.card {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  border-radius: 1.1rem;
+  border: 1px solid #e6e8eb;
+  background-color: #ffffff;
+  padding: 1.5rem;
+}
+
+.quoteMark {
+  color: var(--al-signal-green);
+  opacity: 0.9;
+}
+
+.quote {
+  margin: 1rem 0 0;
+  flex: 1;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #52525b;
+}
+
+.cardFooter {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.author {
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0a0a0a;
+}
+
+.role {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.verified {
+  height: 1.25rem;
+  width: 1.25rem;
+  flex-shrink: 0;
+  color: var(--al-signal-green);
+}
+
+/* ---------- Dots ---------- */
+.dots {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  border: none;
+  background-color: rgba(10, 10, 10, 0.18);
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.dotActive {
+  width: 1.5rem;
+  background-color: var(--al-signal-green);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    scroll-behavior: auto;
+  }
+
+  .dot {
+    transition: none;
+  }
+}

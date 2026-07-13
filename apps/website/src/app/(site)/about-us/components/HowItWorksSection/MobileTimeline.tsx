@@ -17,7 +17,7 @@ export function MobileTimeline({ steps }: MobileTimelineProps) {
         <li key={step.id} className="relative pl-10">
           <span
             aria-hidden
-            className="absolute left-[1.125rem] top-[1.375rem] z-10 h-2 w-2 -translate-x-1/2 rounded-full bg-[#0a0a0a] ring-4 ring-background"
+            className="absolute left-[1.125rem] top-[1.375rem] z-10 h-2 w-2 -translate-x-1/2 rounded-full bg-[var(--al-signal-green)] ring-4 ring-background"
           />
           <StepCard step={step} className="lg:w-full lg:max-w-none" />
         </li>

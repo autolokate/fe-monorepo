@@ -80,6 +80,9 @@ export const footerLinks: FooterLinkSection[] = [
     links: [
       { id: "about", label: "About Us", href: "/about-us" },
       { id: "how-it-works", label: "How It Works", href: "/how-it-works" },
+      { id: "products", label: "Products", href: "/products" },
+      { id: "safety", label: "Emergency & Safety", href: "/safety" },
+      { id: "pricing", label: "Pricing", href: "/pricing" },
       { id: "explore", label: "Explore Cars", href: "/explore" },
       { id: "compare", label: "Compare Cars", href: "/compare" },
       { id: "media", label: "Media", href: "/media" },
