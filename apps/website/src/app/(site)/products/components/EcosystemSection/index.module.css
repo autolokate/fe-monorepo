@@ -1,0 +1,152 @@
+/* EcosystemSection — "Stronger together. Better outcomes."
+   Three stakeholder nodes connected by dashed arrows.
+   Desktop: nodes in a row with right-pointing arrows between them.
+   Mobile: nodes stacked with down-pointing arrows between them. */
+
+.section {
+  background-color: var(--background);
+}
+
+.container {
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: 3.5rem 1.25rem 4rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 4rem 2rem 4.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 4.5rem 2.5rem 5rem;
+  }
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+  text-wrap: balance;
+}
+
+/* ---------- Flow ---------- */
+.flow {
+  margin: 2.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .flow {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+}
+
+/* ---------- Node ---------- */
+.node {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  padding: 1.25rem 1.35rem;
+  text-align: left;
+}
+
+.nodeIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 9999px;
+  background-color: var(--accent);
+  color: #fff;
+}
+
+.nodeCopy {
+  min-width: 0;
+}
+
+.nodeTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.nodeDescription {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
+/* ---------- Connector ---------- */
+.connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--foreground) 40%, transparent);
+}
+
+@media (min-width: 900px) {
+  .connector {
+    width: 2.5rem;
+  }
+}
+
+.arrowRight,
+.arrowDown {
+  height: 1.35rem;
+  width: 1.35rem;
+  stroke-width: 2;
+  stroke-dasharray: 3 2.5;
+}
+
+/* Show the down arrow when stacked (mobile), the right arrow when in a row. */
+.arrowRight {
+  display: none;
+}
+
+.arrowDown {
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .arrowRight {
+    display: block;
+  }
+
+  .arrowDown {
+    display: none;
+  }
+}
+
+/* ---------- Footnote ---------- */
+.footnote {
+  margin: 1.75rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--al-signal-green);
+}

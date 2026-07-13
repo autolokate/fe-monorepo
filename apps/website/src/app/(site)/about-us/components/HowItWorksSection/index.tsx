@@ -18,7 +18,7 @@ export function HowItWorksSection() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <header className="mx-auto max-w-2xl text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <p className="font-mono text-[0.8rem] font-bold uppercase tracking-[0.18em] text-[var(--al-signal-green)]">
             {CRASH_TO_CARE_COPY.eyebrow}
           </p>
           <h2

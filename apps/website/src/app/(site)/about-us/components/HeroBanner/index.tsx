@@ -1,11 +1,9 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   ABOUT_HERO_COPY,
   ABOUT_HERO_FEATURES,
   ABOUT_HERO_STATS,
 } from "./constants";
+import { HeroCta } from "./HeroCta";
 import styles from "./index.module.css";
 
 export function HeroBanner() {
@@ -21,37 +19,18 @@ export function HeroBanner() {
       <div className={styles.inner}>
         <div className={styles.mainRow}>
           <div className={styles.copy}>
-            <span className={styles.badge}>{ABOUT_HERO_COPY.badge}</span>
+            <span className={styles.eyebrow}>{ABOUT_HERO_COPY.eyebrow}</span>
 
             <h1 id="about-hero-heading" className={styles.headline}>
-              {ABOUT_HERO_COPY.headline}
+              {ABOUT_HERO_COPY.headline}{" "}
+              <span className={styles.headlineAccent}>
+                {ABOUT_HERO_COPY.headlineAccent}
+              </span>
             </h1>
 
             <p className={styles.subheading}>{ABOUT_HERO_COPY.subheading}</p>
 
-            <div className={styles.ctas}>
-              <Button
-                size="lg"
-                asChild
-                className="border-transparent bg-white px-7 text-[#0a0a0a] shadow-none hover:bg-zinc-100"
-              >
-                <Link href={ABOUT_HERO_COPY.primaryCta.href}>
-                  {ABOUT_HERO_COPY.primaryCta.label}
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="border-white/55 bg-transparent px-7 text-white hover:border-white hover:bg-white/10 hover:text-white"
-              >
-                <Link href={ABOUT_HERO_COPY.secondaryCta.href}>
-                  {ABOUT_HERO_COPY.secondaryCta.label}
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-              </Button>
-            </div>
+            <HeroCta />
           </div>
 
           <ul className={styles.features} aria-label="Platform capabilities">

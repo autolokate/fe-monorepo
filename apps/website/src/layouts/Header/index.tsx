@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type CSSProperties, useEffect, useState } from "react";
-import { LogIn, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { AlButton } from "@autolokate/ui/button";
 import { AlIconButton } from "@autolokate/ui/icon-button";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,6 @@ import {
   CloseIcon,
   Logo,
   downloadAppCta,
-  headerLoginCta,
   isNavItemActive,
   primaryNavItems,
   secondaryNavItems,
@@ -161,24 +160,7 @@ export function Header({
             {downloadAppCta.label}
           </AlButton>
 
-          {authed === null ? (
-            <div
-              aria-hidden
-              className="h-10 w-10 shrink-0 rounded-full bg-muted/40"
-            />
-          ) : authed ? (
-            <AvatarMenu />
-          ) : (
-            <AlButton
-              size="sm"
-              radius="pill"
-              variant="ghost"
-              style={onDarkSurfaceStyle}
-              onClick={() => router.push(headerLoginCta.href)}
-            >
-              {headerLoginCta.label}
-            </AlButton>
-          )}
+          {authed ? <AvatarMenu /> : null}
         </div>
       </div>
 
@@ -306,18 +288,6 @@ export function Header({
                     </button>
                   );
                 })}
-              </>
-            ) : authed === false ? (
-              <>
-                <div className="my-2 h-px bg-border/70" role="separator" />
-                <Link
-                  href={headerLoginCta.href}
-                  onClick={() => setOpen(false)}
-                  className="touch-target flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium text-foreground/85 transition hover:bg-foreground/5 hover:text-foreground"
-                >
-                  <LogIn className="h-4 w-4 shrink-0" aria-hidden />
-                  {headerLoginCta.label}
-                </Link>
               </>
             ) : null}
           </div>

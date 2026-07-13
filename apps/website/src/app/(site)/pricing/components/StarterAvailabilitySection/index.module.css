@@ -1,0 +1,162 @@
+/* StarterAvailabilitySection — "₹99 Safe" starter plan availability strip.
+   Mobile: shield + copy stacked above the retailer wordmarks.
+   Desktop: copy on the left, a divider, then "Available on" + wordmarks. */
+
+.section {
+  background-color: var(--background);
+}
+
+.container {
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: 0 1.25rem 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 2rem 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2.5rem 4.5rem;
+  }
+}
+
+/* ---------- Card ---------- */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-radius: 1.25rem;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--foreground) 3%, var(--card));
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.5rem 2rem;
+  }
+}
+
+/* ---------- Info ---------- */
+.info {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.9rem;
+  width: 2.9rem;
+  flex-shrink: 0;
+  border-radius: 0.85rem;
+  background-color: var(--al-signal-green);
+  color: #fff;
+}
+
+.text {
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+.description {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+
+.descriptionEmphasis {
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+/* ---------- Availability ---------- */
+.availability {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .availability {
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    padding-left: 2rem;
+    border-left: 1px solid var(--border);
+  }
+}
+
+.availableLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.retailers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 1.5rem;
+}
+
+.retailer {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wordmark {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+/* ---------- Brand tints ---------- */
+.blinkit .wordmark {
+  color: #1f2937;
+}
+
+.zepto .wordmark {
+  color: #6b21c9;
+}
+
+.amazon {
+  color: #ff9900;
+}
+
+.amazon .wordmark {
+  color: #131a22;
+}
+
+.amazonSmile {
+  margin-top: 0.1rem;
+  width: 3.2rem;
+  height: 0.7rem;
+  color: #ff9900;
+}

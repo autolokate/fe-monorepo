@@ -1,0 +1,186 @@
+/* Safety hero — "The Golden Hour".
+   Uses baked-in night-scene backgrounds (car + app) with copy overlaid.
+   Mobile: copy at the top, CTA button, car fills the lower frame.
+   Desktop: copy on the left half, feature row beneath, car + app on the right. */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #050608;
+  color: #fff;
+}
+
+/* ---------- Background layers ---------- */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/new-design/safetyPageHeroMobile.png");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Mobile: darken the top where the copy sits, keep the car below clear. */
+  background: linear-gradient(
+    180deg,
+    rgba(5, 6, 8, 0.9) 0%,
+    rgba(5, 6, 8, 0.72) 26%,
+    rgba(5, 6, 8, 0.28) 46%,
+    rgba(5, 6, 8, 0.08) 62%,
+    rgba(5, 6, 8, 0) 100%
+  );
+}
+
+/* ---------- Layout shell ---------- */
+.inner {
+  position: relative;
+  z-index: 10;
+  margin-inline: auto;
+  max-width: 80rem;
+  min-height: 42rem;
+  padding: 4.5rem 1.25rem 3rem;
+  display: flex;
+  align-items: flex-start;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    min-height: 46rem;
+    padding: 5.5rem 2rem 3.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    min-height: min(84vh, 46rem);
+    padding: 6rem 2.5rem 5rem;
+    align-items: center;
+  }
+}
+
+/* ---------- Copy ---------- */
+.copy {
+  max-width: 34rem;
+}
+
+@media (min-width: 1024px) {
+  .copy {
+    max-width: 38rem;
+  }
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: ui-monospace, "Space Mono", SFMono-Regular, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--al-signal-green);
+}
+
+.headline {
+  margin-top: 1rem;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.35rem, 8vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.headlineAccent {
+  display: block;
+  color: var(--al-signal-green);
+}
+
+.description {
+  margin-top: 1.25rem;
+  max-width: 30rem;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+@media (min-width: 640px) {
+  .description {
+    font-size: 1.05rem;
+  }
+}
+
+/* ---------- Feature list ---------- */
+.features {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.featureIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.4rem;
+  width: 2.4rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  border: 1.5px solid color-mix(in srgb, var(--al-signal-green) 55%, transparent);
+  background-color: color-mix(in srgb, var(--al-signal-green) 12%, transparent);
+  color: var(--al-signal-green);
+}
+
+.featureLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ---------- Responsive swap ---------- */
+@media (min-width: 1024px) {
+  .bgImage {
+    background-image: url("/images/new-design/safetyPageHeroWeb.png");
+    background-position: right center;
+  }
+
+  .scrim {
+    /* Desktop: darken the left where the copy sits. */
+    background: linear-gradient(
+      90deg,
+      rgba(5, 6, 8, 0.92) 0%,
+      rgba(5, 6, 8, 0.78) 34%,
+      rgba(5, 6, 8, 0.4) 60%,
+      rgba(5, 6, 8, 0.05) 100%
+    );
+  }
+
+  .features {
+    margin-top: 2.5rem;
+    flex-direction: row;
+    gap: 2.25rem;
+  }
+
+  .feature {
+    max-width: 12rem;
+  }
+}
