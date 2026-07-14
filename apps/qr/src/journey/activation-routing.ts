@@ -31,9 +31,9 @@ export function activationEntryByFlow(journeyId: string): Record<ActivationFlowI
   const b2b2c = buildB2b2cPaths(journeyId);
   return {
     purchase: {
-      stepId: 'purchase.vehicle-number',
-      path: purchase.vehicleDetails,
-      label: 'Vehicle number · Purchase activation entry',
+      stepId: 'purchase.welcome',
+      path: purchase.welcome,
+      label: 'Purchase welcome · Activation preview',
     },
     prepaid: {
       stepId: 'prepaid.welcome',
@@ -90,7 +90,7 @@ export function getPostAuthActivationPath(
   const resolvedSession = typeof journeyIdOrSession === 'object' ? journeyIdOrSession : session;
 
   if (!flow) {
-    return purchaseJourneyPathsFor(journeyId).vehicleDetails;
+    return purchaseJourneyPathsFor(journeyId).choosePlan;
   }
 
   if (flow === 'purchase') {
@@ -104,12 +104,20 @@ export function getActivationEntry(flow: ActivationFlowId, journeyId: string): A
   return activationEntryByFlow(journeyId)[flow];
 }
 
-export function getPurchasePostPaymentEmergencyPath(journeyId?: string): string {
+/** @deprecated Prefer getEmergencyHandoffPath — post-pay must still honor rider entitlement. */
+export function getPurchasePostPaymentEmergencyPath(
+  journeyId?: string,
+  session?: Pick<JourneySession, 'purchase'>,
+  selectedFlow?: ActivationFlowId | null,
+): string {
+  if (session) {
+    return getEmergencyHandoffPath(session, selectedFlow, journeyId);
+  }
   const id =
     journeyId?.trim() ||
     (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null) ||
     '_';
-  return buildEmergencyPaths(id).contactsEmpty;
+  return buildEmergencyPaths(id).riderPrompt;
 }
 
 export function getEmergencyHandoffPath(
@@ -143,6 +151,10 @@ export function getAuthFlowBackPath(flow: ActivationFlowId | null, journeyId?: s
     return buildB2b2cPaths(id).welcome;
   }
 
+  if (flow === 'purchase') {
+    return purchaseJourneyPathsFor(id).welcome;
+  }
+
   return buildQrEntryPath(id);
 }
 
@@ -172,7 +184,7 @@ export function getEmergencyFlowBackPath(
   }
 
   if (flow === 'b2b2c') {
-    const riderCount = session?.purchase?.riderCount ?? 0;
+    const riderCount = resolvedSession?.purchase?.riderCount ?? 0;
     const b2b2c = buildB2b2cPaths(journeyId);
     return riderCount > 0 ? b2b2c.welcomePlanRider : b2b2c.welcome;
   }

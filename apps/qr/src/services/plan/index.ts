@@ -3,16 +3,22 @@ export {
   ensurePlansLoaded,
   getPurchasePlansCatalog,
   getPurchasePlanById,
+  getFundedPurchasePlanId,
+  peekActivationPlans,
+  prefersActivationPlansCatalog,
   getPlansRevision,
   purchasePlansCatalog,
   DEFAULT_PURCHASE_PLAN_ID,
   type LoadPlansResult,
+  type LoadPlansOptions,
 } from './plan-service';
 export {
   mapApiTierToPurchasePlanId,
   mapPurchasePlanIdToApiTier,
   formatApiTierLabel,
   formatYearlyPriceLabel,
+  isIncludedActivationPlan,
   PURCHASE_PLAN_ORDER,
 } from './plan-mapper';
-export { clearPlansCache } from './plan-cache';
+export { clearPlansCache, getPlansCacheSource } from './plan-cache';
+export type { PlansCacheSource } from './plan-cache';

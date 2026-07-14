@@ -22,7 +22,8 @@ export function QrEntryRoute() {
   if (!trimmed) {
     return <Navigate to="/" replace />;
   }
-  return <QrDeepLinkBootstrap qrCode={trimmed} />;
+  // Key by code so each `/q/:code` visit remounts and always re-resolves.
+  return <QrDeepLinkBootstrap key={trimmed} qrCode={trimmed} />;
 }
 
 /** @deprecated alias */

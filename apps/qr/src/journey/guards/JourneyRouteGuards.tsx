@@ -7,6 +7,7 @@ import { buildAuthPaths } from '../auth/auth-routing';
 import { getPostAuthActivationPath } from '../activation-routing';
 import { hasAuthTokens } from '@/services/auth/ensure-valid-auth-session';
 import { buildQrEntryPath } from '../routing/journey-url-routing';
+import { resolveSignedInBouncePath } from '../resume/journey-resume-path';
 import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { useJourney } from '../JourneyContext';
 import type { ActivationFlowId } from '../types';
@@ -87,4 +88,29 @@ export function RequireSelectedFlowMatch({ flow, children }: RequireSelectedFlow
   }
 
   return children;
+}
+
+/**
+ * Logged-in users must not reopen mobile/OTP/`/q` (route edit or history back)
+ * until tokens are cleared from storage. Bounce to the last post-login screen.
+ */
+export function BlockLoggedInFromPreLoginAuth({ children }: { children: ReactNode }) {
+  const { selectedFlow, session, lastRoutePath } = useJourney();
+  const journeyId = useActiveJourneyId();
+
+  if (!hasAuthTokens()) {
+    return children;
+  }
+
+  return (
+    <Navigate
+      to={resolveSignedInBouncePath({
+        lastRoutePath,
+        selectedFlow: selectedFlow ?? 'purchase',
+        session,
+        journeyId,
+      })}
+      replace
+    />
+  );
 }

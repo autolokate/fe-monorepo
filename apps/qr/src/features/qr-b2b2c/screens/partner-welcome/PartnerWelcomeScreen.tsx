@@ -54,9 +54,7 @@ export function PartnerWelcomeScreen({ variant = 'plan-only' }: PartnerWelcomeSc
     void navigate(authMobileUrl({ continueAuth: true }));
   };
 
-  const planDisplay = config
-    ? resolveWelcomePlanDisplay(config.planId, config.priceDisplay, config.riderCount)
-    : null;
+  const planDisplay = config ? resolveWelcomePlanDisplay(config) : null;
 
   const successBodyCopy = config?.bodyCopy ?? PARTNER_BODY_COPY[variant];
   const shell = getWelcomeShellPresentation(viewState, successBodyCopy);

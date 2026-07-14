@@ -7,10 +7,17 @@ import { getCheckout } from '@/storage/index';
 
 import { checkoutLogger } from './checkout-logger';
 
-const invoiceUrlByOrderId = new Map<string, string | null>();
+const invoiceUrlByOrderId = new Map<string, string>();
 const inflightByOrderId = new Map<string, Promise<string | null>>();
 
-const INVOICE_URL_KEYS = ['invoiceUrl', 'url', 'downloadUrl', 'pdfUrl', 'href'] as const;
+const INVOICE_RETRY_ATTEMPTS = 4;
+const INVOICE_RETRY_BASE_MS = 700;
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
 
 function normalizeInvoiceUrl(url: string): string {
   if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -20,25 +27,16 @@ function normalizeInvoiceUrl(url: string): string {
   return `${base}${url.startsWith('/') ? url : `/${url}`}`;
 }
 
-function resolveInvoiceUrl(invoice: Record<string, unknown>): string | null {
-  for (const key of INVOICE_URL_KEYS) {
-    const value = invoice[key];
-    if (typeof value === 'string' && value.trim()) {
-      return normalizeInvoiceUrl(value.trim());
-    }
-  }
-  return null;
-}
-
-async function loadInvoiceUrl(orderId: string): Promise<string | null> {
+async function loadInvoiceUrlOnce(orderId: string): Promise<string | null> {
   try {
     const client = getQrApiClient();
     const invoice = await getOrderInvoiceApi(client, orderId);
-    const url = resolveInvoiceUrl(invoice as Record<string, unknown>);
-    if (!url) {
+    const rawUrl = invoice.invoiceUrl.trim();
+    if (!rawUrl) {
       checkoutLogger.warn('order_invoice_missing_url', { orderId, invoice });
       return null;
     }
+    const url = normalizeInvoiceUrl(rawUrl);
     checkoutLogger.info('order_invoice_loaded', { orderId });
     return url;
   } catch (error) {
@@ -52,15 +50,19 @@ export function resolveCheckoutOrderId(): string | null {
   return peekOrderId() ?? getCheckout()?.orderId ?? null;
 }
 
-/** GET /v1/orders/{orderId}/invoice — cached and deduped per orderId. */
+/**
+ * GET /v1/orders/{orderId}/invoice — cached on success only.
+ * Misses are retried so a just-paid order can finish invoice generation.
+ */
 export async function fetchOrderInvoiceUrl(orderId: string): Promise<string | null> {
   const normalizedOrderId = orderId.trim();
   if (!normalizedOrderId) {
     return null;
   }
 
-  if (invoiceUrlByOrderId.has(normalizedOrderId)) {
-    return invoiceUrlByOrderId.get(normalizedOrderId) ?? null;
+  const cached = invoiceUrlByOrderId.get(normalizedOrderId);
+  if (cached) {
+    return cached;
   }
 
   const inflight = inflightByOrderId.get(normalizedOrderId);
@@ -68,19 +70,30 @@ export async function fetchOrderInvoiceUrl(orderId: string): Promise<string | nu
     return inflight;
   }
 
-  const promise = loadInvoiceUrl(normalizedOrderId);
+  const promise = (async (): Promise<string | null> => {
+    for (let attempt = 0; attempt < INVOICE_RETRY_ATTEMPTS; attempt += 1) {
+      const url = await loadInvoiceUrlOnce(normalizedOrderId);
+      if (url) {
+        invoiceUrlByOrderId.set(normalizedOrderId, url);
+        return url;
+      }
+      if (attempt < INVOICE_RETRY_ATTEMPTS - 1) {
+        await delay(INVOICE_RETRY_BASE_MS * (attempt + 1));
+      }
+    }
+    return null;
+  })();
+
   inflightByOrderId.set(normalizedOrderId, promise);
 
   try {
-    const url = await promise;
-    invoiceUrlByOrderId.set(normalizedOrderId, url);
-    return url;
+    return await promise;
   } finally {
     inflightByOrderId.delete(normalizedOrderId);
   }
 }
 
-/** Fetch invoice once and open in a new tab. */
+/** Fetch invoice (with short retries) and open in a new tab. */
 export async function openOrderInvoice(orderId: string): Promise<boolean> {
   const url = await fetchOrderInvoiceUrl(orderId);
   if (!url) {
@@ -88,6 +101,11 @@ export async function openOrderInvoice(orderId: string): Promise<boolean> {
   }
   window.open(url, '_blank', 'noopener,noreferrer');
   return true;
+}
+
+/** Prefetch so "Download tax invoice" is warm when the user taps it. */
+export function prefetchOrderInvoice(orderId: string): void {
+  void fetchOrderInvoiceUrl(orderId);
 }
 
 /** Reset between tests. */

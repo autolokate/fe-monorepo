@@ -36,7 +36,9 @@ export function useActivationPreview({
   const previewCode =
     flow === 'prepaid'
       ? code?.trim() || readStoredActivationPreviewCode() || ''
-      : code?.trim() || readStoredActivationQrCode() || '';
+      : flow === 'purchase'
+        ? code?.trim() || readStoredActivationQrCode() || readStoredActivationPreviewCode() || ''
+        : code?.trim() || readStoredActivationQrCode() || '';
 
   const retry = useCallback(() => {
     setViewState('loading');

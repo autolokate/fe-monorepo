@@ -20,12 +20,23 @@ export type CanonicalJourneyContext = Pick<
 export function resolveJourneyCanonicalPath(context: CanonicalJourneyContext): string {
   const { journeyId, selectedFlow, authStatus, session } = context;
   const paths = buildJourneyScopedPaths(journeyId);
+  const signedIn = hasAuthTokens();
+
+  if (signedIn) {
+    if (session.auth?.isNewUser === true && !session.auth.ownerName) {
+      return paths.auth.vehicleOwner;
+    }
+    if (!selectedFlow) {
+      return resolvePurchaseEntryPath(undefined, journeyId);
+    }
+    return resolveFlowCanonicalPath(selectedFlow, session, journeyId);
+  }
 
   if (!selectedFlow) {
     return paths.auth.mobile;
   }
 
-  if (authStatus !== AUTH_COMPLETED && !hasAuthTokens()) {
+  if (authStatus !== AUTH_COMPLETED) {
     if (session.auth?.otpVerified) {
       return session.auth.isNewUser ? paths.auth.vehicleOwner : paths.auth.mobile;
     }
@@ -33,10 +44,6 @@ export function resolveJourneyCanonicalPath(context: CanonicalJourneyContext): s
       return paths.auth.otp;
     }
     return paths.auth.mobile;
-  }
-
-  if (authStatus !== AUTH_COMPLETED && hasAuthTokens() && session.auth?.isNewUser && !session.auth?.ownerName) {
-    return paths.auth.vehicleOwner;
   }
 
   return resolveFlowCanonicalPath(selectedFlow, session, journeyId);
@@ -66,7 +73,21 @@ export function resolveJourneyResumePath(
   lastRoutePath: string | null,
   journeyId: string,
 ): string {
-  if (lastRoutePath && lastRoutePath.includes(journeyId)) {
+  if (hasAuthTokens()) {
+    if (lastRoutePath && lastRoutePath.includes(journeyId)) {
+      const normalized = lastRoutePath.split('?')[0]?.replace(/\/+$/, '') ?? '';
+      const isPreLogin =
+        normalized.endsWith('/auth') ||
+        normalized.endsWith('/otp') ||
+        normalized === '/auth' ||
+        normalized === '/otp' ||
+        normalized === '/q' ||
+        normalized.startsWith('/q/');
+      if (!isPreLogin) {
+        return lastRoutePath;
+      }
+    }
+  } else if (lastRoutePath && lastRoutePath.includes(journeyId)) {
     return lastRoutePath;
   }
 

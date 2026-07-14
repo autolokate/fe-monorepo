@@ -1,4 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { PlanFeaturesDto } from '@autolokate/api-client';
+import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
 import { catalogQueryKeys, legacySkuQueryKeyPrefix } from '@/hooks/catalog/catalog-query-keys';
 import { mapAdminApiError, resolveSubmitErrorMessage } from '@/platform/errors/admin-api-errors';
@@ -12,6 +13,29 @@ import {
   updateCatalogSku,
 } from '@/services/catalog/admin-catalog-service';
 import { formatPlanRef } from '@/services/catalog/catalog-model';
+
+function upsertById(
+  queryClient: QueryClient,
+  queryKey: readonly unknown[],
+  entity: { id: string },
+  options: { appendIfMissing?: boolean } = {},
+) {
+  queryClient.setQueriesData<{ id: string }[]>(
+    { queryKey },
+    (current) => {
+      if (!current) {
+        return current;
+      }
+      const index = current.findIndex((entry) => entry.id === entity.id);
+      if (index === -1) {
+        return options.appendIfMissing ? [entity, ...current] : current;
+      }
+      const next = current.slice();
+      next[index] = entity;
+      return next;
+    },
+  );
+}
 
 export function useCatalogMutations() {
   const queryClient = useQueryClient();
@@ -36,6 +60,9 @@ export function useCatalogMutations() {
     }) => createCatalogPlanVersion(body, signal),
     retry: 0,
     onSuccess: async (plan) => {
+      upsertById(queryClient, catalogQueryKeys.plans(), plan, {
+        appendIfMissing: true,
+      });
       await invalidatePlans();
       // A new version can put a tier back on the shelf — SKU pickers read from the plan list.
       await invalidateSkus();
@@ -58,6 +85,7 @@ export function useCatalogMutations() {
     }) => updateCatalogPlanLifecycle(planId, body, signal),
     retry: 0,
     onSuccess: async (plan) => {
+      upsertById(queryClient, catalogQueryKeys.plans(), plan);
       await invalidatePlans();
       await invalidateSkus();
       showSuccessToast(
@@ -82,7 +110,8 @@ export function useCatalogMutations() {
       signal?: AbortSignal;
     }) => saveCatalogPlanFeatures(planId, body, signal),
     retry: 0,
-    onSuccess: async (features) => {
+    onSuccess: async (features: PlanFeaturesDto) => {
+      queryClient.setQueryData(catalogQueryKeys.planFeatures(features.planId), features);
       await queryClient.invalidateQueries({
         queryKey: catalogQueryKeys.planFeatures(features.planId),
       });
@@ -103,6 +132,9 @@ export function useCatalogMutations() {
     }) => createCatalogSku(body, signal),
     retry: 0,
     onSuccess: async (sku) => {
+      upsertById(queryClient, catalogQueryKeys.skus(), sku, {
+        appendIfMissing: true,
+      });
       await invalidateSkus();
       showSuccessToast(`SKU ${sku.skuCode} created.`);
     },
@@ -123,6 +155,7 @@ export function useCatalogMutations() {
     }) => updateCatalogSku(skuId, body, signal),
     retry: 0,
     onSuccess: async (sku) => {
+      upsertById(queryClient, catalogQueryKeys.skus(), sku);
       await invalidateSkus();
       showSuccessToast(`SKU ${sku.skuCode} updated.`);
     },

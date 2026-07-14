@@ -9,7 +9,7 @@ export type PlanLoadError = {
   message: string;
 };
 
-/** Map API failures for headless plan prefetch (no new purchase UI states). */
+/** Map API failures for plan prefetch — keeps the endpoint message for the error screen. */
 export function mapPlanApiError(error: unknown): PlanLoadError {
   const normalized = normalizeApiError(error);
   const message = resolveUserFacingMessage(error);
@@ -25,6 +25,8 @@ export function mapPlanApiError(error: unknown): PlanLoadError {
   if (
     normalized.code === 'rate_limit' ||
     normalized.code === 'server_error' ||
+    normalized.code === 'unauthorized' ||
+    normalized.status === 403 ||
     normalized.status === 404 ||
     normalized.status === 500
   ) {

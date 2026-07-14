@@ -32,7 +32,7 @@ import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
 import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { QR_URL_PARAMS } from '@/platform/qr/qr-url-params';
-import { reportUserError } from '@/platform/feedback/index';
+import { reportFieldError, reportUserError } from '@/platform/feedback/index';
 import { usePwaScan } from '../../features/post-activation-pwa/context/PwaScanContext';
 import { useQrJourneyEntry } from '../../hooks/qr/useQrJourneyEntry';
 import { authLogger } from '@/services/auth/auth-logger';
@@ -51,6 +51,7 @@ import {
   applyOtpVerifyError,
 } from './auth-route-helpers';
 import { shouldRequireSignupConsent } from '../auth/signup-consent-policy';
+import { BlockLoggedInFromPreLoginAuth } from '../guards/JourneyRouteGuards';
 
 function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();
@@ -273,6 +274,10 @@ function MobileRoute() {
       { setSelectedFlow, setPhase, navigate, updateSession, updatePwaSession, resetForNewQrEntry },
       { entryPoint: 'auth-mobile' },
     ).then((result) => {
+      // Only settle UI for the code we started; ignore stale completions.
+      if (qrResolvedRef.current !== qrCode) {
+        return;
+      }
       if (!result.ok) {
         reportUserError(qrLogger, 'auth_mobile_qr_entry_failed', result.error, result.error.message);
         setEntryMode('form');
@@ -282,6 +287,8 @@ function MobileRoute() {
         setEntryMode('form');
       }
     });
+    // Intentionally omit session/selectedFlow — those change during resolve and must
+    // not re-fire entry (would force-loop GET /resolve).
   }, [
     bootstrapDone,
     enterFromSearchParams,
@@ -290,8 +297,6 @@ function MobileRoute() {
     qrCode,
     resetForNewQrEntry,
     searchParams,
-    selectedFlow,
-    session,
     setPhase,
     setSelectedFlow,
     updatePwaSession,
@@ -621,9 +626,14 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
 
   const [name, setName] = useState(auth.ownerName ?? '');
   const [nameState, setNameState] = useState<AuthVehicleOwnerState>('empty');
+  const [nameErrorMessage, setNameErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!auth.otpVerified || !auth.mobile) {
+      if (hasAuthTokens()) {
+        void onAuthCompleted?.();
+        return;
+      }
       void navigate(authMobileUrl({ continueAuth: Boolean(selectedFlow) }), { replace: true });
       return;
     }
@@ -653,27 +663,33 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
     const trimmed = name.trim();
     if (!trimmed) {
       setNameState('empty');
+      setNameErrorMessage(null);
       return;
     }
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       setNameState('error');
-      reportUserError(
-        authLogger,
-        'profile_name_save_offline',
-        new Error('offline'),
-        "Couldn't save your name, check your connection and try again",
+      setNameErrorMessage(
+        reportFieldError(
+          authLogger,
+          'profile_name_save_offline',
+          new Error('offline'),
+          "Couldn't save your name, check your connection and try again",
+        ),
       );
       return;
     }
     setNameState('loading');
+    setNameErrorMessage(null);
     const result = await updateProfile({ name: trimmed });
     if (!result.ok) {
       setNameState(applyVehicleOwnerSaveError(result.error));
-      reportUserError(
-        authLogger,
-        'profile_name_save_failed',
-        result.error,
-        "Couldn't save your name, check your connection and try again",
+      setNameErrorMessage(
+        reportFieldError(
+          authLogger,
+          'profile_name_save_failed',
+          result.error,
+          "Couldn't save your name, check your connection and try again",
+        ),
       );
       return;
     }
@@ -692,10 +708,12 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
     <A3VehicleOwnerScreen
       nameValue={name}
       nameState={isUpdateProfilePending ? 'loading' : nameState}
+      nameErrorMessage={nameErrorMessage}
       onNameChange={(value) => {
         setName(value);
         if (nameState === 'error') {
           setNameState(value.trim() ? 'filled' : 'empty');
+          setNameErrorMessage(null);
         }
       }}
       onBack={() => {
@@ -763,9 +781,17 @@ function resolveAuthRouteContent(
 
   switch (path) {
     case '/auth':
-      return <MobileRoute />;
+      return (
+        <BlockLoggedInFromPreLoginAuth>
+          <MobileRoute />
+        </BlockLoggedInFromPreLoginAuth>
+      );
     case '/otp':
-      return <OtpRoute onAuthCompleted={onAuthCompleted} />;
+      return (
+        <BlockLoggedInFromPreLoginAuth>
+          <OtpRoute onAuthCompleted={onAuthCompleted} />
+        </BlockLoggedInFromPreLoginAuth>
+      );
     case '/profile':
       return <VehicleOwnerRoute onAuthCompleted={onAuthCompleted} />;
     case authJourneyPaths.privacy:

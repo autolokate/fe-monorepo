@@ -48,6 +48,8 @@ export const endpoints = {
   activation: {
     preview: (code: string) =>
       `/v1/activation/preview?code=${encodeURIComponent(code)}`,
+    plans: (code: string) =>
+      `/v1/activation/plans?code=${encodeURIComponent(code)}`,
     redeem: '/v1/activation/redeem',
   },
   emergencyContacts: {
@@ -105,6 +107,8 @@ export const endpoints = {
       `/admin/v1/qr-batches/${encodeURIComponent(id)}/generate`,
     provisionQrBatch: (id: string) =>
       `/admin/v1/qr-batches/${encodeURIComponent(id)}/provision`,
+    distributeQrBatch: (id: string) =>
+      `/admin/v1/qr-batches/${encodeURIComponent(id)}/distribute`,
     qrBatchCodes: (id: string) =>
       `/admin/v1/qr-batches/${encodeURIComponent(id)}/codes`,
     exportQrBatchCodes: (id: string) =>

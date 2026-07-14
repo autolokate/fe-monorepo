@@ -12,6 +12,7 @@ import {
 import type { RouteProgressConfig } from '../../journey/progress/route-progress.types';
 
 import '../compositions/validation-feedback/validation-feedback.css';
+import '../flow-step-shell/flow-step-shell.css';
 import '../step-shell-chrome/step-shell-chrome.css';
 import './auth-step-shell.css';
 
@@ -36,6 +37,11 @@ export type AuthStepShellProps = {
   contentGap?: 'mobile' | 'otp' | 'name' | 'plan';
   /** Re-mount CTA for plan-change motion (R06). */
   footerCtaKey?: string;
+  /** Secondary text link with the primary CTA (e.g. R06/R07 skip). */
+  footerSecondaryLabel?: string;
+  onFooterSecondary?: () => void;
+  /** When true, render the secondary link above the primary CTA (R06). */
+  footerSecondaryAboveCta?: boolean;
   /** Top-right header slot — e.g. A1 language switcher (Figma 559:1636). */
   headerAccessory?: ReactNode;
   children: ReactNode;
@@ -123,6 +129,9 @@ export function AuthStepShell({
   shellClassName,
   contentGap = 'mobile',
   footerCtaKey,
+  footerSecondaryLabel,
+  onFooterSecondary,
+  footerSecondaryAboveCta = false,
   headerAccessory,
   children,
 }: AuthStepShellProps) {
@@ -140,6 +149,21 @@ export function AuthStepShell({
       showMeta: false,
     };
   })();
+
+  const footerSecondary =
+    footerSecondaryLabel && onFooterSecondary ? (
+      <button
+        type="button"
+        className={
+          footerSecondaryAboveCta
+            ? 'ob-shell__footer-secondary-link'
+            : 'ob-auth-shell__footer-secondary-link'
+        }
+        onClick={onFooterSecondary}
+      >
+        {footerSecondaryLabel}
+      </button>
+    ) : null;
 
   return (
     <AlScreenBg
@@ -194,6 +218,7 @@ export function AuthStepShell({
                 {ctaHelper}
               </AlText>
             ) : null}
+            {footerSecondaryAboveCta ? footerSecondary : null}
             <AlButton
               variant="primary"
               className="ob-step-chrome__cta ob-auth-shell__cta"
@@ -207,6 +232,7 @@ export function AuthStepShell({
                 <span className="ob-auth-shell__cta-label">{footerLabel}</span>
               )}
             </AlButton>
+            {footerSecondaryAboveCta ? null : footerSecondary}
           </footer>
         )}
       </div>

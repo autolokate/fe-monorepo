@@ -1,5 +1,5 @@
 import type { PwaScanSession } from '../../features/post-activation-pwa/context/pwa-scan-types';
-import { buildB2b2cPaths, buildPrepaidPaths, buildScanPaths } from '@/journey/routing/journey-url-routing';
+import { buildPrepaidPaths } from '@/journey/routing/journey-url-routing';
 import { selectActivationFlow } from '../../journey/navigation/select-activation-flow';
 import type { FlowDispatchDeps } from '../entry/flow-dispatcher';
 import { dispatchPlatformFlow } from '../entry/flow-dispatcher';

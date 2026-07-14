@@ -1,11 +1,13 @@
 .ob-toast-host {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + var(--ob-shell-header-top, 22px));
-  right: max(var(--ob-shell-gutter, 16px), env(safe-area-inset-right, 0px));
-  left: auto;
+  left: 50%;
+  bottom: calc(
+    env(safe-area-inset-bottom, 0px) + var(--al-space-lg, 1rem) + 58px + 0.625rem
+  );
   z-index: 10000;
-  width: max-content;
-  max-width: min(17.5rem, calc(100vw - 4.5rem));
+  width: min(24.5625rem, calc(100vw - 2 * var(--ob-shell-gutter, 16px)));
+  max-width: calc(100vw - 2rem);
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
@@ -28,7 +30,7 @@
   font-weight: 500;
   line-height: 1.35;
   text-align: start;
-  animation: ob-toast-in 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation: ob-toast-in 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
   will-change: transform, opacity;
 }
 
@@ -62,24 +64,24 @@
 @keyframes ob-toast-in {
   from {
     opacity: 0;
-    transform: translate3d(0.85rem, -0.4rem, 0) scale(0.96);
+    transform: translateY(0.5rem);
   }
 
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes ob-toast-out {
   from {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translateY(0);
   }
 
   to {
     opacity: 0;
-    transform: translate3d(0.6rem, -0.25rem, 0) scale(0.97);
+    transform: translateY(0.35rem);
   }
 }
 

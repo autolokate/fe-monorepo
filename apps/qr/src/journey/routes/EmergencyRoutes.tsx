@@ -50,7 +50,11 @@ import type {
   EmergencySession,
   RelationshipId,
 } from '../../features/emergency/types';
-import { getCompletedPath, getEmergencyFlowBackPath } from '../activation-routing';
+import {
+  getCompletedPath,
+  getEmergencyFlowBackPath,
+  getEmergencyHandoffPath,
+} from '../activation-routing';
 import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser-back';
 import { resolveEmergencyFoundationContext } from '../emergency/emergency-foundation';
 import { emergencyJourneyPaths } from '../emergency/emergency-routing';
@@ -201,7 +205,7 @@ function R0Route() {
         const apiMessage = readEmergencyApiUserMessage(result.error);
         if (apiMessage) {
           reportEmergencyApiError(riderLogger, 'riders_load_failed', result.error);
-          setApiErrorMessage(apiMessage);
+          setApiErrorMessage(null);
           patchEmergency({ riderPromptLoadFailed: true });
           setViewState('error');
           return;
@@ -256,7 +260,7 @@ function R0Route() {
         void navigate(getEmergencyFlowBackPath(selectedFlow, session));
       }}
       onContinue={() => {
-        if (viewState === 'error' && apiErrorMessage) {
+        if (viewState === 'error') {
           patchEmergency({ riderPromptLoadFailed: false });
           setApiErrorMessage(null);
           setLoadAttempt((attempt) => attempt + 1);
@@ -345,7 +349,8 @@ function R1Route() {
         void requestOtp(normalized).then((result) => {
           setIsSubmitting(false);
           if (!result.ok) {
-            reportEmergencyApiError(riderLogger, 'rider_otp_request_failed', result.error);
+            reportEmergencyApiError(riderLogger, 'rider_otp_request_failed', result.error, { toast: false });
+            setMobileState('error');
             return;
           }
           patchEmergency({
@@ -402,7 +407,7 @@ function R2Route() {
       setOtpState('verifying');
       void verifyRiderOtpApi(mobile, code).then((result) => {
         if (!result.ok) {
-          reportEmergencyApiError(riderLogger, 'rider_otp_verify_failed', result.error);
+          reportEmergencyApiError(riderLogger, 'rider_otp_verify_failed', result.error, { toast: false });
           setOtpState('error');
           setOtpErrorKind(mapOtpErrorKind(result.error));
           return;
@@ -513,7 +518,7 @@ function R3Route() {
           if (!result.ok) {
             const apiMessage = readEmergencyApiUserMessage(result.error);
             if (apiMessage) {
-              reportEmergencyApiError(riderLogger, 'rider_create_failed', result.error);
+              reportEmergencyApiError(riderLogger, 'rider_create_failed', result.error, { toast: false });
               setApiErrorMessage(apiMessage);
               setFormState('error');
               return;
@@ -750,7 +755,9 @@ function E1Route() {
               emergencyContactLogger,
               'contact_otp_request_failed',
               result.error,
+              { toast: false },
             );
+            setMobileState('error');
             return;
           }
           patchEmergency({
@@ -811,6 +818,7 @@ function E2Route() {
             emergencyContactLogger,
             'contact_otp_verify_failed',
             result.error,
+            { toast: false },
           );
           setOtpState('error');
           setOtpErrorKind(mapOtpErrorKind(result.error));
@@ -893,6 +901,7 @@ function E3Route() {
     draft?.relation ?? (draft?.fromPicker ? undefined : 'spouse'),
   );
   const [formState, setFormState] = useState<EmergencyNameFormState>('default');
+  const [apiErrorMessage, setApiErrorMessage] = useState<string | null>(null);
 
   return (
     <E08ContactNameScreen
@@ -901,11 +910,19 @@ function E3Route() {
         setName(value);
         if (formState === 'error') {
           setFormState('default');
+          setApiErrorMessage(null);
         }
       }}
       relation={relation}
-      onRelationChange={setRelation}
+      onRelationChange={(value) => {
+        setRelation(value);
+        if (formState === 'error') {
+          setFormState('default');
+          setApiErrorMessage(null);
+        }
+      }}
       formState={formState}
+      errorMessage={apiErrorMessage}
       onBack={() => {
         void navigate(emergencyJourneyPaths.contactOtp);
       }}
@@ -923,13 +940,16 @@ function E3Route() {
           return;
         }
         setFormState('submitting');
+        setApiErrorMessage(null);
         void createContact(name.trim(), relation).then((result) => {
           if (!result.ok) {
-            reportEmergencyApiError(
+            const apiMessage = reportEmergencyApiError(
               emergencyContactLogger,
               'contact_create_failed',
               result.error,
+              { toast: false },
             );
+            setApiErrorMessage(apiMessage);
             setFormState('error');
             return;
           }
@@ -1025,21 +1045,14 @@ function E5Route() {
 function EmergencyWildcardRedirect() {
   const { session, selectedFlow } = useJourney();
   const emergency = session.emergency ?? {};
-  const { planId, riderCount, flowKind } = resolveEmergencyFoundationContext(session, selectedFlow);
 
   if (emergency.riderSkipped) {
     return <Navigate to={getCompletedPath()} replace />;
   }
 
-  if (selectedFlow === 'purchase' && session.purchase?.paymentStatus === 'success') {
-    return <Navigate to={emergencyJourneyPaths.contactsEmpty} replace />;
-  }
-
-  if (!shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
-    return <Navigate to={emergencyJourneyPaths.contactsEmpty} replace />;
-  }
-
-  return <Navigate to={emergencyJourneyPaths.riderPrompt} replace />;
+  // Same rule as post-attach / skip handoff — never skip rider screens after payment.
+  // SAFE (0 rider slots) → contacts; entitled riders → rider-prompt.
+  return <Navigate to={getEmergencyHandoffPath(session, selectedFlow)} replace />;
 }
 
 export function EmergencyRoutes() {

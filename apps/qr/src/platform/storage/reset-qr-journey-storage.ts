@@ -3,7 +3,6 @@ import { activationStorageRepository } from '@/platform/storage/repositories/act
 import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
 import { emergencyContactStorageRepository } from '@/platform/storage/repositories/emergency-contact-storage-repository';
 import { riderStorageRepository } from '@/platform/storage/repositories/rider-storage-repository';
-import { clearLocalAuthSession } from '@/services/auth/auth-session';
 import {
   clearActivationCache,
   clearActivationRedeemAttempt,
@@ -23,10 +22,10 @@ import { clearVehicleLookupCache } from '@/services/vehicle/vehicle-cache';
 
 /**
  * Wipe QR journey blobs before a new QR activation.
- * Preserves UI prefs (theme, PWA install dismiss) — not journey data.
+ * Preserves auth tokens and UI prefs (theme, PWA install dismiss).
+ * Logout / clearJourney must clear tokens explicitly.
  */
 export function resetQrJourneyStorage(): void {
-  clearLocalAuthSession();
   clearJourneyPersistence();
   clearQrCodeFromStorage();
   resetPurchaseFlowState();

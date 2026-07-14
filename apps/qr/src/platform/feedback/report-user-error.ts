@@ -101,3 +101,16 @@ export function reportUserError(
 
   return message;
 }
+
+/**
+ * Input/form screens: log only — caller renders the message under the field.
+ * Never show a snackbar for the same error.
+ */
+export function reportFieldError(
+  logger: Logger,
+  event: string,
+  error: unknown,
+  fallback?: string,
+): string {
+  return reportUserError(logger, event, error, fallback, { toast: false });
+}

@@ -6,7 +6,6 @@ import {
 } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { useJourney } from '../JourneyContext';
 import {
   buildJourneyScopedPaths,
   parseJourneyIdFromPathname,

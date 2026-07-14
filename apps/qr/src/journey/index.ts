@@ -15,11 +15,11 @@ export {
 export {
   getNextPurchasePath,
   getPrevPurchasePath,
-  purchaseJourneyPaths,
   purchaseStepPathSequence,
   purchaseVehicleConfirmationPath,
   purchaseVehicleLookupPath,
 } from './purchase/purchase-routing';
+export { purchaseJourneyPaths } from './purchase/purchase-paths-runtime';
 export { resolvePurchaseEntryPath } from './state/purchase-journey-state-machine';
 export type {
   ActivationFlowId,

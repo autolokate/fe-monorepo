@@ -2,9 +2,13 @@ import type { PurchasePlanDefinition } from '@/features/qr-purchase/types-checko
 
 const CACHE_TTL_MS = 5 * 60_000;
 
+/** Plans in the QR app come only from GET /v1/activation/plans. */
+export type PlansCacheSource = 'activation';
+
 type CacheState = {
   qrCode: string | null;
   plans: PurchasePlanDefinition[];
+  source: PlansCacheSource;
   expiresAt: number;
   revision: number;
 };
@@ -29,23 +33,36 @@ export function peekPlansCatalog(qrCode: string | null): PurchasePlanDefinition[
   return cache.plans;
 }
 
+export function getPlansCacheSource(): PlansCacheSource | null {
+  return cache?.source ?? null;
+}
+
 export function rememberPlansCatalog(
   plans: PurchasePlanDefinition[],
   qrCode: string | null,
+  source: PlansCacheSource = 'activation',
 ): void {
   const revision = (cache?.revision ?? 0) + 1;
   cache = {
     qrCode,
     plans,
+    source,
     expiresAt: Date.now() + CACHE_TTL_MS,
     revision,
   };
   purchasePlansCatalog.splice(0, purchasePlansCatalog.length, ...plans);
 }
 
+/** Drop cached plans but keep any in-flight fetch so StrictMode / parallel callers coalesce. */
+export function invalidatePlansCache(): void {
+  cache = null;
+  purchasePlansCatalog.splice(0, purchasePlansCatalog.length);
+}
+
 export function clearPlansCache(): void {
   cache = null;
   inflight = null;
+  purchasePlansCatalog.splice(0, purchasePlansCatalog.length);
 }
 
 export function getInflightPlansLoad(): Promise<PurchasePlanDefinition[]> | null {

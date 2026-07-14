@@ -17,6 +17,23 @@ export function mapPromoApiError(error: unknown): PromoError {
     };
   }
 
+  if (
+    error &&
+    typeof error === 'object' &&
+    'code' in error &&
+    'message' in error &&
+    typeof (error as { code: unknown }).code === 'string' &&
+    typeof (error as { message: unknown }).message === 'string'
+  ) {
+    const mapped = error as { code: string; message: string };
+    if (mapped.code === 'promo_invalid') {
+      return { code: 'promo_invalid', message: mapped.message };
+    }
+    if (mapped.code === 'offline') {
+      return { code: 'offline', message: mapped.message };
+    }
+  }
+
   const normalized = normalizeApiError(error);
   const message = resolveUserFacingMessage(error);
 
@@ -28,7 +45,8 @@ export function mapPromoApiError(error: unknown): PromoError {
     return { code: 'offline', message };
   }
 
-  if (normalized.status === 422) {
+  // Swagger: upgrade/renewal carts reject promo with validation 400; invalid codes often 422.
+  if (normalized.code === 'validation' || normalized.status === 400 || normalized.status === 422) {
     return { code: 'promo_invalid', message };
   }
 

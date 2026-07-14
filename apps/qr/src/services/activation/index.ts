@@ -1,8 +1,10 @@
 export {
   loadActivationPreview,
   loadPartnerActivationPreviewAtEntry,
+  loadPurchaseActivationPreviewAtEntry,
   redeemActivationEntitlement,
   seedActivationFromQrPayload,
+  seedActivationContext,
   seedPartnerActivationContext,
   rememberActivationContext,
   clearActivationCache,

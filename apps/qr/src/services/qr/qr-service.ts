@@ -35,13 +35,27 @@ function persistQrResolution(code: string, resolution: QrResolution): void {
 }
 
 function seedPurchaseQrFromResolve(code: string, resolution: QrResolution): void {
-  if (resolution.journey !== 'CONSUMER_SELF_PAY') {
+  if (resolution.journey !== 'CONSUMER_PREPAID') {
     return;
   }
   saveQrCode(code);
 }
 
-const inflightResolveByCode = new Map<string, Promise<ResolveQrCodeResult>>();
+const inflightResolveByCode = new Map<string, Promise<QrResolution>>();
+
+export type ResolveQrCodeOptions = {
+  /**
+   * When false, still call resolve and return the payload, but do not write
+   * purchase/session storage or seed partner activation. Used for signed-in `/q`
+   * re-entry until ACTIVATED commits a new journey.
+   */
+  commit?: boolean;
+  /**
+   * Always call GET /resolve (skip in-memory / session peek).
+   * Required for `/q/:code` so status is fresh even when the sticker was resolved earlier.
+   */
+  forceNetwork?: boolean;
+};
 
 function validateResolution(code: string, resolution: QrResolution): QrDispatchError | null {
   if (isExpiredQrStatus(resolution.qrStatus)) {
@@ -68,68 +82,88 @@ function validateResolution(code: string, resolution: QrResolution): QrDispatchE
 function finalizeResolvedPayload(
   code: string,
   resolution: QrResolution,
+  commit: boolean,
 ): ResolveQrCodeResult | null {
   const payload = mapResolutionToPayload(code, resolution);
   if (!payload) {
     return failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'));
   }
 
-  if (payload.type === 'prepaid' || payload.type === 'b2b2c') {
-    seedActivationFromQrPayload(code, payload);
+  if (commit) {
+    if (payload.type === 'prepaid' || payload.type === 'b2b2c') {
+      seedActivationFromQrPayload(code, payload);
+    }
+    seedPurchaseQrFromResolve(code, resolution);
   }
-  seedPurchaseQrFromResolve(code, resolution);
 
   return { ok: true, payload, resolution };
 }
 
+function materializeResolved(
+  code: string,
+  resolution: QrResolution,
+  commit: boolean,
+): ResolveQrCodeResult {
+  if (commit) {
+    persistQrResolution(code, resolution);
+  }
+  // Read-only resolve must not replace the active purchase QR cache.
+
+  const validationError = validateResolution(code, resolution);
+  if (validationError) {
+    return failure(validationError);
+  }
+
+  return (
+    finalizeResolvedPayload(code, resolution, commit) ??
+    failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'))
+  );
+}
+
+/** Persist resolve side effects after a read-only resolve (e.g. ACTIVATED on `/q`). */
+export function commitResolvedQr(code: string, resolution: QrResolution): ResolveQrCodeResult {
+  return materializeResolved(code.trim(), resolution, true);
+}
+
 /** Resolve an opaque QR code via GET /v1/qr/{code}/resolve. */
-export async function resolveQrCode(code: string): Promise<ResolveQrCodeResult> {
+export async function resolveQrCode(
+  code: string,
+  options?: ResolveQrCodeOptions,
+): Promise<ResolveQrCodeResult> {
   const trimmed = code.trim();
   if (!trimmed) {
     return failure(mapQrStatusError('Missing QR code.', 'invalid'));
   }
 
-  const cached = peekResolvedQr(trimmed);
-  if (cached) {
-    persistQrResolution(trimmed, cached);
-    const validationError = validateResolution(trimmed, cached);
-    if (validationError) {
-      return failure(validationError);
+  const commit = options?.commit !== false;
+  const forceNetwork = options?.forceNetwork === true;
+
+  if (!forceNetwork) {
+    const cached = peekResolvedQr(trimmed);
+    if (cached) {
+      return materializeResolved(trimmed, cached, commit);
     }
-    const result = finalizeResolvedPayload(trimmed, cached);
-    return result ?? failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'));
   }
 
   try {
-    const inflight = inflightResolveByCode.get(trimmed);
-    if (inflight) {
-      return await inflight;
+    let resolutionPromise = inflightResolveByCode.get(trimmed);
+    if (!resolutionPromise) {
+      const client = getQrBootstrapClient();
+      resolutionPromise = (async () => {
+        const resolution = await resolveQrApi(client, trimmed);
+        qrLogger.info('qr_resolved', {
+          journey: resolution.journey,
+          status: resolution.qrStatus,
+          channel: resolution.channel,
+        });
+        return resolution;
+      })();
+      inflightResolveByCode.set(trimmed, resolutionPromise);
     }
 
-    const client = getQrBootstrapClient();
-
-    const request = (async (): Promise<ResolveQrCodeResult> => {
-      const resolution = await resolveQrApi(client, trimmed);
-      persistQrResolution(trimmed, resolution);
-
-      const validationError = validateResolution(trimmed, resolution);
-      if (validationError) {
-        return failure(validationError);
-      }
-
-      qrLogger.info('qr_resolved', {
-        journey: resolution.journey,
-        status: resolution.qrStatus,
-        channel: resolution.channel,
-      });
-
-      const result = finalizeResolvedPayload(trimmed, resolution);
-      return result ?? failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'));
-    })();
-
-    inflightResolveByCode.set(trimmed, request);
     try {
-      return await request;
+      const resolution = await resolutionPromise;
+      return materializeResolved(trimmed, resolution, commit);
     } finally {
       inflightResolveByCode.delete(trimmed);
     }

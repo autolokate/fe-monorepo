@@ -132,7 +132,7 @@
   height: 15rem;
 }
 
-/* R10 — invoice download link above Continue */
+/* R10 — invoice download link above Continue (same secondary-above-CTA pattern as Skip) */
 .ob-purchase-status-shell.ob-purchase-success-shell .ob-purchase-status-shell__footer {
   gap: 0.875rem;
 }
@@ -140,30 +140,13 @@
 .ob-purchase-success-invoice-link.ob-purchase-status-shell__secondary-link {
   min-height: auto;
   padding-block: 0.25rem;
+  padding-bottom: 0.5rem;
   font-size: var(--al-text-body-size);
   font-weight: 400;
   line-height: var(--al-text-body-line-height);
-  color: var(--al-neutral-700);
+  color: var(--al-color-on-surface-muted);
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-color: currentColor;
   -webkit-text-decoration: underline;
-}
-
-[data-theme='dark'] .ob-purchase-success-invoice-link.ob-purchase-status-shell__secondary-link {
-  color: var(--al-neutral-300);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light'])
-    .ob-purchase-success-invoice-link.ob-purchase-status-shell__secondary-link {
-    color: var(--al-neutral-300);
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark'])
-    .ob-purchase-success-invoice-link.ob-purchase-status-shell__secondary-link {
-    color: var(--al-neutral-700);
-  }
 }

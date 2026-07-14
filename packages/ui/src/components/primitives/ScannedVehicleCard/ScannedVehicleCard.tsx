@@ -36,6 +36,7 @@ export function AlScannedVehicleCard({
 }: AlScannedVehicleCardProps) {
   const resolvedFooter = footerLabel;
 
+
   return (
     <article
       className={cn(

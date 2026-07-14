@@ -19,7 +19,6 @@ function hydrateFromStorage(): void {
       qrStatus: stored.qrStatus,
       channel: stored.channel,
       journey: stored.journey,
-      offeredSku: stored.offeredSku,
       vehicle: stored.vehicle,
     },
   };
@@ -37,10 +36,10 @@ export function peekResolvedQr(code: string): QrResolution | null {
   return lastResolved.resolution;
 }
 
-/** Last resolved CONSUMER_SELF_PAY code — fallback when checkout cache was not hydrated. */
+/** Last resolved CONSUMER_PREPAID code — fallback when checkout cache was not hydrated. */
 export function peekLastResolvedPurchaseCode(): string | null {
   hydrateFromStorage();
-  if (!lastResolved || lastResolved.resolution.journey !== 'CONSUMER_SELF_PAY') {
+  if (!lastResolved || lastResolved.resolution.journey !== 'CONSUMER_PREPAID') {
     return null;
   }
   return lastResolved.code;

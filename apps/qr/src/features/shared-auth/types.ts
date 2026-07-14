@@ -64,6 +64,8 @@ export type A3VehicleOwnerScreenProps = AuthNavigationProps & {
   nameValue?: string;
   onNameChange?: (value: string) => void;
   nameState?: AuthVehicleOwnerState;
+  /** Inline field error — snackbar must not also show for the same failure. */
+  nameErrorMessage?: string | null;
   title?: string;
   description?: string;
   footerLabel?: string;

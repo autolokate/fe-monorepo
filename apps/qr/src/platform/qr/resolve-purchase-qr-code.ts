@@ -1,5 +1,3 @@
-import type { NavigateFunction } from 'react-router-dom';
-
 import { readQrCodeFromSearchParams } from './qr-url-params';
 import { parseJourneyIdFromPathname } from '@/journey/routing/journey-url-routing';
 import { peekLastResolvedPurchaseCode } from '@/services/qr/qr-cache';

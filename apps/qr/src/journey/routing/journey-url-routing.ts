@@ -78,6 +78,7 @@ export function buildPurchasePaths(journeyId: string) {
   const path = (segment: string) => `${base}/${segment}`;
 
   return {
+    welcome: path('welcome'),
     vehicleDetails: path('vehicle'),
     vehicleLookupFailed: path('vehicle-lookup-failed'),
     choosePlan: path('plans'),

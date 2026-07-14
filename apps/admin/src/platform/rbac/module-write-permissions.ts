@@ -5,7 +5,7 @@ export function useCanWriteInventoryMutations(): boolean {
   return useAdminAnyPermission(['inventory:write', 'qr-batches:write']);
 }
 
-/** POST /admin/v1/qr/{code}/replace|retire and batch generate/provision. */
+/** POST /admin/v1/qr/{code}/replace|retire and batch generate/provision/distribute. */
 export function useCanRunQrLifecycleMutations(): boolean {
   return useAdminAnyPermission(['qr-lifecycle:write', 'inventory:write', 'qr-batches:write']);
 }

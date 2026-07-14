@@ -99,6 +99,17 @@
   color: var(--al-color-on-surface-muted);
 }
 
+/* R06 / R07 Skip — above CTA; underlined, muted, no border/fill */
+.ob-auth-shell--plan-screen .ob-shell__footer-secondary-link,
+.ob-auth-shell--rider-screen .ob-shell__footer-secondary-link {
+  min-height: 0;
+  padding: 0 0 8px;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: var(--al-color-on-surface-muted);
+}
+
 .ob-auth-shell--purchase.ob-auth-shell--plan-screen .ob-auth-shell__frame {
   overflow-x: hidden;
   overflow-y: visible;
@@ -412,4 +423,27 @@
   color: var(--al-color-warning);
   text-align: center;
   width: 100%;
+}
+
+.ob-auth-shell__footer-secondary-link {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+  padding: 16px 0 15px;
+  border: none;
+  background: none;
+  font-family: var(--al-text-ui-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 17px;
+  color: var(--al-color-on-surface-muted);
+  text-align: center;
+  cursor: pointer;
+}
+
+/* R06 — keep secondary skip compact so the plan carousel is not clipped */
+.ob-auth-shell--plan-screen .ob-auth-shell__footer-secondary-link {
+  min-height: 0;
+  padding: 8px 0 0;
 }

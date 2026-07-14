@@ -3,9 +3,7 @@ import type { QrResolution } from '@autolokate/api-client';
 import { loadJourneyState } from '@/journey/persistence';
 import {
   purchaseJourneyPathsFor,
-  purchaseVehicleConfirmationPath,
 } from '@/journey/purchase/purchase-routing';
-import { buildQrEntryPath, parseJourneyIdFromPathname } from '@/journey/routing/journey-url-routing';
 import type { JourneySession } from '@/journey/types';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { getVehicle } from '@/storage/index';
@@ -15,6 +13,10 @@ import {
   isDistributedQrLifecycleStatus,
 } from '@/platform/qr/qr-status';
 import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
+import {
+  getFundedPurchasePlanId,
+  getPurchasePlansCatalog,
+} from '@/services/plan/plan-service';
 
 export const PURCHASE_JOURNEY_KIND = {
   FULL_ACTIVATION: 'full_activation',
@@ -49,8 +51,7 @@ const VEHICLE_STEP_ROUTE_IDS = new Set<PurchaseRouteId>([
   PURCHASE_ROUTE_ID.vehicleConfirmation,
 ]);
 
-const CHECKOUT_ROUTE_IDS = new Set<PurchaseRouteId>([
-  PURCHASE_ROUTE_ID.choosePlan,
+const UPGRADE_CHECKOUT_ROUTE_IDS = new Set<PurchaseRouteId>([
   PURCHASE_ROUTE_ID.riderCover,
   PURCHASE_ROUTE_ID.orderSummary,
   PURCHASE_ROUTE_ID.orderSummaryPromoApplied,
@@ -89,7 +90,8 @@ export function readPurchaseJourneyState(
     kind: skipsVehicleSteps
       ? PURCHASE_JOURNEY_KIND.RESUME_CHECKOUT
       : PURCHASE_JOURNEY_KIND.FULL_ACTIVATION,
-    entryPath: skipsVehicleSteps ? paths.choosePlan : paths.vehicleDetails,
+    // Post-auth entry is always plans; skip proceeds to vehicle lookup.
+    entryPath: paths.choosePlan,
     skipsVehicleSteps,
     skipsAttachApi: skipsVehicleSteps,
     hasStoredResolve: Boolean(stored),
@@ -109,21 +111,27 @@ export function isVehiclePurchaseStepBlocked(searchParams?: URLSearchParams): bo
   return readPurchaseJourneyState(searchParams).skipsVehicleSteps;
 }
 
-/** Vehicle confirm on R05 unlocks checkout — attach API success/failure must never block. */
-function isVehicleConfirmedForCheckout(session: JourneySession): boolean {
-  if (session.vehicle?.confirmed) {
-    return true;
-  }
-  if (getVehicle()?.confirmedAt) {
-    return true;
-  }
-  return Boolean(loadJourneyState().session.vehicle?.confirmed);
+function hasPlanSelection(session: JourneySession): boolean {
+  return (
+    Boolean(session.purchase?.selectedPlanId) ||
+    Boolean(getVehicle()?.selectedPlanId) ||
+    Boolean(session.purchase?.skippedPlanUpgrade) ||
+    Boolean(session.purchase?.entitlement)
+  );
+}
+
+/** Vehicle steps unlock after Skip / Continue / Upgrade from the plans screen. */
+export function isPurchaseVehicleUnlocked(session: JourneySession): boolean {
+  return (
+    Boolean(session.purchase?.skippedPlanUpgrade) ||
+    Boolean(session.purchase?.upgradeCheckout) ||
+    hasPlanSelection(session)
+  );
 }
 
 /**
- * True when checkout screens are reachable.
- * ATTACHED: stored resolve is sufficient — attach API must not run again.
- * DISTRIBUTED: vehicle confirmed on R05 — attach is attempted but non-blocking on failure.
+ * True when upgrade checkout screens (riders / order summary) are reachable.
+ * Requires a confirmed vehicle (or resume-checkout when QR already attached).
  */
 export function isPurchaseCheckoutUnlocked(
   session: JourneySession,
@@ -135,28 +143,15 @@ export function isPurchaseCheckoutUnlocked(
     return true;
   }
 
-  return isVehicleConfirmedForCheckout(session);
-}
-
-function checkoutFallbackPath(
-  routeId: PurchaseRouteId,
-  state: PurchaseJourneyState,
-  session: JourneySession,
-): string {
-  const journeyId = state.qrCode ?? '_';
-  const paths = purchaseJourneyPathsFor(journeyId);
-
-  if (state.skipsVehicleSteps) {
-    return journeyId !== '_' ? buildQrEntryPath(journeyId) : '/q';
+  if (!session.purchase?.upgradeCheckout) {
+    return false;
   }
-  if (routeId === PURCHASE_ROUTE_ID.choosePlan) {
-    const registration = session.vehicle?.plate ?? getVehicle()?.registration;
-    if (registration?.trim()) {
-      return purchaseVehicleConfirmationPath(journeyId, registration);
-    }
-    return paths.vehicleDetails;
+
+  if (session.vehicle?.confirmed || getVehicle()?.confirmedAt) {
+    return true;
   }
-  return paths.choosePlan;
+
+  return Boolean(loadJourneyState().session.vehicle?.confirmed);
 }
 
 /** Central gate for purchase route segments. */
@@ -170,27 +165,35 @@ export function evaluatePurchaseRouteAccess(
   const paths = purchaseJourneyPathsFor(state.qrCode ?? journeyId ?? '_');
 
   if (state.skipsVehicleSteps && VEHICLE_STEP_ROUTE_IDS.has(routeId)) {
+    // Already attached — skip vehicle/attach and stay on plans → emergency path later.
     return { allowed: false, redirectTo: paths.choosePlan };
   }
 
-  if (CHECKOUT_ROUTE_IDS.has(routeId)) {
-    const hasPlanSelection =
-      Boolean(session.purchase?.selectedPlanId) ||
-      Boolean(getVehicle()?.selectedPlanId);
+  // Plans screen is first after auth — always allowed.
+  if (routeId === PURCHASE_ROUTE_ID.choosePlan) {
+    return { allowed: true, redirectTo: null };
+  }
 
-    if (!hasPlanSelection && routeId !== PURCHASE_ROUTE_ID.choosePlan) {
+  // Vehicle steps require Skip / Continue / Upgrade from plans.
+  if (VEHICLE_STEP_ROUTE_IDS.has(routeId)) {
+    if (!isPurchaseVehicleUnlocked(session)) {
       return { allowed: false, redirectTo: paths.choosePlan };
     }
+    return { allowed: true, redirectTo: null };
+  }
 
+  // Upgrade checkout (riders / order summary) — skip flow never uses these.
+  if (UPGRADE_CHECKOUT_ROUTE_IDS.has(routeId)) {
+    if (session.purchase?.skippedPlanUpgrade && !state.skipsAttachApi) {
+      return { allowed: false, redirectTo: paths.choosePlan };
+    }
+    if (!hasPlanSelection(session)) {
+      return { allowed: false, redirectTo: paths.choosePlan };
+    }
     if (isPurchaseCheckoutUnlocked(session, searchParams)) {
       return { allowed: true, redirectTo: null };
     }
-
-    return { allowed: false, redirectTo: checkoutFallbackPath(routeId, state, session) };
-  }
-
-  if (routeId === PURCHASE_ROUTE_ID.vehicleConfirmation && state.skipsAttachApi) {
-    return { allowed: false, redirectTo: paths.choosePlan };
+    return { allowed: false, redirectTo: paths.vehicleDetails };
   }
 
   return { allowed: true, redirectTo: null };
@@ -202,4 +205,20 @@ export function isPostActivationQrResolution(resolution: QrResolution): boolean 
 
 export function isConsumerPurchaseQrStatus(status: QrResolution['qrStatus']): boolean {
   return isDistributedQrLifecycleStatus(status) || isAttachedQrLifecycleStatus(status);
+}
+
+/**
+ * True when the selected plan is already funded on this QR (activation/plans.funded).
+ * Derived from API catalog flags — never hardcoded tier names.
+ */
+export function isCommercePrepaidFreePlan(planId: string): boolean {
+  const catalog = getPurchasePlansCatalog();
+  const plan = catalog.find((entry) => entry.id === planId);
+  if (!plan) {
+    return getFundedPurchasePlanId() === planId;
+  }
+  if (plan.included === true) {
+    return true;
+  }
+  return typeof plan.payablePaise === 'number' && plan.payablePaise <= 0;
 }

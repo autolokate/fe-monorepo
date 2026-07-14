@@ -1,5 +1,4 @@
 import type { ApiClient } from './client';
-import type { ApiPlanTier } from './plans';
 import { endpoints } from './endpoints';
 import { unwrapEnvelope } from './envelope';
 
@@ -25,7 +24,7 @@ export type OrderDto = {
   status: OrderStatus;
 };
 
-/** Consumer self-pay — ONLINE-only; optional auto-renew mandate. */
+/** Consumer commerce checkout — ONLINE-only; optional auto-renew mandate. */
 export type PayOrderBody = {
   setupMandate?: boolean;
   mandateConsent?: boolean;
@@ -39,7 +38,7 @@ export type OrderInvoiceDto = {
 /**
  * Maps to OpenAPI `PaymentRefDto` — envelope `data` on POST /v1/orders/{orderId}/pay.
  *
- * Consumer self-pay is ONLINE-only on the server. When Razorpay keys are configured:
+ * Consumer commerce checkout is ONLINE-only on the server. When Razorpay keys are configured:
  *  - providerOrderId → pass to the Razorpay SDK as `order_id`
  *  - razorpayKeyId   → pass to the Razorpay SDK as `key`
  */
@@ -54,7 +53,7 @@ export type PaymentOutcomeDto = {
   outcome: PaymentOutcome;
 };
 
-/** POST /v1/orders — create a consumer self-pay order. */
+/** POST /v1/orders — create a consumer commerce order. */
 export async function createOrder(
   client: ApiClient,
   body: CreateOrderBody,

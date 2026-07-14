@@ -14,6 +14,7 @@ export const inventoryQueryKeys = {
   all: ['admin', 'inventory'] as const,
   list: (stateFilter: InventoryStateFilter) =>
     [...inventoryQueryKeys.all, { state: toInventoryQueryState(stateFilter) }] as const,
+  byId: (batchId: string) => [...inventoryQueryKeys.all, 'by-id', batchId] as const,
 };
 
 export function useQrInventory(initialStateFilter: InventoryStateFilter = 'ALL') {

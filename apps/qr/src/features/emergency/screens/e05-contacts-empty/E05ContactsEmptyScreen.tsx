@@ -39,7 +39,6 @@ export function E05ContactsEmptyScreen({
       onContinue={onContinue}
       footerSecondaryLabel={manualOnly ? undefined : footerSecondaryLabel}
       onFooterSecondary={manualOnly ? undefined : onFooterSecondary}
-      footerSecondaryFirst={!manualOnly}
     >
       <div className="ob-emergency-empty-state">
         <EmptyStateHero

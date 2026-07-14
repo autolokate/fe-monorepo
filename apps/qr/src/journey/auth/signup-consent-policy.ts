@@ -22,7 +22,7 @@ export function shouldRequireSignupConsent(selectedFlow: ActivationFlowId | null
     return resolved.qrStatus === QR_STATUS.DISTRIBUTED;
   }
 
-  if (selectedFlow === 'purchase' && resolved?.journey === 'CONSUMER_SELF_PAY') {
+  if (selectedFlow === 'purchase' && resolved?.journey === 'CONSUMER_PREPAID') {
     return resolved.qrStatus === QR_STATUS.DISTRIBUTED;
   }
 

@@ -10,6 +10,7 @@ import {
 import { AUTH_COMPLETED } from '../features/shared-auth/types';
 
 import { reconcileAuthSession, revokeAndClearAuthSession, createAuthFailureSessionPatch } from '../services/auth/auth-session';
+import { hasAuthTokens } from '../services/auth/ensure-valid-auth-session';
 import { resetQrJourneyStorage } from '@/platform/storage/reset-qr-journey-storage';
 import {
   loadJourneyState,
@@ -18,6 +19,7 @@ import {
 } from './persistence';
 import type {
   ActivationFlowId,
+  AuthStatus,
   JourneyContextValue,
   JourneyPhase,
   JourneySession,
@@ -71,13 +73,41 @@ export function JourneyProvider({ initialPhase = 'home', children }: JourneyProv
   }, []);
 
   const resetForNewQrEntry = useCallback(() => {
-    resetQrJourneyStorage();
-    setPersisted({ selectedFlow: null, authStatus: 'pending', session: {} });
+    // Keep the signed-in session across a new QR scan — only wipe journey/checkout blobs.
+    const signedIn = hasAuthTokens();
+    const authStatus: AuthStatus = signedIn ? AUTH_COMPLETED : 'pending';
+    setPersisted((current) => {
+      const preservedLastRoute = signedIn ? current.lastRoutePath : null;
+      resetQrJourneyStorage();
+      const next: PersistedJourneyState = {
+        selectedFlow: null,
+        authStatus,
+        session: {},
+        lastRoutePath: preservedLastRoute,
+      };
+      saveJourneyState(next);
+      return next;
+    });
   }, []);
 
   const updateSession = useCallback((patch: Partial<JourneySession>) => {
     setPersisted((current) => {
-      const next = { ...current, session: { ...current.session, ...patch } };
+      // Deep-merge nested session blobs so concurrent patches (Pay / prepare) cannot
+      // clobber checkoutReady / paymentStatus with a stale shallow replace.
+      const session: JourneySession = { ...current.session, ...patch };
+      if (patch.purchase) {
+        session.purchase = { ...current.session.purchase, ...patch.purchase };
+      }
+      if (patch.vehicle) {
+        session.vehicle = { ...current.session.vehicle, ...patch.vehicle };
+      }
+      if (patch.auth) {
+        session.auth = { ...current.session.auth, ...patch.auth };
+      }
+      if (patch.emergency) {
+        session.emergency = { ...current.session.emergency, ...patch.emergency };
+      }
+      const next = { ...current, session };
       saveJourneyState(next);
       return next;
     });
