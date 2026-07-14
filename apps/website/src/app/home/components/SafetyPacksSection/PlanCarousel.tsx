@@ -1,9 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { SAFETY_PLANS } from "./constants";
+import { PURCHASE_ROUTE } from "@/app/(purchase)/purchase/constants";
+import { writePurchaseIntent } from "@/app/(purchase)/purchase/storage";
+import { useSafetyPlans } from "@/hooks/plans";
+import { toSafetyPlan } from "./constants";
 import { PlanCard } from "./PlanCard";
 import styles from "./index.module.css";
 
@@ -13,11 +16,28 @@ type SlotPosition = "left" | "center" | "right";
 
 export function PlanCarousel() {
   const router = useRouter();
-  const plans = SAFETY_PLANS;
+  const pathname = usePathname();
+  const { data, isLoading, isError } = useSafetyPlans();
+  const plans = useMemo(() => (data ?? []).map(toSafetyPlan), [data]);
+
+  // Persist the chosen plan + the page the user came from (Home or Pricing) so
+  // the purchase flow can preselect the plan and send them back on "back".
+  const choosePlan = useCallback(
+    (planId: string) => {
+      writePurchaseIntent({ plan: planId, from: pathname ?? "/" });
+      router.push(PURCHASE_ROUTE);
+    },
+    [router, pathname],
+  );
   const count = plans.length;
-  const popularIndex = plans.findIndex((plan) => plan.popular);
-  const [active, setActive] = useState(popularIndex >= 0 ? popularIndex : 0);
+  const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+
+  // Center on the "popular" plan once the plans arrive from the API.
+  useEffect(() => {
+    const popularIndex = plans.findIndex((plan) => plan.popular);
+    if (popularIndex >= 0) setActive(popularIndex);
+  }, [plans]);
 
   const go = useCallback(
     (direction: number) => {
@@ -39,6 +59,20 @@ export function PlanCarousel() {
     }, AUTO_ROTATE_MS);
     return () => window.clearInterval(id);
   }, [paused, count]);
+
+  if (count === 0) {
+    return (
+      <div className={styles.stateShell} role="status" aria-live="polite">
+        <p className={styles.stateText}>
+          {isLoading
+            ? "Loading plans…"
+            : isError
+              ? "We couldn't load plans right now. Please try again shortly."
+              : "No plans available right now."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -85,7 +119,7 @@ export function PlanCarousel() {
               <PlanCard
                 plan={plan}
                 focused={isCenter}
-                onChoose={() => router.push(plan.ctaHref)}
+                onChoose={() => choosePlan(plan.id)}
               />
             </div>
           );

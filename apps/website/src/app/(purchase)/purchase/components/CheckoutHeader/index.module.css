@@ -1,0 +1,107 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.brandLink {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Center rail/badge across the full header width, independent of logo width. */
+.center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ---------- Progress rail ---------- */
+.stepper {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 820px) {
+  .stepper {
+    display: flex;
+  }
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dot {
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.dotDone {
+  border-color: transparent;
+  background: var(--success);
+  color: #fff;
+}
+
+.dotActive {
+  border-color: transparent;
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.stepLabel {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.stepLabelOn {
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.divider {
+  color: color-mix(in srgb, var(--muted-foreground) 45%, transparent);
+}
+
+/* ---------- PWA badge ---------- */
+.pwaBadge {
+  display: none;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+@media (min-width: 820px) {
+  .pwaBadge {
+    display: inline;
+  }
+}

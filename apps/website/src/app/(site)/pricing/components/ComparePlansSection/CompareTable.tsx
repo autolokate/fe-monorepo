@@ -1,62 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import { Check, ChevronDown, Contrast, Star } from "lucide-react";
+import { type CSSProperties, useMemo, useState } from "react";
+import { Check, ChevronDown, Star } from "lucide-react";
+import { useSafetyPlans } from "@/hooks/plans";
 import { cn } from "@/lib/utils";
-import {
-  COMPARE_COPY,
-  COMPARE_GROUPS,
-  COMPARE_PLANS,
-  type CompareCell,
-} from "./constants";
+import { COMPARE_COPY, buildCompareData } from "./constants";
 import styles from "./index.module.css";
-
-function CellValue({ value }: { value: CompareCell }) {
-  if (value === true) {
-    return (
-      <span className={styles.yes}>
-        <Check className="h-3.5 w-3.5 stroke-[3]" aria-hidden />
-        <span className="sr-only">Included</span>
-      </span>
-    );
-  }
-
-  if (value === "partial") {
-    return (
-      <span className={styles.partial}>
-        <Contrast className="h-4 w-4" aria-hidden />
-        <span className="sr-only">Limited</span>
-      </span>
-    );
-  }
-
-  if (value === false) {
-    return (
-      <span className={styles.no} aria-hidden>
-        –<span className="sr-only">Not included</span>
-      </span>
-    );
-  }
-
-  if ("badge" in value) {
-    return (
-      <span className={styles.badge}>
-        <Star className="h-3 w-3 fill-current" aria-hidden />
-        {value.badge}
-      </span>
-    );
-  }
-
-  return <span className={styles.price}>{value.price}</span>;
-}
 
 export function CompareTable() {
   const [expanded, setExpanded] = useState(false);
+  const { data, isLoading, isError } = useSafetyPlans();
+  const { columns, groups } = useMemo(
+    () => buildCompareData(data ?? []),
+    [data],
+  );
+
+  if (columns.length === 0) {
+    return (
+      <div className={styles.stateShell} role="status" aria-live="polite">
+        <p className={styles.stateText}>
+          {isLoading
+            ? "Loading plans…"
+            : isError
+              ? "We couldn't load plans right now. Please try again shortly."
+              : "No plans available right now."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
       <div className={styles.scroll}>
-        <div className={cn(styles.table, !expanded && styles.collapsed)}>
+        <div
+          className={cn(styles.table, !expanded && styles.collapsed)}
+          style={{ "--plan-count": columns.length } as CSSProperties}
+        >
           {/* Header */}
           <div className={styles.headRow}>
             <div className={styles.headFeature}>
@@ -64,7 +43,7 @@ export function CompareTable() {
                 {COMPARE_COPY.heading}
               </h2>
             </div>
-            {COMPARE_PLANS.map((plan) => (
+            {columns.map((plan) => (
               <div
                 key={plan.id}
                 className={cn(styles.headPlan, plan.popular && styles.headPlanPopular)}
@@ -83,35 +62,40 @@ export function CompareTable() {
             ))}
           </div>
 
-          {/* Groups */}
-          {COMPARE_GROUPS.map((group, groupIndex) => (
+          {/* Groups — one per tier that introduces features */}
+          {groups.map((group, groupIndex) => (
             <div
               key={group.id}
               className={cn(styles.group, groupIndex > 0 && styles.groupExtra)}
             >
               <div className={styles.groupTitle}>{group.title}</div>
 
-              {group.rows.map(({ id, label, sub, Icon, cells }) => (
-                <div key={id} className={styles.row}>
+              {group.rows.map((row) => (
+                <div key={row.id} className={styles.row}>
                   <div className={styles.feature}>
-                    <span className={styles.featureIcon} aria-hidden>
-                      <Icon className="h-4 w-4 stroke-[1.75]" />
-                    </span>
                     <span className={styles.featureText}>
-                      <span className={styles.featureLabel}>{label}</span>
-                      <span className={styles.featureSub}>{sub}</span>
+                      <span className={styles.featureLabel}>{row.label}</span>
                     </span>
                   </div>
 
-                  {cells.map((cell, i) => (
+                  {row.cells.map((included, i) => (
                     <div
-                      key={COMPARE_PLANS[i].id}
+                      key={columns[i].id}
                       className={cn(
                         styles.cell,
-                        COMPARE_PLANS[i].popular && styles.cellPopular,
+                        columns[i].popular && styles.cellPopular,
                       )}
                     >
-                      <CellValue value={cell} />
+                      {included ? (
+                        <span className={styles.yes}>
+                          <Check className="h-3.5 w-3.5 stroke-[3]" aria-hidden />
+                          <span className="sr-only">Included</span>
+                        </span>
+                      ) : (
+                        <span className={styles.no} aria-hidden>
+                          –<span className="sr-only">Not included</span>
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>

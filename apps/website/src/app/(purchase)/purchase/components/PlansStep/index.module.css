@@ -1,0 +1,168 @@
+.wrap {
+  width: 100%;
+}
+
+.head {
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.title {
+  margin: 0 0 0.6rem;
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  line-height: 1.08;
+  color: var(--foreground);
+}
+
+.subtitle {
+  margin: 0 auto;
+  max-width: 32rem;
+  font-size: 1rem;
+  color: var(--muted-foreground);
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.15rem;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 16rem;
+  max-width: 20.5rem;
+  padding: 1.9rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+.cardPopular {
+  border-color: transparent;
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.4);
+}
+
+.popularPill {
+  position: absolute;
+  top: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.tierBadge {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+.cardPopular .tierBadge {
+  background: color-mix(in srgb, var(--background) 14%, transparent);
+  color: var(--background);
+}
+
+.tierName {
+  margin: 0.9rem 0 0.15rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.tierTag {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.price {
+  margin: 0.9rem 0 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.pricePeriod {
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.55;
+}
+
+.monthly {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.55;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex: 1;
+  margin: 1.4rem 0 1.6rem;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.feature svg {
+  color: var(--primary);
+}
+
+.cardPopular .feature svg {
+  color: color-mix(in srgb, var(--background) 85%, var(--primary));
+}
+
+.cta {
+  width: 100%;
+  justify-content: center;
+}
+
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  justify-content: center;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trustItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+}
+
+.trustItem svg {
+  color: var(--success);
+}

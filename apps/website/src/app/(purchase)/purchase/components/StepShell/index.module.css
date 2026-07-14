@@ -1,0 +1,60 @@
+.shell {
+  margin-inline: auto;
+  width: 100%;
+}
+
+.center {
+  text-align: center;
+}
+
+.widthSm {
+  max-width: 25rem;
+}
+
+.widthMd {
+  /* Aligned to the header stepper's rendered width so every step's content
+     column lines up with the progress rail above it. */
+  max-width: 30rem;
+}
+
+.widthLg {
+  max-width: 64rem;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  transition: color 0.15s ease;
+}
+
+.back:hover {
+  color: var(--foreground);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.1rem);
+  line-height: 1.1;
+  color: var(--foreground);
+}
+
+.subtitle {
+  margin: 0.5rem 0 0;
+  max-width: 34rem;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}
+
+.center .subtitle {
+  margin-inline: auto;
+}
+
+.body {
+  margin-top: 1.75rem;
+}

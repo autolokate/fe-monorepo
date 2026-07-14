@@ -30,6 +30,25 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* ---------- Loading / empty state ---------- */
+.stateShell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background-color: var(--card);
+  padding: 2rem 1.5rem;
+}
+
+.stateText {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
 /* ---------- Table shell ---------- */
 .table {
   min-width: 20rem;
@@ -39,11 +58,12 @@
   overflow: hidden;
 }
 
-/* Shared column template for the header + every feature row. */
+/* Shared column template for the header + every feature row.
+   `--plan-count` is set on `.table` from the number of plans the API returns. */
 .headRow,
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.7fr) repeat(var(--plan-count, 3), minmax(0, 1fr));
   align-items: center;
 }
 

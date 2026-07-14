@@ -116,7 +116,7 @@ export const PRIVACY_SECTIONS: PolicySection[] = [
           "Process bookings, payments, and refunds for the expert advisory and QR-sticker storefront.",
           "Communicate with you about your account, transactions, OTP-based logins, and service updates.",
           "Detect, prevent, and respond to fraud, abuse, and security incidents.",
-          "Comply with applicable legal obligations and enforce our Terms of Service.",
+          "Comply with applicable legal obligations and enforce our Terms & Conditions.",
         ],
       },
     ],

@@ -19,7 +19,6 @@ export interface SafetyPlan {
   popular?: boolean;
   popularBadge?: string;
   ctaLabel: string;
-  ctaHref: string;
   features: PlanFeature[];
 }
 
