@@ -63,7 +63,7 @@ export const TC_SECTIONS: TermsSection[] = [
       },
       {
         body:
-          "These General Terms & Conditions work alongside our Privacy Policy and Terms of Service. If there is any conflict, the more specific document governs the relevant subject matter.",
+          "These General Terms & Conditions work alongside our Privacy Policy. If there is any conflict, the more specific document governs the relevant subject matter.",
       },
     ],
   },

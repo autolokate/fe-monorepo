@@ -1,0 +1,107 @@
+.card {
+  padding: 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+}
+
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-top: 1.1rem;
+}
+
+.consentText {
+  margin: 0;
+  padding-top: 0.35rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.consentLink {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.consentLink:hover {
+  color: var(--primary);
+}
+
+.encrypted {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.gate {
+  margin: 1.1rem 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.action {
+  width: 100%;
+  justify-content: center;
+  margin-top: 1.1rem;
+}
+
+.sentTo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.sentTo strong {
+  color: var(--foreground);
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.edit:hover {
+  opacity: 0.75;
+}
+
+.resend {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.resendTimer {
+  font-weight: 600;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.resendLink {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.resendLink:hover {
+  text-decoration: underline;
+}

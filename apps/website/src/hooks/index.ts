@@ -6,3 +6,7 @@ export * from "./booking";
 export * from "./catalogue";
 export * from "./prices";
 export * from "./preferences";
+export * from "./plans";
+export * from "./otp";
+export * from "./purchase";
+export * from "./legal";

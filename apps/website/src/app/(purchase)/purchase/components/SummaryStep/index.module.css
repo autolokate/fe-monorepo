@@ -1,0 +1,290 @@
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.col {
+  flex: 1.2;
+  min-width: 20rem;
+  max-width: 35rem;
+}
+
+.title {
+  margin: 0 0 1.4rem;
+  font-size: clamp(1.75rem, 4vw, 2.1rem);
+  color: var(--foreground);
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+  margin-bottom: 1rem;
+}
+
+.lineTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 1rem;
+  color: var(--foreground);
+}
+
+.lineAmount {
+  font-weight: 600;
+}
+
+.lineNote {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.discountRow,
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.65rem;
+  font-size: 0.83rem;
+}
+
+.discountRow {
+  font-weight: 600;
+  color: var(--success);
+}
+
+.metaRow {
+  color: var(--muted-foreground);
+}
+
+.free {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.totalRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.totalAmount {
+  font-size: 1.65rem;
+  font-weight: 700;
+}
+
+/* ---------- Auto-renew toggle (inside the pay panel) ---------- */
+.renew {
+  display: flex;
+  gap: 0.85rem;
+  width: 100%;
+  text-align: left;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 0.9rem;
+  background: var(--background);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.renewOn {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 7%, transparent);
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: 0.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 0.45rem;
+  color: #fff;
+}
+
+.checkOn {
+  border-color: var(--success);
+  background: var(--success);
+}
+
+.renewTitle {
+  display: block;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+
+.renewDesc {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.83rem;
+  color: var(--muted-foreground);
+}
+
+/* ---------- Cart error ---------- */
+.errorCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--destructive, #dc2626) 40%, var(--border));
+  border-radius: 1.1rem;
+  background: color-mix(in srgb, var(--destructive, #dc2626) 8%, transparent);
+}
+
+.errorText {
+  margin: 0;
+  flex: 1;
+  min-width: 12rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.retry {
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.75rem;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: opacity 0.15s ease;
+}
+
+.retry:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.retry:disabled {
+  opacity: 0.5;
+}
+
+/* ---------- Promo code ---------- */
+.promoRow {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.promoInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--background);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--foreground);
+  text-transform: uppercase;
+}
+
+.promoInput:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.promoApply,
+.promoClear {
+  padding: 0.65rem 1.1rem;
+  border-radius: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: opacity 0.15s ease;
+}
+
+.promoApply {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.promoApply:disabled {
+  opacity: 0.45;
+}
+
+.promoClear {
+  border: 1.5px solid var(--border);
+  color: var(--foreground);
+}
+
+.promoApply:not(:disabled):hover,
+.promoClear:hover {
+  opacity: 0.8;
+}
+
+.promoOk {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.7rem 0 0;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+/* ---------- Section label (promo) ---------- */
+.payLabel {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+/* ---------- Sticky pay rail ---------- */
+.rail {
+  flex: 1;
+  min-width: 17.5rem;
+  max-width: 24rem;
+  position: sticky;
+  top: 5.5rem;
+}
+
+.payPanel {
+  padding: 1.75rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.payingLabel {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.payingAmount {
+  margin: 0 0 1.1rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.payBtn {
+  width: 100%;
+  justify-content: center;
+}
+
+.payFine {
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}

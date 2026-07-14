@@ -99,7 +99,6 @@ export const footerLinks: FooterLinkSection[] = [
     title: "Legal",
     links: [
       { id: "privacy", label: "Privacy Policy", href: "/privacy-policy" },
-      { id: "terms", label: "Terms of Service", href: "/terms-of-service" },
       { id: "terms-conditions", label: "Terms & Conditions", href: "/terms-and-conditions" },
     ],
   },
