@@ -1,5 +1,5 @@
 import type { AdminPlanDto } from '@autolokate/api-client';
-import { AlButton, AlSheet, AlStack, AlStatusBadge, AlText } from '@autolokate/ui';
+import { AlButton, AlModal, AlStack, AlStatusBadge, AlText } from '@autolokate/ui';
 
 import {
   AdminDetailField,
@@ -41,15 +41,16 @@ export function PlanVersionDetailSheet({
   const lifecycle = getPlanLifecycle(plan);
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="lg"
       title={`${planTierLabel(plan.tier)} v${String(plan.version)}`}
       description={plan.name}
     >
       <AlStack gap="md">
         <AdminDetailSection title="Status">
-          <div className="admin-sheet-actions">
+          <div className="admin-modal-actions">
             <AlStatusBadge
               label={plan.isEffectiveNow ? 'Live' : lifecycle.charAt(0) + lifecycle.slice(1).toLowerCase()}
               status={plan.isEffectiveNow ? 'active' : lifecycle === 'RETIRED' ? 'inactive' : 'pending'}
@@ -89,16 +90,12 @@ export function PlanVersionDetailSheet({
           </AdminDetailGrid>
         </AdminDetailSection>
 
-        <AdminDetailSection title="Reference">
-          <AdminDetailField label="Plan ID" value={plan.id} mono />
-        </AdminDetailSection>
-
         {canWrite ? (
           <AdminDetailSection
             title="Actions"
             description="Feature bullets are editable in place. Price and name are not."
           >
-            <div className="admin-sheet-actions">
+            <div className="admin-modal-actions">
               <AlButton size="sm" onClick={onEditFeatures}>
                 Edit features
               </AlButton>
@@ -130,6 +127,6 @@ export function PlanVersionDetailSheet({
           </AdminDetailSection>
         ) : null}
       </AlStack>
-    </AlSheet>
+    </AlModal>
   );
 }

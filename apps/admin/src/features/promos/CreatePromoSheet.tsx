@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPromoDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlInput, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -31,7 +31,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
     defaultValues: {
       code: '',
       discountPercent: undefined,
-      discountPaise: undefined,
+      discountRupees: '',
       validFrom: defaultValidity.validFrom,
       validTo: defaultValidity.validTo,
       maxRedemptions: undefined,
@@ -47,7 +47,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
       form.reset({
         code: '',
         discountPercent: undefined,
-        discountPaise: undefined,
+        discountRupees: '',
         validFrom: defaultValidity.validFrom,
         validTo: defaultValidity.validTo,
         maxRedemptions: undefined,
@@ -81,19 +81,45 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
   });
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="xl"
       title="Create promo"
       description="Configure a new promotional campaign."
+      footer={
+        <div className="admin-modal-actions">
+          <AlButton
+            type="submit"
+            form="create-promo-form"
+            size="sm"
+            loading={createPromoMutation.isPending}
+            disabled={createPromoMutation.isPending}
+          >
+            Create promo
+          </AlButton>
+          <AlButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={createPromoMutation.isPending}
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
+            Cancel
+          </AlButton>
+        </div>
+      }
     >
       <form
+        id="create-promo-form"
+        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlStack gap="lg">
-          <Controller
+        <Controller
             control={form.control}
             name="code"
             render={({ field, fieldState }) => (
@@ -127,27 +153,24 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
                   }}
                   onBlur={field.onBlur}
                   errorText={fieldState.error?.message}
-                  helperText="1–100. Flat paise takes precedence when both are set."
+                  helperText="1–100. Flat rupee amount takes precedence when both are set."
                 />
               )}
             />
 
             <Controller
               control={form.control}
-              name="discountPaise"
+              name="discountRupees"
               render={({ field, fieldState }) => (
                 <AlInput
-                  label="Discount paise"
-                  type="number"
-                  min={1}
-                  value={field.value ?? ''}
-                  onChange={(event) => {
-                    const next = event.target.value;
-                    field.onChange(next === '' ? undefined : event.target.valueAsNumber);
-                  }}
+                  label="Discount (₹)"
+                  inputMode="decimal"
+                  value={field.value}
+                  onChange={field.onChange}
                   onBlur={field.onBlur}
                   errorText={fieldState.error?.message}
-                  helperText="Flat discount in paise (100 paise = ₹1)."
+                  helperText="Flat discount in rupees. Up to 2 decimals."
+                  autoComplete="off"
                 />
               )}
             />
@@ -241,29 +264,8 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             )}
           />
 
-          {submitError ? <AlText role="alert">{submitError}</AlText> : null}
-
-          <AlStack gap="sm" direction="row">
-            <AlButton
-              type="submit"
-              loading={createPromoMutation.isPending}
-              disabled={createPromoMutation.isPending}
-            >
-              Create promo
-            </AlButton>
-            <AlButton
-              type="button"
-              variant="secondary"
-              disabled={createPromoMutation.isPending}
-              onClick={() => {
-                onOpenChange(false);
-              }}
-            >
-              Cancel
-            </AlButton>
-          </AlStack>
-        </AlStack>
+          {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }

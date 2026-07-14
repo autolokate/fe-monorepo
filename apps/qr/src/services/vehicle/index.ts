@@ -3,7 +3,6 @@ export {
   normalizePlate,
   compactPlate,
   isPlateEntryReady,
-  VAHAN_FETCH_HOLD_MS,
   type VehicleLookupResult,
   type VehicleLookupStatus,
 } from './vehicle-service';

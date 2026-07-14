@@ -54,8 +54,11 @@ export {
 export {
   AlConfirmationDialog,
   AlDeleteDialog,
+  AlModal,
   AlSheet,
   type AlConfirmationDialogProps,
+  type AlModalProps,
+  type AlModalSize,
   type AlSheetProps,
 } from './Dialog';
 export {

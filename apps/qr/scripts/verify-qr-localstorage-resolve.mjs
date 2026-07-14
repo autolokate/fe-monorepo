@@ -49,7 +49,7 @@ async function main() {
     { journeyState, qr: QR_CODE },
   );
 
-  await page.goto(`${BASE}/journey/purchase/vehicle-details`, { waitUntil: 'networkidle' });
+  await page.goto(`${BASE}/vehicle`, { waitUntil: 'networkidle' });
 
   // Allow resolve effect to finish
   await page.waitForTimeout(3000);

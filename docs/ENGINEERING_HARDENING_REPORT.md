@@ -26,7 +26,7 @@
 
 | Path | Role | Status |
 |------|------|--------|
-| `apps/qr/` | Production PWA + journey | Active |
+| `apps/onboarding/` | Production PWA + journey | Active |
 | `apps/ui-preview/` | Component preview | Active |
 | `packages/ui/` | Shared UI primitives | Active |
 | `packages/icons/` | Icon set | Active |
@@ -34,7 +34,7 @@
 | `packages/brand/` | Brand assets | Active |
 | `docs/` | Active docs (10 files after cleanup) | Consolidated |
 | `docs/archive/` | Historical reports (231+ files) | Archive |
-| `apps/qr/scripts/` | 8 maintenance scripts | Active |
+| `apps/onboarding/scripts/` | 8 maintenance scripts | Active |
 
 ### Dead / orphan inventory (documented, not removed — by constraint)
 
@@ -47,7 +47,7 @@
 
 ### Scripts
 
-All 8 scripts under `apps/qr/scripts/` are referenced by package workflows or doc regeneration (`visual-truth-capture.mjs`, `deploy-vercel.sh`, etc.). None are orphaned.
+All 8 scripts under `apps/onboarding/scripts/` are referenced by package workflows or doc regeneration (`visual-truth-capture.mjs`, `deploy-vercel.sh`, etc.). None are orphaned.
 
 ### Assets
 
@@ -100,7 +100,7 @@ See `TYPESCRIPT_SIGNOFF.md`. All packages pass `tsc --noEmit`.
 
 ## Phase 4 — Console Audit
 
-Grep across `apps/qr/src` and `packages/`:
+Grep across `apps/onboarding/src` and `packages/`:
 
 | File | Call | Classification |
 |------|------|----------------|
@@ -138,7 +138,7 @@ No circular import tooling run; manual inspection of provider graph shows acycli
 
 ## Phase 7 — Component Ownership
 
-UI primitives consumed from `@autolokate/ui` across 40+ onboarding files (`AlButton`, `AlTextField`, `AlOtp`, `AlChip`, etc.). No duplicate button/input/OTP implementations found in `apps/qr/src` (grep for local `function Button` / duplicate OTP components: 0).
+UI primitives consumed from `@autolokate/ui` across 40+ onboarding files (`AlButton`, `AlTextField`, `AlOtp`, `AlChip`, etc.). No duplicate button/input/OTP implementations found in `apps/onboarding/src` (grep for local `function Button` / duplicate OTP components: 0).
 
 App-level compositions (`EmergencyContactRow`, `InlineConsentBlock`, `AuthStepShell`) wrap `@autolokate/ui` — correct ownership boundary.
 

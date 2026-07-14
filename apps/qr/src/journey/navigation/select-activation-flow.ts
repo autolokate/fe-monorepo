@@ -1,11 +1,11 @@
 import type { NavigateFunction } from 'react-router-dom';
 
 import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { saveQrCode } from '@/storage/index';
 
-import { authJourneyPaths } from '../auth/auth-routing';
-import { b2b2cJourneyPaths } from '../b2b2c/b2b2c-routing';
-import { prepaidJourneyPaths } from '../prepaid/prepaid-routing';
+import { buildAuthPaths } from '../routing/journey-url-routing';
+import { buildB2b2cPaths, buildPrepaidPaths } from '../routing/journey-url-routing';
 import type { ActivationFlowId, JourneyPhase, JourneySession } from '../types';
 
 export type SelectActivationFlowDeps = {
@@ -27,30 +27,42 @@ export function resetPurchaseCheckoutSession(): Partial<JourneySession> {
   };
 }
 
+function resolveFlowJourneyId(): string | null {
+  const fromUrl = extractQrCodeParam(new URLSearchParams(window.location.search));
+  if (fromUrl) {
+    saveQrCode(fromUrl);
+    return fromUrl;
+  }
+  return resolvePurchaseQrCode(new URLSearchParams(window.location.search));
+}
+
 /** Sets journey flow and navigates to the first screen of the selected path. */
 export function selectActivationFlow(
   flow: ActivationFlowId,
   { setSelectedFlow, setPhase, navigate, updateSession }: SelectActivationFlowDeps,
 ): void {
   setSelectedFlow(flow);
+  const journeyId = resolveFlowJourneyId();
 
   if (flow === 'purchase') {
-    const codeFromUrl = extractQrCodeParam(new URLSearchParams(window.location.search));
-    if (codeFromUrl) {
-      saveQrCode(codeFromUrl);
-    }
     updateSession?.(resetPurchaseCheckoutSession());
     setPhase('shared-auth');
-    void navigate(authJourneyPaths.mobile);
+    if (journeyId) {
+      void navigate(buildAuthPaths(journeyId).mobile);
+    }
     return;
   }
 
   if (flow === 'prepaid') {
     setPhase('flow-select');
-    void navigate(prepaidJourneyPaths.welcome);
+    if (journeyId) {
+      void navigate(buildPrepaidPaths(journeyId).welcome);
+    }
     return;
   }
 
   setPhase('flow-select');
-  void navigate(b2b2cJourneyPaths.welcome);
+  if (journeyId) {
+    void navigate(buildB2b2cPaths(journeyId).welcome);
+  }
 }

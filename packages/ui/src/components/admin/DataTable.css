@@ -75,7 +75,7 @@
 
 .al-data-table__table th,
 .al-data-table__table td {
-  padding: var(--al-space-3) var(--al-space-4);
+  padding: var(--al-space-2) var(--al-space-4);
   text-align: left;
   vertical-align: middle;
   border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);

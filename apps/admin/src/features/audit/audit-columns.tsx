@@ -1,21 +1,22 @@
 import type { AuditEventDto } from '@autolokate/api-client';
-import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
+import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
+import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
 import { formatAuditField } from '@/platform/utils/audit-field';
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString();
 }
 
-function actionTone(action: string): 'active' | 'pending' | 'inactive' {
-  if (action.includes('APPROVED') || action.includes('PAID') || action.includes('MINTED')) {
-    return 'active';
+function formatActor(event: AuditEventDto): string {
+  if (event.actorAdminId) {
+    return 'Admin user';
   }
-  if (action.includes('REJECTED') || action.includes('SCRAPPED') || action.includes('ERASURE')) {
-    return 'inactive';
+  if (event.actorAccountId) {
+    return 'Account';
   }
-  return 'pending';
+  return 'System';
 }
 
 export function useAuditColumns(): ColumnDef<AuditEventDto>[] {
@@ -29,24 +30,17 @@ export function useAuditColumns(): ColumnDef<AuditEventDto>[] {
       {
         accessorKey: 'action',
         header: 'Action',
-        cell: ({ row }) => (
-          <AlStatusBadge label={row.original.action} status={actionTone(row.original.action)} />
-        ),
+        cell: ({ row }) => <AuditActionBadge action={row.original.action} />,
       },
       {
-        accessorKey: 'actorAdminId',
-        header: 'Actor (admin)',
-        cell: ({ row }) => formatAuditField(row.original.actorAdminId),
+        id: 'actor',
+        header: 'Actor',
+        cell: ({ row }) => formatActor(row.original),
       },
       {
         accessorKey: 'targetType',
         header: 'Entity type',
         cell: ({ row }) => formatAuditField(row.original.targetType),
-      },
-      {
-        accessorKey: 'targetId',
-        header: 'Target ID',
-        cell: ({ row }) => formatAuditField(row.original.targetId),
       },
     ],
     [],

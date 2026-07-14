@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto, SkuSummaryDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSelect, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
@@ -136,20 +136,22 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
   const isBusy = updateSkuMutation.isPending;
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="xl"
       title={sku.skuCode}
       description={`${sku.channel} · ${sku.prepaid ? 'Prepaid' : 'Not prepaid'}`}
       footer={
         canWrite ? (
-          <AlStack gap="sm" direction="row">
-            <AlButton type="submit" form="edit-sku-form" loading={isBusy} disabled={isBusy}>
+          <div className="admin-modal-actions">
+            <AlButton type="submit" form="edit-sku-form" size="sm" loading={isBusy} disabled={isBusy}>
               Save SKU
             </AlButton>
             <AlButton
               type="button"
               variant="secondary"
+              size="sm"
               disabled={isBusy}
               onClick={() => {
                 onOpenChange(false);
@@ -157,7 +159,7 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
             >
               Cancel
             </AlButton>
-          </AlStack>
+          </div>
         ) : undefined
       }
     >
@@ -170,7 +172,6 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
             <AdminDetailField label="SKU code" value={sku.skuCode} mono />
             <AdminDetailField label="Channel" value={sku.channel} />
             <AdminDetailField label="Prepaid" value={sku.prepaid ? 'Yes' : 'No'} />
-            <AdminDetailField label="SKU ID" value={sku.id} mono />
           </AdminDetailGrid>
         </AdminDetailSection>
 
@@ -182,7 +183,7 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
             }}
             onKeyDown={handleFormKeyDown}
           >
-            <AlStack gap="lg">
+            <AlStack gap="md">
               <Controller
                 control={form.control}
                 name="offeredTiers"
@@ -231,7 +232,7 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                     errorText={fieldState.error?.message}
-                    helperText="What the sticker costs. Sent to the API as paise."
+                    helperText="What the sticker costs. Up to 2 decimal places."
                     autoComplete="off"
                   />
                 )}
@@ -277,6 +278,6 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
           </form>
         ) : null}
       </AlStack>
-    </AlSheet>
+    </AlModal>
   );
 }

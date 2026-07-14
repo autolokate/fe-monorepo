@@ -24,18 +24,16 @@ export function E04RiderNameScreen({
   relation,
   onRelationChange,
   formState = 'default',
-  errorMessage = null,
+  errorMessage: _errorMessage = null,
   onContinue,
   onBack,
   showBack = true,
 }: E04RiderNameScreenProps) {
   const interactive = onNameChange !== undefined;
   const isSubmitting = formState === 'submitting';
-  const apiError = errorMessage?.trim() ?? '';
-  const showApiError = formState === 'error' && apiError.length > 0;
   const hasName = nameValue.trim().length > 0;
   const isInvalid = interactive && (!hasName || !relation);
-  const showDisabledHelper = isInvalid && !isSubmitting && !showApiError;
+  const showDisabledHelper = isInvalid && !isSubmitting;
 
   return (
     <FlowStepShell
@@ -46,14 +44,8 @@ export function E04RiderNameScreen({
       footerLabel="Save rider"
       footerLoading={isSubmitting}
       footerDisabled={isInvalid || isSubmitting}
-      footerHelperText={
-        showApiError
-          ? apiError
-          : showDisabledHelper
-            ? 'Add a name to continue'
-            : undefined
-      }
-      footerHelperTone={showApiError ? 'warning' : 'muted'}
+      footerHelperText={showDisabledHelper ? 'Add a name to continue' : undefined}
+      footerHelperTone="muted"
       captureProgress={{ step: 3, total: 3 }}
       showBack={showBack}
       onBack={onBack}

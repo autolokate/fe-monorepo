@@ -1,0 +1,365 @@
+/**
+ * Google Admin Console / Cloud Console surface language.
+ * Layout, density, and structure only — uses existing Autolokate theme colors.
+ */
+
+/* ── Shell & canvas ─────────────────────────────────────────────── */
+
+.al-page-layout {
+  background: var(--al-color-canvas);
+}
+
+.al-page-layout__sidebar {
+  background: var(--al-color-surface);
+  box-shadow: none;
+  border-right: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-page-layout__header {
+  background: var(--al-color-surface);
+  box-shadow: none;
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-page-layout__content {
+  padding: var(--al-space-5) var(--al-space-6);
+}
+
+/* ── Navigation (rounded pill active, no accent bar) ────────────── */
+
+.admin-shell-nav-item.is-active::before {
+  display: none;
+}
+
+.admin-shell-nav-item {
+  min-height: 2.5rem;
+  padding: var(--al-space-2) var(--al-space-4);
+  border-radius: var(--al-radius-pill);
+  font-weight: var(--al-font-weight-regular);
+}
+
+.admin-shell-nav-item.is-active {
+  background: var(--al-color-surface-active);
+  color: var(--al-color-text);
+  font-weight: var(--al-font-weight-medium);
+}
+
+.admin-shell-sidebar__group-label {
+  letter-spacing: 0.04em;
+  font-weight: var(--al-font-weight-medium);
+  padding-inline: var(--al-space-4);
+}
+
+.admin-shell-sidebar__brand-mark {
+  box-shadow: none;
+  background: transparent;
+}
+
+.admin-shell-profile {
+  box-shadow: none;
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  background: var(--al-color-surface);
+}
+
+/* ── Page headers (Google: regular weight, clear hierarchy) ─────── */
+
+.al-page-layout .al-page-header {
+  margin-bottom: var(--al-space-5);
+}
+
+.al-page-layout .al-page-header .al-heading[variant='h2'],
+.al-page-layout .al-page-header .al-text[variant='headline'] {
+  font-size: 1.375rem;
+  line-height: 1.75rem;
+  font-weight: var(--al-font-weight-regular);
+  letter-spacing: 0;
+  color: var(--al-color-text);
+}
+
+.al-page-layout .al-page-header .al-text[tone='muted'] {
+  font-size: var(--al-text-body-size);
+  line-height: var(--al-text-body-line-height);
+  font-weight: var(--al-font-weight-regular);
+  margin-top: var(--al-space-1);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+/* Sidebar & shell text readability */
+.al-page-layout .admin-shell-nav-item {
+  color: color-mix(in srgb, var(--al-color-on-surface) 78%, transparent);
+}
+
+.al-page-layout .admin-shell-sidebar__group-label {
+  color: var(--al-admin-hint-color, var(--al-color-text-subtle));
+}
+
+.al-page-layout .al-data-table__table td {
+  color: var(--al-color-text);
+}
+
+.al-page-layout .al-data-table__footer-meta,
+.al-page-layout .al-data-table__page-size {
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+/* ── Flat cards & data blocks (border-first, no drop shadow) ────── */
+
+.al-page-layout .al-data-table,
+.al-page-layout .al-metric-card,
+.al-page-layout .al-stat-card,
+.al-page-layout .al-empty-state,
+.al-page-layout .al-error-state,
+.al-page-layout .admin-data-block,
+.al-page-layout .admin-mutation-result,
+.al-page-layout .admin-result-panel {
+  box-shadow: none;
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  border-radius: var(--al-radius-sm);
+}
+
+.al-page-layout .admin-data-block__filters {
+  background: var(--al-color-surface);
+  padding: var(--al-space-4);
+}
+
+.admin-filter-field__label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: var(--al-font-weight-medium);
+  font-size: var(--al-text-label-size);
+  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 86%, transparent));
+}
+
+/* ── Tables (Google: sentence-case headers, tinted head row) ────── */
+
+.al-page-layout .al-data-table__table th {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 82%, transparent));
+  background: color-mix(in srgb, var(--al-color-on-surface) 5%, var(--al-color-surface));
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-page-layout .al-data-table__table.is-sticky thead th {
+  background: color-mix(in srgb, var(--al-color-on-surface) 5%, var(--al-color-surface));
+}
+
+.al-page-layout .al-data-table__sort {
+  color: inherit;
+}
+
+.al-page-layout .al-data-table__sort:hover {
+  color: var(--al-color-text);
+}
+
+.al-page-layout .al-data-table__sort-icon {
+  opacity: 0.72;
+}
+
+.al-page-layout .al-data-table__sort.is-sorted {
+  color: var(--al-color-text);
+}
+
+.al-page-layout .al-data-table__sort.is-sorted .al-data-table__sort-icon {
+  opacity: 1;
+  color: var(--al-color-primary);
+}
+
+.al-page-layout .al-data-table__table th,
+.al-page-layout .al-data-table__table td {
+  min-height: 3rem;
+  padding: var(--al-space-3) var(--al-space-4);
+}
+
+.al-page-layout .al-data-table__table tbody tr:hover {
+  background: var(--al-color-surface-hover);
+}
+
+.al-page-layout .al-data-table__footer {
+  background: var(--al-color-surface);
+  border-top: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+/* ── Tabs (Google Cloud underline style) ────────────────────────── */
+
+.al-page-layout .al-tabs__list {
+  display: flex;
+  gap: var(--al-space-5);
+  padding: 0;
+  margin-bottom: var(--al-space-5);
+  background: transparent;
+  box-shadow: none;
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  border-radius: 0;
+}
+
+.al-page-layout .al-tabs__trigger {
+  position: relative;
+  padding: var(--al-space-3) 0;
+  margin-bottom: -1px;
+  border-radius: 0;
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-color-text-muted);
+  background: transparent;
+  box-shadow: none;
+}
+
+.al-page-layout .al-tabs__trigger:hover:not(:disabled) {
+  color: var(--al-color-text);
+  background: transparent;
+}
+
+.al-page-layout .al-tabs__trigger[data-state='active'] {
+  color: var(--al-color-primary);
+  background: transparent;
+  box-shadow: none;
+}
+
+.al-page-layout .al-tabs__trigger[data-state='active']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--al-color-primary);
+}
+
+/* ── Buttons (Google: medium weight, text-like secondary) ───────── */
+
+.al-page-layout .al-button,
+.al-modal .al-button {
+  font-weight: var(--al-font-weight-medium);
+  letter-spacing: 0.01em;
+}
+
+.al-page-layout .al-button--secondary,
+.al-modal .al-button--secondary {
+  border-color: var(--al-color-border-subtle);
+}
+
+.al-page-layout .admin-command-trigger {
+  min-width: 16rem;
+  border-radius: var(--al-radius-pill);
+  border-color: var(--al-color-border-subtle);
+  background: var(--al-color-surface-variant);
+  font-weight: var(--al-font-weight-regular) !important;
+}
+
+/* ── Modals (Google dialog: flat footer, subtle close) ──────────── */
+
+.al-modal {
+  border-radius: var(--al-radius-sm);
+  box-shadow:
+    0 4px 16px color-mix(in srgb, var(--al-color-on-surface) 12%, transparent),
+    0 0 0 1px var(--al-color-border-subtle);
+}
+
+.al-modal__header .al-heading[variant='h4'] {
+  font-size: 1.25rem;
+  line-height: 1.625rem;
+  font-weight: var(--al-font-weight-regular);
+  letter-spacing: 0;
+}
+
+.al-modal__header .al-text[tone='muted'] {
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+}
+
+.al-modal__footer {
+  background: var(--al-color-surface);
+}
+
+.al-dialog-close {
+  background: transparent;
+  border-radius: var(--al-radius-pill);
+}
+
+.al-dialog-close:hover {
+  background: var(--al-color-surface-hover);
+}
+
+.al-dialog-content {
+  border-radius: var(--al-radius-sm);
+  box-shadow:
+    0 4px 16px color-mix(in srgb, var(--al-color-on-surface) 12%, transparent),
+    0 0 0 1px var(--al-color-border-subtle);
+}
+
+/* ── Detail panels inside modals ────────────────────────────────── */
+
+.al-modal .admin-detail-section {
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  padding-bottom: var(--al-space-4);
+}
+
+.al-modal .admin-detail-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Modal detail — left-aligned badge/action rows in body */
+.al-modal .admin-detail-section .admin-modal-actions {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.al-modal .admin-detail-section .admin-modal-actions .al-button {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.al-modal .admin-detail-section__title {
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.al-modal .admin-detail-section__description {
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+/* ── Metric cards ───────────────────────────────────────────────── */
+
+.al-page-layout .al-stat-card__icon {
+  box-shadow: none;
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  background: var(--al-color-surface-variant);
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.al-page-layout .al-metric-card:hover,
+.al-page-layout .al-stat-card:hover {
+  box-shadow: none;
+  border-color: color-mix(in srgb, var(--al-color-outline) 80%, transparent);
+}
+
+/* ── Login (Google sign-in card) ────────────────────────────────── */
+
+.admin-login-card {
+  border-radius: var(--al-radius-sm);
+  box-shadow: none;
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.admin-login-card .al-text[variant='headline'] {
+  font-weight: var(--al-font-weight-regular);
+  font-size: 1.5rem;
+}
+
+@media (max-width: 960px) {
+  .al-page-layout__content {
+    padding: var(--al-space-4);
+  }
+}

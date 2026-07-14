@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { optionalRupeeAmount } from '@/features/catalog/catalog-schemas';
+
 function optionalIntField(min: number, max?: number) {
   return z
     .number()
@@ -17,7 +19,7 @@ export const createPromoSchema = z
       .min(1, 'Promo code is required.')
       .max(64, 'Promo code is too long.'),
     discountPercent: optionalIntField(1, 100),
-    discountPaise: optionalIntField(1),
+    discountRupees: optionalRupeeAmount,
     validFrom: z.string().min(1, 'Start date is required.'),
     validTo: z.string().min(1, 'End date is required.'),
     maxRedemptions: optionalIntField(1),

@@ -81,8 +81,8 @@ export function LoginPage() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-6">
+    <div className="admin-login-page">
+      <div className="admin-login-card">
         <AlStack gap="md">
           <AlStack gap="xs">
             <AlText variant="headline">Sign in to Admin</AlText>
@@ -105,7 +105,7 @@ export function LoginPage() {
                   {...phoneForm.register('phone')}
                   errorText={phoneForm.formState.errors.phone?.message}
                 />
-                {error ? <AlText tone="muted">{error}</AlText> : null}
+                {error ? <p className="admin-login-error">{error}</p> : null}
                 <AlButton type="submit" loading={submitting}>
                   Send OTP
                 </AlButton>
@@ -127,8 +127,8 @@ export function LoginPage() {
                   }}
                   errorText={otpForm.formState.errors.code?.message}
                 />
-                {error ? <AlText tone="muted">{error}</AlText> : null}
-                <AlStack gap="sm" direction="row">
+                {error ? <p className="admin-login-error">{error}</p> : null}
+                <div className="admin-login-actions">
                   <AlButton
                     type="button"
                     variant="secondary"
@@ -141,7 +141,7 @@ export function LoginPage() {
                   <AlButton type="submit" loading={submitting}>
                     Verify & continue
                   </AlButton>
-                </AlStack>
+                </div>
               </AlStack>
             </form>
           )}

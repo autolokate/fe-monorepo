@@ -1,12 +1,11 @@
 import { shouldEnterRiderPrompt } from '../features/emergency/emergency-limits';
 
-import { authJourneyPaths, defaultActivationAfterAuth } from './auth/auth-routing';
+import { buildAuthPaths } from './auth/auth-routing';
 import { journeyPaths } from './constants';
-import { emergencyJourneyPaths } from './emergency/emergency-routing';
+import { buildEmergencyPaths } from './emergency/emergency-routing';
 import { resolveEmergencyFoundationContext } from './emergency/emergency-foundation';
-import { b2b2cJourneyPaths } from './b2b2c/b2b2c-routing';
-import { prepaidJourneyPaths } from './prepaid/prepaid-routing';
-import { purchaseJourneyPaths } from './purchase/purchase-routing';
+import { buildB2b2cPaths, buildPrepaidPaths, buildQrEntryPath, parseJourneyIdFromPathname } from './routing/journey-url-routing';
+import { purchaseJourneyPathsFor } from './purchase/purchase-routing';
 import { resolvePurchaseEntryPath } from '@/journey/state/purchase-journey-state-machine';
 import type { ActivationFlowId, JourneySession } from './types';
 
@@ -17,32 +16,38 @@ export type ActivationEntry = {
   label: string;
 };
 
-/** Auth completion lands on vehicle owner (174:25) — not activation. */
-export const authCompletionEntry: ActivationEntry = {
-  stepId: 'shared.vehicle-owner',
-  path: authJourneyPaths.vehicleOwner,
-  label: 'Vehicle owner · Auth completion destination',
-};
+export function authCompletionEntry(journeyId: string): ActivationEntry {
+  const paths = buildAuthPaths(journeyId);
+  return {
+    stepId: 'shared.vehicle-owner',
+    path: paths.vehicleOwner,
+    label: 'Vehicle owner · Auth completion destination',
+  };
+}
 
-export const activationEntryByFlow: Record<ActivationFlowId, ActivationEntry> = {
-  purchase: {
-    stepId: 'purchase.vehicle-number',
-    path: purchaseJourneyPaths.vehicleDetails,
-    label: 'Vehicle number · Purchase activation entry',
-  },
-  prepaid: {
-    stepId: 'prepaid.welcome',
-    path: prepaidJourneyPaths.welcome,
-    label: 'Pre-paid welcome',
-  },
-  b2b2c: {
-    stepId: 'b2b2c.welcome',
-    path: b2b2cJourneyPaths.welcome,
-    label: 'Partner welcome',
-  },
-};
+export function activationEntryByFlow(journeyId: string): Record<ActivationFlowId, ActivationEntry> {
+  const purchase = purchaseJourneyPathsFor(journeyId);
+  const prepaid = buildPrepaidPaths(journeyId);
+  const b2b2c = buildB2b2cPaths(journeyId);
+  return {
+    purchase: {
+      stepId: 'purchase.vehicle-number',
+      path: purchase.vehicleDetails,
+      label: 'Vehicle number · Purchase activation entry',
+    },
+    prepaid: {
+      stepId: 'prepaid.welcome',
+      path: prepaid.welcome,
+      label: 'Pre-paid welcome',
+    },
+    b2b2c: {
+      stepId: 'b2b2c.welcome',
+      path: b2b2c.welcome,
+      label: 'Partner welcome',
+    },
+  };
+}
 
-/** Emergency suffix — Figma-aligned (Phase 11b). */
 export const EMERGENCY_SUFFIX_STEP_IDS = [
   'emergency.rider-prompt',
   'emergency.rider-mobile',
@@ -58,93 +63,119 @@ export const EMERGENCY_SUFFIX_STEP_IDS = [
 
 export type EmergencySuffixStepId = (typeof EMERGENCY_SUFFIX_STEP_IDS)[number];
 
-export const emergencyEntry: ActivationEntry = {
-  stepId: EMERGENCY_SUFFIX_STEP_IDS[0],
-  path: `${journeyPaths.emergency}/rider-prompt`,
-  label: 'Emergency + Rider entry',
-};
+export function emergencyEntry(journeyId: string): ActivationEntry {
+  const paths = buildEmergencyPaths(journeyId);
+  return {
+    stepId: EMERGENCY_SUFFIX_STEP_IDS[0],
+    path: paths.riderPrompt,
+    label: 'Emergency + Rider entry',
+  };
+}
 
-export function getActivationEntryPath(flow: ActivationFlowId): string {
-  return activationEntryByFlow[flow].path;
+export function getActivationEntryPath(flow: ActivationFlowId, journeyId: string): string {
+  return activationEntryByFlow(journeyId)[flow].path;
 }
 
 export function getPostAuthActivationPath(
   flow: ActivationFlowId | null,
+  journeyIdOrSession?: string | JourneySession,
   session?: JourneySession,
 ): string {
+  const journeyId =
+    typeof journeyIdOrSession === 'string'
+      ? journeyIdOrSession
+      : (typeof window !== 'undefined'
+          ? parseJourneyIdFromPathname(window.location.pathname)
+          : null) ?? '_';
+  const resolvedSession = typeof journeyIdOrSession === 'object' ? journeyIdOrSession : session;
+
   if (!flow) {
-    return defaultActivationAfterAuth;
+    return purchaseJourneyPathsFor(journeyId).vehicleDetails;
   }
 
   if (flow === 'purchase') {
-    return resolvePurchaseEntryPath();
+    return resolvePurchaseEntryPath(undefined, journeyId);
   }
 
-  return getEmergencyHandoffPath(session, flow);
+  return getEmergencyHandoffPath(resolvedSession, flow, journeyId);
 }
 
-export function getActivationEntry(flow: ActivationFlowId): ActivationEntry {
-  return activationEntryByFlow[flow];
+export function getActivationEntry(flow: ActivationFlowId, journeyId: string): ActivationEntry {
+  return activationEntryByFlow(journeyId)[flow];
 }
 
-/**
- * First emergency route after purchase payment success (R10 Continue).
- * All plans land on contacts-empty — rider flow is optional later, not entry.
- */
-export function getPurchasePostPaymentEmergencyPath(): string {
-  return emergencyJourneyPaths.contactsEmpty;
+export function getPurchasePostPaymentEmergencyPath(journeyId?: string): string {
+  const id =
+    journeyId?.trim() ||
+    (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null) ||
+    '_';
+  return buildEmergencyPaths(id).contactsEmpty;
 }
 
-/**
- * First emergency route after activation (prepaid/B2B2C) or legacy handoff.
- * No rider entitlement (Safe or riderCount 0) → E0; addon entitled → R0.
- */
 export function getEmergencyHandoffPath(
   session?: Pick<JourneySession, 'purchase'>,
   selectedFlow?: ActivationFlowId | null,
+  journeyId?: string,
 ): string {
+  const id =
+    journeyId?.trim() ||
+    (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null);
+  const paths = id ? buildEmergencyPaths(id) : null;
   const context = resolveEmergencyFoundationContext(session ?? {}, selectedFlow);
 
   if (!shouldEnterRiderPrompt(context.planId, context.riderCount, context.flowKind)) {
-    return emergencyJourneyPaths.contactsEmpty;
+    return paths?.contactsEmpty ?? `${journeyPaths.emergency}/contacts-empty`;
   }
 
-  return emergencyJourneyPaths.riderPrompt;
+  return paths?.riderPrompt ?? `${journeyPaths.emergency}/rider-prompt`;
 }
 
-export function getAuthFlowBackPath(flow: ActivationFlowId | null): string {
+export function getAuthFlowBackPath(flow: ActivationFlowId | null, journeyId?: string): string {
+  const id =
+    journeyId?.trim() ||
+    (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null) ||
+    '_';
   if (flow === 'prepaid') {
-    return prepaidJourneyPaths.welcome;
+    return buildPrepaidPaths(id).welcome;
   }
 
   if (flow === 'b2b2c') {
-    return b2b2cJourneyPaths.welcome;
+    return buildB2b2cPaths(id).welcome;
   }
 
-  return journeyPaths.root;
+  return buildQrEntryPath(id);
 }
 
 export function getCompletedPath(): string {
   return journeyPaths.completed;
 }
 
-/** Emergency back-nav target — stays inside the active flow (not purchase R10 for prepaid/B2B2C). */
 export function getEmergencyFlowBackPath(
   flow: ActivationFlowId | null,
+  journeyIdOrSession?: string | Pick<JourneySession, 'purchase'>,
   session?: Pick<JourneySession, 'purchase'>,
 ): string {
+  const journeyId =
+    typeof journeyIdOrSession === 'string'
+      ? journeyIdOrSession
+      : (typeof window !== 'undefined'
+          ? parseJourneyIdFromPathname(window.location.pathname)
+          : null) ?? '_';
+  const resolvedSession =
+    typeof journeyIdOrSession === 'object' ? journeyIdOrSession : session;
   if (flow === 'purchase') {
-    return purchaseJourneyPaths.paymentSuccess;
+    return purchaseJourneyPathsFor(journeyId).paymentSuccess;
   }
 
   if (flow === 'prepaid') {
-    return prepaidJourneyPaths.welcome;
+    return buildPrepaidPaths(journeyId).welcome;
   }
 
   if (flow === 'b2b2c') {
     const riderCount = session?.purchase?.riderCount ?? 0;
-    return riderCount > 0 ? b2b2cJourneyPaths.welcomePlanRider : b2b2cJourneyPaths.welcome;
+    const b2b2c = buildB2b2cPaths(journeyId);
+    return riderCount > 0 ? b2b2c.welcomePlanRider : b2b2c.welcome;
   }
 
-  return journeyPaths.root;
+  return buildQrEntryPath(journeyId);
 }

@@ -50,7 +50,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--al-space-3);
+  padding: var(--al-space-2) var(--al-space-3);
 }
 
 .admin-shell-sidebar__group {
@@ -89,9 +89,9 @@
   gap: var(--al-space-3);
   width: 100%;
   min-height: var(--al-admin-nav-item-height);
-  padding: var(--al-space-2) var(--al-space-3);
+  padding: var(--al-space-2) var(--al-space-4);
   border: none;
-  border-radius: var(--al-admin-radius-control);
+  border-radius: var(--al-radius-pill);
   background: transparent;
   color: var(--al-color-text-muted);
   text-decoration: none;

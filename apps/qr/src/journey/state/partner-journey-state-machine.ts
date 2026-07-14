@@ -1,7 +1,6 @@
 import type { QrResolution } from '@autolokate/api-client';
 
-import { b2b2cJourneyPaths } from '@/journey/b2b2c/b2b2c-routing';
-import { prepaidJourneyPaths } from '@/journey/prepaid/prepaid-routing';
+import { buildB2b2cPaths, buildPrepaidPaths, parseJourneyIdFromPathname } from '@/journey/routing/journey-url-routing';
 import type { ActivationFlowId } from '@/journey/types';
 import {
   type PartnerActivationKind,
@@ -65,11 +64,17 @@ export function resolvePartnerFlowId(kind: PartnerActivationKind): ActivationFlo
 export function resolvePartnerWelcomePath(
   kind: PartnerActivationKind,
   riderCount: number,
+  journeyId?: string,
 ): string {
+  const id =
+    journeyId?.trim() ||
+    (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null) ||
+    '_';
   if (kind === 'b2b') {
-    return prepaidJourneyPaths.welcome;
+    return buildPrepaidPaths(id).welcome;
   }
-  return riderCount > 0 ? b2b2cJourneyPaths.welcomePlanRider : b2b2cJourneyPaths.welcome;
+  const b2b2c = buildB2b2cPaths(id);
+  return riderCount > 0 ? b2b2c.welcomePlanRider : b2b2c.welcome;
 }
 
 export function resolvePartnerVariantFromRiderCount(

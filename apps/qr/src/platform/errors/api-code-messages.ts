@@ -9,6 +9,8 @@ export const API_CODE_MESSAGES: Readonly<Record<string, string>> = {
   validation: 'Please check your details and try again.',
   vehicle_not_found: 'Vehicle not found. Check the registration number and try again.',
   vehicle_already_linked: 'This vehicle is already linked to another account.',
+  vehicle_already_subscribed:
+    'This vehicle already has an active protection plan. Enter a different number and try again.',
   promo_invalid: 'That promo code is not valid.',
   alert_not_cancellable: 'Help is already on the way and cannot be cancelled.',
   plan_unavailable: 'This plan is not available right now.',

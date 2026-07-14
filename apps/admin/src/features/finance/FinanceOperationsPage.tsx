@@ -22,10 +22,6 @@ function SettlementResultPanel({ result }: { result: SettlementBatchResultDto })
         { label: 'Payouts created', value: result.payouts.toLocaleString() },
         { label: 'Skipped', value: result.skipped.toLocaleString() },
         { label: 'Errors', value: result.errors.toLocaleString() },
-        {
-          label: 'Payout IDs',
-          value: result.payoutIds.length > 0 ? result.payoutIds.join(', ') : '—',
-        },
       ]}
     />
   );
@@ -84,6 +80,12 @@ export function FinanceOperationsPage() {
         {clawbackResult ? <ClawbackResultPanel result={clawbackResult} /> : null}
         {settlementResult ? <SettlementResultPanel result={settlementResult} /> : null}
       </div>
+
+      {!clawbackResult && !settlementResult ? (
+        <p className="admin-empty-note admin-operations-empty">
+          Results from clawbacks and settlement batches appear here after you run an operation.
+        </p>
+      ) : null}
 
       <CreateClawbackSheet
         open={clawbackOpen}

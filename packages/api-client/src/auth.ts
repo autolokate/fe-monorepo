@@ -7,6 +7,7 @@ export type OtpChannel = 'sms' | 'whatsapp';
 
 export type RequestOtpBody = {
   phone: string;
+  channel?: OtpChannel;
 };
 
 export type RequestOtpResult = {

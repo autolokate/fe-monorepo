@@ -21,6 +21,10 @@ type UpsertOutcome = 'registered' | 'no-session' | 'no-token' | 'failed';
 
 let reconnectArmed = false;
 let reconnectRetries = 0;
+/** Coalesce concurrent register/refresh callers (OTP verify + session registrar, StrictMode). */
+let inflightUpsert: Promise<UpsertOutcome> | null = null;
+/** Last successful upload key (`userId:fcmToken`) — skip identical re-posts this session. */
+let lastUploadedKey: string | null = null;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -28,8 +32,19 @@ function delay(ms: number): Promise<void> {
   });
 }
 
+function uploadKey(userId: string, fcmToken: string): string {
+  return `${userId}:${fcmToken}`;
+}
+
 async function upsertDeviceRegistration(): Promise<UpsertOutcome> {
-  if (!getTokenManager().hasSession()) {
+  const tokenManager = getTokenManager();
+  if (!tokenManager.hasSession()) {
+    deviceLogger.debug('register_skipped_no_session');
+    return 'no-session';
+  }
+
+  const userId = tokenManager.getUserId();
+  if (!userId) {
     deviceLogger.debug('register_skipped_no_session');
     return 'no-session';
   }
@@ -40,12 +55,19 @@ async function upsertDeviceRegistration(): Promise<UpsertOutcome> {
     return 'no-token';
   }
 
+  const key = uploadKey(userId, fcmToken);
+  if (key === lastUploadedKey) {
+    deviceLogger.debug('register_skipped_already_uploaded');
+    return 'registered';
+  }
+
   const client = getQrApiClient();
   const platform = detectDevicePlatform();
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     try {
       const result = await registerDeviceToken(client, { fcmToken, platform });
+      lastUploadedKey = key;
       deviceLogger.info('device_registered', {
         platform,
         deviceId: result.deviceId,
@@ -96,7 +118,7 @@ async function retryPendingUpload(): Promise<void> {
   if (!reconnectArmed) {
     return;
   }
-  const outcome = await upsertDeviceRegistration();
+  const outcome = await driveUpsert();
   if (outcome === 'registered' || outcome === 'no-session') {
     // Uploaded, or the session lapsed (a later login re-runs registerDevice) — stop retrying.
     disarmReconnectRetry();
@@ -109,20 +131,32 @@ async function retryPendingUpload(): Promise<void> {
   }
 }
 
-async function driveUpsert(): Promise<void> {
-  const outcome = await upsertDeviceRegistration();
-  if (outcome === 'registered') {
-    disarmReconnectRetry();
-    return;
+async function driveUpsert(): Promise<UpsertOutcome> {
+  if (inflightUpsert) {
+    return inflightUpsert;
   }
-  if (outcome === 'failed') {
-    armReconnectRetry();
-  }
+
+  inflightUpsert = (async () => {
+    try {
+      const outcome = await upsertDeviceRegistration();
+      if (outcome === 'registered') {
+        disarmReconnectRetry();
+      } else if (outcome === 'failed') {
+        armReconnectRetry();
+      }
+      return outcome;
+    } finally {
+      inflightUpsert = null;
+    }
+  })();
+
+  return inflightUpsert;
 }
 
 /**
  * Register this browser/device for push after authentication.
  * Non-blocking — never throws; failures are logged only.
+ * Concurrent callers share one request; identical token is not re-posted.
  */
 export async function registerDevice(): Promise<void> {
   await driveUpsert();
@@ -134,6 +168,12 @@ export async function registerDevice(): Promise<void> {
  */
 export async function refreshDeviceRegistration(): Promise<void> {
   await driveUpsert();
+}
+
+/** Clear upload dedupe on logout so the next login can re-bind the token to the new user. */
+export function clearDeviceRegistrationState(): void {
+  lastUploadedKey = null;
+  disarmReconnectRetry();
 }
 
 /**
@@ -149,6 +189,7 @@ export async function unregisterDevice(fcmToken: string): Promise<void> {
     }
     const client = getQrApiClient();
     await unregisterDeviceToken(client, { fcmToken });
+    lastUploadedKey = null;
     deviceLogger.info('device_unregistered');
   } catch (error) {
     deviceLogger.warn('device_unregister_failed', { error });

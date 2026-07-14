@@ -5,6 +5,58 @@ import { AlButton } from '../primitives/Button/index';
 import { AlHeading, AlStack, AlText } from '../primitives/index';
 import './Dialog.css';
 
+export type AlModalSize = 'sm' | 'md' | 'lg' | 'xl';
+
+export type AlModalProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description?: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  size?: AlModalSize;
+};
+
+/** Centered dialog for admin create/edit/detail flows. */
+export function AlModal({
+  open,
+  onOpenChange,
+  title,
+  description,
+  children,
+  footer,
+  size = 'md',
+}: AlModalProps) {
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="al-dialog-overlay" />
+        <Dialog.Content className={`al-modal al-modal--${size}`}>
+          <div className="al-modal__header">
+            <AlStack gap="xs">
+              <Dialog.Title asChild>
+                <AlHeading variant="h4">{title}</AlHeading>
+              </Dialog.Title>
+              {description ? (
+                <Dialog.Description asChild>
+                  <AlText tone="muted">{description}</AlText>
+                </Dialog.Description>
+              ) : null}
+            </AlStack>
+          </div>
+          <div className="al-modal__body">{children}</div>
+          {footer ? <div className="al-modal__footer">{footer}</div> : null}
+          <Dialog.Close asChild>
+            <button type="button" className="al-dialog-close al-admin-focus-ring" aria-label="Close dialog">
+              ×
+            </button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
 export type AlSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;

@@ -12,6 +12,7 @@ import '../purchase-vehicle.css';
 export function R03VehicleNumberScreen({
   plateValue = '',
   plateState = 'empty',
+  plateErrorMessage,
   onPlateChange,
   onContinue,
   onBack,
@@ -23,6 +24,9 @@ export function R03VehicleNumberScreen({
   const isError = plateState === 'error';
   const canSubmit = isPlateEntryReady(plateValue) && !isLoading;
   const ctaHelper = !canSubmit && !isError ? 'Enter your number to continue' : undefined;
+  const errorMessage =
+    plateErrorMessage ??
+    "We couldn't find that number, check and try again";
   return (
     <AuthStepShell
       hideProgress
@@ -50,7 +54,7 @@ export function R03VehicleNumberScreen({
         />
         {isError ? (
           <p className="ob-plate-error-message" role="alert">
-            We couldn&apos;t find that number, check and try again
+            {errorMessage}
           </p>
         ) : null}
         <VahanPreviewChips />

@@ -327,6 +327,7 @@ function validateApiOrder(timeline) {
   const plansIdx = idx((e) => e.method === 'GET' && short(e).endsWith('/v1/plans'));
   const lookupIdx = idx((e) => e.method === 'GET' && e.url.includes('/vehicles/lookup'));
   const createIdx = idx((e) => e.method === 'POST' && short(e).endsWith('/v1/orders'));
+  const cartIdx = idx((e) => e.method === 'POST' && short(e).endsWith('/v1/cart'));
   const payIdx = idx((e) => e.method === 'POST' && e.url.includes('/pay'));
   const paymentPollIdx = idx((e) => e.method === 'GET' && e.url.includes('/payment'));
   const vehicleDetailIdx = idx(
@@ -348,6 +349,12 @@ function validateApiOrder(timeline) {
   if (createIdx >= 0 && payIdx >= 0 && createIdx > payIdx) {
     issues.push('POST /orders must run before POST /pay');
   }
+  if (cartIdx >= 0 && createIdx >= 0 && cartIdx > createIdx) {
+    issues.push('POST /cart must run before POST /orders');
+  }
+  if (cartIdx < 0) {
+    issues.push('missing POST /v1/cart');
+  }
   if (payIdx >= 0 && paymentPollIdx >= 0 && payIdx > paymentPollIdx) {
     issues.push('POST /pay must run before GET /payment poll');
   }
@@ -355,8 +362,11 @@ function validateApiOrder(timeline) {
     issues.push('GET /vehicles/{id} must run before GET /vehicles');
   }
 
-  return { issues, attachIdx, plansIdx, vehicleDetailIdx, vehiclesListIdx };
+  return { issues, attachIdx, plansIdx, cartIdx, vehicleDetailIdx, vehiclesListIdx };
 }
+
+const ONBOARDING = (segment) =>
+  `${BASE}/onboarding/${encodeURIComponent(QR_CODE)}${segment.startsWith('/') ? segment : `/${segment}`}`;
 
 async function main() {
   const browser = await chromium.launch({
@@ -425,7 +435,7 @@ async function main() {
   });
 
   // 1. Open mobile auth with qr_code (URL-first QR source; no FlowEntry resolve)
-  await page.goto(`${BASE}/journey/auth/mobile?qr_code=${encodeURIComponent(QR_CODE)}`, {
+  await page.goto(`${BASE}/q/${encodeURIComponent(QR_CODE)}`, {
     waitUntil: 'networkidle',
     timeout: 60000,
   });
@@ -446,29 +456,32 @@ async function main() {
   await clickFooterCta(page, /get otp/i);
 
   // OTP
-  await page.waitForURL(/auth\/otp/, { timeout: 30000 });
+  await page.waitForURL(/\/onboarding\/[^/]+\/otp/, { timeout: 30000 });
   await fillOtpCells(page, OTP);
   await page.waitForTimeout(2000);
 
-  // Wait for vehicle owner or purchase
-  await page.waitForURL(/vehicle-owner|purchase/, { timeout: 60000 });
+  // Wait for profile (vehicle owner) or purchase vehicle step
+  await page.waitForURL(/\/onboarding\/[^/]+\/(profile|vehicle)/, { timeout: 60000 });
 
-  if (page.url().includes('vehicle-owner')) {
+  if (page.url().includes('/profile')) {
     await page.getByRole('textbox').first().fill(OWNER);
     await clickFooterCta(page, /add my name|continue/i);
-    await page.waitForURL(/purchase/, { timeout: 30000 });
+    await page.waitForURL(/\/onboarding\/[^/]+\/vehicle/, { timeout: 30000 });
   }
 
-  // Ensure QR in localStorage
-  const qrStored = await page.evaluate(() => window.localStorage.getItem('qr_code'));
-  console.log('[storage] localStorage qr_code =', qrStored);
-  if (!qrStored) {
-    await page.evaluate((qr) => window.localStorage.setItem('qr_code', qr), QR_CODE);
+  // Journey id must be in URL — not localStorage
+  const journeyInUrl = await page.evaluate(() => {
+    const m = window.location.pathname.match(/\/onboarding\/([^/]+)/);
+    return m?.[1] ?? null;
+  });
+  console.log('[url] journey id in path =', journeyInUrl);
+  if (!journeyInUrl) {
+    throw new Error('Expected journey id in onboarding URL path');
   }
 
   // R03 vehicle
-  if (!page.url().includes('r03-vehicle')) {
-    await page.goto(`${BASE}/journey/purchase/vehicle-details`, { waitUntil: 'networkidle' });
+  if (!page.url().includes('/vehicle')) {
+    await page.goto(ONBOARDING('/vehicle'), { waitUntil: 'networkidle' });
   }
   await page.waitForTimeout(2000);
 

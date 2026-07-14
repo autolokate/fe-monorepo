@@ -1,4 +1,4 @@
-import { journeyPaths } from '../constants';
+import { authJourneyPaths } from '../auth/auth-routing';
 
 import type { RouteProgressConfig } from './route-progress.types';
 
@@ -7,19 +7,19 @@ export const SHARED_AUTH_PROGRESS_TOTAL = 3;
 
 /** Source of truth: path → progress (Shared Auth). */
 export const authRouteProgressByPath: Record<string, RouteProgressConfig> = {
-  [`${journeyPaths.auth}/mobile`]: {
+  [authJourneyPaths.mobile]: {
     step: 1,
     total: SHARED_AUTH_PROGRESS_TOTAL,
     showProgress: true,
     showMeta: false,
   },
-  [`${journeyPaths.auth}/otp`]: {
+  [authJourneyPaths.otp]: {
     step: 2,
     total: SHARED_AUTH_PROGRESS_TOTAL,
     showProgress: true,
     showMeta: false,
   },
-  [`${journeyPaths.auth}/vehicle-owner`]: {
+  [authJourneyPaths.vehicleOwner]: {
     step: 3,
     total: SHARED_AUTH_PROGRESS_TOTAL,
     showProgress: false,
@@ -31,4 +31,3 @@ export function getAuthRouteProgress(pathname: string): RouteProgressConfig | nu
   const normalized = pathname.replace(/\/+$/, '');
   return authRouteProgressByPath[normalized] ?? null;
 }
-

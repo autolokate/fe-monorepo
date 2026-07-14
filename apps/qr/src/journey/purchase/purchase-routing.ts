@@ -1,12 +1,16 @@
-import { journeyPaths } from '../constants';
+import {
+  buildPurchasePaths,
+  decodeRegistrationFromPath,
+  parsePurchaseVehicleConfirmationPath,
+  parsePurchaseVehicleLookupPath,
+  stripOnboardingPrefix,
+} from '../routing/journey-url-routing';
 
-/** Canonical URL segments for the purchase journey. */
+/** Canonical URL segments for the purchase journey (relative to onboarding base). */
 export const PURCHASE_ROUTE_SEGMENTS = {
-  vehicleDetails: 'vehicle-details',
-  vehicleLookup: 'vehicle-lookup',
+  vehicleDetails: 'vehicle',
   vehicleLookupFailed: 'vehicle-lookup-failed',
-  vehicleConfirmation: 'vehicle-confirmation',
-  choosePlan: 'choose-plan',
+  choosePlan: 'plans',
   riderCover: 'rider-cover',
   orderSummary: 'order-summary',
   orderSummaryPromoApplied: 'order-summary-promo-applied',
@@ -18,7 +22,16 @@ export const PURCHASE_ROUTE_SEGMENTS = {
   paymentUnconfirmed: 'payment-unconfirmed',
 } as const;
 
-/** Legacy Figma R03–R10 segments — kept for deep-link redirects only. */
+export const PURCHASE_ROUTE_PATTERNS = {
+  vehicleLookup: 'vehicle/:registrationNumber/lookup',
+  vehicleConfirmation: 'vehicle/:registrationNumber/confirmation',
+} as const;
+
+export const LEGACY_PURCHASE_FLAT_SEGMENTS = {
+  vehicleLookup: 'vehicle-lookup',
+  vehicleConfirmation: 'vehicle-confirmation',
+} as const;
+
 export const LEGACY_PURCHASE_ROUTE_SEGMENTS = {
   r03Vehicle: 'r03-vehicle',
   r04Fetching: 'r04-fetching',
@@ -36,70 +49,139 @@ export const LEGACY_PURCHASE_ROUTE_SEGMENTS = {
   r10cPaymentUnconfirmed: 'r10c-payment-unconfirmed',
 } as const;
 
-const purchaseBase = journeyPaths.purchase;
+export { buildPurchasePaths };
 
-/** URL paths for the purchase segment inside the journey orchestrator. */
-export const purchaseJourneyPaths = {
-  vehicleDetails: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.vehicleDetails}`,
-  vehicleLookup: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.vehicleLookup}`,
-  vehicleLookupFailed: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed}`,
-  vehicleConfirmation: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.vehicleConfirmation}`,
-  choosePlan: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.choosePlan}`,
-  riderCover: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.riderCover}`,
-  orderSummary: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.orderSummary}`,
-  orderSummaryPromoApplied: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied}`,
-  orderSummaryInvalidPromo: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo}`,
-  processingPayment: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.processingPayment}`,
-  paymentStillConfirming: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming}`,
-  paymentSuccess: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.paymentSuccess}`,
-  paymentFailed: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.paymentFailed}`,
-  paymentUnconfirmed: `${purchaseBase}/${PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed}`,
-} as const;
-
-/** Maps legacy path segments to their canonical replacements. */
-export const legacyPurchasePathRedirects = [
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r03Vehicle, purchaseJourneyPaths.vehicleDetails],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r04Fetching, purchaseJourneyPaths.vehicleLookup],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r04bFetchFailed, purchaseJourneyPaths.vehicleLookupFailed],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r05Confirm, purchaseJourneyPaths.vehicleConfirmation],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r06ChoosePlan, purchaseJourneyPaths.choosePlan],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r07RiderCover, purchaseJourneyPaths.riderCover],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r08OrderSummary, purchaseJourneyPaths.orderSummary],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r08bPromoApplied, purchaseJourneyPaths.orderSummaryPromoApplied],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r08cInvalidPromo, purchaseJourneyPaths.orderSummaryInvalidPromo],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r09ProcessingPayment, purchaseJourneyPaths.processingPayment],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r09bStillConfirming, purchaseJourneyPaths.paymentStillConfirming],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r10PaymentSuccess, purchaseJourneyPaths.paymentSuccess],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r10bPaymentFailed, purchaseJourneyPaths.paymentFailed],
-  [LEGACY_PURCHASE_ROUTE_SEGMENTS.r10cPaymentUnconfirmed, purchaseJourneyPaths.paymentUnconfirmed],
-] as const;
-
-export type PurchaseJourneyPath = (typeof purchaseStepPathSequence)[number];
-
-/** Active purchase journey — Auth → checkout → Emergency handoff on payment success. */
-export const purchaseStepPathSequence = [
-  purchaseJourneyPaths.vehicleDetails,
-  purchaseJourneyPaths.vehicleLookup,
-  purchaseJourneyPaths.vehicleConfirmation,
-  purchaseJourneyPaths.choosePlan,
-  purchaseJourneyPaths.riderCover,
-  purchaseJourneyPaths.orderSummary,
-  purchaseJourneyPaths.processingPayment,
-  purchaseJourneyPaths.paymentSuccess,
-] as const;
-
-export function getNextPurchasePath(currentPath: string): string | null {
-  const index = purchaseStepPathSequence.indexOf(currentPath as PurchaseJourneyPath);
-  if (index < 0 || index >= purchaseStepPathSequence.length - 1) {
-    return null;
-  }
-  return purchaseStepPathSequence[index + 1] ?? null;
+export function purchaseVehicleLookupPath(journeyId: string, registration: string): string {
+  return buildPurchasePaths(journeyId).vehicleLookup(registration);
 }
 
-export function getPrevPurchasePath(currentPath: string): string | null {
-  const index = purchaseStepPathSequence.indexOf(currentPath as PurchaseJourneyPath);
+export function purchaseVehicleConfirmationPath(journeyId: string, registration: string): string {
+  return buildPurchasePaths(journeyId).vehicleConfirmation(registration);
+}
+
+export { decodeRegistrationFromPath as decodeRegistrationFromPath };
+
+export function purchaseJourneyPathsFor(journeyId: string) {
+  const paths = buildPurchasePaths(journeyId);
+  return {
+    vehicleDetails: paths.vehicleDetails,
+    vehicleLookupFailed: paths.vehicleLookupFailed,
+    choosePlan: paths.choosePlan,
+    riderCover: paths.riderCover,
+    orderSummary: paths.orderSummary,
+    orderSummaryPromoApplied: paths.orderSummaryPromoApplied,
+    orderSummaryInvalidPromo: paths.orderSummaryInvalidPromo,
+    processingPayment: paths.processingPayment,
+    paymentStillConfirming: paths.paymentStillConfirming,
+    paymentSuccess: paths.paymentSuccess,
+    paymentFailed: paths.paymentFailed,
+    paymentUnconfirmed: paths.paymentUnconfirmed,
+  } as const;
+}
+
+/** @deprecated Use purchaseJourneyPathsFor(journeyId) */
+export const purchaseJourneyPaths = purchaseJourneyPathsFor('');
+
+export const legacyPurchasePathRedirects = (journeyId: string) => {
+  const paths = purchaseJourneyPathsFor(journeyId);
+  return [
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r03Vehicle, paths.vehicleDetails],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r04Fetching, `/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleLookup}`],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r04bFetchFailed, paths.vehicleLookupFailed],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r05Confirm, `/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleConfirmation}`],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r06ChoosePlan, paths.choosePlan],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r07RiderCover, paths.riderCover],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r08OrderSummary, paths.orderSummary],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r08bPromoApplied, paths.orderSummaryPromoApplied],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r08cInvalidPromo, paths.orderSummaryInvalidPromo],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r09ProcessingPayment, paths.processingPayment],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r09bStillConfirming, paths.paymentStillConfirming],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r10PaymentSuccess, paths.paymentSuccess],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r10bPaymentFailed, paths.paymentFailed],
+    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r10cPaymentUnconfirmed, paths.paymentUnconfirmed],
+  ] as const;
+};
+
+export const legacyJourneyPurchasePathRedirects = (journeyId: string) => {
+  const paths = purchaseJourneyPathsFor(journeyId);
+  return [
+    ['vehicle-details', paths.vehicleDetails],
+    ['vehicle-lookup', `/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleLookup}`],
+    ['vehicle-lookup-failed', paths.vehicleLookupFailed],
+    ['vehicle-confirmation', `/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleConfirmation}`],
+    ['choose-plan', paths.choosePlan],
+    ['rider-cover', paths.riderCover],
+    ['order-summary', paths.orderSummary],
+    ['order-summary-promo-applied', paths.orderSummaryPromoApplied],
+    ['order-summary-invalid-promo', paths.orderSummaryInvalidPromo],
+    ['processing-payment', paths.processingPayment],
+    ['payment-still-confirming', paths.paymentStillConfirming],
+    ['payment-success', paths.paymentSuccess],
+    ['payment-failed', paths.paymentFailed],
+    ['payment-unconfirmed', paths.paymentUnconfirmed],
+  ] as const;
+};
+
+export type PurchaseJourneyPath = ReturnType<typeof purchaseJourneyPathsFor>[keyof ReturnType<typeof purchaseJourneyPathsFor>];
+
+export function purchaseStepPathSequence(journeyId: string) {
+  const paths = purchaseJourneyPathsFor(journeyId);
+  return [
+    paths.vehicleDetails,
+    paths.choosePlan,
+    paths.riderCover,
+    paths.orderSummary,
+    paths.processingPayment,
+    paths.paymentSuccess,
+  ] as const;
+}
+
+export function isPurchaseRoutePath(pathname: string): boolean {
+  const relative = stripOnboardingPrefix(pathname);
+  const normalized = relative.replace(/\/+$/, '') || '/';
+  const segments = Object.values(PURCHASE_ROUTE_SEGMENTS).map((s) => `/${s}`);
+  if (segments.includes(normalized)) {
+    return true;
+  }
+  return (
+    parsePurchaseVehicleLookupPath(pathname) !== null ||
+    parsePurchaseVehicleConfirmationPath(pathname) !== null
+  );
+}
+
+export function getNextPurchasePath(journeyId: string, currentPath: string): string | null {
+  const relative = stripOnboardingPrefix(currentPath);
+  const normalized = relative.replace(/\/+$/, '');
+  if (parsePurchaseVehicleConfirmationPath(currentPath)) {
+    return purchaseJourneyPathsFor(journeyId).choosePlan;
+  }
+  if (parsePurchaseVehicleLookupPath(currentPath)) {
+    return null;
+  }
+
+  const sequence = purchaseStepPathSequence(journeyId);
+  const paths = purchaseJourneyPathsFor(journeyId);
+  const flatPaths = Object.values(paths);
+  const index = flatPaths.findIndex((p) => p.endsWith(normalized));
+  if (index < 0 || index >= sequence.length - 1) {
+    return null;
+  }
+  return sequence[index + 1] ?? null;
+}
+
+export function getPrevPurchasePath(journeyId: string, currentPath: string): string | null {
+  const relative = stripOnboardingPrefix(currentPath);
+  const normalized = relative.replace(/\/+$/, '');
+  if (parsePurchaseVehicleConfirmationPath(currentPath)) {
+    return purchaseJourneyPathsFor(journeyId).vehicleDetails;
+  }
+
+  const sequence = purchaseStepPathSequence(journeyId);
+  const index = sequence.findIndex((p) => p === currentPath || p.endsWith(normalized));
   if (index <= 0) {
     return null;
   }
-  return purchaseStepPathSequence[index - 1] ?? null;
+  return sequence[index - 1] ?? null;
 }
+
+export { parsePurchaseVehicleLookupPath, parsePurchaseVehicleConfirmationPath };

@@ -97,7 +97,7 @@ No nested `website/autolokate-fe/` folder.
 | `pnpm-workspace.yaml` | Added `!apps/website-backup` exclusion |
 | `pnpm-lock.yaml` | Updated after `pnpm install` (+167 packages for website) |
 
-**Unchanged:** root `package.json`, `turbo.json`, other apps `(`admin`, `qr`, `ui-preview`), all `packages/*`.
+**Unchanged:** root `package.json`, `turbo.json`, other apps (`admin`, `onboarding`, `ui-preview`), all `packages/*`.
 
 ---
 

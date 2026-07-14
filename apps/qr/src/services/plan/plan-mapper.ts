@@ -62,6 +62,7 @@ export function mapPlanOptionToDefinition(option: PlanOptionDto): PurchasePlanDe
 
   return {
     id,
+    planVersionId: option.id,
     name: option.name,
     priceLabel: formatYearlyPriceLabel(option.pricePaise),
     priceInr,
@@ -88,6 +89,15 @@ export function formatApiTierLabel(tier: string): string {
     .split('_')
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
+}
+
+export function getPlanVersionId(
+  plans: readonly PurchasePlanDefinition[],
+  planId: PurchasePlanId,
+): string | null {
+  const plan = plans.find((entry) => entry.id === planId);
+  const versionId = plan?.planVersionId?.trim();
+  return versionId ? versionId : null;
 }
 
 /** Rider options for the selected plan tier from the cached catalog. */

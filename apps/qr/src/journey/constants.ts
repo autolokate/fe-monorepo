@@ -1,24 +1,36 @@
 import type { ActivationFlowId } from './types';
+import { ROUTE_NAMESPACE, buildQrEntryPath, LEGACY_FLAT_PATHS } from './routing/journey-url-routing';
 
 export const JOURNEY_STORAGE_KEY = 'al-journey-v1';
-export const SELECTED_FLOW_KEY = 'al-selected-flow';
 
+/** Root-level public onboarding paths. */
 export const journeyPaths = {
-  /** Production QR entry — scan lands on auth mobile with ?qr_code= */
-  entry: '/journey/auth/mobile',
-  root: '/journey/auth/mobile',
-  auth: '/journey/auth',
-  authWildcard: '/journey/auth/*',
-  purchase: '/journey/purchase',
-  purchaseWildcard: '/journey/purchase/*',
-  prepaid: '/journey/prepaid',
-  prepaidWildcard: '/journey/prepaid/*',
-  b2b2c: '/journey/b2b2c',
-  b2b2cWildcard: '/journey/b2b2c/*',
-  emergency: '/journey/emergency',
-  emergencyWildcard: '/journey/emergency/*',
-  completed: '/journey/completed',
+  /** Universal QR entry */
+  entry: ROUTE_NAMESPACE.q,
+  root: ROUTE_NAMESPACE.q,
+  qrDeepLinkPrefix: ROUTE_NAMESPACE.q,
+  onboardingPrefix: ROUTE_NAMESPACE.onboarding,
+  emergencyPrefix: ROUTE_NAMESPACE.emergency,
+  scanPrefix: ROUTE_NAMESPACE.scan,
+  legalPrivacy: ROUTE_NAMESPACE.legalPrivacy,
+  legalTerms: ROUTE_NAMESPACE.legalTerms,
+  prepaid: ROUTE_NAMESPACE.prepaid,
+  prepaidWildcard: `${ROUTE_NAMESPACE.prepaid}/*`,
+  b2b2c: ROUTE_NAMESPACE.b2b2c,
+  b2b2cWildcard: `${ROUTE_NAMESPACE.b2b2c}/*`,
+  emergency: ROUTE_NAMESPACE.emergency,
+  emergencyWildcard: `${ROUTE_NAMESPACE.emergency}/*`,
+  completed: ROUTE_NAMESPACE.completed,
+  /** Legacy flat paths — redirect only */
+  auth: LEGACY_FLAT_PATHS.auth,
+  otp: LEGACY_FLAT_PATHS.otp,
+  profile: LEGACY_FLAT_PATHS.profile,
+  scan: LEGACY_FLAT_PATHS.scan,
 } as const;
+
+export function buildQrDeepLinkPath(qrCode: string): string {
+  return buildQrEntryPath(qrCode);
+}
 
 export const flowLabels: Record<ActivationFlowId, string> = {
   purchase: 'Consumer QR Activation + Purchase',

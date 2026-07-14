@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { AlLogo } from '@autolokate/brand';
 import { AlScreenBg, AlText } from '@autolokate/ui';
 
@@ -7,21 +6,9 @@ import type { S0SplashScreenProps } from '../../types';
 
 import './s0-splash.css';
 
-const SPLASH_AUTO_MS = 1800;
-
-/** S0 · Splash — Figma 27:98 */
-export function S0SplashScreen({ onComplete }: S0SplashScreenProps) {
+/** S0 · Splash — Figma 27:98 (duration controlled by AppLaunchSplash bootstrap). */
+export function S0SplashScreen(_props: S0SplashScreenProps) {
   const { themeMode } = useThemeMode();
-
-  useEffect(() => {
-    if (!onComplete) {
-      return;
-    }
-    const timer = window.setTimeout(onComplete, SPLASH_AUTO_MS);
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [onComplete]);
 
   return (
     <AlScreenBg variant="protected" className="ob-splash">

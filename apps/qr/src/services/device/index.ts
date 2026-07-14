@@ -1,4 +1,8 @@
-export { registerDevice, refreshDeviceRegistration } from './device-service';
+export {
+  registerDevice,
+  refreshDeviceRegistration,
+  clearDeviceRegistrationState,
+} from './device-service';
 export {
   setFcmTokenProvider,
   getFcmToken,

@@ -41,6 +41,8 @@ export type A1MobileScreenProps = AuthNavigationProps & {
   footerLabel?: string;
   hideProgress?: boolean;
   consentVariant?: 'owner' | 'bystander';
+  /** When false, hide T&C checkbox and allow OTP without consent (B2C post-DISTRIBUTED). */
+  requireConsent?: boolean;
 };
 
 export type A2OtpScreenProps = AuthNavigationProps & {

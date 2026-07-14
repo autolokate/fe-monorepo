@@ -9,6 +9,7 @@ import {
   getActivationCompleteTitle,
 } from '../../features/qr-purchase/data/purchase-pricing';
 import { resolvePurchasePlanId } from '../../features/emergency/emergency-limits';
+import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser-back';
 import { useJourney } from '../JourneyContext';
 import { journeyPaths } from '../constants';
 
@@ -31,6 +32,8 @@ export function JourneyCompletedScreen() {
   useEffect(() => {
     setPhase('completed');
   }, [setPhase]);
+
+  usePreventBrowserBack();
 
   const finish = () => {
     clearJourney();

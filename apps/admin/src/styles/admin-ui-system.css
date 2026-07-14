@@ -1,0 +1,499 @@
+/**
+ * Admin UI system — Google Console density & clarity on existing theme tokens.
+ * Layout, typography, contrast, and component polish only.
+ */
+
+/* ── Readable text (dark + light) ───────────────────────────────── */
+
+.al-page-layout,
+.al-modal {
+  --al-admin-hint-color: color-mix(in srgb, var(--al-color-on-surface) 72%, transparent);
+  --al-admin-label-color: color-mix(in srgb, var(--al-color-on-surface) 86%, transparent);
+  --al-admin-body-secondary: color-mix(in srgb, var(--al-color-on-surface) 78%, transparent);
+}
+
+[data-theme='light'] .al-page-layout,
+[data-theme='light'] .al-modal {
+  --al-admin-hint-color: color-mix(in srgb, var(--al-color-on-surface) 56%, transparent);
+  --al-admin-label-color: color-mix(in srgb, var(--al-color-on-surface) 74%, transparent);
+  --al-admin-body-secondary: color-mix(in srgb, var(--al-color-on-surface) 64%, transparent);
+}
+
+.al-page-layout .al-text--muted,
+.al-modal .al-text--muted {
+  color: var(--al-admin-hint-color);
+}
+
+.al-page-layout .admin-detail-field .al-text--caption {
+  color: var(--al-admin-label-color);
+}
+
+.al-page-layout .admin-detail-field .al-text:not(.al-text--caption) {
+  color: var(--al-color-text);
+}
+
+/* ── Page panels (card sections) ─────────────────────────────────── */
+
+.al-page-layout .admin-detail-section {
+  padding: var(--al-space-5);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface);
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-page-layout .admin-detail-section__title {
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  line-height: 1.375rem;
+  color: var(--al-color-text);
+}
+
+.al-page-layout .admin-detail-section__description {
+  color: var(--al-admin-hint-color);
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+}
+
+.al-page-layout .al-section-header {
+  margin-bottom: var(--al-space-4);
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.al-page-layout .al-section-header .al-heading {
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  line-height: 1.375rem;
+}
+
+.al-page-layout .al-section-header .al-text--caption {
+  color: var(--al-admin-hint-color);
+}
+
+/* ── Stats row ─────────────────────────────────────────────────── */
+
+.al-page-layout .admin-detail-stat-grid {
+  gap: var(--al-space-3);
+}
+
+.al-page-layout .admin-detail-stat {
+  text-align: left;
+  padding: var(--al-space-3) var(--al-space-4);
+  background: var(--al-color-surface-variant);
+}
+
+.al-page-layout .admin-detail-stat__value {
+  font-size: 1.25rem;
+  font-weight: var(--al-font-weight-medium);
+  line-height: 1.5rem;
+}
+
+.al-page-layout .admin-detail-stat__label {
+  color: var(--al-admin-hint-color);
+  margin-top: var(--al-space-1);
+}
+
+/* ── Detail grid ───────────────────────────────────────────────── */
+
+.al-page-layout .admin-detail-grid {
+  gap: var(--al-space-4) var(--al-space-5);
+}
+
+/* ── Page actions (never full-width buttons) ─────────────────────── */
+
+.admin-page-actions,
+.admin-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--al-space-2);
+}
+
+.admin-page-actions .al-button,
+.admin-sheet-actions .al-button {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+/* ── Inline alerts ───────────────────────────────────────────────── */
+
+.admin-inline-alert {
+  margin: 0;
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  color: var(--al-color-danger);
+  background: color-mix(in srgb, var(--al-color-danger) 10%, var(--al-color-surface));
+  border: 1px solid color-mix(in srgb, var(--al-color-danger) 26%, transparent);
+}
+
+.admin-empty-note {
+  margin: 0;
+  padding: var(--al-space-5);
+  text-align: center;
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  color: var(--al-admin-hint-color);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface-variant);
+  border: var(--al-border-width-thin) dashed var(--al-color-border-subtle);
+}
+
+/* ── Result panels (unified) ─────────────────────────────────────── */
+
+.admin-result-panel,
+.qr-batch-result-card,
+.admin-mutation-result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-3);
+  padding: var(--al-space-4);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface-variant);
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.admin-result-panel .al-text--label,
+.qr-batch-result-card .al-text--label,
+.admin-mutation-result .al-text--label {
+  color: var(--al-color-text);
+  font-weight: var(--al-font-weight-medium);
+}
+
+/* ── Data table toolbar & search ───────────────────────────────── */
+
+.al-page-layout .al-data-table .al-field__input,
+.al-page-layout .al-data-table .al-search-input__control {
+  min-height: 2.25rem !important;
+  border-radius: var(--al-radius-sm) !important;
+  border-width: 1px !important;
+  border-color: var(--al-color-outline) !important;
+  font-size: var(--al-text-label-size) !important;
+}
+
+.al-page-layout .al-data-table .al-field__input:focus,
+.al-page-layout .al-data-table .al-search-input__control:focus {
+  border-color: var(--al-color-focus) !important;
+  outline: 2px solid color-mix(in srgb, var(--al-color-focus) 20%, transparent) !important;
+}
+
+.al-page-layout .al-data-table .al-field__input:not(:placeholder-shown) {
+  border-color: var(--al-color-outline) !important;
+}
+
+.al-page-layout .al-data-table__footer {
+  padding: var(--al-space-2) var(--al-space-4);
+  gap: var(--al-space-3);
+}
+
+.al-page-layout .al-data-table__footer-meta,
+.al-page-layout .al-data-table__page-size {
+  color: var(--al-admin-hint-color);
+  font-size: var(--al-text-label-size);
+}
+
+.al-page-layout .al-data-table__pagination {
+  gap: var(--al-space-2);
+}
+
+.al-page-layout .al-data-table__pagination .al-button {
+  min-height: 2rem;
+  min-width: 2.5rem;
+  width: auto;
+  padding-inline: var(--al-space-3);
+  font-size: var(--al-text-label-size);
+}
+
+.al-page-layout .al-data-table__page-size select {
+  min-height: 2rem;
+  border-color: var(--al-color-outline);
+}
+
+/* ── Filter chips (readable on dark + light) ─────────────────────── */
+
+.al-page-layout .admin-filter-bar {
+  background: transparent;
+  border: none;
+  padding: 0;
+  gap: var(--al-space-2);
+}
+
+.al-page-layout .admin-filter-chip .al-badge {
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  padding: 0.375rem 0.875rem;
+  min-height: 2rem;
+  font-weight: var(--al-font-weight-medium);
+  color: color-mix(in srgb, var(--al-color-on-surface) 86%, transparent);
+  background: var(--al-color-surface-variant);
+  border: 1px solid color-mix(in srgb, var(--al-color-outline) 90%, transparent);
+  box-shadow: none;
+}
+
+.al-page-layout .admin-filter-chip:hover:not([aria-pressed='true']) .al-badge {
+  color: var(--al-color-text);
+  background: var(--al-color-surface-hover);
+  border-color: var(--al-color-outline);
+}
+
+.al-page-layout .admin-filter-chip[aria-pressed='true'] .al-badge {
+  color: var(--al-color-text);
+  background: color-mix(in srgb, var(--al-color-primary) 16%, var(--al-color-surface-variant));
+  border-color: color-mix(in srgb, var(--al-color-primary) 55%, transparent);
+  box-shadow: inset 0 -2px 0 var(--al-color-primary);
+}
+
+[data-theme='dark'] .al-page-layout .admin-filter-chip .al-badge {
+  color: color-mix(in srgb, var(--al-color-on-surface) 90%, transparent);
+  background: color-mix(in srgb, var(--al-color-on-surface) 6%, var(--al-color-surface));
+  border-color: color-mix(in srgb, var(--al-color-outline) 95%, transparent);
+}
+
+[data-theme='dark'] .al-page-layout .admin-filter-chip[aria-pressed='true'] .al-badge {
+  background: color-mix(in srgb, var(--al-color-primary) 18%, var(--al-color-surface));
+}
+
+/* ── Table toolbar, headers, cells ───────────────────────────────── */
+
+.al-page-layout .al-data-table .al-toolbar--inset {
+  padding: var(--al-space-3) var(--al-space-4);
+  background: color-mix(in srgb, var(--al-color-on-surface) 4%, var(--al-color-surface));
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-page-layout .al-data-table__toolbar .al-text--muted,
+.al-page-layout .al-data-table__toolbar .al-toolbar__meta {
+  color: var(--al-admin-hint-color, color-mix(in srgb, var(--al-color-on-surface) 72%, transparent));
+}
+
+.al-page-layout .al-data-table__table th {
+  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 84%, transparent));
+  background: color-mix(in srgb, var(--al-color-on-surface) 5%, var(--al-color-surface));
+}
+
+.al-page-layout .al-data-table__table td {
+  color: var(--al-color-text);
+}
+
+.al-page-layout .al-data-table__table tbody tr:hover td {
+  color: var(--al-color-text);
+}
+
+.al-page-layout .admin-filter-field__label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: var(--al-font-weight-medium);
+  font-size: var(--al-text-label-size);
+  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 88%, transparent));
+}
+
+/* ── Page rhythm ─────────────────────────────────────────────────── */
+
+.al-page-layout .al-page-content > .al-stack--gap-md,
+.al-page-layout .al-page-content > .al-stack--gap-lg {
+  gap: var(--al-space-5);
+}
+
+.al-page-layout .al-page-header + * {
+  margin-top: 0;
+}
+
+/* ── Breadcrumb ──────────────────────────────────────────────────── */
+
+.al-page-layout .al-breadcrumb {
+  font-size: var(--al-text-label-size);
+}
+
+.al-page-layout .al-breadcrumb button,
+.al-page-layout .al-breadcrumb a {
+  color: var(--al-admin-hint-color);
+}
+
+.al-page-layout .al-breadcrumb [aria-current='page'] {
+  color: var(--al-color-text);
+}
+
+/* ── Status badges on dark ───────────────────────────────────────── */
+
+.al-page-layout .al-status-badge,
+.al-modal .al-status-badge {
+  font-size: var(--al-text-caption-size);
+}
+
+/* ── Control radius & density (Google: 8px corners everywhere) ───── */
+
+.al-page-layout,
+.al-modal {
+  --al-comp-input-radius: var(--al-radius-sm);
+  --al-comp-text-field-radius: var(--al-radius-sm);
+  --al-comp-button-radius: var(--al-radius-sm);
+}
+
+.al-page-layout .al-field__input,
+.al-page-layout .al-select,
+.al-page-layout .al-search-input__control,
+.al-modal .al-field__input,
+.al-modal .al-select {
+  border-radius: var(--al-radius-sm) !important;
+}
+
+.al-page-layout .al-button,
+.al-modal .al-button {
+  border-radius: var(--al-radius-sm);
+}
+
+/* Destructive actions: outline, not screaming solid fill */
+.al-page-layout .al-button--destructive,
+.al-page-layout .al-button--danger,
+.al-modal .al-button--destructive,
+.al-modal .al-button--danger {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--al-color-danger) 42%, transparent);
+  color: var(--al-color-danger);
+}
+
+.al-page-layout .al-button--destructive:hover:not(:disabled):not(.is-loading),
+.al-page-layout .al-button--danger:hover:not(:disabled):not(.is-loading),
+.al-modal .al-button--destructive:hover:not(:disabled):not(.is-loading),
+.al-modal .al-button--danger:hover:not(:disabled):not(.is-loading) {
+  background: color-mix(in srgb, var(--al-color-danger) 8%, var(--al-color-surface));
+  border-color: color-mix(in srgb, var(--al-color-danger) 55%, transparent);
+  color: var(--al-color-danger);
+}
+
+.al-page-layout .admin-data-block__filters .al-search-input__control,
+.al-page-layout .admin-data-block__filters .al-field__input {
+  min-height: 2.25rem !important;
+  border-radius: var(--al-radius-sm) !important;
+  border-color: var(--al-color-outline) !important;
+}
+
+/* ── Section headers on pages ────────────────────────────────────── */
+
+.al-page-layout .al-section-header {
+  margin-bottom: 0;
+  padding-bottom: var(--al-space-4);
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.al-page-layout .al-section-header .al-heading[variant='h4'] {
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  line-height: 1.375rem;
+  letter-spacing: 0;
+}
+
+.al-page-layout .al-section-header .al-text--caption {
+  color: var(--al-admin-hint-color);
+}
+
+.al-page-layout .al-section-header__actions .al-button {
+  width: auto;
+}
+
+/* ── Metric / stat cards ─────────────────────────────────────────── */
+
+.al-page-layout .al-metric-card,
+.al-page-layout .al-stat-card {
+  padding: var(--al-space-4);
+}
+
+.al-page-layout .al-metric-card__value,
+.al-page-layout .al-stat-card__value {
+  font-size: 1.375rem;
+  font-weight: var(--al-font-weight-medium);
+  line-height: 1.625rem;
+}
+
+.al-page-layout .al-metric-card__label,
+.al-page-layout .al-stat-card__label {
+  color: var(--al-admin-hint-color);
+  font-size: var(--al-text-label-size);
+}
+
+/* ── Operations pages (finance, ownership) ───────────────────────── */
+
+.admin-operations-results:not(:has(*)) {
+  display: none;
+}
+
+.admin-operations-empty {
+  margin: 0;
+}
+
+/* ── QR batch detail ─────────────────────────────────────────────── */
+
+.qr-batch-detail-summary .admin-detail-section__body > .al-status-badge {
+  align-self: flex-start;
+}
+
+.qr-batch-detail-summary .admin-detail-section__body > .al-status-badge + .admin-detail-grid {
+  margin-top: var(--al-space-1);
+}
+
+.qr-batch-codes-page {
+  padding: var(--al-space-5);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface);
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.qr-batch-codes-page .admin-data-block {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.qr-batch-codes-page .admin-data-block__filters {
+  padding-inline: 0;
+  padding-top: 0;
+  background: transparent;
+  border-bottom: none;
+}
+
+.qr-batch-codes-page .al-section-header {
+  padding-bottom: var(--al-space-3);
+  margin-bottom: var(--al-space-4);
+}
+
+.qr-batch-detail-actions .admin-detail-section__description {
+  color: var(--al-admin-hint-color);
+}
+
+.qr-batch-detail-actions .admin-empty-note {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4rem;
+}
+
+/* ── Permission / helper notes ───────────────────────────────────── */
+
+.admin-permission-note {
+  margin: 0;
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  color: var(--al-admin-hint-color);
+}
+
+/* ── Page header actions ─────────────────────────────────────────── */
+
+.al-page-layout .al-page-header__actions .al-button {
+  width: auto;
+}
+
+/* ── Empty & error states in panels ──────────────────────────────── */
+
+.al-page-layout .al-empty-state,
+.al-page-layout .al-error-state {
+  padding: var(--al-space-6) var(--al-space-5);
+}
+
+.al-page-layout .al-empty-state .al-text--muted,
+.al-page-layout .al-error-state .al-text--muted {
+  color: var(--al-admin-hint-color);
+}
+

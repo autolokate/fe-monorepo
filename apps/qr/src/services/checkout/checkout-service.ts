@@ -10,6 +10,7 @@ import { getQrApiClient } from '@/platform/api/qr-api-client';
 
 import {
   clearCheckoutCache,
+  clearCartPricingCache,
   getCheckoutRevision,
   getInflightPayment,
   getInflightPrepare,
@@ -23,7 +24,12 @@ import {
   setInflightPrepare,
   updateCheckoutState,
 } from './checkout-cache';
-import { mapCheckoutApiError, type CheckoutError } from './checkout-errors';
+import {
+  isCatalogStaleError,
+  isRefreshableCheckoutError,
+  mapCheckoutApiError,
+  type CheckoutError,
+} from './checkout-errors';
 import {
   buildCheckoutParamsKey,
   createIdempotencyKey,
@@ -37,10 +43,11 @@ import { isPendingPaymentOutcome } from './payment-outcome';
 import { getRazorpayPublishableKey } from './payment-gateway';
 import { patchCheckout, clearCheckout } from '@/storage/index';
 import { openRazorpayCheckout } from './razorpay-checkout';
-import {
-  formatCreateOrderBodyForLog,
-  resolveOrderQrCode,
-} from './resolve-order-qr-code';
+import { formatCreateOrderBodyForLog } from './resolve-order-qr-code';
+import { priceCheckoutCart } from '@/services/cart/index';
+import { peekCartId } from './checkout-cache';
+import { clearPlansCache } from '@/services/plan/plan-cache';
+import { loadPlans } from '@/services/plan/plan-service';
 
 export type PrepareCheckoutResult =
   | { ok: true; revision: number }
@@ -66,16 +73,18 @@ function sleep(ms: number): Promise<void> {
   });
 }
 
-async function createOrderForParams(params: CheckoutParams): Promise<PrepareCheckoutResult> {
-  const purchaseQrCode = resolveOrderQrCode();
-  if (!purchaseQrCode) {
-    checkoutLogger.warn('prepare_checkout_blocked', { reason: 'missing_purchase_qr_code' });
-    return {
-      ok: false,
-      error: { code: 'unavailable', message: 'Missing purchase QR code.' },
-    };
+async function refreshCatalogIfStale(error: unknown): Promise<void> {
+  if (!isCatalogStaleError(error)) {
+    return;
   }
+  clearPlansCache();
+  await loadPlans();
+}
 
+async function createOrderForParams(
+  params: CheckoutParams,
+  retryAttempt = 0,
+): Promise<PrepareCheckoutResult> {
   const paramsKey = buildCheckoutParamsKey(params);
   const current = readCheckoutState();
 
@@ -84,8 +93,22 @@ async function createOrderForParams(params: CheckoutParams): Promise<PrepareChec
       orderId: current.orderId,
       orderStatus: current.orderStatus,
       totalPaise: current.totalPaise,
+      cartId: current.cartId,
     });
     return { ok: true, revision: getCheckoutRevision() };
+  }
+
+  const priced = await priceCheckoutCart(params, { force: retryAttempt > 0 });
+  if (!priced.ok) {
+    return priced;
+  }
+
+  const cartId = peekCartId();
+  if (!cartId) {
+    return {
+      ok: false,
+      error: { code: 'unavailable', message: 'Cart was not priced.' },
+    };
   }
 
   const idempotencyKey =
@@ -93,13 +116,14 @@ async function createOrderForParams(params: CheckoutParams): Promise<PrepareChec
       ? current.createIdempotencyKey
       : createIdempotencyKey();
 
-  const createBody = mapCheckoutParamsToCreateOrderBody(params, purchaseQrCode);
+  const createBody = mapCheckoutParamsToCreateOrderBody(cartId);
 
   try {
     const client = getQrApiClient();
     checkoutLogger.info('order_create_request', {
       body: formatCreateOrderBodyForLog(createBody),
       idempotencyKey,
+      cartId,
     });
 
     const order = await createOrderApi(client, createBody, idempotencyKey);
@@ -131,6 +155,15 @@ async function createOrderForParams(params: CheckoutParams): Promise<PrepareChec
     });
     return { ok: true, revision: getCheckoutRevision() };
   } catch (error) {
+    if (retryAttempt === 0 && isRefreshableCheckoutError(error)) {
+      checkoutLogger.info('order_create_refresh_cart', {
+        reason: error instanceof ApiError ? error.code : 'unknown',
+      });
+      clearCartPricingCache();
+      await refreshCatalogIfStale(error);
+      return createOrderForParams(params, retryAttempt + 1);
+    }
+
     checkoutLogger.warn('order_create_failed', { error, body: formatCreateOrderBodyForLog(createBody) });
     return { ok: false, error: mapCheckoutApiError(error) };
   }
@@ -237,7 +270,7 @@ async function initiateOrderPayment(orderId: string): Promise<InitiateOrderPayme
   }
 
   try {
-    const payBody = { mode: 'ONLINE' as const };
+    const payBody = {};
     checkoutLogger.info('payment_open_request', { orderId, body: payBody, idempotencyKey: payIdempotencyKey });
     const payment = await payOrderApi(client, orderId, payBody, payIdempotencyKey);
     updateCheckoutState({

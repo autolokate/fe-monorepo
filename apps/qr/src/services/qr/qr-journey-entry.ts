@@ -45,7 +45,7 @@ export type QrJourneyEntryDeps = {
 };
 
 export type QrJourneyEntryResult =
-  | { ok: true; qrCode: string; purchaseSkipsVehicle: boolean }
+  | { ok: true; qrCode: string; purchaseSkipsVehicle: boolean; staysOnAuthScreen: boolean }
   | { ok: false; error: QrDispatchError };
 
 function dispatchDeps(deps: QrJourneyEntryDeps): QrDispatchDeps {
@@ -106,7 +106,7 @@ async function beginPartnerActivationJourney(
   const riderCount: number = previewResult.ok ? previewResult.preview.riderCount : 0;
   const flowId = resolvePartnerFlowId(partnerKind);
   const variant = resolvePartnerVariantFromRiderCount(riderCount);
-  const welcomePath = resolvePartnerWelcomePath(partnerKind, riderCount);
+  const welcomePath = resolvePartnerWelcomePath(partnerKind, riderCount, code);
 
   deps.setSelectedFlow(flowId);
   deps.setPhase('flow-select');
@@ -164,7 +164,7 @@ export async function enterJourneyFromQrCode(
     const payload = mapResolutionToPayload(trimmed, resolution);
     if (payload?.type === 'activated') {
       dispatchQrPayload(payload, dispatchDeps(deps));
-      return { ok: true, qrCode: trimmed, purchaseSkipsVehicle: false };
+      return { ok: true, qrCode: trimmed, purchaseSkipsVehicle: false, staysOnAuthScreen: false };
     }
   }
 
@@ -197,6 +197,7 @@ export async function enterJourneyFromQrCode(
       ok: true,
       qrCode: trimmed,
       purchaseSkipsVehicle: isAttachedQrLifecycleStatus(resolution.qrStatus),
+      staysOnAuthScreen: entryPoint === 'auth-mobile',
     };
   }
 
@@ -205,7 +206,7 @@ export async function enterJourneyFromQrCode(
     journeyTarget === PARTNER_JOURNEY_TARGET.PARTNER_B2B
   ) {
     await beginPartnerActivationJourney(trimmed, resolution, deps);
-    return { ok: true, qrCode: trimmed, purchaseSkipsVehicle: false };
+    return { ok: true, qrCode: trimmed, purchaseSkipsVehicle: false, staysOnAuthScreen: false };
   }
 
   return {

@@ -46,13 +46,22 @@ export {
 } from './qr';
 export { getLegalDocuments, type LegalDocuments } from './legal';
 export { lookupVehicle, listVehicles, getVehicleById, type RcRecordDto, type VehicleDetailDto, type VehicleSummaryDto } from './vehicles';
-export { listPlans, type ApiPlanTier, type PlanOptionDto, type PlanPeriod, type RiderOptionDto } from './plans';
+export {
+  listPlans,
+  type ApiPlanTier,
+  type ListPlansParams,
+  type PlanOptionDto,
+  type PlanPeriod,
+  type RiderOptionDto,
+} from './plans';
 export {
   createOrder,
   payOrder,
   getOrderPayment,
+  getOrderInvoice,
   type CreateOrderBody,
   type OrderDto,
+  type OrderInvoiceDto,
   type OrderStatus,
   type PayOrderBody,
   type PayOrderMode,
@@ -60,6 +69,12 @@ export {
   type PaymentOutcomeDto,
   type PaymentRefDto,
 } from './orders';
+export {
+  createCart,
+  getCart,
+  type CartDto,
+  type CreateCartBody,
+} from './cart';
 export {
   validatePromo,
   type PromoPreviewDto,

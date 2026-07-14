@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlInput, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -110,16 +110,18 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
   const isBusy = updatePlanFeaturesMutation.isPending;
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="md"
       title={`Features — ${formatPlanRef(plan)}`}
       description={`Card copy for ${plan.name}. Features belong to this version; editing them does not reprice anyone.`}
       footer={
-        <AlStack gap="sm" direction="row">
+        <div className="admin-modal-actions">
           <AlButton
             type="submit"
             form="edit-plan-features-form"
+            size="sm"
             loading={isBusy}
             disabled={isBusy || featuresQuery.isLoading}
           >
@@ -128,6 +130,7 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
           <AlButton
             type="button"
             variant="secondary"
+            size="sm"
             disabled={isBusy}
             onClick={() => {
               onOpenChange(false);
@@ -135,7 +138,7 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
           >
             Cancel
           </AlButton>
-        </AlStack>
+        </div>
       }
     >
       <form
@@ -238,6 +241,6 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
           {submitError ? <AlText role="alert">{submitError}</AlText> : null}
         </AlStack>
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }

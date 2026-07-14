@@ -9,6 +9,7 @@ import { readPurchaseJourneyState } from '@/journey/state/purchase-journey-state
 import { ensureAttachedPurchaseContext } from '@/services/qr/seed-attached-purchase-from-resolve';
 import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
 import { activationLogger } from '@/services/activation/activation-logger';
+import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { useJourney } from '../JourneyContext';
 import { AuthRoutes } from './AuthRoutes';
 
@@ -17,6 +18,8 @@ export function JourneySharedAuthRoute() {
   const { completeAuth, setPhase, selectedFlow, setSelectedFlow, session, updateSession } =
     useJourney();
   const { redeemActivation } = useRedeemActivation();
+
+  const journeyId = useActiveJourneyId();
 
   const handleAuthCompleted = useCallback(async () => {
     const flow = selectedFlow ?? 'purchase';
@@ -35,16 +38,18 @@ export function JourneySharedAuthRoute() {
           redeemResult.error.message,
         );
         setPhase('flow-select');
-        void navigate(getAuthFlowBackPath(flow));
+        void navigate(getAuthFlowBackPath(flow, journeyId ?? undefined));
         return;
       }
       setPhase('emergency');
-      void navigate(getPostAuthActivationPath(flow, session));
+      void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session), {
+        replace: true,
+      });
       return;
     }
 
     const resolved = qrStorageRepository.readResolved();
-    const journeyState = readPurchaseJourneyState();
+    const journeyState = readPurchaseJourneyState(undefined, journeyId);
     const attachedPatch =
       journeyState.skipsVehicleSteps && resolved
         ? ensureAttachedPurchaseContext(resolved)
@@ -55,9 +60,12 @@ export function JourneySharedAuthRoute() {
       ...attachedPatch,
     });
     setPhase('activation');
-    void navigate(getPostAuthActivationPath(flow, session));
+    void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session), {
+      replace: true,
+    });
   }, [
     completeAuth,
+    journeyId,
     navigate,
     redeemActivation,
     selectedFlow,

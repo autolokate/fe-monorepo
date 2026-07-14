@@ -55,7 +55,7 @@ The codebase meets engineering-quality targets for demo/production deployment: *
 |-----------|----------------|--------|
 | Back navigation | Per-route `navigate(-1)` / path guards | Unchanged |
 | Session restore | `loadJourneyState()` / `pwa-scan-storage` | Unchanged |
-| Theme persistence | `localStorage` `al-qr-theme` | Unchanged |
+| Theme persistence | `localStorage` `al-onboarding-theme` | Unchanged |
 | iOS contact CTA hidden | `shouldShowAddFromContactsCTA()` | Verified in code |
 | Rider skip → completed | `riderSkipped` guards in EmergencyRoutes | Verified in code |
 | OTP | Shared `AlOtp` + flow wrappers | Unchanged |
@@ -98,7 +98,7 @@ Minimal engineering fixes only — no flow/UI/rule changes:
 
 ## Recommendation
 
-1. **Deploy** current build to Vercel (already configured: `qr-staging.autolokate.com`)
+1. **Deploy** current build to Vercel (already configured: `onboarding-lemon-six.vercel.app`)
 2. **Execute** real-device matrix; attach evidence to `docs/real-device-evidence/`
 3. **Re-run** signoff with device screenshots → upgrade verdict to **PRODUCTION READY**
 

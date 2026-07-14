@@ -71,3 +71,11 @@
 .al-status-badge__dot--neutral {
   background: var(--al-color-text-muted);
 }
+
+.al-status-badge__dot--info {
+  background: var(--al-signal-blue, #1a73e8);
+}
+
+[data-theme='dark'] .al-status-badge__dot--info {
+  background: var(--al-signal-blue-bright, #8ab4f8);
+}

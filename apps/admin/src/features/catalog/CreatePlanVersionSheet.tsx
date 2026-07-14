@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto, ApiPlanTier } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSelect, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
@@ -98,16 +98,18 @@ export function CreatePlanVersionSheet({
   });
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="xl"
       title="New plan version"
       description="Plans are immutable. Changing a price or a name mints a new version — this is the only way to do it."
       footer={
-        <AlStack gap="sm" direction="row">
+        <div className="admin-modal-actions">
           <AlButton
             type="submit"
             form="create-plan-version-form"
+            size="sm"
             loading={createPlanVersionMutation.isPending}
             disabled={createPlanVersionMutation.isPending}
           >
@@ -116,6 +118,7 @@ export function CreatePlanVersionSheet({
           <AlButton
             type="button"
             variant="secondary"
+            size="sm"
             disabled={createPlanVersionMutation.isPending}
             onClick={() => {
               onOpenChange(false);
@@ -123,7 +126,7 @@ export function CreatePlanVersionSheet({
           >
             Cancel
           </AlButton>
-        </AlStack>
+        </div>
       }
     >
       <form
@@ -133,7 +136,7 @@ export function CreatePlanVersionSheet({
         }}
         onKeyDown={handleFormKeyDown}
       >
-        <AlStack gap="lg">
+        <AlStack gap="md">
           <AlText variant="caption" tone="muted">
             A live Subscription pins the plan version it was sold on, so an existing version can never be
             repriced — customers who already paid would be retro-repriced. Minting {planTierLabel(tier)} v
@@ -189,7 +192,7 @@ export function CreatePlanVersionSheet({
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 errorText={fieldState.error?.message}
-                helperText="Rupees — sent to the API as paise. Up to 2 decimals."
+                helperText="Up to 2 decimal places."
                 autoComplete="off"
               />
             )}
@@ -248,6 +251,6 @@ export function CreatePlanVersionSheet({
           {submitError ? <AlText role="alert">{submitError}</AlText> : null}
         </AlStack>
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }

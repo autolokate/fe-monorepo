@@ -10,6 +10,8 @@ import './payment-success-hero.css';
 export type R10PaymentSuccessScreenProps = {
   selectedPlanId: PurchasePlanId;
   paidAmountInr: number;
+  onDownloadInvoice?: () => void;
+  invoiceDownloading?: boolean;
   onContinue?: () => void;
 };
 
@@ -17,12 +19,24 @@ export type R10PaymentSuccessScreenProps = {
 export function R10PaymentSuccessScreen({
   selectedPlanId,
   paidAmountInr,
+  onDownloadInvoice,
+  invoiceDownloading = false,
   onContinue,
 }: R10PaymentSuccessScreenProps) {
   return (
     <PurchaseStatusShell
+      shellClassName="ob-purchase-success-shell"
       title="Payment successful"
       description={getPaymentSuccessDescription(selectedPlanId, paidAmountInr)}
+      secondaryFooterClassName="ob-purchase-success-invoice-link"
+      secondaryFooterLabel={
+        onDownloadInvoice
+          ? invoiceDownloading
+            ? 'Preparing invoice…'
+            : 'Download tax invoice'
+          : undefined
+      }
+      onSecondaryFooter={onDownloadInvoice}
       celebration={
         <ConfettiLottie className="ob-purchase-success-hero__confetti" />
       }

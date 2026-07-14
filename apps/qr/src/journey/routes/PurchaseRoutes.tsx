@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
-import { Navigate, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { formatPlateInput } from '@autolokate/ui';
+import { usePurchaseRouteHydration, PurchaseRouteHydrationProvider } from '../../hooks/purchase/usePurchaseRouteHydration';
+import { AlScreenBg, AlScreenSpinner, formatPlateInput } from '@autolokate/ui';
 
 import {
   isPlateEntryReady,
   normalizePlate,
 } from '../../services/vehicle/index';
+import { compactPlate } from '@/services/vehicle/vehicle-plate';
 import { useVehicleLookup } from '../../hooks/vehicle/index';
 import {
   R03VehicleNumberScreen,
@@ -31,6 +33,7 @@ import type {
   PurchaseRiderCount,
 } from '../../features/qr-purchase/types-checkout';
 import { DEFAULT_PURCHASE_PLAN_ID } from '../../features/qr-purchase/data/purchase-plans';
+import { getVehicle } from '@/storage/index';
 import { buildOrderSummary } from '../../features/qr-purchase/data/purchase-pricing';
 import { normalizePromoCode } from '../../features/qr-purchase/data/purchase-promo';
 import { usePlans } from '../../hooks/plan/index';
@@ -38,48 +41,73 @@ import { getRiderOptionsForPlan, isPlanRiderEligible } from '@/services/plan/pla
 import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
 import { useCheckout } from '../../hooks/checkout/index';
 import { usePaymentPolling } from '../../hooks/checkout/index';
+import { useCartPricing } from '../../hooks/checkout/index';
 import { useQrAttach } from '../../hooks/qr/index';
-import { getStoredPurchaseQrResolve } from '@/services/qr/qr-service';
+import { getStoredPurchaseQrResolve, resolveQrCode } from '@/services/qr/qr-service';
 import {
   getCheckoutSummary,
   peekOrderId,
   resetCheckoutForRetry,
   type CheckoutParams,
 } from '../../services/checkout/index';
+import { openOrderInvoice, resolveCheckoutOrderId } from '@/services/checkout/invoice-service';
 import { syncVehiclesAfterPayment } from '@/services/vehicle/vehicle-sync-service';
 import { persistQrCodeFromUrl } from '@/platform/qr/qr-code-from-url';
+import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser-back';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { reportUserError } from '@/platform/feedback/index';
 import { getPurchasePostPaymentEmergencyPath } from '../activation-routing';
 import { persistPurchaseSelections, persistVehicleContext } from '@/services/purchase/purchase-context-service';
-import { resetPurchaseFlowState } from '@/services/purchase/reset-purchase-flow-state';
-import { isPageReload } from '@/platform/navigation/is-page-reload';
 import { checkoutLogger } from '@/services/checkout/checkout-logger';
 import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code';
 import { clearPromoPreviewCache, validatePromoCheckout } from '@/services/promo/index';
 import { promoLogger } from '@/services/promo/promo-logger';
 import { planLogger } from '@/services/plan/plan-logger';
-import { PurchaseAttachErrorSheet } from '../../features/qr-purchase/components/PurchaseAttachErrorSheet';
-import { isPurchaseAttachReady, resetAttachAttemptCache } from '@/services/qr/qr-attach-service';
-import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
+import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service';
 import {
   PURCHASE_ROUTE_ID,
 } from '@/journey/state/purchase-journey-state-machine';
 import { PurchaseRouteGate } from '../guards/PurchaseRouteGate';
 import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
-import type { QrAttachError } from '@/services/qr/qr-attach-errors';
 import { qrAttachLogger } from '@/services/qr/qr-attach-logger';
 import { qrLogger } from '@/services/qr/qr-logger';
 import { vehicleLogger } from '@/services/vehicle/vehicle-logger';
-import { authJourneyPaths } from '../auth/auth-routing';
+import { getAuthFlowBackPath } from '../activation-routing';
+import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { useJourney } from '../JourneyContext';
-import { purchaseJourneyPaths, legacyPurchasePathRedirects, PURCHASE_ROUTE_SEGMENTS } from '../purchase/purchase-routing';
+import { hasAuthTokens } from '@/services/auth/ensure-valid-auth-session';
+import {
+  purchaseJourneyPaths,
+  legacyPurchasePathRedirectsForActiveJourney,
+  purchaseVehicleConfirmationPath,
+  purchaseVehicleLookupPath,
+} from '../purchase/purchase-paths-runtime';
+import {
+  parsePurchaseVehicleConfirmationPath,
+  parsePurchaseVehicleLookupPath,
+  PURCHASE_ROUTE_SEGMENTS,
+} from '../purchase/purchase-routing';
+import { stripOnboardingPrefix } from '../routing/journey-url-routing';
+
+function PurchaseRouteLoader({ label = 'Loading order' }: { label?: string }) {
+  return (
+    <AlScreenBg variant="protected" className="qr-route-loader">
+      <AlScreenSpinner size="lg" animated aria-label={label} />
+    </AlScreenBg>
+  );
+}
 
 function PurchaseSegmentBootstrap({ children }: { children: ReactNode }) {
   const { setPhase } = useJourney();
+  const { isHydrating, plansReady } = usePurchaseRouteHydration();
 
   useEffect(() => {
     setPhase('activation');
   }, [setPhase]);
+
+  if (isHydrating && !plansReady) {
+    return <PurchaseRouteLoader />;
+  }
 
   return children;
 }
@@ -87,8 +115,10 @@ function PurchaseSegmentBootstrap({ children }: { children: ReactNode }) {
 function usePurchaseCheckout() {
   const { session, updateSession } = useJourney();
   const purchase = session.purchase;
-  const planId = purchase?.selectedPlanId ?? DEFAULT_PURCHASE_PLAN_ID;
-  const riderCount = purchase?.riderCount ?? 1;
+  const storedVehicle = getVehicle();
+  const planId =
+    purchase?.selectedPlanId ?? storedVehicle?.selectedPlanId ?? DEFAULT_PURCHASE_PLAN_ID;
+  const riderCount = purchase?.riderCount ?? storedVehicle?.riderCount ?? 1;
 
   const patchPurchase = useCallback(
     (patch: Partial<NonNullable<typeof session.purchase>>) => {
@@ -271,12 +301,14 @@ function startPayment(
     return;
   }
 
-  const summary = buildOrderSummary({
-    planId: params.planId,
-    riderCount: params.riderCount,
-    promoApplied: params.promoApplied,
-    promoCode: params.promoCode,
-  });
+  const summary =
+    getCheckoutSummary() ??
+    buildOrderSummary({
+      planId: params.planId,
+      riderCount: params.riderCount,
+      promoApplied: params.promoApplied,
+      promoCode: params.promoCode,
+    });
 
   flushSync(() => {
     patchPurchase({
@@ -293,13 +325,24 @@ function startPayment(
 
 function VehicleDetailsRoute() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { session, updateSession } = useJourney();
+  const { session, updateSession, selectedFlow } = useJourney();
+  const journeyId = useActiveJourneyId();
   const { purchase } = usePurchaseCheckout();
   const vehicle = session.vehicle ?? {};
 
+  const blockedMessage =
+    typeof (location.state as { vehicleBlockedMessage?: unknown } | null)?.vehicleBlockedMessage ===
+    'string'
+      ? (location.state as { vehicleBlockedMessage: string }).vehicleBlockedMessage
+      : null;
+
   const [plate, setPlate] = useState(() => formatPlateInput(vehicle.plate ?? ''));
   const [plateState, setPlateState] = useState<PurchaseVehiclePlateState>(() => {
+    if (blockedMessage) {
+      return 'error';
+    }
     if (vehicle.fetchStatus === 'not-found') {
       return 'error';
     }
@@ -308,12 +351,25 @@ function VehicleDetailsRoute() {
     }
     return 'empty';
   });
+  const [plateErrorMessage, setPlateErrorMessage] = useState<string | undefined>(() =>
+    blockedMessage ?? undefined,
+  );
 
   useEffect(() => {
-    if (vehicle.fetchStatus === 'not-found') {
+    if (!blockedMessage) {
+      return;
+    }
+    setPlateState('error');
+    setPlateErrorMessage(blockedMessage);
+    // Clear one-shot navigation state so refresh doesn't keep the attach error.
+    void navigate(location.pathname + location.search, { replace: true, state: null });
+  }, [blockedMessage, location.pathname, location.search, navigate]);
+
+  useEffect(() => {
+    if (vehicle.fetchStatus === 'not-found' && !plateErrorMessage) {
       setPlateState('error');
     }
-  }, [vehicle.fetchStatus]);
+  }, [plateErrorMessage, vehicle.fetchStatus]);
 
   useEffect(() => {
     redirectIfPaymentSucceeded(navigate, purchase);
@@ -322,9 +378,21 @@ function VehicleDetailsRoute() {
   useEffect(() => {
     persistQrCodeFromUrl(searchParams);
     const stored = getStoredPurchaseQrResolve();
-    if (!stored.ok) {
-      reportUserError(qrLogger, 'purchase_resolve_missing', stored.error, stored.error.message);
+    if (stored.ok) {
+      return;
     }
+
+    const code = resolvePurchaseQrCode(searchParams);
+    if (!code) {
+      reportUserError(qrLogger, 'purchase_resolve_missing', stored.error, stored.error.message);
+      return;
+    }
+
+    void resolveQrCode(code).then((result) => {
+      if (!result.ok) {
+        reportUserError(qrLogger, 'purchase_resolve_refresh_failed', result.error, result.error.message);
+      }
+    });
   }, [searchParams]);
 
   const handleFetch = useCallback(() => {
@@ -338,6 +406,7 @@ function VehicleDetailsRoute() {
           fetchStatus: 'not-found',
         },
       });
+      setPlateErrorMessage(undefined);
       setPlateState('error');
       return;
     }
@@ -349,17 +418,20 @@ function VehicleDetailsRoute() {
         fetchStatus: 'fetching',
       },
     });
-    void navigate(purchaseJourneyPaths.vehicleLookup);
+    setPlateErrorMessage(undefined);
+    void navigate(purchaseVehicleLookupPath(normalized));
   }, [navigate, plate, updateSession, vehicle]);
 
   return (
     <R03VehicleNumberScreen
       plateValue={plate}
       plateState={plateState}
+      plateErrorMessage={plateErrorMessage}
       onPlateChange={(value) => {
         setPlate(value);
         if (plateState === 'error') {
           setPlateState(value.trim() ? 'filled' : 'empty');
+          setPlateErrorMessage(undefined);
           updateSession({
             vehicle: {
               ...vehicle,
@@ -372,19 +444,24 @@ function VehicleDetailsRoute() {
         }
       }}
       onBack={() => {
-        void navigate(authJourneyPaths.vehicleOwner);
+        // Logged-in users must not re-enter /auth via /q bootstrap.
+        if (hasAuthTokens()) {
+          return;
+        }
+        void navigate(getAuthFlowBackPath(selectedFlow, journeyId ?? undefined), { replace: true });
       }}
+      showBack={!hasAuthTokens()}
       onContinue={handleFetch}
     />
   );
 }
 
-function VehicleLookupRoute() {
+function VehicleLookupRoute({ registrationNumber }: { registrationNumber: string }) {
   const navigate = useNavigate();
   const { session, updateSession } = useJourney();
   const { purchase } = usePurchaseCheckout();
   const { lookupVehicle } = useVehicleLookup();
-  const plate = session.vehicle?.plate ?? '';
+  const plate = session.vehicle?.plate ?? registrationNumber;
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -392,6 +469,11 @@ function VehicleLookupRoute() {
     }
     if (!plate) {
       void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
+      return;
+    }
+
+    if (compactPlate(normalizePlate(plate)) !== compactPlate(normalizePlate(registrationNumber))) {
+      void navigate(purchaseVehicleLookupPath(plate), { replace: true });
       return;
     }
 
@@ -423,7 +505,7 @@ function VehicleLookupRoute() {
             fetchStatus: 'success',
           },
         });
-        void navigate(purchaseJourneyPaths.vehicleConfirmation, { replace: true });
+        void navigate(purchaseVehicleConfirmationPath(result.plate), { replace: true });
         return;
       }
 
@@ -448,7 +530,7 @@ function VehicleLookupRoute() {
     return () => {
       abortController.abort();
     };
-  }, [lookupVehicle, navigate, plate, purchase, updateSession]);
+  }, [lookupVehicle, navigate, plate, purchase, registrationNumber, updateSession]);
 
   return <R04FetchingVehicleScreen />;
 }
@@ -486,30 +568,16 @@ function VehicleLookupFailedRoute() {
   );
 }
 
-function VehicleConfirmationRoute() {
+function VehicleConfirmationRoute({ registrationNumber }: { registrationNumber: string }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { session, updateSession } = useJourney();
   const { purchase } = usePurchaseCheckout();
-  const { attachPurchaseQr } = useQrAttach();
-  const [isAttaching, setIsAttaching] = useState(false);
-  const [attachError, setAttachError] = useState<QrAttachError | null>(null);
+  const { attachPurchaseQr, isPending: isAttachPending } = useQrAttach();
   const vehicle = session.vehicle ?? {};
+  const attachStartedRef = useRef(false);
 
-  useEffect(() => {
-    if (redirectIfPaymentSucceeded(navigate, purchase)) {
-      return;
-    }
-    if (!vehicle.plate || vehicle.fetchStatus !== 'success' || !vehicle.fields?.length) {
-      void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
-    }
-  }, [navigate, purchase, vehicle.fields, vehicle.fetchStatus, vehicle.plate]);
-
-  const runAttach = useCallback(() => {
-    if (isAttaching) {
-      return;
-    }
-    setAttachError(null);
+  const proceedToChoosePlan = useCallback(() => {
     persistVehicleContext({
       registration: vehicle.plate ?? '',
       fields: vehicle.fields,
@@ -518,54 +586,8 @@ function VehicleConfirmationRoute() {
       selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
       riderCount: 1,
     });
-    setIsAttaching(true);
-    void attachPurchaseQr(searchParams).then((result) => {
-      setIsAttaching(false);
-      if (!result.ok) {
-        if (
-          result.error.code === 'missing_qr_code' &&
-          isPurchaseAttachReady(searchParams)
-        ) {
-          qrAttachLogger.info('purchase_attach_recovered', { reason: 'attach_ready_without_qr' });
-          updateSession({
-            vehicle: {
-              ...vehicle,
-              confirmed: true,
-            },
-            purchase: {
-              selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
-              riderCount: 1,
-              promoApplied: false,
-              promoCode: null,
-              promoInvalid: false,
-              checkoutReady: false,
-              paymentStatus: 'idle',
-            },
-          });
-          void navigate(purchaseJourneyPaths.choosePlan);
-          return;
-        }
 
-        if (result.error.code === 'missing_qr_code') {
-          qrAttachLogger.warn('purchase_attach_missing_qr', { message: result.error.message });
-          return;
-        }
-
-        purchaseStorageRepository.clearAttachResult();
-        resetAttachAttemptCache();
-        updateSession({
-          vehicle: {
-            ...vehicle,
-            confirmed: false,
-          },
-        });
-        qrAttachLogger.warn('purchase_attach_failed', {
-          code: result.error.code,
-          message: result.error.message,
-        });
-        setAttachError(result.error);
-        return;
-      }
+    flushSync(() => {
       updateSession({
         vehicle: {
           ...vehicle,
@@ -581,12 +603,98 @@ function VehicleConfirmationRoute() {
           paymentStatus: 'idle',
         },
       });
-      void navigate(purchaseJourneyPaths.choosePlan);
     });
+    void navigate(purchaseJourneyPaths.choosePlan, { replace: true });
+  }, [
+    navigate,
+    session.auth?.languageId,
+    session.auth?.ownerName,
+    updateSession,
+    vehicle,
+  ]);
+
+  useEffect(() => {
+    if (redirectIfPaymentSucceeded(navigate, purchase)) {
+      return;
+    }
+    if (!vehicle.plate || vehicle.fetchStatus !== 'success' || !vehicle.fields?.length) {
+      void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
+      return;
+    }
+    if (compactPlate(normalizePlate(vehicle.plate)) !== compactPlate(normalizePlate(registrationNumber))) {
+      void navigate(purchaseVehicleConfirmationPath(vehicle.plate), { replace: true });
+    }
+  }, [navigate, purchase, registrationNumber, vehicle.fields, vehicle.fetchStatus, vehicle.plate]);
+
+  const runAttach = useCallback(() => {
+    if (isAttachPending || attachStartedRef.current) {
+      return;
+    }
+    attachStartedRef.current = true;
+
+    void (async () => {
+      // Persist plate before attach — attach reads registration from purchase storage.
+      persistVehicleContext({
+        registration: vehicle.plate ?? '',
+        fields: vehicle.fields,
+        ownerName: session.auth?.ownerName,
+        languageId: session.auth?.languageId,
+        selectedPlanId: DEFAULT_PURCHASE_PLAN_ID,
+        riderCount: 1,
+      });
+
+      try {
+        const result = await attachPurchaseQr(searchParams, { force: true });
+        if (!result.ok) {
+          attachStartedRef.current = false;
+          resetAttachAttemptCache();
+          if (result.error.code === 'vehicle_already_subscribed') {
+            reportUserError(
+              qrAttachLogger,
+              'purchase_attach_vehicle_already_subscribed',
+              result.error,
+              result.error.message,
+            );
+            flushSync(() => {
+              updateSession({
+                vehicle: {
+                  ...vehicle,
+                  confirmed: false,
+                  fetchStatus: 'idle',
+                },
+              });
+            });
+            void navigate(purchaseJourneyPaths.vehicleDetails, {
+              replace: true,
+              state: {
+                vehicleBlockedMessage:
+                  result.error.message ||
+                  'This vehicle already has an active protection plan. Enter a different number and try again.',
+              },
+            });
+            return;
+          }
+
+          reportUserError(
+            qrAttachLogger,
+            'purchase_attach_failed',
+            result.error,
+            result.error.message,
+          );
+          return;
+        }
+        proceedToChoosePlan();
+      } catch (error: unknown) {
+        attachStartedRef.current = false;
+        resetAttachAttemptCache();
+        reportUserError(qrAttachLogger, 'purchase_attach_error', error);
+      }
+    })();
   }, [
     attachPurchaseQr,
-    isAttaching,
+    isAttachPending,
     navigate,
+    proceedToChoosePlan,
     searchParams,
     session.auth?.languageId,
     session.auth?.ownerName,
@@ -595,34 +703,22 @@ function VehicleConfirmationRoute() {
   ]);
 
   return (
-    <>
-      <R05ConfirmVehicleScreen
-        plate={vehicle.plate}
-        fields={vehicle.fields}
-        footerLoading={isAttaching}
-        onBack={() => {
-          void navigate(purchaseJourneyPaths.vehicleDetails);
-        }}
-        onContinue={runAttach}
-      />
-      <PurchaseAttachErrorSheet
-        open={attachError !== null && attachError.code !== 'missing_qr_code'}
-        error={attachError}
-        onRetry={() => {
-          resetAttachAttemptCache();
-          runAttach();
-        }}
-        onDismiss={() => {
-          setAttachError(null);
-        }}
-      />
-    </>
+    <R05ConfirmVehicleScreen
+      plate={vehicle.plate}
+      fields={vehicle.fields}
+      footerLoading={isAttachPending}
+      footerLabel={isAttachPending ? 'Linking…' : 'Looks right'}
+      onBack={() => {
+        void navigate(purchaseJourneyPaths.vehicleDetails);
+      }}
+      onContinue={runAttach}
+    />
   );
 }
 
 function ChoosePlanRoute() {
   const navigate = useNavigate();
-  const { planId, patchPurchase, purchase } = usePurchaseCheckout();
+  const { session, planId, patchPurchase, purchase } = usePurchaseCheckout();
   const { ensurePlansLoaded, revision } = usePlans();
 
   useEffect(() => {
@@ -645,7 +741,12 @@ function ChoosePlanRoute() {
         patchPurchase({ selectedPlanId: id });
       }}
       onBack={() => {
-        void navigate(purchaseJourneyPaths.vehicleConfirmation);
+        const plate = session.vehicle?.plate;
+        if (plate?.trim()) {
+          void navigate(purchaseVehicleConfirmationPath(plate));
+        } else {
+          void navigate(purchaseJourneyPaths.vehicleDetails);
+        }
       }}
       onContinue={() => {
         persistPurchaseSelections({ selectedPlanId: planId });
@@ -713,33 +814,28 @@ function RiderCoverRoute() {
 
 function OrderSummaryRoute() {
   const navigate = useNavigate();
-  const { planId, riderCount, purchase, patchPurchase, updateSession } = usePurchaseCheckout();
+  const { planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
+  const { plansRevision, plansReady } = usePurchaseRouteHydration();
+  const checkoutParams = buildCheckoutParams(planId, riderCount, {
+    ...purchase,
+    promoApplied: false,
+    promoCode: null,
+  });
+  const { cartReady, cartRevision } = useCartPricing(checkoutParams);
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
   const [promoApplying, setPromoApplying] = useState(false);
-  const resetOnReloadRef = useRef(isPageReload());
-
-  useLayoutEffect(() => {
-    if (!resetOnReloadRef.current) {
-      return;
-    }
-    resetPurchaseFlowState();
-    updateSession({ vehicle: undefined, purchase: undefined });
-    void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
-  }, [navigate, updateSession]);
 
   useEffect(() => {
-    if (resetOnReloadRef.current) {
-      return;
-    }
     redirectIfPaymentSucceeded(navigate, purchase);
   }, [navigate, purchase]);
 
-  if (resetOnReloadRef.current) {
-    return null;
+  if (!plansReady || !cartReady) {
+    return <PurchaseRouteLoader />;
   }
 
   return (
     <R08OrderSummaryScreen
+      key={`${plansRevision}-${cartRevision}`}
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoInput}
@@ -773,6 +869,12 @@ function OrderSummaryRoute() {
 function OrderSummaryInvalidPromoRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
+  const checkoutParams = buildCheckoutParams(planId, riderCount, {
+    ...purchase,
+    promoApplied: false,
+    promoCode: null,
+  });
+  const { cartReady, cartRevision } = useCartPricing(checkoutParams);
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
   const [promoApplying, setPromoApplying] = useState(false);
 
@@ -785,8 +887,13 @@ function OrderSummaryInvalidPromoRoute() {
     }
   }, [navigate, purchase, session.purchase?.promoCode, session.purchase?.promoInvalid]);
 
+  if (!cartReady) {
+    return <PurchaseRouteLoader />;
+  }
+
   return (
     <R08cInvalidPromoScreen
+      key={cartRevision}
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoInput}
@@ -824,6 +931,8 @@ function OrderSummaryPromoAppliedRoute() {
   const navigate = useNavigate();
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
   const promoCode = purchase?.promoCode ?? '';
+  const checkoutParams = buildCheckoutParams(planId, riderCount, purchase);
+  const { cartReady, cartRevision } = useCartPricing(checkoutParams);
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -834,8 +943,13 @@ function OrderSummaryPromoAppliedRoute() {
     }
   }, [navigate, purchase, session.purchase?.promoApplied, session.purchase?.promoCode, session.purchase?.promoInvalid]);
 
+  if (!cartReady) {
+    return <PurchaseRouteLoader />;
+  }
+
   return (
     <R08bPromoAppliedScreen
+      key={cartRevision}
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoCode}
@@ -919,6 +1033,9 @@ function ProcessingPaymentRoute() {
             });
             void navigate(purchaseJourneyPaths.orderSummaryInvalidPromo, { replace: true });
             return;
+          }
+          if (result.error.code === 'cart_stale' || result.error.code === 'catalog_stale') {
+            resetCheckoutForRetry();
           }
           void navigate(
             getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
@@ -1024,7 +1141,9 @@ function PaymentSuccessRoute() {
   const { setPhase, session, updateSession } = useJourney();
   const { planId, purchase } = usePurchaseCheckout();
   const vehiclesSyncedRef = useRef(false);
+  const [invoiceDownloading, setInvoiceDownloading] = useState(false);
   const paidAmountInr = purchase?.paidAmountInr ?? 0;
+  const orderId = resolveCheckoutOrderId();
 
   useEffect(() => {
     if (session.purchase?.paymentStatus !== 'success') {
@@ -1051,10 +1170,34 @@ function PaymentSuccessRoute() {
     });
   }, [session.purchase?.paymentStatus]);
 
+  usePreventBrowserBack(session.purchase?.paymentStatus === 'success');
+
   return (
     <R10PaymentSuccessScreen
       selectedPlanId={planId}
       paidAmountInr={paidAmountInr}
+      invoiceDownloading={invoiceDownloading}
+      onDownloadInvoice={
+        orderId
+          ? () => {
+              setInvoiceDownloading(true);
+              void openOrderInvoice(orderId)
+                .then((opened) => {
+                  if (!opened) {
+                    reportUserError(
+                      checkoutLogger,
+                      'order_invoice_open_failed',
+                      new Error('invoice_unavailable'),
+                      'Tax invoice is not available yet. Try again in a moment.',
+                    );
+                  }
+                })
+                .finally(() => {
+                  setInvoiceDownloading(false);
+                });
+            }
+          : undefined
+      }
       onContinue={() => {
         setPhase('emergency');
         const purchaseSession = session.purchase ?? {};
@@ -1166,84 +1309,92 @@ function PaymentUnconfirmedRoute() {
   );
 }
 
+function resolvePurchaseRouteContent(pathname: string): ReactNode {
+  const path = stripOnboardingPrefix(pathname).replace(/\/+$/, '') || '/';
+
+  for (const [legacySegment, canonicalPath] of legacyPurchasePathRedirectsForActiveJourney()) {
+    if (path === `/${legacySegment}`) {
+      return <Navigate to={canonicalPath} replace />;
+    }
+  }
+
+  const lookupRegistration = parsePurchaseVehicleLookupPath(path);
+  if (lookupRegistration) {
+    return (
+      <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleLookup}>
+        <VehicleLookupRoute registrationNumber={lookupRegistration} />
+      </PurchaseRouteGate>
+    );
+  }
+
+  const confirmationRegistration = parsePurchaseVehicleConfirmationPath(path);
+  if (confirmationRegistration) {
+    return (
+      <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleConfirmation}>
+        <VehicleConfirmationRoute registrationNumber={confirmationRegistration} />
+      </PurchaseRouteGate>
+    );
+  }
+
+  switch (path) {
+    case `/${PURCHASE_ROUTE_SEGMENTS.vehicleDetails}`:
+      return (
+        <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleDetails}>
+          <VehicleDetailsRoute />
+        </PurchaseRouteGate>
+      );
+    case `/${PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed}`:
+      return (
+        <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleLookupFailed}>
+          <VehicleLookupFailedRoute />
+        </PurchaseRouteGate>
+      );
+    case `/${PURCHASE_ROUTE_SEGMENTS.choosePlan}`:
+      return (
+        <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.choosePlan}>
+          <ChoosePlanRoute />
+        </PurchaseRouteGate>
+      );
+    case `/${PURCHASE_ROUTE_SEGMENTS.riderCover}`:
+      return (
+        <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.riderCover}>
+          <RiderCoverRoute />
+        </PurchaseRouteGate>
+      );
+    case `/${PURCHASE_ROUTE_SEGMENTS.orderSummary}`:
+      return (
+        <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.orderSummary}>
+          <OrderSummaryRoute />
+        </PurchaseRouteGate>
+      );
+    case `/${PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied}`:
+      return <OrderSummaryPromoAppliedRoute />;
+    case `/${PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo}`:
+      return <OrderSummaryInvalidPromoRoute />;
+    case `/${PURCHASE_ROUTE_SEGMENTS.processingPayment}`:
+      return <ProcessingPaymentRoute />;
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming}`:
+      return <PaymentStillConfirmingRoute />;
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentSuccess}`:
+      return <PaymentSuccessRoute />;
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentFailed}`:
+      return <PaymentFailedRoute />;
+    case `/${PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed}`:
+      return <PaymentUnconfirmedRoute />;
+    default:
+      return <PurchaseIndexRedirect />;
+  }
+}
+
 export function PurchaseRoutes() {
+  const { pathname } = useLocation();
+
   return (
-    <PurchaseSegmentBootstrap>
-      <Routes>
-        <Route index element={<PurchaseIndexRedirect />} />
-        <Route
-          path={PURCHASE_ROUTE_SEGMENTS.vehicleDetails}
-          element={
-            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleDetails}>
-              <VehicleDetailsRoute />
-            </PurchaseRouteGate>
-          }
-        />
-        <Route
-          path={PURCHASE_ROUTE_SEGMENTS.vehicleLookup}
-          element={
-            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleLookup}>
-              <VehicleLookupRoute />
-            </PurchaseRouteGate>
-          }
-        />
-        <Route
-          path={PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed}
-          element={
-            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleLookupFailed}>
-              <VehicleLookupFailedRoute />
-            </PurchaseRouteGate>
-          }
-        />
-        <Route
-          path={PURCHASE_ROUTE_SEGMENTS.vehicleConfirmation}
-          element={
-            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.vehicleConfirmation}>
-              <VehicleConfirmationRoute />
-            </PurchaseRouteGate>
-          }
-        />
-        <Route
-          path={PURCHASE_ROUTE_SEGMENTS.choosePlan}
-          element={
-            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.choosePlan}>
-              <ChoosePlanRoute />
-            </PurchaseRouteGate>
-          }
-        />
-        <Route
-          path={PURCHASE_ROUTE_SEGMENTS.riderCover}
-          element={
-            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.riderCover}>
-              <RiderCoverRoute />
-            </PurchaseRouteGate>
-          }
-        />
-        <Route
-          path={PURCHASE_ROUTE_SEGMENTS.orderSummary}
-          element={
-            <PurchaseRouteGate routeId={PURCHASE_ROUTE_ID.orderSummary}>
-              <OrderSummaryRoute />
-            </PurchaseRouteGate>
-          }
-        />
-        <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied} element={<OrderSummaryPromoAppliedRoute />} />
-        <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo} element={<OrderSummaryInvalidPromoRoute />} />
-        <Route path={PURCHASE_ROUTE_SEGMENTS.processingPayment} element={<ProcessingPaymentRoute />} />
-        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming} element={<PaymentStillConfirmingRoute />} />
-        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentSuccess} element={<PaymentSuccessRoute />} />
-        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentFailed} element={<PaymentFailedRoute />} />
-        <Route path={PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed} element={<PaymentUnconfirmedRoute />} />
-        {legacyPurchasePathRedirects.map(([legacySegment, canonicalPath]) => (
-          <Route
-            key={legacySegment}
-            path={legacySegment}
-            element={<Navigate to={canonicalPath} replace />}
-          />
-        ))}
-        <Route path="*" element={<PurchaseIndexRedirect />} />
-      </Routes>
-    </PurchaseSegmentBootstrap>
+    <PurchaseRouteHydrationProvider>
+      <PurchaseSegmentBootstrap>
+        {resolvePurchaseRouteContent(pathname)}
+      </PurchaseSegmentBootstrap>
+    </PurchaseRouteHydrationProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { BatchSummaryDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlSelect, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
@@ -158,16 +158,18 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
   });
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="xl"
       title="Create batch"
       description="Set up a new QR batch in draft status. The server mints the batch code; sticker codes stay short and opaque."
       footer={
-        <AlStack gap="sm" direction="row">
+        <div className="admin-modal-actions">
           <AlButton
             type="submit"
             form="create-batch-form"
+            size="sm"
             loading={createBatchMutation.isPending}
             disabled={!canSubmit}
           >
@@ -176,6 +178,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
           <AlButton
             type="button"
             variant="secondary"
+            size="sm"
             disabled={createBatchMutation.isPending}
             onClick={() => {
               onOpenChange(false);
@@ -183,7 +186,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
           >
             Cancel
           </AlButton>
-        </AlStack>
+        </div>
       }
     >
       <form
@@ -193,7 +196,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
         }}
         onKeyDown={handleFormKeyDown}
       >
-        <AlStack gap="lg">
+        <AlStack gap="md">
           <Controller
             control={form.control}
             name="channel"
@@ -283,6 +286,6 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
           ) : null}
         </AlStack>
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }

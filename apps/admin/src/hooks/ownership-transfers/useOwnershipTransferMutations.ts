@@ -18,8 +18,8 @@ export function useOwnershipTransferMutations() {
       signal?: AbortSignal;
     }) => submitInitiateOwnershipTransfer(body, signal),
     retry: 0,
-    onSuccess: (result) => {
-      showSuccessToast(`Transfer ${result.transferId} initiated.`);
+    onSuccess: () => {
+      showSuccessToast('Transfer initiated.');
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'ownership-transfers:initiate', toast: true });
@@ -37,8 +37,8 @@ export function useOwnershipTransferMutations() {
       signal?: AbortSignal;
     }) => submitApproveOwnershipTransfer(transferId, body, signal),
     retry: 0,
-    onSuccess: (result) => {
-      showSuccessToast(`Transfer ${result.transferId} completed.`);
+    onSuccess: () => {
+      showSuccessToast('Transfer completed.');
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'ownership-transfers:approve', toast: true });

@@ -1,17 +1,44 @@
 import type { QrPublicVehicle } from '@autolokate/api-client';
 import type { AlVehicleRcField } from '@autolokate/ui';
 
-/** Compact model line from anonymous QR resolve — e.g. "White · Maruti Swift". */
-export function formatQrPublicVehicleSummary(vehicle: QrPublicVehicle): string {
-  const colour = vehicle.color?.split(' ').pop() ?? vehicle.color ?? '';
-  const maker = vehicle.make ?? '';
-  const model = vehicle.model ?? '';
-  if (!colour && !maker && !model) {
+function shortenMake(maker: string): string {
+  const trimmed = maker.trim();
+  if (!trimmed) {
     return '';
   }
-  const makeShort = maker.includes('Maruti') ? 'Maruti' : maker.split(' ')[0] ?? maker;
-  const modelShort = model.split(' ')[0] ?? model;
-  return `${colour} · ${makeShort} ${modelShort}`.trim();
+  return trimmed.includes('Maruti') ? 'Maruti' : trimmed.split(' ')[0] ?? trimmed;
+}
+
+function shortenModel(model: string): string {
+  const trimmed = model.trim();
+  if (!trimmed) {
+    return '';
+  }
+  return trimmed.split(' ')[0] ?? trimmed;
+}
+
+function shortenColour(colour: string): string {
+  const trimmed = colour.trim();
+  if (!trimmed) {
+    return '';
+  }
+  return trimmed.split(' ').pop() ?? trimmed;
+}
+
+/** Join colour + make/model — omit the middle dot when colour is missing. */
+function formatColourMakeModelLine(colour: string, maker: string, model: string): string {
+  const colourShort = shortenColour(colour);
+  const makeModel = [shortenMake(maker), shortenModel(model)].filter(Boolean).join(' ').trim();
+
+  if (colourShort && makeModel) {
+    return `${colourShort} · ${makeModel}`;
+  }
+  return colourShort || makeModel;
+}
+
+/** Compact model line from anonymous QR resolve — e.g. "White · Maruti Swift". */
+export function formatQrPublicVehicleSummary(vehicle: QrPublicVehicle): string {
+  return formatColourMakeModelLine(vehicle.color ?? '', vehicle.make ?? '', vehicle.model ?? '');
 }
 
 export function isQrVehicleProtected(protection: QrPublicVehicle['protection']): boolean {
@@ -20,11 +47,8 @@ export function isQrVehicleProtected(protection: QrPublicVehicle['protection']):
 
 /** Compact model line for Figma confirm cards — e.g. "White · Maruti Swift". */
 export function formatReporterModelSummary(fields: AlVehicleRcField[]): string {
-  const colour = fields.find((field) => field.label === 'Colour')?.value ?? 'White';
+  const colour = fields.find((field) => field.label === 'Colour')?.value ?? '';
   const maker = fields.find((field) => field.label === 'Maker')?.value ?? '';
   const model = fields.find((field) => field.label === 'Model')?.value ?? '';
-  const colourShort = colour.split(' ').pop() ?? colour;
-  const makeShort = maker.includes('Maruti') ? 'Maruti' : maker.split(' ')[0] ?? maker;
-  const modelShort = model.split(' ')[0] ?? model;
-  return `${colourShort} · ${makeShort} ${modelShort}`.trim();
+  return formatColourMakeModelLine(colour, maker, model);
 }

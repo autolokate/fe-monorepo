@@ -4,6 +4,7 @@ import { resolveUserFacingMessage } from '@/platform/errors/user-facing-error';
 
 export type QrAttachErrorCode =
   | 'already_attached'
+  | 'vehicle_already_subscribed'
   | 'invalid'
   | 'missing_qr_code'
   | 'offline'
@@ -38,6 +39,13 @@ export function mapQrAttachApiError(error: unknown): QrAttachError {
     normalized.code === 'timeout'
   ) {
     return { code: 'offline', message };
+  }
+
+  if (
+    apiCode === 'vehicle_already_subscribed' ||
+    apiCode === 'vehicle_already_linked'
+  ) {
+    return { code: 'vehicle_already_subscribed', message };
   }
 
   if (apiCode === 'already_attached' || normalized.status === 409) {

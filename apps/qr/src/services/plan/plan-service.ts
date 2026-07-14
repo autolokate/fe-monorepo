@@ -2,6 +2,7 @@ import { listPlans as listPlansApi } from '@autolokate/api-client';
 
 import type { PurchasePlanDefinition, PurchasePlanId } from '@/features/qr-purchase/types-checkout';
 import { getQrApiClient } from '@/platform/api/qr-api-client';
+import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 
 import {
   clearInflightPlansLoad,
@@ -34,6 +35,7 @@ function buildPlaceholderCatalog(): PurchasePlanDefinition[] {
     }
     return {
       id,
+      planVersionId: '',
       name: id === 'shield-plus' ? 'Shield+' : id.charAt(0).toUpperCase() + id.slice(1),
       priceLabel: '—',
       priceInr: 0,
@@ -45,20 +47,21 @@ function buildPlaceholderCatalog(): PurchasePlanDefinition[] {
   });
 }
 
-async function fetchPlansFromApi(): Promise<PurchasePlanDefinition[]> {
+async function fetchPlansFromApi(qrCode: string | null): Promise<PurchasePlanDefinition[]> {
   const client = getQrApiClient();
-  const options = await listPlansApi(client);
+  const options = await listPlansApi(client, qrCode ? { code: qrCode } : undefined);
   const mapped = sortPlansByCarouselOrder(options.map(mapPlanOptionToDefinition));
-  rememberPlansCatalog(mapped);
-  planLogger.info('plans_loaded', { count: mapped.length });
+  rememberPlansCatalog(mapped, qrCode);
+  planLogger.info('plans_loaded', { count: mapped.length, qrCode: qrCode ?? undefined });
   return mapped;
 }
 
 /** Load plan catalog from GET /v1/plans (cached 5 min, deduped). */
 export async function loadPlans(): Promise<LoadPlansResult> {
-  const cached = peekPlansCatalog();
+  const qrCode = resolvePurchaseQrCode();
+  const cached = peekPlansCatalog(qrCode);
   if (cached) {
-    planLogger.debug('plans_cache_hit', { count: cached.length });
+    planLogger.debug('plans_cache_hit', { count: cached.length, qrCode: qrCode ?? undefined });
     return { ok: true, plans: cached };
   }
 
@@ -73,7 +76,7 @@ export async function loadPlans(): Promise<LoadPlansResult> {
     }
   }
 
-  const promise = fetchPlansFromApi();
+  const promise = fetchPlansFromApi(qrCode);
   setInflightPlansLoad(promise);
 
   try {
@@ -93,7 +96,7 @@ export async function ensurePlansLoaded(): Promise<LoadPlansResult> {
 }
 
 export function getPurchasePlansCatalog(): readonly PurchasePlanDefinition[] {
-  return peekPlansCatalog() ?? purchasePlansCatalog;
+  return peekPlansCatalog(resolvePurchaseQrCode()) ?? purchasePlansCatalog;
 }
 
 export function getPurchasePlanById(planId: PurchasePlanId): PurchasePlanDefinition {

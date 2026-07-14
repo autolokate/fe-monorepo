@@ -17,15 +17,23 @@ export async function revokeAndClearAuthSession(): Promise<void> {
 
 /**
  * Align journey auth flags with token presence after reload.
- * Clears stale AUTH_COMPLETED when tokens are missing.
+ * Restores AUTH_COMPLETED when tokens exist; clears stale flags when tokens are gone.
  */
 export function reconcileAuthSession(state: PersistedJourneyState): Partial<PersistedJourneyState> | null {
+  const hasTokens = getTokenManager().hasSession();
+
+  if (hasTokens && state.authStatus !== AUTH_COMPLETED) {
+    if (state.session.auth?.otpVerified || state.session.auth?.mobile) {
+      return { authStatus: AUTH_COMPLETED };
+    }
+  }
+
   const expectsAuth =
     state.authStatus === AUTH_COMPLETED || state.session.auth?.otpVerified === true;
   if (!expectsAuth) {
     return null;
   }
-  if (getTokenManager().hasSession()) {
+  if (hasTokens) {
     return null;
   }
   return createAuthFailureSessionPatch(state.session);

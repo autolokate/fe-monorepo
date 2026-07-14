@@ -40,7 +40,6 @@ export function AuditEventsPage() {
   const {
     events,
     hasMore,
-    requestMeta,
     isLoading,
     isFetching,
     isFetchingNextPage,
@@ -162,10 +161,10 @@ export function AuditEventsPage() {
               </div>
               {showAdvancedFilters ? (
                 <div className="audit-filters-advanced">
-                  <AdminFilterField label="Target ID">
+                  <AdminFilterField label="Entity reference">
                     <AlInput
                       value={filters.targetId}
-                      placeholder="Entity identifier"
+                      placeholder="Filter by entity"
                       mono
                       onChange={(event) => {
                         setFilters((current) => ({ ...current, targetId: event.target.value }));
@@ -231,7 +230,6 @@ export function AuditEventsPage() {
           event={selectedEvent}
           open={detailOpen}
           onOpenChange={setDetailOpen}
-          envelopeMeta={requestMeta}
         />
       </AlStack>
     </RequirePermission>

@@ -1,9 +1,9 @@
 import type { BatchCodeDto } from '@autolokate/api-client';
-import { AlStatusBadge, AlText } from '@autolokate/ui';
+import { AlText } from '@autolokate/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
-import { qrCodeStatusTone } from '@/platform/utils/qr-code-status';
+import { QrCodeStatusBadge } from '@/platform/components/EntityStatusBadge';
 
 function formatDateTime(value: string | null): string {
   if (!value) {
@@ -27,12 +27,7 @@ export function useBatchCodeColumns(): ColumnDef<BatchCodeDto>[] {
       {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => (
-          <AlStatusBadge
-            label={row.original.status}
-            status={qrCodeStatusTone(row.original.status)}
-          />
-        ),
+        cell: ({ row }) => <QrCodeStatusBadge status={row.original.status} />,
       },
       {
         accessorKey: 'createdAt',

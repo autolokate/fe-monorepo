@@ -9,6 +9,7 @@ import {
   evaluatePurchaseRouteAccess,
   type PurchaseRouteId,
 } from '../state/purchase-journey-state-machine';
+import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { useJourney } from '../JourneyContext';
 
 type PurchaseRouteGateProps = {
@@ -34,7 +35,8 @@ export function PurchaseRouteGate({ routeId, children }: PurchaseRouteGateProps)
     updateSession(ensureAttachedPurchaseContext(resolved));
   }, [isAttachedResume, resolved, session.vehicle?.confirmed, updateSession]);
 
-  const access = evaluatePurchaseRouteAccess(routeId, session, searchParams);
+  const journeyId = useActiveJourneyId();
+  const access = evaluatePurchaseRouteAccess(routeId, session, searchParams, journeyId);
 
   useEffect(() => {
     if (!access.allowed && access.redirectTo) {

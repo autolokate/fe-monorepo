@@ -12,7 +12,7 @@ import {
 } from './vehicle-cache';
 import { mapVehicleLookupApiError } from './vehicle-errors';
 import { mapRcRecordToFields, mapRcRecordToVehicleSession } from './vehicle-mapper';
-import { compactPlate, normalizePlate, VAHAN_FETCH_HOLD_MS } from './vehicle-plate';
+import { compactPlate, normalizePlate } from './vehicle-plate';
 import { vehicleLogger } from './vehicle-logger';
 
 export type VehicleLookupStatus = 'success' | 'not-found' | 'error';
@@ -28,12 +28,6 @@ export type VehicleLookupResult =
       plate: string;
     };
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
-}
-
 function failure(status: 'not-found' | 'error', plate: string): VehicleLookupResult {
   return { status, plate };
 }
@@ -41,10 +35,7 @@ function failure(status: 'not-found' | 'error', plate: string): VehicleLookupRes
 async function fetchVehicleLookup(lookupKey: string, displayPlate: string): Promise<VehicleLookupResult> {
   try {
     const client = getQrApiClient();
-    const [record] = await Promise.all([
-      lookupVehicleApi(client, lookupKey),
-      delay(VAHAN_FETCH_HOLD_MS),
-    ]);
+    const record = await lookupVehicleApi(client, lookupKey);
 
     const mapped = mapRcRecordToVehicleSession(record);
     const fields = mapped.fields ?? mapRcRecordToFields(record);
@@ -99,4 +90,4 @@ export async function lookupVehicleByPlate(plate: string): Promise<VehicleLookup
   }
 }
 
-export { normalizePlate, compactPlate, isPlateEntryReady, VAHAN_FETCH_HOLD_MS } from './vehicle-plate';
+export { normalizePlate, compactPlate, isPlateEntryReady } from './vehicle-plate';

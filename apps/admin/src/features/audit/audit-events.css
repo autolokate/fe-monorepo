@@ -45,11 +45,11 @@
 .audit-action-filter__option {
   display: block;
   width: 100%;
-  padding: var(--al-space-sm) var(--al-space-md);
+  padding: var(--al-space-2) var(--al-space-3);
   border: none;
-  border-radius: calc(var(--al-admin-radius-control) - 2px);
+  border-radius: var(--al-radius-sm);
   background: transparent;
-  color: var(--al-color-on-surface);
+  color: color-mix(in srgb, var(--al-color-on-surface) 86%, transparent);
   font-family: var(--al-text-ui-family);
   font-size: var(--al-text-label-size);
   line-height: var(--al-text-label-line-height);
@@ -59,19 +59,21 @@
 
 .audit-action-filter__option:hover,
 .audit-action-filter__option:focus-visible {
-  background: var(--al-color-surface-variant);
+  background: var(--al-color-surface-hover);
+  color: var(--al-color-text);
   outline: none;
 }
 
 .audit-action-filter__option[aria-selected='true'] {
-  background: color-mix(in srgb, var(--al-color-primary) 16%, transparent);
-  color: var(--al-color-on-surface);
+  background: color-mix(in srgb, var(--al-color-primary) 16%, var(--al-color-surface));
+  color: var(--al-color-text);
+  box-shadow: inset 2px 0 0 var(--al-color-primary);
 }
 
 .audit-action-filter__empty {
   margin: 0;
-  padding: var(--al-space-sm) var(--al-space-md);
-  color: var(--al-color-text-muted);
+  padding: var(--al-space-2) var(--al-space-3);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
   font-size: var(--al-text-caption-size);
 }
 

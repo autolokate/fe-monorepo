@@ -1,0 +1,62 @@
+.admin-login-page {
+  display: flex;
+  min-height: 100dvh;
+  align-items: center;
+  justify-content: center;
+  padding: var(--al-space-6);
+  background: var(--al-color-canvas);
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 24rem;
+  padding: var(--al-space-6);
+  border-radius: var(--al-admin-radius-panel);
+  background: var(--al-color-surface);
+  box-shadow: var(--al-admin-shadow-panel);
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.admin-login-card .al-field__input {
+  min-height: 2.5rem;
+}
+
+.admin-login-card .al-button {
+  width: 100%;
+}
+
+.admin-login-actions {
+  display: flex;
+  gap: var(--al-space-2);
+}
+
+.admin-login-actions .al-button {
+  width: auto;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.admin-login-card .al-text--muted {
+  color: color-mix(in srgb, var(--al-color-on-surface) 72%, transparent);
+}
+
+.admin-login-card .al-field__input {
+  border-radius: var(--al-radius-sm);
+}
+
+.admin-login-card .al-text[variant='headline'] {
+  font-size: var(--al-text-title-size);
+  line-height: var(--al-text-title-line-height);
+  font-weight: var(--al-text-title-weight);
+  letter-spacing: var(--al-text-title-letter-spacing);
+}
+
+.admin-login-error {
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  background: color-mix(in srgb, var(--al-color-danger) 8%, var(--al-color-surface));
+  border: var(--al-border-width-thin) solid color-mix(in srgb, var(--al-color-danger) 24%, transparent);
+  color: var(--al-color-danger);
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+}

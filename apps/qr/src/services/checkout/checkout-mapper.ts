@@ -1,5 +1,4 @@
 import type { CreateOrderBody, OrderDto, PaymentOutcome } from '@autolokate/api-client';
-import { formatInrFromPaise } from '@autolokate/utils';
 
 import type {
   OrderSummaryTotals,
@@ -7,9 +6,9 @@ import type {
   PurchasePlanId,
   PurchaseRiderCount,
 } from '@/features/qr-purchase/types-checkout';
-import { getPurchasePlanById } from '@/services/plan/plan-service';
-import { mapPurchasePlanIdToApiTier } from '@/services/plan/plan-mapper';
 
+import { readCheckoutState } from './checkout-cache';
+import { mapPricedSaleToSummary } from './priced-sale-mapper';
 import { PAYMENT_OUTCOME } from './payment-outcome';
 
 export type CheckoutParams = {
@@ -24,59 +23,24 @@ export function buildCheckoutParamsKey(params: CheckoutParams): string {
   return `${params.planId}:${String(params.riderCount)}:${params.promoApplied ? '1' : '0'}:${promoCode}`;
 }
 
-export function mapCheckoutParamsToCreateOrderBody(
-  params: CheckoutParams,
-  purchaseQrCode: string,
-): CreateOrderBody {
-  const body: CreateOrderBody = {
-    code: purchaseQrCode,
-    planTier: mapPurchasePlanIdToApiTier(params.planId),
-    riderCount: params.riderCount,
-  };
-
-  if (params.promoApplied && params.promoCode?.trim()) {
-    return { ...body, promoCode: params.promoCode.trim().toUpperCase() };
-  }
-
-  return body;
+export function mapCheckoutParamsToCreateOrderBody(cartId: string): CreateOrderBody {
+  return { cartId };
 }
 
-/** Map backend order total into existing order-summary card shape (formatting only). */
-export function mapOrderToSummary(
-  order: OrderDto,
-  params: CheckoutParams,
-): OrderSummaryTotals {
-  const plan = getPurchasePlanById(params.planId);
-  const totalInr = Math.round(order.totalPaise / 100);
-  const totalLabel = formatInrFromPaise(order.totalPaise);
+/** Map authoritative order totals into the R08 summary card (plan/rider lines from cart). */
+export function mapOrderToSummary(order: OrderDto, params: CheckoutParams): OrderSummaryTotals {
+  const priced = readCheckoutState();
 
-  const summary: OrderSummaryTotals = {
-    planLine: {
-      label: `${plan.name} plan`,
-      value: plan.priceLabel,
+  return mapPricedSaleToSummary(
+    {
+      planPricePaise: priced.planPricePaise ?? 0,
+      riderCoverPaise: priced.riderCoverPaise ?? 0,
+      discountPaise: order.discountPaise,
+      totalPaise: order.totalPaise,
+      appliedPromoCode: order.appliedPromoCode ?? priced.appliedPromoCode,
     },
-    totalLabel,
-    totalInr,
-    gstNote: 'Inclusive of 18% GST',
-    payCtaLabel: `Pay ${totalLabel}`,
-  };
-
-  if (params.riderCount > 0) {
-    summary.riderLine = {
-      label: `Rider cover × ${String(params.riderCount)}`,
-      value: 'Included',
-    };
-  }
-
-  if (params.promoApplied && params.promoCode) {
-    summary.promoLine = {
-      label: `Promo · ${params.promoCode}`,
-      value: 'Applied',
-      tone: 'promo',
-    };
-  }
-
-  return summary;
+    params,
+  );
 }
 
 export function mapPaymentOutcomeToStatus(outcome: PaymentOutcome): PurchasePaymentStatus | 'timeout' {

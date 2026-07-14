@@ -1,8 +1,25 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
-import { emergencyJourneyPaths } from '../emergency/emergency-routing';
+import { AuthEntryLegacyRedirect } from '../guards/AuthEntryLegacyRedirect';
 import { PreserveSearchRedirect } from '../guards/PreserveSearchRedirect';
+import {
+  LegacyVehicleConfirmationRedirect,
+  LegacyVehicleLookupRedirect,
+} from '../guards/LegacyVehicleRouteRedirects';
+import {
+  LEGACY_FLAT_PURCHASE_REDIRECTS,
+  LEGACY_JOURNEY_AUTH_REDIRECTS,
+  LEGACY_JOURNEY_ENTRY_REDIRECTS,
+  LegacyEmergencyFlatRedirect,
+  LegacyFlatToScopedRedirect,
+  QrEntryRoute,
+} from '../guards/LegacyJourneyRedirectRoutes';
 import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
+import {
+  LEGACY_PURCHASE_FLAT_SEGMENTS,
+  PURCHASE_ROUTE_PATTERNS,
+  PURCHASE_ROUTE_SEGMENTS,
+} from '../purchase/purchase-routing';
 import {
   RequireAuthCompleted,
   RequireSelectedFlow,
@@ -10,6 +27,7 @@ import {
 } from '../guards/JourneyRouteGuards';
 import { JourneyCompletedScreen } from '../screens/JourneyCompletedScreen';
 import { journeyPaths } from '../constants';
+import { JourneyScopeProvider } from '../routing/JourneyScopeProvider';
 import { B2b2cRoutes } from './B2b2cRoutes';
 import { EmergencyRoutes } from './EmergencyRoutes';
 import { PrepaidRoutes } from './PrepaidRoutes';
@@ -36,30 +54,132 @@ function EmergencyActivationRoute() {
   );
 }
 
+function OnboardingJourneyRoutes() {
+  return (
+    <Routes>
+      <Route path="auth" element={<JourneySharedAuthRoute />} />
+      <Route path="otp" element={<JourneySharedAuthRoute />} />
+      <Route path="profile" element={<JourneySharedAuthRoute />} />
+      <Route path="vehicle" element={<PurchaseActivationRoute />} />
+      <Route path="vehicle/:registrationNumber/lookup" element={<PurchaseActivationRoute />} />
+      <Route path="vehicle/:registrationNumber/confirmation" element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.choosePlan} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.riderCover} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummary} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.processingPayment} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.paymentSuccess} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.paymentFailed} element={<PurchaseActivationRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed} element={<PurchaseActivationRoute />} />
+      <Route path="*" element={<PurchaseIndexRedirect />} />
+    </Routes>
+  );
+}
+
 export function JourneyRoutes() {
   return (
     <div className="journey-frame">
       <Routes>
         <Route path="/" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
-        <Route path="/journey" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
-        <Route path="/journey/home" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
-        <Route path="/journey/flow-hub" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
-        <Route path="/journey/qr-scan" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
-        <Route path="/journey/auth/*" element={<JourneySharedAuthRoute />} />
+        <Route path={`${journeyPaths.qrDeepLinkPrefix}/:qrCode`} element={<QrEntryRoute />} />
+
+        {LEGACY_JOURNEY_ENTRY_REDIRECTS.map(([from, to]) => (
+          <Route key={from} path={from} element={<PreserveSearchRedirect to={to} />} />
+        ))}
+        {LEGACY_JOURNEY_AUTH_REDIRECTS.map(([from, to]) => (
+          <Route key={from} path={from} element={<PreserveSearchRedirect to={to} />} />
+        ))}
+
+        {/* Journey-scoped onboarding (auth + purchase) */}
         <Route
-          path="/journey/purchase/qr-scan"
-          element={<PurchaseIndexRedirect />}
+          path={`${journeyPaths.onboardingPrefix}/:journeyId/*`}
+          element={
+            <JourneyScopeProvider>
+              <OnboardingJourneyRoutes />
+            </JourneyScopeProvider>
+          }
         />
-        <Route path="/journey/purchase" element={<PurchaseIndexRedirect />} />
-        <Route path="/journey/purchase/*" element={<PurchaseActivationRoute />} />
-        <Route path="/journey/prepaid/*" element={<PrepaidRoutes />} />
-        <Route path="/journey/b2b2c/*" element={<B2b2cRoutes />} />
+
+        {/* Journey-scoped emergency */}
         <Route
-          path="/journey/emergency"
-          element={<Navigate to={emergencyJourneyPaths.riderPrompt} replace />}
+          path={`${journeyPaths.emergencyPrefix}/:journeyId/*`}
+          element={
+            <JourneyScopeProvider>
+              <EmergencyActivationRoute />
+            </JourneyScopeProvider>
+          }
         />
-        <Route path="/journey/emergency/*" element={<EmergencyActivationRoute />} />
-        <Route path="/journey/completed" element={<JourneyCompletedScreen />} />
+
+        {/* Partner flows */}
+        <Route
+          path={`${journeyPaths.prepaid}/:journeyId/*`}
+          element={
+            <JourneyScopeProvider>
+              <PrepaidRoutes />
+            </JourneyScopeProvider>
+          }
+        />
+        <Route
+          path={`${journeyPaths.b2b2c}/:journeyId/*`}
+          element={
+            <JourneyScopeProvider>
+              <B2b2cRoutes />
+            </JourneyScopeProvider>
+          }
+        />
+
+        {/* Static legal + completed */}
+        <Route path={journeyPaths.legalPrivacy} element={<JourneySharedAuthRoute />} />
+        <Route path={journeyPaths.legalTerms} element={<JourneySharedAuthRoute />} />
+        <Route path={journeyPaths.completed} element={<JourneyCompletedScreen />} />
+
+        {/* Legacy flat auth → scoped */}
+        <Route path="/auth" element={<LegacyFlatToScopedRedirect suffix="/auth" />} />
+        <Route path="/scan" element={<AuthEntryLegacyRedirect />} />
+        <Route path="/otp" element={<LegacyFlatToScopedRedirect suffix="/otp" />} />
+        <Route path="/profile" element={<LegacyFlatToScopedRedirect suffix="/profile" />} />
+
+        {/* Legacy flat emergency → scoped */}
+        <Route
+          path={journeyPaths.emergency}
+          element={<LegacyEmergencyFlatRedirect suffix="/rider-prompt" />}
+        />
+        <Route path={`${journeyPaths.emergency}/:segment`} element={<LegacyEmergencyFlatRedirect suffix="" />} />
+
+        {/* Legacy flat purchase → scoped */}
+        <Route path="/purchase" element={<PurchaseIndexRedirect />} />
+        <Route path="/purchase/*" element={<PurchaseIndexRedirect />} />
+        <Route
+          path={`/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleLookup}`}
+          element={<LegacyVehicleLookupRedirect />}
+        />
+        <Route
+          path={`/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleConfirmation}`}
+          element={<LegacyVehicleConfirmationRedirect />}
+        />
+        <Route
+          path={PURCHASE_ROUTE_PATTERNS.vehicleLookup}
+          element={<LegacyFlatToScopedRedirect suffix={PURCHASE_ROUTE_PATTERNS.vehicleLookup} />}
+        />
+        <Route
+          path={PURCHASE_ROUTE_PATTERNS.vehicleConfirmation}
+          element={<LegacyFlatToScopedRedirect suffix={PURCHASE_ROUTE_PATTERNS.vehicleConfirmation} />}
+        />
+        {LEGACY_FLAT_PURCHASE_REDIRECTS.map(([segment]) => (
+          <Route
+            key={segment}
+            path={`/${segment}`}
+            element={<LegacyFlatToScopedRedirect suffix={`/${segment}`} />}
+          />
+        ))}
+
+        {/* Legacy prepaid/b2b2c without journey id */}
+        <Route path={`${journeyPaths.prepaid}/*`} element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+        <Route path={`${journeyPaths.b2b2c}/*`} element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+
         <Route path="*" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
       </Routes>
     </div>

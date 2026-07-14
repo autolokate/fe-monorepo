@@ -9,10 +9,13 @@ export function useQrAttach() {
   const [isPending, setIsPending] = useState(false);
 
   const attachPurchaseQrWithState = useCallback(
-    async (searchParams?: URLSearchParams): Promise<AttachPurchaseQrResult> => {
+    async (
+      searchParams?: URLSearchParams,
+      options?: { force?: boolean },
+    ): Promise<AttachPurchaseQrResult> => {
       setIsPending(true);
       try {
-        return await attachPurchaseQr(searchParams);
+        return await attachPurchaseQr(searchParams, options);
       } finally {
         setIsPending(false);
       }

@@ -32,10 +32,15 @@ export const endpoints = {
     list: '/v1/plans',
     detail: (planId: string) => `/plans/${planId}`,
   },
+  cart: {
+    create: '/v1/cart',
+    detail: (cartId: string) => `/v1/cart/${encodeURIComponent(cartId)}`,
+  },
   orders: {
     create: '/v1/orders',
     pay: (orderId: string) => `/v1/orders/${orderId}/pay`,
     payment: (orderId: string) => `/v1/orders/${orderId}/payment`,
+    invoice: (orderId: string) => `/v1/orders/${orderId}/invoice`,
   },
   promos: {
     validate: '/v1/promos/validate',
