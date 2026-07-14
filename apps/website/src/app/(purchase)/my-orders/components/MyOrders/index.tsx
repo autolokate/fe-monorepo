@@ -170,7 +170,7 @@ export function MyOrders() {
           </div>
         ) : isError ? (
           <div className={styles.state}>
-            <p className={styles.stateText}>We couldn't load your orders just now.</p>
+            <p className={styles.stateText}>We couldn&apos;t load your orders just now.</p>
             <AlButton
               size="sm"
               radius="lg"
@@ -183,7 +183,7 @@ export function MyOrders() {
           </div>
         ) : list.length === 0 ? (
           <div className={styles.state}>
-            <p className={styles.stateText}>You haven't placed any orders yet.</p>
+            <p className={styles.stateText}>You haven&apos;t placed any orders yet.</p>
             <AlButton size="sm" radius="lg" variant="primary" onClick={() => router.push("/purchase")}>
               Browse plans
             </AlButton>
