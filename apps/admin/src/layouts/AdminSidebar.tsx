@@ -1,6 +1,7 @@
 import { AlBrandMark } from '@autolokate/brand';
 import {
   ActivityIcon,
+  BellIcon,
   CircleUserIcon,
   CreditCardIcon,
   HouseIcon,
@@ -27,6 +28,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/subscriptions': ShieldCheckIcon,
   '/shipments': MapPinIcon,
   '/payments': CreditCardIcon,
+  '/support': BellIcon,
   '/audit-events': ActivityIcon,
   '/finance': CreditCardIcon,
   '/ownership-transfers': CircleUserIcon,

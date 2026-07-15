@@ -24,3 +24,8 @@ export function useCanWriteCatalogMutations(): boolean {
 export function useCanRefundOrders(): boolean {
   return useAdminAnyPermission(['orders:refund']);
 }
+
+/** PATCH /admin/v1/support/tickets/{ticketId} — status triage (SUPPORT/OPS/SUPER_ADMIN). */
+export function useCanWriteSupportTickets(): boolean {
+  return useAdminAnyPermission(['support:write']);
+}

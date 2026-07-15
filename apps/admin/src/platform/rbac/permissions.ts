@@ -34,6 +34,8 @@ export type AdminPermission =
   | 'subscriptions:view'
   | 'shipments:view'
   | 'payments:view'
+  | 'support:view'
+  | 'support:write'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -67,6 +69,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'subscriptions:view',
     'shipments:view',
     'payments:view',
+    // The support-ticket console (read + status triage) — SUPPORT/OPS/SUPER_ADMIN.
+    'support:view',
+    'support:write',
     'audit:read',
     'audit:view',
     'settlements:write',
@@ -97,6 +102,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'subscriptions:view',
     'shipments:view',
     'payments:view',
+    'support:view',
+    'support:write',
     'audit:read',
     'audit:view',
     'partners:read',
@@ -109,6 +116,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'subscriptions:view',
     'shipments:view',
     'payments:view',
+    // Support tickets are this role's core queue — read + status triage.
+    'support:view',
+    'support:write',
     'audit:read',
     'audit:view',
     'partners:read',
@@ -154,6 +164,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'subscriptions:view',
     'shipments:view',
     'payments:view',
+    // Read-only oversight of the support queue (no status triage).
+    'support:view',
     'audit:read',
     'audit:view',
     'partners:read',

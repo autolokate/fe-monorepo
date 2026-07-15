@@ -3,6 +3,7 @@ import type {
   AdminPaymentOutcome,
   AdminShipmentStatus,
   AdminSubscriptionStatus,
+  AdminSupportTicketStatus,
   AuditAction,
   QrBatchStatus,
   QrCodeStatus,
@@ -58,6 +59,12 @@ export function ShipmentStatusBadge({ status }: { status: AdminShipmentStatus })
 export function PaymentOutcomeBadge({ outcome }: { outcome: AdminPaymentOutcome }) {
   return (
     <EntityStatusBadge label={outcome} modifier={`admin-entity-status-badge--payment-${outcome}`} />
+  );
+}
+
+export function SupportTicketStatusBadge({ status }: { status: AdminSupportTicketStatus }) {
+  return (
+    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--support-${status}`} />
   );
 }
 

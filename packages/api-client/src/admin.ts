@@ -1205,6 +1205,120 @@ export async function getAdminPayment(
   return unwrapEnvelope(response) as AdminPaymentDetail;
 }
 
+/** OpenAPI `AdminSupportTicketSummary.status` / `AdminSupportTicketDetail.status` — the ticket lifecycle. */
+export type AdminSupportTicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+
+/** OpenAPI `AdminSupportTicketSummary.type` / `AdminSupportTicketDetail.type` — the ticket category. */
+export type AdminSupportTicketType = 'LOST_QR' | 'BILLING' | 'ACCOUNT' | 'GENERAL';
+
+/** OpenAPI `AdminSupportTicketSummary` — one row in the admin support-ticket list (subject only, no body). */
+export type AdminSupportTicketSummary = {
+  ticketId: string;
+  accountId: string;
+  type: AdminSupportTicketType;
+  subject: string;
+  status: AdminSupportTicketStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/**
+ * OpenAPI `AdminSupportTicketDetail` — a single ticket in full. `subject`/`body` are operator-readable
+ * for triage; `metadata` is the structured context (e.g. `{ qr_code }` for a LOST_QR ticket).
+ */
+export type AdminSupportTicket = {
+  ticketId: string;
+  accountId: string;
+  type: AdminSupportTicketType;
+  subject: string;
+  body: string;
+  status: AdminSupportTicketStatus;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Query for `GET /admin/v1/support/tickets` — keyset-paginated; every field optional. */
+export type ListAdminSupportTicketsQuery = {
+  status?: AdminSupportTicketStatus;
+  type?: AdminSupportTicketType;
+  accountId?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated support-ticket response with envelope pagination meta. */
+export type AdminSupportTicketsPageResult = {
+  items: AdminSupportTicketSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** Body for `PATCH /admin/v1/support/tickets/{ticketId}` — the triage action (set status). */
+export type UpdateSupportTicketStatusBody = {
+  status: AdminSupportTicketStatus;
+};
+
+/** GET /admin/v1/support/tickets — includes pagination meta from the envelope. */
+export async function listAdminSupportTicketsPage(
+  client: ApiClient,
+  query: ListAdminSupportTicketsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSupportTicketsPageResult> {
+  const path = `${endpoints.admin.adminSupportTickets}${buildQuery({
+    status: query.status,
+    type: query.type,
+    accountId: query.accountId,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminSupportTicketSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/support/tickets/{ticketId} */
+export async function getAdminSupportTicket(
+  client: ApiClient,
+  ticketId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSupportTicket> {
+  const response = await client.get<unknown>(endpoints.admin.adminSupportTicket(ticketId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminSupportTicket;
+}
+
+/** PATCH /admin/v1/support/tickets/{ticketId} — triage a ticket (set its status). */
+export async function updateAdminSupportTicketStatus(
+  client: ApiClient,
+  ticketId: string,
+  status: AdminSupportTicketStatus,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSupportTicket> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.adminSupportTicket(ticketId),
+    { status } satisfies UpdateSupportTicketStatusBody,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as AdminSupportTicket;
+}
+
 /** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */
 export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
 

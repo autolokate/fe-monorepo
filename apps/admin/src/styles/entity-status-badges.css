@@ -258,6 +258,32 @@
   color: var(--al-signal-red-bright);
 }
 
+/* —— Support tickets (AdminSupportTicketSummary.status — the triage lifecycle) —— */
+
+.admin-entity-status-badge--support-OPEN {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--support-IN_PROGRESS {
+  background: color-mix(in srgb, var(--al-signal-blue, #3b82f6) 14%, var(--al-color-surface));
+  color: var(--al-signal-blue, #3b82f6);
+}
+
+.admin-entity-status-badge--support-RESOLVED {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
+.admin-entity-status-badge--support-CLOSED {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--support-CLOSED {
+  color: #94a3b8;
+}
+
 /* —— Shipments (AdminShipmentSummary.status — the fulfilment FSM) —— */
 
 .admin-entity-status-badge--shipment-PAID {

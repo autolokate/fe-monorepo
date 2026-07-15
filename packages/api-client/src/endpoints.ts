@@ -98,6 +98,9 @@ export const endpoints = {
     adminShipment: (orderId: string) => `/admin/v1/shipments/${encodeURIComponent(orderId)}`,
     adminPayments: '/admin/v1/payments',
     adminPayment: (paymentId: string) => `/admin/v1/payments/${encodeURIComponent(paymentId)}`,
+    adminSupportTickets: '/admin/v1/support/tickets',
+    adminSupportTicket: (ticketId: string) =>
+      `/admin/v1/support/tickets/${encodeURIComponent(ticketId)}`,
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',
