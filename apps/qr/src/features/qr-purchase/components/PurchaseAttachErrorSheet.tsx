@@ -2,10 +2,7 @@ import { AlPermissionSheet } from '@autolokate/ui';
 
 import type { QrAttachError } from '@/services/qr/qr-attach-errors';
 
-import {
-  buildPurchaseSupportMailto,
-  PURCHASE_SUPPORT_EMAIL,
-} from '../constants/purchase-support';
+import { buildPurchaseSupportMailto, PURCHASE_SUPPORT_EMAIL } from '../constants/purchase-support';
 import { resolveAttachErrorPresentation } from '../utils/attach-error-presentation';
 import './purchase-attach-error-sheet.css';
 
@@ -44,7 +41,10 @@ export function PurchaseAttachErrorSheet({
     >
       <p className="ob-purchase-attach-error-sheet__support">
         Reach us at{' '}
-        <a href={`mailto:${PURCHASE_SUPPORT_EMAIL}`} className="ob-purchase-attach-error-sheet__email">
+        <a
+          href={`mailto:${PURCHASE_SUPPORT_EMAIL}`}
+          className="ob-purchase-attach-error-sheet__email"
+        >
           {PURCHASE_SUPPORT_EMAIL}
         </a>
       </p>

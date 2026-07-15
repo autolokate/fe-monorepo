@@ -10,15 +10,15 @@
 
 Standalone frontend copied into the monorepo as `@autolokate/website` with **no refactors, no design-system adoption, no shared UI, no icon changes, and no visual modifications**.
 
-| Check | Result |
-|-------|--------|
-| Source | `/Users/kapil/projects/autolokate/autolokate-fe` |
-| Target | `apps/website/` (files at app root — no nested `autolokate-fe/`) |
-| Files copied | **461** (excl. `node_modules`, `.next`) |
-| Package name | `@autolokate/website` |
-| `pnpm install` | ✅ Success |
-| `pnpm --filter @autolokate/website dev` | ✅ Ready on `http://localhost:3000` |
-| `pnpm --filter @autolokate/website build` | ✅ Success — **19 routes** |
+| Check                                     | Result                                                           |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| Source                                    | `/Users/kapil/projects/autolokate/autolokate-fe`                 |
+| Target                                    | `apps/website/` (files at app root — no nested `autolokate-fe/`) |
+| Files copied                              | **461** (excl. `node_modules`, `.next`)                          |
+| Package name                              | `@autolokate/website`                                            |
+| `pnpm install`                            | ✅ Success                                                       |
+| `pnpm --filter @autolokate/website dev`   | ✅ Ready on `http://localhost:3000`                              |
+| `pnpm --filter @autolokate/website build` | ✅ Success — **19 routes**                                       |
 
 ---
 
@@ -72,14 +72,14 @@ No nested `website/autolokate-fe/` folder.
 
 ## Files Copied
 
-| Category | Examples |
-|----------|----------|
-| App source | `src/app/**`, `src/components/**`, `src/layouts/**`, `src/lib/**`, `src/providers/**`, `src/services/**`, `src/hooks/**` |
-| Styles | `src/app/styles/globals.css`, CSS modules under page components |
-| Static assets | `public/brands/*.svg`, `public/images/**`, `public/favicon.ico` |
-| Config | `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`, `next-env.d.ts` |
-| Infra / ops | `infra/terraform/**`, `infra/scripts/**`, `.github/workflows/ci.yml`, `Dockerfile` |
-| Docs | `README.md`, `.env.example`, `.dockerignore`, `.gitignore` |
+| Category      | Examples                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| App source    | `src/app/**`, `src/components/**`, `src/layouts/**`, `src/lib/**`, `src/providers/**`, `src/services/**`, `src/hooks/**` |
+| Styles        | `src/app/styles/globals.css`, CSS modules under page components                                                          |
+| Static assets | `public/brands/*.svg`, `public/images/**`, `public/favicon.ico`                                                          |
+| Config        | `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`, `next-env.d.ts`                            |
+| Infra / ops   | `infra/terraform/**`, `infra/scripts/**`, `.github/workflows/ci.yml`, `Dockerfile`                                       |
+| Docs          | `README.md`, `.env.example`, `.dockerignore`, `.gitignore`                                                               |
 
 **Total:** 461 files at `apps/website/` (excluding build artifacts).
 
@@ -89,13 +89,13 @@ No nested `website/autolokate-fe/` folder.
 
 ## Workspace Changes
 
-| File | Change |
-|------|--------|
-| `apps/website/` | Populated from `autolokate-fe` (was `.gitkeep` placeholder) |
-| `apps/website-backup/` | Previous placeholder backup |
-| `apps/website/package.json` | `"name": "@autolokate/website"` |
-| `pnpm-workspace.yaml` | Added `!apps/website-backup` exclusion |
-| `pnpm-lock.yaml` | Updated after `pnpm install` (+167 packages for website) |
+| File                        | Change                                                      |
+| --------------------------- | ----------------------------------------------------------- |
+| `apps/website/`             | Populated from `autolokate-fe` (was `.gitkeep` placeholder) |
+| `apps/website-backup/`      | Previous placeholder backup                                 |
+| `apps/website/package.json` | `"name": "@autolokate/website"`                             |
+| `pnpm-workspace.yaml`       | Added `!apps/website-backup` exclusion                      |
+| `pnpm-lock.yaml`            | Updated after `pnpm install` (+167 packages for website)    |
 
 **Unchanged:** root `package.json`, `turbo.json`, other apps (`admin`, `onboarding`, `ui-preview`), all `packages/*`.
 
@@ -103,8 +103,8 @@ No nested `website/autolokate-fe/` folder.
 
 ## Package Name Changes
 
-| Before (source) | After (monorepo) |
-|-----------------|------------------|
+| Before (source)           | After (monorepo)                |
+| ------------------------- | ------------------------------- |
 | `"name": "autolokate-fe"` | `"name": "@autolokate/website"` |
 
 **Dependencies:** Identical to source — no upgrades, removals, or workspace package additions.
@@ -155,20 +155,20 @@ pnpm --filter @autolokate/website start
 
 ## Success Criteria
 
-| Criterion | Met |
-|-----------|-----|
-| Original website UI unchanged | ✅ Source copy, no code edits |
-| Original functionality unchanged | ✅ No logic/route/API changes |
-| Original icons unchanged | ✅ Lucide + local SVGs preserved |
-| Original theme unchanged | ✅ `globals.css` + CSS modules from source |
-| Original routes unchanged | ✅ 19 routes in build output |
-| Original APIs unchanged | ✅ No service layer changes |
-| App located in `apps/website` | ✅ |
-| Builds inside monorepo | ✅ |
-| No design-system migration | ✅ |
-| No shared component migration | ✅ |
-| No icon migration | ✅ |
-| No visual modifications | ✅ |
+| Criterion                        | Met                                        |
+| -------------------------------- | ------------------------------------------ |
+| Original website UI unchanged    | ✅ Source copy, no code edits              |
+| Original functionality unchanged | ✅ No logic/route/API changes              |
+| Original icons unchanged         | ✅ Lucide + local SVGs preserved           |
+| Original theme unchanged         | ✅ `globals.css` + CSS modules from source |
+| Original routes unchanged        | ✅ 19 routes in build output               |
+| Original APIs unchanged          | ✅ No service layer changes                |
+| App located in `apps/website`    | ✅                                         |
+| Builds inside monorepo           | ✅                                         |
+| No design-system migration       | ✅                                         |
+| No shared component migration    | ✅                                         |
+| No icon migration                | ✅                                         |
+| No visual modifications          | ✅                                         |
 
 ---
 

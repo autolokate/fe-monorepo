@@ -1,4 +1,7 @@
-import { getEmergencyPlanLimits, resolvePurchasePlanId } from '../../features/emergency/emergency-limits';
+import {
+  getEmergencyPlanLimits,
+  resolvePurchasePlanId,
+} from '../../features/emergency/emergency-limits';
 import type { EmergencyPlanLimits } from '../../features/emergency/emergency-limits';
 import type { PurchasePlanId, PurchaseRiderCount } from '../../features/qr-purchase/types-checkout';
 import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository';

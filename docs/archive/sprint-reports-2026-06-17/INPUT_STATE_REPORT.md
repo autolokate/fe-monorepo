@@ -53,14 +53,14 @@ Per-cell `--has-value` class + 2px border on digits (already present; confirmed 
 
 ## Audit scope
 
-| Component | Filled class | Active border | Active label |
-|-----------|-------------|---------------|--------------|
-| `AlTextField` | ✅ | ✅ | ✅ |
-| `AlInput` | ✅ (added) | ✅ | ✅ (added) |
-| `AlOtpInput` | ✅ per-cell | ✅ | N/A |
-| `AlPlateInput` | ✅ | ✅ | N/A |
-| Auth mobile/name | via TextField | ✅ (override fixed) | ✅ |
-| Promo code field | ✅ (added) | ✅ | N/A |
+| Component        | Filled class  | Active border       | Active label |
+| ---------------- | ------------- | ------------------- | ------------ |
+| `AlTextField`    | ✅            | ✅                  | ✅           |
+| `AlInput`        | ✅ (added)    | ✅                  | ✅ (added)   |
+| `AlOtpInput`     | ✅ per-cell   | ✅                  | N/A          |
+| `AlPlateInput`   | ✅            | ✅                  | N/A          |
+| Auth mobile/name | via TextField | ✅ (override fixed) | ✅           |
+| Promo code field | ✅ (added)    | ✅                  | N/A          |
 
 Screen-specific hacks were not added. Changes propagate via shared UI package.
 

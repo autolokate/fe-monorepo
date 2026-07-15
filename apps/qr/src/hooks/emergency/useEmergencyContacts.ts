@@ -42,7 +42,10 @@ export function useEmergencyContacts() {
   );
 
   const createContact = useCallback(
-    async (name: string, relation: EmergencyContact['relation']): Promise<EmergencyContactCreateResult> => {
+    async (
+      name: string,
+      relation: EmergencyContact['relation'],
+    ): Promise<EmergencyContactCreateResult> => {
       const result = await createEmergencyContact(name, relation);
       if (result.ok) {
         setRevision(result.revision);

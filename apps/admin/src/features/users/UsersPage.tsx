@@ -12,6 +12,7 @@ import {
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
 import { userLookupSchema, type UserLookupFormValues } from '@/features/users/user-lookup-schema';
 import { describeUserRoleError, useAdminUserRoles } from '@/hooks/users/useAdminUserRoles';
 import { AdminDetailField } from '@/platform/components/AdminDetailField';
@@ -79,8 +80,8 @@ export function UsersPage() {
     <RequirePermission permission="users:read">
       <AlStack gap="md">
         <AlPageHeader
-          title="Users & Roles"
-          description="Find an account by its verified phone number and grant or revoke the ADMIN role. Every change is written to the audit log."
+          title="Customers"
+          description="Find a customer by their verified phone number to see their orders and coverage — and manage account access. Every change is written to the audit log."
         />
 
         <section className="admin-user-lookup" aria-label="Find an account">
@@ -115,61 +116,65 @@ export function UsersPage() {
         </section>
 
         {account ? (
-          <section className="admin-user-account" aria-label="Account roles">
-            <AlStack gap="md">
-              <AdminDetailField label="Phone number" value={lookupPhone ?? '—'} mono />
+          <>
+            <section className="admin-user-account" aria-label="Account roles">
+              <AlStack gap="md">
+                <AdminDetailField label="Phone number" value={lookupPhone ?? '—'} mono />
 
-              <AlStack gap="xs">
-                <AlText variant="caption" tone="muted">
-                  Active roles
-                </AlText>
-                <div className="admin-user-account__roles">
-                  {account.roles.length === 0 ? (
-                    <AlText tone="muted">No active roles.</AlText>
-                  ) : (
-                    account.roles.map((role) => (
-                      <AlStatusBadge
-                        key={`${role.role}:${role.scopeRef ?? 'platform'}`}
-                        label={role.role}
-                        status={role.role === MANAGED_ROLE ? 'success' : 'inactive'}
-                      />
-                    ))
-                  )}
-                </div>
+                <AlStack gap="xs">
+                  <AlText variant="caption" tone="muted">
+                    Active roles
+                  </AlText>
+                  <div className="admin-user-account__roles">
+                    {account.roles.length === 0 ? (
+                      <AlText tone="muted">No active roles.</AlText>
+                    ) : (
+                      account.roles.map((role) => (
+                        <AlStatusBadge
+                          key={`${role.role}:${role.scopeRef ?? 'platform'}`}
+                          label={role.role}
+                          status={role.role === MANAGED_ROLE ? 'success' : 'inactive'}
+                        />
+                      ))
+                    )}
+                  </div>
+                </AlStack>
+
+                {canWrite ? (
+                  <div className="admin-page-actions">
+                    {isAdmin ? (
+                      <AlButton
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        disabled={mutating}
+                        loading={revokeMutation.isPending}
+                        onClick={() => {
+                          setPending('revoke');
+                        }}
+                      >
+                        Revoke ADMIN
+                      </AlButton>
+                    ) : (
+                      <AlButton
+                        type="button"
+                        size="sm"
+                        disabled={mutating}
+                        loading={grantMutation.isPending}
+                        onClick={() => {
+                          setPending('grant');
+                        }}
+                      >
+                        Grant ADMIN
+                      </AlButton>
+                    )}
+                  </div>
+                ) : null}
               </AlStack>
+            </section>
 
-              {canWrite ? (
-                <div className="admin-page-actions">
-                  {isAdmin ? (
-                    <AlButton
-                      type="button"
-                      size="sm"
-                      variant="secondary"
-                      disabled={mutating}
-                      loading={revokeMutation.isPending}
-                      onClick={() => {
-                        setPending('revoke');
-                      }}
-                    >
-                      Revoke ADMIN
-                    </AlButton>
-                  ) : (
-                    <AlButton
-                      type="button"
-                      size="sm"
-                      disabled={mutating}
-                      loading={grantMutation.isPending}
-                      onClick={() => {
-                        setPending('grant');
-                      }}
-                    >
-                      Grant ADMIN
-                    </AlButton>
-                  )}
-                </div>
-              ) : null}
-            </AlStack>
-          </section>
+            <CustomerDrilldown accountId={account.id} />
+          </>
         ) : null}
 
         <AlConfirmationDialog

@@ -1,6 +1,6 @@
-import { Sparkles } from "lucide-react";
-import { heroMeta } from "./constants";
-import styles from "./index.module.css";
+import { Sparkles } from 'lucide-react';
+import { heroMeta } from './constants';
+import styles from './index.module.css';
 
 export function HeroBanner() {
   return (
@@ -23,8 +23,8 @@ export function HeroBanner() {
           </h1>
 
           <p className={styles.description}>
-            Whether you need support, have a question, or want to share feedback we&apos;re just
-            a message away.
+            Whether you need support, have a question, or want to share feedback we&apos;re just a
+            message away.
           </p>
 
           <ul className={styles.metaList} aria-label="Support highlights">

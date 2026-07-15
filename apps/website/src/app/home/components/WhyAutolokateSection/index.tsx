@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { WHY_AUTOLOKATE_BACKGROUND, WHY_AUTOLOKATE_COPY, WHY_HIGHLIGHTS } from "./constants";
-import { HighlightCard } from "./HighlightCard";
-import styles from "./index.module.css";
+import Image from 'next/image';
+import { WHY_AUTOLOKATE_BACKGROUND, WHY_AUTOLOKATE_COPY, WHY_HIGHLIGHTS } from './constants';
+import { HighlightCard } from './HighlightCard';
+import styles from './index.module.css';
 
 export function WhyAutolokateSection() {
   return (

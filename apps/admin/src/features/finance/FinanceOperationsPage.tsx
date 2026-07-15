@@ -50,7 +50,7 @@ export function FinanceOperationsPage() {
   return (
     <AlStack gap="md">
       <AlPageHeader
-        title="Finance Operations"
+        title="Settlements"
         description="Run clawbacks and settlement batches."
         actions={
           <>

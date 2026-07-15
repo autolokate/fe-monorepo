@@ -26,10 +26,7 @@ export function ToastHost() {
       role={toast.variant === 'error' ? 'alert' : 'status'}
       aria-live={toast.variant === 'error' ? 'assertive' : 'polite'}
     >
-      <p
-        className={`admin-toast admin-toast--${toast.variant}`}
-        key={toast.message}
-      >
+      <p className={`admin-toast admin-toast--${toast.variant}`} key={toast.message}>
         {toast.variant === 'success' ? (
           <span className="admin-toast__icon" aria-hidden>
             ✓

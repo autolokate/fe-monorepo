@@ -1,4 +1,4 @@
-import type { VehicleCategory } from "@/lib/preferences";
+import type { VehicleCategory } from '@/lib/preferences';
 
 /**
  * Mirrors Autolokate `CarsPageApi` brand listing subtitle
@@ -18,19 +18,19 @@ export const BRAND_MODELS_COPY: Record<
   cars: {
     pageSubtitle:
       "This brand's models from the live catalogue — same search, filters, and sorting as the full inventory.",
-    modelsHeading: "Models and variants",
-    backToBrands: "All car brands",
-    switchBrandLabel: "Switch brand",
+    modelsHeading: 'Models and variants',
+    backToBrands: 'All car brands',
+    switchBrandLabel: 'Switch brand',
     emptyModels:
-      "We could not load models for this brand yet. Try again shortly or browse the full marketplace.",
+      'We could not load models for this brand yet. Try again shortly or browse the full marketplace.',
   },
   bikes: {
     pageSubtitle:
       "This brand's models from the live catalogue — same search, filters, and sorting as the full inventory.",
-    modelsHeading: "Models and variants",
-    backToBrands: "All bike brands",
-    switchBrandLabel: "Switch brand",
+    modelsHeading: 'Models and variants',
+    backToBrands: 'All bike brands',
+    switchBrandLabel: 'Switch brand',
     emptyModels:
-      "We could not load models for this brand yet. Try again shortly or browse the full marketplace.",
+      'We could not load models for this brand yet. Try again shortly or browse the full marketplace.',
   },
 };

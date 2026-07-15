@@ -1,4 +1,4 @@
-import type { ApiEnvelope } from "@/services/auth/types";
+import type { ApiEnvelope } from '@/services/auth/types';
 
 /** Body for `POST /v1/payments/orders`. */
 export interface CreatePaymentOrderPayload {

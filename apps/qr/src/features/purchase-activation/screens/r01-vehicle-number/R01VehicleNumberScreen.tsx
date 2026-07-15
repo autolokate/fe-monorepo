@@ -1,10 +1,7 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlPlateInput, AlText } from '@autolokate/ui';
 
-import {
-  EmptyStateHero,
-  FormFieldStack,
-} from '@/components/compositions/index';
+import { EmptyStateHero, FormFieldStack } from '@/components/compositions/index';
 import { FlowStepShell } from '@/components/flow-step-shell/index';
 import type { R01VehicleNumberScreenProps } from '../../types';
 // Moved from shared-auth — Purchase activation (Figma 170:25)
@@ -24,11 +21,7 @@ export function R01VehicleNumberScreen({
   const isEmpty = state === 'empty';
   const isSuccess = state === 'success';
   const interactive = plateValue !== undefined && onPlateChange !== undefined;
-  const displayPlate = interactive
-    ? plateValue
-    : isSuccess || isError
-      ? plateValue ?? ''
-      : '';
+  const displayPlate = interactive ? plateValue : isSuccess || isError ? (plateValue ?? '') : '';
 
   return (
     <FlowStepShell

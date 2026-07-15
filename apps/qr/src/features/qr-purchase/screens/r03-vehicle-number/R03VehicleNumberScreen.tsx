@@ -24,9 +24,7 @@ export function R03VehicleNumberScreen({
   const isError = plateState === 'error';
   const canSubmit = isPlateEntryReady(plateValue) && !isLoading;
   const ctaHelper = !canSubmit && !isError ? 'Enter your number to continue' : undefined;
-  const errorMessage =
-    plateErrorMessage ??
-    "We couldn't find that number, check and try again";
+  const errorMessage = plateErrorMessage ?? "We couldn't find that number, check and try again";
   return (
     <AuthStepShell
       hideProgress

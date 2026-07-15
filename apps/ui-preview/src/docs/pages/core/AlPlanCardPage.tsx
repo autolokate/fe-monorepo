@@ -1,10 +1,7 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlPlanCard, AlStack } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 const secureFeatures = [
   'Automatic crash detection',
@@ -80,12 +77,18 @@ export function AlPlanCardPage() {
       responsive={renderPlanCard('default')}
       accessibility={
         <ul className="ds-list">
-          <li>Interactive cards use native <code className="ds-inline-code">button</code> semantics.</li>
           <li>
-            <code className="ds-inline-code">aria-pressed</code> reflects selected state for screen readers.
+            Interactive cards use native <code className="ds-inline-code">button</code> semantics.
+          </li>
+          <li>
+            <code className="ds-inline-code">aria-pressed</code> reflects selected state for screen
+            readers.
           </li>
           <li>Focus-visible ring on interactive cards (2px focus token).</li>
-          <li>Feature icons and selected tick marked <code className="ds-inline-code">aria-hidden</code>.</li>
+          <li>
+            Feature icons and selected tick marked{' '}
+            <code className="ds-inline-code">aria-hidden</code>.
+          </li>
           <li>Long feature lists wrap naturally; card width capped at 270px.</li>
         </ul>
       }
@@ -118,13 +121,34 @@ import { AlPlanCard } from '@autolokate/ui';
         { name: 'name', type: 'string', description: 'Plan tier name (h3).' },
         { name: 'price', type: 'string', description: 'Price display string.' },
         { name: 'features', type: 'string[]', description: 'Feature checklist items.' },
-        { name: 'badge', type: 'string', description: 'Optional uppercase badge (e.g. MOST POPULAR).' },
+        {
+          name: 'badge',
+          type: 'string',
+          description: 'Optional uppercase badge (e.g. MOST POPULAR).',
+        },
         { name: 'includesLabel', type: 'string', description: 'Optional includes pill label.' },
-        { name: 'addon', type: 'AlPlanCardAddon', description: 'Optional add-on row below features.' },
-        { name: 'selected', type: 'boolean', defaultValue: 'false', description: 'Selected border + tick mark.' },
-        { name: 'featureIcon', type: 'ReactNode', description: 'Icon rendered before each feature.' },
+        {
+          name: 'addon',
+          type: 'AlPlanCardAddon',
+          description: 'Optional add-on row below features.',
+        },
+        {
+          name: 'selected',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Selected border + tick mark.',
+        },
+        {
+          name: 'featureIcon',
+          type: 'ReactNode',
+          description: 'Icon rendered before each feature.',
+        },
         { name: 'selectedIcon', type: 'ReactNode', description: 'Tick icon when selected.' },
-        { name: 'onSelect', type: '() => void', description: 'When set, renders interactive button.' },
+        {
+          name: 'onSelect',
+          type: '() => void',
+          description: 'When set, renders interactive button.',
+        },
       ]}
     />
   );

@@ -544,4 +544,6 @@ export const stepIdByPath = Object.fromEntries(
   routeCatalog.map((route) => [route.path, route.stepId]),
 ) as Record<string, StepId>;
 
-export const sharedStepIds = sharedFlowRoutes.map((route) => route.stepId) as readonly SharedStepId[];
+export const sharedStepIds = sharedFlowRoutes.map(
+  (route) => route.stepId,
+) as readonly SharedStepId[];

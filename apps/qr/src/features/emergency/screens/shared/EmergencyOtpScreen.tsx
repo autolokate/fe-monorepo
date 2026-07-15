@@ -43,11 +43,7 @@ export function EmergencyOtpScreen({
   const isWrong = otpState === 'error' || otpErrorKind === 'wrong' || otpErrorKind === 'expired';
   const canResend = Boolean(onResendOtp) && resendCooldownSeconds === 0 && !verifying && !isSuccess;
 
-  const otpInputState = isSuccess
-    ? 'success'
-    : isWrong || isNetworkError
-      ? 'error'
-      : 'empty';
+  const otpInputState = isSuccess ? 'success' : isWrong || isNetworkError ? 'error' : 'empty';
 
   const errorText =
     otpErrorKind === 'expired'
@@ -74,7 +70,11 @@ export function EmergencyOtpScreen({
           {onChangeNumber ? (
             <>
               {' '}
-              <button type="button" className="ob-emergency-otp-desc__change" onClick={onChangeNumber}>
+              <button
+                type="button"
+                className="ob-emergency-otp-desc__change"
+                onClick={onChangeNumber}
+              >
                 Change
               </button>
             </>

@@ -97,7 +97,8 @@ export function buildPurchasePaths(journeyId: string) {
       `${base}/vehicle/${registrationSegment(registration)}/confirmation`,
     orderSummaryWithPromo: (promo: 'applied' | 'invalid') =>
       `${path('order-summary')}?promo=${promo}`,
-    orderSummaryForOrder: (orderId: string) => `${base}/orders/${encodeURIComponent(orderId)}/summary`,
+    orderSummaryForOrder: (orderId: string) =>
+      `${base}/orders/${encodeURIComponent(orderId)}/summary`,
     paymentProcessingForOrder: (orderId: string) =>
       `${base}/orders/${encodeURIComponent(orderId)}/payment/processing`,
     paymentSuccessForOrder: (orderId: string) =>
@@ -275,7 +276,10 @@ export function decodeRegistrationFromPath(segment: string): string {
   }
 }
 
-export function parsePurchaseVehicleLookupPath(pathname: string, journeyId?: string): string | null {
+export function parsePurchaseVehicleLookupPath(
+  pathname: string,
+  journeyId?: string,
+): string | null {
   const relative = journeyId ? stripOnboardingPrefix(pathname) : pathname.replace(/\/+$/, '');
   const prefix = journeyId ? '' : '';
   const re = new RegExp(`^${prefix}/vehicle/([^/]+)/lookup$`.replace('//', '/'));

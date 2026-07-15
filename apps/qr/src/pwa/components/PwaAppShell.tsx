@@ -35,7 +35,7 @@ export function PwaAppShell({ children }: PwaAppShellProps) {
     <PwaInstallProvider>
       {!online ? (
         <div className="pwa-offline-banner" role="status">
-          You're offline. Cached screens stay available until you're back online.
+          You&apos;re offline. Cached screens stay available until you&apos;re back online.
         </div>
       ) : null}
       {children}

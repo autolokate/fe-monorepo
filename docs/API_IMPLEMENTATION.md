@@ -22,39 +22,39 @@ The QR PWA has a **locked UI** and a **layered integration architecture**. Authe
 
 ## Current Backend Status
 
-| Domain | OpenAPI | Integrated | Notes |
-|--------|:-------:|:----------:|-------|
-| Auth OTP / refresh / logout | ✅ | ✅ | Production-ready |
-| Consent grant | ✅ | ✅ | Fire-and-forget after verify |
-| Legal documents | ✅ | Partial | Fetched for consent only; L1/L2 UI static |
-| Profile GET | ✅ | ✅ | On verify |
-| Profile PATCH | ✅ | ✅ | A3 vehicle-owner via `useUpdateProfile` |
-| Device FCM | ✅ | ✅ | Headless; requires `setFcmTokenProvider` for live POST |
-| Vahan lookup | ✅ | ✅ | Purchase R04 + PWA park-me via `useVehicleLookup` |
-| QR resolve | ✅ | ✅ | `?code=` → API; legacy `?type=` bridge |
-| QR attach | ✅ | ✅ | R10 post-payment via `useQrAttach` |
-| Plans | ✅ | ✅ | R06 carousel + order summary via `usePlans` |
-| Orders / pay / poll | ✅ | ✅ | R08–R10c via `useCheckout` / `usePaymentPolling` |
-| Activation preview / redeem | ✅ | ✅ | Prepaid / B2B2C welcome + post-auth redeem |
-| Emergency contacts | ✅ | ❌ | E05–E09 |
-| Media upload | ✅ | ❌ | PWA photos |
-| Emergency bystander | ⚠️ | ❌ | Spec: `nonce` only — UI needs more |
-| Rider onboarding | ❌ | ❌ | No API in spec |
+| Domain                      | OpenAPI | Integrated | Notes                                                  |
+| --------------------------- | :-----: | :--------: | ------------------------------------------------------ |
+| Auth OTP / refresh / logout |   ✅    |     ✅     | Production-ready                                       |
+| Consent grant               |   ✅    |     ✅     | Fire-and-forget after verify                           |
+| Legal documents             |   ✅    |  Partial   | Fetched for consent only; L1/L2 UI static              |
+| Profile GET                 |   ✅    |     ✅     | On verify                                              |
+| Profile PATCH               |   ✅    |     ✅     | A3 vehicle-owner via `useUpdateProfile`                |
+| Device FCM                  |   ✅    |     ✅     | Headless; requires `setFcmTokenProvider` for live POST |
+| Vahan lookup                |   ✅    |     ✅     | Purchase R04 + PWA park-me via `useVehicleLookup`      |
+| QR resolve                  |   ✅    |     ✅     | `?code=` → API; legacy `?type=` bridge                 |
+| QR attach                   |   ✅    |     ✅     | R10 post-payment via `useQrAttach`                     |
+| Plans                       |   ✅    |     ✅     | R06 carousel + order summary via `usePlans`            |
+| Orders / pay / poll         |   ✅    |     ✅     | R08–R10c via `useCheckout` / `usePaymentPolling`       |
+| Activation preview / redeem |   ✅    |     ✅     | Prepaid / B2B2C welcome + post-auth redeem             |
+| Emergency contacts          |   ✅    |     ❌     | E05–E09                                                |
+| Media upload                |   ✅    |     ❌     | PWA photos                                             |
+| Emergency bystander         |   ⚠️    |     ❌     | Spec: `nonce` only — UI needs more                     |
+| Rider onboarding            |   ❌    |     ❌     | No API in spec                                         |
 
 ---
 
 ## OpenAPI Coverage
 
-| Metric | Value |
-|--------|------:|
-| Total paths (full spec) | 69 |
-| Consumer-relevant operations | ~35 |
-| Operations integrated | 19 |
-| **API operation coverage** | **54%** |
-| Screens needing backend | ~63 |
-| Screens with live API | ~6 |
-| **Screen coverage** | **~10%** |
-| **Mock / local coverage** | **~90%** |
+| Metric                       |    Value |
+| ---------------------------- | -------: |
+| Total paths (full spec)      |       69 |
+| Consumer-relevant operations |      ~35 |
+| Operations integrated        |       19 |
+| **API operation coverage**   |  **54%** |
+| Screens needing backend      |      ~63 |
+| Screens with live API        |       ~6 |
+| **Screen coverage**          | **~10%** |
+| **Mock / local coverage**    | **~90%** |
 
 Envelope: `{ data, meta }` success · `{ error }` failure · Bearer + refresh rotation · `Idempotency-Key` on orders/pay/redeem.
 
@@ -62,26 +62,26 @@ Envelope: `{ data, meta }` success · `{ error }` failure · Bearer + refresh ro
 
 ## APIs Completed
 
-| Method | Path | Service | Hook |
-|--------|------|---------|------|
-| POST | `/v1/auth/otp/request` | `auth-service` | `useRequestOtp` |
-| POST | `/v1/auth/otp/verify` | `auth-service` | `useVerifyOtp` |
-| POST | `/v1/auth/refresh` | api-client interceptor | — |
-| POST | `/v1/auth/logout` | `auth-service` | `useLogout` |
-| GET | `/v1/profile` | `auth-service` | (via verify) |
-| GET | `/v1/legal/documents` | `consent-sync` | — |
-| POST | `/v1/me/consents` | `consent-sync` | — |
-| PATCH | `/v1/profile` | `profile-service` | `useUpdateProfile` |
-| POST | `/v1/devices/token` | `device-service` | `useRegisterDevice` (headless) |
-| GET | `/v1/qr/{code}/resolve` | `qr-service` | `useQrResolve` |
-| POST | `/v1/qr/{code}/attach` | `qr-attach-service` | `useQrAttach` |
-| GET | `/v1/vehicles/lookup` | `vehicle-service` | `useVehicleLookup` |
-| GET | `/v1/plans` | `plan-service` | `usePlans` |
-| POST | `/v1/orders` | `checkout-service` | `useCheckout` |
-| POST | `/v1/orders/{id}/pay` | `checkout-service` | `useCheckout` |
-| GET | `/v1/orders/{id}/payment` | `checkout-service` | `usePaymentPolling` |
-| GET | `/v1/activation/preview` | `activation-service` | `useActivationPreview` |
-| POST | `/v1/activation/redeem` | `activation-service` | `useRedeemActivation` |
+| Method | Path                      | Service                | Hook                           |
+| ------ | ------------------------- | ---------------------- | ------------------------------ |
+| POST   | `/v1/auth/otp/request`    | `auth-service`         | `useRequestOtp`                |
+| POST   | `/v1/auth/otp/verify`     | `auth-service`         | `useVerifyOtp`                 |
+| POST   | `/v1/auth/refresh`        | api-client interceptor | —                              |
+| POST   | `/v1/auth/logout`         | `auth-service`         | `useLogout`                    |
+| GET    | `/v1/profile`             | `auth-service`         | (via verify)                   |
+| GET    | `/v1/legal/documents`     | `consent-sync`         | —                              |
+| POST   | `/v1/me/consents`         | `consent-sync`         | —                              |
+| PATCH  | `/v1/profile`             | `profile-service`      | `useUpdateProfile`             |
+| POST   | `/v1/devices/token`       | `device-service`       | `useRegisterDevice` (headless) |
+| GET    | `/v1/qr/{code}/resolve`   | `qr-service`           | `useQrResolve`                 |
+| POST   | `/v1/qr/{code}/attach`    | `qr-attach-service`    | `useQrAttach`                  |
+| GET    | `/v1/vehicles/lookup`     | `vehicle-service`      | `useVehicleLookup`             |
+| GET    | `/v1/plans`               | `plan-service`         | `usePlans`                     |
+| POST   | `/v1/orders`              | `checkout-service`     | `useCheckout`                  |
+| POST   | `/v1/orders/{id}/pay`     | `checkout-service`     | `useCheckout`                  |
+| GET    | `/v1/orders/{id}/payment` | `checkout-service`     | `usePaymentPolling`            |
+| GET    | `/v1/activation/preview`  | `activation-service`   | `useActivationPreview`         |
+| POST   | `/v1/activation/redeem`   | `activation-service`   | `useRedeemActivation`          |
 
 **DTOs:** `packages/api-client` — `auth.ts`, `consent.ts`, `legal.ts`, `devices.ts`, `qr.ts`, `vehicles.ts`, `plans.ts`, `orders.ts`, `activation.ts`  
 **Mappers:** `profile-mapper.ts`, `qr-mapper.ts`, `vehicle-mapper.ts`, `plan-mapper.ts`, `checkout-mapper.ts`, `activation-mapper.ts`, `qr-errors.ts`, `qr-attach-errors.ts`, `vehicle-errors.ts`, `plan-errors.ts`, `checkout-errors.ts`, `activation-errors.ts`, `profile-errors.ts`, `auth-errors.ts`  
@@ -93,9 +93,9 @@ Envelope: `{ data, meta }` success · `{ error }` failure · Bearer + refresh ro
 
 Priority order (see [Integration Order](#integration-order)):
 
-1. Emergency contacts CRUD + OTP — E05–E09  
-2. `POST /v1/media` + complete — PWA photos  
-3. `POST /v1/qr/{code}/emergency` — PWA SOS (minimal until spec expands)  
+1. Emergency contacts CRUD + OTP — E05–E09
+2. `POST /v1/media` + complete — PWA photos
+3. `POST /v1/qr/{code}/emergency` — PWA SOS (minimal until spec expands)
 4. PWA verify name — reuse `useUpdateProfile` when wired
 
 **Blocked:** Rider flow (E02–E10) — no OpenAPI endpoints. Rich park-me/SOS — `AcceptEmergencyDto` is `nonce` only.
@@ -120,13 +120,13 @@ Feature Service (orchestration, mappers)
 Backend
 ```
 
-| Layer | Owns | Must NOT know |
-|-------|------|----------------|
-| Screen | Visual states | fetch, axios, tokens, API URLs |
-| Hook | `isPending`, error mapping call | Journey beyond patch |
-| Service | Orchestration, mappers | React |
-| api-client | HTTP, DTOs, `normalizeApiError` | JourneySession |
-| auth | TokenManager, deviceId | Business rules |
+| Layer      | Owns                            | Must NOT know                  |
+| ---------- | ------------------------------- | ------------------------------ |
+| Screen     | Visual states                   | fetch, axios, tokens, API URLs |
+| Hook       | `isPending`, error mapping call | Journey beyond patch           |
+| Service    | Orchestration, mappers          | React                          |
+| api-client | HTTP, DTOs, `normalizeApiError` | JourneySession                 |
+| auth       | TokenManager, deviceId          | Business rules                 |
 
 **Per API requirement:** DTO (api-client) · Mapper (service) · Error mapper · Feature service · Hook.
 
@@ -165,20 +165,20 @@ apps/qr/hooks/auth
 
 ## Integration Order
 
-| Phase | Domain | Why |
-|------:|--------|-----|
-| 1 ✅ | Authentication | Token gate for all protected APIs |
-| 2 ✅ | Device FCM | Headless push registration; `setFcmTokenProvider` for token |
-| 3 ✅ | Profile PATCH | A3 owner name |
-| 4 ✅ | QR resolve | Backend journey + legacy URL bridge |
-| 5 ✅ | Vahan lookup | Shared service for purchase + PWA |
-| 6 ✅ | Plans | Backend pricePaise + riderEligible |
-| 7 ✅ | Orders + payments | Backend `totalPaise`; pay + poll → R09/R10 |
-| 8 ✅ | Activation | Preview (public) + redeem (auth) → prepaid/B2B welcome |
-| 9 ✅ | QR attach | Bind resolved code to vehicle post payment (R10) |
-| 10 | Emergency contacts | Spec complete |
-| 11 | Media | Presigned upload pipeline |
-| 12 | PWA emergency | Last — spec gap |
+| Phase | Domain             | Why                                                         |
+| ----: | ------------------ | ----------------------------------------------------------- |
+|  1 ✅ | Authentication     | Token gate for all protected APIs                           |
+|  2 ✅ | Device FCM         | Headless push registration; `setFcmTokenProvider` for token |
+|  3 ✅ | Profile PATCH      | A3 owner name                                               |
+|  4 ✅ | QR resolve         | Backend journey + legacy URL bridge                         |
+|  5 ✅ | Vahan lookup       | Shared service for purchase + PWA                           |
+|  6 ✅ | Plans              | Backend pricePaise + riderEligible                          |
+|  7 ✅ | Orders + payments  | Backend `totalPaise`; pay + poll → R09/R10                  |
+|  8 ✅ | Activation         | Preview (public) + redeem (auth) → prepaid/B2B welcome      |
+|  9 ✅ | QR attach          | Bind resolved code to vehicle post payment (R10)            |
+|    10 | Emergency contacts | Spec complete                                               |
+|    11 | Media              | Presigned upload pipeline                                   |
+|    12 | PWA emergency      | Last — spec gap                                             |
 
 Each phase: api-client module → service → hook → wire route (no UI changes) → update this doc → quality gate.
 
@@ -188,22 +188,22 @@ Each phase: api-client module → service → hook → wire route (no UI changes
 
 ### `@autolokate/api-client`
 
-| Module | Status |
-|--------|--------|
-| `client.ts`, `errors.ts`, `envelope.ts`, `endpoints.ts` | ✅ |
-| `auth.ts` (OTP, profile, refresh, logout) | ✅ |
-| `consent.ts`, `legal.ts`, `devices.ts`, `qr.ts`, `vehicles.ts`, `plans.ts`, `orders.ts`, `activation.ts` | ✅ |
-| `media.ts`, `emergency-contacts.ts`, `emergency.ts` | Pending |
+| Module                                                                                                   | Status  |
+| -------------------------------------------------------------------------------------------------------- | ------- |
+| `client.ts`, `errors.ts`, `envelope.ts`, `endpoints.ts`                                                  | ✅      |
+| `auth.ts` (OTP, profile, refresh, logout)                                                                | ✅      |
+| `consent.ts`, `legal.ts`, `devices.ts`, `qr.ts`, `vehicles.ts`, `plans.ts`, `orders.ts`, `activation.ts` | ✅      |
+| `media.ts`, `emergency-contacts.ts`, `emergency.ts`                                                      | Pending |
 
 Must NOT contain: React, JourneySession, env reads, token storage.
 
 ### `@autolokate/auth`
 
-| Export | Role |
-|--------|------|
-| `TokenManager`, `getTokenManager` | Access/refresh tokens |
-| `getDeviceId` | Persistent UUID for OTP verify |
-| `createLogger` | Service-layer logging |
+| Export                            | Role                           |
+| --------------------------------- | ------------------------------ |
+| `TokenManager`, `getTokenManager` | Access/refresh tokens          |
+| `getDeviceId`                     | Persistent UUID for OTP verify |
+| `createLogger`                    | Service-layer logging          |
 
 ### `@autolokate/types` / `@autolokate/utils`
 
@@ -211,28 +211,28 @@ App-domain enums and formatters. OpenAPI DTOs live in api-client; mappers bridge
 
 ### `apps/qr`
 
-| Path | Role |
-|------|------|
-| `src/services/auth/*` | Auth orchestration |
-| `src/services/profile/*` | Profile PATCH + mapper |
-| `src/services/qr/*` | Resolve, attach + mapper + ephemeral cache |
-| `src/services/vehicle/*` | Vahan lookup + mapper + ephemeral cache |
-| `src/services/plan/*` | Plan catalog + mapper + 5m cache |
-| `src/services/checkout/*` | Order create, pay, poll + ephemeral cache |
-| `src/services/activation/*` | Preview, redeem + ephemeral cache |
-| `src/hooks/qr/*` | `useQrResolve`, `useQrAttach` |
-| `src/hooks/vehicle/*` | `useVehicleLookup` |
-| `src/hooks/plan/*` | `usePlans` |
-| `src/hooks/checkout/*` | `useCheckout`, `usePaymentPolling` |
-| `src/hooks/activation/*` | `useActivationPreview`, `useRedeemActivation` |
-| `src/hooks/auth/*` | Auth hooks |
-| `src/hooks/profile/*` | `useUpdateProfile` |
-| `src/services/device/*` | FCM device registration (headless) |
-| `src/hooks/device/*` | `useRegisterDevice` (headless) |
-| `src/platform/api/qr-api-client.ts` | Client factory + `onAuthFailure` |
-| `src/platform/auth/AuthSessionRegistrar.tsx` | Refresh-failure redirect (no UI) |
-| `src/platform/device/DeviceRegistrationRegistrar.tsx` | Session-restore device register (no UI) |
-| `src/config/env.ts` | Sole `import.meta.env` reader |
+| Path                                                  | Role                                          |
+| ----------------------------------------------------- | --------------------------------------------- |
+| `src/services/auth/*`                                 | Auth orchestration                            |
+| `src/services/profile/*`                              | Profile PATCH + mapper                        |
+| `src/services/qr/*`                                   | Resolve, attach + mapper + ephemeral cache    |
+| `src/services/vehicle/*`                              | Vahan lookup + mapper + ephemeral cache       |
+| `src/services/plan/*`                                 | Plan catalog + mapper + 5m cache              |
+| `src/services/checkout/*`                             | Order create, pay, poll + ephemeral cache     |
+| `src/services/activation/*`                           | Preview, redeem + ephemeral cache             |
+| `src/hooks/qr/*`                                      | `useQrResolve`, `useQrAttach`                 |
+| `src/hooks/vehicle/*`                                 | `useVehicleLookup`                            |
+| `src/hooks/plan/*`                                    | `usePlans`                                    |
+| `src/hooks/checkout/*`                                | `useCheckout`, `usePaymentPolling`            |
+| `src/hooks/activation/*`                              | `useActivationPreview`, `useRedeemActivation` |
+| `src/hooks/auth/*`                                    | Auth hooks                                    |
+| `src/hooks/profile/*`                                 | `useUpdateProfile`                            |
+| `src/services/device/*`                               | FCM device registration (headless)            |
+| `src/hooks/device/*`                                  | `useRegisterDevice` (headless)                |
+| `src/platform/api/qr-api-client.ts`                   | Client factory + `onAuthFailure`              |
+| `src/platform/auth/AuthSessionRegistrar.tsx`          | Refresh-failure redirect (no UI)              |
+| `src/platform/device/DeviceRegistrationRegistrar.tsx` | Session-restore device register (no UI)       |
+| `src/config/env.ts`                                   | Sole `import.meta.env` reader                 |
 
 Future services: `media/`, `emergency-contact/`, `emergency-incident/`.
 
@@ -242,50 +242,50 @@ Session schema is **locked** — services map DTOs to existing fields only.
 
 ### Shared auth
 
-| Screen | Route | API | Session fields |
-|--------|-------|-----|----------------|
-| A1 Mobile | `/journey/auth/mobile` | ✅ OTP request | `auth.mobile`, `consentAccepted` |
-| A2 OTP | `/journey/auth/otp` | ✅ verify + profile GET | `auth.otpVerified`, `ownerName`, `languageId` |
-| A3 Owner | `/journey/auth/vehicle-owner` | ✅ PATCH profile | `auth.ownerName`, `languageId` |
-| L1/L2 Legal | `legal/*` | 🔲 GET legal (optional) | none |
+| Screen      | Route                         | API                     | Session fields                                |
+| ----------- | ----------------------------- | ----------------------- | --------------------------------------------- |
+| A1 Mobile   | `/journey/auth/mobile`        | ✅ OTP request          | `auth.mobile`, `consentAccepted`              |
+| A2 OTP      | `/journey/auth/otp`           | ✅ verify + profile GET | `auth.otpVerified`, `ownerName`, `languageId` |
+| A3 Owner    | `/journey/auth/vehicle-owner` | ✅ PATCH profile        | `auth.ownerName`, `languageId`                |
+| L1/L2 Legal | `legal/*`                     | 🔲 GET legal (optional) | none                                          |
 
 ### Purchase
 
-| Screen | Route | API | Session fields |
-|--------|-------|-----|----------------|
-| R03–R05 | vehicle confirm | ✅ `GET /v1/vehicles/lookup` (R04 fetch) | `vehicle.*` |
-| R06–R07 | plan + rider | ✅ `GET /v1/plans` | `purchase.selectedPlanId`, `purchase.riderCount` |
-| R08–R10c | checkout + payment | ✅ orders create / pay / poll | `purchase.checkoutReady`, `purchase.paymentStatus`, `purchase.paidAmountInr`, promo flags |
-| R10 | payment success | ✅ `POST /v1/qr/{code}/attach` (headless) | none — uses checkout `purchaseQrCode` + `vehicle.plate` |
-| Entry | QR scan | ✅ `GET /v1/qr/{code}/resolve` (+ legacy `?type=` bridge) | flow selection only |
+| Screen   | Route              | API                                                       | Session fields                                                                            |
+| -------- | ------------------ | --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| R03–R05  | vehicle confirm    | ✅ `GET /v1/vehicles/lookup` (R04 fetch)                  | `vehicle.*`                                                                               |
+| R06–R07  | plan + rider       | ✅ `GET /v1/plans`                                        | `purchase.selectedPlanId`, `purchase.riderCount`                                          |
+| R08–R10c | checkout + payment | ✅ orders create / pay / poll                             | `purchase.checkoutReady`, `purchase.paymentStatus`, `purchase.paidAmountInr`, promo flags |
+| R10      | payment success    | ✅ `POST /v1/qr/{code}/attach` (headless)                 | none — uses checkout `purchaseQrCode` + `vehicle.plate`                                   |
+| Entry    | QR scan            | ✅ `GET /v1/qr/{code}/resolve` (+ legacy `?type=` bridge) | flow selection only                                                                       |
 
 **Checkout ephemeral (never in session):** `purchaseQrCode`, `orderId`, `paymentRef`, `createIdempotencyKey`, `payIdempotencyKey`, cached `orderSummary`.
 
 ### Prepaid / B2B2C
 
-| Screen | Route | API | Session fields |
-|--------|-------|-----|----------------|
-| Welcome | prepaid/b2b2c welcome | ✅ `GET /v1/activation/preview` | `prepaid.entitlement` / `b2b2c.entitlement`, `purchase.*`, `vehicle.plate` |
-| Post-auth | shared auth complete | ✅ `POST /v1/activation/redeem` | existing purchase/vehicle fields from preview mapper |
+| Screen    | Route                 | API                             | Session fields                                                             |
+| --------- | --------------------- | ------------------------------- | -------------------------------------------------------------------------- |
+| Welcome   | prepaid/b2b2c welcome | ✅ `GET /v1/activation/preview` | `prepaid.entitlement` / `b2b2c.entitlement`, `purchase.*`, `vehicle.plate` |
+| Post-auth | shared auth complete  | ✅ `POST /v1/activation/redeem` | existing purchase/vehicle fields from preview mapper                       |
 
 **Activation ephemeral (never in session):** `activationCode`, `qrCode`, `subscriptionId`, redeem idempotency key, cached preview.
 
 ### Emergency
 
-| Screen | API when wired |
-|--------|----------------|
+| Screen           | API when wired                |
+| ---------------- | ----------------------------- |
 | E05–E09 contacts | emergency-contacts OTP + CRUD |
-| E02–E10 riders | ⚠️ **no API** — keep mock |
+| E02–E10 riders   | ⚠️ **no API** — keep mock     |
 
 ### PWA scan
 
-| Screen | API when wired |
-|--------|----------------|
-| Loading | ✅ `GET /v1/qr/{code}/resolve` (+ legacy bridge) |
-| Verify | auth OTP (or bystander TBD) |
-| Park-me lookup | ✅ `GET /v1/vehicles/lookup` |
-| Photos | `POST /v1/media` |
-| SOS send | `POST /v1/qr/{code}/emergency` (minimal) |
+| Screen         | API when wired                                   |
+| -------------- | ------------------------------------------------ |
+| Loading        | ✅ `GET /v1/qr/{code}/resolve` (+ legacy bridge) |
+| Verify         | auth OTP (or bystander TBD)                      |
+| Park-me lookup | ✅ `GET /v1/vehicles/lookup`                     |
+| Photos         | `POST /v1/media`                                 |
+| SOS send       | `POST /v1/qr/{code}/emergency` (minimal)         |
 
 **Ephemeral (never in session):** `orderId`, `paymentRef`, idempotency keys, `purchaseQrCode`, `activationCode`, `qrCode`, `subscriptionId`, `verificationToken`, presigned URLs, QR resolve response, raw `code`, vehicle lookup cache, plan catalog cache, checkout order summary cache, activation preview cache.
 
@@ -300,24 +300,24 @@ Session schema is **locked** — services map DTOs to existing fields only.
 3. **Hooks** — catch service errors, return `{ ok: false, error }`.
 4. **Refresh** — 401 → single-queue refresh → one retry → `onAuthFailure` → clear tokens + redirect.
 
-| Code | Auth UI |
-|------|---------|
-| `offline` | `offline` |
-| `network` / `timeout` | `network-error` |
-| `unauthorized` / `expired` | OTP wrong / expired |
-| `rate_limit` / `validation` | mobile `error` |
+| Code                        | Auth UI             |
+| --------------------------- | ------------------- |
+| `offline`                   | `offline`           |
+| `network` / `timeout`       | `network-error`     |
+| `unauthorized` / `expired`  | OTP wrong / expired |
+| `rate_limit` / `validation` | mobile `error`      |
 
 ---
 
 ## Storage Strategy
 
-| Data | Owner | Key |
-|------|-------|-----|
-| Auth tokens | `@autolokate/auth` | `sessionStorage` `al-auth-tokens-v1` |
-| Device ID | `@autolokate/auth` | `localStorage` `al-device-id-v1` |
-| Journey | onboarding | `sessionStorage` `al-journey-v1` |
-| PWA scan | onboarding | `sessionStorage` `al-pwa-scan-v1` |
-| Theme / PWA UX | onboarding | separate keys (not auth) |
+| Data           | Owner              | Key                                  |
+| -------------- | ------------------ | ------------------------------------ |
+| Auth tokens    | `@autolokate/auth` | `sessionStorage` `al-auth-tokens-v1` |
+| Device ID      | `@autolokate/auth` | `localStorage` `al-device-id-v1`     |
+| Journey        | onboarding         | `sessionStorage` `al-journey-v1`     |
+| PWA scan       | onboarding         | `sessionStorage` `al-pwa-scan-v1`    |
+| Theme / PWA UX | onboarding         | separate keys (not auth)             |
 
 - `clearJourney()` → `revokeAndClearAuthSession()` (logout API + token clear).
 - `reconcileAuthSession()` on load clears stale `otpVerified` without tokens.
@@ -327,17 +327,17 @@ Session schema is **locked** — services map DTOs to existing fields only.
 
 ## Environment Strategy
 
-| File | Purpose |
-|------|---------|
-| `apps/qr/.env.example` | Template |
-| `.env.development` / `.env.production` | Committed defaults |
-| `.env.local` | Gitignored overrides |
+| File                                   | Purpose              |
+| -------------------------------------- | -------------------- |
+| `apps/qr/.env.example`                 | Template             |
+| `.env.development` / `.env.production` | Committed defaults   |
+| `.env.local`                           | Gitignored overrides |
 
-| Variable | Required |
-|----------|----------|
-| `VITE_API_BASE_URL` | Yes |
-| `VITE_ENVIRONMENT` | No (defaults from `PROD`) |
-| `VITE_ENABLE_LOGS` | No |
+| Variable            | Required                  |
+| ------------------- | ------------------------- |
+| `VITE_API_BASE_URL` | Yes                       |
+| `VITE_ENVIRONMENT`  | No (defaults from `PROD`) |
+| `VITE_ENABLE_LOGS`  | No                        |
 
 **Single reader:** `apps/qr/src/config/env.ts` — validated in `main.tsx` via `validateEnv()`.
 
@@ -446,41 +446,41 @@ Session schema is **locked** — services map DTOs to existing fields only.
 
 ## Build Status
 
-| Package | lint | typecheck | build |
-|---------|:----:|:---------:|:-----:|
-| `@autolokate/auth` | — | ✅ | ✅ |
-| `@autolokate/api-client` | — | ✅ | ✅ |
-| `@autolokate/qr` | ✅ | ✅ | ✅ |
+| Package                  | lint | typecheck | build |
+| ------------------------ | :--: | :-------: | :---: |
+| `@autolokate/auth`       |  —   |    ✅     |  ✅   |
+| `@autolokate/api-client` |  —   |    ✅     |  ✅   |
+| `@autolokate/qr`         |  ✅  |    ✅     |  ✅   |
 
-*Re-run after each phase; update table here.*
+_Re-run after each phase; update table here._
 
 ---
 
 ## Known Limitations
 
-| Item | Impact |
-|------|--------|
-| Legacy QR URLs (`?type=`) | Local parse only — no backend call until migrated to `?code=` |
-| OpenAPI 410 on resolve | Not in spec — client maps 404 + status enums to `expired` |
-| `refreshQrResolution` | Exposed in hook; not wired to UI (headless refresh path) |
-| Rider add-on prices on R07 | Static marketing labels in `RiderCoverOptions` — not checkout authority |
-| Promo line amounts | Backend order total only; promo line shows "Applied" (no INR breakdown in API) |
-| Manual purchase entry (no QR) | `prepareCheckout` requires ephemeral `purchaseQrCode` from scan |
-| Plan feature bullets | Static presentation in `plan-mapper.ts` (not pricing) |
-| Manual hub prepaid/B2B entry | No `voucherId`/`partnerId` → preview cannot load |
-| Legacy `?type=prepaid` without QR scan | Redeem needs `qrCode` — only `?code=` path fully supported |
-| Partner `null` in preview DTO | Fallback sponsor label until P4 partner org |
-| `apps/website` SAFETY_PLANS | Separate marketing stack — not onboarding |
-| `purchase-activation/validation.ts` | Legacy flow duplicate `normalizePlate` — separate from vehicle service |
-| Rider onboarding | No API — E02–E10 stay mock |
-| PWA emergency DTO | `nonce` only — photos/location not in spec |
-| Promo validation | Backend via create-order; `mapCheckoutApiError` → `promo_invalid` |
-| FCM not wired | Default provider returns null — no POST until `setFcmTokenProvider` |
-| PWA verify name | Still mock delay — PATCH available via `useUpdateProfile` when wired |
-| `apps/website` | Legacy axios stack — separate migration |
-| `import.meta.env.DEV` | Used in PWA dev diagnostics only (not config) |
-| QR attach on R10 | Headless — logs errors; no UI branch; idempotent cache per code+plate |
-| Razorpay gateway | `VITE_RAZORPAY_KEY` optional — checkout stops after POST pay until SDK wired |
+| Item                                   | Impact                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------ |
+| Legacy QR URLs (`?type=`)              | Local parse only — no backend call until migrated to `?code=`                  |
+| OpenAPI 410 on resolve                 | Not in spec — client maps 404 + status enums to `expired`                      |
+| `refreshQrResolution`                  | Exposed in hook; not wired to UI (headless refresh path)                       |
+| Rider add-on prices on R07             | Static marketing labels in `RiderCoverOptions` — not checkout authority        |
+| Promo line amounts                     | Backend order total only; promo line shows "Applied" (no INR breakdown in API) |
+| Manual purchase entry (no QR)          | `prepareCheckout` requires ephemeral `purchaseQrCode` from scan                |
+| Plan feature bullets                   | Static presentation in `plan-mapper.ts` (not pricing)                          |
+| Manual hub prepaid/B2B entry           | No `voucherId`/`partnerId` → preview cannot load                               |
+| Legacy `?type=prepaid` without QR scan | Redeem needs `qrCode` — only `?code=` path fully supported                     |
+| Partner `null` in preview DTO          | Fallback sponsor label until P4 partner org                                    |
+| `apps/website` SAFETY_PLANS            | Separate marketing stack — not onboarding                                      |
+| `purchase-activation/validation.ts`    | Legacy flow duplicate `normalizePlate` — separate from vehicle service         |
+| Rider onboarding                       | No API — E02–E10 stay mock                                                     |
+| PWA emergency DTO                      | `nonce` only — photos/location not in spec                                     |
+| Promo validation                       | Backend via create-order; `mapCheckoutApiError` → `promo_invalid`              |
+| FCM not wired                          | Default provider returns null — no POST until `setFcmTokenProvider`            |
+| PWA verify name                        | Still mock delay — PATCH available via `useUpdateProfile` when wired           |
+| `apps/website`                         | Legacy axios stack — separate migration                                        |
+| `import.meta.env.DEV`                  | Used in PWA dev diagnostics only (not config)                                  |
+| QR attach on R10                       | Headless — logs errors; no UI branch; idempotent cache per code+plate          |
+| Razorpay gateway                       | `VITE_RAZORPAY_KEY` optional — checkout stops after POST pay until SDK wired   |
 
 ---
 
@@ -488,12 +488,12 @@ Session schema is **locked** — services map DTOs to existing fields only.
 
 **Phase 10 — Emergency contacts**
 
-| Step | Work |
-|------|------|
-| api-client | `emergency-contacts.ts` |
-| service | `emergency-contact-service` |
-| hook | wire E05–E09 |
-| wire | contact OTP + CRUD |
+| Step       | Work                        |
+| ---------- | --------------------------- |
+| api-client | `emergency-contacts.ts`     |
+| service    | `emergency-contact-service` |
+| hook       | wire E05–E09                |
+| wire       | contact OTP + CRUD          |
 
 No UI, route, provider, or JourneySession schema changes.
 
@@ -501,22 +501,22 @@ No UI, route, provider, or JourneySession schema changes.
 
 ## Final Engineering Verdict
 
-| Criterion | Status |
-|-----------|--------|
-| Architecture layers enforced | ✅ |
-| Auth production-ready | ✅ |
-| Device FCM (headless) | ✅ |
-| Profile PATCH on A3 | ✅ |
-| QR resolve + legacy bridge | ✅ |
-| QR attach post-payment | ✅ |
-| Vahan lookup (purchase + PWA) | ✅ |
-| Plans from backend catalog | ✅ |
-| Orders + payments (backend totals) | ✅ |
-| Activation preview + redeem | ✅ |
-| Dead activation mocks removed (`fetch-landing-entitlement`, landing-config demos) | ✅ |
-| Documentation single-file | ✅ |
-| Monorepo boundaries clean | ✅ |
-| Quality gate passing | ✅ |
-| Ready for Phase 10 (emergency contacts) | ✅ |
+| Criterion                                                                         | Status |
+| --------------------------------------------------------------------------------- | ------ |
+| Architecture layers enforced                                                      | ✅     |
+| Auth production-ready                                                             | ✅     |
+| Device FCM (headless)                                                             | ✅     |
+| Profile PATCH on A3                                                               | ✅     |
+| QR resolve + legacy bridge                                                        | ✅     |
+| QR attach post-payment                                                            | ✅     |
+| Vahan lookup (purchase + PWA)                                                     | ✅     |
+| Plans from backend catalog                                                        | ✅     |
+| Orders + payments (backend totals)                                                | ✅     |
+| Activation preview + redeem                                                       | ✅     |
+| Dead activation mocks removed (`fetch-landing-entitlement`, landing-config demos) | ✅     |
+| Documentation single-file                                                         | ✅     |
+| Monorepo boundaries clean                                                         | ✅     |
+| Quality gate passing                                                              | ✅     |
+| Ready for Phase 10 (emergency contacts)                                           | ✅     |
 
 **Maintain this file only.** When a phase ships, update APIs Completed, APIs Pending, Build Status, and Next Phase sections here.

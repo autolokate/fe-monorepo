@@ -37,7 +37,10 @@ export function usePaymentPolling() {
         }
 
         if (result.paymentStatus === 'success' || result.paymentStatus === 'failed') {
-          checkoutLogger.info('payment_poll_terminal', { orderId, paymentStatus: result.paymentStatus });
+          checkoutLogger.info('payment_poll_terminal', {
+            orderId,
+            paymentStatus: result.paymentStatus,
+          });
           return result;
         }
 

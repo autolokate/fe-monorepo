@@ -25,17 +25,17 @@ Code-level fixes from the P0 sprint may be present in the production bundle (rem
 
 ## Release gate checklist
 
-| Gate | Required | Status |
-|------|----------|--------|
-| Android Chrome — install + standalone | Device evidence | ❌ **FAIL** — not run |
-| Samsung Internet — install + flows | Device evidence | ❌ **FAIL** — not run |
-| iPhone Safari — A2HS + SOS/camera/geo | Device evidence | ❌ **FAIL** — not run |
-| iPhone Chrome — install UX (no Android banner) | Device evidence | ❌ **FAIL** — not run |
-| Emergency contact — native picker (Android) | Device evidence | ❌ **FAIL** — not run |
-| Emergency contact — iOS fallback | Device evidence | ❌ **FAIL** — not run |
-| Rider skip — Purchase / Prepaid / B2B2C | Device evidence | ❌ **FAIL** — not run |
-| Visual QA 393px dark/light | Device evidence | ❌ **FAIL** — not run |
-| Evidence artifacts in repo | Screenshots + video | ❌ **FAIL** — none |
+| Gate                                           | Required            | Status                |
+| ---------------------------------------------- | ------------------- | --------------------- |
+| Android Chrome — install + standalone          | Device evidence     | ❌ **FAIL** — not run |
+| Samsung Internet — install + flows             | Device evidence     | ❌ **FAIL** — not run |
+| iPhone Safari — A2HS + SOS/camera/geo          | Device evidence     | ❌ **FAIL** — not run |
+| iPhone Chrome — install UX (no Android banner) | Device evidence     | ❌ **FAIL** — not run |
+| Emergency contact — native picker (Android)    | Device evidence     | ❌ **FAIL** — not run |
+| Emergency contact — iOS fallback               | Device evidence     | ❌ **FAIL** — not run |
+| Rider skip — Purchase / Prepaid / B2B2C        | Device evidence     | ❌ **FAIL** — not run |
+| Visual QA 393px dark/light                     | Device evidence     | ❌ **FAIL** — not run |
+| Evidence artifacts in repo                     | Screenshots + video | ❌ **FAIL** — none    |
 
 **Passed:** 0 / 9 gates  
 **Failed:** 9 / 9 gates
@@ -44,12 +44,12 @@ Code-level fixes from the P0 sprint may be present in the production bundle (rem
 
 ## What was verified (insufficient for release)
 
-| Check | Result | Counts toward release? |
-|-------|--------|------------------------|
-| Production URL reachable | ✅ HTTP 200 | ❌ No |
-| Web manifest reachable | ✅ HTTP 200 | ❌ No |
-| PWA JS bundle deployed | ✅ Present | ❌ No |
-| Local `pnpm run build` (prior session) | ✅ Passed | ❌ No |
+| Check                                  | Result      | Counts toward release? |
+| -------------------------------------- | ----------- | ---------------------- |
+| Production URL reachable               | ✅ HTTP 200 | ❌ No                  |
+| Web manifest reachable                 | ✅ HTTP 200 | ❌ No                  |
+| PWA JS bundle deployed                 | ✅ Present  | ❌ No                  |
+| Local `pnpm run build` (prior session) | ✅ Passed   | ❌ No                  |
 
 ---
 
@@ -72,12 +72,12 @@ Code-level fixes from the P0 sprint may be present in the production bundle (rem
 
 ## Prior code reports — status reclassification
 
-| Report | Code claim | Device sign-off |
-|--------|------------|-----------------|
-| `IOS_CONTACT_PICKER_REPORT.md` | Implemented | **UNVERIFIED** on hardware |
-| `RIDER_LOOP_FIX_REPORT.md` | Implemented | **UNVERIFIED** on hardware |
-| `IOS_INSTALL_REPORT.md` | Implemented | **UNVERIFIED** on hardware |
-| `REAL_DEVICE_SIGNOFF_V2.md` | FIXED (code) | **Still pending** device QA |
+| Report                         | Code claim   | Device sign-off             |
+| ------------------------------ | ------------ | --------------------------- |
+| `IOS_CONTACT_PICKER_REPORT.md` | Implemented  | **UNVERIFIED** on hardware  |
+| `RIDER_LOOP_FIX_REPORT.md`     | Implemented  | **UNVERIFIED** on hardware  |
+| `IOS_INSTALL_REPORT.md`        | Implemented  | **UNVERIFIED** on hardware  |
+| `REAL_DEVICE_SIGNOFF_V2.md`    | FIXED (code) | **Still pending** device QA |
 
 These reports describe **intent and code changes**, not **release proof**.
 
@@ -94,7 +94,7 @@ These reports describe **intent and code changes**, not **release proof**.
 
 ## Sign-off authority
 
-| Role | Name | Date | Verdict |
-|------|------|------|---------|
-| Real device QA | *Not executed* | 2026-06-21 | **ISSUES FOUND** |
-| Release | *Blocked* | 2026-06-21 | **NOT RELEASE READY** |
+| Role           | Name           | Date       | Verdict               |
+| -------------- | -------------- | ---------- | --------------------- |
+| Real device QA | _Not executed_ | 2026-06-21 | **ISSUES FOUND**      |
+| Release        | _Blocked_      | 2026-06-21 | **NOT RELEASE READY** |

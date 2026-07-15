@@ -120,24 +120,51 @@ async function boot(browser, appUrl, tokens, fcmConfig) {
 const run = async (browser, appUrl) => {
   console.log('\n[A] FID arrives before the bounded wait');
   {
-    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, { fidDelayMs: 50, fid: 'FAKE-FID-A1' });
+    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, {
+      fidDelayMs: 50,
+      fid: 'FAKE-FID-A1',
+    });
     await page.waitForTimeout(3000);
     const snap = await page.evaluate(() => window.__fcm.snapshot());
-    check('device registered with the FID', posts.length >= 1 && fidsOf(posts).join() === 'FAKE-FID-A1', `${posts.length} post(s), fids=${fidsOf(posts)}`);
-    check('register() called once despite repeated registerDevice()', snap.registerCalls === 1, JSON.stringify(snap));
-    check('onRegistered subscribed exactly once', snap.onRegisteredSubscriptions === 1, JSON.stringify(snap));
-    check('logged fcm_fid_ready', logs.some((l) => l.t.startsWith('fcm_fid_ready')));
+    check(
+      'device registered with the FID',
+      posts.length >= 1 && fidsOf(posts).join() === 'FAKE-FID-A1',
+      `${posts.length} post(s), fids=${fidsOf(posts)}`,
+    );
+    check(
+      'register() called once despite repeated registerDevice()',
+      snap.registerCalls === 1,
+      JSON.stringify(snap),
+    );
+    check(
+      'onRegistered subscribed exactly once',
+      snap.onRegisteredSubscriptions === 1,
+      JSON.stringify(snap),
+    );
+    check(
+      'logged fcm_fid_ready',
+      logs.some((l) => l.t.startsWith('fcm_fid_ready')),
+    );
     await close();
   }
 
-  console.log(`\n[B] FID arrives at ${TIMEOUT_MS + 3000}ms — after the ${TIMEOUT_MS}ms bounded wait   <<< the regression`);
+  console.log(
+    `\n[B] FID arrives at ${TIMEOUT_MS + 3000}ms — after the ${TIMEOUT_MS}ms bounded wait   <<< the regression`,
+  );
   {
-    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, { fidDelayMs: TIMEOUT_MS + 3000, fid: 'FAKE-FID-B1' });
+    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, {
+      fidDelayMs: TIMEOUT_MS + 3000,
+      fid: 'FAKE-FID-B1',
+    });
 
     await page.waitForTimeout(TIMEOUT_MS + 1500); // just past the timeout, before the FID lands
     const postsAtTimeout = posts.length;
     const sawTimeout = logs.some((l) => l.t.startsWith('fcm_fid_timeout'));
-    check('bounded wait fired (no hang)', sawTimeout, logs.map((l) => l.t.split(' ')[0]).join(' | '));
+    check(
+      'bounded wait fired (no hang)',
+      sawTimeout,
+      logs.map((l) => l.t.split(' ')[0]).join(' | '),
+    );
     check('nothing uploaded at the timeout', postsAtTimeout === 0, `${postsAtTimeout} post(s)`);
 
     await page.waitForTimeout(5000); // let the late FID arrive and recover
@@ -146,47 +173,95 @@ const run = async (browser, appUrl) => {
       posts.length >= 1 && fidsOf(posts).join() === 'FAKE-FID-B1',
       `${posts.length} post(s) at ${posts.map((p) => `${p.atMs}ms`).join(',')} fids=${fidsOf(posts)}`,
     );
-    check('recovery logged as fcm_fid_late', logs.some((l) => l.t.startsWith('fcm_fid_late')), logs.map((l) => `${l.atMs}ms:${l.t.split(' ')[0]}`).join(' | '));
-    check('upload happened after the timeout', posts[0]?.atMs > TIMEOUT_MS, `first post at ${posts[0]?.atMs}ms`);
+    check(
+      'recovery logged as fcm_fid_late',
+      logs.some((l) => l.t.startsWith('fcm_fid_late')),
+      logs.map((l) => `${l.atMs}ms:${l.t.split(' ')[0]}`).join(' | '),
+    );
+    check(
+      'upload happened after the timeout',
+      posts[0]?.atMs > TIMEOUT_MS,
+      `first post at ${posts[0]?.atMs}ms`,
+    );
     await close();
   }
 
   console.log('\n[C] FID rotation');
   {
-    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, { fidDelayMs: 50, fid: 'FAKE-FID-C1' });
+    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, {
+      fidDelayMs: 50,
+      fid: 'FAKE-FID-C1',
+    });
     await page.waitForTimeout(2500);
     const before = posts.length;
     await page.evaluate(() => window.__fcm.emit('FAKE-FID-C2'));
     await page.waitForTimeout(2500);
-    check('rotation uploads the new FID', posts.length > before && posts.at(-1).body.fcmToken === 'FAKE-FID-C2', `${before} -> ${posts.length} post(s), last=${posts.at(-1)?.body?.fcmToken}`);
-    check('rotation logged', logs.some((l) => l.t.startsWith('fcm_fid_rotated')));
+    check(
+      'rotation uploads the new FID',
+      posts.length > before && posts.at(-1).body.fcmToken === 'FAKE-FID-C2',
+      `${before} -> ${posts.length} post(s), last=${posts.at(-1)?.body?.fcmToken}`,
+    );
+    check(
+      'rotation logged',
+      logs.some((l) => l.t.startsWith('fcm_fid_rotated')),
+    );
     const snap = await page.evaluate(() => window.__fcm.snapshot());
-    check('no duplicate onRegistered subscription', snap.onRegisteredSubscriptions === 1, JSON.stringify(snap));
+    check(
+      'no duplicate onRegistered subscription',
+      snap.onRegisteredSubscriptions === 1,
+      JSON.stringify(snap),
+    );
     await close();
   }
 
   console.log('\n[D] FID never arrives');
   {
-    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, { fidDelayMs: -1 });
+    const { page, posts, logs, close } = await boot(browser, appUrl, SEED_TOKENS, {
+      fidDelayMs: -1,
+    });
     await page.waitForTimeout(TIMEOUT_MS + 3000);
     check('no upload', posts.length === 0, `${posts.length} post(s)`);
-    check('timeout logged, app still alive', logs.some((l) => l.t.startsWith('fcm_fid_timeout')));
+    check(
+      'timeout logged, app still alive',
+      logs.some((l) => l.t.startsWith('fcm_fid_timeout')),
+    );
     check('page did not hang', await page.evaluate(() => document.readyState === 'complete'));
     await close();
   }
 
   console.log('\n[E] FID retired -> onUnregistered issues a DELETE');
   {
-    const { page, posts, deletes, logs, close } = await boot(browser, appUrl, SEED_TOKENS, { fidDelayMs: 50, fid: 'FAKE-FID-E1' });
+    const { page, posts, deletes, logs, close } = await boot(browser, appUrl, SEED_TOKENS, {
+      fidDelayMs: 50,
+      fid: 'FAKE-FID-E1',
+    });
     await page.waitForTimeout(2500);
-    check('device first registered with the FID', posts.length >= 1 && fidsOf(posts).join() === 'FAKE-FID-E1', `${posts.length} post(s), fids=${fidsOf(posts)}`);
+    check(
+      'device first registered with the FID',
+      posts.length >= 1 && fidsOf(posts).join() === 'FAKE-FID-E1',
+      `${posts.length} post(s), fids=${fidsOf(posts)}`,
+    );
     await page.evaluate(() => window.__fcm.emitUnregister('FAKE-FID-E1'));
     await page.waitForTimeout(2000);
-    check('DELETE fired with the retired FID', deletes.length >= 1 && deletes.at(-1).body.fcmToken === 'FAKE-FID-E1', `${deletes.length} delete(s), body=${JSON.stringify(deletes.at(-1)?.body)}`);
-    check('retirement logged as fcm_fid_unregistered', logs.some((l) => l.t.startsWith('fcm_fid_unregistered')));
-    check('device_unregistered logged after the DELETE', logs.some((l) => l.t.startsWith('device_unregistered')));
+    check(
+      'DELETE fired with the retired FID',
+      deletes.length >= 1 && deletes.at(-1).body.fcmToken === 'FAKE-FID-E1',
+      `${deletes.length} delete(s), body=${JSON.stringify(deletes.at(-1)?.body)}`,
+    );
+    check(
+      'retirement logged as fcm_fid_unregistered',
+      logs.some((l) => l.t.startsWith('fcm_fid_unregistered')),
+    );
+    check(
+      'device_unregistered logged after the DELETE',
+      logs.some((l) => l.t.startsWith('device_unregistered')),
+    );
     const snap = await page.evaluate(() => window.__fcm.snapshot());
-    check('onUnregistered subscribed exactly once', snap.onUnregisteredSubscriptions === 1, JSON.stringify(snap));
+    check(
+      'onUnregistered subscribed exactly once',
+      snap.onUnregisteredSubscriptions === 1,
+      JSON.stringify(snap),
+    );
     await close();
   }
 };

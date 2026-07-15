@@ -9,8 +9,17 @@ export {
   type ResolveQrCodeResult,
   type ResolveQrCodeOptions,
 } from './qr-service';
-export { attachPurchaseQr, isPurchaseAttachReady, resetAttachAttemptCache, type AttachPurchaseQrResult } from './qr-attach-service';
-export { mapQrAttachApiError, type QrAttachError, type QrAttachErrorCode } from './qr-attach-errors';
+export {
+  attachPurchaseQr,
+  isPurchaseAttachReady,
+  resetAttachAttemptCache,
+  type AttachPurchaseQrResult,
+} from './qr-attach-service';
+export {
+  mapQrAttachApiError,
+  type QrAttachError,
+  type QrAttachErrorCode,
+} from './qr-attach-errors';
 export { mapQrApiError, mapQrStatusError } from './qr-errors';
 export {
   mapQrJourneyToActivationFlow,

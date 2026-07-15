@@ -19,3 +19,13 @@ export function useCanWritePromoMutations(): boolean {
 export function useCanWriteCatalogMutations(): boolean {
   return useAdminAnyPermission(['catalog:write']);
 }
+
+/** POST /admin/v1/orders/{orderId}/refund — a full money refund (FINANCE·step_up). */
+export function useCanRefundOrders(): boolean {
+  return useAdminAnyPermission(['orders:refund']);
+}
+
+/** PATCH /admin/v1/support/tickets/{ticketId} — status triage (SUPPORT/OPS/SUPER_ADMIN). */
+export function useCanWriteSupportTickets(): boolean {
+  return useAdminAnyPermission(['support:write']);
+}

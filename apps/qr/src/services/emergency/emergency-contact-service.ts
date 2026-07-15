@@ -16,10 +16,7 @@ import {
   mapEmergencyApiError,
   type EmergencyApiError,
 } from './emergency-api-errors';
-import {
-  mapApiRelationToLabel,
-  mapEmergencyContactDtos,
-} from './emergency-contact-mapper';
+import { mapApiRelationToLabel, mapEmergencyContactDtos } from './emergency-contact-mapper';
 import { emergencyContactLogger } from './emergency-contact-logger';
 
 const MAX_ATTEMPTS = 3;
@@ -31,9 +28,7 @@ export type EmergencyContactListResult =
   | { ok: true; contacts: EmergencyContact[]; revision: number }
   | { ok: false; error: EmergencyApiError };
 
-export type EmergencyContactOtpResult =
-  | { ok: true }
-  | { ok: false; error: EmergencyApiError };
+export type EmergencyContactOtpResult = { ok: true } | { ok: false; error: EmergencyApiError };
 
 export type EmergencyContactVerifyResult =
   | { ok: true; verificationToken: string }
@@ -129,7 +124,11 @@ export async function loadEmergencyContacts(options?: {
     }
     return {
       ok: false,
-      error: { code: 'unavailable', message: 'Unable to load emergency contacts.', apiMessage: null },
+      error: {
+        code: 'unavailable',
+        message: 'Unable to load emergency contacts.',
+        apiMessage: null,
+      },
     };
   })();
 
@@ -170,7 +169,11 @@ export async function requestEmergencyContactOtp(
     }
     return {
       ok: false,
-      error: { code: 'unavailable', message: 'Unable to send verification code.', apiMessage: null },
+      error: {
+        code: 'unavailable',
+        message: 'Unable to send verification code.',
+        apiMessage: null,
+      },
     };
   })();
 
@@ -242,7 +245,11 @@ export async function createEmergencyContact(
   if (!token) {
     return {
       ok: false,
-      error: { code: 'validation', message: 'Verification expired. Request a new code.', apiMessage: null },
+      error: {
+        code: 'validation',
+        message: 'Verification expired. Request a new code.',
+        apiMessage: null,
+      },
     };
   }
 
@@ -312,7 +319,11 @@ export async function deleteEmergencyContact(
   }
   return {
     ok: false,
-    error: { code: 'unavailable', message: 'Unable to remove emergency contact.', apiMessage: null },
+    error: {
+      code: 'unavailable',
+      message: 'Unable to remove emergency contact.',
+      apiMessage: null,
+    },
   };
 }
 

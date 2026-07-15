@@ -19,17 +19,17 @@ Phase 11b implements all **9 Figma primary screens** and **10 state-variant fram
 
 ## Implemented routes
 
-| Path | Screen | Figma | Step ID |
-|------|--------|-------|---------|
-| `/journey/emergency/rider-prompt` | R0 · Rider prompt | `375:37` | `emergency.rider-prompt` |
-| `/journey/emergency/rider-mobile` | R1 · Rider mobile | `374:37` | `emergency.rider-mobile` |
-| `/journey/emergency/rider-otp` | R2 · Rider OTP | `374:54` | `emergency.rider-otp` |
-| `/journey/emergency/rider-name` | R3 · Rider name | `374:71` | `emergency.rider-name` |
-| `/journey/emergency/contacts-empty` | E0 · No contacts | `373:37` | `emergency.contacts-empty` |
-| `/journey/emergency/contact-mobile` | E1 · Contact mobile | `371:1295` | `emergency.contact-mobile` |
-| `/journey/emergency/contact-otp` | E2 · Contact OTP | `371:1318` | `emergency.contact-otp` |
-| `/journey/emergency/contact-name` | E3 · Contact name | `371:1276` | `emergency.contact-name` |
-| `/journey/emergency/contacts-summary` | E5 · Contacts summary | `373:64` | `emergency.contacts-summary` |
+| Path                                  | Screen                | Figma      | Step ID                      |
+| ------------------------------------- | --------------------- | ---------- | ---------------------------- |
+| `/journey/emergency/rider-prompt`     | R0 · Rider prompt     | `375:37`   | `emergency.rider-prompt`     |
+| `/journey/emergency/rider-mobile`     | R1 · Rider mobile     | `374:37`   | `emergency.rider-mobile`     |
+| `/journey/emergency/rider-otp`        | R2 · Rider OTP        | `374:54`   | `emergency.rider-otp`        |
+| `/journey/emergency/rider-name`       | R3 · Rider name       | `374:71`   | `emergency.rider-name`       |
+| `/journey/emergency/contacts-empty`   | E0 · No contacts      | `373:37`   | `emergency.contacts-empty`   |
+| `/journey/emergency/contact-mobile`   | E1 · Contact mobile   | `371:1295` | `emergency.contact-mobile`   |
+| `/journey/emergency/contact-otp`      | E2 · Contact OTP      | `371:1318` | `emergency.contact-otp`      |
+| `/journey/emergency/contact-name`     | E3 · Contact name     | `371:1276` | `emergency.contact-name`     |
+| `/journey/emergency/contacts-summary` | E5 · Contacts summary | `373:64`   | `emergency.contacts-summary` |
 
 **Legacy redirect:** `/journey/emergency/rider-setup` → `/journey/emergency/rider-prompt`
 
@@ -55,24 +55,24 @@ Session fields persisted on `JourneySession.emergency`: `riderSkipped`, `rider`,
 
 ## Reused components
 
-| Asset | Used on |
-|-------|---------|
-| `FlowStepShell` (`phase: 'emergency'`, 9 steps) | All 9 screens |
-| `EmptyStateHero` | R0, E0 |
-| `FormFieldStack` | R1, R2, R3, E1, E2, E3 |
-| R04 OTP validation (`isValidOtp`, `isExpiredOtp`, `RESEND_COOLDOWN_SECONDS`, `OTP_LENGTH`) | R2, E2 |
-| R03 mobile validation (`isValidMobile`, `normalizeMobile`) | R1, E1 |
-| `AlTextField`, `AlOtpInput`, `AlInput`, `AlButton`, `AlScreenBg variant="protected"` | Per Figma DS usage |
+| Asset                                                                                      | Used on                |
+| ------------------------------------------------------------------------------------------ | ---------------------- |
+| `FlowStepShell` (`phase: 'emergency'`, 9 steps)                                            | All 9 screens          |
+| `EmptyStateHero`                                                                           | R0, E0                 |
+| `FormFieldStack`                                                                           | R1, R2, R3, E1, E2, E3 |
+| R04 OTP validation (`isValidOtp`, `isExpiredOtp`, `RESEND_COOLDOWN_SECONDS`, `OTP_LENGTH`) | R2, E2                 |
+| R03 mobile validation (`isValidMobile`, `normalizeMobile`)                                 | R1, E1                 |
+| `AlTextField`, `AlOtpInput`, `AlInput`, `AlButton`, `AlScreenBg variant="protected"`       | Per Figma DS usage     |
 
 ---
 
 ## Promoted compositions
 
-| Composition | Figma usage | Screens |
-|-------------|-------------|---------|
+| Composition            | Figma usage               | Screens                              |
+| ---------------------- | ------------------------- | ------------------------------------ |
 | `RelationshipSelector` | R3 + E3 relationship grid | `e04-rider-name`, `e08-contact-name` |
-| `EmergencyContactRow` | E5 verified contact row | `e09-contacts-summary` |
-| `AddContactRow` | E5 “Add another contact” | `e09-contacts-summary` |
+| `EmergencyContactRow`  | E5 verified contact row   | `e09-contacts-summary`               |
+| `AddContactRow`        | E5 “Add another contact”  | `e09-contacts-summary`               |
 
 Registered in `components/compositions/index.ts` and `inventory.ts`.
 
@@ -82,39 +82,39 @@ Registered in `components/compositions/index.ts` and `inventory.ts`.
 
 ### Primary screens (9/9)
 
-| Frame | Implemented | Screen file |
-|-------|-------------|-------------|
-| R0 `375:37` | ✅ | `E01RiderPromptScreen` |
-| R1 `374:37` | ✅ | `E02RiderMobileScreen` |
-| R2 `374:54` | ✅ | `E03RiderOtpScreen` |
-| R3 `374:71` | ✅ | `E04RiderNameScreen` |
-| E0 `373:37` | ✅ | `E05ContactsEmptyScreen` |
-| E1 `371:1295` | ✅ | `E06ContactMobileScreen` |
-| E2 `371:1318` | ✅ | `E07ContactOtpScreen` |
-| E3 `371:1276` | ✅ | `E08ContactNameScreen` |
-| E5 `373:64` | ✅ | `E09ContactsSummaryScreen` |
+| Frame         | Implemented | Screen file                |
+| ------------- | ----------- | -------------------------- |
+| R0 `375:37`   | ✅          | `E01RiderPromptScreen`     |
+| R1 `374:37`   | ✅          | `E02RiderMobileScreen`     |
+| R2 `374:54`   | ✅          | `E03RiderOtpScreen`        |
+| R3 `374:71`   | ✅          | `E04RiderNameScreen`       |
+| E0 `373:37`   | ✅          | `E05ContactsEmptyScreen`   |
+| E1 `371:1295` | ✅          | `E06ContactMobileScreen`   |
+| E2 `371:1318` | ✅          | `E07ContactOtpScreen`      |
+| E3 `371:1276` | ✅          | `E08ContactNameScreen`     |
+| E5 `373:64`   | ✅          | `E09ContactsSummaryScreen` |
 
 ### State variants (10/10 — dev preview + screen props)
 
-| Frame | Node | Prop / dev state |
-|-------|------|------------------|
-| R1 · Error | `595:1895` | `mobileState="error"` |
-| R1 · Offline | `595:1913` | `mobileState="offline"` |
-| R2 · Error | `580:1748` | `otpState="error"` |
-| R2 · Verifying | `580:1769` | `otpState="verifying"` |
+| Frame              | Node       | Prop / dev state           |
+| ------------------ | ---------- | -------------------------- |
+| R1 · Error         | `595:1895` | `mobileState="error"`      |
+| R1 · Offline       | `595:1913` | `mobileState="offline"`    |
+| R2 · Error         | `580:1748` | `otpState="error"`         |
+| R2 · Verifying     | `580:1769` | `otpState="verifying"`     |
 | R2 · Network error | `595:1933` | `otpState="network-error"` |
-| E1 · Error | `595:1815` | `mobileState="error"` |
-| E1 · Offline | `595:1838` | `mobileState="offline"` |
-| E2 · Error | `579:1794` | `otpState="error"` |
-| E2 · Verifying | `579:1806` | `otpState="verifying"` |
+| E1 · Error         | `595:1815` | `mobileState="error"`      |
+| E1 · Offline       | `595:1838` | `mobileState="offline"`    |
+| E2 · Error         | `579:1794` | `otpState="error"`         |
+| E2 · Verifying     | `579:1806` | `otpState="verifying"`     |
 | E2 · Network error | `595:1863` | `otpState="network-error"` |
 
 ### Removed (no Figma frames)
 
-| Removed step | Status |
-|--------------|--------|
-| `emergency.plan-addon` | Deleted from `flows.config.ts`, `steps.config.ts`, `types/flow.ts` |
-| `emergency.confirmation` | Deleted from config; E5 Continue replaces terminal handoff |
+| Removed step             | Status                                                             |
+| ------------------------ | ------------------------------------------------------------------ |
+| `emergency.plan-addon`   | Deleted from `flows.config.ts`, `steps.config.ts`, `types/flow.ts` |
+| `emergency.confirmation` | Deleted from config; E5 Continue replaces terminal handoff         |
 
 ---
 
@@ -122,13 +122,13 @@ Registered in `components/compositions/index.ts` and `inventory.ts`.
 
 Verified via dev preview viewport toggles at **320 · 360 · 375 · 390 · 414** px:
 
-| Width | Result |
-|-------|--------|
-| 320 | Relationship grid wraps; OTP cells fit; footer CTAs full width |
-| 360 | No horizontal overflow |
-| 375 | Matches Figma intent |
-| 390 | Default dev preview width |
-| 414 | Centered column capped by `.journey-frame` / shell max-width |
+| Width | Result                                                         |
+| ----- | -------------------------------------------------------------- |
+| 320   | Relationship grid wraps; OTP cells fit; footer CTAs full width |
+| 360   | No horizontal overflow                                         |
+| 375   | Matches Figma intent                                           |
+| 390   | Default dev preview width                                      |
+| 414   | Centered column capped by `.journey-frame` / shell max-width   |
 
 Shell: `.journey-frame` + `FlowStepShell` — no new layout primitives.
 
@@ -136,9 +136,9 @@ Shell: `.journey-frame` + `FlowStepShell` — no new layout primitives.
 
 ## Theme audit
 
-| Theme | Verification |
-|-------|--------------|
-| **Dark** | Default · `data-theme="dark"` |
+| Theme     | Verification                             |
+| --------- | ---------------------------------------- |
+| **Dark**  | Default · `data-theme="dark"`            |
 | **Light** | Dev preview theme toggle · DS token swap |
 
 Ambient: `AlScreenBg variant="protected"` (green radial) on all emergency screens.
@@ -147,15 +147,15 @@ Ambient: `AlScreenBg variant="protected"` (green radial) on all emergency screen
 
 ## Config alignment
 
-| File | Change |
-|------|--------|
-| `types/flow.ts` | 9 emergency step IDs + screen IDs |
-| `flows.config.ts` | Emergency flow = 9 suffix steps only (no shared pipeline prefix) |
-| `steps.config.ts` | Figma-aligned step → screen mapping |
-| `activation-routing.ts` | `EMERGENCY_SUFFIX_STEP_IDS`, handoff → `rider-prompt` |
-| `routes.schema.ts` | 9 journey emergency route definitions |
-| `JourneyRoutes.tsx` | `EmergencyRoutes` replaces placeholder |
-| `JourneyContext.tsx` | `updateSession()` + `session.emergency` |
+| File                    | Change                                                           |
+| ----------------------- | ---------------------------------------------------------------- |
+| `types/flow.ts`         | 9 emergency step IDs + screen IDs                                |
+| `flows.config.ts`       | Emergency flow = 9 suffix steps only (no shared pipeline prefix) |
+| `steps.config.ts`       | Figma-aligned step → screen mapping                              |
+| `activation-routing.ts` | `EMERGENCY_SUFFIX_STEP_IDS`, handoff → `rider-prompt`            |
+| `routes.schema.ts`      | 9 journey emergency route definitions                            |
+| `JourneyRoutes.tsx`     | `EmergencyRoutes` replaces placeholder                           |
+| `JourneyContext.tsx`    | `updateSession()` + `session.emergency`                          |
 
 ---
 
@@ -182,15 +182,15 @@ Both pass as of Phase 11b signoff.
 
 ## Remaining gaps
 
-| Gap | Notes |
-|-----|-------|
-| **Device contact picker** | E0 “Add from contacts” simulates picker with `demoPickerContact` → E3; no native bridge |
-| **Relationship tile icons** | Figma uses heart/smile/ellipsis; DS maps to nearest `AlIcon` names (`user`, `circle-user`, `users`, `plus`) |
-| **Offline chip (Figma)** | R1/E1 offline frames show top `offlineChip`; implementation uses field `helperText: "No internet connection"` + disabled CTA |
-| **Network error in journey** | Variant rendered in dev preview; live journey OTP uses wrong/expired/valid only (no simulated network failure) |
-| **Description casing** | `FlowStepShell` applies `text-transform: lowercase` on description — existing shell behavior |
-| **`EmergencyPlaceholderScreen.tsx`** | File retained but no longer routed; safe to delete in cleanup pass |
-| **Prepaid / B2B2C activation** | Still placeholders; emergency entry wired from P06 and activation placeholder handoff |
+| Gap                                  | Notes                                                                                                                        |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Device contact picker**            | E0 “Add from contacts” simulates picker with `demoPickerContact` → E3; no native bridge                                      |
+| **Relationship tile icons**          | Figma uses heart/smile/ellipsis; DS maps to nearest `AlIcon` names (`user`, `circle-user`, `users`, `plus`)                  |
+| **Offline chip (Figma)**             | R1/E1 offline frames show top `offlineChip`; implementation uses field `helperText: "No internet connection"` + disabled CTA |
+| **Network error in journey**         | Variant rendered in dev preview; live journey OTP uses wrong/expired/valid only (no simulated network failure)               |
+| **Description casing**               | `FlowStepShell` applies `text-transform: lowercase` on description — existing shell behavior                                 |
+| **`EmergencyPlaceholderScreen.tsx`** | File retained but no longer routed; safe to delete in cleanup pass                                                           |
+| **Prepaid / B2B2C activation**       | Still placeholders; emergency entry wired from P06 and activation placeholder handoff                                        |
 
 ---
 
@@ -222,8 +222,8 @@ components/compositions/
 
 ## Related documents
 
-| Document | Relationship |
-|----------|--------------|
-| [PHASE_11_EMERGENCY_AUDIT.md](./PHASE_11_EMERGENCY_AUDIT.md) | Figma source of truth |
-| [PHASE_10_PURCHASE_ALIGNMENT.md](./PHASE_10_PURCHASE_ALIGNMENT.md) | P06 → emergency handoff |
-| [PHASE_9_JOURNEY_ORCHESTRATOR.md](./PHASE_9_JOURNEY_ORCHESTRATOR.md) | Journey architecture |
+| Document                                                             | Relationship            |
+| -------------------------------------------------------------------- | ----------------------- |
+| [PHASE_11_EMERGENCY_AUDIT.md](./PHASE_11_EMERGENCY_AUDIT.md)         | Figma source of truth   |
+| [PHASE_10_PURCHASE_ALIGNMENT.md](./PHASE_10_PURCHASE_ALIGNMENT.md)   | P06 → emergency handoff |
+| [PHASE_9_JOURNEY_ORCHESTRATOR.md](./PHASE_9_JOURNEY_ORCHESTRATOR.md) | Journey architecture    |

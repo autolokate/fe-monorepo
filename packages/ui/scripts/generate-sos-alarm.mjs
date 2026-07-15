@@ -83,8 +83,7 @@ function generateSamples() {
     const hiLoHigh = Math.floor(t / HI_LO_HALF) % 2 === 1;
     const toneA = hiLoHigh ? 1380 : 720;
     const toneB = hiLoHigh ? 1980 : 980;
-    const hiLo =
-      squareWave(TAU * toneA * t, 5) * 0.26 + squareWave(TAU * toneB * t, 5) * 0.22;
+    const hiLo = squareWave(TAU * toneA * t, 5) * 0.26 + squareWave(TAU * toneB * t, 5) * 0.22;
 
     // --- Layer 2: Aggressive frequency wail (700–2180 Hz) ---
     const wailFreq = 720 + 1460 * wail01(t, WAIL_PERIOD);
@@ -109,13 +108,15 @@ function generateSamples() {
     const stutter = squareWave(TAU * 2100 * t, 3) * stutterGate * 0.28;
 
     // --- Layer 5: Search-and-rescue beacon pulse ---
-    const beaconOn = (t % BEACON_PERIOD) < 0.78;
+    const beaconOn = t % BEACON_PERIOD < 0.78;
     const beacon = beaconOn ? squareWave(TAU * 960 * t, 5) * 0.14 : 0;
 
     // --- Layer 6: Deep sub rumble (physical impact) ---
     const subAmp = 0.55 + 0.45 * Math.sin(TAU * 1.25 * t);
     const sub =
-      (Math.sin(TAU * 52 * t) * 0.42 + Math.sin(TAU * 78 * t) * 0.28 + Math.sin(TAU * 104 * t) * 0.12) *
+      (Math.sin(TAU * 52 * t) * 0.42 +
+        Math.sin(TAU * 78 * t) * 0.28 +
+        Math.sin(TAU * 104 * t) * 0.12) *
       subAmp;
 
     // --- Layer 7: Harmonic sweep (military / civil-defense upper edge) ---
@@ -129,8 +130,7 @@ function generateSamples() {
     // --- Master urgency envelope (slow swell, still seamless) ---
     const masterEnv = 0.78 + 0.22 * Math.sin(TAU * 0.125 * t);
 
-    let sample =
-      (hiLo + wail + burstTone + stutter + beacon + sub + harmonicSweep) * masterEnv;
+    let sample = (hiLo + wail + burstTone + stutter + beacon + sub + harmonicSweep) * masterEnv;
 
     // Hard limiter pre-clip
     sample = softClip(sample * 1.15);

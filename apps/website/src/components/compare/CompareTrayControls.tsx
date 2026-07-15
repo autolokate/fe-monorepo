@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { COMPARE_MAX_SLOTS } from "@/components/compare/constants";
-import { cn } from "@/lib/utils";
+import { Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { COMPARE_MAX_SLOTS } from '@/components/compare/constants';
+import { cn } from '@/lib/utils';
 
 type Props = {
   /** Number of variants currently in the compare tray (0–COMPARE_MAX_SLOTS). */
@@ -18,7 +18,7 @@ type Props = {
  */
 export function CompareTrayControls({ selectedCount, onClearTray, className }: Props) {
   return (
-    <div className={cn("flex shrink-0 flex-wrap items-center gap-3", className)}>
+    <div className={cn('flex shrink-0 flex-wrap items-center gap-3', className)}>
       <div
         className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-sm"
         role="status"

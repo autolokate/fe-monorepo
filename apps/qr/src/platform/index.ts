@@ -22,10 +22,7 @@ export {
   dispatchQrPayload,
   type QrDispatchDeps,
 } from './qr/dispatch-qr-payload';
-export {
-  buildQrDeepLinkUrl,
-  QR_ENTRY_BASE_URL,
-} from './qr/qr-entry-urls';
+export { buildQrDeepLinkUrl, QR_ENTRY_BASE_URL } from './qr/qr-entry-urls';
 export {
   extractQrCodeParam,
   hasLegacyQrEntryParams,

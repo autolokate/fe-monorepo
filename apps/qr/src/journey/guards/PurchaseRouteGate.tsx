@@ -24,9 +24,7 @@ export function PurchaseRouteGate({ routeId, children }: PurchaseRouteGateProps)
   const { session, updateSession } = useJourney();
 
   const resolved = qrStorageRepository.readResolved();
-  const isAttachedResume = Boolean(
-    resolved && isAttachedQrLifecycleStatus(resolved.qrStatus),
-  );
+  const isAttachedResume = Boolean(resolved && isAttachedQrLifecycleStatus(resolved.qrStatus));
 
   useEffect(() => {
     if (!isAttachedResume || !resolved || session.vehicle?.confirmed) {

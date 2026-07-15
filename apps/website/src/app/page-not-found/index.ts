@@ -1,2 +1,2 @@
-export { NotFoundContent } from "./components/NotFoundContent";
-export { notFoundMetadata } from "./config/metadata";
+export { NotFoundContent } from './components/NotFoundContent';
+export { notFoundMetadata } from './config/metadata';

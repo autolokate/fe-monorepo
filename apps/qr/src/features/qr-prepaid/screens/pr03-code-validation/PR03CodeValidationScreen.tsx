@@ -1,9 +1,6 @@
 import { AlIcon } from '@autolokate/icons';
 
-import {
-  EmptyStateHero,
-  InlineStatusBanner,
-} from '@/components/compositions/index';
+import { EmptyStateHero, InlineStatusBanner } from '@/components/compositions/index';
 import { FlowStepShell } from '@/components/flow-step-shell/index';
 import type { PrepaidScreenState } from '../../types';
 import { demoActivationCode, prepaidOrgName } from '../../data/activation-data';
@@ -23,9 +20,7 @@ export function PR03CodeValidationScreen({ state = 'default' }: PR03CodeValidati
       step={3}
       title="Validating code"
       description="confirming with your organisation"
-      footerLabel={
-        isInvalid ? 'Try again' : isSuccess ? 'Continue to vehicle' : 'Validating…'
-      }
+      footerLabel={isInvalid ? 'Try again' : isSuccess ? 'Continue to vehicle' : 'Validating…'}
       footerLoading={validating && !isInvalid}
       footerDisabled={validating && !isInvalid && !isSuccess}
     >

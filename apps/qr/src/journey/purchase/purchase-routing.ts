@@ -90,7 +90,10 @@ export const legacyPurchasePathRedirects = (journeyId: string) => {
     [LEGACY_PURCHASE_ROUTE_SEGMENTS.r03Vehicle, paths.vehicleDetails],
     [LEGACY_PURCHASE_ROUTE_SEGMENTS.r04Fetching, `/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleLookup}`],
     [LEGACY_PURCHASE_ROUTE_SEGMENTS.r04bFetchFailed, paths.vehicleLookupFailed],
-    [LEGACY_PURCHASE_ROUTE_SEGMENTS.r05Confirm, `/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleConfirmation}`],
+    [
+      LEGACY_PURCHASE_ROUTE_SEGMENTS.r05Confirm,
+      `/${LEGACY_PURCHASE_FLAT_SEGMENTS.vehicleConfirmation}`,
+    ],
     [LEGACY_PURCHASE_ROUTE_SEGMENTS.r06ChoosePlan, paths.choosePlan],
     [LEGACY_PURCHASE_ROUTE_SEGMENTS.r07RiderCover, paths.riderCover],
     [LEGACY_PURCHASE_ROUTE_SEGMENTS.r08OrderSummary, paths.orderSummary],
@@ -124,7 +127,9 @@ export const legacyJourneyPurchasePathRedirects = (journeyId: string) => {
   ] as const;
 };
 
-export type PurchaseJourneyPath = ReturnType<typeof purchaseJourneyPathsFor>[keyof ReturnType<typeof purchaseJourneyPathsFor>];
+export type PurchaseJourneyPath = ReturnType<typeof purchaseJourneyPathsFor>[keyof ReturnType<
+  typeof purchaseJourneyPathsFor
+>];
 
 export function purchaseStepPathSequence(journeyId: string) {
   const paths = purchaseJourneyPathsFor(journeyId);

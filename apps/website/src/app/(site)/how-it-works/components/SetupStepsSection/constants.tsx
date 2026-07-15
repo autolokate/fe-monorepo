@@ -1,9 +1,9 @@
-import { ShieldCheck, ShoppingCart, Smartphone, type LucideIcon } from "lucide-react";
+import { ShieldCheck, ShoppingCart, Smartphone, type LucideIcon } from 'lucide-react';
 
 export const SETUP_STEPS_COPY = {
-  eyebrow: "3-Step Setup",
-  headline: "Get protected in 3 simple steps.",
-  subheadline: "From purchase to protection in minutes — no complicated setup.",
+  eyebrow: '3-Step Setup',
+  headline: 'Get protected in 3 simple steps.',
+  subheadline: 'From purchase to protection in minutes — no complicated setup.',
 } as const;
 
 export interface SetupStep {
@@ -16,23 +16,23 @@ export interface SetupStep {
 
 export const SETUP_STEPS: SetupStep[] = [
   {
-    id: "buy",
-    step: "1",
-    title: "Buy",
-    body: "Choose your plan and complete purchase.",
+    id: 'buy',
+    step: '1',
+    title: 'Buy',
+    body: 'Choose your plan and complete purchase.',
     Icon: ShoppingCart,
   },
   {
-    id: "activate",
-    step: "2",
-    title: "Activate",
-    body: "Verify with Vahan + WhatsApp OTP.",
+    id: 'activate',
+    step: '2',
+    title: 'Activate',
+    body: 'Verify with Vahan + WhatsApp OTP.',
     Icon: Smartphone,
   },
   {
-    id: "protected",
-    step: "3",
-    title: "Protected",
+    id: 'protected',
+    step: '3',
+    title: 'Protected',
     body: "You're all set. We've got your back.",
     Icon: ShieldCheck,
   },

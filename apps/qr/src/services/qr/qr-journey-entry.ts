@@ -127,15 +127,18 @@ async function beginPartnerActivationJourney(
     return;
   }
 
-  const entitlementCode =
-    partnerKind === 'b2b' ? resolveB2bEntitlementCodeFromQrCode(code) : null;
+  const entitlementCode = partnerKind === 'b2b' ? resolveB2bEntitlementCodeFromQrCode(code) : null;
   seedPartnerActivationContext({
     qrCode: code,
     entitlementCode,
     partnerKind,
   });
 
-  const previewResult = await loadPartnerActivationPreviewAtEntry(code, partnerKind, entitlementCode);
+  const previewResult = await loadPartnerActivationPreviewAtEntry(
+    code,
+    partnerKind,
+    entitlementCode,
+  );
   const riderCount: number = previewResult.ok ? previewResult.preview.riderCount : 0;
   const flowId = resolvePartnerFlowId(partnerKind);
   const variant = resolvePartnerVariantFromRiderCount(riderCount);

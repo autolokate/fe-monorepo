@@ -25,9 +25,7 @@ export function computeDashboardMetrics(snapshot: DashboardSnapshot): DashboardM
     batchManagement: computeBatchManagementMetrics(snapshot.inventory),
     promos: computePromoMetrics(snapshot.promos),
     catalog:
-      snapshot.plans && snapshot.skus
-        ? computeCatalogMetrics(snapshot.plans, snapshot.skus)
-        : null,
+      snapshot.plans && snapshot.skus ? computeCatalogMetrics(snapshot.plans, snapshot.skus) : null,
     auditLatestCount: snapshot.recentAuditEvents.length,
   };
 }

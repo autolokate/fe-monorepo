@@ -14,20 +14,20 @@
 
 ## Issue summary
 
-| # | Issue | Verdict |
-|---|-------|---------|
-| 1 | iOS contact support — hide unsupported CTA | **FIXED** |
-| 2 | Rider skip confirmation + completed handoff | **FIXED** |
+| #   | Issue                                       | Verdict   |
+| --- | ------------------------------------------- | --------- |
+| 1   | iOS contact support — hide unsupported CTA  | **FIXED** |
+| 2   | Rider skip confirmation + completed handoff | **FIXED** |
 
 ---
 
 ## Deliverables
 
-| Report | Verdict |
-|--------|---------|
-| `IOS_CONTACT_SUPPORT_REPORT.md` | FIXED |
-| `RIDER_SKIP_CONFIRMATION_REPORT.md` | FIXED |
-| `FINAL_SIGNOFF.md` | FIXED |
+| Report                              | Verdict |
+| ----------------------------------- | ------- |
+| `IOS_CONTACT_SUPPORT_REPORT.md`     | FIXED   |
+| `RIDER_SKIP_CONFIRMATION_REPORT.md` | FIXED   |
+| `FINAL_SIGNOFF.md`                  | FIXED   |
 
 ---
 
@@ -43,12 +43,12 @@
 
 ## Constraints audit
 
-| Constraint | Honoured |
-|------------|----------|
-| No routing changes | ✅ Same paths; guard redirects only |
-| No session architecture changes | ✅ Existing `riderSkipped` field |
-| No business rule changes | ✅ Limits, OTP, plans unchanged |
-| Use `@autolokate/ui` sheet | ✅ `AlPermissionSheet` |
+| Constraint                      | Honoured                            |
+| ------------------------------- | ----------------------------------- |
+| No routing changes              | ✅ Same paths; guard redirects only |
+| No session architecture changes | ✅ Existing `riderSkipped` field    |
+| No business rule changes        | ✅ Limits, OTP, plans unchanged     |
+| Use `@autolokate/ui` sheet      | ✅ `AlPermissionSheet`              |
 
 ---
 

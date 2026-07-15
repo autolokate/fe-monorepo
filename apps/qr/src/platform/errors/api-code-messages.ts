@@ -1,6 +1,7 @@
 /** User-facing copy for known backend error codes. */
 export const API_CODE_MESSAGES: Readonly<Record<string, string>> = {
-  missing_qr_code: 'Your purchase QR code is missing. Scan your Autolokate sticker or open your purchase link again.',
+  missing_qr_code:
+    'Your purchase QR code is missing. Scan your Autolokate sticker or open your purchase link again.',
   already_attached: 'This code is no longer available to attach.',
   not_provisioned: 'This QR code is not ready for activation yet.',
   channel_journey_mismatch: 'This QR code cannot be used for this flow.',
@@ -18,8 +19,7 @@ export const API_CODE_MESSAGES: Readonly<Record<string, string>> = {
   otp_expired: 'This OTP has expired. Request a new one.',
   otp_invalid: 'Incorrect OTP. Please try again.',
   own_phone_not_allowed: "You can't add your own number here.",
-  order_in_progress:
-    'A payment for this code is already in progress - finish or cancel it first.',
+  order_in_progress: 'A payment for this code is already in progress - finish or cancel it first.',
 };
 
 const TECHNICAL_CODE_PATTERN = /^[A-Z][A-Z0-9_]*$/;

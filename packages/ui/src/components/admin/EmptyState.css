@@ -32,7 +32,8 @@
 
 .al-error-state {
   box-shadow: var(--al-admin-shadow-panel);
-  border: var(--al-border-width-thin) solid color-mix(in srgb, var(--al-signal-red) 20%, var(--al-color-border-subtle));
+  border: var(--al-border-width-thin) solid
+    color-mix(in srgb, var(--al-signal-red) 20%, var(--al-color-border-subtle));
 }
 
 .al-error-state__icon {

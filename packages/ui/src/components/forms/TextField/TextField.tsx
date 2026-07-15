@@ -26,8 +26,7 @@ export function AlTextField({
   const isError = state === 'error' || Boolean(errorText);
   const isSuccess = state === 'success' && !isError;
   const isDisabled = state === 'disabled' || Boolean(disabled);
-  const isFilled =
-    String(props.value ?? props.defaultValue ?? '').trim().length > 0;
+  const isFilled = String(props.value ?? props.defaultValue ?? '').trim().length > 0;
   const describedBy = isError ? errorId : helperText ? hintId : undefined;
 
   return (

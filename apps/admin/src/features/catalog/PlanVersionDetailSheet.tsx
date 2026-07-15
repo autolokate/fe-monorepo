@@ -7,7 +7,11 @@ import {
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
-import { formatEffectiveWindow, getPlanLifecycle, planTierLabel } from '@/services/catalog/catalog-model';
+import {
+  formatEffectiveWindow,
+  getPlanLifecycle,
+  planTierLabel,
+} from '@/services/catalog/catalog-model';
 
 export type PlanVersionDetailSheetProps = {
   plan: AdminPlanDto | null;
@@ -52,8 +56,14 @@ export function PlanVersionDetailSheet({
         <AdminDetailSection title="Status">
           <div className="admin-modal-actions">
             <AlStatusBadge
-              label={plan.isEffectiveNow ? 'Live' : lifecycle.charAt(0) + lifecycle.slice(1).toLowerCase()}
-              status={plan.isEffectiveNow ? 'active' : lifecycle === 'RETIRED' ? 'inactive' : 'pending'}
+              label={
+                plan.isEffectiveNow
+                  ? 'Live'
+                  : lifecycle.charAt(0) + lifecycle.slice(1).toLowerCase()
+              }
+              status={
+                plan.isEffectiveNow ? 'active' : lifecycle === 'RETIRED' ? 'inactive' : 'pending'
+              }
             />
             {featureCount === 0 ? (
               <AlStatusBadge label="No features — blank card" status="error" />
@@ -68,7 +78,10 @@ export function PlanVersionDetailSheet({
           <AdminDetailGrid>
             <AdminDetailField label="Price" value={formatPaiseAsRupees(plan.pricePaise)} />
             <AdminDetailField label="Period" value={plan.period} />
-            <AdminDetailField label="Rider" value={plan.riderEligible ? 'Eligible' : 'Not eligible'} />
+            <AdminDetailField
+              label="Rider"
+              value={plan.riderEligible ? 'Eligible' : 'Not eligible'}
+            />
             <AdminDetailField
               label="Features"
               value={featureCount === null ? '—' : `${String(featureCount)} bullets`}
@@ -76,7 +89,8 @@ export function PlanVersionDetailSheet({
           </AdminDetailGrid>
           <AlText variant="caption" tone="muted">
             A Subscription pins the plan version it was sold on. Editing this price in place would
-            retro-reprice everyone who already paid, so the API rejects it — mint a new version instead.
+            retro-reprice everyone who already paid, so the API rejects it — mint a new version
+            instead.
           </AlText>
         </AdminDetailSection>
 

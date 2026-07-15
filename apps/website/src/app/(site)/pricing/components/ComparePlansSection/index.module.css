@@ -1,0 +1,350 @@
+/* ComparePlansSection — "Compare plans" feature matrix.
+   Light card, grouped rows, a highlighted popular column, and a mobile-only
+   "View all features" toggle that reveals the groups below the first. */
+
+.section {
+  background-color: var(--background);
+}
+
+.container {
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: 1rem 1.25rem 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 1.5rem 2rem 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 2rem 2.5rem 5rem;
+  }
+}
+
+/* Horizontal safety net on very small screens. */
+.scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---------- Loading / empty state ---------- */
+.stateShell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background-color: var(--card);
+  padding: 2rem 1.5rem;
+}
+
+.stateText {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+/* ---------- Table shell ---------- */
+.table {
+  min-width: 20rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background-color: var(--card);
+  overflow: hidden;
+}
+
+/* Shared column template for the header + every feature row.
+   `--plan-count` is set on `.table` from the number of plans the API returns. */
+.headRow,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) repeat(var(--plan-count, 3), minmax(0, 1fr));
+  align-items: center;
+}
+
+/* ---------- Header row ---------- */
+.headRow {
+  border-bottom: 1px solid var(--border);
+}
+
+.headFeature {
+  padding: 1.25rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .headFeature {
+    padding: 1.75rem 1.5rem;
+  }
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.15rem, 3.5vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.headPlan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 2.1rem 0.4rem 1.1rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .headPlan {
+    padding: 2.4rem 0.75rem 1.6rem;
+  }
+}
+
+.headPlanPopular {
+  background-color: color-mix(in srgb, var(--al-signal-green) 9%, var(--card));
+}
+
+.popularPill {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transform: translateX(-50%);
+  padding: 0.28rem 0.6rem;
+  border-radius: 9999px;
+  background-color: var(--al-signal-green);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.planName {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+@media (min-width: 768px) {
+  .planName {
+    font-size: 1rem;
+  }
+}
+
+.planPrice {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+/* ---------- Group ---------- */
+.groupTitle {
+  padding: 0.7rem 1rem;
+  background-color: color-mix(in srgb, var(--foreground) 4%, var(--card));
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@media (min-width: 768px) {
+  .groupTitle {
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* ---------- Feature row ---------- */
+.row + .row .feature {
+  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.row:hover {
+  background-color: color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .feature {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.featureIcon {
+  display: none;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.6rem;
+  color: var(--al-signal-green);
+  border: 1px solid color-mix(in srgb, var(--al-signal-green) 30%, transparent);
+  background-color: color-mix(in srgb, var(--al-signal-green) 8%, transparent);
+}
+
+@media (min-width: 640px) {
+  .featureIcon {
+    display: inline-flex;
+  }
+}
+
+.featureText {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.featureLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--foreground);
+}
+
+@media (min-width: 768px) {
+  .featureLabel {
+    font-size: 0.9rem;
+  }
+}
+
+.featureSub {
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: var(--muted-foreground);
+}
+
+/* ---------- Value cells ---------- */
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  padding: 0.85rem 0.35rem;
+}
+
+@media (min-width: 768px) {
+  .cell {
+    padding: 1rem 0.5rem;
+  }
+}
+
+.cellPopular {
+  background-color: color-mix(in srgb, var(--al-signal-green) 6%, transparent);
+}
+
+.yes {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.4rem;
+  width: 1.4rem;
+  border-radius: 9999px;
+  background-color: var(--al-signal-green);
+  color: #fff;
+}
+
+.no {
+  font-size: 1rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--muted-foreground) 60%, transparent);
+}
+
+.partial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #d29e00;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.26rem 0.55rem;
+  border-radius: 9999px;
+  background-color: var(--foreground);
+  color: var(--background);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.price {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+/* ---------- Mobile "view all" toggle ---------- */
+.toggle {
+  margin: 1rem auto 0;
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  padding: 0.6rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--foreground);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.toggle:hover {
+  border-color: color-mix(in srgb, var(--al-signal-green) 55%, transparent);
+  color: var(--al-signal-green);
+}
+
+.toggleChevron {
+  height: 1rem;
+  width: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.toggleChevronOpen {
+  transform: rotate(180deg);
+}
+
+/* Desktop shows every group; the toggle is a mobile affordance only. */
+@media (max-width: 767px) {
+  .collapsed .groupExtra {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .toggle {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggleChevron {
+    transition: none;
+  }
+}

@@ -89,23 +89,17 @@ function resolveFlowKind(preview: ActivationPreviewDto): ActivationFlowKind {
 }
 
 /** Map backend preview into the existing welcome entitlement card shape. */
-export function mapPreviewToLandingEntitlement(
-  preview: ActivationPreviewDto,
-): LandingEntitlement {
+export function mapPreviewToLandingEntitlement(preview: ActivationPreviewDto): LandingEntitlement {
   const resolvedFlow = resolveFlowKind(preview);
   const planId = mapApiTierToPurchasePlanId(preview.planTier);
   const riderCount = clampRiderCount(preview.riderCount);
   const hasPartner = Boolean(preview.partner?.name.trim());
   const partnerName =
-    preview.partner?.name.trim() ||
-    (resolvedFlow === 'purchase' ? 'Autolokate' : 'Your sponsor');
+    preview.partner?.name.trim() || (resolvedFlow === 'purchase' ? 'Autolokate' : 'Your sponsor');
   const planStatusLabel: LandingEntitlement['planStatusLabel'] = 'Paid';
-  const vehiclePlate = preview.vehicleDisplay
-    ? formatVehicleDisplay(preview.vehicleDisplay)
-    : '';
+  const vehiclePlate = preview.vehicleDisplay ? formatVehicleDisplay(preview.vehicleDisplay) : '';
 
-  const planName =
-    typeof preview.planName === 'string' ? preview.planName.trim() : '';
+  const planName = typeof preview.planName === 'string' ? preview.planName.trim() : '';
   const features = Array.isArray(preview.features)
     ? preview.features.map((entry) => entry.trim()).filter(Boolean)
     : [];
@@ -221,6 +215,8 @@ export function resolveActivationKindFromFlow(flow: ActivationFlowKind): Activat
 }
 
 /** @deprecated Use resolveActivationKindFromFlow. */
-export function resolvePartnerKindFromFlow(flow: Exclude<ActivationFlowKind, 'purchase'>): PartnerActivationKind {
+export function resolvePartnerKindFromFlow(
+  flow: Exclude<ActivationFlowKind, 'purchase'>,
+): PartnerActivationKind {
   return flow === 'prepaid' ? 'b2b' : 'b2b2c';
 }

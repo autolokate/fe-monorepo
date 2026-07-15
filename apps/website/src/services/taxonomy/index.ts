@@ -1,1 +1,1 @@
-export * from "./taxonomy-api";
+export * from './taxonomy-api';

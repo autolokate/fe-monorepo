@@ -37,12 +37,7 @@ export {
 } from './Badge';
 export { AlBreadcrumb, type AlBreadcrumbItem, type AlBreadcrumbProps } from './Breadcrumb';
 export { AlTabs, type AlTabItem, type AlTabsProps } from './Tabs';
-export {
-  AlProgress,
-  AlSkeleton,
-  type AlProgressProps,
-  type AlSkeletonProps,
-} from './Skeleton';
+export { AlProgress, AlSkeleton, type AlProgressProps, type AlSkeletonProps } from './Skeleton';
 export {
   AlDataTable,
   type AlDataTableProps,

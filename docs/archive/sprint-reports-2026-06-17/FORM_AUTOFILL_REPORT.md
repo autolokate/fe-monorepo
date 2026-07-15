@@ -13,13 +13,13 @@ Contact picker autofill behavior across the emergency contact-add flow. Routes a
 
 ## Autofill rules
 
-| Step | Screen | Field | Source | User editable | Advance trigger |
-|------|--------|-------|--------|:-------------:|-----------------|
-| 1 | E0 | — | Contact Picker API | — | Tap "Add from contacts" |
-| 2 | E1 | Mobile | `contactDraft.mobile` | ✅ | Tap "Get OTP" |
-| 3 | E2 | OTP | — | ✅ | Enter 6 digits / Continue |
-| 4 | E3 | Name | `contactDraft.name` | ✅ | Tap "Save contact" |
-| 4 | E3 | Relation | — (user selects) | ✅ | Required before save |
+| Step | Screen | Field    | Source                | User editable | Advance trigger           |
+| ---- | ------ | -------- | --------------------- | :-----------: | ------------------------- |
+| 1    | E0     | —        | Contact Picker API    |       —       | Tap "Add from contacts"   |
+| 2    | E1     | Mobile   | `contactDraft.mobile` |      ✅       | Tap "Get OTP"             |
+| 3    | E2     | OTP      | —                     |      ✅       | Enter 6 digits / Continue |
+| 4    | E3     | Name     | `contactDraft.name`   |      ✅       | Tap "Save contact"        |
+| 4    | E3     | Relation | — (user selects)      |      ✅       | Required before save      |
 
 Picker must **not** auto-submit, auto-verify, or skip steps.
 
@@ -40,28 +40,28 @@ contactDraft: {
 
 ## Before
 
-| Step | Behavior |
-|------|----------|
-| Picker | Filled mobile + name, `otpVerified: true` |
-| Navigation | Jumped to E3 (name) |
-| E1 | Never shown for picker path |
-| E2 | Skipped |
-| E3 name | Prefilled but reached without OTP |
-| E3 relation | Unselected when `fromPicker` (correct) |
+| Step        | Behavior                                  |
+| ----------- | ----------------------------------------- |
+| Picker      | Filled mobile + name, `otpVerified: true` |
+| Navigation  | Jumped to E3 (name)                       |
+| E1          | Never shown for picker path               |
+| E2          | Skipped                                   |
+| E3 name     | Prefilled but reached without OTP         |
+| E3 relation | Unselected when `fromPicker` (correct)    |
 
 ---
 
 ## After
 
-| Step | Behavior |
-|------|----------|
-| Picker | Fills `mobile` + `name` in draft, `otpVerified: false` |
-| E1 | `useState(emergency.contactDraft?.mobile)` prefills mobile field |
+| Step        | Behavior                                                             |
+| ----------- | -------------------------------------------------------------------- |
+| Picker      | Fills `mobile` + `name` in draft, `otpVerified: false`               |
+| E1          | `useState(emergency.contactDraft?.mobile)` prefills mobile field     |
 | E1 continue | Updates mobile if edited; preserves `name` + `fromPicker` via spread |
-| E2 | Standard OTP; sets `otpVerified: true` on success |
-| E3 | `useState(draft?.name ?? '')` prefills name field |
-| E3 relation | `undefined` when `fromPicker` — user must select |
-| Save | `verified` requires `otpVerified === true` |
+| E2          | Standard OTP; sets `otpVerified: true` on success                    |
+| E3          | `useState(draft?.name ?? '')` prefills name field                    |
+| E3 relation | `undefined` when `fromPicker` — user must select                     |
+| Save        | `verified` requires `otpVerified === true`                           |
 
 ---
 

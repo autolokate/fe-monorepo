@@ -12,11 +12,7 @@ export type AlBadgeProps = {
 };
 
 export function AlBadge({ children, variant = 'neutral', className }: AlBadgeProps) {
-  return (
-    <span className={cn('al-badge', `al-badge--${variant}`, className)}>
-      {children}
-    </span>
-  );
+  return <span className={cn('al-badge', `al-badge--${variant}`, className)}>{children}</span>;
 }
 
 export type AlStatusBadgeProps = {
@@ -45,7 +41,10 @@ const STATUS_DOT: Record<AlStatusBadgeProps['status'], string> = {
 export function AlStatusBadge({ label, status }: AlStatusBadgeProps) {
   return (
     <span className={cn('al-status-badge', 'al-badge', `al-badge--${STATUS_VARIANT[status]}`)}>
-      <span className={cn('al-status-badge__dot', `al-status-badge__dot--${STATUS_DOT[status]}`)} aria-hidden />
+      <span
+        className={cn('al-status-badge__dot', `al-status-badge__dot--${STATUS_DOT[status]}`)}
+        aria-hidden
+      />
       {label}
     </span>
   );

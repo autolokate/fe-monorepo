@@ -1,0 +1,121 @@
+.wrap {
+  max-width: 25rem;
+  margin-inline: auto;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.back:hover {
+  color: var(--foreground);
+}
+
+.card {
+  padding: 1.9rem 1.65rem;
+  border: 1px solid var(--border);
+  border-radius: 1.75rem;
+  background: var(--card);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.28);
+}
+
+.title {
+  margin: 0 0 0.35rem;
+  font-size: 1.4rem;
+  color: var(--foreground);
+}
+
+.sub {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.plate {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  border: 2px solid var(--foreground);
+  border-radius: 0.75rem;
+  padding: 0.85rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--warn-soft) 80%, var(--card));
+  outline: none;
+}
+
+.plate::placeholder {
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.action {
+  width: 100%;
+  justify-content: center;
+}
+
+.rcCard {
+  padding: 1rem 1.15rem;
+  margin-bottom: 1.1rem;
+  border: 1.5px solid var(--success);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--success) 5%, transparent);
+}
+
+.rcBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--success);
+}
+
+.rcName {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.rcMeta {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.gated {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 1.1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  background: var(--muted);
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.gated b {
+  color: var(--foreground);
+}

@@ -14,12 +14,12 @@ Inside the SOS hold button, the circular progress loader did not render on iOS S
 
 ## Root Cause Analysis
 
-| Factor | Finding |
-|--------|---------|
+| Factor                              | Finding                                                                                                                                                                                                                          |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **SVG stroke-dashoffset animation** | Primary progress was a `<circle>` with `stroke-dashoffset` driven by React state. iOS WebKit has known inconsistencies animating dashed SVG strokes inside transformed containers (`rotate(-90deg)` + `translateZ(0)` stacking). |
-| **Opacity gating** | Progress SVG was fully hidden (`strokeDashoffset = circumference`) when not holding; on iOS the first painted frame after `pointerdown` could miss the arc before compositor caught up. |
-| **Z-index / masking** | 200px disc (`z-index: 1`) sat below progress (`z-index: 2`) — layout correct, but WebKit sometimes fails to composite SVG strokes above rounded buttons during active touch. |
-| **Pointer events** | Not the blocker — `pointer-events: none` on progress layer is intentional; disc handles capture correctly. |
+| **Opacity gating**                  | Progress SVG was fully hidden (`strokeDashoffset = circumference`) when not holding; on iOS the first painted frame after `pointerdown` could miss the arc before compositor caught up.                                          |
+| **Z-index / masking**               | 200px disc (`z-index: 1`) sat below progress (`z-index: 2`) — layout correct, but WebKit sometimes fails to composite SVG strokes above rounded buttons during active touch.                                                     |
+| **Pointer events**                  | Not the blocker — `pointer-events: none` on progress layer is intentional; disc handles capture correctly.                                                                                                                       |
 
 ---
 
@@ -64,22 +64,22 @@ Dual-layer progress rendering:
 
 ## Screenshots
 
-| State | Path |
-|-------|------|
-| After (desktop WebKit emulation) | `docs/audit-screenshots/live/14-sos.png` |
-| Before | Pre-fix captures — loader absent on iOS only (not reproducible in desktop Playwright) |
+| State                            | Path                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------- |
+| After (desktop WebKit emulation) | `docs/audit-screenshots/live/14-sos.png`                                              |
+| Before                           | Pre-fix captures — loader absent on iOS only (not reproducible in desktop Playwright) |
 
 ---
 
 ## Verification Matrix
 
-| Platform | Loader visible | Notes |
-|----------|----------------|-------|
-| Desktop Chrome | ✓ | SVG + CSS ring |
-| Desktop Safari | ✓ (Playwright WebKit) | CSS ring primary |
-| Android Chrome | ✓ | Pre-fix already worked |
-| **iOS Safari** | **Unverified** | Requires physical device |
-| **iOS PWA (standalone)** | **Unverified** | Requires Add to Home Screen test |
+| Platform                 | Loader visible        | Notes                            |
+| ------------------------ | --------------------- | -------------------------------- |
+| Desktop Chrome           | ✓                     | SVG + CSS ring                   |
+| Desktop Safari           | ✓ (Playwright WebKit) | CSS ring primary                 |
+| Android Chrome           | ✓                     | Pre-fix already worked           |
+| **iOS Safari**           | **Unverified**        | Requires physical device         |
+| **iOS PWA (standalone)** | **Unverified**        | Requires Add to Home Screen test |
 
 ---
 
@@ -93,6 +93,7 @@ Dual-layer progress rendering:
 ## Final Verdict: **MORE FIXES REQUIRED**
 
 Fix is implemented and architecturally correct for WebKit. **Do not mark READY** until validated on:
+
 - iPhone Safari (iOS 17+)
 - iPhone PWA standalone mode
 - Hold gesture with `-webkit-touch-callout` disabled (already set on disc)

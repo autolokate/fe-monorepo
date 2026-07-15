@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useCurrentUser, useIsAuthenticated } from "@/hooks/auth";
-import { ProfileForm } from "../ProfileForm";
-import { ProfileSkeleton } from "../ProfileSkeleton";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { AlertTriangle, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useCurrentUser, useIsAuthenticated } from '@/hooks/auth';
+import { ProfileForm } from '../ProfileForm';
+import { ProfileSkeleton } from '../ProfileSkeleton';
 
 /**
  * Client wrapper for `/profile`. Three-state render:
@@ -26,7 +26,7 @@ export function ProfilePageContent() {
   // from the header CTA if they want.
   useEffect(() => {
     if (authed === false) {
-      router.replace("/");
+      router.replace('/');
     }
   }, [authed, router]);
 
@@ -41,7 +41,7 @@ export function ProfilePageContent() {
           Couldn&apos;t load your profile
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {userQuery.error?.message ?? "Please try again in a moment."}
+          {userQuery.error?.message ?? 'Please try again in a moment.'}
         </p>
         <div className="mt-6 flex gap-2">
           <Button onClick={() => void userQuery.refetch()} className="h-10">

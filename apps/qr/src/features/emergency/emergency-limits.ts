@@ -29,7 +29,9 @@ export function resolvePurchasePlanId(planId: PurchasePlanId | undefined): Purch
 
 function readCatalogEmergencyCount(planId: PurchasePlanId): number | null {
   const count = getPurchasePlanById(planId).emergencyCount;
-  return typeof count === 'number' && Number.isFinite(count) ? Math.max(0, Math.floor(count)) : null;
+  return typeof count === 'number' && Number.isFinite(count)
+    ? Math.max(0, Math.floor(count))
+    : null;
 }
 
 function readCatalogRiderCount(planId: PurchasePlanId): number {
@@ -175,8 +177,7 @@ export function getRidersMaxReachedMessage(
 }
 
 /** Figma 373:37 — E0 empty state description. */
-export const E0_CONTACTS_EMPTY_DESCRIPTION =
-  'Add 1–3 people we’ll alert if you’re in a crash.';
+export const E0_CONTACTS_EMPTY_DESCRIPTION = 'Add 1–3 people we’ll alert if you’re in a crash.';
 
 export function getContactsEmptyDescription(planId: PurchasePlanId | undefined): string {
   const { maxEmergencyContacts } = getEmergencyPlanLimits(planId);

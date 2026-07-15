@@ -28,7 +28,11 @@ export function useParkCheckingFlow() {
     const blockingId = session.parkMePhotoIds.front;
     const blockedId = session.parkMePhotoIds.rear;
     if (!blockingId || !blockedId) {
-      reportUserError(scannerLogger, 'park_submit_missing_photo_ids', new Error('Missing photo uploads'));
+      reportUserError(
+        scannerLogger,
+        'park_submit_missing_photo_ids',
+        new Error('Missing photo uploads'),
+      );
       void navigate(pwaScanPaths.parkMePhotos, { replace: true });
       return;
     }

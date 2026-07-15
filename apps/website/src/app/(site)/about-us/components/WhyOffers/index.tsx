@@ -1,7 +1,6 @@
-import { features } from "./constants";
+import { features } from './constants';
 
-const sectionTitle =
-  "font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl";
+const sectionTitle = 'font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl';
 
 export function WhyOffers() {
   return (
@@ -17,9 +16,8 @@ export function WhyOffers() {
           </p>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-[0.95rem]">
             We put owners first, not user profiles. The platform combines vehicle management,
-            community support, trip &amp; expense sharing, and optional emergency contact features
-            — all in one privacy-conscious place. Free, simple, and designed to help when you need
-            it.
+            community support, trip &amp; expense sharing, and optional emergency contact features —
+            all in one privacy-conscious place. Free, simple, and designed to help when you need it.
           </p>
         </div>
 

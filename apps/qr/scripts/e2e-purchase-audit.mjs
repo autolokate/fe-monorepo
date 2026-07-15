@@ -62,7 +62,9 @@ async function acceptConsent(page) {
 }
 
 async function clickFooterCta(page, labelRe) {
-  const btn = page.locator('.ob-auth-shell__cta, .ob-step-chrome__cta').filter({ hasText: labelRe });
+  const btn = page
+    .locator('.ob-auth-shell__cta, .ob-step-chrome__cta')
+    .filter({ hasText: labelRe });
   await btn.waitFor({ state: 'visible', timeout: 20000 });
   await btn.waitFor({ state: 'attached', timeout: 5000 });
   await page.waitForFunction(
@@ -83,21 +85,36 @@ async function clickFooterCta(page, labelRe) {
 
 async function tryFrameNetbanking(page, frame) {
   const backdrop = frame.locator('#overlay-backdrop, [data-testid^="overlay"]');
-  if (await backdrop.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+  if (
+    await backdrop
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false)
+  ) {
     await page.keyboard.press('Escape').catch(() => undefined);
-    await backdrop.first().click({ force: true, timeout: 2000 }).catch(() => undefined);
+    await backdrop
+      .first()
+      .click({ force: true, timeout: 2000 })
+      .catch(() => undefined);
     await page.waitForTimeout(800);
   }
 
   const phoneInput = frame.locator(
     'input[name="contact"], input[type="tel"], input[placeholder*="mobile" i], input[placeholder*="phone" i]',
   );
-  if (await phoneInput.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+  if (
+    await phoneInput
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false)
+  ) {
     await phoneInput.first().fill(RAZORPAY_CONTACT);
     await page.waitForTimeout(500);
   }
 
-  const netbanking = frame.locator('[data-testid="Netbanking"], [data-testid="netbanking"]').first();
+  const netbanking = frame
+    .locator('[data-testid="Netbanking"], [data-testid="netbanking"]')
+    .first();
   if (await netbanking.isVisible({ timeout: 5000 }).catch(() => false)) {
     await netbanking.click({ force: true, timeout: 10000 });
     await page.waitForTimeout(1200);
@@ -124,7 +141,12 @@ async function tryFrameNetbanking(page, frame) {
   const payBtn = frame.locator(
     'button:has-text("Pay"), button:has-text("Continue"), button#pay-now, button[type="submit"]',
   );
-  if (await payBtn.first().isVisible({ timeout: 3000 }).catch(() => false)) {
+  if (
+    await payBtn
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false)
+  ) {
     await payBtn.first().click({ timeout: 10000 });
     await page.waitForTimeout(3000);
   }
@@ -133,8 +155,15 @@ async function tryFrameNetbanking(page, frame) {
     const success = f.getByText(/success/i).first();
     if (await success.isVisible({ timeout: 8000 }).catch(() => false)) {
       await success.click({ timeout: 5000 }).catch(() => undefined);
-      const submit = f.locator('button:has-text("Submit"), button:has-text("Continue"), button[type="submit"]');
-      if (await submit.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+      const submit = f.locator(
+        'button:has-text("Submit"), button:has-text("Continue"), button[type="submit"]',
+      );
+      if (
+        await submit
+          .first()
+          .isVisible({ timeout: 2000 })
+          .catch(() => false)
+      ) {
         await submit.first().click({ timeout: 5000 });
       }
       console.log('[razorpay] clicked test bank success');
@@ -150,7 +179,9 @@ async function completeRazorpayNetbanking(page) {
     console.log('[razorpay] waiting for checkout (netbanking)…');
     await page.waitForTimeout(4000);
     await page
-      .waitForSelector('iframe.razorpay-checkout-frame, iframe[src*="razorpay"]', { timeout: 30000 })
+      .waitForSelector('iframe.razorpay-checkout-frame, iframe[src*="razorpay"]', {
+        timeout: 30000,
+      })
       .catch(() => undefined);
 
     const selectors = [
@@ -188,9 +219,12 @@ async function completeRazorpay(page) {
   await page.waitForTimeout(3000);
 
   await page
-    .waitForSelector('iframe.razorpay-checkout-frame, iframe[src*="razorpay"], iframe[name*="razorpay"]', {
-      timeout: 25000,
-    })
+    .waitForSelector(
+      'iframe.razorpay-checkout-frame, iframe[src*="razorpay"], iframe[name*="razorpay"]',
+      {
+        timeout: 25000,
+      },
+    )
     .catch(() => undefined);
 
   const tryFrameLocator = async (frame) => {
@@ -236,7 +270,9 @@ async function completeRazorpay(page) {
       await expiry.first().fill('1230');
     }
 
-    const cvv = frame.locator('input[name="card.cvv"], input[placeholder*="CVV" i], input[autocomplete="cc-csc"]');
+    const cvv = frame.locator(
+      'input[name="card.cvv"], input[placeholder*="CVV" i], input[autocomplete="cc-csc"]',
+    );
     if ((await cvv.count()) > 0) {
       await cvv.first().fill('123');
     }
@@ -261,8 +297,13 @@ async function completeRazorpay(page) {
       const otpInput = frame.locator(otpSel).first();
       if (await otpInput.isVisible({ timeout: 2000 }).catch(() => false)) {
         await otpInput.fill('123456');
-        const submit = frame.locator('button:has-text("Submit"), button:has-text("Pay"), button[type="submit"]');
-        await submit.first().click({ timeout: 8000 }).catch(() => undefined);
+        const submit = frame.locator(
+          'button:has-text("Submit"), button:has-text("Pay"), button[type="submit"]',
+        );
+        await submit
+          .first()
+          .click({ timeout: 8000 })
+          .catch(() => undefined);
         console.log('[razorpay] OTP submitted');
         await page.waitForTimeout(3000);
         return true;
@@ -311,7 +352,9 @@ function validateApiOrder(timeline) {
   const idx = (pred) => timeline.findIndex(pred);
   const issues = [];
 
-  const resolveCalls = timeline.filter((e) => e.method === 'GET' && e.url.includes('/qr/') && e.url.includes('/resolve'));
+  const resolveCalls = timeline.filter(
+    (e) => e.method === 'GET' && e.url.includes('/qr/') && e.url.includes('/resolve'),
+  );
   if (resolveCalls.length !== 1) {
     issues.push(`resolve count ${resolveCalls.length} (expected 1)`);
   }
@@ -333,9 +376,7 @@ function validateApiOrder(timeline) {
   const vehicleDetailIdx = idx(
     (e) => e.method === 'GET' && /\/v1\/vehicles\/[0-9a-f-]{36}$/i.test(short(e)),
   );
-  const vehiclesListIdx = idx(
-    (e) => e.method === 'GET' && short(e) === '/v1/vehicles',
-  );
+  const vehiclesListIdx = idx((e) => e.method === 'GET' && short(e) === '/v1/vehicles');
 
   if (lookupIdx < 0) issues.push('missing GET /vehicles/lookup');
   if (attachIdx < 0) issues.push('missing POST /attach');
@@ -442,8 +483,15 @@ async function main() {
   await page.waitForTimeout(1000);
 
   // Legal docs only on Privacy/Terms click
-  const privacyLink = page.getByRole('button', { name: /privacy policy/i }).or(page.getByText(/privacy policy/i));
-  if (await privacyLink.first().isVisible({ timeout: 5000 }).catch(() => false)) {
+  const privacyLink = page
+    .getByRole('button', { name: /privacy policy/i })
+    .or(page.getByText(/privacy policy/i));
+  if (
+    await privacyLink
+      .first()
+      .isVisible({ timeout: 5000 })
+      .catch(() => false)
+  ) {
     await privacyLink.first().click();
     await page.waitForURL(/legal\/privacy/, { timeout: 15000 });
     await page.waitForTimeout(1500);
@@ -515,8 +563,7 @@ async function main() {
   await clickFooterCta(page, /pay securely|pay ₹/i);
   await page.waitForURL(/r09/, { timeout: 30000 });
 
-  const razorpayOk =
-    (await completeRazorpayNetbanking(page)) || (await completeRazorpay(page));
+  const razorpayOk = (await completeRazorpayNetbanking(page)) || (await completeRazorpay(page));
 
   await page
     .waitForURL(/payment-success|payment-failed|payment-unconfirmed|payment-still-confirming/, {
@@ -558,11 +605,17 @@ async function main() {
       lookup: timeline.filter((e) => e.url.includes('/vehicles/lookup')),
       attach: timeline.filter((e) => e.method === 'POST' && e.url.includes('/attach')),
       plans: timeline.filter((e) => e.method === 'GET' && e.url.includes('/plans')),
-      createOrder: timeline.filter((e) => e.method === 'POST' && /\/orders$/.test(e.url.replace(/\?.*$/, ''))),
+      createOrder: timeline.filter(
+        (e) => e.method === 'POST' && /\/orders$/.test(e.url.replace(/\?.*$/, '')),
+      ),
       payOrder: timeline.filter((e) => e.method === 'POST' && e.url.includes('/pay')),
       paymentPoll: timeline.filter((e) => e.method === 'GET' && e.url.includes('/payment')),
-      vehicleDetail: timeline.filter((e) => /\/v1\/vehicles\/[0-9a-f-]{36}$/i.test(e.url.replace(/\?.*$/, ''))),
-      vehiclesList: timeline.filter((e) => e.method === 'GET' && e.url.replace(/\?.*$/, '').endsWith('/v1/vehicles')),
+      vehicleDetail: timeline.filter((e) =>
+        /\/v1\/vehicles\/[0-9a-f-]{36}$/i.test(e.url.replace(/\?.*$/, '')),
+      ),
+      vehiclesList: timeline.filter(
+        (e) => e.method === 'GET' && e.url.replace(/\?.*$/, '').endsWith('/v1/vehicles'),
+      ),
       auth: timeline.filter((e) => e.url.includes('/auth/')),
       consents: timeline.filter((e) => e.url.includes('/me/consents')),
       profile: timeline.filter((e) => e.method === 'PATCH' && e.url.includes('/profile')),

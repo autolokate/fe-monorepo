@@ -29,6 +29,15 @@ export type AdminPermission =
   | 'promo:write'
   | 'catalog:read'
   | 'catalog:write'
+  | 'orders:view'
+  | 'orders:refund'
+  | 'subscriptions:view'
+  | 'shipments:view'
+  | 'payments:view'
+  | 'support:view'
+  | 'support:write'
+  // Break-glass emergency-incident PII read. SUPER_ADMIN only — narrow by design; every read is server-audited.
+  | 'incidents:view'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -56,6 +65,17 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     // Catalog writes move money: a price, a shelf, a default plan. SUPER_ADMIN only.
     'catalog:read',
     'catalog:write',
+    'orders:view',
+    // A full money refund — SUPER_ADMIN + FINANCE only, never the broad orders:view set.
+    'orders:refund',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    // The support-ticket console (read + status triage) — SUPPORT/OPS/SUPER_ADMIN.
+    'support:view',
+    'support:write',
+    // Break-glass incident PII read — SUPER_ADMIN only (14-roles §14.6 · security.md § Break-glass).
+    'incidents:view',
     'audit:read',
     'audit:view',
     'settlements:write',
@@ -82,14 +102,78 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'catalog:read',
     'promos:read',
     'promo:view',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    'support:view',
+    'support:write',
     'audit:read',
     'audit:view',
     'partners:read',
   ],
-  SUPPORT: ['dashboard:view', 'inventory:view', 'inventory:read', 'audit:read', 'audit:view', 'partners:read'],
-  FINANCE: ['dashboard:view', 'audit:read', 'audit:view', 'settlements:write', 'clawbacks:write', 'promos:read', 'promo:view', 'catalog:read'],
-  PARTNER_MANAGER: ['dashboard:view', 'inventory:view', 'inventory:read', 'partners:read', 'partners:write', 'audit:read', 'audit:view'],
-  READ_ONLY: ['dashboard:view', 'inventory:view', 'inventory:read', 'qr-batches:read', 'promos:read', 'promo:view', 'catalog:read', 'audit:read', 'audit:view', 'partners:read'],
+  SUPPORT: [
+    'dashboard:view',
+    'inventory:view',
+    'inventory:read',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    // Support tickets are this role's core queue — read + status triage.
+    'support:view',
+    'support:write',
+    'audit:read',
+    'audit:view',
+    'partners:read',
+  ],
+  FINANCE: [
+    'dashboard:view',
+    'audit:read',
+    'audit:view',
+    'settlements:write',
+    'clawbacks:write',
+    'promos:read',
+    'promo:view',
+    'catalog:read',
+    'orders:view',
+    // Refunds are a finance money action (FINANCE·step_up).
+    'orders:refund',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+  ],
+  PARTNER_MANAGER: [
+    'dashboard:view',
+    'inventory:view',
+    'inventory:read',
+    'partners:read',
+    'partners:write',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    'audit:read',
+    'audit:view',
+  ],
+  READ_ONLY: [
+    'dashboard:view',
+    'inventory:view',
+    'inventory:read',
+    'qr-batches:read',
+    'promos:read',
+    'promo:view',
+    'catalog:read',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    // Read-only oversight of the support queue (no status triage).
+    'support:view',
+    'audit:read',
+    'audit:view',
+    'partners:read',
+  ],
 };
 
 export function normalizeAdminRole(role: string | null | undefined): AdminRole {

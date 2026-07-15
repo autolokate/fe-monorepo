@@ -7,7 +7,12 @@ import { buildAuthPaths } from './auth/auth-routing';
 import { journeyPaths } from './constants';
 import { buildEmergencyPaths } from './emergency/emergency-routing';
 import { resolveEmergencyFoundationContext } from './emergency/emergency-foundation';
-import { buildB2b2cPaths, buildPrepaidPaths, buildQrEntryPath, parseJourneyIdFromPathname } from './routing/journey-url-routing';
+import {
+  buildB2b2cPaths,
+  buildPrepaidPaths,
+  buildQrEntryPath,
+  parseJourneyIdFromPathname,
+} from './routing/journey-url-routing';
 import { purchaseJourneyPathsFor } from './purchase/purchase-routing';
 import { resolvePurchaseEntryPath } from '@/journey/state/purchase-journey-state-machine';
 import type { ActivationFlowId, JourneySession } from './types';
@@ -28,7 +33,9 @@ export function authCompletionEntry(journeyId: string): ActivationEntry {
   };
 }
 
-export function activationEntryByFlow(journeyId: string): Record<ActivationFlowId, ActivationEntry> {
+export function activationEntryByFlow(
+  journeyId: string,
+): Record<ActivationFlowId, ActivationEntry> {
   const purchase = purchaseJourneyPathsFor(journeyId);
   const prepaid = buildPrepaidPaths(journeyId);
   const b2b2c = buildB2b2cPaths(journeyId);
@@ -87,9 +94,9 @@ export function getPostAuthActivationPath(
   const journeyId =
     typeof journeyIdOrSession === 'string'
       ? journeyIdOrSession
-      : (typeof window !== 'undefined'
+      : ((typeof window !== 'undefined'
           ? parseJourneyIdFromPathname(window.location.pathname)
-          : null) ?? '_';
+          : null) ?? '_');
   const resolvedSession = typeof journeyIdOrSession === 'object' ? journeyIdOrSession : session;
 
   if (!flow) {
@@ -189,11 +196,10 @@ export function getEmergencyFlowBackPath(
   const journeyId =
     typeof journeyIdOrSession === 'string'
       ? journeyIdOrSession
-      : (typeof window !== 'undefined'
+      : ((typeof window !== 'undefined'
           ? parseJourneyIdFromPathname(window.location.pathname)
-          : null) ?? '_';
-  const resolvedSession =
-    typeof journeyIdOrSession === 'object' ? journeyIdOrSession : session;
+          : null) ?? '_');
+  const resolvedSession = typeof journeyIdOrSession === 'object' ? journeyIdOrSession : session;
   if (flow === 'purchase') {
     return purchaseJourneyPathsFor(journeyId).paymentSuccess;
   }

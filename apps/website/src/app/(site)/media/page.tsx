@@ -1,4 +1,4 @@
-import { HeroBanner, MediaBody, mediaMetadata } from "./";
+import { HeroBanner, MediaBody, mediaMetadata } from './';
 
 export const metadata = mediaMetadata;
 

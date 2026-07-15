@@ -56,7 +56,12 @@ async function captureDev(browser, screen, theme, width, filePath) {
       document.body.dataset.devState === expectedState &&
       document.body.dataset.devTheme === expectedTheme &&
       document.body.dataset.devWidth === String(expectedWidth),
-    { expectedScreen: screen.id, expectedState: screen.state, expectedTheme: theme, expectedWidth: width },
+    {
+      expectedScreen: screen.id,
+      expectedState: screen.state,
+      expectedTheme: theme,
+      expectedWidth: width,
+    },
     { timeout: 15000 },
   );
   const delay = settleMs(screen.id);
@@ -103,16 +108,47 @@ async function main() {
         const fileName = `${slug(['dev', screen.flow, screen.id, screen.state, theme, width])}.png`;
         const filePath = path.join(OUT_DIR, fileName);
         if (await fileExists(filePath)) {
-          manifest.push({ kind: 'dev', screenId: screen.id, state: screen.state, flow: screen.flow, figma: screen.figma, theme, width, screenshot: `docs/visual-truth/screens/${fileName}`, captured: true, skipped: true });
+          manifest.push({
+            kind: 'dev',
+            screenId: screen.id,
+            state: screen.state,
+            flow: screen.flow,
+            figma: screen.figma,
+            theme,
+            width,
+            screenshot: `docs/visual-truth/screens/${fileName}`,
+            captured: true,
+            skipped: true,
+          });
           continue;
         }
         try {
           await captureDev(browser, screen, theme, width, filePath);
-          manifest.push({ kind: 'dev', screenId: screen.id, state: screen.state, flow: screen.flow, figma: screen.figma, theme, width, screenshot: `docs/visual-truth/screens/${fileName}`, captured: true });
+          manifest.push({
+            kind: 'dev',
+            screenId: screen.id,
+            state: screen.state,
+            flow: screen.flow,
+            figma: screen.figma,
+            theme,
+            width,
+            screenshot: `docs/visual-truth/screens/${fileName}`,
+            captured: true,
+          });
           done += 1;
           if (done % 25 === 0) console.log(`dev ${done} new captures…`);
         } catch (error) {
-          manifest.push({ kind: 'dev', screenId: screen.id, state: screen.state, flow: screen.flow, figma: screen.figma, theme, width, captured: false, error: String(error) });
+          manifest.push({
+            kind: 'dev',
+            screenId: screen.id,
+            state: screen.state,
+            flow: screen.flow,
+            figma: screen.figma,
+            theme,
+            width,
+            captured: false,
+            error: String(error),
+          });
         }
       }
 
@@ -120,15 +156,43 @@ async function main() {
         const fileName = `${slug(['pwa', screen.id, theme, width])}.png`;
         const filePath = path.join(OUT_DIR, fileName);
         if (await fileExists(filePath)) {
-          manifest.push({ kind: 'pwa', screenId: screen.id, flow: screen.flow, figma: screen.figma, theme, width, screenshot: `docs/visual-truth/screens/${fileName}`, captured: true, skipped: true });
+          manifest.push({
+            kind: 'pwa',
+            screenId: screen.id,
+            flow: screen.flow,
+            figma: screen.figma,
+            theme,
+            width,
+            screenshot: `docs/visual-truth/screens/${fileName}`,
+            captured: true,
+            skipped: true,
+          });
           continue;
         }
         try {
           await capturePwa(browser, screen, theme, width, filePath);
-          manifest.push({ kind: 'pwa', screenId: screen.id, flow: screen.flow, figma: screen.figma, theme, width, screenshot: `docs/visual-truth/screens/${fileName}`, captured: true });
+          manifest.push({
+            kind: 'pwa',
+            screenId: screen.id,
+            flow: screen.flow,
+            figma: screen.figma,
+            theme,
+            width,
+            screenshot: `docs/visual-truth/screens/${fileName}`,
+            captured: true,
+          });
           done += 1;
         } catch (error) {
-          manifest.push({ kind: 'pwa', screenId: screen.id, flow: screen.flow, figma: screen.figma, theme, width, captured: false, error: String(error) });
+          manifest.push({
+            kind: 'pwa',
+            screenId: screen.id,
+            flow: screen.flow,
+            figma: screen.figma,
+            theme,
+            width,
+            captured: false,
+            error: String(error),
+          });
         }
       }
       console.log(`finished ${theme}/${width}`);

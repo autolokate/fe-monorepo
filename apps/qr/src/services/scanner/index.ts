@@ -34,5 +34,9 @@ export {
   type ScanUploadResult,
 } from './scan-upload-service';
 export { scannerJourneyStateMachine } from './scanner-journey-state-machine';
-export { mapScannerApiError, isScannerTransientError, type ScannerApiError } from './scanner-api-errors';
+export {
+  mapScannerApiError,
+  isScannerTransientError,
+  type ScannerApiError,
+} from './scanner-api-errors';
 export { scannerLogger } from './scanner-logger';

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useId, useState } from "react";
-import { Bike, Car, Check, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useId, useState } from 'react';
+import { Bike, Car, Check, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -10,12 +10,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  VEHICLE_CATEGORY_OPTIONS,
-  type VehicleCategory,
-} from "@/lib/preferences";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog';
+import { VEHICLE_CATEGORY_OPTIONS, type VehicleCategory } from '@/lib/preferences';
+import { cn } from '@/lib/utils';
 
 const ICON_BY_CATEGORY: Record<VehicleCategory, typeof Car> = {
   cars: Car,
@@ -51,23 +48,23 @@ export function PreferenceCategoryDialog({
   defaultValue,
   onOpenChange,
   onSubmit,
-  title = "What are you shopping for?",
-  description = "Pick a vehicle type so we can personalise your experience. You can change this any time.",
-  submitLabel = "Save preference",
-  cancelLabel = "Not now",
+  title = 'What are you shopping for?',
+  description = 'Pick a vehicle type so we can personalise your experience. You can change this any time.',
+  submitLabel = 'Save preference',
+  cancelLabel = 'Not now',
 }: PreferenceCategoryDialogProps) {
   const groupName = useId();
   const [selected, setSelected] = useState<VehicleCategory>(
-    defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0]!.value,
+    defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0].value,
   );
 
   useEffect(() => {
     if (open) {
-      setSelected(defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0]!.value);
+      setSelected(defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0].value);
     }
   }, [open, defaultValue]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(selected);
   };
@@ -94,12 +91,12 @@ export function PreferenceCategoryDialog({
                 <label
                   key={option.value}
                   className={cn(
-                    "group relative flex cursor-pointer flex-col items-center gap-2 rounded-2xl border bg-background px-4 py-5 text-center transition",
-                    "hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-sm motion-reduce:transition-none motion-reduce:hover:translate-y-0",
-                    "focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/30",
+                    'group relative flex cursor-pointer flex-col items-center gap-2 rounded-2xl border bg-background px-4 py-5 text-center transition',
+                    'hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-sm motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+                    'focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/30',
                     active
-                      ? "border-primary/70 bg-primary/[0.08] ring-2 ring-primary/25"
-                      : "border-border",
+                      ? 'border-primary/70 bg-primary/[0.08] ring-2 ring-primary/25'
+                      : 'border-border',
                   )}
                 >
                   <input
@@ -107,32 +104,32 @@ export function PreferenceCategoryDialog({
                     name={groupName}
                     value={option.value}
                     checked={active}
-                    onChange={() => setSelected(option.value)}
+                    onChange={() => {
+                      setSelected(option.value);
+                    }}
                     className="sr-only"
                   />
                   <span
                     className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-full transition",
+                      'flex h-12 w-12 items-center justify-center rounded-full transition',
                       active
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "bg-muted text-foreground",
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'bg-muted text-foreground',
                     )}
                     aria-hidden
                   >
                     <Icon className="h-6 w-6" strokeWidth={1.75} />
                   </span>
-                  <span className="text-sm font-semibold text-foreground">
-                    {option.label}
-                  </span>
+                  <span className="text-sm font-semibold text-foreground">{option.label}</span>
                   <span className="text-[11px] leading-snug text-muted-foreground">
                     {option.description}
                   </span>
                   <span
                     className={cn(
-                      "absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full border transition",
+                      'absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full border transition',
                       active
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background text-transparent",
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-background text-transparent',
                     )}
                     aria-hidden
                   >
@@ -147,7 +144,9 @@ export function PreferenceCategoryDialog({
             <Button
               type="button"
               variant="ghost"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false);
+              }}
             >
               <X className="h-4 w-4" aria-hidden />
               {cancelLabel}

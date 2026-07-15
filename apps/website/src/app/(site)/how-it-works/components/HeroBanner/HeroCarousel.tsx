@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { HERO_PRIMARY_CTA, HERO_SLIDES } from "./constants";
-import { VideoPanel } from "./VideoPanel";
-import styles from "./index.module.css";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { HERO_PRIMARY_CTA, HERO_SLIDES } from './constants';
+import { VideoPanel } from './VideoPanel';
+import styles from './index.module.css';
 
 const AUTO_ROTATE_MS = 5000;
 
@@ -28,14 +28,16 @@ export function HeroCarousel() {
   useEffect(() => {
     if (paused || playing || count <= 1) return;
     const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
 
     const id = window.setInterval(() => {
       setActive((prev) => (prev + 1) % count);
     }, AUTO_ROTATE_MS);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+    };
   }, [paused, playing, count]);
 
   const slide = slides[active];
@@ -43,10 +45,18 @@ export function HeroCarousel() {
   return (
     <div
       className={styles.carousel}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
+      onMouseEnter={() => {
+        setPaused(true);
+      }}
+      onMouseLeave={() => {
+        setPaused(false);
+      }}
+      onFocusCapture={() => {
+        setPaused(true);
+      }}
+      onBlurCapture={() => {
+        setPaused(false);
+      }}
     >
       <div key={slide.id} className={styles.slide}>
         <div className={styles.copy}>
@@ -69,7 +79,9 @@ export function HeroCarousel() {
               className={styles.ctaPrimary}
               icon={<ArrowRight className="h-4 w-4" />}
               iconPosition="end"
-              onClick={() => router.push(HERO_PRIMARY_CTA.href)}
+              onClick={() => {
+                router.push(HERO_PRIMARY_CTA.href);
+              }}
             >
               {HERO_PRIMARY_CTA.label}
             </AlButton>
@@ -80,7 +92,9 @@ export function HeroCarousel() {
           <VideoPanel
             video={slide.video}
             playing={playing}
-            onPlay={() => setPlaying((prev) => !prev)}
+            onPlay={() => {
+              setPlaying((prev) => !prev);
+            }}
           />
         </div>
       </div>
@@ -90,9 +104,11 @@ export function HeroCarousel() {
           <button
             key={s.id}
             type="button"
-            onClick={() => select(index)}
-            className={`${styles.dot} ${index === active ? styles.dotActive : ""}`}
-            aria-label={`Show slide ${index + 1}`}
+            onClick={() => {
+              select(index);
+            }}
+            className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
+            aria-label={`Show slide ${String(index + 1)}`}
             aria-current={index === active}
           />
         ))}

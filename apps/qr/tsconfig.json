@@ -6,9 +6,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": [
-    "src",
-    "vite.config.ts",
-    "../../packages/config/typescript/css-modules.d.ts"
-  ]
+  "include": ["src", "vite.config.ts", "../../packages/config/typescript/css-modules.d.ts"]
 }

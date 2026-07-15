@@ -2,7 +2,12 @@ import type { AdminPlanDto, ApiPlanTier, SkuSummaryDto } from '@autolokate/api-c
 
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
 
-export const PLAN_TIERS = ['SAFE', 'SECURE', 'SHIELD', 'SHIELD_PLUS'] as const satisfies readonly ApiPlanTier[];
+export const PLAN_TIERS = [
+  'SAFE',
+  'SECURE',
+  'SHIELD',
+  'SHIELD_PLUS',
+] as const satisfies readonly ApiPlanTier[];
 
 const TIER_LABELS: Record<ApiPlanTier, string> = {
   SAFE: 'SAFE',
@@ -60,7 +65,10 @@ export function formatPlanRef(plan: AdminPlanDto): string {
 }
 
 export function formatEffectiveWindow(plan: AdminPlanDto): string {
-  const from = plan.effectiveFrom !== null ? new Date(plan.effectiveFrom).toLocaleDateString() : 'Not published';
+  const from =
+    plan.effectiveFrom !== null
+      ? new Date(plan.effectiveFrom).toLocaleDateString()
+      : 'Not published';
   const to = plan.effectiveTo !== null ? new Date(plan.effectiveTo).toLocaleDateString() : 'Open';
   return `${from} → ${to}`;
 }

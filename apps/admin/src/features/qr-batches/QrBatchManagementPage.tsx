@@ -119,7 +119,7 @@ export function QrBatchManagementPage() {
     <RequirePermission permission="inventory:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="QR Batch Management"
+          title="Batches"
           description={pageDescription}
           actions={
             <>

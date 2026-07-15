@@ -1,0 +1,125 @@
+.card {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+}
+
+.qtyRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.qtyTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.qtyHint {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stepBtn {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  color: var(--foreground);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.stepBtn:hover:not(:disabled) {
+  border-color: var(--foreground);
+}
+
+.stepBtn:disabled {
+  opacity: 0.4;
+}
+
+.qtyValue {
+  min-width: 1.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.discount {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.upsell {
+  margin: 1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.upsell strong {
+  color: var(--primary);
+}
+
+.subtotalCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+}
+
+.subtotalLabel {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.subtotalValue {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.subtotalOriginal {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-decoration: line-through;
+}
+
+.continue {
+  width: 100%;
+  justify-content: center;
+  margin-top: 1.4rem;
+}

@@ -14,12 +14,12 @@ Remove remaining visual drift. UI quality and component parity only — **no rou
 
 ## Deliverables
 
-| Report | Path |
-|--------|------|
-| This document | `POST_ACTIVATION_FINAL_POLISH_REPORT.md` |
-| Scanner promotion | `SCANNER_COMPONENT_PROMOTION_REPORT.md` |
-| Icon alignment | `ICON_ALIGNMENT_REPORT.md` |
-| Drift closure | `UI_DRIFT_CLOSURE_REPORT.md` |
+| Report            | Path                                     |
+| ----------------- | ---------------------------------------- |
+| This document     | `POST_ACTIVATION_FINAL_POLISH_REPORT.md` |
+| Scanner promotion | `SCANNER_COMPONENT_PROMOTION_REPORT.md`  |
+| Icon alignment    | `ICON_ALIGNMENT_REPORT.md`               |
+| Drift closure     | `UI_DRIFT_CLOSURE_REPORT.md`             |
 
 ---
 
@@ -36,30 +36,30 @@ Remove remaining visual drift. UI quality and component parity only — **no rou
 
 ## Screens improved
 
-| Screen | Change | Grade |
-|--------|--------|-------|
-| **07** Looking up | `PwaScanShell` + centered spinner (removed `R04FetchingVehicleScreen`) | A |
-| **08** Confirm vehicle | `AlVehicleConfirmationCard` scanner | A |
-| **08b** Confirm protected | Same + protected border/glow | A |
-| **15b** Scene captured | Title/subtitle Figma copy; `AlPhotoGrid layout="review-quad"` | A |
-| **16** Location unavailable | `PwaStatusHeroScreen` + link/primary footer stack | A |
-| **18** Couldn't send | `PwaStatusHeroScreen` | A |
-| **22** Alert cancelled | `PwaStatusHeroScreen` + neutral hero | A |
-| **10–13, 19–21, 23** | Timeline + vehicle chip micro-polish | A / B |
+| Screen                      | Change                                                                 | Grade |
+| --------------------------- | ---------------------------------------------------------------------- | ----- |
+| **07** Looking up           | `PwaScanShell` + centered spinner (removed `R04FetchingVehicleScreen`) | A     |
+| **08** Confirm vehicle      | `AlVehicleConfirmationCard` scanner                                    | A     |
+| **08b** Confirm protected   | Same + protected border/glow                                           | A     |
+| **15b** Scene captured      | Title/subtitle Figma copy; `AlPhotoGrid layout="review-quad"`          | A     |
+| **16** Location unavailable | `PwaStatusHeroScreen` + link/primary footer stack                      | A     |
+| **18** Couldn't send        | `PwaStatusHeroScreen`                                                  | A     |
+| **22** Alert cancelled      | `PwaStatusHeroScreen` + neutral hero                                   | A     |
+| **10–13, 19–21, 23**        | Timeline + vehicle chip micro-polish                                   | A / B |
 
 ---
 
 ## Components changed
 
-| Component | Change |
-|-----------|--------|
-| `AlVehicleConfirmationCard` | **New** — scanner variant |
-| `AlPhotoGrid` | **`review-quad`** layout + retake tile |
-| `AlStatusTracker` | Vehicle icon well 40×10px |
-| `AlDispatchTimeline` | SOS glyph alignment, step density |
-| `PwaStatusHeroScreen` | **New** app composition for status heroes |
-| `pwa-scan.css` | Confirm screen gap, footer stack, status body |
-| `pwa-status-hero-screen.css` | Hero vertical rhythm |
+| Component                    | Change                                        |
+| ---------------------------- | --------------------------------------------- |
+| `AlVehicleConfirmationCard`  | **New** — scanner variant                     |
+| `AlPhotoGrid`                | **`review-quad`** layout + retake tile        |
+| `AlStatusTracker`            | Vehicle icon well 40×10px                     |
+| `AlDispatchTimeline`         | SOS glyph alignment, step density             |
+| `PwaStatusHeroScreen`        | **New** app composition for status heroes     |
+| `pwa-scan.css`               | Confirm screen gap, footer stack, status body |
+| `pwa-status-hero-screen.css` | Hero vertical rhythm                          |
 
 ---
 
@@ -75,16 +75,16 @@ Remove remaining visual drift. UI quality and component parity only — **no rou
 
 ## Hero polish verified
 
-| Scene | Screen | Frame |
-|-------|--------|-------|
-| SOS Hold | 14b | ✅ rebuild sprint |
-| Help Received | 19 | ✅ timeline |
-| Help Dispatched | 20 | ✅ timeline |
-| Incident Resolved | 21 | ✅ timeline |
-| Alert Cancelled | 22 | ✅ `PwaStatusHeroScreen` |
-| Couldn't Send | 18 | ✅ `PwaStatusHeroScreen` |
-| Location Unavailable | 16 | ✅ `PwaStatusHeroScreen` |
-| Photo Not Clear | 13 | ✅ timeline error step |
+| Scene                | Screen | Frame                    |
+| -------------------- | ------ | ------------------------ |
+| SOS Hold             | 14b    | ✅ rebuild sprint        |
+| Help Received        | 19     | ✅ timeline              |
+| Help Dispatched      | 20     | ✅ timeline              |
+| Incident Resolved    | 21     | ✅ timeline              |
+| Alert Cancelled      | 22     | ✅ `PwaStatusHeroScreen` |
+| Couldn't Send        | 18     | ✅ `PwaStatusHeroScreen` |
+| Location Unavailable | 16     | ✅ `PwaStatusHeroScreen` |
+| Photo Not Clear      | 13     | ✅ timeline error step   |
 
 ---
 
@@ -96,12 +96,12 @@ Polish limited to reuse constraint: screens remain on shared auth compositions (
 
 ## QA
 
-| Dimension | Result |
-|-----------|--------|
-| 320 / 360 / 375 / 390 / 393 / 414 | ✅ Sampled |
-| Dark / Light | ✅ Sampled |
-| Overflow / clipping | ✅ None on critical paths |
-| Build | ✅ `@autolokate/ui` + `@autolokate/qr` |
+| Dimension                         | Result                                 |
+| --------------------------------- | -------------------------------------- |
+| 320 / 360 / 375 / 390 / 393 / 414 | ✅ Sampled                             |
+| Dark / Light                      | ✅ Sampled                             |
+| Overflow / clipping               | ✅ None on critical paths              |
+| Build                             | ✅ `@autolokate/ui` + `@autolokate/qr` |
 
 Capture: `docs/audit-screenshots/polish/after/` (30 screens @393 dark)  
 Responsive: `docs/audit-screenshots/polish/responsive/`
@@ -110,12 +110,12 @@ Responsive: `docs/audit-screenshots/polish/responsive/`
 
 ## Final visual grade
 
-| Grade | Count |
-|-------|-------|
-| **A** | 25 |
+| Grade | Count                  |
+| ----- | ---------------------- |
+| **A** | 25                     |
 | **B** | 5 (02, 03, 04, 05, 23) |
-| **C** | 0 |
-| **D** | 0 |
+| **C** | 0                      |
+| **D** | 0                      |
 
 **Sign-off:** Meets polish sprint targets (D=0, C≤3, B≤5, A≥22).
 

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useSyncVehiclePreferenceFromProfile } from "@/hooks/preferences";
+import { useSyncVehiclePreferenceFromProfile } from '@/hooks/preferences';
 
 /**
  * Mount-only client component. Runs the profile → localStorage sync exactly

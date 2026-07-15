@@ -1,0 +1,92 @@
+/* PricingPlansSection — reuses the home SafetyPacks PlanCarousel (3D coverflow).
+   The side cards use 3D transforms that overflow horizontally, so the section
+   clips overflow just like the home section does. */
+
+.section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+.container {
+  margin-inline: auto;
+  max-width: 80rem;
+  padding: 3rem 1.25rem 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 3.5rem 2rem 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 4.5rem 2.5rem 5rem;
+  }
+}
+
+/* ---------- Header ---------- */
+.header {
+  margin-inline: auto;
+  max-width: 44rem;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--al-signal-green);
+}
+
+.title {
+  margin-top: 0.6rem;
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+  text-wrap: balance;
+}
+
+.subtitle {
+  margin: 0.9rem auto 0;
+  max-width: 34rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+/* ---------- Footnotes ---------- */
+.footnotes {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.footnote {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.footnoteIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--al-signal-green);
+}

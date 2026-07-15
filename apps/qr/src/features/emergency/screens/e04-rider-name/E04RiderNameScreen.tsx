@@ -2,7 +2,11 @@ import { AlTextField } from '@autolokate/ui';
 
 import { FormFieldStack, RelationshipSelector } from '@/components/compositions/index';
 import { FlowStepShell } from '@/components/flow-step-shell/index';
-import type { EmergencyNameFormState, EmergencyScreenNavigationProps, RelationshipId } from '../../types';
+import type {
+  EmergencyNameFormState,
+  EmergencyScreenNavigationProps,
+  RelationshipId,
+} from '../../types';
 
 import '../../../../components/auth-step-shell/auth-step-shell.css';
 import '../../emergency.css';

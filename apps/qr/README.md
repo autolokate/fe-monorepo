@@ -13,11 +13,11 @@ Open http://127.0.0.1:5173/journey/auth/mobile
 
 ## Environment
 
-| Variable | Purpose |
-|----------|---------|
+| Variable            | Purpose                                               |
+| ------------------- | ----------------------------------------------------- |
 | `VITE_API_BASE_URL` | Backend API (local: ngrok tunnel; staging: set in CI) |
-| `VITE_RAZORPAY_KEY` | Razorpay test key for checkout |
-| `VITE_ENVIRONMENT` | `development` \| `staging` \| `production` |
+| `VITE_RAZORPAY_KEY` | Razorpay test key for checkout                        |
+| `VITE_ENVIRONMENT`  | `development` \| `staging` \| `production`            |
 
 Staging deploy: https://qr-staging.autolokate.com/
 

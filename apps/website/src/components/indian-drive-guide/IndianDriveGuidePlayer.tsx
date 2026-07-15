@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { youtubeNocookieEmbedSrc } from "@/lib/idg";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from 'react';
+import { youtubeNocookieEmbedSrc } from '@/lib/idg';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { cn } from '@/lib/utils';
 
 export interface IndianDriveGuidePlayerProps {
   videoId: string;
@@ -17,7 +17,7 @@ export interface IndianDriveGuidePlayerProps {
    * `cover`   — fills parent height; parent must set explicit height.
    * `compact` — fixed-height strip (cover-cropped) for dense layouts.
    */
-  layout?: "default" | "cover" | "compact";
+  layout?: 'default' | 'cover' | 'compact';
 }
 
 /**
@@ -32,7 +32,7 @@ export function IndianDriveGuidePlayer({
   autoplayWhenVisible = true,
   className,
   iframeClassName,
-  layout = "default",
+  layout = 'default',
 }: IndianDriveGuidePlayerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -47,29 +47,31 @@ export function IndianDriveGuidePlayer({
     if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => {
-        if (e?.isIntersecting) setInView(true);
+        if (e.isIntersecting) setInView(true);
       },
-      { threshold: 0.28, rootMargin: "0px 0px -8% 0px" },
+      { threshold: 0.28, rootMargin: '0px 0px -8% 0px' },
     );
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+    };
   }, [autoplayWhenVisible, reduceMotion]);
 
-  const autoplay = Boolean(inView && !reduceMotion && autoplayWhenVisible);
+  const autoplay = inView && !reduceMotion && autoplayWhenVisible;
   const iframeBase =
-    "border-0 [contain:strict] pointer-events-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+    'border-0 [contain:strict] pointer-events-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
 
-  if (layout === "cover") {
+  if (layout === 'cover') {
     return (
       <div
         ref={ref}
-        className={cn("relative h-full min-h-[200px] w-full overflow-hidden bg-black", className)}
+        className={cn('relative h-full min-h-[200px] w-full overflow-hidden bg-black', className)}
       >
         <iframe
           title={title}
           src={youtubeNocookieEmbedSrc(videoId, { autoplay, controls: 1 })}
           className={cn(
-            "absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 sm:min-w-[105%]",
+            'absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 sm:min-w-[105%]',
             iframeBase,
             iframeClassName,
           )}
@@ -80,12 +82,12 @@ export function IndianDriveGuidePlayer({
     );
   }
 
-  if (layout === "compact") {
+  if (layout === 'compact') {
     return (
       <div
         ref={ref}
         className={cn(
-          "relative h-[200px] w-full min-w-0 max-w-full overflow-hidden rounded-xl bg-black sm:h-[268px]",
+          'relative h-[200px] w-full min-w-0 max-w-full overflow-hidden rounded-xl bg-black sm:h-[268px]',
           className,
         )}
       >
@@ -93,7 +95,7 @@ export function IndianDriveGuidePlayer({
           title={title}
           src={youtubeNocookieEmbedSrc(videoId, { autoplay, controls: 1 })}
           className={cn(
-            "absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2",
+            'absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2',
             iframeBase,
             iframeClassName,
           )}
@@ -107,12 +109,12 @@ export function IndianDriveGuidePlayer({
   return (
     <div
       ref={ref}
-      className={cn("relative aspect-video w-full overflow-hidden bg-black", className)}
+      className={cn('relative aspect-video w-full overflow-hidden bg-black', className)}
     >
       <iframe
         title={title}
         src={youtubeNocookieEmbedSrc(videoId, { autoplay, controls: 1 })}
-        className={cn("absolute inset-0 h-full w-full", iframeBase, iframeClassName)}
+        className={cn('absolute inset-0 h-full w-full', iframeBase, iframeClassName)}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerPolicy="strict-origin-when-cross-origin"
       />

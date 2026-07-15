@@ -20,21 +20,18 @@ function upsertById(
   entity: { id: string },
   options: { appendIfMissing?: boolean } = {},
 ) {
-  queryClient.setQueriesData<{ id: string }[]>(
-    { queryKey },
-    (current) => {
-      if (!current) {
-        return current;
-      }
-      const index = current.findIndex((entry) => entry.id === entity.id);
-      if (index === -1) {
-        return options.appendIfMissing ? [entity, ...current] : current;
-      }
-      const next = current.slice();
-      next[index] = entity;
-      return next;
-    },
-  );
+  queryClient.setQueriesData<{ id: string }[]>({ queryKey }, (current) => {
+    if (!current) {
+      return current;
+    }
+    const index = current.findIndex((entry) => entry.id === entity.id);
+    if (index === -1) {
+      return options.appendIfMissing ? [entity, ...current] : current;
+    }
+    const next = current.slice();
+    next[index] = entity;
+    return next;
+  });
 }
 
 export function useCatalogMutations() {
@@ -66,7 +63,9 @@ export function useCatalogMutations() {
       await invalidatePlans();
       // A new version can put a tier back on the shelf — SKU pickers read from the plan list.
       await invalidateSkus();
-      showSuccessToast(`Minted ${formatPlanRef(plan)} — features copied forward from the outgoing version.`);
+      showSuccessToast(
+        `Minted ${formatPlanRef(plan)} — features copied forward from the outgoing version.`,
+      );
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'catalog:create-plan-version', toast: true });

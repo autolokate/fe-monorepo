@@ -1,0 +1,105 @@
+.wrap {
+  max-width: 25rem;
+  margin-inline: auto;
+}
+
+.card {
+  padding: 1.9rem 1.65rem;
+  border: 1px solid var(--border);
+  border-radius: 1.75rem;
+  background: var(--card);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.28);
+}
+
+.top {
+  text-align: center;
+  margin-bottom: 1.4rem;
+}
+
+.qr {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 6rem;
+  height: 6rem;
+  margin: 0 auto 1rem;
+  border-radius: 1.1rem;
+  border: 5px solid var(--foreground);
+  background: repeating-linear-gradient(
+    45deg,
+    var(--foreground),
+    var(--foreground) 5px,
+    var(--card) 5px,
+    var(--card) 10px
+  );
+}
+
+.qrGlyph {
+  display: grid;
+  place-items: center;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.4rem;
+  background: var(--card);
+  color: var(--foreground);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.verified {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--success);
+}
+
+.title {
+  margin: 0 0 0.55rem;
+  text-align: center;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+.sub {
+  margin: 0 0 1.4rem;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.sub b {
+  color: var(--foreground);
+}
+
+.bullets {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0 0 1.4rem;
+  padding: 1rem 1.15rem;
+  list-style: none;
+  border-radius: 0.85rem;
+  background: var(--muted);
+  font-size: 0.85rem;
+  color: var(--foreground);
+}
+
+.bullets li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.bullets svg {
+  color: var(--success);
+}
+
+.action {
+  width: 100%;
+  justify-content: center;
+}

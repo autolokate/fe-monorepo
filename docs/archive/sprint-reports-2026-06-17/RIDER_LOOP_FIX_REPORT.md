@@ -29,14 +29,15 @@ After skipping the rider prompt (R0), adding an emergency contact, and continuin
 
 ## Fix
 
-| Location | Change |
-|----------|--------|
-| `emergency-limits.ts` | `shouldEnterRiderFlowOnContinue = ridersOwed && !riderSkipped` for **all flows** |
-| `EmergencyRoutes.tsx` E5 | Removed `useLayoutEffect` that reset `riderSkipped` |
-| `EmergencyRoutes.tsx` R0 | Redirect to E0 when `riderSkipped` |
-| `EmergencyRoutes.tsx` wildcard | Redirect to E0 when `riderSkipped` or no rider entitlement |
+| Location                       | Change                                                                           |
+| ------------------------------ | -------------------------------------------------------------------------------- |
+| `emergency-limits.ts`          | `shouldEnterRiderFlowOnContinue = ridersOwed && !riderSkipped` for **all flows** |
+| `EmergencyRoutes.tsx` E5       | Removed `useLayoutEffect` that reset `riderSkipped`                              |
+| `EmergencyRoutes.tsx` R0       | Redirect to E0 when `riderSkipped`                                               |
+| `EmergencyRoutes.tsx` wildcard | Redirect to E0 when `riderSkipped` or no rider entitlement                       |
 
 **Unchanged business rules:**
+
 - R0 skip still sets `riderSkipped: true`
 - Rider remains optional
 - User can still add riders later from E5 if they did **not** skip (via `goToRiderSetup`)
@@ -45,17 +46,17 @@ After skipping the rider prompt (R0), adding an emergency contact, and continuin
 
 ## Flow verification
 
-| Flow | Plan | Skip rider → add contact → E5 Continue | Expected |
-|------|------|----------------------------------------|----------|
-| Purchase | Secure/Shield + rider | Yes | → `/journey/completed` |
-| Prepaid | Plan + rider | Yes | → completed |
-| B2B2C | plan-rider | Yes | → completed |
-| Purchase | Secure + rider | No skip, riders owed | → R0/R1 rider setup |
+| Flow     | Plan                  | Skip rider → add contact → E5 Continue | Expected               |
+| -------- | --------------------- | -------------------------------------- | ---------------------- |
+| Purchase | Secure/Shield + rider | Yes                                    | → `/journey/completed` |
+| Prepaid  | Plan + rider          | Yes                                    | → completed            |
+| B2B2C    | plan-rider            | Yes                                    | → completed            |
+| Purchase | Secure + rider        | No skip, riders owed                   | → R0/R1 rider setup    |
 
-| Back navigation after skip | Expected |
-|----------------------------|----------|
-| E0 Back | Flow back (R10 for purchase) — not R0 |
-| E5 Back | E0 contacts-empty |
+| Back navigation after skip | Expected                              |
+| -------------------------- | ------------------------------------- |
+| E0 Back                    | Flow back (R10 for purchase) — not R0 |
+| E5 Back                    | E0 contacts-empty                     |
 
 ---
 

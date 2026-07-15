@@ -6,7 +6,7 @@ import {
   QrBackupSection,
   SetupStepsSection,
   howQrWorksMetadata,
-} from "./";
+} from './';
 
 export const metadata = howQrWorksMetadata;
 

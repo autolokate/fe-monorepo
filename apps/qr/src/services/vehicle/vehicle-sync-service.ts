@@ -101,10 +101,16 @@ export async function syncVehiclesAfterPayment(): Promise<SyncVehiclesAfterPayme
   const client = getQrApiClient();
 
   try {
-    const isSyntheticVehicleId = vehicleId.startsWith('resolved-') || vehicleId === 'attached-resolve' || vehicleId === 'already-attached';
+    const isSyntheticVehicleId =
+      vehicleId.startsWith('resolved-') ||
+      vehicleId === 'attached-resolve' ||
+      vehicleId === 'already-attached';
     if (!isSyntheticVehicleId) {
       const detail = await getVehicleById(client, vehicleId);
-      vehicleLogger.info('vehicle_detail_loaded', { vehicleId: detail.vehicleId, plate: detail.plate });
+      vehicleLogger.info('vehicle_detail_loaded', {
+        vehicleId: detail.vehicleId,
+        plate: detail.plate,
+      });
     }
 
     const list = await listVehicles(client);

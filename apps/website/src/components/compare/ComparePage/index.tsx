@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { PageFade } from "@/components/shared/PageFade";
-import { CompareSlots } from "@/components/compare/CompareSlots";
-import { CompareWorkspace } from "@/components/compare/CompareWorkspace";
-import { CompareSuggestedPairs } from "@/components/compare/CompareSuggestedPairs";
-import { CompareAddDialog } from "@/components/compare/CompareAddDialog";
-import { CompareTrayControls } from "@/components/compare/CompareTrayControls";
-import { COMPARE_MAX_SLOTS } from "@/components/compare/constants";
-import type { CompareTabId } from "@/lib/catalogue/compare-matrix";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { PageFade } from '@/components/shared/PageFade';
+import { CompareSlots } from '@/components/compare/CompareSlots';
+import { CompareWorkspace } from '@/components/compare/CompareWorkspace';
+import { CompareSuggestedPairs } from '@/components/compare/CompareSuggestedPairs';
+import { CompareAddDialog } from '@/components/compare/CompareAddDialog';
+import { CompareTrayControls } from '@/components/compare/CompareTrayControls';
+import { COMPARE_MAX_SLOTS } from '@/components/compare/constants';
+import type { CompareTabId } from '@/lib/catalogue/compare-matrix';
 import {
   comparePathWithModelSegments,
   compareRootPath,
@@ -17,16 +17,16 @@ import {
   parseCompareModelParam,
   serializeCompareModelSegments,
   type CompareModelSegment,
-} from "@/lib/catalogue/compare-url";
+} from '@/lib/catalogue/compare-url';
 import {
   compareSegmentFromVariant,
   resolveBrandModelToVariantId,
-} from "@/lib/catalogue/resolve-default-variant";
-import { useCatalogueCompare, useCatalogueTaxonomy } from "@/hooks/catalogue";
-import type { CatalogueModel, CatalogueVariant } from "@/lib/catalogue/types";
-import { toApiVehicleCategory, type VehicleCategory } from "@/lib/preferences";
-import { cn } from "@/lib/utils";
-import { getModelDetails } from "@/services/catalogue/catalogue-api";
+} from '@/lib/catalogue/resolve-default-variant';
+import { useCatalogueCompare, useCatalogueTaxonomy } from '@/hooks/catalogue';
+import type { CatalogueModel, CatalogueVariant } from '@/lib/catalogue/types';
+import { toApiVehicleCategory, type VehicleCategory } from '@/lib/preferences';
+import { cn } from '@/lib/utils';
+import { getModelDetails } from '@/services/catalogue/catalogue-api';
 
 function dedupePreserveOrder(ids: string[]): string[] {
   const seen = new Set<string>();
@@ -43,19 +43,19 @@ function dedupePreserveOrder(ids: string[]): string[] {
 function segmentsForUrlFromState(
   variantIds: string[],
   variantsById: Map<string, CatalogueVariant>,
-  segmentByVariantId: Record<string, CompareModelSegment>,
+  segmentByVariantId: Partial<Record<string, CompareModelSegment>>,
 ): CompareModelSegment[] | null {
   const out: CompareModelSegment[] = [];
   for (const id of variantIds) {
     const v = variantsById.get(id);
-    const b = String(v?.brand_slug ?? "").trim();
-    const m = String(v?.model_slug ?? "").trim();
+    const b = (v?.brand_slug ?? '').trim();
+    const m = (v?.model_slug ?? '').trim();
     if (b && m) {
       out.push({ brandSlug: b, modelSlug: m });
       continue;
     }
     const cached = segmentByVariantId[id];
-    if (cached?.brandSlug && cached?.modelSlug) {
+    if (cached?.brandSlug && cached.modelSlug) {
       out.push(cached);
       continue;
     }
@@ -71,12 +71,12 @@ export type ComparePageContentProps = {
 export function ComparePageContent({ vehicleCategory }: ComparePageContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const modelQ = searchParams.get("model") ?? "";
-  const idsQ = searchParams.get("ids") ?? "";
+  const modelQ = searchParams.get('model') ?? '';
+  const idsQ = searchParams.get('ids') ?? '';
 
   const [variantIds, setVariantIds] = useState<string[]>([]);
   const [segmentByVariantId, setSegmentByVariantId] = useState<
-    Record<string, CompareModelSegment>
+    Partial<Record<string, CompareModelSegment>>
   >({});
   const [resolvingUrl, setResolvingUrl] = useState(false);
   const [hydratedFromUrl, setHydratedFromUrl] = useState(false);
@@ -91,10 +91,12 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
 
   // Resolve `?model=` (or legacy `?ids=`) into variant UUIDs used by the compare API.
   useEffect(() => {
-    let cancelled = false;
+    // Widened to `boolean` so the async closure's `if (!cancelled)` guards read as real
+    // conditions — the cleanup below flips this after an await to skip stale setState.
+    let cancelled = false as boolean;
     skipNextUrlSyncRef.current = true;
 
-    (async () => {
+    void (async () => {
       if (modelQ.trim()) {
         if (skipModelResolutionFromUrlSyncRef.current) {
           skipModelResolutionFromUrlSyncRef.current = false;
@@ -167,19 +169,20 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
   const variantsById = useMemo(() => {
     const m = new Map<string, CatalogueVariant>();
     for (const v of compareQuery.data ?? []) {
-      const id = String(v.id ?? "").trim();
+      const id = (v.id ?? '').trim();
       if (id) m.set(id, v);
     }
     return m;
   }, [compareQuery.data]);
 
   useEffect(() => {
-    if (!compareQuery.data?.length) return;
+    const data = compareQuery.data;
+    if (!data?.length) return;
     setSegmentByVariantId((prev) => {
       const next = { ...prev };
       let changed = false;
-      for (const v of compareQuery.data!) {
-        const id = String(v.id ?? "").trim();
+      for (const v of data) {
+        const id = (v.id ?? '').trim();
         const seg = compareSegmentFromVariant(v);
         if (!id || !seg || next[id]) continue;
         next[id] = seg;
@@ -214,10 +217,9 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
       await Promise.all(
         variantIds.map(async (id) => {
           const v = variantsById.get(id);
-          const seg =
-            segmentByVariantId[id] ?? (v ? compareSegmentFromVariant(v) : undefined);
-          const b = seg?.brandSlug?.trim();
-          const modelSlug = seg?.modelSlug?.trim();
+          const seg = segmentByVariantId[id] ?? (v ? compareSegmentFromVariant(v) : undefined);
+          const b = seg?.brandSlug.trim();
+          const modelSlug = seg?.modelSlug.trim();
           if (!b || !modelSlug) return;
 
           try {
@@ -285,8 +287,8 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
     if (orderedVariants.length < 2) return null;
     let best: { id: string; price: number } | null = null;
     for (const v of orderedVariants) {
-      const id = String(v.id ?? "").trim();
-      const p = Number(v.ex_showroom_price ?? v.min_price ?? NaN);
+      const id = (v.id ?? '').trim();
+      const p = v.ex_showroom_price ?? v.min_price ?? NaN;
       if (!id || !Number.isFinite(p)) continue;
       if (!best || p < best.price) best = { id, price: p };
     }
@@ -296,8 +298,7 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
   const removeVariant = (variantId: string) => {
     setVariantIds((prev) => prev.filter((x) => x !== variantId));
     setSegmentByVariantId((prev) => {
-      const next = { ...prev };
-      delete next[variantId];
+      const { [variantId]: _removed, ...next } = prev;
       return next;
     });
   };
@@ -318,34 +319,30 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
       if (withoutDup.length >= COMPARE_MAX_SLOTS) return prev;
       return [...withoutDup, v].slice(0, COMPARE_MAX_SLOTS);
     });
-    if (meta?.brandSlug && meta?.modelSlug) {
+    if (meta?.brandSlug && meta.modelSlug) {
       setSegmentByVariantId((prev) => ({ ...prev, [v]: meta }));
     }
   };
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [tab, setTab] = useState<CompareTabId>("overview");
+  const [tab, setTab] = useState<CompareTabId>('overview');
 
-  const errMsg =
-    compareQuery.error instanceof Error ? compareQuery.error.message : undefined;
+  const errMsg = compareQuery.error instanceof Error ? compareQuery.error.message : undefined;
 
   return (
     <PageFade>
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <p
           className={cn(
-            "mb-6 text-center text-sm text-muted-foreground",
-            !resolvingUrl && "hidden",
+            'mb-6 text-center text-sm text-muted-foreground',
+            !resolvingUrl && 'hidden',
           )}
           aria-live="polite"
         >
           Resolving models from your link…
         </p>
         <div className="mb-6 flex w-full justify-end">
-          <CompareTrayControls
-            selectedCount={variantIds.length}
-            onClearTray={clearTray}
-          />
+          <CompareTrayControls selectedCount={variantIds.length} onClearTray={clearTray} />
         </div>
         <CompareSuggestedPairs vehicleCategory={vehicleCategory} />
         <CompareSlots
@@ -354,7 +351,9 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
           modelDetailByVariantId={modelDetailByVariantId}
           bestValueId={bestValueId}
           onRemove={removeVariant}
-          onRequestAdd={() => setDialogOpen(true)}
+          onRequestAdd={() => {
+            setDialogOpen(true);
+          }}
         />
         <CompareWorkspace
           tab={tab}
@@ -366,7 +365,9 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
           isLoading={compareQuery.isLoading || resolvingUrl}
           isError={compareQuery.isError}
           errorMessage={errMsg}
-          onAddCar={() => setDialogOpen(true)}
+          onAddCar={() => {
+            setDialogOpen(true);
+          }}
         />
       </div>
 

@@ -25,10 +25,10 @@ This monorepo delivers:
 - Emergency + Rider contact setup
 - Post-Activation PWA (SOS Emergency, Park Me)
 
-| Entry | Path |
-|-------|------|
-| QR journey | `/journey/auth/mobile?qr_code=…` |
-| Post-activation PWA | `/pwa/scan/*` |
+| Entry               | Path                             |
+| ------------------- | -------------------------------- |
+| QR journey          | `/journey/auth/mobile?qr_code=…` |
+| Post-activation PWA | `/pwa/scan/*`                    |
 
 **Deploy reference:** `https://qr-staging.autolokate.com`
 
@@ -36,11 +36,11 @@ This monorepo delivers:
 
 ## Baseline Signoffs
 
-| Domain | Verdict | Reference |
-|--------|---------|-----------|
-| Visual / Figma | **PIXEL PERFECT VERIFIED** | `VISUAL_TRUTH_MATRIX_V2.md` |
-| Theme | Signed off | `FINAL_THEME_SIGNOFF.md` |
-| Engineering | **READY WITH KNOWN GAPS** | `FINAL_SANITY_REPORT.md` |
+| Domain               | Verdict                       | Reference                       |
+| -------------------- | ----------------------------- | ------------------------------- |
+| Visual / Figma       | **PIXEL PERFECT VERIFIED**    | `VISUAL_TRUTH_MATRIX_V2.md`     |
+| Theme                | Signed off                    | `FINAL_THEME_SIGNOFF.md`        |
+| Engineering          | **READY WITH KNOWN GAPS**     | `FINAL_SANITY_REPORT.md`        |
 | Production readiness | Demo-ready; device QA pending | `FINAL_PRODUCTION_READINESS.md` |
 
 Known gaps (documented, not blockers for baseline lock):
@@ -139,42 +139,42 @@ Future work must follow this order. **Never reverse it.**
 
 Treat this repository as the **canonical implementation**. New projects should inherit:
 
-| Area | Reference location |
-|------|-------------------|
-| Folder structure | `apps/qr/src/` |
-| Component ownership | `packages/ui/`, `CLAUDE_PROJECT_INDEX.md` §8 |
-| Design system usage | `packages/design-system/` |
-| Provider patterns | `AutolokateRootProvider`, `JourneyProvider`, `PwaScanProvider` |
-| Route organization | `journey/routes/`, `features/post-activation-pwa/routes/` |
-| PWA architecture | `pwa/`, `features/post-activation-pwa/` |
-| Engineering standards | `DEVELOPMENT_STANDARDS.md` |
-| Documentation standards | `memory/MEMORY.md`, truth hierarchy |
+| Area                    | Reference location                                             |
+| ----------------------- | -------------------------------------------------------------- |
+| Folder structure        | `apps/qr/src/`                                                 |
+| Component ownership     | `packages/ui/`, `CLAUDE_PROJECT_INDEX.md` §8                   |
+| Design system usage     | `packages/design-system/`                                      |
+| Provider patterns       | `AutolokateRootProvider`, `JourneyProvider`, `PwaScanProvider` |
+| Route organization      | `journey/routes/`, `features/post-activation-pwa/routes/`      |
+| PWA architecture        | `pwa/`, `features/post-activation-pwa/`                        |
+| Engineering standards   | `DEVELOPMENT_STANDARDS.md`                                     |
+| Documentation standards | `memory/MEMORY.md`, truth hierarchy                            |
 
 ---
 
 ## Change Control
 
-| Change type | Required approval |
-|-------------|-------------------|
-| Figma-driven UI fix | Design signoff + visual truth re-capture |
-| New screen in existing flow | Architecture review + Figma node |
-| Flow order change | Explicit architecture approval |
-| Session schema change | Migration plan + version bump on storage key |
-| New `@autolokate/ui` primitive | Component ownership review |
-| Route graph change | Architecture approval + regression checklist |
+| Change type                    | Required approval                            |
+| ------------------------------ | -------------------------------------------- |
+| Figma-driven UI fix            | Design signoff + visual truth re-capture     |
+| New screen in existing flow    | Architecture review + Figma node             |
+| Flow order change              | Explicit architecture approval               |
+| Session schema change          | Migration plan + version bump on storage key |
+| New `@autolokate/ui` primitive | Component ownership review                   |
+| Route graph change             | Architecture approval + regression checklist |
 
 ---
 
 ## Permanent Reference Documents
 
-| Document | Role |
-|----------|------|
-| `PROJECT_CHARTER.md` | This file — baseline lock + change control |
-| `ARCHITECTURE_PRINCIPLES.md` | Locked architecture reference |
-| `DEVELOPMENT_STANDARDS.md` | Engineering + PWA standards |
-| `CLAUDE_PROJECT_INDEX.md` | Routes, session, components |
-| `PROJECT_STATUS.md` | Live status and signoffs |
-| `memory/MEMORY.md` | Agent memory index |
+| Document                     | Role                                       |
+| ---------------------------- | ------------------------------------------ |
+| `PROJECT_CHARTER.md`         | This file — baseline lock + change control |
+| `ARCHITECTURE_PRINCIPLES.md` | Locked architecture reference              |
+| `DEVELOPMENT_STANDARDS.md`   | Engineering + PWA standards                |
+| `CLAUDE_PROJECT_INDEX.md`    | Routes, session, components                |
+| `PROJECT_STATUS.md`          | Live status and signoffs                   |
+| `memory/MEMORY.md`           | Agent memory index                         |
 
 ---
 

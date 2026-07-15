@@ -1,8 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
-import type { ReactNode } from "react";
-import { ArrowLeft } from "lucide-react";
-import { AUTH_BG, INLINE_FLEX_THEME_VAR } from "../constants";
+import Image from 'next/image';
+import Link from 'next/link';
+import type { ReactNode } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { AUTH_BG, INLINE_FLEX_THEME_VAR } from '../constants';
 
 interface AuthShellProps {
   children: ReactNode;
@@ -16,8 +16,14 @@ interface AuthShellProps {
 export function AuthShell({ children }: AuthShellProps) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="theme-dark-only pointer-events-none absolute inset-0 z-0 bg-zinc-950" aria-hidden />
-      <div className="theme-light-only pointer-events-none absolute inset-0 z-0 bg-zinc-100" aria-hidden />
+      <div
+        className="theme-dark-only pointer-events-none absolute inset-0 z-0 bg-zinc-950"
+        aria-hidden
+      />
+      <div
+        className="theme-light-only pointer-events-none absolute inset-0 z-0 bg-zinc-100"
+        aria-hidden
+      />
 
       <div className="pointer-events-none absolute inset-0 z-0">
         <Image

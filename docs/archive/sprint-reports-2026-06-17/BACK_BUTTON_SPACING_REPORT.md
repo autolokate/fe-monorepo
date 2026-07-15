@@ -23,7 +23,9 @@ Excessive vertical gap between the back button and title block on screens withou
 ### Shared chrome — `step-shell-chrome.css`
 
 ```css
-.ob-step-chrome__header--compact { gap: 0; }
+.ob-step-chrome__header--compact {
+  gap: 0;
+}
 .ob-step-chrome__header--compact + .ob-step-chrome__body {
   padding-block-start: var(--ob-shell-header-stack-gap); /* 20px Figma */
 }
@@ -33,13 +35,13 @@ Back → title spacing is now exactly **20px** (`--ob-shell-header-stack-gap`) v
 
 ### Shells updated
 
-| Shell | Compact header when |
-|-------|---------------------|
-| `AuthStepShell` | No progress track |
-| `FlowStepShell` | No progress track |
+| Shell                    | Compact header when       |
+| ------------------------ | ------------------------- |
+| `AuthStepShell`          | No progress track         |
+| `FlowStepShell`          | No progress track         |
 | `WelcomeActivationShell` | Always (back-only header) |
-| `PurchaseStatusShell` | When back shown |
-| `LegalReaderHeader` | Always (back-only header) |
+| `PurchaseStatusShell`    | When back shown           |
+| `LegalReaderHeader`      | Always (back-only header) |
 
 ### Removed
 
@@ -48,24 +50,24 @@ Back → title spacing is now exactly **20px** (`--ob-shell-header-stack-gap`) v
 
 ### Unchanged (by design)
 
-| Shell | Reason |
-|-------|--------|
-| `PwaScanShell` | Figma wordmark header — back + brand row, not step-shell progress pattern |
-| Screens with progress track | Full header stack gap preserved for back + track + title |
+| Shell                       | Reason                                                                    |
+| --------------------------- | ------------------------------------------------------------------------- |
+| `PwaScanShell`              | Figma wordmark header — back + brand row, not step-shell progress pattern |
+| Screens with progress track | Full header stack gap preserved for back + track + title                  |
 
 ---
 
 ## Flow coverage
 
-| Area | Shell | Spacing |
-|------|-------|---------|
-| Auth A1–A3 | `AuthStepShell` | ✅ 20px |
-| Purchase R* | `FlowStepShell` / `AuthStepShell` | ✅ 20px |
-| Emergency E* | `FlowStepShell` | ✅ 20px |
-| B2B / B2B2C welcome | `WelcomeActivationShell` | ✅ 20px |
-| Purchase status R04/R09 | `PurchaseStatusShell` | ✅ 20px |
-| Legal L1 | `LegalReaderHeader` | ✅ 20px |
-| PWA scan | `PwaScanShell` | Separate Figma layout (unchanged) |
+| Area                    | Shell                             | Spacing                           |
+| ----------------------- | --------------------------------- | --------------------------------- |
+| Auth A1–A3              | `AuthStepShell`                   | ✅ 20px                           |
+| Purchase R\*            | `FlowStepShell` / `AuthStepShell` | ✅ 20px                           |
+| Emergency E\*           | `FlowStepShell`                   | ✅ 20px                           |
+| B2B / B2B2C welcome     | `WelcomeActivationShell`          | ✅ 20px                           |
+| Purchase status R04/R09 | `PurchaseStatusShell`             | ✅ 20px                           |
+| Legal L1                | `LegalReaderHeader`               | ✅ 20px                           |
+| PWA scan                | `PwaScanShell`                    | Separate Figma layout (unchanged) |
 
 ---
 

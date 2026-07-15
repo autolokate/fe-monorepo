@@ -16,7 +16,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("/images/new-design/homrFromOwnerMobile.png");
+  background-image: url('/images/new-design/homrFromOwnerMobile.png');
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
@@ -24,7 +24,7 @@
 
 @media (min-width: 1024px) {
   .bgPlate {
-    background-image: url("/images/new-design/homrFromOwnerWeb.png");
+    background-image: url('/images/new-design/homrFromOwnerWeb.png');
     background-position: center;
   }
 }
@@ -75,7 +75,7 @@
 
 /* Downward tail. */
 .floatQuote::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 2rem;
   bottom: -0.5rem;
@@ -163,7 +163,7 @@
 
 /* Right-pointing tail, vertically centred. */
 .pullQuote::after {
-  content: "";
+  content: '';
   position: absolute;
   right: -0.5rem;
   top: 50%;

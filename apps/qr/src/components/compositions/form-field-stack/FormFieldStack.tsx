@@ -8,5 +8,7 @@ export type FormFieldStackProps = {
 };
 
 export function FormFieldStack({ children, className }: FormFieldStackProps) {
-  return <div className={className ? `ob-field-stack ${className}` : 'ob-field-stack'}>{children}</div>;
+  return (
+    <div className={className ? `ob-field-stack ${className}` : 'ob-field-stack'}>{children}</div>
+  );
 }

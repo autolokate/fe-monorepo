@@ -1,4 +1,11 @@
-import { getOrSwitchSession, getProfile, requestOtp, verifyOtp, type Profile, type SessionRoles } from '@autolokate/api-client';
+import {
+  getOrSwitchSession,
+  getProfile,
+  requestOtp,
+  verifyOtp,
+  type Profile,
+  type SessionRoles,
+} from '@autolokate/api-client';
 import { createSessionTokenStorage } from '@autolokate/auth';
 import {
   createContext,
@@ -12,7 +19,11 @@ import {
 
 import { normalizeAdminRole, type AdminRole } from '@/platform/rbac/permissions';
 import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries';
-import { getAdminApiClient, getAdminBootstrapClient, tokenManager } from '@/platform/api/admin-api-client';
+import {
+  getAdminApiClient,
+  getAdminBootstrapClient,
+  tokenManager,
+} from '@/platform/api/admin-api-client';
 
 export type AdminAuthState = {
   isAuthenticated: boolean;
@@ -117,7 +128,16 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       verifyOtp: verifyAdminOtp,
       signOut,
     }),
-    [adminRole, isAuthenticated, isBootstrapping, profile, requestAdminOtp, session, signOut, verifyAdminOtp],
+    [
+      adminRole,
+      isAuthenticated,
+      isBootstrapping,
+      profile,
+      requestAdminOtp,
+      session,
+      signOut,
+      verifyAdminOtp,
+    ],
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

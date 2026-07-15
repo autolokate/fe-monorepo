@@ -1,0 +1,182 @@
+/* Features hero — dark full-bleed banner: copy + store badges beside a
+   fanned trio of app screens. Reuses the home-page hero background plate. */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #050505;
+  color: #fff;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/new-design/featurePageBannerMobile.png');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+.bgScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Mobile: darken the top where the copy sits, keep the phones below clear. */
+  background-image: linear-gradient(
+    180deg,
+    rgba(5, 5, 5, 0.92) 0%,
+    rgba(5, 5, 5, 0.72) 26%,
+    rgba(5, 5, 5, 0.3) 46%,
+    rgba(5, 5, 5, 0.08) 62%,
+    rgba(5, 5, 5, 0) 100%
+  );
+}
+
+.fadeBottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  height: 7rem;
+  background: linear-gradient(to top, rgba(5, 5, 5, 0.96) 0%, transparent 100%);
+}
+
+@media (min-width: 1024px) {
+  .bgImage {
+    background-image: url('/images/new-design/featurePageBannerWeb.png');
+    background-position: right center;
+  }
+
+  .bgScrim {
+    /* Desktop: darken the left where the copy sits, keep the phones on the right clear. */
+    background-image: linear-gradient(
+      90deg,
+      rgba(5, 5, 5, 0.94) 0%,
+      rgba(5, 5, 5, 0.8) 34%,
+      rgba(5, 5, 5, 0.4) 62%,
+      rgba(5, 5, 5, 0.06) 100%
+    );
+  }
+}
+
+.inner {
+  position: relative;
+  z-index: 10;
+  margin-inline: auto;
+  display: flex;
+  align-items: flex-start;
+  max-width: 80rem;
+  min-height: 40rem;
+  padding: 4rem 1.25rem 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    min-height: 44rem;
+    padding: 5rem 2rem 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    align-items: center;
+    min-height: min(84vh, 46rem);
+    padding: 6.5rem 2.5rem 4rem;
+  }
+}
+
+/* ---------- Copy ---------- */
+.copy {
+  max-width: 34rem;
+}
+
+.headline {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.2rem, 5.2vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.headlineAccent {
+  display: block;
+  color: var(--al-signal-green);
+}
+
+.description {
+  margin-top: 1.35rem;
+  max-width: 34rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+@media (min-width: 640px) {
+  .description {
+    font-size: 1.05rem;
+  }
+}
+
+/* ---------- Store badges ---------- */
+.badges {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background-color: rgba(10, 12, 11, 0.72);
+  padding: 0.6rem 1.1rem;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.badge:hover {
+  border-color: rgba(255, 255, 255, 0.55);
+  background-color: rgba(20, 24, 22, 0.9);
+  transform: translateY(-1px);
+}
+
+.badgeIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex-shrink: 0;
+}
+
+.badgeText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.badgeText small {
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.badgeText strong {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}

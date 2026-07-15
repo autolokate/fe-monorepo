@@ -1,9 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import {
-  attachPurchaseQr,
-  type AttachPurchaseQrResult,
-} from '@/services/qr/qr-attach-service';
+import { attachPurchaseQr, type AttachPurchaseQrResult } from '@/services/qr/qr-attach-service';
 
 export function useQrAttach() {
   const [isPending, setIsPending] = useState(false);

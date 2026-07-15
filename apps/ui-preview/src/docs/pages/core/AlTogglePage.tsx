@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { AlToggle } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function ToggleStatePreview({ state }: { state: ShowcaseState }) {
   const [checked, setChecked] = useState(state === 'active' || state === 'loading');
@@ -36,7 +33,9 @@ export function AlTogglePage() {
       description="Binary on/off control for settings and preferences."
       whenToUse="Immediate settings that take effect without a separate save action."
       whenNotToUse="Multi-option choices — use chips or radio groups."
-      overview={<p>Figma Core toggle with label, optional helper, loading, and 48dp touch target.</p>}
+      overview={
+        <p>Figma Core toggle with label, optional helper, loading, and 48dp touch target.</p>
+      }
       variants={
         <div className="preview-row" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
           <AlToggle label="Off" checked={false} onChange={() => undefined} />
@@ -68,8 +67,18 @@ export function AlTogglePage() {
         { name: 'label', type: 'string', description: 'Visible toggle label.' },
         { name: 'helperText', type: 'string', description: 'Supporting description.' },
         { name: 'checked', type: 'boolean', description: 'Controlled on state.' },
-        { name: 'loading', type: 'boolean', defaultValue: 'false', description: 'Shows busy state.' },
-        { name: 'disabled', type: 'boolean', defaultValue: 'false', description: 'Disables control.' },
+        {
+          name: 'loading',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Shows busy state.',
+        },
+        {
+          name: 'disabled',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Disables control.',
+        },
       ]}
     />
   );

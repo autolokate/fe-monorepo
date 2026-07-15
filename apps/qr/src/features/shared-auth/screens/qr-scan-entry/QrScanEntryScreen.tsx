@@ -1,7 +1,14 @@
 import { useCallback, useState } from 'react';
 import { AlIcon } from '@autolokate/icons';
 import { AlLogo } from '@autolokate/brand';
-import { AlButton, AlHeading, AlIconButton, AlScreenBg, AlScreenSpinner, AlText } from '@autolokate/ui';
+import {
+  AlButton,
+  AlHeading,
+  AlIconButton,
+  AlScreenBg,
+  AlScreenSpinner,
+  AlText,
+} from '@autolokate/ui';
 
 import { useThemeMode } from '@/hooks/useThemeMode';
 import {
@@ -131,8 +138,8 @@ export function QrScanEntryScreen({ onQrCodeDetected }: QrScanEntryScreenProps) 
             Please scan the QR
           </AlHeading>
           <AlText tone="muted" align="center" className="ob-qr-scan-entry__description">
-            Scan the Autolokate sticker on the vehicle to start activation, emergency setup, or
-            Park Me.
+            Scan the Autolokate sticker on the vehicle to start activation, emergency setup, or Park
+            Me.
           </AlText>
           {scannerSupported ? (
             <AlButton
@@ -152,12 +159,7 @@ export function QrScanEntryScreen({ onQrCodeDetected }: QrScanEntryScreenProps) 
         </div>
       </AlScreenBg>
 
-      {scannerOpen ? (
-        <QrCodeScannerOverlay
-          scanner={scanner}
-          onClose={handleCloseScanner}
-        />
-      ) : null}
+      {scannerOpen ? <QrCodeScannerOverlay scanner={scanner} onClose={handleCloseScanner} /> : null}
     </>
   );
 }

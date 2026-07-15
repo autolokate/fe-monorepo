@@ -40,7 +40,11 @@
 
 [data-theme='dark'] .al-badge--info {
   color: var(--al-signal-blue-bright, #8ab4f8);
-  background: color-mix(in srgb, var(--al-signal-blue-bright, #8ab4f8) 14%, var(--al-color-surface));
+  background: color-mix(
+    in srgb,
+    var(--al-signal-blue-bright, #8ab4f8) 14%,
+    var(--al-color-surface)
+  );
 }
 
 .al-status-badge {

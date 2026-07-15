@@ -1,4 +1,4 @@
-import { NotFoundContent, notFoundMetadata } from "@/app/page-not-found";
+import { NotFoundContent, notFoundMetadata } from '@/app/page-not-found';
 
 export const metadata = notFoundMetadata;
 

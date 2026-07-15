@@ -34,7 +34,11 @@ export function PwaPhotoRouteGuard({
       {storageError ? (
         <div className="pwa-scan-photo-alert" role="status">
           <AlText tone="muted">{storageError}</AlText>
-          <button type="button" className="pwa-scan-photo-alert__dismiss" onClick={clearStorageError}>
+          <button
+            type="button"
+            className="pwa-scan-photo-alert__dismiss"
+            onClick={clearStorageError}
+          >
             Dismiss
           </button>
         </div>

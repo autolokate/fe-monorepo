@@ -3,15 +3,17 @@ import { useMutation } from '@tanstack/react-query';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { showSuccessToast } from '@/platform/feedback/toast';
-import {
-  submitClawback,
-  submitSettlementBatch,
-} from '@/services/finance/finance-service';
+import { submitClawback, submitSettlementBatch } from '@/services/finance/finance-service';
 
 export function useFinanceMutations() {
   const clawbackMutation = useMutation({
-    mutationFn: ({ body, signal }: { body: Parameters<typeof submitClawback>[0]; signal?: AbortSignal }) =>
-      submitClawback(body, signal),
+    mutationFn: ({
+      body,
+      signal,
+    }: {
+      body: Parameters<typeof submitClawback>[0];
+      signal?: AbortSignal;
+    }) => submitClawback(body, signal),
     retry: 0,
     onSuccess: (result) => {
       showSuccessToast(`Clawback recorded for ${result.paymentRef}.`);

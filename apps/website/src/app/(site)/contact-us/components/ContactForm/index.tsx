@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { type FormEvent, useState } from "react";
+import Link from 'next/link';
+import { type SubmitEvent, useState } from 'react';
 import {
   CheckCircle2,
   Loader2,
@@ -11,21 +11,21 @@ import {
   Send,
   Shield,
   User,
-} from "lucide-react";
-import { useSubmitContactUs } from "@/hooks/contact";
+} from 'lucide-react';
+import { useSubmitContactUs } from '@/hooks/contact';
 import {
   MAX_CONTACT_MESSAGE,
   MAX_CONTACT_NAME,
   buildContactUsPayload,
   validateContactForm,
-} from "@/lib/contact/validation";
-import styles from "./index.module.css";
+} from '@/lib/contact/validation';
+import styles from './index.module.css';
 
 export function ContactForm() {
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,17 +34,19 @@ export function ContactForm() {
       setSuccess(true);
       reset();
     },
-    onError: (apiErr) => setError(apiErr.message),
+    onError: (apiErr) => {
+      setError(apiErr.message);
+    },
   });
 
   function reset() {
-    setName("");
-    setNumber("");
-    setEmail("");
-    setMessage("");
+    setName('');
+    setNumber('');
+    setEmail('');
+    setMessage('');
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
 
@@ -99,7 +101,9 @@ export function ContactForm() {
               placeholder="Your Name"
               autoComplete="name"
               value={name}
-              onChange={(e) => setName(e.target.value.slice(0, MAX_CONTACT_NAME))}
+              onChange={(e) => {
+                setName(e.target.value.slice(0, MAX_CONTACT_NAME));
+              }}
               className={styles.fieldInput}
               required
               maxLength={MAX_CONTACT_NAME}
@@ -114,7 +118,9 @@ export function ContactForm() {
               placeholder="Email Address"
               autoComplete="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               className={styles.fieldInput}
               required
             />
@@ -129,23 +135,24 @@ export function ContactForm() {
               placeholder="Phone Number"
               autoComplete="tel"
               value={number}
-              onChange={(e) => setNumber(e.target.value)}
+              onChange={(e) => {
+                setNumber(e.target.value);
+              }}
               className={styles.fieldInput}
               required
             />
           </div>
 
           <div className={styles.field}>
-            <MessageSquare
-              className={`${styles.fieldIcon} ${styles.textareaIcon}`}
-              aria-hidden
-            />
+            <MessageSquare className={`${styles.fieldIcon} ${styles.textareaIcon}`} aria-hidden />
             <textarea
               id="contact-message"
               rows={4}
               placeholder="How can we help you today?"
               value={message}
-              onChange={(e) => setMessage(e.target.value.slice(0, MAX_CONTACT_MESSAGE))}
+              onChange={(e) => {
+                setMessage(e.target.value.slice(0, MAX_CONTACT_MESSAGE));
+              }}
               className={`${styles.fieldInput} ${styles.textarea}`}
               required
               maxLength={MAX_CONTACT_MESSAGE}
@@ -175,7 +182,7 @@ export function ContactForm() {
           <p className={styles.privacy}>
             <Shield className="h-3.5 w-3.5 shrink-0" aria-hidden />
             <span>
-              By sending this message, you agree to our{" "}
+              By sending this message, you agree to our{' '}
               <Link href="/privacy-policy" className={styles.privacyLink}>
                 Privacy Policy
               </Link>

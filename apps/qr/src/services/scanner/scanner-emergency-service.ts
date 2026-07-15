@@ -1,7 +1,4 @@
-import {
-  acceptEmergency,
-  cancelEmergencyAlert,
-} from '@autolokate/api-client';
+import { acceptEmergency, cancelEmergencyAlert } from '@autolokate/api-client';
 
 import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
 import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
@@ -13,7 +10,11 @@ import {
   withTimeout,
   SCANNER_REQUEST_TIMEOUT_MS,
 } from './scanner-network';
-import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors';
+import {
+  isScannerTransientError,
+  mapScannerApiError,
+  type ScannerApiError,
+} from './scanner-api-errors';
 import { stopEmergencyAlertPoll } from './scanner-poll-manager';
 import { scannerLogger } from './scanner-logger';
 
@@ -97,7 +98,9 @@ export type EmergencySubmitInput = {
  * POST /v1/qr/{code}/emergency using media ids uploaded at capture time.
  * Upload failures at capture never block SOS — empty ids are fine.
  */
-export async function submitScannerEmergency(input: EmergencySubmitInput): Promise<EmergencySubmitResult> {
+export async function submitScannerEmergency(
+  input: EmergencySubmitInput,
+): Promise<EmergencySubmitResult> {
   const qrCode = anonymousScannerRepository.readQrCode();
   if (!qrCode) {
     return {

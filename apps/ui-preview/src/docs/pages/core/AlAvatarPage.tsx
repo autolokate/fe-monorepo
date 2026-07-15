@@ -1,9 +1,6 @@
 import { AlAvatar } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderAvatarState(state: ShowcaseState) {
   const opacity = state === 'disabled' ? 0.5 : 1;
@@ -48,7 +45,12 @@ export function AlAvatarPage() {
         { name: 'src', type: 'string', description: 'Image URL.' },
         { name: 'alt', type: 'string', description: 'Image alt text.' },
         { name: 'initials', type: 'string', description: 'Fallback initials.' },
-        { name: 'size', type: "'sm' | 'md' | 'lg'", defaultValue: 'md', description: 'Avatar scale.' },
+        {
+          name: 'size',
+          type: "'sm' | 'md' | 'lg'",
+          defaultValue: 'md',
+          description: 'Avatar scale.',
+        },
       ]}
     />
   );

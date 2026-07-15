@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { hasAuthTokens, subscribeAuthChange } from "@/lib/auth/storage";
+import { useEffect, useState } from 'react';
+import { hasAuthTokens, subscribeAuthChange } from '@/lib/auth/storage';
 
 /**
  * Reactive boolean for "do we have tokens?".
@@ -13,7 +13,9 @@ export function useIsAuthenticated(): boolean | null {
   const [authed, setAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const read = () => setAuthed(hasAuthTokens());
+    const read = () => {
+      setAuthed(hasAuthTokens());
+    };
     read();
     return subscribeAuthChange(read);
   }, []);

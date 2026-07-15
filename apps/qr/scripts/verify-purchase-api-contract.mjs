@@ -67,7 +67,11 @@ async function probeLive(baseUrl) {
   }
 
   const resolve = await request('GET', '/v1/qr/ALK-7Q2K9F/resolve');
-  console.log('GET resolve', resolve.status, resolve.json?.data ? Object.keys(resolve.json.data) : resolve.text);
+  console.log(
+    'GET resolve',
+    resolve.status,
+    resolve.json?.data ? Object.keys(resolve.json.data) : resolve.text,
+  );
 
   if (!resolve.json?.data) {
     console.log('Live probe stopped — backend unreachable or non-envelope response.');

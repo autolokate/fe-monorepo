@@ -51,6 +51,9 @@ export function mapQrApiError(error: unknown): QrDispatchError {
   return { code: 'invalid', message };
 }
 
-export function mapQrStatusError(message: string, code: QrDispatchErrorCode = 'expired'): QrDispatchError {
+export function mapQrStatusError(
+  message: string,
+  code: QrDispatchErrorCode = 'expired',
+): QrDispatchError {
   return { code, message };
 }

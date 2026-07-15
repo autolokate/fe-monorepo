@@ -36,7 +36,8 @@ export function resolveAttachErrorPresentation(error: QrAttachError): AttachErro
     case 'not_provisioned':
       return {
         title: 'QR code not ready yet',
-        description: error.message || 'This QR code is not ready for activation. Please contact us.',
+        description:
+          error.message || 'This QR code is not ready for activation. Please contact us.',
       };
     case 'invalid':
       return {
@@ -46,7 +47,8 @@ export function resolveAttachErrorPresentation(error: QrAttachError): AttachErro
     default:
       return {
         title: 'Could not link your vehicle',
-        description: error.message || 'Something went wrong while linking your QR code. Please try again.',
+        description:
+          error.message || 'Something went wrong while linking your QR code. Please try again.',
       };
   }
 }

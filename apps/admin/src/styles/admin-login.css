@@ -55,7 +55,8 @@
   padding: var(--al-space-2) var(--al-space-3);
   border-radius: var(--al-radius-sm);
   background: color-mix(in srgb, var(--al-color-danger) 8%, var(--al-color-surface));
-  border: var(--al-border-width-thin) solid color-mix(in srgb, var(--al-color-danger) 24%, transparent);
+  border: var(--al-border-width-thin) solid
+    color-mix(in srgb, var(--al-color-danger) 24%, transparent);
   color: var(--al-color-danger);
   font-size: var(--al-text-label-size);
   line-height: var(--al-text-label-line-height);

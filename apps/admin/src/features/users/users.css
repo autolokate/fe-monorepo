@@ -1,5 +1,6 @@
 .admin-user-lookup,
-.admin-user-account {
+.admin-user-account,
+.admin-user-activity {
   padding: var(--al-space-5);
   border-radius: var(--al-radius-sm);
   background: var(--al-color-surface);

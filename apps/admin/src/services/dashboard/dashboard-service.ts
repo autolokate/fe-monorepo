@@ -1,4 +1,10 @@
-import type { AdminPlanDto, AdminPromoDto, AuditEventDto, BatchSummaryDto, SkuSummaryDto } from '@autolokate/api-client';
+import type {
+  AdminPlanDto,
+  AdminPromoDto,
+  AuditEventDto,
+  BatchSummaryDto,
+  SkuSummaryDto,
+} from '@autolokate/api-client';
 
 import { RECENT_AUDIT_PARAMS } from '@/hooks/audit/audit-query-keys';
 import { fetchAdminPlans, fetchCatalogSkus } from '@/services/catalog/admin-catalog-service';

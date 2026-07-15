@@ -9,35 +9,35 @@
 
 ## Executive summary
 
-| Metric | Claimed (impl docs) | Verified |
-|--------|---------------------|----------|
-| Frame route coverage | 30/30 | **30/30 routes exist** ✅ |
-| Overall Figma parity | 94% | **~71%** ❌ |
-| Build | PASS | **PASS** ✅ |
-| Console errors (runtime spot-check) | None | **None observed** ✅ |
-| Dead-end branches | Not disclosed | **2 critical** ❌ |
+| Metric                              | Claimed (impl docs) | Verified                  |
+| ----------------------------------- | ------------------- | ------------------------- |
+| Frame route coverage                | 30/30               | **30/30 routes exist** ✅ |
+| Overall Figma parity                | 94%                 | **~71%** ❌               |
+| Build                               | PASS                | **PASS** ✅               |
+| Console errors (runtime spot-check) | None                | **None observed** ✅      |
+| Dead-end branches                   | Not disclosed       | **2 critical** ❌         |
 
 ### Final verdict: **NOT READY**
 
-Per signoff rule: *Do not approve if parity is below 100%.* Verified parity is **~71%** with **blocker gaps** on CC tracker fidelity, Park Me photo capture layout, unreachable error branches, and missing QR scanner entry.
+Per signoff rule: _Do not approve if parity is below 100%._ Verified parity is **~71%** with **blocker gaps** on CC tracker fidelity, Park Me photo capture layout, unreachable error branches, and missing QR scanner entry.
 
 ---
 
 ## What passed
 
-| Check | Result |
-|-------|--------|
-| Isolated `/pwa/scan/*` tree | ✅ Separate from `/journey/*` session |
-| `/journey` 4th entry card | ✅ "QR Scan (Post-Activation)" + description |
-| No fake StatusBar | ✅ Confirmed in live UI |
-| No language selector on verify | ✅ Confirmed on `/pwa/scan/verify/mobile` |
-| All 30 routes mount | ✅ Deep-linkable without blank screen |
-| No route loops observed | ✅ Catch-all → loading only |
-| Onboarding A1/A2/A3/R03/R04/R05 defaults | ✅ Optional props; auth routes unchanged |
-| Real camera hook | ✅ File input + `capture="environment"` |
-| Real geolocation hook | ✅ `navigator.geolocation` |
-| Permission sheet component | ✅ Renders on permission routes |
-| TypeScript / Vite build | ✅ Pass |
+| Check                                    | Result                                       |
+| ---------------------------------------- | -------------------------------------------- |
+| Isolated `/pwa/scan/*` tree              | ✅ Separate from `/journey/*` session        |
+| `/journey` 4th entry card                | ✅ "QR Scan (Post-Activation)" + description |
+| No fake StatusBar                        | ✅ Confirmed in live UI                      |
+| No language selector on verify           | ✅ Confirmed on `/pwa/scan/verify/mobile`    |
+| All 30 routes mount                      | ✅ Deep-linkable without blank screen        |
+| No route loops observed                  | ✅ Catch-all → loading only                  |
+| Onboarding A1/A2/A3/R03/R04/R05 defaults | ✅ Optional props; auth routes unchanged     |
+| Real camera hook                         | ✅ File input + `capture="environment"`      |
+| Real geolocation hook                    | ✅ `navigator.geolocation`                   |
+| Permission sheet component               | ✅ Renders on permission routes              |
+| TypeScript / Vite build                  | ✅ Pass                                      |
 
 ---
 
@@ -61,10 +61,10 @@ Implementation: **2-column Front/Rear grid**, title **"Take two photos"**, CTA *
 
 ### 3. Unreachable branches
 
-| Frame | Route | Issue |
-|-------|-------|-------|
-| 13 Photo not clear | `/pwa/scan/park-me/photo-not-clear` | **No navigation path** from status checking — dead branch |
-| 18 Couldn't send | `/pwa/scan/sos/couldnt-send` | `simulateNetworkFail` **never set true** in UI flow — dead branch |
+| Frame              | Route                               | Issue                                                             |
+| ------------------ | ----------------------------------- | ----------------------------------------------------------------- |
+| 13 Photo not clear | `/pwa/scan/park-me/photo-not-clear` | **No navigation path** from status checking — dead branch         |
+| 18 Couldn't send   | `/pwa/scan/sos/couldnt-send`        | `simulateNetworkFail` **never set true** in UI flow — dead branch |
 
 Audit graph requires these transitions; they are not exercisable in the happy path or any demo path.
 
@@ -82,62 +82,62 @@ Figma implies sticker scan entry. Implementation: loading spinner only; no live 
 
 ## High-severity gaps (non-blocker but parity impact)
 
-| Area | Figma | Implementation |
-|------|-------|--------------|
-| Loading subtitle (`928:2252`) | "No app needed. Loading the scanner securely." | "Getting this vehicle ready for you" |
-| SOS title (`848:278`) | "Emergency" | "Emergency SOS" |
-| SOS location chip | "Turn on location" pill + chevron | Status chip "Getting location…" |
-| Call 112 | "Or call 112 directly" + phone icon | "Call 112" text link |
-| SOS Help received title (`849:321`) | "Help is on the way" | "Help on the way" |
-| Cancel CTA on SOS status | "I'm safe, cancel alert" (secondary outline) | "Cancel alert" |
-| Emergency hub icon | `icon/bell` | `icon/heart` |
-| Photo icons | `icon/camera` | `icon/scan-line` |
-| GPS preview | Map-style capture area | Text pin label only |
-| R04 loading copy | Park Me specific | Purchase R04 copy reused |
+| Area                                | Figma                                          | Implementation                       |
+| ----------------------------------- | ---------------------------------------------- | ------------------------------------ |
+| Loading subtitle (`928:2252`)       | "No app needed. Loading the scanner securely." | "Getting this vehicle ready for you" |
+| SOS title (`848:278`)               | "Emergency"                                    | "Emergency SOS"                      |
+| SOS location chip                   | "Turn on location" pill + chevron              | Status chip "Getting location…"      |
+| Call 112                            | "Or call 112 directly" + phone icon            | "Call 112" text link                 |
+| SOS Help received title (`849:321`) | "Help is on the way"                           | "Help on the way"                    |
+| Cancel CTA on SOS status            | "I'm safe, cancel alert" (secondary outline)   | "Cancel alert"                       |
+| Emergency hub icon                  | `icon/bell`                                    | `icon/heart`                         |
+| Photo icons                         | `icon/camera`                                  | `icon/scan-line`                     |
+| GPS preview                         | Map-style capture area                         | Text pin label only                  |
+| R04 loading copy                    | Park Me specific                               | Purchase R04 copy reused             |
 
 ---
 
 ## Runtime QA (spot-check)
 
-| Test | Result |
-|------|--------|
-| Console errors | None on sampled routes |
-| Console warnings | None on sampled routes |
-| `/journey` → PWA card | Navigates to loading → vehicle |
-| Verify gate | Works when unverified |
-| SOS hold → scene photos | Route chain exists |
-| Park Me full happy path | Reachable with demo plate `MH 12 AB 3456` |
-| Light theme | Works via `/journey` theme toggle (inherits to PWA) |
-| 320px viewport | Vehicle hub renders; RC card height risk on small screens |
-| Refresh persistence | `sessionStorage` restores session |
+| Test                    | Result                                                    |
+| ----------------------- | --------------------------------------------------------- |
+| Console errors          | None on sampled routes                                    |
+| Console warnings        | None on sampled routes                                    |
+| `/journey` → PWA card   | Navigates to loading → vehicle                            |
+| Verify gate             | Works when unverified                                     |
+| SOS hold → scene photos | Route chain exists                                        |
+| Park Me full happy path | Reachable with demo plate `MH 12 AB 3456`                 |
+| Light theme             | Works via `/journey` theme toggle (inherits to PWA)       |
+| 320px viewport          | Vehicle hub renders; RC card height risk on small screens |
+| Refresh persistence     | `sessionStorage` restores session                         |
 
 ---
 
 ## Onboarding reuse regression
 
-| Screen | Regression | Notes |
-|--------|------------|-------|
-| A1 | **None** | Defaults preserved; PWA passes optional props only |
-| A2 | **None** | Optional title only |
-| A3 | **None** | Optional copy only |
-| R03 | **None** | Optional title/description |
-| R04 | **None** | Unchanged |
-| R05 | **None** | Optional protected variant additive |
+| Screen | Regression | Notes                                              |
+| ------ | ---------- | -------------------------------------------------- |
+| A1     | **None**   | Defaults preserved; PWA passes optional props only |
+| A2     | **None**   | Optional title only                                |
+| A3     | **None**   | Optional copy only                                 |
+| R03    | **None**   | Optional title/description                         |
+| R04    | **None**   | Unchanged                                          |
+| R05    | **None**   | Optional protected variant additive                |
 
 ---
 
 ## Promoted components — signoff
 
-| Component | Promoted | Figma parity | Verdict |
-|-----------|----------|--------------|---------|
-| AlScannerHubCard | ✅ | ~88% — structure good; emergency icon wrong | **PARTIAL** |
-| AlDispatchTimeline | ✅ | ~45% — missing subtitles, step count, amber halo | **FAIL** |
-| AlStatusTracker | ✅ | ~70% — chip OK; timeline child fails | **PARTIAL** |
-| AlScenePhotoCard | ✅ | ~82% — cell chrome OK; wrong icon in usage | **PARTIAL** |
-| AlPhotoGrid | ✅ | ~50% — wrong layout mode for Park Me 09 | **FAIL** |
-| AlSosHoldButton | ✅ | ~85% — disc/ring present; hold UX split across routes | **PARTIAL** |
-| AlPermissionSheet | ✅ | ~90% — sheet pattern matches | **PASS** |
-| AlIncidentStatusHero | ✅ | ~80% — wrapper OK; reuses payment halo SVG | **PARTIAL** |
+| Component            | Promoted | Figma parity                                          | Verdict     |
+| -------------------- | -------- | ----------------------------------------------------- | ----------- |
+| AlScannerHubCard     | ✅       | ~88% — structure good; emergency icon wrong           | **PARTIAL** |
+| AlDispatchTimeline   | ✅       | ~45% — missing subtitles, step count, amber halo      | **FAIL**    |
+| AlStatusTracker      | ✅       | ~70% — chip OK; timeline child fails                  | **PARTIAL** |
+| AlScenePhotoCard     | ✅       | ~82% — cell chrome OK; wrong icon in usage            | **PARTIAL** |
+| AlPhotoGrid          | ✅       | ~50% — wrong layout mode for Park Me 09               | **FAIL**    |
+| AlSosHoldButton      | ✅       | ~85% — disc/ring present; hold UX split across routes | **PARTIAL** |
+| AlPermissionSheet    | ✅       | ~90% — sheet pattern matches                          | **PASS**    |
+| AlIncidentStatusHero | ✅       | ~80% — wrapper OK; reuses payment halo SVG            | **PARTIAL** |
 
 **Component promotion signoff:** **NOT APPROVED** — 2/8 fail Figma parity; none at 100%.
 
@@ -171,11 +171,11 @@ The prior `POST_ACTIVATION_PARITY_REPORT.md` claimed **94% parity** and **READY*
 
 ## Signoff authority
 
-| Role | Status |
-|------|--------|
-| Route completeness | ✅ Approved |
-| Figma visual parity | ❌ **Rejected** |
-| Branch completeness | ❌ **Rejected** |
+| Role                 | Status           |
+| -------------------- | ---------------- |
+| Route completeness   | ✅ Approved      |
+| Figma visual parity  | ❌ **Rejected**  |
+| Branch completeness  | ❌ **Rejected**  |
 | Production readiness | ❌ **NOT READY** |
 
 **Overall: NOT READY**

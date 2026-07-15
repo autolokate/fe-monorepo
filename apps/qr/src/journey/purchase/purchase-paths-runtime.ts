@@ -1,7 +1,4 @@
-import {
-  buildPurchasePaths,
-  parseJourneyIdFromPathname,
-} from '../routing/journey-url-routing';
+import { buildPurchasePaths, parseJourneyIdFromPathname } from '../routing/journey-url-routing';
 
 import { legacyPurchasePathRedirects, purchaseJourneyPathsFor } from './purchase-routing';
 

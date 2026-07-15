@@ -1,4 +1,7 @@
-import type { AlDispatchTimelineStep, AlDispatchTimelineVariant } from '../DispatchTimeline/DispatchTimeline.types';
+import type {
+  AlDispatchTimelineStep,
+  AlDispatchTimelineVariant,
+} from '../DispatchTimeline/DispatchTimeline.types';
 
 export type AlStatusTrackerProps = {
   plate: string;

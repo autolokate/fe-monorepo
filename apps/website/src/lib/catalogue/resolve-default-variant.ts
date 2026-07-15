@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { getModelVariants } from "@/services/catalogue/catalogue-api";
-import type { CatalogueModel, CatalogueVariant } from "@/lib/catalogue/types";
-import { slugifyPart } from "@/lib/seo/slugs";
+import { getModelVariants } from '@/services/catalogue/catalogue-api';
+import type { CatalogueModel, CatalogueVariant } from '@/lib/catalogue/types';
+import { slugifyPart } from '@/lib/seo/slugs';
 
 function isRecord(x: unknown): x is Record<string, unknown> {
-  return typeof x === "object" && x !== null;
+  return typeof x === 'object' && x !== null;
 }
 
 function readText(v: unknown): string | null {
-  return typeof v === "string" && v.trim().length > 0 ? v.trim() : null;
+  return typeof v === 'string' && v.trim().length > 0 ? v.trim() : null;
 }
 
 function readNumber(v: unknown): number | null {
@@ -18,9 +18,7 @@ function readNumber(v: unknown): number | null {
 }
 
 /** Preference order: flagged default/popular, then lowest price, then first row. */
-export function pickDefaultCatalogueVariant(
-  variants: CatalogueVariant[],
-): CatalogueVariant | null {
+export function pickDefaultCatalogueVariant(variants: CatalogueVariant[]): CatalogueVariant | null {
   if (!variants.length) return null;
 
   const flagged = variants.find((v) => v.is_default === true || v.is_popular === true);
@@ -29,14 +27,11 @@ export function pickDefaultCatalogueVariant(
   const priced = variants
     .map((v) => ({
       row: v,
-      price:
-        readNumber(v.ex_showroom_price ?? v.min_price ?? v.price) ??
-        Number.POSITIVE_INFINITY,
+      price: readNumber(v.ex_showroom_price ?? v.min_price ?? v.price) ?? Number.POSITIVE_INFINITY,
     }))
     .sort((a, b) => a.price - b.price);
-  if (priced[0]?.row) return priced[0].row;
-
-  return variants[0] ?? null;
+  // `priced` is a 1:1 map of the (already non-empty) `variants`, so `priced[0]` always exists.
+  return priced[0].row;
 }
 
 function readBrandSlugFromModel(model: CatalogueModel): string | null {
@@ -76,7 +71,7 @@ export async function resolveBrandModelToVariantId(
     const variants = await getModelVariants(b, m);
     const preferred = pickDefaultCatalogueVariant(variants);
     const id = preferred?.id;
-    return typeof id === "string" && id.replace(/-/g, "").length >= 16 ? id : null;
+    return typeof id === 'string' && id.replace(/-/g, '').length >= 16 ? id : null;
   } catch {
     return null;
   }
@@ -101,7 +96,7 @@ export async function resolveCatalogueModelToVariantId(
   model: CatalogueModel,
 ): Promise<string | null> {
   const explicit = model.default_variant_id;
-  if (typeof explicit === "string" && explicit.replace(/-/g, "").length >= 16) {
+  if (typeof explicit === 'string' && explicit.replace(/-/g, '').length >= 16) {
     return explicit;
   }
 

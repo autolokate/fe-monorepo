@@ -48,8 +48,8 @@ export function R02VehicleDetailsScreen({
         <EmptyStateHero
           variant="empty"
           icon={<AlIcon name="circle-x" size={48} aria-hidden />}
-          heading="Couldn&apos;t load vehicle"
-          message="We couldn&apos;t retrieve registration details. Try again in a moment."
+          heading="Couldn't load vehicle"
+          message="We couldn't retrieve registration details. Try again in a moment."
         />
       ) : null}
 

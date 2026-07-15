@@ -26,7 +26,12 @@ export function AdminHeader({ onOpenCommandPalette, onOpenMobileNav }: AdminHead
         <AlIconButton
           icon={
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-              <path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <path
+                d="M3 5h12M3 9h12M3 13h12"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
             </svg>
           }
           label="Open navigation"
@@ -48,7 +53,10 @@ export function AdminHeader({ onOpenCommandPalette, onOpenMobileNav }: AdminHead
         <ThemeToggleButton />
         <AdminActivityNotification />
         {profile?.name ? (
-          <div className="admin-shell-profile" title={session?.role ? `Role: ${session.role}` : undefined}>
+          <div
+            className="admin-shell-profile"
+            title={session?.role ? `Role: ${session.role}` : undefined}
+          >
             <span className="admin-shell-profile__avatar" aria-hidden>
               {getInitials(profile.name)}
             </span>

@@ -11,15 +11,12 @@ function readJourneyId(): string {
 }
 
 /** Runtime emergency paths from URL journey id. */
-export const emergencyJourneyPaths = new Proxy(
-  {} as ReturnType<typeof buildEmergencyPaths>,
-  {
-    get(_target, prop: string) {
-      const paths = buildEmergencyPaths(readJourneyId());
-      return paths[prop as keyof typeof paths];
-    },
+export const emergencyJourneyPaths = new Proxy({} as ReturnType<typeof buildEmergencyPaths>, {
+  get(_target, prop: string) {
+    const paths = buildEmergencyPaths(readJourneyId());
+    return paths[prop as keyof typeof paths];
   },
-);
+});
 
 export function emergencyJourneyPathsFor(journeyId: string) {
   return buildEmergencyPaths(journeyId);

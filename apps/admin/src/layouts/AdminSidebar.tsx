@@ -1,21 +1,41 @@
 import { AlBrandMark } from '@autolokate/brand';
-import { ActivityIcon, CircleUserIcon, CreditCardIcon, HouseIcon, ReceiptTextIcon, ScanLineIcon, StoreIcon } from '@autolokate/icons';
+import {
+  ActivityIcon,
+  BellIcon,
+  CarIcon,
+  CircleUserIcon,
+  CreditCardIcon,
+  HouseIcon,
+  MapPinIcon,
+  ReceiptTextIcon,
+  ScanLineIcon,
+  ShieldCheckIcon,
+  StoreIcon,
+  TriangleAlertIcon,
+} from '@autolokate/icons';
 import { AlText } from '@autolokate/ui';
 import { NavLink } from 'react-router-dom';
 
-import { adminNavRoutes } from '@/app/routes/admin-paths';
+import { adminNavSections } from '@/app/routes/admin-paths';
 import { useAdminAuth } from '@/providers/AdminAuthProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 
 const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/dashboard': HouseIcon,
-  '/inventory': ScanLineIcon,
-  '/qr-batches': ReceiptTextIcon,
-  '/catalog': StoreIcon,
+  '/users': CircleUserIcon,
+  '/support': BellIcon,
+  '/orders': ReceiptTextIcon,
+  '/subscriptions': ShieldCheckIcon,
+  '/shipments': MapPinIcon,
+  '/payments': CreditCardIcon,
+  '/finance': ReceiptTextIcon,
   '/promos': CreditCardIcon,
+  '/catalog': StoreIcon,
+  '/inventory': ScanLineIcon,
+  '/qr-batches': ScanLineIcon,
+  '/ownership-transfers': CarIcon,
   '/audit-events': ActivityIcon,
-  '/finance': CreditCardIcon,
-  '/ownership-transfers': CircleUserIcon,
+  '/incidents': TriangleAlertIcon,
 };
 
 export type AdminSidebarProps = {
@@ -45,28 +65,30 @@ export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminS
       </div>
 
       <nav className="admin-shell-sidebar__scroll" aria-label="Admin navigation">
-        <div className="admin-shell-sidebar__group">
-          <p className="admin-shell-sidebar__group-label">Modules</p>
-          {adminNavRoutes.map((route) => {
-            const Icon = NAV_ICONS[route.path] ?? HouseIcon;
-            return (
-              <NavLink
-                key={route.path}
-                to={route.path}
-                className={({ isActive }) =>
-                  `admin-shell-nav-item al-admin-focus-ring ${isActive ? 'is-active' : ''}`.trim()
-                }
-                title={route.label}
-                onClick={onNavigate}
-              >
-                <span className="admin-shell-nav-item__icon">
-                  <Icon size={18} aria-hidden />
-                </span>
-                <span className="admin-shell-nav-item__label">{route.label}</span>
-              </NavLink>
-            );
-          })}
-        </div>
+        {adminNavSections().map((section) => (
+          <div className="admin-shell-sidebar__group" key={section.id}>
+            <p className="admin-shell-sidebar__group-label">{section.label}</p>
+            {section.items.map((route) => {
+              const Icon = NAV_ICONS[route.path] ?? HouseIcon;
+              return (
+                <NavLink
+                  key={route.path}
+                  to={route.path}
+                  className={({ isActive }) =>
+                    `admin-shell-nav-item al-admin-focus-ring ${isActive ? 'is-active' : ''}`.trim()
+                  }
+                  title={route.label}
+                  onClick={onNavigate}
+                >
+                  <span className="admin-shell-nav-item__icon">
+                    <Icon size={18} aria-hidden />
+                  </span>
+                  <span className="admin-shell-nav-item__label">{route.label}</span>
+                </NavLink>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       <div className="admin-shell-sidebar__footer">
@@ -86,9 +108,21 @@ export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminS
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
             {collapsed ? (
-              <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M6 4l4 4-4 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             ) : (
-              <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M10 4L6 8l4 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             )}
           </svg>
         </button>

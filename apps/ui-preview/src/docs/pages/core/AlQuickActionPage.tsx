@@ -1,10 +1,7 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlQuickAction } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderQuickActionState(state: ShowcaseState) {
   return (
@@ -41,8 +38,14 @@ export function AlQuickActionPage() {
       renderStatePreview={renderQuickActionState}
       usage={
         <div className="preview-row">
-          <AlQuickAction label="Parking" icon={<AlIcon name="square-parking" size={20} aria-hidden />} />
-          <AlQuickAction label="Receipts" icon={<AlIcon name="receipt-text" size={20} aria-hidden />} />
+          <AlQuickAction
+            label="Parking"
+            icon={<AlIcon name="square-parking" size={20} aria-hidden />}
+          />
+          <AlQuickAction
+            label="Receipts"
+            icon={<AlIcon name="receipt-text" size={20} aria-hidden />}
+          />
           <AlQuickAction label="Community" icon={<AlIcon name="users" size={20} aria-hidden />} />
         </div>
       }
@@ -57,8 +60,18 @@ import { AlIcon } from '@autolokate/icons';
       props={[
         { name: 'label', type: 'string', description: 'Caption below icon.' },
         { name: 'icon', type: 'ReactNode', description: 'Leading icon.' },
-        { name: 'loading', type: 'boolean', defaultValue: 'false', description: 'Shows spinner in icon slot.' },
-        { name: 'disabled', type: 'boolean', defaultValue: 'false', description: 'Disables action.' },
+        {
+          name: 'loading',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Shows spinner in icon slot.',
+        },
+        {
+          name: 'disabled',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Disables action.',
+        },
       ]}
     />
   );

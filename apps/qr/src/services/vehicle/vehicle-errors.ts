@@ -17,7 +17,11 @@ export function mapVehicleLookupApiError(error: unknown): VehicleLookupErrorStat
     return 'not-found';
   }
 
-  if (normalized.code === 'offline' || normalized.code === 'timeout' || normalized.code === 'network') {
+  if (
+    normalized.code === 'offline' ||
+    normalized.code === 'timeout' ||
+    normalized.code === 'network'
+  ) {
     return 'error';
   }
 
@@ -42,7 +46,11 @@ export function mapVehicleApiError(error: unknown): VehicleLoadError {
   const normalized = normalizeApiError(error);
   const message = resolveUserFacingMessage(error);
 
-  if (normalized.code === 'offline' || normalized.code === 'timeout' || normalized.code === 'network') {
+  if (
+    normalized.code === 'offline' ||
+    normalized.code === 'timeout' ||
+    normalized.code === 'network'
+  ) {
     return { code: 'network', message };
   }
 

@@ -3,7 +3,11 @@ import { useCallback, useState } from 'react';
 import { reportUserError } from '@/platform/feedback/report-user-error';
 import { anonymousScannerRepository } from '@/platform/storage/repositories/anonymous-scanner-repository';
 import { parkSessionRepository } from '@/platform/storage/repositories/park-session-repository';
-import { uploadScanPhotoForSlot, scannerLogger, type ScanUploadKind } from '@/services/scanner/index';
+import {
+  uploadScanPhotoForSlot,
+  scannerLogger,
+  type ScanUploadKind,
+} from '@/services/scanner/index';
 
 import { usePwaScan, type PwaSessionPatch } from '../context/PwaScanContext';
 import { useCameraCapture } from './use-camera-capture';

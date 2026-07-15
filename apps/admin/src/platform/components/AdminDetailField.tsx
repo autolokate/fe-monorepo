@@ -29,9 +29,7 @@ export function AdminDetailSection({ title, description, children }: AdminDetail
     <section className="admin-detail-section">
       <div className="admin-detail-section__header">
         <h3 className="admin-detail-section__title">{title}</h3>
-        {description ? (
-          <p className="admin-detail-section__description">{description}</p>
-        ) : null}
+        {description ? <p className="admin-detail-section__description">{description}</p> : null}
       </div>
       <div className="admin-detail-section__body">{children}</div>
     </section>
@@ -53,7 +51,9 @@ function isIdLikeMetadataKey(key: string): boolean {
   return normalized === 'requestid' || normalized === 'correlationid';
 }
 
-export function formatMetadataEntries(metadata: object | null): Array<{ label: string; value: string }> {
+export function formatMetadataEntries(
+  metadata: object | null,
+): Array<{ label: string; value: string }> {
   if (!metadata || typeof metadata !== 'object') {
     return [];
   }

@@ -1,4 +1,8 @@
-import { buildEmergencyPaths, parseJourneyIdFromPathname, ROUTE_NAMESPACE } from '../routing/journey-url-routing';
+import {
+  buildEmergencyPaths,
+  parseJourneyIdFromPathname,
+  ROUTE_NAMESPACE,
+} from '../routing/journey-url-routing';
 
 export { buildEmergencyPaths };
 

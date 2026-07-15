@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getTokenManager } from '@autolokate/auth';
 
-import {
-  refreshDeviceRegistration,
-  registerDevice,
-} from '@/services/device/device-service';
+import { refreshDeviceRegistration, registerDevice } from '@/services/device/device-service';
 
 /**
  * Headless device registration — no UI.

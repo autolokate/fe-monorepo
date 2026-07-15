@@ -5,8 +5,14 @@ import type { QrResolution } from '@autolokate/api-client';
 
 import type { ActivationFlowId, JourneyPhase, JourneySession } from '@/journey/types';
 import { saveResolvedQr } from '@/storage/index';
-import { resolveQrJourneyTarget, PARTNER_JOURNEY_TARGET } from '@/journey/state/partner-journey-state-machine';
-import { resolvePartnerFlowId, resolvePartnerKindFromResolution } from '@/journey/state/partner-journey-state-machine';
+import {
+  resolveQrJourneyTarget,
+  PARTNER_JOURNEY_TARGET,
+} from '@/journey/state/partner-journey-state-machine';
+import {
+  resolvePartnerFlowId,
+  resolvePartnerKindFromResolution,
+} from '@/journey/state/partner-journey-state-machine';
 import { isAttachedQrLifecycleStatus } from '@/platform/qr/qr-status';
 import { seedAttachedPurchaseFromResolve } from '@/services/qr/seed-attached-purchase-from-resolve';
 import { resolveQrCode } from '@/services/qr/qr-service';

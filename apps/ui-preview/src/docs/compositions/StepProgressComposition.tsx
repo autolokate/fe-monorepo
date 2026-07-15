@@ -13,7 +13,9 @@ export function StepProgressComposition() {
     <AlStack gap="lg">
       <AlStack gap="sm">
         <AlHeading variant="h4">Onboarding progress</AlHeading>
-        <AlText tone="muted">Step states 1 through 5 of 5 from Figma AlStepProgress variants.</AlText>
+        <AlText tone="muted">
+          Step states 1 through 5 of 5 from Figma AlStepProgress variants.
+        </AlText>
       </AlStack>
       {steps.map(({ step, label }) => (
         <AlStack key={step} gap="sm">

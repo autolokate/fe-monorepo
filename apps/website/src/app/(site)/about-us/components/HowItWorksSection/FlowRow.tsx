@@ -1,8 +1,8 @@
-import { Fragment } from "react";
-import { cn } from "@/lib/utils";
-import type { CrashToCareStep } from "./types";
-import { StepArrow } from "./StepArrow";
-import { StepCard } from "./StepCard";
+import { Fragment } from 'react';
+import { cn } from '@/lib/utils';
+import type { CrashToCareStep } from './types';
+import { StepArrow } from './StepArrow';
+import { StepCard } from './StepCard';
 
 interface FlowRowProps {
   steps: CrashToCareStep[];
@@ -11,12 +11,7 @@ interface FlowRowProps {
 
 export function FlowRow({ steps, className }: FlowRowProps) {
   return (
-    <ol
-      className={cn(
-        "flex list-none flex-wrap items-center justify-center gap-y-3",
-        className,
-      )}
-    >
+    <ol className={cn('flex list-none flex-wrap items-center justify-center gap-y-3', className)}>
       {steps.map((step, index) => (
         <Fragment key={step.id}>
           <li>

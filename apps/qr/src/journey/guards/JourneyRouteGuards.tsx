@@ -18,17 +18,15 @@ export type RequireSelectedFlowProps = {
   fallbackPath?: string;
 };
 
-export function RequireSelectedFlow({
-  children,
-  fallbackPath,
-}: RequireSelectedFlowProps) {
+export function RequireSelectedFlow({ children, fallbackPath }: RequireSelectedFlowProps) {
   const { selectedFlow, authStatus } = useJourney();
   const journeyId = useActiveJourneyId();
 
   if (!selectedFlow) {
     const redirect =
       authStatus === AUTH_COMPLETED || hasAuthTokens()
-        ? (fallbackPath ?? (journeyId ? getPostAuthActivationPath(null, journeyId) : buildQrEntryPath('')))
+        ? (fallbackPath ??
+          (journeyId ? getPostAuthActivationPath(null, journeyId) : buildQrEntryPath('')))
         : journeyId
           ? buildAuthPaths(journeyId).mobile
           : buildQrEntryPath('');
@@ -81,7 +79,11 @@ export function RequireSelectedFlowMatch({ flow, children }: RequireSelectedFlow
   if (selectedFlow !== flow) {
     return (
       <Navigate
-        to={journeyId ? getPostAuthActivationPath(selectedFlow, journeyId, session) : buildQrEntryPath('')}
+        to={
+          journeyId
+            ? getPostAuthActivationPath(selectedFlow, journeyId, session)
+            : buildQrEntryPath('')
+        }
         replace
       />
     );

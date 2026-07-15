@@ -14,13 +14,13 @@ Android showed a working install banner; iOS users saw no usable install path, o
 
 ## Expected platform UX
 
-| Platform | UX |
-|----------|-----|
-| Android Chrome | Native `beforeinstallprompt` banner |
-| iPhone Safari | Add to Home Screen helper — Share → Add to Home Screen |
-| iPhone Chrome | Sheet — Open in Safari → Share → Add to Home Screen |
-| iPhone Edge | Sheet — Open in Safari → Share → Add to Home Screen |
-| Already installed / standalone | Hidden |
+| Platform                       | UX                                                     |
+| ------------------------------ | ------------------------------------------------------ |
+| Android Chrome                 | Native `beforeinstallprompt` banner                    |
+| iPhone Safari                  | Add to Home Screen helper — Share → Add to Home Screen |
+| iPhone Chrome                  | Sheet — Open in Safari → Share → Add to Home Screen    |
+| iPhone Edge                    | Sheet — Open in Safari → Share → Add to Home Screen    |
+| Already installed / standalone | Hidden                                                 |
 
 ---
 
@@ -51,25 +51,25 @@ Android showed a working install banner; iOS users saw no usable install path, o
 
 ## Files
 
-| File | Role |
-|------|------|
-| `pwa/device-detection.ts` | Browser detection |
-| `pwa/components/PwaInstallPrompt.tsx` | Platform router |
+| File                                    | Role                       |
+| --------------------------------------- | -------------------------- |
+| `pwa/device-detection.ts`               | Browser detection          |
+| `pwa/components/PwaInstallPrompt.tsx`   | Platform router            |
 | `pwa/components/PwaIosInstallSheet.tsx` | Safari + non-Safari iOS UX |
-| `pwa/components/PwaIosInstallSheet.css` | Banner step styling |
-| `journey/screens/FlowEntryScreen.tsx` | Mount point `/journey` |
+| `pwa/components/PwaIosInstallSheet.css` | Banner step styling        |
+| `journey/screens/FlowEntryScreen.tsx`   | Mount point `/journey`     |
 
 ---
 
 ## Verification matrix
 
-| Device / Browser | Must NOT show | Must show |
-|------------------|---------------|-----------|
-| Android Chrome | iOS sheet | Install banner (when prompt available) |
-| iPhone Safari | Android banner | A2HS banner |
-| iPhone Chrome | Android banner | Safari install sheet |
-| iPhone Edge | Android banner | Safari install sheet |
-| Installed PWA | Any prompt | Nothing |
+| Device / Browser | Must NOT show  | Must show                              |
+| ---------------- | -------------- | -------------------------------------- |
+| Android Chrome   | iOS sheet      | Install banner (when prompt available) |
+| iPhone Safari    | Android banner | A2HS banner                            |
+| iPhone Chrome    | Android banner | Safari install sheet                   |
+| iPhone Edge      | Android banner | Safari install sheet                   |
+| Installed PWA    | Any prompt     | Nothing                                |
 
 ---
 

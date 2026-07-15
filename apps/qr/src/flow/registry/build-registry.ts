@@ -24,7 +24,9 @@ function toFlowDefinition(entry: FlowConfigEntry): FlowDefinition {
 }
 
 /** Build typed flow registry from declarative config. */
-export function buildFlowRegistry(config: readonly FlowConfigEntry[]): Record<string, FlowDefinition> {
+export function buildFlowRegistry(
+  config: readonly FlowConfigEntry[],
+): Record<string, FlowDefinition> {
   return Object.fromEntries(config.map((entry) => [entry.id, toFlowDefinition(entry)]));
 }
 

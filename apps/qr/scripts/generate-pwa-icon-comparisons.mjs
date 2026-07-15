@@ -69,7 +69,10 @@ function circleMaskSvg(size) {
 
 async function renderAndroidLauncherPreview() {
   const iconSize = 192;
-  const icon = await sharp(path.join(iconsDir, 'icon-192-maskable.png')).resize(iconSize, iconSize).png().toBuffer();
+  const icon = await sharp(path.join(iconsDir, 'icon-192-maskable.png'))
+    .resize(iconSize, iconSize)
+    .png()
+    .toBuffer();
 
   const masked = await sharp(icon)
     .composite([{ input: circleMaskSvg(iconSize), blend: 'dest-in' }])
@@ -107,7 +110,10 @@ function iosRoundedRectMask(size, radius) {
 
 async function renderIosHomescreenPreview() {
   const iconSize = 180;
-  const icon = await sharp(path.join(publicDir, 'apple-touch-icon.png')).resize(iconSize, iconSize).png().toBuffer();
+  const icon = await sharp(path.join(publicDir, 'apple-touch-icon.png'))
+    .resize(iconSize, iconSize)
+    .png()
+    .toBuffer();
   const radius = Math.round(iconSize * 0.225);
   const masked = await sharp(icon)
     .composite([{ input: iosRoundedRectMask(iconSize, radius), blend: 'dest-in' }])
@@ -132,8 +138,14 @@ async function renderIosHomescreenPreview() {
 }
 
 async function renderSideBySide() {
-  const ref = await sharp(path.join(outDir, '01-source-in-app-dark-variant.png')).resize(272, 272).png().toBuffer();
-  const gen = await sharp(path.join(outDir, '02-generated-icon-192.png')).resize(272, 272).png().toBuffer();
+  const ref = await sharp(path.join(outDir, '01-source-in-app-dark-variant.png'))
+    .resize(272, 272)
+    .png()
+    .toBuffer();
+  const gen = await sharp(path.join(outDir, '02-generated-icon-192.png'))
+    .resize(272, 272)
+    .png()
+    .toBuffer();
 
   await sharp({
     create: { width: 584, height: 312, channels: 3, background: { r: 245, g: 245, b: 247 } },

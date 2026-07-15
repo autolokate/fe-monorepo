@@ -29,7 +29,11 @@ export function InlineConsentBlock({
         <AlCheckbox
           className="ob-inline-consent__checkbox"
           layout="icon-only"
-          label={isBystander ? 'Consent to be contacted and Terms' : 'Consent to Privacy Policy and Terms'}
+          label={
+            isBystander
+              ? 'Consent to be contacted and Terms'
+              : 'Consent to Privacy Policy and Terms'
+          }
           checked={checked}
           disabled={disabled}
           onChange={(event) => {

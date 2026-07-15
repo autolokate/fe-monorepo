@@ -12,7 +12,12 @@ export function AlSmsFallback({ onSmsClick, disabled = false }: AlSmsFallbackPro
   return (
     <AlText variant="caption" tone="muted" className="ob-sms-fallback">
       Didn&apos;t get the code?{' '}
-      <button type="button" className="ob-sms-fallback__link" onClick={onSmsClick} disabled={disabled}>
+      <button
+        type="button"
+        className="ob-sms-fallback__link"
+        onClick={onSmsClick}
+        disabled={disabled}
+      >
         Get it by SMS
       </button>
     </AlText>

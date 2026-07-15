@@ -1,9 +1,6 @@
 import { AlStack } from '@autolokate/ui';
 
-import {
-  AddContactRow,
-  EmergencyContactRow,
-} from '@/components/compositions/index';
+import { AddContactRow, EmergencyContactRow } from '@/components/compositions/index';
 import { FlowStepShell } from '@/components/flow-step-shell/index';
 import type { PurchasePlanId, PurchaseRiderCount } from '@/features/qr-purchase/types-checkout';
 import {
@@ -59,7 +56,11 @@ export function E10RidersSummaryScreen({
           <EmergencyContactRow key={`${rider.mobile}-${rider.name}`} contact={rider} />
         ))}
         {canAddMore ? (
-          <AddContactRow label="Add another rider" onClick={onAddAnother} disabled={!onAddAnother} />
+          <AddContactRow
+            label="Add another rider"
+            onClick={onAddAnother}
+            disabled={!onAddAnother}
+          />
         ) : isMaxReached ? (
           <p className="ob-emergency-max-message">
             {getRidersMaxReachedMessage(planId, purchasedRiderSlots, flowKind)}

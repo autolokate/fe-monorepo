@@ -8,23 +8,26 @@
 ## 1. Route Architecture ✅ PASS
 
 ### JourneyOrchestrator
+
 - `/pwa/scan/*` is the first `<Route>` — structurally isolated before JourneyProvider
 - `JourneyProvider` wraps only the catch-all `path="*"` — correct
 - PWA cannot accidentally inherit journey context
 
 ### JourneyRoutes
+
 All 6 journey flow entry points present with correct guards:
 
-| Route | Guard |
-|-------|-------|
-| `/journey/auth/*` | None (entry point) |
-| `/journey/purchase/*` | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` |
-| `/journey/emergency/*` | `RequireAuthCompleted` + `RequireSelectedFlow` |
-| `/journey/prepaid/*` | None (entry, has own welcome) |
-| `/journey/b2b2c/*` | None (entry, has own welcome) |
-| `/pwa/scan/*` | Isolated (PwaScanProvider only) |
+| Route                  | Guard                                                           |
+| ---------------------- | --------------------------------------------------------------- |
+| `/journey/auth/*`      | None (entry point)                                              |
+| `/journey/purchase/*`  | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` |
+| `/journey/emergency/*` | `RequireAuthCompleted` + `RequireSelectedFlow`                  |
+| `/journey/prepaid/*`   | None (entry, has own welcome)                                   |
+| `/journey/b2b2c/*`     | None (entry, has own welcome)                                   |
+| `/pwa/scan/*`          | Isolated (PwaScanProvider only)                                 |
 
 ### Guards
+
 - `RequireAuthCompleted` — checks `authStatus !== AUTH_COMPLETED`, redirects to `auth/mobile` ✅
 - `RequireSelectedFlow` — checks `selectedFlow` null, branches on authStatus for redirect target ✅
 - `RequireSelectedFlowMatch` — checks both null and mismatch ✅
@@ -34,12 +37,12 @@ All 6 journey flow entry points present with correct guards:
 
 ## 2. Session Model ✅ PASS
 
-| Key | Store | Verified |
-|-----|-------|---------|
-| `al-journey-v1` | sessionStorage | ✅ |
-| `al-selected-flow` | localStorage | ✅ |
-| `al-qr-theme` | localStorage | ✅ |
-| `al-pwa-scan-v1` | sessionStorage | ✅ |
+| Key                | Store          | Verified |
+| ------------------ | -------------- | -------- |
+| `al-journey-v1`    | sessionStorage | ✅       |
+| `al-selected-flow` | localStorage   | ✅       |
+| `al-qr-theme`      | localStorage   | ✅       |
+| `al-pwa-scan-v1`   | sessionStorage | ✅       |
 
 - `clearJourney()` resets `{ selectedFlow: null, authStatus: 'pending', session: {} }` and calls `setPhase('home')` ✅
 - `completeAuth()` sets `AUTH_COMPLETED` + calls `setPhase('activation')` ✅
@@ -54,6 +57,7 @@ All 6 journey flow entry points present with correct guards:
 **Emergency ← qr-purchase (MEDIUM concern)**
 
 Emergency screens import plan types and default plan IDs directly from `qr-purchase/`:
+
 - `E05ContactsEmptyScreen.tsx` — imports `DEFAULT_PURCHASE_PLAN_ID` from `../../../qr-purchase/data/purchase-plans.js`
 - `E09ContactsSummaryScreen.tsx` — imports `PurchasePlanId` type from `../../../qr-purchase/types-checkout.js`
 - `E10RidersSummaryScreen.tsx` — same
@@ -81,17 +85,17 @@ No imports from emergency in qr-purchase.
 
 ### Custom hooks in scope
 
-| Hook | Location | Cross-feature coupling |
-|------|----------|----------------------|
-| `useThemeMode` | `apps/qr/src/hooks/` | None |
-| `useRouteProgress` | `journey/progress/` | Journey-internal only |
-| `use-welcome-landing` | `features/b2b-shared/` | None |
-| `use-camera-capture` | `features/post-activation-pwa/hooks/` | PWA-internal only |
-| `use-geolocation` | `features/post-activation-pwa/hooks/` | PWA-internal only |
-| `use-hold-progress` | `features/post-activation-pwa/hooks/` | PWA-internal only |
-| `use-hold-progress-from` | `features/post-activation-pwa/hooks/` | PWA-internal only |
-| `use-pwa-photo-capture` | `features/post-activation-pwa/hooks/` | PWA-internal only |
-| `use-resolve-stored-location-name` | `features/post-activation-pwa/hooks/` | PWA-internal only |
+| Hook                               | Location                              | Cross-feature coupling |
+| ---------------------------------- | ------------------------------------- | ---------------------- |
+| `useThemeMode`                     | `apps/qr/src/hooks/`                  | None                   |
+| `useRouteProgress`                 | `journey/progress/`                   | Journey-internal only  |
+| `use-welcome-landing`              | `features/b2b-shared/`                | None                   |
+| `use-camera-capture`               | `features/post-activation-pwa/hooks/` | PWA-internal only      |
+| `use-geolocation`                  | `features/post-activation-pwa/hooks/` | PWA-internal only      |
+| `use-hold-progress`                | `features/post-activation-pwa/hooks/` | PWA-internal only      |
+| `use-hold-progress-from`           | `features/post-activation-pwa/hooks/` | PWA-internal only      |
+| `use-pwa-photo-capture`            | `features/post-activation-pwa/hooks/` | PWA-internal only      |
+| `use-resolve-stored-location-name` | `features/post-activation-pwa/hooks/` | PWA-internal only      |
 
 **useJourney() not used in PWA:** ✅ Confirmed zero usages in `post-activation-pwa/`
 
@@ -105,12 +109,12 @@ No imports from emergency in qr-purchase.
 
 In `apps/qr/src/features/emergency/emergency-limits.ts`:
 
-| Plan | Max Contacts | Max Riders |
-|------|-------------|------------|
-| `safe` | 1 | 0 |
-| `secure` | 2 | 2 |
-| `shield` | 3 | 2 |
-| `shield-plus` | 3 | 2 |
+| Plan          | Max Contacts | Max Riders |
+| ------------- | ------------ | ---------- |
+| `safe`        | 1            | 0          |
+| `secure`      | 2            | 2          |
+| `shield`      | 3            | 2          |
+| `shield-plus` | 3            | 2          |
 
 `RIDER_ADDON_PRODUCT_CAP = 2` ✅  
 Plan limit numbers only defined in `emergency-limits.ts` — not duplicated as raw numbers elsewhere ✅
@@ -129,8 +133,10 @@ Plan limit numbers only defined in `emergency-limits.ts` — not duplicated as r
 ## 7. Recommendations
 
 ### Medium Priority
+
 - Refactor emergency screens to import plan constants through `emergency-limits.ts` only — eliminate direct `qr-purchase` imports from E01, E05, E09, E10
 
 ### Low Priority
+
 - Add `ScreenDevApp.tsx` import of `THEME_KEY` from constants (currently hardcoded string)
 - The `b2b-shared/` shared layer between `qr-prepaid` and `qr-b2b2c` is a good pattern — continue using it for any additional shared B2B logic

@@ -1,4 +1,4 @@
-import { HeroBanner, PolicyContent, privacyMetadata } from "./";
+import { HeroBanner, PolicyContent, privacyMetadata } from './';
 
 export const metadata = privacyMetadata;
 

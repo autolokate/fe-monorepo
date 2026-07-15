@@ -20,19 +20,11 @@ export function readFirebaseWebConfig(): FirebaseWebConfig | null {
   const authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN?.trim();
   const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID?.trim();
   const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET?.trim();
-  const messagingSenderId =
-    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID?.trim();
+  const messagingSenderId = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID?.trim();
   const appId = import.meta.env.VITE_FIREBASE_APP_ID?.trim();
   const measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID?.trim();
 
-  if (
-    !apiKey ||
-    !authDomain ||
-    !projectId ||
-    !storageBucket ||
-    !messagingSenderId ||
-    !appId
-  ) {
+  if (!apiKey || !authDomain || !projectId || !storageBucket || !messagingSenderId || !appId) {
     return null;
   }
 

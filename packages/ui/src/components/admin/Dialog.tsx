@@ -47,7 +47,11 @@ export function AlModal({
           <div className="al-modal__body">{children}</div>
           {footer ? <div className="al-modal__footer">{footer}</div> : null}
           <Dialog.Close asChild>
-            <button type="button" className="al-dialog-close al-admin-focus-ring" aria-label="Close dialog">
+            <button
+              type="button"
+              className="al-dialog-close al-admin-focus-ring"
+              aria-label="Close dialog"
+            >
               ×
             </button>
           </Dialog.Close>
@@ -95,7 +99,11 @@ export function AlSheet({
           <div className="al-sheet__body">{children}</div>
           {footer ? <div className="al-sheet__footer">{footer}</div> : null}
           <Dialog.Close asChild>
-            <button type="button" className="al-dialog-close al-admin-focus-ring" aria-label="Close panel">
+            <button
+              type="button"
+              className="al-dialog-close al-admin-focus-ring"
+              aria-label="Close panel"
+            >
               ×
             </button>
           </Dialog.Close>

@@ -130,7 +130,6 @@ function useOnlineState() {
   return isOnline;
 }
 
-
 function LegacyRiderSetupRedirect() {
   return <Navigate to={emergencyJourneyPaths.riderPrompt} replace />;
 }
@@ -238,19 +237,14 @@ function R0Route() {
   ]);
 
   if (!shouldEnterRiderPrompt(planId, riderCount, flowKind) || emergency.riderSkipped) {
-    return (
-      <Navigate to={getEmergencyHandoffPath({ purchase, emergency }, selectedFlow)} replace />
-    );
+    return <Navigate to={getEmergencyHandoffPath({ purchase, emergency }, selectedFlow)} replace />;
   }
 
   const finishWithoutRider = () => {
     setSkipConfirmOpen(false);
     const nextEmergency = { ...emergency, riderSkipped: true, rider: undefined };
     patchEmergency({ riderSkipped: true, rider: undefined });
-    const nextPath = getEmergencyHandoffPath(
-      { purchase, emergency: nextEmergency },
-      selectedFlow,
-    );
+    const nextPath = getEmergencyHandoffPath({ purchase, emergency: nextEmergency }, selectedFlow);
     if (nextPath === getCompletedPath()) {
       setPhase('completed');
     }
@@ -260,33 +254,33 @@ function R0Route() {
   return (
     <>
       <E01RiderPromptScreen
-      viewState={viewState}
-      description={getRiderPromptDescription(entitledSlots)}
-      errorMessage={apiErrorMessage}
-      onBack={() => {
-        void navigate(getEmergencyFlowBackPath(selectedFlow, session));
-      }}
-      onContinue={() => {
-        if (viewState === 'error') {
-          patchEmergency({ riderPromptLoadFailed: false });
-          setApiErrorMessage(null);
-          setLoadAttempt((attempt) => attempt + 1);
-          return;
-        }
-        if (viewState === 'offline' || viewState === 'loading') {
-          return;
-        }
-        patchEmergency({
-          riderSkipped: false,
-          rider: emergency.rider ?? { mobile: '', name: '', relation: 'spouse' },
-        });
-        void navigate(emergencyJourneyPaths.riderMobile);
-      }}
-      footerSecondaryLabel="Skip for now"
-      onFooterSecondary={() => {
-        setSkipConfirmOpen(true);
-      }}
-    />
+        viewState={viewState}
+        description={getRiderPromptDescription(entitledSlots)}
+        errorMessage={apiErrorMessage}
+        onBack={() => {
+          void navigate(getEmergencyFlowBackPath(selectedFlow, session));
+        }}
+        onContinue={() => {
+          if (viewState === 'error') {
+            patchEmergency({ riderPromptLoadFailed: false });
+            setApiErrorMessage(null);
+            setLoadAttempt((attempt) => attempt + 1);
+            return;
+          }
+          if (viewState === 'offline' || viewState === 'loading') {
+            return;
+          }
+          patchEmergency({
+            riderSkipped: false,
+            rider: emergency.rider ?? { mobile: '', name: '', relation: 'spouse' },
+          });
+          void navigate(emergencyJourneyPaths.riderMobile);
+        }}
+        footerSecondaryLabel="Skip for now"
+        onFooterSecondary={() => {
+          setSkipConfirmOpen(true);
+        }}
+      />
       <AlPermissionSheet
         open={skipConfirmOpen}
         title={RIDER_SKIP_CONFIRM_TITLE}
@@ -425,7 +419,9 @@ function R2Route() {
       setOtpState('verifying');
       void verifyRiderOtpApi(mobile, code).then((result) => {
         if (!result.ok) {
-          reportEmergencyApiError(riderLogger, 'rider_otp_verify_failed', result.error, { toast: false });
+          reportEmergencyApiError(riderLogger, 'rider_otp_verify_failed', result.error, {
+            toast: false,
+          });
           setOtpState('error');
           setOtpErrorKind(mapOtpErrorKind(result.error));
           return;
@@ -536,7 +532,9 @@ function R3Route() {
           if (!result.ok) {
             const apiMessage = readEmergencyApiUserMessage(result.error);
             if (apiMessage) {
-              reportEmergencyApiError(riderLogger, 'rider_create_failed', result.error, { toast: false });
+              reportEmergencyApiError(riderLogger, 'rider_create_failed', result.error, {
+                toast: false,
+              });
               setApiErrorMessage(apiMessage);
               setFormState('error');
               return;
@@ -644,7 +642,7 @@ function E0Route() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [navigate, patchEmergency, refreshContacts]);
 
   const goToManualEntry = useCallback(() => {
     void navigate(emergencyJourneyPaths.contactMobile);

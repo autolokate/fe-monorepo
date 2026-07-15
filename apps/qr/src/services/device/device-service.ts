@@ -1,7 +1,4 @@
-import {
-  registerDeviceToken,
-  unregisterDeviceToken,
-} from '@autolokate/api-client';
+import { registerDeviceToken, unregisterDeviceToken } from '@autolokate/api-client';
 import { getTokenManager } from '@autolokate/auth';
 
 import { getQrApiClient } from '@/platform/api/qr-api-client';

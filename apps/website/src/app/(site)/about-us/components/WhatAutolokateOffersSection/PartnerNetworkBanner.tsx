@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { PARTNER_BANNER_BACKGROUND, PARTNER_BANNER_COPY, PARTNER_CATEGORIES } from "./constants";
+import Image from 'next/image';
+import { PARTNER_BANNER_BACKGROUND, PARTNER_BANNER_COPY, PARTNER_CATEGORIES } from './constants';
 
 export function PartnerNetworkBanner() {
   return (
@@ -16,7 +16,7 @@ export function PartnerNetworkBanner() {
 
       <div className="relative z-10 flex flex-col gap-5 sm:gap-6 lg:flex-row lg:items-center lg:gap-7">
         <div className="min-w-0 lg:max-w-[20rem] lg:shrink-0 xl:max-w-[22rem]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/55 sm:text-[11px]">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--al-signal-green)] sm:text-[11px]">
             {PARTNER_BANNER_COPY.eyebrow}
           </p>
           <h3 className="font-display mt-2 text-xl font-bold leading-tight tracking-tight sm:text-2xl">
@@ -36,7 +36,7 @@ export function PartnerNetworkBanner() {
           {PARTNER_CATEGORIES.map(({ id, label, Icon }) => (
             <li key={id} className="flex flex-col items-center text-center">
               <span
-                className="flex h-8 w-8 items-center justify-center text-white sm:h-9 sm:w-9"
+                className="flex h-8 w-8 items-center justify-center text-[var(--al-signal-green)] sm:h-9 sm:w-9"
                 aria-hidden
               >
                 <Icon className="h-5 w-5 stroke-[1.5] sm:h-[1.35rem] sm:w-[1.35rem]" />

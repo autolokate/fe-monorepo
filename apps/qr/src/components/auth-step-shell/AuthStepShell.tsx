@@ -198,7 +198,9 @@ export function AuthStepShell({
           ) : null}
         </header>
 
-        <div className={`ob-step-chrome__body ob-auth-shell__body ob-auth-shell__body--${contentGap}`}>
+        <div
+          className={`ob-step-chrome__body ob-auth-shell__body ob-auth-shell__body--${contentGap}`}
+        >
           <div className="ob-step-chrome__heading ob-auth-shell__heading">
             <AlHeading variant="h2">{title}</AlHeading>
             {description ? (

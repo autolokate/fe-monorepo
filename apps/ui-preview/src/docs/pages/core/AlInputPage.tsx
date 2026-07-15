@@ -1,9 +1,6 @@
 import { AlInput } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderInputState(state: ShowcaseState) {
   const disabled = state === 'disabled';
@@ -52,7 +49,12 @@ export function AlInputPage() {
 />`}
       props={[
         { name: 'label', type: 'string', description: 'Field label.' },
-        { name: 'variant', type: 'AlInputVariant', defaultValue: 'default', description: 'Visual state.' },
+        {
+          name: 'variant',
+          type: 'AlInputVariant',
+          defaultValue: 'default',
+          description: 'Visual state.',
+        },
         { name: 'trailing', type: 'ReactNode', description: 'Trailing adornment.' },
         { name: 'mono', type: 'boolean', defaultValue: 'false', description: 'Monospace styling.' },
       ]}

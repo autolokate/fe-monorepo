@@ -30,7 +30,12 @@ export function useEmergencySendingFlow() {
       updateSession({ sosStatus: 'sending' });
       const result = await submitScannerEmergency({ scenePhotoIds });
       if (!result.ok) {
-        reportUserError(scannerLogger, 'emergency_submit_failed', result.error, result.error.message);
+        reportUserError(
+          scannerLogger,
+          'emergency_submit_failed',
+          result.error,
+          result.error.message,
+        );
         void navigate(pwaScanPaths.sosCouldntSend, { replace: true });
         return;
       }
@@ -88,7 +93,12 @@ export function useEmergencyContactsOnlySubmit() {
     void (async () => {
       const result = await submitScannerEmergency({ scenePhotoIds: [] });
       if (!result.ok) {
-        reportUserError(scannerLogger, 'emergency_contacts_submit_failed', result.error, result.error.message);
+        reportUserError(
+          scannerLogger,
+          'emergency_contacts_submit_failed',
+          result.error,
+          result.error.message,
+        );
         return;
       }
       updateSession({ sosStatus: 'contacts-only' });
@@ -128,7 +138,12 @@ export function useEmergencyCancelAlert() {
       if (alertId) {
         const result = await cancelScannerEmergency(alertId);
         if (!result.ok) {
-          reportUserError(scannerLogger, 'emergency_cancel_failed', result.error, result.error.message);
+          reportUserError(
+            scannerLogger,
+            'emergency_cancel_failed',
+            result.error,
+            result.error.message,
+          );
           return;
         }
       }

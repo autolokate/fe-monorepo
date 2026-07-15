@@ -83,7 +83,7 @@
 /* The plate lives on a pseudo so it can zoom on hover without scaling the
    card copy. Position is passed per-card via --bg-pos (defaults to center). */
 .imageCard::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -95,7 +95,7 @@
   transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-:global([data-theme="light"]) .imageCard::before {
+:global([data-theme='light']) .imageCard::before {
   background-image: var(--bg-light);
 }
 

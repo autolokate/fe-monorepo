@@ -1,5 +1,5 @@
-import { AppleGlyph, footerDownload, GooglePlayGlyph } from "./constants";
-import { FooterStoreBadge } from "./FooterStoreBadge";
+import { AppleGlyph, footerDownload, GooglePlayGlyph } from './constants';
+import { FooterStoreBadge } from './FooterStoreBadge';
 
 export function FooterDownload() {
   return (

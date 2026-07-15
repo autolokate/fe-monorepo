@@ -1,6 +1,9 @@
 import type { BatchSummaryDto, QrBatchStatus } from '@autolokate/api-client';
 
-import { computeInventoryMetrics, type InventoryMetrics } from '@/services/inventory/inventory-metrics';
+import {
+  computeInventoryMetrics,
+  type InventoryMetrics,
+} from '@/services/inventory/inventory-metrics';
 
 export type BatchLifecycleActionId = 'generate' | 'provision' | 'distribute';
 

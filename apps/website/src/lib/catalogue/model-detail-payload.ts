@@ -1,30 +1,39 @@
-import type { CatalogueModelDetailPayload } from "@/lib/catalogue/types";
-import type { CatalogueModel, CatalogueVariant } from "@/lib/catalogue/types";
+import type { CatalogueModelDetailPayload } from '@/lib/catalogue/types';
+import type { CatalogueModel, CatalogueVariant } from '@/lib/catalogue/types';
 import {
   getBrandModels,
   getModelDetails,
   getModelVariants,
   getVariantDetails,
   searchCatalogue,
-} from "@/services/catalogue/catalogue-api";
+} from '@/services/catalogue/catalogue-api';
 
 type ApiGroupRow = Record<string, unknown>;
 
+/** Coerce a loosely-typed API field to a string; non-primitive values fall back. */
+function asString(value: unknown, fallback = ''): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value);
+  }
+  return fallback;
+}
+
 function toDisplayValue(value: unknown): string | null {
   if (value === null || value === undefined) return null;
-  if (typeof value === "number") return value.toLocaleString("en-IN");
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  if (typeof value === "string") {
+  if (typeof value === 'number') return value.toLocaleString('en-IN');
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (typeof value === 'string') {
     const v = value.trim();
     return v ? v : null;
   }
   if (Array.isArray(value)) {
     const items = value
       .map((item) =>
-        typeof item === "string" || typeof item === "number" ? String(item).trim() : "",
+        typeof item === 'string' || typeof item === 'number' ? String(item).trim() : '',
       )
       .filter(Boolean);
-    return items.length ? items.join(", ") : null;
+    return items.length ? items.join(', ') : null;
   }
   return null;
 }
@@ -32,27 +41,24 @@ function toDisplayValue(value: unknown): string | null {
 function normalizeSpecGroups(details: Record<string, unknown>) {
   const groupsMap = new Map<string, Map<string, ApiGroupRow>>();
   const pushRow = (groupName: string, key: string, row: ApiGroupRow) => {
-    const normalizedGroup = groupName.trim().toLowerCase() || "other";
+    const normalizedGroup = groupName.trim().toLowerCase() || 'other';
     const normalizedKey = key.trim().toLowerCase();
     if (!normalizedKey) return;
-    if (!groupsMap.has(normalizedGroup)) {
-      groupsMap.set(normalizedGroup, new Map<string, ApiGroupRow>());
+    let groupBucket = groupsMap.get(normalizedGroup);
+    if (!groupBucket) {
+      groupBucket = new Map<string, ApiGroupRow>();
+      groupsMap.set(normalizedGroup, groupBucket);
     }
-    const groupBucket = groupsMap.get(normalizedGroup)!;
     if (!groupBucket.has(normalizedKey)) groupBucket.set(normalizedKey, row);
   };
 
-  const grouped = Array.isArray(details.spec_groups)
-    ? (details.spec_groups as ApiGroupRow[])
-    : [];
+  const grouped = Array.isArray(details.spec_groups) ? (details.spec_groups as ApiGroupRow[]) : [];
   for (const group of grouped) {
-    const groupName = String(group.group ?? "other");
+    const groupName = asString(group.group, 'other');
     const specs = Array.isArray(group.specs) ? (group.specs as ApiGroupRow[]) : [];
     for (const spec of specs) {
-      const key = String(spec.key ?? spec.spec_key ?? spec.display_name ?? "").trim();
-      const displayName = String(
-        spec.display_name ?? spec.key ?? spec.spec_key ?? "",
-      ).trim();
+      const key = asString(spec.key ?? spec.spec_key ?? spec.display_name).trim();
+      const displayName = asString(spec.display_name ?? spec.key ?? spec.spec_key).trim();
       const value = toDisplayValue(spec.value ?? spec.spec_value);
       if (!key || !value) continue;
       pushRow(groupName, key, {
@@ -66,13 +72,13 @@ function normalizeSpecGroups(details: Record<string, unknown>) {
   if (groupsMap.size === 0 && Array.isArray(details.specs)) {
     const flatSpecs = details.specs as ApiGroupRow[];
     for (const spec of flatSpecs) {
-      const groupName = String(spec.spec_group ?? "other");
-      const key = String(spec.spec_key ?? spec.key ?? "").trim();
+      const groupName = asString(spec.spec_group, 'other');
+      const key = asString(spec.spec_key ?? spec.key).trim();
       const value = toDisplayValue(spec.spec_value ?? spec.value);
       if (!key || !value) continue;
       pushRow(groupName, key, {
         key,
-        display_name: String(spec.display_name ?? key),
+        display_name: asString(spec.display_name, key),
         value,
       });
     }
@@ -88,10 +94,7 @@ function normalizeSpecGroups(details: Record<string, unknown>) {
   }));
 }
 
-function normalizeFeatureGroups(
-  details: Record<string, unknown>,
-  variants: CatalogueVariant[],
-) {
+function normalizeFeatureGroups(details: Record<string, unknown>, variants: CatalogueVariant[]) {
   const dedupRows = new Map<string, ApiGroupRow>();
   const featureGroups = Array.isArray(details.feature_groups)
     ? (details.feature_groups as ApiGroupRow[])
@@ -101,12 +104,15 @@ function normalizeFeatureGroups(
   for (const group of featureGroups) {
     const rows = Array.isArray(group.features) ? (group.features as ApiGroupRow[]) : [];
     for (const row of rows) {
-      const groupKey = String(row.key ?? row.display_name ?? "")
+      const groupKey = asString(row.key ?? row.display_name)
         .trim()
         .toLowerCase();
       const value = row.value;
-      if (!groupKey || !value || typeof value !== "object") continue;
+      if (!groupKey || !value || typeof value !== 'object') continue;
       const objectValue = value as Record<string, unknown>;
+      // Record index access is typed as always-present (noUncheckedIndexedAccess off); this map is
+      // lazily populated, so the key really can be absent at runtime.
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- lazily-populated map key may be absent
       if (!mergedFeatureValueMap[groupKey]) mergedFeatureValueMap[groupKey] = {};
       for (const [k, v] of Object.entries(objectValue)) {
         const displayValue = toDisplayValue(v);
@@ -125,17 +131,18 @@ function normalizeFeatureGroups(
 
   if (dedupRows.size === 0) {
     for (const variant of variants) {
-      const featureMap =
-        (variant.features as Record<string, unknown> | undefined) ?? {};
+      const featureMap = (variant.features as Record<string, unknown> | undefined) ?? {};
       for (const [category, featureValues] of Object.entries(featureMap)) {
-        if (!featureValues || typeof featureValues !== "object") continue;
+        if (!featureValues || typeof featureValues !== 'object') continue;
         const groupKey = category.trim().toLowerCase();
         if (!groupKey) continue;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- lazily-populated map key may be absent (noUncheckedIndexedAccess off)
         if (!mergedFeatureValueMap[groupKey]) mergedFeatureValueMap[groupKey] = {};
         for (const [k, v] of Object.entries(featureValues as Record<string, unknown>)) {
           const displayValue = toDisplayValue(v);
           if (!displayValue) continue;
-          if (!mergedFeatureValueMap[groupKey][k]) mergedFeatureValueMap[groupKey][k] = displayValue;
+          if (!mergedFeatureValueMap[groupKey][k])
+            mergedFeatureValueMap[groupKey][k] = displayValue;
         }
       }
     }
@@ -146,7 +153,7 @@ function normalizeFeatureGroups(
 
   return [
     {
-      group: "other",
+      group: 'other',
       features: [...dedupRows.values()] as Array<{
         key: string;
         display_name: string;
@@ -159,15 +166,15 @@ function normalizeFeatureGroups(
 async function resolveBrandAndModelSlug(
   slug: string,
 ): Promise<{ brandSlug: string; modelSlug: string } | null> {
-  const rows = await searchCatalogue(slug.replace(/-/g, " "));
+  const rows = await searchCatalogue(slug.replace(/-/g, ' '));
   const wanted = slug.toLowerCase();
-  const model = rows.find(
-    (row) => String(row.slug ?? "").toLowerCase() === wanted,
-  ) as Record<string, unknown> | undefined;
+  const model = rows.find((row) => row.slug.toLowerCase() === wanted) as
+    | Record<string, unknown>
+    | undefined;
   if (!model) return null;
-  const modelSlug = String(model.slug ?? "").trim();
+  const modelSlug = asString(model.slug).trim();
   const brandObj = (model.brand as Record<string, unknown> | undefined) ?? {};
-  const brandSlug = String(model.brand_slug ?? brandObj.slug ?? "").trim();
+  const brandSlug = asString(model.brand_slug ?? brandObj.slug).trim();
   if (!brandSlug || !modelSlug) return null;
   return { brandSlug, modelSlug };
 }
@@ -180,10 +187,10 @@ export async function fetchCatalogueModelDetailPayload(
   brandSlugIn: string,
   modelSlugIn: string,
 ): Promise<CatalogueModelDetailPayload> {
-  let brandSlug = String(brandSlugIn ?? "").trim();
-  let modelSlug = String(modelSlugIn ?? "").trim();
+  let brandSlug = brandSlugIn.trim();
+  let modelSlug = modelSlugIn.trim();
   if (!brandSlug || !modelSlug) {
-    throw new Error("Model not found");
+    throw new Error('Model not found');
   }
 
   const loadByPair = async (brand: string, model: string) => {
@@ -192,7 +199,7 @@ export async function fetchCatalogueModelDetailPayload(
       getModelDetails(brand, model),
       getModelVariants(brand, model),
     ]);
-    if (!details) throw new Error("Model not found");
+    if (!details) throw new Error('Model not found');
     return { models, details, variants, brand, model };
   };
 
@@ -208,7 +215,7 @@ export async function fetchCatalogueModelDetailPayload(
     loaded = await loadByPair(brandSlug, modelSlug);
   } catch {
     const resolved = await resolveBrandAndModelSlug(modelSlug);
-    if (!resolved) throw new Error("Model not found");
+    if (!resolved) throw new Error('Model not found');
     loaded = await loadByPair(resolved.brandSlug, resolved.modelSlug);
     brandSlug = resolved.brandSlug;
     modelSlug = resolved.modelSlug;
@@ -217,13 +224,11 @@ export async function fetchCatalogueModelDetailPayload(
   const { models, details, variants } = loaded;
   const detailsRec = details as unknown as Record<string, unknown>;
 
-  const listing =
-    models.find((m) => String(m.slug ?? "").toLowerCase() === modelSlug.toLowerCase()) ??
-    details;
+  const listing = models.find((m) => m.slug.toLowerCase() === modelSlug.toLowerCase()) ?? details;
 
   const withDetails = await Promise.all(
     variants.map(async (variant) => {
-      const variantSlug = String(variant.slug ?? "").trim();
+      const variantSlug = (variant.slug ?? '').trim();
       if (!variantSlug) return variant;
       try {
         const full = await getVariantDetails(brandSlug, modelSlug, variantSlug);
@@ -243,15 +248,15 @@ export async function fetchCatalogueModelDetailPayload(
     : [];
   const reviewMap = new Map<string, Record<string, unknown>>();
   [...modelReviews, ...variantReviews].forEach((review, idx) => {
-    const id = String(review.id ?? review.title ?? review.heading ?? idx).trim();
-    const key = id || `review-${idx}`;
+    const id = asString(review.id ?? review.title ?? review.heading ?? idx).trim();
+    const key = id || `review-${String(idx)}`;
     if (!reviewMap.has(key)) reviewMap.set(key, review);
   });
 
   return {
     brandSlug,
     modelSlug,
-    listing: listing as CatalogueModel,
+    listing: listing,
     details: detailsRec,
     variants: withDetails,
     modelImages: Array.isArray(detailsRec.images)

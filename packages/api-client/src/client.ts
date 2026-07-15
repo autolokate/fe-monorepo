@@ -28,7 +28,12 @@ export class ApiError extends Error {
   readonly code: string | null;
   readonly details: unknown;
 
-  constructor(message: string, status: number, code: string | null = null, details: unknown = null) {
+  constructor(
+    message: string,
+    status: number,
+    code: string | null = null,
+    details: unknown = null,
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
@@ -95,8 +100,13 @@ export class ApiClient {
     path: string,
     options: Omit<ApiRequestOptions, 'method' | 'body'> & { accept?: string } = {},
   ): Promise<{ blob: Blob; filename: string | null }> {
-    const { accept = 'application/octet-stream', headers = {}, signal, skipAuth = false, skipAuthRetry = false } =
-      options;
+    const {
+      accept = 'application/octet-stream',
+      headers = {},
+      signal,
+      skipAuth = false,
+      skipAuthRetry = false,
+    } = options;
     const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
     const token = skipAuth ? null : this.getAccessToken();
     // Held in its own binding: `RequestInit.headers` widens to `HeadersInit` (which may be an array or
@@ -169,16 +179,19 @@ export class ApiClient {
 
   /** `body` is optional: `DELETE /v1/devices/token` identifies the row by a body field rather than
    *  putting the device's push token in the URL, where it would reach access logs. */
-  async delete<T>(
-    path: string,
-    options: Omit<ApiRequestOptions, 'method'> = {},
-  ): Promise<T> {
+  async delete<T>(path: string, options: Omit<ApiRequestOptions, 'method'> = {}): Promise<T> {
     return this.request<T>(path, { ...options, method: 'DELETE' });
   }
 
   async request<T>(path: string, options: ApiRequestOptions = {}, isRetry = false): Promise<T> {
-    const { method = 'GET', body, headers = {}, signal, skipAuth = false, skipAuthRetry = false } =
-      options;
+    const {
+      method = 'GET',
+      body,
+      headers = {},
+      signal,
+      skipAuth = false,
+      skipAuthRetry = false,
+    } = options;
     const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
     const token = skipAuth ? null : this.getAccessToken();
     const requestInit: RequestInit = {

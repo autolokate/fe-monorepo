@@ -9,10 +9,7 @@ import {
   AlText,
 } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 import type { CoreComponentPageId, PropRow } from '../../types';
 
 function renderLayoutPreview(page: CoreComponentPageId, _state: ShowcaseState) {
@@ -66,9 +63,7 @@ function renderLayoutPreview(page: CoreComponentPageId, _state: ShowcaseState) {
         </AlStack>
       );
     case 'core-icon-button':
-      return (
-        <AlIconButton icon={<AlIcon name="bell" size={20} />} label="Notifications" />
-      );
+      return <AlIconButton icon={<AlIcon name="bell" size={20} />} label="Notifications" />;
     default:
       return null;
   }
@@ -184,10 +179,25 @@ const layoutMeta: Record<
 <AlText variant="body">Body</AlText>
 <AlText variant="label" tone="muted">Secondary</AlText>`,
     props: [
-      { name: 'variant', type: 'TextVariant', defaultValue: 'body', description: 'display | headline | title | body | label | caption | mono' },
-      { name: 'tone', type: 'TextTone', defaultValue: 'default', description: 'default | muted | on-primary' },
+      {
+        name: 'variant',
+        type: 'TextVariant',
+        defaultValue: 'body',
+        description: 'display | headline | title | body | label | caption | mono',
+      },
+      {
+        name: 'tone',
+        type: 'TextTone',
+        defaultValue: 'default',
+        description: 'default | muted | on-primary',
+      },
       { name: 'as', type: 'element', defaultValue: 'p', description: 'Semantic HTML element.' },
-      { name: 'align', type: 'start | center', defaultValue: 'start', description: 'Text alignment.' },
+      {
+        name: 'align',
+        type: 'start | center',
+        defaultValue: 'start',
+        description: 'Text alignment.',
+      },
     ],
     accessibility: [
       'Use semantic as prop for headings only when AlHeading is not appropriate.',
@@ -205,7 +215,12 @@ const layoutMeta: Record<
 
 <AlHeading variant="h2">Section title</AlHeading>`,
     props: [
-      { name: 'variant', type: 'AlHeadingVariant', defaultValue: 'h2', description: 'Visual scale h1–h4.' },
+      {
+        name: 'variant',
+        type: 'AlHeadingVariant',
+        defaultValue: 'h2',
+        description: 'Visual scale h1–h4.',
+      },
       { name: 'as', type: 'AlHeadingVariant', description: 'Semantic tag override.' },
     ],
     accessibility: [
@@ -217,15 +232,36 @@ const layoutMeta: Record<
     name: 'AlStack',
     description: 'Flex layout primitive with tokenized gap, alignment, and direction.',
     whenToUse: 'Vertical or horizontal grouping with consistent spacing rhythm.',
-    overview: 'Wraps flexbox with design-system gap tokens (xs through xxxl). Default column direction.',
+    overview:
+      'Wraps flexbox with design-system gap tokens (xs through xxxl). Default column direction.',
     code: `import { AlStack, AlText } from '@autolokate/ui';
 
 <AlStack gap="md"><AlText>A</AlText><AlText>B</AlText></AlStack>`,
     props: [
-      { name: 'direction', type: 'row | column', defaultValue: 'column', description: 'Flex direction.' },
-      { name: 'gap', type: 'StackGap', defaultValue: 'md', description: 'xs | sm | md | lg | xl | xxl | xxxl' },
-      { name: 'align', type: 'start | center | stretch', defaultValue: 'stretch', description: 'Cross-axis alignment.' },
-      { name: 'justify', type: 'start | center | between', defaultValue: 'start', description: 'Main-axis distribution.' },
+      {
+        name: 'direction',
+        type: 'row | column',
+        defaultValue: 'column',
+        description: 'Flex direction.',
+      },
+      {
+        name: 'gap',
+        type: 'StackGap',
+        defaultValue: 'md',
+        description: 'xs | sm | md | lg | xl | xxl | xxxl',
+      },
+      {
+        name: 'align',
+        type: 'start | center | stretch',
+        defaultValue: 'stretch',
+        description: 'Cross-axis alignment.',
+      },
+      {
+        name: 'justify',
+        type: 'start | center | between',
+        defaultValue: 'start',
+        description: 'Main-axis distribution.',
+      },
     ],
     accessibility: [
       'Layout-only — no implicit ARIA roles.',
@@ -241,7 +277,12 @@ const layoutMeta: Record<
 
 <AlGrid columns={3} gap="md">{children}</AlGrid>`,
     props: [
-      { name: 'columns', type: 'GridColumns', defaultValue: '1', description: '1 | 2 | 3 | 4 | auto' },
+      {
+        name: 'columns',
+        type: 'GridColumns',
+        defaultValue: '1',
+        description: '1 | 2 | 3 | 4 | auto',
+      },
       { name: 'gap', type: 'StackGap', defaultValue: 'md', description: 'Grid gap token.' },
     ],
     accessibility: [
@@ -253,12 +294,18 @@ const layoutMeta: Record<
     name: 'AlContainer',
     description: 'Max-width content wrapper with horizontal padding.',
     whenToUse: 'Centering screen content within mobile and tablet breakpoints.',
-    overview: 'Width variants: narrow, wide (default), full. Applies horizontal padding from layout tokens.',
+    overview:
+      'Width variants: narrow, wide (default), full. Applies horizontal padding from layout tokens.',
     code: `import { AlContainer } from '@autolokate/ui';
 
 <AlContainer>{children}</AlContainer>`,
     props: [
-      { name: 'width', type: 'ContainerWidth', defaultValue: 'wide', description: 'narrow | wide | full' },
+      {
+        name: 'width',
+        type: 'ContainerWidth',
+        defaultValue: 'wide',
+        description: 'narrow | wide | full',
+      },
     ],
     accessibility: [
       'Does not constrain focus order or skip links.',
@@ -275,7 +322,12 @@ const layoutMeta: Record<
 <AlDivider />
 <AlDivider orientation="vertical" />`,
     props: [
-      { name: 'orientation', type: 'horizontal | vertical', defaultValue: 'horizontal', description: 'Separator direction.' },
+      {
+        name: 'orientation',
+        type: 'horizontal | vertical',
+        defaultValue: 'horizontal',
+        description: 'Separator direction.',
+      },
     ],
     accessibility: [
       'role="separator" on hr element.',
@@ -286,16 +338,26 @@ const layoutMeta: Record<
     name: 'AlIconButton',
     description: 'Icon-only button with required accessible name.',
     whenToUse: 'Toolbar actions, header icons, and compact controls.',
-    overview: 'Requires label prop mapped to aria-label and title. Sizes sm/md/lg with optional filled variant.',
+    overview:
+      'Requires label prop mapped to aria-label and title. Sizes sm/md/lg with optional filled variant.',
     code: `import { AlIconButton } from '@autolokate/ui';
 import { AlIcon } from '@autolokate/icons';
 
 <AlIconButton icon={<AlIcon name="bell" />} label="Notifications" />`,
     props: [
-      { name: 'icon', type: 'ReactNode', description: 'Icon content (mark aria-hidden on AlIcon).' },
+      {
+        name: 'icon',
+        type: 'ReactNode',
+        description: 'Icon content (mark aria-hidden on AlIcon).',
+      },
       { name: 'label', type: 'string', description: 'Required — aria-label and title.' },
       { name: 'size', type: 'sm | md | lg', defaultValue: 'md', description: 'Touch target size.' },
-      { name: 'filled', type: 'boolean', defaultValue: 'false', description: 'Filled surface variant.' },
+      {
+        name: 'filled',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Filled surface variant.',
+      },
     ],
     accessibility: [
       'label prop is required — never ship icon-only buttons without accessible name.',

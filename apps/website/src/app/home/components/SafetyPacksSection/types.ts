@@ -1,12 +1,12 @@
-import type { ComponentType } from "react";
-import type { LucideProps } from "lucide-react";
+import type { ComponentType } from 'react';
+import type { LucideProps } from 'lucide-react';
 
 export interface PlanFeature {
   label: string;
   Icon: ComponentType<LucideProps>;
 }
 
-export type SafetyPlanVariant = "secure" | "shield" | "shieldPlus";
+export type SafetyPlanVariant = 'secure' | 'shield' | 'shieldPlus';
 
 export interface SafetyPlan {
   id: string;
@@ -19,7 +19,6 @@ export interface SafetyPlan {
   popular?: boolean;
   popularBadge?: string;
   ctaLabel: string;
-  ctaHref: string;
   features: PlanFeature[];
 }
 

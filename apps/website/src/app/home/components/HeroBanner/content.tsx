@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { useMemo } from "react";
-import { ArrowRight, BookOpen, ChevronRight, Flame } from "lucide-react";
-import { useTrendingModels } from "@/hooks/catalogue";
-import { formatINR } from "@/lib/utils";
-import type { CatalogueModel } from "@/lib/catalogue/types";
-import { TRENDING_MODELS } from "./constants";
-import type { TrendingModel } from "./types";
-import styles from "./index.module.css";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useMemo } from 'react';
+import { ArrowRight, BookOpen, ChevronRight, Flame } from 'lucide-react';
+import { useTrendingModels } from '@/hooks/catalogue';
+import { formatINR } from '@/lib/utils';
+import type { CatalogueModel } from '@/lib/catalogue/types';
+import { TRENDING_MODELS } from './constants';
+import type { TrendingModel } from './types';
+import styles from './index.module.css';
 
 function toTrendingItems(models: CatalogueModel[]): TrendingModel[] {
   return models.slice(0, 3).map((m, idx) => {
-    const min = typeof m.min_price === "number" ? m.min_price : null;
-    const max = typeof m.max_price === "number" ? m.max_price : null;
-    let priceLabel = "Price on request";
+    const min = typeof m.min_price === 'number' ? m.min_price : null;
+    const max = typeof m.max_price === 'number' ? m.max_price : null;
+    let priceLabel = 'Price on request';
     if (min && max && max > min) {
       priceLabel = `${formatINR(min)} – ${formatINR(max)}`;
     } else if (min) {
@@ -26,19 +26,21 @@ function toTrendingItems(models: CatalogueModel[]): TrendingModel[] {
         ? `/cars/${encodeURIComponent(m.brand_slug)}/${encodeURIComponent(m.model_slug)}`
         : m.model_slug
           ? `/cars/${encodeURIComponent(m.model_slug)}`
-          : "/how-it-works";
+          : '/how-it-works';
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- fuel_types is typed string[] but this index-signature API row may omit it at runtime
     const subtitle = [m.body_type, ...(m.fuel_types ?? [])]
       .filter((s): s is string => Boolean(s))
       .slice(0, 3)
       .map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())
-      .join(" · ");
+      .join(' · ');
 
     return {
-      id: typeof m.id === "string" ? m.id : `${m.brand_slug ?? "model"}-${m.model_slug ?? idx}`,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- model_slug is typed string but this index-signature API row may omit it at runtime
+      id: typeof m.id === 'string' ? m.id : `${m.brand_slug ?? 'model'}-${m.model_slug ?? idx}`,
       href,
-      title: [m.brand_name, m.model_name].filter(Boolean).join(" ") || m.model_name,
-      subtitle: subtitle || "New model",
-      imageUrl: typeof m.hero_image_url === "string" ? m.hero_image_url : undefined,
+      title: [m.brand_name, m.model_name].filter(Boolean).join(' ') || m.model_name,
+      subtitle: subtitle || 'New model',
+      imageUrl: typeof m.hero_image_url === 'string' ? m.hero_image_url : undefined,
       imageAlt: m.model_name,
       priceLabel,
     };
@@ -62,10 +64,7 @@ export function TrendingModelsCard() {
       aria-label="Trending models in the catalogue"
       className="relative w-full overflow-hidden rounded-3xl border border-border/80 bg-card/95 p-5 shadow-hero-card ring-1 ring-foreground/[0.04] backdrop-blur-md sm:p-6"
     >
-      <div
-        className="ambient-blob-primary right-[-3rem] top-[-3.5rem] h-32 w-32"
-        aria-hidden
-      />
+      <div className="ambient-blob-primary right-[-3rem] top-[-3.5rem] h-32 w-32" aria-hidden />
 
       <div className="relative mb-4 flex items-center justify-between gap-3">
         <h3 className="font-display text-lg font-semibold tracking-tight text-foreground sm:text-xl">

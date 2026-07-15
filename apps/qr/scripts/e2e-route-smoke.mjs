@@ -27,11 +27,7 @@ async function main() {
     qrRedirectOk = /\/onboarding\/[^/]+\/auth/.test(page.url());
   }
   const qrHasQuery = page.url().includes('q=ALK-B2C005');
-  record(
-    'QR entry redirects to onboarding auth with ?q=',
-    qrRedirectOk && qrHasQuery,
-    page.url(),
-  );
+  record('QR entry redirects to onboarding auth with ?q=', qrRedirectOk && qrHasQuery, page.url());
 
   await page.goto(`${BASE}/auth?q=${encodeURIComponent(QR)}`, { waitUntil: 'domcontentloaded' });
   let authRedirectOk = false;
@@ -54,11 +50,7 @@ async function main() {
   await page.goto(`${BASE}/onboarding/${encodeURIComponent(QR)}/plans`, {
     waitUntil: 'networkidle',
   });
-  record(
-    'Scoped /plans route loads',
-    page.url().includes('/plans'),
-    page.url(),
-  );
+  record('Scoped /plans route loads', page.url().includes('/plans'), page.url());
 
   await page.goto(`${BASE}/emergency/${encodeURIComponent(QR)}/rider-prompt`, {
     waitUntil: 'networkidle',

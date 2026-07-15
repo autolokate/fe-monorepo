@@ -30,19 +30,19 @@ pnpm install
 
 ## Local development
 
-| App | Command | Notes |
-|-----|---------|-------|
-| QR PWA | `pnpm --filter @autolokate/qr dev` | API URL in `apps/qr/.env.development` |
-| Admin | `pnpm --filter @autolokate/admin dev` | API URL in `apps/admin/.env.development` |
-| Website | `pnpm --filter @autolokate/website dev` | |
+| App     | Command                                 | Notes                                    |
+| ------- | --------------------------------------- | ---------------------------------------- |
+| QR PWA  | `pnpm --filter @autolokate/qr dev`      | API URL in `apps/qr/.env.development`    |
+| Admin   | `pnpm --filter @autolokate/admin dev`   | API URL in `apps/admin/.env.development` |
+| Website | `pnpm --filter @autolokate/website dev` |                                          |
 
 **Staging QR PWA:** https://qr-staging.autolokate.com/
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Run dev servers across the workspace |
-| `pnpm build` | Build all packages and apps |
-| `pnpm lint` | Lint all packages and apps |
-| `pnpm clean` | Clean build artifacts |
+| Command      | Description                          |
+| ------------ | ------------------------------------ |
+| `pnpm dev`   | Run dev servers across the workspace |
+| `pnpm build` | Build all packages and apps          |
+| `pnpm lint`  | Lint all packages and apps           |
+| `pnpm clean` | Clean build artifacts                |

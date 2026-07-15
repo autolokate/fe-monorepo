@@ -27,8 +27,7 @@ export function A2OtpScreen({
   const isSuccess = otpState === 'success';
   const isNetworkError = otpState === 'network-error';
   const isResendFailed = otpState === 'resend-failed';
-  const isWrong =
-    otpState === 'error' || otpErrorKind === 'wrong' || otpErrorKind === 'expired';
+  const isWrong = otpState === 'error' || otpErrorKind === 'wrong' || otpErrorKind === 'expired';
   const isOffline = otpState === 'offline';
   const canResend = Boolean(onResendOtp) && resendCooldownSeconds === 0 && !verifying && !isOffline;
   const showSmsFallback =
@@ -76,9 +75,7 @@ export function A2OtpScreen({
       }
       footerLabel="Verify"
       footerLoading={verifying}
-      footerDisabled={
-        isSuccess || verifying || isOffline || otpValue.length < OTP_LENGTH
-      }
+      footerDisabled={isSuccess || verifying || isOffline || otpValue.length < OTP_LENGTH}
       hideFooter={isSuccess}
       showBack={showBack}
       onBack={onBack}

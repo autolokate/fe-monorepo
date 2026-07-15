@@ -26,9 +26,7 @@ export function toCreatePlanBody(values: CreatePlanVersionFormValues): CreatePla
     pricePaise: requirePaise(values.priceRupees),
     riderEligible: values.riderEligible,
     period: 'YEARLY',
-    ...(effectiveFrom.length > 0
-      ? { effectiveFrom: new Date(effectiveFrom).toISOString() }
-      : {}),
+    ...(effectiveFrom.length > 0 ? { effectiveFrom: new Date(effectiveFrom).toISOString() } : {}),
     ...(values.retireCurrent ? { retireCurrent: true } : {}),
   };
 }

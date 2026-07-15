@@ -21,9 +21,7 @@ export function AlScreenBg({
       className={cn('al-screen-bg', variant !== 'default' && `al-screen-bg--${variant}`, className)}
       {...props}
     >
-      {variant !== 'default' ? (
-        <div className="al-screen-bg__tint" aria-hidden="true" />
-      ) : null}
+      {variant !== 'default' ? <div className="al-screen-bg__tint" aria-hidden="true" /> : null}
       {children ? <div className="al-screen-bg__content">{children}</div> : null}
     </div>
   );

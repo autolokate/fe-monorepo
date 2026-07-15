@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { AlCheckbox } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function CheckboxStatePreview({ state }: { state: ShowcaseState }) {
   const [checked, setChecked] = useState(state === 'active');
@@ -65,7 +62,12 @@ export function AlCheckboxPage() {
         { name: 'label', type: 'string', description: 'Checkbox label.' },
         { name: 'helperText', type: 'string', description: 'Supporting hint.' },
         { name: 'errorText', type: 'string', description: 'Validation message.' },
-        { name: 'disabled', type: 'boolean', defaultValue: 'false', description: 'Disables input.' },
+        {
+          name: 'disabled',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Disables input.',
+        },
       ]}
     />
   );

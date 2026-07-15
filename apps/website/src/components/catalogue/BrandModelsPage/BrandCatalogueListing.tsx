@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
-import { useMemo, useState } from "react";
+import type { ReactNode } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   Car,
@@ -16,22 +16,18 @@ import {
   Search,
   Tag,
   X,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import type { CatalogueModel } from "@/lib/catalogue/types";
-import type { VehicleCategory } from "@/lib/preferences";
-import { cn } from "@/lib/utils";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import type { CatalogueModel } from '@/lib/catalogue/types';
+import type { VehicleCategory } from '@/lib/preferences';
+import { cn } from '@/lib/utils';
 
-import { BrandModelCatalogueCard } from "./BrandModelCatalogueCard";
-import { BrandModelCatalogueListRow } from "./BrandModelCatalogueListRow";
+import { BrandModelCatalogueCard } from './BrandModelCatalogueCard';
+import { BrandModelCatalogueListRow } from './BrandModelCatalogueListRow';
 import {
   humanizeSegment,
   modelSearchBlob,
@@ -39,7 +35,7 @@ import {
   priceLow,
   primaryModelKey,
   sortModelLabelKey,
-} from "./model-utils";
+} from './model-utils';
 
 export type BrandCatalogueListingProps = {
   listings: CatalogueModel[];
@@ -59,7 +55,7 @@ export type BrandCatalogueListingProps = {
   afterListings?: ReactNode | null;
 };
 
-type SortMode = "popular" | "price-asc" | "price-desc";
+type SortMode = 'popular' | 'price-asc' | 'price-desc';
 
 export function BrandCatalogueListing({
   listings,
@@ -75,11 +71,11 @@ export function BrandCatalogueListing({
   showBrandLockBadge = true,
   afterListings = null,
 }: BrandCatalogueListingProps) {
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortMode>("popular");
-  const [bodyType, setBodyType] = useState("all");
-  const [fuelType, setFuelType] = useState("all");
-  const [view, setView] = useState<"grid" | "list">("grid");
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortMode>('popular');
+  const [bodyType, setBodyType] = useState('all');
+  const [fuelType, setFuelType] = useState('all');
+  const [view, setView] = useState<'grid' | 'list'>('grid');
 
   // Popover open states for each chip trigger
   const [bodyOpen, setBodyOpen] = useState(false);
@@ -88,8 +84,8 @@ export function BrandCatalogueListing({
 
   const bodyOptions = useMemo(
     () =>
-      Array.from(new Set(listings.map((r) => String(r.body_type || "").trim()).filter(Boolean))).sort((a, b) =>
-        a.localeCompare(b),
+      Array.from(new Set(listings.map((r) => (r.body_type || '').trim()).filter(Boolean))).sort(
+        (a, b) => a.localeCompare(b),
       ),
     [listings],
   );
@@ -101,8 +97,8 @@ export function BrandCatalogueListing({
           listings
             .flatMap((r) =>
               Array.isArray(r.fuel_types) && r.fuel_types.length
-                ? r.fuel_types.map((fuel) => String(fuel || "").trim())
-                : [String(r.fuel_type || "").trim()],
+                ? r.fuel_types.map((fuel) => (fuel || '').trim())
+                : [(r.fuel_type || '').trim()],
             )
             .filter(Boolean),
         ),
@@ -116,55 +112,52 @@ export function BrandCatalogueListing({
     if (q) {
       rows = rows.filter((r) => modelSearchBlob(r, displayName, pageBrandSlug).includes(q));
     }
-    if (bodyType !== "all") {
-      rows = rows.filter((r) => String(r.body_type ?? "") === bodyType);
+    if (bodyType !== 'all') {
+      rows = rows.filter((r) => (r.body_type ?? '') === bodyType);
     }
-    if (fuelType !== "all") {
+    if (fuelType !== 'all') {
       rows = rows.filter((r) => {
         const options =
-          Array.isArray(r.fuel_types) && r.fuel_types.length
-            ? r.fuel_types.map((fuel) => String(fuel))
-            : [String(r.fuel_type ?? "")];
+          Array.isArray(r.fuel_types) && r.fuel_types.length ? r.fuel_types : [r.fuel_type ?? ''];
         return options.includes(fuelType);
       });
     }
 
-    if (sort === "price-asc") {
+    if (sort === 'price-asc') {
       rows.sort(
         (a, b) =>
           priceLow(a) - priceLow(b) ||
           sortModelLabelKey(a, displayName).localeCompare(sortModelLabelKey(b, displayName)),
       );
-    } else if (sort === "price-desc") {
+    } else if (sort === 'price-desc') {
       rows.sort(
         (a, b) =>
           priceHigh(b) - priceHigh(a) ||
           sortModelLabelKey(a, displayName).localeCompare(sortModelLabelKey(b, displayName)),
       );
     } else {
-      rows.sort((a, b) => sortModelLabelKey(a, displayName).localeCompare(sortModelLabelKey(b, displayName)));
+      rows.sort((a, b) =>
+        sortModelLabelKey(a, displayName).localeCompare(sortModelLabelKey(b, displayName)),
+      );
     }
     return rows;
   }, [listings, query, bodyType, fuelType, sort, displayName, pageBrandSlug]);
 
   const priceSortLabel =
-    sort === "price-asc"
-      ? "Price: Low to High"
-      : sort === "price-desc"
-        ? "Price: High to Low"
+    sort === 'price-asc'
+      ? 'Price: Low to High'
+      : sort === 'price-desc'
+        ? 'Price: High to Low'
         : null;
 
   const hasActiveFilters =
-    query.trim().length > 0 ||
-    bodyType !== "all" ||
-    fuelType !== "all" ||
-    priceSortLabel != null;
+    query.trim().length > 0 || bodyType !== 'all' || fuelType !== 'all' || priceSortLabel != null;
 
   const clearFilters = () => {
-    setQuery("");
-    setBodyType("all");
-    setFuelType("all");
-    setSort("popular");
+    setQuery('');
+    setBodyType('all');
+    setFuelType('all');
+    setSort('popular');
   };
 
   // Active filter pills (rendered below the filter bar)
@@ -172,24 +165,37 @@ export function BrandCatalogueListing({
   const activePills: ActivePill[] = useMemo(() => {
     const out: ActivePill[] = [];
     const q = query.trim();
-    if (q) out.push({ id: "q", label: `“${q}”`, onClear: () => setQuery("") });
-    if (bodyType !== "all")
+    if (q)
       out.push({
-        id: "body",
-        label: humanizeSegment(bodyType),
-        onClear: () => setBodyType("all"),
+        id: 'q',
+        label: `“${q}”`,
+        onClear: () => {
+          setQuery('');
+        },
       });
-    if (fuelType !== "all")
+    if (bodyType !== 'all')
       out.push({
-        id: "fuel",
+        id: 'body',
+        label: humanizeSegment(bodyType),
+        onClear: () => {
+          setBodyType('all');
+        },
+      });
+    if (fuelType !== 'all')
+      out.push({
+        id: 'fuel',
         label: humanizeSegment(fuelType),
-        onClear: () => setFuelType("all"),
+        onClear: () => {
+          setFuelType('all');
+        },
       });
     if (priceSortLabel != null)
       out.push({
-        id: "price-sort",
+        id: 'price-sort',
         label: priceSortLabel,
-        onClear: () => setSort("popular"),
+        onClear: () => {
+          setSort('popular');
+        },
       });
     return out;
   }, [query, bodyType, fuelType, priceSortLabel]);
@@ -204,7 +210,9 @@ export function BrandCatalogueListing({
             variant="outline"
             size="sm"
             className="mt-4"
-            onClick={() => void onRetryModels()}
+            onClick={() => {
+              onRetryModels();
+            }}
           >
             <RefreshCw className="h-3.5 w-3.5" aria-hidden />
             Retry models
@@ -242,7 +250,9 @@ export function BrandCatalogueListing({
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
               placeholder="Brand or model name"
               className="h-10 w-full rounded-full border-border/70 bg-background pl-9 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-primary/30"
               aria-label="Search by brand or model name"
@@ -258,19 +268,19 @@ export function BrandCatalogueListing({
                 disabled={isInitialLoading}
                 aria-label="Filter by body type"
                 className={cn(
-                  "inline-flex h-10 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
-                  bodyType !== "all"
-                    ? "border-foreground/40 bg-foreground/[0.06] text-foreground"
-                    : "border-border/70 text-foreground hover:border-foreground/30 hover:bg-foreground/5",
-                  bodyOpen && "border-foreground/50 ring-2 ring-foreground/10",
+                  'inline-flex h-10 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50',
+                  bodyType !== 'all'
+                    ? 'border-foreground/40 bg-foreground/[0.06] text-foreground'
+                    : 'border-border/70 text-foreground hover:border-foreground/30 hover:bg-foreground/5',
+                  bodyOpen && 'border-foreground/50 ring-2 ring-foreground/10',
                 )}
               >
                 <Car className="h-4 w-4 text-muted-foreground" aria-hidden />
-                <span>{bodyType === "all" ? "Body Type" : humanizeSegment(bodyType)}</span>
+                <span>{bodyType === 'all' ? 'Body Type' : humanizeSegment(bodyType)}</span>
                 <ChevronDown
                   className={cn(
-                    "h-3.5 w-3.5 text-muted-foreground transition",
-                    bodyOpen && "rotate-180",
+                    'h-3.5 w-3.5 text-muted-foreground transition',
+                    bodyOpen && 'rotate-180',
                   )}
                   aria-hidden
                 />
@@ -283,9 +293,9 @@ export function BrandCatalogueListing({
               <ul className="max-h-72 overflow-y-auto py-1">
                 <FilterOption
                   label="All body types"
-                  selected={bodyType === "all"}
+                  selected={bodyType === 'all'}
                   onSelect={() => {
-                    setBodyType("all");
+                    setBodyType('all');
                     setBodyOpen(false);
                   }}
                 />
@@ -317,19 +327,19 @@ export function BrandCatalogueListing({
                 disabled={isInitialLoading}
                 aria-label="Filter by fuel type"
                 className={cn(
-                  "inline-flex h-10 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
-                  fuelType !== "all"
-                    ? "border-foreground/40 bg-foreground/[0.06] text-foreground"
-                    : "border-border/70 text-foreground hover:border-foreground/30 hover:bg-foreground/5",
-                  fuelOpen && "border-foreground/50 ring-2 ring-foreground/10",
+                  'inline-flex h-10 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50',
+                  fuelType !== 'all'
+                    ? 'border-foreground/40 bg-foreground/[0.06] text-foreground'
+                    : 'border-border/70 text-foreground hover:border-foreground/30 hover:bg-foreground/5',
+                  fuelOpen && 'border-foreground/50 ring-2 ring-foreground/10',
                 )}
               >
                 <Droplets className="h-4 w-4 text-muted-foreground" aria-hidden />
-                <span>{fuelType === "all" ? "Fuel Type" : humanizeSegment(fuelType)}</span>
+                <span>{fuelType === 'all' ? 'Fuel Type' : humanizeSegment(fuelType)}</span>
                 <ChevronDown
                   className={cn(
-                    "h-3.5 w-3.5 text-muted-foreground transition",
-                    fuelOpen && "rotate-180",
+                    'h-3.5 w-3.5 text-muted-foreground transition',
+                    fuelOpen && 'rotate-180',
                   )}
                   aria-hidden
                 />
@@ -342,9 +352,9 @@ export function BrandCatalogueListing({
               <ul className="max-h-72 overflow-y-auto py-1">
                 <FilterOption
                   label="All fuel types"
-                  selected={fuelType === "all"}
+                  selected={fuelType === 'all'}
                   onSelect={() => {
-                    setFuelType("all");
+                    setFuelType('all');
                     setFuelOpen(false);
                   }}
                 />
@@ -376,19 +386,19 @@ export function BrandCatalogueListing({
                 disabled={isInitialLoading}
                 aria-label="Sort by price range"
                 className={cn(
-                  "inline-flex h-10 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
+                  'inline-flex h-10 items-center gap-2 rounded-full border bg-background px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50',
                   priceSortLabel
-                    ? "border-foreground/40 bg-foreground/[0.06] text-foreground"
-                    : "border-border/70 text-foreground hover:border-foreground/30 hover:bg-foreground/5",
-                  priceOpen && "border-foreground/50 ring-2 ring-foreground/10",
+                    ? 'border-foreground/40 bg-foreground/[0.06] text-foreground'
+                    : 'border-border/70 text-foreground hover:border-foreground/30 hover:bg-foreground/5',
+                  priceOpen && 'border-foreground/50 ring-2 ring-foreground/10',
                 )}
               >
                 <Tag className="h-4 w-4 text-muted-foreground" aria-hidden />
-                <span>{priceSortLabel ?? "Price Range"}</span>
+                <span>{priceSortLabel ?? 'Price Range'}</span>
                 <ChevronDown
                   className={cn(
-                    "h-3.5 w-3.5 text-muted-foreground transition",
-                    priceOpen && "rotate-180",
+                    'h-3.5 w-3.5 text-muted-foreground transition',
+                    priceOpen && 'rotate-180',
                   )}
                   aria-hidden
                 />
@@ -401,17 +411,17 @@ export function BrandCatalogueListing({
               <ul className="py-1">
                 <FilterOption
                   label="Low to High"
-                  selected={sort === "price-asc"}
+                  selected={sort === 'price-asc'}
                   onSelect={() => {
-                    setSort("price-asc");
+                    setSort('price-asc');
                     setPriceOpen(false);
                   }}
                 />
                 <FilterOption
                   label="High to Low"
-                  selected={sort === "price-desc"}
+                  selected={sort === 'price-desc'}
                   onSelect={() => {
-                    setSort("price-desc");
+                    setSort('price-desc');
                     setPriceOpen(false);
                   }}
                 />
@@ -421,7 +431,7 @@ export function BrandCatalogueListing({
                   <button
                     type="button"
                     onClick={() => {
-                      setSort("popular");
+                      setSort('popular');
                       setPriceOpen(false);
                     }}
                     className="text-[11px] font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
@@ -456,9 +466,9 @@ export function BrandCatalogueListing({
       <div className="mb-5 mt-5 flex flex-wrap items-center gap-2 text-sm">
         <Filter className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
         <span className="text-muted-foreground">
-          Showing{" "}
-          <span className="font-semibold tabular-nums text-foreground">{filtered.length}</span>{" "}
-          {filtered.length === 1 ? "model" : "models"}
+          Showing{' '}
+          <span className="font-semibold tabular-nums text-foreground">{filtered.length}</span>{' '}
+          {filtered.length === 1 ? 'model' : 'models'}
         </span>
         {showBrandLockBadge && lockedBrandBadge ? (
           <Badge
@@ -473,12 +483,14 @@ export function BrandCatalogueListing({
           <button
             type="button"
             aria-label="Grid view"
-            onClick={() => setView("grid")}
+            onClick={() => {
+              setView('grid');
+            }}
             className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-lg transition",
-              view === "grid"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+              'flex h-7 w-7 items-center justify-center rounded-lg transition',
+              view === 'grid'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
             )}
           >
             <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
@@ -486,12 +498,14 @@ export function BrandCatalogueListing({
           <button
             type="button"
             aria-label="List view"
-            onClick={() => setView("list")}
+            onClick={() => {
+              setView('list');
+            }}
             className={cn(
-              "flex h-7 w-7 items-center justify-center rounded-lg transition",
-              view === "list"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+              'flex h-7 w-7 items-center justify-center rounded-lg transition',
+              view === 'list'
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
             )}
           >
             <List className="h-3.5 w-3.5" aria-hidden />
@@ -520,7 +534,7 @@ export function BrandCatalogueListing({
               </Button>
             ) : null}
           </div>
-        ) : view === "grid" ? (
+        ) : view === 'grid' ? (
           <ul className="grid list-none gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
             {filtered.map((model, idx) => (
               <BrandModelCatalogueCard
@@ -568,16 +582,14 @@ function FilterOption({
         type="button"
         onClick={onSelect}
         className={cn(
-          "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
+          'flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition',
           selected
-            ? "bg-foreground/[0.08] font-medium text-foreground"
-            : "text-foreground hover:bg-foreground/[0.04]",
+            ? 'bg-foreground/[0.08] font-medium text-foreground'
+            : 'text-foreground hover:bg-foreground/[0.04]',
         )}
       >
         <span className="truncate">{label}</span>
-        {selected ? (
-          <Check className="h-3.5 w-3.5 text-foreground" aria-hidden />
-        ) : null}
+        {selected ? <Check className="h-3.5 w-3.5 text-foreground" aria-hidden /> : null}
       </button>
     </li>
   );

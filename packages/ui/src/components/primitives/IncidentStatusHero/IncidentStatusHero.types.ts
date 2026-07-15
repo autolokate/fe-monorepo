@@ -1,10 +1,7 @@
 import type { ReactNode } from 'react';
 
 /** Figma frame-specific hero illustration. */
-export type AlIncidentStatusHeroScene =
-  | 'couldnt-send'
-  | 'alert-cancelled'
-  | 'location-unavailable';
+export type AlIncidentStatusHeroScene = 'couldnt-send' | 'alert-cancelled' | 'location-unavailable';
 
 export type AlIncidentStatusHeroVariant = 'attention' | 'emergency' | 'neutral' | 'success';
 

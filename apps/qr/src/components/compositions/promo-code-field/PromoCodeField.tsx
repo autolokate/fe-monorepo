@@ -81,7 +81,11 @@ export function PromoCodeField({
       <AlText tone="muted" className="ob-promo-code-field__placeholder">
         Have a promo code?
       </AlText>
-      <button type="button" className="ob-promo-code-field__action ob-promo-code-field__action--apply" onClick={onApply}>
+      <button
+        type="button"
+        className="ob-promo-code-field__action ob-promo-code-field__action--apply"
+        onClick={onApply}
+      >
         Apply
       </button>
     </div>

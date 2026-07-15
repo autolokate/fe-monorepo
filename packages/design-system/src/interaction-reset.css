@@ -30,18 +30,18 @@
 
 /* Pointer/touch focus — no default ring; keyboard uses :focus-visible in components */
 :is(
-  button,
-  a,
-  input,
-  textarea,
-  select,
-  summary,
-  [role='button'],
-  [role='link'],
-  [role='tab'],
-  [role='menuitem'],
-  [role='option']
-):focus:not(:focus-visible) {
+    button,
+    a,
+    input,
+    textarea,
+    select,
+    summary,
+    [role='button'],
+    [role='link'],
+    [role='tab'],
+    [role='menuitem'],
+    [role='option']
+  ):focus:not(:focus-visible) {
   outline: none;
 }
 

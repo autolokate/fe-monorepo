@@ -11,10 +11,7 @@ import type {
   PartnerActivationKind,
 } from '@/platform/activation/activation-channel';
 import { isPartnerActivationKind } from '@/platform/activation/activation-channel';
-import {
-  getQrApiClient,
-  getQrBootstrapClient,
-} from '@/platform/api/qr-api-client';
+import { getQrApiClient, getQrBootstrapClient } from '@/platform/api/qr-api-client';
 import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository';
 
 import {
@@ -34,7 +31,11 @@ import {
   setInflightRedeem,
   updateActivationState,
 } from './activation-cache';
-import { isActivationTransientError, mapActivationApiError, type ActivationError } from './activation-errors';
+import {
+  isActivationTransientError,
+  mapActivationApiError,
+  type ActivationError,
+} from './activation-errors';
 import {
   createActivationIdempotencyKey,
   mapPreviewToLandingEntitlement,
@@ -145,9 +146,7 @@ export function seedActivationFromQrPayload(
   });
 }
 
-function readStoredPreviewEntitlement(
-  previewCode: string,
-): LoadActivationPreviewResult | null {
+function readStoredPreviewEntitlement(previewCode: string): LoadActivationPreviewResult | null {
   const stored = activationStorageRepository.read();
   if (!stored?.preview || stored.previewCode !== previewCode.trim()) {
     return null;
@@ -332,8 +331,7 @@ async function redeemCurrentActivation(): Promise<RedeemActivationResult> {
   const stored = activationStorageRepository.read();
   const qrCode = (stored?.qrCode.trim() || peekActivationQrCode()?.trim()) ?? null;
   const activationKind = stored?.activationKind ?? 'b2b2c';
-  const entitlementCode =
-    stored?.entitlementCode?.trim() ?? peekActivationCode()?.trim() ?? null;
+  const entitlementCode = stored?.entitlementCode?.trim() ?? peekActivationCode()?.trim() ?? null;
 
   if (!qrCode) {
     return {

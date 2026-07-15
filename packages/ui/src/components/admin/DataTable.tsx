@@ -46,14 +46,36 @@ import './DataTable.css';
 
 function SortIcon() {
   return (
-    <svg className="al-data-table__sort-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
-      <path d="M3 4.5L6 1.5L9 4.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M3 7.5L6 10.5L9 7.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" opacity="0.35" />
+    <svg
+      className="al-data-table__sort-icon"
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M3 4.5L6 1.5L9 4.5"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 7.5L6 10.5L9 7.5"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.35"
+      />
     </svg>
   );
 }
 
-function getAriaSortValue(sort: false | 'asc' | 'desc'): 'none' | 'ascending' | 'descending' | 'other' {
+function getAriaSortValue(
+  sort: false | 'asc' | 'desc',
+): 'none' | 'ascending' | 'descending' | 'other' {
   if (sort === 'asc') {
     return 'ascending';
   }
@@ -171,6 +193,7 @@ export function AlDataTable<TData>({
         ),
         cell: ({ row }) => (
           <div
+            role="presentation"
             onClick={(event) => {
               event.stopPropagation();
             }}
@@ -285,6 +308,8 @@ export function AlDataTable<TData>({
     [onRowClick, table],
   );
 
+  const rowCount = table.getRowModel().rows.length;
+
   useEffect(() => {
     if (focusedRowIndex === null) {
       return;
@@ -293,7 +318,7 @@ export function AlDataTable<TData>({
       `tbody tr[data-row-index="${String(focusedRowIndex)}"]`,
     );
     row?.focus();
-  }, [focusedRowIndex, table.getRowModel().rows.length]);
+  }, [focusedRowIndex, rowCount]);
 
   const selectedCount = Object.keys(rowSelection ?? internalRowSelection).length;
   const filteredCount = table.getFilteredRowModel().rows.length;
@@ -301,12 +326,7 @@ export function AlDataTable<TData>({
   const isEmpty = !loading && filteredCount === 0;
 
   if (error) {
-    return (
-      <AlErrorState
-        message={error}
-        {...(onRetry ? { onRetry } : {})}
-      />
-    );
+    return <AlErrorState message={error} {...(onRetry ? { onRetry } : {})} />;
   }
 
   return (
@@ -340,8 +360,17 @@ export function AlDataTable<TData>({
                 {bulkActions}
               </>
             ) : (
-              <span className={cn('al-toolbar__meta', (isRefreshing || showLoadingState) && 'is-pulsing')}>
-                {showLoadingState ? 'Loading…' : isRefreshing ? 'Refreshing…' : `${String(filteredCount)} rows`}
+              <span
+                className={cn(
+                  'al-toolbar__meta',
+                  (isRefreshing || showLoadingState) && 'is-pulsing',
+                )}
+              >
+                {showLoadingState
+                  ? 'Loading…'
+                  : isRefreshing
+                    ? 'Refreshing…'
+                    : `${String(filteredCount)} rows`}
               </span>
             )}
             {enableDensitySwitch ? (
@@ -381,7 +410,11 @@ export function AlDataTable<TData>({
                   </AlButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Portal>
-                  <DropdownMenu.Content className="al-data-table__column-menu" align="end" sideOffset={6}>
+                  <DropdownMenu.Content
+                    className="al-data-table__column-menu"
+                    align="end"
+                    sideOffset={6}
+                  >
                     {table
                       .getAllColumns()
                       .filter((column) => column.getCanHide())
@@ -418,11 +451,7 @@ export function AlDataTable<TData>({
         </div>
       ) : isEmpty ? (
         <div className="al-data-table__empty">
-          <AlEmptyState
-            compact
-            title={emptyTitle}
-            description={emptyDescription}
-          />
+          <AlEmptyState compact title={emptyTitle} description={emptyDescription} />
         </div>
       ) : (
         <div className="al-data-table__scroll">
@@ -436,7 +465,9 @@ export function AlDataTable<TData>({
                       <th
                         key={header.id}
                         scope="col"
-                        aria-sort={header.column.getCanSort() ? getAriaSortValue(sorted) : undefined}
+                        aria-sort={
+                          header.column.getCanSort() ? getAriaSortValue(sorted) : undefined
+                        }
                         className={cn(
                           header.column.getIsPinned() === 'left' && 'is-pinned-left',
                           header.column.getIsPinned() === 'right' && 'is-pinned-right',
@@ -461,7 +492,11 @@ export function AlDataTable<TData>({
                                 enableMultiSort && (event.shiftKey || event.metaKey),
                               );
                             }}
-                            title={enableMultiSort ? 'Click to sort. Shift+click for multi-sort.' : undefined}
+                            title={
+                              enableMultiSort
+                                ? 'Click to sort. Shift+click for multi-sort.'
+                                : undefined
+                            }
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
                             <SortIcon />
@@ -491,49 +526,53 @@ export function AlDataTable<TData>({
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row, rowIndex) => (
-                    <tr
-                      key={row.id}
-                      data-row-index={rowIndex}
-                      tabIndex={focusedRowIndex === rowIndex || (focusedRowIndex === null && rowIndex === 0) ? 0 : -1}
-                      data-state={row.getIsSelected() ? 'selected' : undefined}
-                      className={cn(onRowClick && 'is-clickable')}
-                      onFocus={() => {
-                        setFocusedRowIndex(rowIndex);
-                      }}
-                      onKeyDown={(event) => {
-                        handleRowKeyDown(event, rowIndex, row.original);
-                      }}
+                <tr
+                  key={row.id}
+                  data-row-index={rowIndex}
+                  tabIndex={
+                    focusedRowIndex === rowIndex || (focusedRowIndex === null && rowIndex === 0)
+                      ? 0
+                      : -1
+                  }
+                  data-state={row.getIsSelected() ? 'selected' : undefined}
+                  className={cn(onRowClick && 'is-clickable')}
+                  onFocus={() => {
+                    setFocusedRowIndex(rowIndex);
+                  }}
+                  onKeyDown={(event) => {
+                    handleRowKeyDown(event, rowIndex, row.original);
+                  }}
+                  onClick={
+                    onRowClick
+                      ? () => {
+                          onRowClick(row.original);
+                        }
+                      : undefined
+                  }
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className={cn(
+                        enableCopyCell && 'is-copyable',
+                        cell.column.getIsPinned() === 'left' && 'is-pinned-left',
+                        cell.column.getIsPinned() === 'right' && 'is-pinned-right',
+                      )}
+                      title={enableCopyCell ? 'Click to copy' : undefined}
                       onClick={
-                        onRowClick
-                          ? () => {
-                              onRowClick(row.original);
+                        enableCopyCell
+                          ? (event) => {
+                              event.stopPropagation();
+                              void handleCellCopy(cell.getValue());
                             }
                           : undefined
                       }
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className={cn(
-                            enableCopyCell && 'is-copyable',
-                            cell.column.getIsPinned() === 'left' && 'is-pinned-left',
-                            cell.column.getIsPinned() === 'right' && 'is-pinned-right',
-                          )}
-                          title={enableCopyCell ? 'Click to copy' : undefined}
-                          onClick={
-                            enableCopyCell
-                              ? (event) => {
-                                  event.stopPropagation();
-                                  void handleCellCopy(cell.getValue());
-                                }
-                              : undefined
-                          }
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </tr>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
                   ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

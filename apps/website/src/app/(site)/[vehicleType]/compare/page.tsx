@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
-import { ComparePageContent } from "@/components/compare";
-import type { VehicleCategory } from "@/lib/preferences";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ComparePageContent } from '@/components/compare';
+import type { VehicleCategory } from '@/lib/preferences';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Props = { params: Promise<{ vehicleType: string }> };
 
 function isVehicleCategory(v: string): v is VehicleCategory {
-  return v === "cars" || v === "bikes";
+  return v === 'cars' || v === 'bikes';
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { vehicleType } = await params;
-  if (!isVehicleCategory(vehicleType)) return { title: "Not found" };
+  if (!isVehicleCategory(vehicleType)) return { title: 'Not found' };
 
-  const noun = vehicleType === "cars" ? "cars" : "bikes";
+  const noun = vehicleType === 'cars' ? 'cars' : 'bikes';
   return {
     title: `Compare ${noun} – Autolokate`,
     description: `Compare up to three ${noun} side by side — specs, features, and indicative prices from the catalogue.`,

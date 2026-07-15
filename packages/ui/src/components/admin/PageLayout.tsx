@@ -12,7 +12,13 @@ export type AlPageLayoutProps = {
 };
 
 /** Desktop-first admin page shell with optional sidebar and header slots. */
-export function AlPageLayout({ children, sidebar, header, className, sidebarClassName }: AlPageLayoutProps) {
+export function AlPageLayout({
+  children,
+  sidebar,
+  header,
+  className,
+  sidebarClassName,
+}: AlPageLayoutProps) {
   return (
     <div className={cn('al-page-layout', className)}>
       {sidebar ? (
@@ -32,9 +38,5 @@ export type AlPageContentProps = {
 };
 
 export function AlPageContent({ children, maxWidth = 'xl' }: AlPageContentProps) {
-  return (
-    <div className={`al-page-content al-page-content--${maxWidth}`}>
-      {children}
-    </div>
-  );
+  return <div className={`al-page-content al-page-content--${maxWidth}`}>{children}</div>;
 }

@@ -104,7 +104,7 @@ export function AuditEventsPage() {
     <RequirePermission permission="audit:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Audit Events"
+          title="Activity Log"
           description={pageDescription}
           actions={
             <AlPageHeaderAction
@@ -226,11 +226,7 @@ export function AuditEventsPage() {
           </div>
         ) : null}
 
-        <AuditDetailSheet
-          event={selectedEvent}
-          open={detailOpen}
-          onOpenChange={setDetailOpen}
-        />
+        <AuditDetailSheet event={selectedEvent} open={detailOpen} onOpenChange={setDetailOpen} />
       </AlStack>
     </RequirePermission>
   );

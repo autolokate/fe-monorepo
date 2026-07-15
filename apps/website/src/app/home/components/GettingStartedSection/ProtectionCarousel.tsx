@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { Headset, Satellite } from "lucide-react";
-import { PROTECTION_CARDS, PROTECTION_COPY } from "./constants";
-import { ProtectionCard } from "./ProtectionCard";
-import styles from "./index.module.css";
+import { useEffect, useRef, useState } from 'react';
+import { Headset, Satellite } from 'lucide-react';
+import { PROTECTION_CARDS, PROTECTION_COPY } from './constants';
+import { ProtectionCard } from './ProtectionCard';
+import styles from './index.module.css';
 
 export function ProtectionCarousel() {
   const trackRef = useRef<HTMLUListElement>(null);
@@ -12,7 +12,7 @@ export function ProtectionCarousel() {
 
   useEffect(() => {
     const el = trackRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") {
+    if (!el || typeof IntersectionObserver === 'undefined') {
       setRevealed(true);
       return;
     }
@@ -28,7 +28,9 @@ export function ProtectionCarousel() {
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   return (
@@ -52,8 +54,8 @@ export function ProtectionCarousel() {
         {PROTECTION_CARDS.map((card, index) => (
           <li
             key={card.id}
-            style={{ transitionDelay: `${index * 90}ms` }}
-            className={`${styles.reveal} ${revealed ? styles.revealIn : ""} min-w-0 shrink-0 basis-[80%] snap-start min-[480px]:basis-[55%] sm:basis-[44%] lg:basis-[calc((100%-3rem)/4)]`}
+            style={{ transitionDelay: `${String(index * 90)}ms` }}
+            className={`${styles.reveal} ${revealed ? styles.revealIn : ''} min-w-0 shrink-0 basis-[80%] snap-start min-[480px]:basis-[55%] sm:basis-[44%] lg:basis-[calc((100%-3rem)/4)]`}
           >
             <ProtectionCard card={card} />
           </li>

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from 'lucide-react';
 
 interface PhoneFieldProps {
   id: string;
@@ -51,12 +51,13 @@ export function PhoneField({
           inputMode="numeric"
           placeholder="Enter mobile number"
           autoComplete="tel-national"
+          // eslint-disable-next-line jsx-a11y/no-autofocus -- opt-in via the `autoFocus` prop, used only on the dedicated login step where this is the sole primary control; callers that omit it (e.g. signup) get no autofocus
           autoFocus={autoFocus}
           disabled={disabled}
           value={value}
-          onChange={(e) =>
-            onChange(e.target.value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 10))
-          }
+          onChange={(e) => {
+            onChange(e.target.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 10));
+          }}
           className="h-full w-full flex-1 rounded-none border-0 bg-transparent px-4 text-base text-foreground placeholder:text-muted-foreground shadow-none outline-none disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>

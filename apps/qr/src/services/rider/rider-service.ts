@@ -124,11 +124,7 @@ export async function loadSubscriptionRiders(
 
   const { subscriptionId } = resolved;
   const stored = riderStorageRepository.read();
-  if (
-    !options?.force &&
-    stored.subscriptionId === subscriptionId &&
-    stored.loadedAt
-  ) {
+  if (!options?.force && stored.subscriptionId === subscriptionId && stored.loadedAt) {
     return {
       ok: true,
       riders: stored.riders,
@@ -207,7 +203,11 @@ export async function requestRiderOtp(mobileDigits: string): Promise<RiderOtpRes
     }
     return {
       ok: false,
-      error: { code: 'unavailable', message: 'Unable to send verification code.', apiMessage: null },
+      error: {
+        code: 'unavailable',
+        message: 'Unable to send verification code.',
+        apiMessage: null,
+      },
     };
   })();
 
@@ -289,7 +289,11 @@ export async function createRider(
   if (!token) {
     return {
       ok: false,
-      error: { code: 'validation', message: 'Verification expired. Request a new code.', apiMessage: null },
+      error: {
+        code: 'validation',
+        message: 'Verification expired. Request a new code.',
+        apiMessage: null,
+      },
     };
   }
 
@@ -310,12 +314,7 @@ export async function createRider(
           return { ok: true, riders: refreshed.riders, revision: refreshed.revision };
         }
         const storedRiders = riderStorageRepository.read().riders;
-        const optimistic = buildOptimisticRider(
-          created.riderId,
-          name,
-          relation,
-          verificationPhone,
-        );
+        const optimistic = buildOptimisticRider(created.riderId, name, relation, verificationPhone);
         const riders = upsertRider(storedRiders, optimistic);
         const revision = persistRiders(resolved.subscriptionId, riders);
         riderLogger.warn('rider_create_refresh_failed_using_optimistic', {

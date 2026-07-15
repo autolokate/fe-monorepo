@@ -8,12 +8,12 @@
 
 ## Issues fixed
 
-| Issue | Root cause | Fix |
-|-------|------------|-----|
-| R04 stops indefinitely | `fetchStarted` ref blocked React Strict Mode second effect run | Removed ref; rely on `cancelled` flag only |
-| Unknown plates reached R04 | Fetch triggered before plate classification | Validate on R03; invalid stays inline |
-| R04 hold too short | 1600ms delay | **3000ms** minimum on R04 (`VAHAN_FETCH_HOLD_MS`) |
-| R04b Retry → R04 | Wrong retry target | Retry navigates to **R03** |
+| Issue                      | Root cause                                                     | Fix                                               |
+| -------------------------- | -------------------------------------------------------------- | ------------------------------------------------- |
+| R04 stops indefinitely     | `fetchStarted` ref blocked React Strict Mode second effect run | Removed ref; rely on `cancelled` flag only        |
+| Unknown plates reached R04 | Fetch triggered before plate classification                    | Validate on R03; invalid stays inline             |
+| R04 hold too short         | 1600ms delay                                                   | **3000ms** minimum on R04 (`VAHAN_FETCH_HOLD_MS`) |
+| R04b Retry → R04           | Wrong retry target                                             | Retry navigates to **R03**                        |
 
 ---
 
@@ -51,24 +51,24 @@ stateDiagram-v2
 
 ### Session fields (`JourneySession.vehicle`)
 
-| Field | Values |
-|-------|--------|
-| `plate` | Normalized plate string |
+| Field         | Values                                                  |
+| ------------- | ------------------------------------------------------- |
+| `plate`       | Normalized plate string                                 |
 | `fetchStatus` | `idle` · `fetching` · `success` · `not-found` · `error` |
-| `fields` | RC data (success only) |
-| `confirmed` | `true` after R05 CTA |
+| `fields`      | RC data (success only)                                  |
+| `confirmed`   | `true` after R05 CTA                                    |
 
 ---
 
 ## Plate rules (demo Vahan)
 
-| Plate | Intent | R03 | R04 (3s) | Destination |
-|-------|--------|-----|----------|-------------|
-| `MH 12 AB 3456` | `success` | Navigate | Hold | **R05 Confirm** |
-| `MH 12 AB 0000` | `fetch-error` | Navigate | Hold | **R04b Fetch failed** |
-| Any other (≥8 chars) | `invalid` | **Inline error** | Never reached | Stay on **R03** |
+| Plate                | Intent        | R03              | R04 (3s)      | Destination           |
+| -------------------- | ------------- | ---------------- | ------------- | --------------------- |
+| `MH 12 AB 3456`      | `success`     | Navigate         | Hold          | **R05 Confirm**       |
+| `MH 12 AB 0000`      | `fetch-error` | Navigate         | Hold          | **R04b Fetch failed** |
+| Any other (≥8 chars) | `invalid`     | **Inline error** | Never reached | Stay on **R03**       |
 
-Error copy (R03): *We couldn't find that number, check and try again*
+Error copy (R03): _We couldn't find that number, check and try again_
 
 ---
 
@@ -85,6 +85,7 @@ R03 Vehicle
 ```
 
 **URLs:**
+
 ```
 /journey/purchase/r03-vehicle
 → /journey/purchase/r04-fetching
@@ -106,6 +107,7 @@ R03 Vehicle
 ```
 
 **URLs:**
+
 ```
 /journey/purchase/r03-vehicle
 → /journey/purchase/r04-fetching
@@ -117,11 +119,11 @@ R03 Vehicle
 
 ## Retry path
 
-| Step | Screen | Action | Next |
-|------|--------|--------|------|
-| 1 | R04b | Tap **Try again** | R03 |
-| 2 | R03 | Plate preserved; user may edit | — |
-| 3 | R03 | Tap **Fetch from Vahan** | R04 (if known plate) |
+| Step | Screen | Action                         | Next                 |
+| ---- | ------ | ------------------------------ | -------------------- |
+| 1    | R04b   | Tap **Try again**              | R03                  |
+| 2    | R03    | Plate preserved; user may edit | —                    |
+| 3    | R03    | Tap **Fetch from Vahan**       | R04 (if known plate) |
 
 Retry does **not** return to R04 directly — user must re-submit from R03.
 
@@ -131,75 +133,75 @@ Retry does **not** return to R04 directly — user must re-submit from R03.
 
 ### R03 · Vehicle number
 
-| Check | Behavior | Status |
-|-------|----------|--------|
-| CTA disabled when empty | `isPlateEntryReady` (≥8 chars) | ✅ |
-| CTA **Fetch from Vahan** | Classifies plate before navigate | ✅ |
-| Invalid plate | Inline amber error, no navigation | ✅ |
-| Known plates | Navigate to R04 | ✅ |
-| Back | → `/journey/auth/vehicle-owner` | ✅ |
-| Progress bar | Hidden (Figma) | ✅ |
+| Check                    | Behavior                          | Status |
+| ------------------------ | --------------------------------- | ------ |
+| CTA disabled when empty  | `isPlateEntryReady` (≥8 chars)    | ✅     |
+| CTA **Fetch from Vahan** | Classifies plate before navigate  | ✅     |
+| Invalid plate            | Inline amber error, no navigation | ✅     |
+| Known plates             | Navigate to R04                   | ✅     |
+| Back                     | → `/journey/auth/vehicle-owner`   | ✅     |
+| Progress bar             | Hidden (Figma)                    | ✅     |
 
 ### R04 · Fetching
 
-| Check | Behavior | Status |
-|-------|----------|--------|
-| Auto navigation | After **3s** + fetch result | ✅ |
-| Never indefinite | Strict Mode safe (no fetchStarted guard) | ✅ |
-| No CTA / no back | Transient loader only | ✅ |
-| Invalid plate guard | Redirect to R03 if reached without intent | ✅ |
-| Success exit | → R05 replace | ✅ |
-| Error exit | → R04b replace | ✅ |
+| Check               | Behavior                                  | Status |
+| ------------------- | ----------------------------------------- | ------ |
+| Auto navigation     | After **3s** + fetch result               | ✅     |
+| Never indefinite    | Strict Mode safe (no fetchStarted guard)  | ✅     |
+| No CTA / no back    | Transient loader only                     | ✅     |
+| Invalid plate guard | Redirect to R03 if reached without intent | ✅     |
+| Success exit        | → R05 replace                             | ✅     |
+| Error exit          | → R04b replace                            | ✅     |
 
 ### R05 · Confirm vehicle
 
-| Check | Behavior | Status |
-|-------|----------|--------|
-| Guard | Redirect to R03 if no success data | ✅ |
-| CTA **Looks right** | → p01-plan-selection, `confirmed: true` | ✅ |
-| Back | → R03 | ✅ |
-| RC card | `AlVehicleRcCard` + demo fields | ✅ |
+| Check               | Behavior                                | Status |
+| ------------------- | --------------------------------------- | ------ |
+| Guard               | Redirect to R03 if no success data      | ✅     |
+| CTA **Looks right** | → p01-plan-selection, `confirmed: true` | ✅     |
+| Back                | → R03                                   | ✅     |
+| RC card             | `AlVehicleRcCard` + demo fields         | ✅     |
 
 ### R04b · Fetch failed
 
-| Check | Behavior | Status |
-|-------|----------|--------|
-| CTA **Try again** | → R03, `fetchStatus: idle` | ✅ |
-| No back button | Figma centered error | ✅ |
+| Check             | Behavior                   | Status |
+| ----------------- | -------------------------- | ------ |
+| CTA **Try again** | → R03, `fetchStatus: idle` | ✅     |
+| No back button    | Figma centered error       | ✅     |
 
 ---
 
 ## Implementation files
 
-| File | Role |
-|------|------|
+| File                                      | Role                              |
+| ----------------------------------------- | --------------------------------- |
 | `features/qr-purchase/data/vahan-demo.ts` | Plate intent, 3s hold, mock Vahan |
-| `journey/routes/PurchaseRoutes.tsx` | Route orchestration R03–R05 |
-| `journey/purchase/purchase-routing.ts` | Absolute paths |
+| `journey/routes/PurchaseRoutes.tsx`       | Route orchestration R03–R05       |
+| `journey/purchase/purchase-routing.ts`    | Absolute paths                    |
 
 ---
 
 ## Manual test checklist
 
-| # | Steps | Expected |
-|---|-------|----------|
-| 1 | R03 → `MH 12 AB 3456` → Fetch | R04 ~3s → R05 |
-| 2 | R03 → `MH 12 AB 0000` → Fetch | R04 ~3s → R04b |
-| 3 | R03 → `DL 01 CA 9999` → Fetch | Error on R03, no R04 |
-| 4 | R04b → Try again | R03 with plate preserved |
-| 5 | R05 → Back | R03 |
-| 6 | R05 → Looks right | p01-plan-selection |
+| #   | Steps                         | Expected                 |
+| --- | ----------------------------- | ------------------------ |
+| 1   | R03 → `MH 12 AB 3456` → Fetch | R04 ~3s → R05            |
+| 2   | R03 → `MH 12 AB 0000` → Fetch | R04 ~3s → R04b           |
+| 3   | R03 → `DL 01 CA 9999` → Fetch | Error on R03, no R04     |
+| 4   | R04b → Try again              | R03 with plate preserved |
+| 5   | R05 → Back                    | R03                      |
+| 6   | R05 → Looks right             | p01-plan-selection       |
 
 ---
 
 ## Remaining (out of R03–R05 scope)
 
-| Item | Notes |
-|------|-------|
-| Real Vahan API | Mock `fetchVahanDetails` |
-| R04b Enter manually | Figma hotspot only — no route |
-| P01+ screens | Phase B — gated after R05 |
-| Offline on R04 | Routes to R04b via `navigator.onLine` |
+| Item                | Notes                                 |
+| ------------------- | ------------------------------------- |
+| Real Vahan API      | Mock `fetchVahanDetails`              |
+| R04b Enter manually | Figma hotspot only — no route         |
+| P01+ screens        | Phase B — gated after R05             |
+| Offline on R04      | Routes to R04b via `navigator.onLine` |
 
 ---
 

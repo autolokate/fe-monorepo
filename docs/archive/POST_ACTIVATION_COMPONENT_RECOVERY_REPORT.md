@@ -8,16 +8,16 @@
 
 ## Summary
 
-| Component | Before | After | Status |
-|-----------|--------|-------|--------|
-| `AlDispatchTimeline` | ~45% | **~98%** | Recovered |
-| `AlPhotoGrid` | ~50% | **~97%** | Recovered |
-| `AlScenePhotoCard` | ~82% | **~96%** | Recovered |
-| `AlStatusTracker` | ~70% | **~98%** | Recovered |
-| `AlScannerHubCard` | ~88% | **~99%** | Recovered |
-| `AlSosHoldButton` | ~85% | **~95%** | Partial |
-| `AlPermissionSheet` | ~90% | **~90%** | Unchanged |
-| `AlIncidentStatusHero` | ~80% | **~80%** | Unchanged |
+| Component              | Before | After    | Status    |
+| ---------------------- | ------ | -------- | --------- |
+| `AlDispatchTimeline`   | ~45%   | **~98%** | Recovered |
+| `AlPhotoGrid`          | ~50%   | **~97%** | Recovered |
+| `AlScenePhotoCard`     | ~82%   | **~96%** | Recovered |
+| `AlStatusTracker`      | ~70%   | **~98%** | Recovered |
+| `AlScannerHubCard`     | ~88%   | **~99%** | Recovered |
+| `AlSosHoldButton`      | ~85%   | **~95%** | Partial   |
+| `AlPermissionSheet`    | ~90%   | **~90%** | Unchanged |
+| `AlIncidentStatusHero` | ~80%   | **~80%** | Unchanged |
 
 **New:** `AlScannedVehicleCard` — Figma 843:2080 compact vehicle card (frame 02).
 
@@ -28,6 +28,7 @@
 ## AlDispatchTimeline — ~45% → ~98%
 
 ### Changes
+
 - Added `subtitle` and per-step `activeGlyph` to step model
 - 24px glyph column matching Figma CC tracker
 - Completed: green `circle-check` stroke icon
@@ -37,11 +38,13 @@
 - Removed generic numbered pending steps
 
 ### Presets wired in `pwa-demo-data.ts`
+
 - Park Me: checking, calling, resolved, photoError (6 steps each)
 - SOS: received, dispatched, resolved (10 steps each)
 - SOS contacts-only: 3 steps
 
 ### Remaining
+
 - SOS timeline uses 14px title / 12px subtitle (Figma SOS frames) vs 15px/13px Park Me — minor typography delta
 
 ---
@@ -49,11 +52,13 @@
 ## AlPhotoGrid — ~50% → ~97%
 
 ### Changes
+
 - New `stacked` layout — full-width vertical stack, 16px gap
 - GPS slot supports 120px dashed location box via `locationPreview` slot
 - Park Me route uses stacked dual capture + location CTA
 
 ### Remaining
+
 - Frame 09b review route still renders custom 2-column review grid instead of stacked filled `AlScenePhotoCard` cells
 
 ---
@@ -61,11 +66,13 @@
 ## AlScenePhotoCard — ~82% → ~96%
 
 ### Changes
+
 - `variant="stacked"` — min-height 160px, 15px label, 32px icon area
 - Figma dashed 1.5px border preserved
 - `capturing` state green solid border
 
 ### Remaining
+
 - No success pop animation on fill transition
 
 ---
@@ -73,6 +80,7 @@
 ## AlStatusTracker — ~70% → ~98%
 
 ### Changes
+
 - Delegates to rebuilt timeline (no separate `activeIcon` prop)
 - Vehicle chip unchanged (60px, plate + model) — matches Figma status frames
 
@@ -81,6 +89,7 @@
 ## AlScannerHubCard — ~88% → ~99%
 
 ### Changes
+
 - Optional `chevron` prop — PWA passes `chevron-right` icon export
 - Emergency tile uses `bell` at call site
 
@@ -89,13 +98,16 @@
 ## AlSosHoldButton — ~85% → ~95%
 
 ### Unchanged in component
+
 - Hold ring, aura, disc copy match Figma 848:278
 
 ### Route-level fixes
+
 - SOS screen wraps chip + call fallback outside button (Figma layout)
 - Hold progress still split across `/sos` and `/sos/holding` routes (by design — no route changes)
 
 ### Remaining
+
 - Holding route title "Keep holding" — Figma 14b uses same disc copy pattern; acceptable
 
 ---
@@ -114,13 +126,13 @@ No changes. Used on location unavailable / couldn't send / cancelled screens.
 
 ## AlScannedVehicleCard (new)
 
-| Property | Figma match |
-|----------|-------------|
-| 104px card height (content-driven) | ✅ |
-| 44px car tile, 12px radius | ✅ |
-| Plate 15px semibold, model 13px muted | ✅ |
-| Divider + shield row 13px green | ✅ |
-| Optional `protectedLabel` | ✅ |
+| Property                              | Figma match |
+| ------------------------------------- | ----------- |
+| 104px card height (content-driven)    | ✅          |
+| 44px car tile, 12px radius            | ✅          |
+| Plate 15px semibold, model 13px muted | ✅          |
+| Divider + shield row 13px green       | ✅          |
+| Optional `protectedLabel`             | ✅          |
 
 ---
 

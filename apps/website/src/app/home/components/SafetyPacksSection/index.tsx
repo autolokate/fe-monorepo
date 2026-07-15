@@ -1,7 +1,7 @@
-import { Check } from "lucide-react";
-import { SAFETY_PACKS_COPY, SAFETY_PACKS_SECTION_ID } from "./constants";
-import { PlanCarousel } from "./PlanCarousel";
-import styles from "./index.module.css";
+import { Check } from 'lucide-react';
+import { SAFETY_PACKS_COPY, SAFETY_PACKS_SECTION_ID } from './constants';
+import { PlanCarousel } from './PlanCarousel';
+import styles from './index.module.css';
 
 export function SafetyPacksSection() {
   return (
@@ -39,7 +39,11 @@ export function SafetyPacksSection() {
                 </span>
               ) : null}
               <span className="flex items-center gap-1.5">
-                <Check className={`${styles.accent} h-3.5 w-3.5 shrink-0`} strokeWidth={2.5} aria-hidden />
+                <Check
+                  className={`${styles.accent} h-3.5 w-3.5 shrink-0`}
+                  strokeWidth={2.5}
+                  aria-hidden
+                />
                 {note}
               </span>
             </li>

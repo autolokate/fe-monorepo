@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { AlButton } from "@autolokate/ui/button";
-import { HERO_COPY } from "./constants";
-import styles from "./index.module.css";
+import { useRouter } from 'next/navigation';
+import { AlButton } from '@autolokate/ui/button';
+import { HERO_COPY } from './constants';
+import styles from './index.module.css';
 
 export function HeroCtas() {
   const router = useRouter();
@@ -14,7 +14,9 @@ export function HeroCtas() {
         size="md"
         className={styles.ctaPrimary}
         variant="primary"
-        onClick={() => router.push(HERO_COPY.primaryCta.href)}
+        onClick={() => {
+          router.push(HERO_COPY.primaryCta.href);
+        }}
       >
         {HERO_COPY.primaryCta.label}
       </AlButton>

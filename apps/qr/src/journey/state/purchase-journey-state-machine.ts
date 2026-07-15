@@ -1,9 +1,7 @@
 import type { QrResolution } from '@autolokate/api-client';
 
 import { loadJourneyState } from '@/journey/persistence';
-import {
-  purchaseJourneyPathsFor,
-} from '@/journey/purchase/purchase-routing';
+import { purchaseJourneyPathsFor } from '@/journey/purchase/purchase-routing';
 import type { JourneySession } from '@/journey/types';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { getVehicle } from '@/storage/index';
@@ -13,17 +11,15 @@ import {
   isDistributedQrLifecycleStatus,
 } from '@/platform/qr/qr-status';
 import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
-import {
-  getFundedPurchasePlanId,
-  getPurchasePlansCatalog,
-} from '@/services/plan/plan-service';
+import { getFundedPurchasePlanId, getPurchasePlansCatalog } from '@/services/plan/plan-service';
 
 export const PURCHASE_JOURNEY_KIND = {
   FULL_ACTIVATION: 'full_activation',
   RESUME_CHECKOUT: 'resume_checkout',
 } as const;
 
-export type PurchaseJourneyKind = (typeof PURCHASE_JOURNEY_KIND)[keyof typeof PURCHASE_JOURNEY_KIND];
+export type PurchaseJourneyKind =
+  (typeof PURCHASE_JOURNEY_KIND)[keyof typeof PURCHASE_JOURNEY_KIND];
 
 export const PURCHASE_ROUTE_ID = {
   vehicleDetails: 'vehicle-details',
@@ -80,11 +76,10 @@ export function readPurchaseJourneyState(
   const stored = qrStorageRepository.readResolved();
   const skipsVehicleSteps = Boolean(stored && isAttachedQrLifecycleStatus(stored.qrStatus));
   const resolvedJourneyId =
-    journeyId?.trim() ||
-    resolvePurchaseQrCode(searchParams) ||
-    stored?.qrCode ||
-    null;
-  const paths = resolvedJourneyId ? purchaseJourneyPathsFor(resolvedJourneyId) : purchaseJourneyPathsFor('_');
+    journeyId?.trim() || resolvePurchaseQrCode(searchParams) || stored?.qrCode || null;
+  const paths = resolvedJourneyId
+    ? purchaseJourneyPathsFor(resolvedJourneyId)
+    : purchaseJourneyPathsFor('_');
 
   return {
     kind: skipsVehicleSteps

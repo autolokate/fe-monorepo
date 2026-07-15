@@ -18,26 +18,26 @@
 
 ## Flow Summary
 
-| Flow | Entry | Guards (runtime) | Terminal |
-|------|-------|------------------|----------|
-| **Purchase** | `/journey` → auth → R03 | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` | R10/R10b/R10c → Emergency |
-| **Prepaid** | `/journey/prepaid/welcome` | None | Emergency → Completed |
-| **B2B2C** | `/journey/b2b2c/welcome` | None | Emergency → Completed |
-| **Emergency** | Post-activation handoff | `RequireAuthCompleted` + `RequireSelectedFlow` | `/journey/completed` |
-| **Auth** | `/journey/auth/*` | None (entry) | → flow-specific next step |
-| **PWA** | `/pwa/scan/loading` | None (isolated session) | Status screens → vehicle hub |
-| **Completed** | Emergency E5/R4 continue | **None** | Finish → `/journey` |
+| Flow          | Entry                      | Guards (runtime)                                                | Terminal                     |
+| ------------- | -------------------------- | --------------------------------------------------------------- | ---------------------------- |
+| **Purchase**  | `/journey` → auth → R03    | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` | R10/R10b/R10c → Emergency    |
+| **Prepaid**   | `/journey/prepaid/welcome` | None                                                            | Emergency → Completed        |
+| **B2B2C**     | `/journey/b2b2c/welcome`   | None                                                            | Emergency → Completed        |
+| **Emergency** | Post-activation handoff    | `RequireAuthCompleted` + `RequireSelectedFlow`                  | `/journey/completed`         |
+| **Auth**      | `/journey/auth/*`          | None (entry)                                                    | → flow-specific next step    |
+| **PWA**       | `/pwa/scan/loading`        | None (isolated session)                                         | Status screens → vehicle hub |
+| **Completed** | Emergency E5/R4 continue   | **None**                                                        | Finish → `/journey`          |
 
 ---
 
 ## Guards Inventory
 
-| Guard | Mounted On |
-|-------|------------|
-| `RequireAuthCompleted` | `/journey/purchase/*`, `/journey/emergency/*` |
-| `RequireSelectedFlowMatch('purchase')` | `/journey/purchase/*` |
-| `RequireSelectedFlow` | `/journey/emergency/*` |
-| `PwaPhotoRouteGuard` | PWA photo routes (diagnostic only — not access control) |
+| Guard                                  | Mounted On                                              |
+| -------------------------------------- | ------------------------------------------------------- |
+| `RequireAuthCompleted`                 | `/journey/purchase/*`, `/journey/emergency/*`           |
+| `RequireSelectedFlowMatch('purchase')` | `/journey/purchase/*`                                   |
+| `RequireSelectedFlow`                  | `/journey/emergency/*`                                  |
+| `PwaPhotoRouteGuard`                   | PWA photo routes (diagnostic only — not access control) |
 
 **Not mounted:** Declarative catalog guards in `routes.schema.ts`
 
@@ -102,36 +102,36 @@
 
 ## Schema Drift Summary
 
-| Schema Path | Mounted? |
-|-------------|----------|
-| `/activate/:token` | ❌ |
-| `/shared/*` | ❌ (use `/journey/auth/*`) |
-| `/prepaid/pr01–pr03` | ❌ |
-| `/flow/*` | ❌ |
-| `/journey/prepaid/entry` | ❌ (use `welcome`) |
-| `/journey/b2b2c/partner-bridge` | ❌ (use `welcome`) |
-| `/pwa/scan/*` | ✅ (not in schema) |
+| Schema Path                     | Mounted?                   |
+| ------------------------------- | -------------------------- |
+| `/activate/:token`              | ❌                         |
+| `/shared/*`                     | ❌ (use `/journey/auth/*`) |
+| `/prepaid/pr01–pr03`            | ❌                         |
+| `/flow/*`                       | ❌                         |
+| `/journey/prepaid/entry`        | ❌ (use `welcome`)         |
+| `/journey/b2b2c/partner-bridge` | ❌ (use `welcome`)         |
+| `/pwa/scan/*`                   | ✅ (not in schema)         |
 
 ---
 
 ## Refresh / Session Behavior
 
-| Store | Key | Survives Refresh |
-|-------|-----|------------------|
-| Journey session | `sessionStorage` `al-journey-v1` | ✅ Same tab |
-| Selected flow | `localStorage` `al-selected-flow` | ✅ Cross-tab |
-| Journey phase | In-memory only | ❌ Self-heals via route segment effects |
-| PWA session | `sessionStorage` `al-pwa-scan-v1` | ✅ Same tab |
+| Store           | Key                               | Survives Refresh                        |
+| --------------- | --------------------------------- | --------------------------------------- |
+| Journey session | `sessionStorage` `al-journey-v1`  | ✅ Same tab                             |
+| Selected flow   | `localStorage` `al-selected-flow` | ✅ Cross-tab                            |
+| Journey phase   | In-memory only                    | ❌ Self-heals via route segment effects |
+| PWA session     | `sessionStorage` `al-pwa-scan-v1` | ✅ Same tab                             |
 
 ---
 
 ## Risk Rollup
 
-| Priority | Count | Theme |
-|----------|------:|-------|
-| P0 | 0 | No total flow breakage in mounted routers |
-| P1 | 12 | Unguarded routes, schema drift, deep links |
-| P2 | 15+ | Legacy catalog, phase non-persistence, QA routes |
+| Priority | Count | Theme                                            |
+| -------- | ----: | ------------------------------------------------ |
+| P0       |     0 | No total flow breakage in mounted routers        |
+| P1       |    12 | Unguarded routes, schema drift, deep links       |
+| P2       |   15+ | Legacy catalog, phase non-persistence, QA routes |
 
 ---
 

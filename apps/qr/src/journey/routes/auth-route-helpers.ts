@@ -1,7 +1,4 @@
-import type {
-  AuthMobileState,
-  AuthOtpState,
-} from '@/features/shared-auth/types';
+import type { AuthMobileState, AuthOtpState } from '@/features/shared-auth/types';
 import type { MappedAuthError } from '@/services/auth/auth-errors';
 
 export function applyMobileSendError(error: MappedAuthError): AuthMobileState {

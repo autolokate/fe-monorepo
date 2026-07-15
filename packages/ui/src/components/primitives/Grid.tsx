@@ -13,7 +13,8 @@ export type GridProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 export function Grid({ columns = 1, gap = 'md', className, children, ...props }: GridProps) {
-  const columnsClass = columns === 'auto' ? 'al-grid--cols-auto' : `al-grid--cols-${String(columns)}`;
+  const columnsClass =
+    columns === 'auto' ? 'al-grid--cols-auto' : `al-grid--cols-${String(columns)}`;
 
   return (
     <div className={cn('al-grid', columnsClass, `al-grid--gap-${gap}`, className)} {...props}>

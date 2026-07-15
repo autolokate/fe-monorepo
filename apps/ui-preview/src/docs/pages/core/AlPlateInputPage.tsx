@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { AlPlateInput } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderPlateInput(state: ShowcaseState, value = 'MH 12 AB 3456') {
   const disabled = state === 'disabled';
@@ -30,8 +27,9 @@ export function AlPlateInputPage() {
       overview={
         <p>
           Figma INPUTS row plate control: green divider (#1FA24A), plate surface token, uppercase
-          auto-transform on change. Focus ring uses <code className="ds-inline-code">:focus-within</code>{' '}
-          on the plate shell. Default aria-label: &quot;Vehicle registration plate&quot;.
+          auto-transform on change. Focus ring uses{' '}
+          <code className="ds-inline-code">:focus-within</code> on the plate shell. Default
+          aria-label: &quot;Vehicle registration plate&quot;.
         </p>
       }
       variants={
@@ -45,11 +43,17 @@ export function AlPlateInputPage() {
       responsive={renderPlateInput('default', 'MH 12 AB 3456')}
       accessibility={
         <ul className="ds-list">
-          <li>Native <code className="ds-inline-code">input</code> with configurable aria-label.</li>
-          <li>Focus ring on plate container via <code className="ds-inline-code">:focus-within</code>.</li>
+          <li>
+            Native <code className="ds-inline-code">input</code> with configurable aria-label.
+          </li>
+          <li>
+            Focus ring on plate container via <code className="ds-inline-code">:focus-within</code>.
+          </li>
           <li>62px height meets 48dp touch target minimum.</li>
           <li>Uppercase transform applied on change for consistent plate formatting.</li>
-          <li>Read-only when <code className="ds-inline-code">onChange</code> is omitted.</li>
+          <li>
+            Read-only when <code className="ds-inline-code">onChange</code> is omitted.
+          </li>
         </ul>
       }
       usage={
@@ -67,10 +71,29 @@ export function AlPlateInputPage() {
 <AlPlateInput value="MH 12 AB 3456" aria-label="Registration number" />`}
       props={[
         { name: 'value', type: 'string', description: 'Plate value (displayed uppercase).' },
-        { name: 'onChange', type: '(value: string) => void', description: 'Optional — omit for read-only.' },
-        { name: 'placeholder', type: 'string', defaultValue: 'MH 12 AB 3456', description: 'Empty-state hint.' },
-        { name: 'disabled', type: 'boolean', defaultValue: 'false', description: 'Disables input interaction.' },
-        { name: 'aria-label', type: 'string', defaultValue: 'Vehicle registration plate', description: 'Screen reader label.' },
+        {
+          name: 'onChange',
+          type: '(value: string) => void',
+          description: 'Optional — omit for read-only.',
+        },
+        {
+          name: 'placeholder',
+          type: 'string',
+          defaultValue: 'MH 12 AB 3456',
+          description: 'Empty-state hint.',
+        },
+        {
+          name: 'disabled',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Disables input interaction.',
+        },
+        {
+          name: 'aria-label',
+          type: 'string',
+          defaultValue: 'Vehicle registration plate',
+          description: 'Screen reader label.',
+        },
       ]}
     />
   );

@@ -10,10 +10,7 @@ import {
   legacyPurchasePathRedirects,
   PURCHASE_ROUTE_SEGMENTS,
 } from '../purchase/purchase-routing';
-import {
-  scopedEmergencyPath,
-  scopedOnboardingPath,
-} from '../routing/journey-url-routing';
+import { scopedEmergencyPath, scopedOnboardingPath } from '../routing/journey-url-routing';
 
 /** `/q/:qrCode` — resolve first; activated QRs go straight to scan, purchase QRs to auth. */
 export function QrEntryRoute() {

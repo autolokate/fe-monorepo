@@ -19,5 +19,7 @@
     "@autolokate/auth": "workspace:*",
     "@autolokate/types": "workspace:*"
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }

@@ -1,38 +1,30 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import {
-  ArrowRight,
-  Clock,
-  LayoutGrid,
-  Newspaper,
-  PenLine,
-  Play,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { INDIAN_DRIVE_GUIDE_CHANNEL_URL } from "@/lib/idg";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+import { ArrowRight, Clock, LayoutGrid, Newspaper, PenLine, Play } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { INDIAN_DRIVE_GUIDE_CHANNEL_URL } from '@/lib/idg';
 import {
   type MediaFilterId,
   MEDIA_BLOG_POSTS,
   MEDIA_VIDEOS,
   videoThumbnailSrc,
-} from "../../constants";
-import { MediaFeaturedVideo } from "../MediaFeaturedVideo";
+} from '../../constants';
+import { MediaFeaturedVideo } from '../MediaFeaturedVideo';
 
-const FILTERS: { id: MediaFilterId; label: string; icon: typeof LayoutGrid }[] =
-  [
-    { id: "all", label: "All", icon: LayoutGrid },
-    { id: "videos", label: "Videos", icon: Play },
-    { id: "blog", label: "Blog", icon: PenLine },
-  ];
+const FILTERS: { id: MediaFilterId; label: string; icon: typeof LayoutGrid }[] = [
+  { id: 'all', label: 'All', icon: LayoutGrid },
+  { id: 'videos', label: 'Videos', icon: Play },
+  { id: 'blog', label: 'Blog', icon: PenLine },
+];
 
 export function MediaBody() {
-  const [filter, setFilter] = useState<MediaFilterId>("all");
-  const showVideos = filter === "all" || filter === "videos";
-  const showBlog = filter === "all" || filter === "blog";
+  const [filter, setFilter] = useState<MediaFilterId>('all');
+  const showVideos = filter === 'all' || filter === 'videos';
+  const showBlog = filter === 'all' || filter === 'blog';
 
   return (
     <section className="relative bg-secondary/40 py-12 sm:py-16">
@@ -45,11 +37,7 @@ export function MediaBody() {
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
             Browse
           </p>
-          <div
-            className="flex flex-wrap gap-2"
-            role="tablist"
-            aria-label="Media categories"
-          >
+          <div className="flex flex-wrap gap-2" role="tablist" aria-label="Media categories">
             {FILTERS.map(({ id, label, icon: Icon }) => {
               const active = filter === id;
               return (
@@ -59,9 +47,11 @@ export function MediaBody() {
                   role="tab"
                   aria-selected={active}
                   size="sm"
-                  variant={active ? "default" : "outline"}
+                  variant={active ? 'default' : 'outline'}
                   className="px-4"
-                  onClick={() => setFilter(id)}
+                  onClick={() => {
+                    setFilter(id);
+                  }}
                 >
                   <Icon className="h-3.5 w-3.5" aria-hidden />
                   {label}
@@ -145,10 +135,7 @@ export function MediaBody() {
                   From the desk
                 </p>
                 <h3 className="font-display mt-1 flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground sm:text-[1.75rem]">
-                  <Newspaper
-                    className="h-7 w-7 text-primary sm:h-8 sm:w-8"
-                    aria-hidden
-                  />
+                  <Newspaper className="h-7 w-7 text-primary sm:h-8 sm:w-8" aria-hidden />
                   Articles & notes
                 </h3>
               </div>
@@ -187,7 +174,7 @@ export function MediaBody() {
                         {post.title}
                       </p>
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
-                        {post.external ? "Watch on YouTube" : "Read more"}
+                        {post.external ? 'Watch on YouTube' : 'Read more'}
                         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                       </span>
                     </div>

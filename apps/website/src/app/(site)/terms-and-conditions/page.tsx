@@ -1,4 +1,4 @@
-import { HeroBanner, TermsContent, termsConditionsMetadata } from "./";
+import { HeroBanner, TermsContent, termsConditionsMetadata } from './';
 
 export const metadata = termsConditionsMetadata;
 

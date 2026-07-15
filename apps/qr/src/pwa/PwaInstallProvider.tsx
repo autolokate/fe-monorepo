@@ -15,11 +15,7 @@ import {
   shouldShowIosInstallSheet,
 } from './components/PwaIosInstallSheet';
 import { PwaInstallBanner } from './components/PwaInstallBanner';
-import {
-  isIosNonSafariBrowser,
-  isIosSafari,
-  isStandaloneDisplay,
-} from './device-detection';
+import { isIosNonSafariBrowser, isIosSafari, isStandaloneDisplay } from './device-detection';
 import {
   readPwaInstallDismissedRecently,
   writePwaInstallDismissedAt,
@@ -163,9 +159,7 @@ export function PwaInstallProvider({ children }: { children: ReactNode }) {
   );
 
   const showInstallDock =
-    !installed &&
-    !isStandaloneDisplay() &&
-    (canPrompt || showIosSafariBanner);
+    !installed && !isStandaloneDisplay() && (canPrompt || showIosSafariBanner);
 
   return (
     <PwaInstallContext.Provider value={value}>

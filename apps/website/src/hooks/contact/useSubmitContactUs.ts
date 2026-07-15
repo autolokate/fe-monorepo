@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
-import { submitContactUs } from "@/services/contact";
-import type { ContactUsPayload, ContactUsResponse } from "@/services/contact/types";
+import { useMemo } from 'react';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
+import { submitContactUs } from '@/services/contact';
+import type { ContactUsPayload, ContactUsResponse } from '@/services/contact/types';
 
 /**
  * `POST /v1/contact-us` — submits the public contact form.

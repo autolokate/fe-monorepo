@@ -14,13 +14,13 @@
 
 ## Browser support (verified)
 
-| Platform | Contact Picker API | Production behaviour |
-|----------|-------------------|----------------------|
-| Android Chrome | ✅ Supported | Native device picker opens |
-| iPhone Safari | ❌ Not supported by default | Manual fallback only |
-| iPhone Chrome | ❌ Not supported (WebKit) | Manual fallback only |
-| iPhone Edge | ❌ Not supported (WebKit) | Manual fallback only |
-| Desktop Chrome | ❌ Typically unavailable | Manual entry (E1) |
+| Platform       | Contact Picker API          | Production behaviour       |
+| -------------- | --------------------------- | -------------------------- |
+| Android Chrome | ✅ Supported                | Native device picker opens |
+| iPhone Safari  | ❌ Not supported by default | Manual fallback only       |
+| iPhone Chrome  | ❌ Not supported (WebKit)   | Manual fallback only       |
+| iPhone Edge    | ❌ Not supported (WebKit)   | Manual fallback only       |
+| Desktop Chrome | ❌ Typically unavailable    | Manual entry (E1)          |
 
 **Important:** iOS may expose the API only behind Safari **Experimental Features → Contact Picker API**. We do not rely on that flag for production UX.
 
@@ -55,22 +55,22 @@ Navigate to E1 manual entry (no sheet).
 
 ## Files
 
-| File | Change |
-|------|--------|
-| `utils/device-contact-picker.ts` | `isContactPickerSupported`, `shouldUseContactPickFallback`, `getContactPickerPlatformNote`, `pickDeviceContactWithStatus` |
-| `journey/routes/EmergencyRoutes.tsx` | E0: native first; fallback only when API absent |
-| `features/emergency/components/ios-contact-pick-sheet/` | Fallback UI copy — does not claim native picker |
+| File                                                    | Change                                                                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `utils/device-contact-picker.ts`                        | `isContactPickerSupported`, `shouldUseContactPickFallback`, `getContactPickerPlatformNote`, `pickDeviceContactWithStatus` |
+| `journey/routes/EmergencyRoutes.tsx`                    | E0: native first; fallback only when API absent                                                                           |
+| `features/emergency/components/ios-contact-pick-sheet/` | Fallback UI copy — does not claim native picker                                                                           |
 
 ---
 
 ## Verification matrix
 
-| Device | Tap Add from contacts | Expected |
-|--------|----------------------|----------|
-| Android Chrome | Native picker | ✅ Direct OS picker → E1 prefilled |
-| iPhone Safari | Fallback sheet | ✅ Manual sheet; no fake native claim |
-| iPhone Chrome | Fallback sheet | ✅ Same as Safari |
-| Cancel native picker | Stay on E0 | ✅ No navigation |
+| Device               | Tap Add from contacts | Expected                              |
+| -------------------- | --------------------- | ------------------------------------- |
+| Android Chrome       | Native picker         | ✅ Direct OS picker → E1 prefilled    |
+| iPhone Safari        | Fallback sheet        | ✅ Manual sheet; no fake native claim |
+| iPhone Chrome        | Fallback sheet        | ✅ Same as Safari                     |
+| Cancel native picker | Stay on E0            | ✅ No navigation                      |
 
 ---
 

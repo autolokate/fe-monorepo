@@ -32,10 +32,7 @@ import { useQrResolve } from '../../../hooks/qr/useQrResolve';
 import { useParkOtp } from '../../../hooks/scanner/index';
 import { reportFieldError, reportUserError } from '../../../platform/feedback/report-user-error';
 import { scannerLogger } from '../../../services/scanner/index';
-import {
-  applyActivatedQrToPwaSession,
-  isQrEntryUrl,
-} from '../../../platform/index';
+import { applyActivatedQrToPwaSession, isQrEntryUrl } from '../../../platform/index';
 
 import '../styles/pwa-scan.css';
 
@@ -208,7 +205,12 @@ export function PwaVerifyMobileRoute() {
       const result = await requestOtp(session.mobile);
       if (!result.ok) {
         setMobileState('error');
-        reportFieldError(scannerLogger, 'park_otp_request_failed', result.error, result.error.message);
+        reportFieldError(
+          scannerLogger,
+          'park_otp_request_failed',
+          result.error,
+          result.error.message,
+        );
         return;
       }
       setMobileState('empty');

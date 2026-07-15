@@ -1,9 +1,6 @@
 import { PWA_SCAN_STORAGE_KEY } from '../constants/pwa-scan-paths';
 import { defaultPwaScanSession, type PwaScanSession } from '../context/pwa-scan-types';
-import {
-  estimateSessionPhotoBytes,
-  logPhotoDiagnostic,
-} from '../utils/pwa-photo-diagnostics';
+import { estimateSessionPhotoBytes, logPhotoDiagnostic } from '../utils/pwa-photo-diagnostics';
 
 function hydrateSession(raw: Partial<PwaScanSession>): PwaScanSession {
   const base = defaultPwaScanSession();

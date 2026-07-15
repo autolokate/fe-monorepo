@@ -19,7 +19,6 @@ export function AlBrandMark({
       width={size}
       height={size}
       className={className}
-      role="img"
       aria-label={ariaLabel}
       draggable={false}
       style={{

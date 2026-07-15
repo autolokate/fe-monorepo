@@ -1,15 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Logo } from "@/layouts/Header/constants";
-import { FooterDownload } from "./FooterDownload";
-import styles from "./footer.module.css";
-import {
-  FOOTER_BACKGROUND,
-  footerBrand,
-  footerLinks,
-  socialLinks,
-} from "./constants";
+import Image from 'next/image';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
+import { Logo } from '@/layouts/Header/constants';
+import { FooterDownload } from './FooterDownload';
+import styles from './footer.module.css';
+import { FOOTER_BACKGROUND, footerBrand, footerLinks, socialLinks } from './constants';
 
 interface FooterProps {
   className?: string;
@@ -19,15 +14,9 @@ export function Footer({ className }: FooterProps) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className={cn(styles.footer, "relative isolate z-[1]", className)}>
+    <footer className={cn(styles.footer, 'relative isolate z-[1]', className)}>
       <div className={styles.bgWrap} aria-hidden="true">
-        <Image
-          src={FOOTER_BACKGROUND}
-          alt=""
-          fill
-          sizes="100vw"
-          className={styles.bgImage}
-        />
+        <Image src={FOOTER_BACKGROUND} alt="" fill sizes="100vw" className={styles.bgImage} />
         <div className={styles.bgFade} />
       </div>
 
@@ -54,7 +43,7 @@ export function Footer({ className }: FooterProps) {
                     aria-label={label}
                     className={styles.socialIcon}
                     data-social={id}
-                    style={{ "--social-brand": brandColor } as React.CSSProperties}
+                    style={{ '--social-brand': brandColor } as React.CSSProperties}
                   >
                     <Icon className="h-[18px] w-[18px]" />
                   </a>
@@ -74,8 +63,8 @@ export function Footer({ className }: FooterProps) {
                     <li key={`${section.title}-${item.id}`}>
                       <Link
                         href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noreferrer noopener" : undefined}
+                        target={item.external ? '_blank' : undefined}
+                        rel={item.external ? 'noreferrer noopener' : undefined}
                         className={styles.navLink}
                       >
                         {item.label}

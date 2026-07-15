@@ -49,13 +49,15 @@ export class PwaScanErrorBoundary extends Component<
       <div className="pwa-scan-error-fallback" role="alert">
         <AlHeading variant="h2">Something went wrong</AlHeading>
         <AlText tone="muted">
-          The screen could not load after your photo was captured. Your session is still active — try
-          again or go back.
+          The screen could not load after your photo was captured. Your session is still active —
+          try again or go back.
         </AlText>
         <p className="pwa-scan-error-fallback__detail">{this.state.error.message}</p>
         {diagnostics.length > 0 ? (
           <pre className="pwa-scan-error-fallback__diag">
-            {diagnostics.map((entry) => `${entry.at} · ${entry.routeId} · ${entry.event}`).join('\n')}
+            {diagnostics
+              .map((entry) => `${entry.at} · ${entry.routeId} · ${entry.event}`)
+              .join('\n')}
           </pre>
         ) : null}
         <AlButton variant="primary" onClick={this.handleRetry}>

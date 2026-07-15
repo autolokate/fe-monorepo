@@ -15,46 +15,46 @@ Enterprise-grade **code structure and hygiene** achieved for demo deployment. Al
 
 ## Quality Gates
 
-| Gate | Status |
-|------|--------|
-| TypeScript | ✅ 0 errors |
-| ESLint | ✅ 0 errors |
-| Production build | ✅ PASS |
-| Unused code | ✅ Orphan files removed |
+| Gate                | Status                                   |
+| ------------------- | ---------------------------------------- |
+| TypeScript          | ✅ 0 errors                              |
+| ESLint              | ✅ 0 errors                              |
+| Production build    | ✅ PASS                                  |
+| Unused code         | ✅ Orphan files removed                  |
 | Import architecture | ✅ `@/` aliases; 0 deep relative imports |
-| Component ownership | ✅ Enforced |
-| Flow regressions | ✅ None — route graph unchanged |
-| Session schema | ✅ Unchanged |
-| Figma UX | ✅ Unchanged |
+| Component ownership | ✅ Enforced                              |
+| Flow regressions    | ✅ None — route graph unchanged          |
+| Session schema      | ✅ Unchanged                             |
+| Figma UX            | ✅ Unchanged                             |
 
 ---
 
 ## Enterprise Quality Bar Assessment
 
-| Criterion | Stripe/Linear bar | Status |
-|-----------|-------------------|--------|
-| Predictable folder structure | Feature-owned modules | ✅ |
-| No dead code in production path | Orphans removed | ✅ |
-| Consistent imports | `@/` + package aliases | ✅ |
-| Single source of truth (formatters) | shared/format-mobile | ✅ |
-| Type strictness | strict: true, 0 any | ✅ |
-| Reusable UI in design system | @autolokate/ui | ✅ |
-| No duplicate primitives | Verified | ✅ |
-| Cohesive files over arbitrary splits | Large route files retained | ✅ |
+| Criterion                            | Stripe/Linear bar          | Status |
+| ------------------------------------ | -------------------------- | ------ |
+| Predictable folder structure         | Feature-owned modules      | ✅     |
+| No dead code in production path      | Orphans removed            | ✅     |
+| Consistent imports                   | `@/` + package aliases     | ✅     |
+| Single source of truth (formatters)  | shared/format-mobile       | ✅     |
+| Type strictness                      | strict: true, 0 any        | ✅     |
+| Reusable UI in design system         | @autolokate/ui             | ✅     |
+| No duplicate primitives              | Verified                   | ✅     |
+| Cohesive files over arbitrary splits | Large route files retained | ✅     |
 
 ---
 
 ## Flow Verification (unchanged)
 
-| Flow | Status |
-|------|--------|
-| Auth | ✅ A1→A2→A3 |
-| Purchase | ✅ R03→R10→Emergency |
-| Emergency | ✅ All paths |
-| Prepaid | ✅ Welcome→Auth→Emergency |
-| B2B2C | ✅ Welcome→Auth→Emergency |
-| Post-Activation PWA | ✅ /pwa/scan/* |
-| Completed | ✅ Emergency→Completed |
+| Flow                | Status                    |
+| ------------------- | ------------------------- |
+| Auth                | ✅ A1→A2→A3               |
+| Purchase            | ✅ R03→R10→Emergency      |
+| Emergency           | ✅ All paths              |
+| Prepaid             | ✅ Welcome→Auth→Emergency |
+| B2B2C               | ✅ Welcome→Auth→Emergency |
+| Post-Activation PWA | ✅ /pwa/scan/\*           |
+| Completed           | ✅ Emergency→Completed    |
 
 ---
 

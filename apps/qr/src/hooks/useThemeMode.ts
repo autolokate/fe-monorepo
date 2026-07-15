@@ -1,7 +1,4 @@
-import {
-  useThemeContext,
-  type ThemeContextValue,
-} from '../platform/theme/ThemeProvider';
+import { useThemeContext, type ThemeContextValue } from '../platform/theme/ThemeProvider';
 import type { ThemeMode } from '../platform/theme/resolve-scheduled-theme';
 import type { ThemePreference } from '../platform/theme/theme-preference';
 

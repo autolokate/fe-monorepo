@@ -1,19 +1,16 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { Building2, Eye, Info, LayoutGrid, RefreshCw, Search, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { BrandLogo } from "@/components/shared/BrandLogo";
-import { PageFade } from "@/components/shared/PageFade";
-import { useCatalogueBrandsForCategory } from "@/hooks/catalogue";
-import type { VehicleCategory } from "@/lib/preferences";
-import { cn } from "@/lib/utils";
-import {
-  BRAND_BACKGROUND,
-  BRANDS_DIRECTORY_COPY,
-} from "./constants";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import { Building2, Eye, Info, LayoutGrid, RefreshCw, Search, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BrandLogo } from '@/components/shared/BrandLogo';
+import { PageFade } from '@/components/shared/PageFade';
+import { useCatalogueBrandsForCategory } from '@/hooks/catalogue';
+import type { VehicleCategory } from '@/lib/preferences';
+import { cn } from '@/lib/utils';
+import { BRAND_BACKGROUND, BRANDS_DIRECTORY_COPY } from './constants';
 
 export interface BrandsDirectoryPageProps {
   /** UI vehicle category — drives copy, filter, and brand-link routing. */
@@ -34,7 +31,7 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
     refetch,
   } = useCatalogueBrandsForCategory(vehicleType);
 
-  const [brandQuery, setBrandQuery] = useState("");
+  const [brandQuery, setBrandQuery] = useState('');
 
   const filteredBrands = useMemo(() => {
     const q = brandQuery.trim().toLowerCase();
@@ -76,7 +73,7 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
               {copy.eyebrow}
             </p>
             <h1 className="font-display mt-3 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl lg:leading-tight">
-              {copy.headlinePrefix}{" "}
+              {copy.headlinePrefix}{' '}
               <span className="text-primary underline decoration-primary/40 decoration-2 underline-offset-4">
                 {copy.headlineAccent}
               </span>
@@ -113,27 +110,29 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
               <input
                 type="text"
                 value={brandQuery}
-                onChange={(e) => setBrandQuery(e.target.value)}
+                onChange={(e) => {
+                  setBrandQuery(e.target.value);
+                }}
                 placeholder={copy.searchPlaceholder}
                 aria-label="Filter brands by name"
                 className={cn(
-                  "h-12 w-full rounded-2xl border border-border/60 bg-card pl-11 pr-4 text-sm text-foreground shadow-sm ring-1 ring-border/40",
-                  "placeholder:text-muted-foreground/60",
-                  "focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/30",
+                  'h-12 w-full rounded-2xl border border-border/60 bg-card pl-11 pr-4 text-sm text-foreground shadow-sm ring-1 ring-border/40',
+                  'placeholder:text-muted-foreground/60',
+                  'focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/30',
                 )}
               />
             </div>
             <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
               <Info className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span>
-                Showing{" "}
+                Showing{' '}
                 <span className="font-semibold tabular-nums text-foreground">
                   {filteredBrands.length}
-                </span>{" "}
+                </span>{' '}
                 {filteredBrands.length === categoryFilteredBrands.length
-                  ? `brand${filteredBrands.length === 1 ? "" : "s"}`
-                  : `of ${categoryFilteredBrands.length} brand${
-                      categoryFilteredBrands.length === 1 ? "" : "s"
+                  ? `brand${filteredBrands.length === 1 ? '' : 's'}`
+                  : `of ${categoryFilteredBrands.length.toString()} brand${
+                      categoryFilteredBrands.length === 1 ? '' : 's'
                     }`}
               </span>
             </div>
@@ -148,7 +147,9 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
             <EmptyState
               title={copy.emptyTitle}
               query={brandQuery.trim()}
-              onClear={() => setBrandQuery("")}
+              onClear={() => {
+                setBrandQuery('');
+              }}
             />
           ) : (
             <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
@@ -157,8 +158,8 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
                   <Link
                     href={`/${vehicleType}/${encodeURIComponent(brand.slug)}`}
                     className={cn(
-                      "group relative flex h-full flex-col items-center gap-5 overflow-hidden rounded-3xl border border-border/80 bg-card/90 p-6 text-center shadow-app-soft ring-1 ring-foreground/[0.04] backdrop-blur-md transition duration-300",
-                      "hover:-translate-y-0.5 hover:border-primary/35 motion-reduce:hover:translate-y-0",
+                      'group relative flex h-full flex-col items-center gap-5 overflow-hidden rounded-3xl border border-border/80 bg-card/90 p-6 text-center shadow-app-soft ring-1 ring-foreground/[0.04] backdrop-blur-md transition duration-300',
+                      'hover:-translate-y-0.5 hover:border-primary/35 motion-reduce:hover:translate-y-0',
                     )}
                   >
                     {/* Soft primary halo in the corner — same idiom as the
@@ -178,9 +179,7 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
                     />
 
                     <div className="relative flex flex-col gap-1.5">
-                      <h3 className="text-lg font-bold text-foreground">
-                        {brand.name}
-                      </h3>
+                      <h3 className="text-lg font-bold text-foreground">{brand.name}</h3>
                       <p className="text-xs font-medium text-muted-foreground">
                         View available models
                       </p>
@@ -236,19 +235,9 @@ function BrandsGridSkeleton() {
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="rounded-2xl border border-dashed border-border bg-muted/30 px-6 py-16 text-center">
-      <p className="font-medium text-foreground">
-        We could not load the brand directory.
-      </p>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Check your connection and try again.
-      </p>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="mt-4"
-        onClick={onRetry}
-      >
+      <p className="font-medium text-foreground">We could not load the brand directory.</p>
+      <p className="mt-1 text-sm text-muted-foreground">Check your connection and try again.</p>
+      <Button type="button" variant="outline" size="sm" className="mt-4" onClick={onRetry}>
         <RefreshCw className="h-3.5 w-3.5" aria-hidden />
         Retry
       </Button>

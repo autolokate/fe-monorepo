@@ -1,11 +1,5 @@
 import type { ApiPlanTier } from '@autolokate/api-client';
-import {
-  AlErrorState,
-  AlPageHeader,
-  AlPageHeaderAction,
-  AlStack,
-  AlTabs,
-} from '@autolokate/ui';
+import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack, AlTabs } from '@autolokate/ui';
 import { useCallback, useMemo, useState } from 'react';
 
 import { CatalogPlansTab } from '@/features/catalog/CatalogPlansTab';
@@ -58,9 +52,7 @@ export function CatalogPage() {
       `${metrics.planVersions.toLocaleString()} plan versions`,
       `${metrics.livePlans.toLocaleString()} live`,
       `${metrics.skus.toLocaleString()} SKUs`,
-      metrics.emptyShelves > 0
-        ? `${metrics.emptyShelves.toLocaleString()} empty shelves`
-        : null,
+      metrics.emptyShelves > 0 ? `${metrics.emptyShelves.toLocaleString()} empty shelves` : null,
     ]);
   }, [isLoading, metrics]);
 
@@ -76,7 +68,10 @@ export function CatalogPage() {
   if (plansDead && skusDead) {
     return (
       <RequirePermission permission="catalog:read">
-        <AlErrorState message={plansState.userErrorMessage ?? 'Unable to load the catalog.'} onRetry={refreshAll} />
+        <AlErrorState
+          message={plansState.userErrorMessage ?? 'Unable to load the catalog.'}
+          onRetry={refreshAll}
+        />
       </RequirePermission>
     );
   }

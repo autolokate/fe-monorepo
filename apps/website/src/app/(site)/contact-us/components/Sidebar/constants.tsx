@@ -1,7 +1,7 @@
-import type { ComponentType, SVGProps } from "react";
-import { Mail, MapPin, type LucideIcon } from "lucide-react";
-import { socialLinks, type SocialLink } from "@/layouts/Footer/constants";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import type { ComponentType, SVGProps } from 'react';
+import { Mail, MapPin, type LucideIcon } from 'lucide-react';
+import { socialLinks, type SocialLink } from '@/layouts/Footer/constants';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 
 export { WhatsAppIcon };
 
@@ -19,32 +19,32 @@ export interface ContactCard {
 
 export const contactCards: ContactCard[] = [
   {
-    key: "email",
+    key: 'email',
     Icon: Mail,
-    label: "Email Us",
-    primary: "contact@autolokate.com",
-    href: "mailto:contact@autolokate.com",
-    brandColor: "#3B82F6",
+    label: 'Email Us',
+    primary: 'contact@autolokate.com',
+    href: 'mailto:contact@autolokate.com',
+    brandColor: '#3B82F6',
   },
   {
-    key: "whatsapp",
+    key: 'whatsapp',
     Icon: WhatsAppIcon,
-    label: "WhatsApp Support",
-    primary: "+91 906 252 4516",
-    href: "https://wa.me/919062524516",
-    brandColor: "#25D366",
+    label: 'WhatsApp Support',
+    primary: '+91 906 252 4516',
+    href: 'https://wa.me/919062524516',
+    brandColor: '#25D366',
   },
   {
-    key: "office",
+    key: 'office',
     Icon: MapPin,
-    label: "Office Location",
-    primary: "E 90 / 91 Chanakya Place, Delhi - 110059",
-    brandColor: "#F59E0B",
+    label: 'Office Location',
+    primary: 'E 90 / 91 Chanakya Place, Delhi - 110059',
+    brandColor: '#F59E0B',
   },
 ];
 
 export interface SocialItem {
-  id: SocialLink["id"];
+  id: SocialLink['id'];
   label: string;
   href: string;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
@@ -52,12 +52,10 @@ export interface SocialItem {
 }
 
 /** Same destinations as site footer — single source of truth. */
-export const socials: SocialItem[] = socialLinks.map(
-  ({ id, label, href, Icon, brandColor }) => ({
-    id,
-    label,
-    href,
-    Icon,
-    brandColor,
-  }),
-);
+export const socials: SocialItem[] = socialLinks.map(({ id, label, href, Icon, brandColor }) => ({
+  id,
+  label,
+  href,
+  Icon,
+  brandColor,
+}));

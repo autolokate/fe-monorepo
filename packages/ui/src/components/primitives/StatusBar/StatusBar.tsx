@@ -20,7 +20,12 @@ function DefaultStatusIcons() {
 
 export function StatusBar({ time, icons, className, ...props }: StatusBarProps) {
   return (
-    <div className={cn('al-status-bar', className)} role="status" aria-label="Device status bar" {...props}>
+    <div
+      className={cn('al-status-bar', className)}
+      role="status"
+      aria-label="Device status bar"
+      {...props}
+    >
       <time className="al-status-bar__time" dateTime={time}>
         {time}
       </time>

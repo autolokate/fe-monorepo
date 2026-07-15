@@ -22,7 +22,12 @@ export function AlIconButton({
   return (
     <button
       type={type}
-      className={cn('al-icon-button', `al-icon-button--${size}`, filled && 'al-icon-button--filled', className)}
+      className={cn(
+        'al-icon-button',
+        `al-icon-button--${size}`,
+        filled && 'al-icon-button--filled',
+        className,
+      )}
       aria-label={label}
       title={label}
       {...props}

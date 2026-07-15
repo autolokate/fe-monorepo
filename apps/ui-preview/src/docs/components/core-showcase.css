@@ -5,7 +5,8 @@
 
 .ds-core-showcase__frame {
   padding: var(--al-space-lg);
-  border: calc(var(--al-space-xs) / 4) dashed color-mix(in srgb, var(--al-color-outline) 80%, transparent);
+  border: calc(var(--al-space-xs) / 4) dashed
+    color-mix(in srgb, var(--al-color-outline) 80%, transparent);
   border-radius: var(--al-radius-lg);
   background: var(--al-color-background);
   color: var(--al-color-on-surface);

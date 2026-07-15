@@ -1,7 +1,10 @@
 import type { AlertStatus, ParkStatus } from '@autolokate/api-client';
 
 import { pwaScanPaths } from '@/features/post-activation-pwa/constants/pwa-scan-paths';
-import type { PwaParkMeStatus, PwaSosStatus } from '@/features/post-activation-pwa/context/pwa-scan-types';
+import type {
+  PwaParkMeStatus,
+  PwaSosStatus,
+} from '@/features/post-activation-pwa/context/pwa-scan-types';
 
 export type ScannerJourneyPhase =
   | 'idle'

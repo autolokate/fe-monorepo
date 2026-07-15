@@ -20,7 +20,8 @@
   background: hsl(calc(130deg + var(--hue-offset)) 62% calc(48% + (var(--ob-confetti-i) % 3) * 8%));
   opacity: 0;
   transform: translate(-50%, -50%) rotate(var(--angle));
-  animation: ob-confetti-burst 1.35s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--ob-confetti-i) * 18ms) both;
+  animation: ob-confetti-burst 1.35s cubic-bezier(0.22, 1, 0.36, 1)
+    calc(var(--ob-confetti-i) * 18ms) both;
 }
 
 [data-theme='light'] .ob-confetti__particle {

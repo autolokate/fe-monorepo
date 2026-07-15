@@ -40,7 +40,13 @@ export function AlBreadcrumb({ items }: AlBreadcrumbProps) {
               {!isLast ? (
                 <span className="al-breadcrumb__separator" aria-hidden>
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M4.5 2.5L7.5 6L4.5 9.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+                    <path
+                      d="M4.5 2.5L7.5 6L4.5 9.5"
+                      stroke="currentColor"
+                      strokeWidth="1.25"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </span>
               ) : null}

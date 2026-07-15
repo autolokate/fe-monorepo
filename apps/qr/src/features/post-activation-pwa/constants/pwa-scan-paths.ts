@@ -1,4 +1,8 @@
-import { buildScanPaths, parseJourneyIdFromPathname, ROUTE_NAMESPACE } from '../../../journey/routing/journey-url-routing';
+import {
+  buildScanPaths,
+  parseJourneyIdFromPathname,
+  ROUTE_NAMESPACE,
+} from '../../../journey/routing/journey-url-routing';
 
 function readQrCodeFromUrl(): string {
   if (typeof window === 'undefined') {

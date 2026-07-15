@@ -68,7 +68,9 @@ function DashboardPageCard({
         </div>
       </div>
 
-      <div className={`dashboard-page-card__hero ${toneClass('dashboard-page-card__hero', primaryTone)}`}>
+      <div
+        className={`dashboard-page-card__hero ${toneClass('dashboard-page-card__hero', primaryTone)}`}
+      >
         <span className="dashboard-page-card__hero-value">{primaryValue}</span>
         <span className="dashboard-page-card__hero-label">{primaryLabel}</span>
       </div>
@@ -101,7 +103,11 @@ type DashboardLinkCardProps = {
 
 function DashboardLinkCard({ title, description, icon, onClick }: DashboardLinkCardProps) {
   return (
-    <button type="button" className="dashboard-page-card dashboard-page-card--link" onClick={onClick}>
+    <button
+      type="button"
+      className="dashboard-page-card dashboard-page-card--link"
+      onClick={onClick}
+    >
       <div className="dashboard-page-card__head">
         <div className="dashboard-page-card__icon">{icon}</div>
         <div className="dashboard-page-card__titles">
@@ -161,8 +167,8 @@ export function DashboardPage() {
         ) : (
           <div className="dashboard-page-grid">
             <DashboardPageCard
-              title="QR Inventory"
-              description="Browse batches and sticker stock"
+              title="Stock"
+              description="Sticker stock by batch"
               icon={<ScanLineIcon size={20} aria-hidden />}
               primaryValue={inventory.totalBatches.toLocaleString()}
               primaryLabel="batches"
@@ -188,7 +194,7 @@ export function DashboardPage() {
               }}
             />
             <DashboardPageCard
-              title="QR Batch Management"
+              title="Batches"
               description="Create batches and run lifecycle"
               icon={<ScanLineIcon size={20} aria-hidden />}
               primaryValue={batchManagement.draftBatches.toLocaleString()}
@@ -255,7 +261,7 @@ export function DashboardPage() {
               />
             )}
             <DashboardPageCard
-              title="Promo Management"
+              title="Promos"
               description="Campaigns and discount codes"
               icon={<CreditCardIcon size={20} aria-hidden />}
               primaryValue={promos.activePromos.toLocaleString()}
@@ -283,7 +289,7 @@ export function DashboardPage() {
               }}
             />
             <DashboardPageCard
-              title="Audit Events"
+              title="Activity Log"
               description="Administrative activity timeline"
               icon={<ReceiptTextIcon size={20} aria-hidden />}
               primaryValue={metrics.auditLatestCount.toLocaleString()}
@@ -293,7 +299,7 @@ export function DashboardPage() {
               }}
             />
             <DashboardLinkCard
-              title="Finance Operations"
+              title="Settlements"
               description="Clawbacks and settlement batches"
               icon={<ShieldCheckIcon size={20} aria-hidden />}
               onClick={() => {
@@ -301,7 +307,7 @@ export function DashboardPage() {
               }}
             />
             <DashboardLinkCard
-              title="Ownership Transfers"
+              title="Ownership"
               description="Initiate and approve transfers"
               icon={<UserIcon size={20} aria-hidden />}
               onClick={() => {
@@ -309,8 +315,8 @@ export function DashboardPage() {
               }}
             />
             <DashboardLinkCard
-              title="Users & Roles"
-              description="Grant or revoke ADMIN access"
+              title="Customers"
+              description="Find a customer; manage account access"
               icon={<UsersIcon size={20} aria-hidden />}
               onClick={() => {
                 void navigate(adminPaths.users);

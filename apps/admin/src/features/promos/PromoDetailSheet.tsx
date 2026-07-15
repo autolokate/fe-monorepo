@@ -7,10 +7,7 @@ import {
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
-import {
-  formatPromoDiscount,
-  getPromoLifecycleStatus,
-} from '@/services/promos/promo-metrics';
+import { formatPromoDiscount, getPromoLifecycleStatus } from '@/services/promos/promo-metrics';
 
 export type PromoDetailSheetProps = {
   promo: AdminPromoDto | null;
@@ -60,7 +57,13 @@ export function PromoDetailSheet({
           <div className="admin-modal-actions">
             <AlStatusBadge
               label={lifecycle}
-              status={lifecycle === 'ACTIVE' ? 'active' : lifecycle === 'UPCOMING' ? 'pending' : 'inactive'}
+              status={
+                lifecycle === 'ACTIVE'
+                  ? 'active'
+                  : lifecycle === 'UPCOMING'
+                    ? 'pending'
+                    : 'inactive'
+              }
             />
             <AlStatusBadge
               label={promo.active ? 'Enabled' : 'Disabled'}

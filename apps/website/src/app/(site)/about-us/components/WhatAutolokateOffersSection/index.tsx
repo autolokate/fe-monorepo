@@ -2,9 +2,9 @@ import {
   OFFER_FEATURES,
   OFFERS_SECTION_COPY,
   WHAT_AUTOLOKATE_OFFERS_SECTION_ID,
-} from "./constants";
-import { OfferCard } from "./OfferCard";
-import { PartnerNetworkBanner } from "./PartnerNetworkBanner";
+} from './constants';
+import { OfferCard } from './OfferCard';
+import { PartnerNetworkBanner } from './PartnerNetworkBanner';
 
 export function WhatAutolokateOffersSection() {
   return (
@@ -15,7 +15,7 @@ export function WhatAutolokateOffersSection() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <header className="mx-auto max-w-2xl text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <p className="font-mono text-[0.8rem] font-bold uppercase tracking-[0.18em] text-[var(--al-signal-green)]">
             {OFFERS_SECTION_COPY.eyebrow}
           </p>
           <h2

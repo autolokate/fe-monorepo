@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState, type ReactNode } from "react";
-import { X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { FIELD_ERROR_BORDER } from "./constants";
+import { useState, type ReactNode } from 'react';
+import { X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import { FIELD_ERROR_BORDER } from './constants';
 
 function parseList(raw: string): string[] {
   return raw
-    .split(",")
+    .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
 }
@@ -22,7 +22,7 @@ interface CommaTagInputProps {
   disabled?: boolean;
   icon: ReactNode;
   hasError?: boolean;
-  "aria-invalid"?: boolean;
+  'aria-invalid'?: boolean;
 }
 
 /**
@@ -37,13 +37,13 @@ export function CommaTagInput({
   disabled,
   icon,
   hasError,
-  "aria-invalid": ariaInvalid,
+  'aria-invalid': ariaInvalid,
 }: CommaTagInputProps) {
-  const [draft, setDraft] = useState("");
+  const [draft, setDraft] = useState('');
   const tags = parseList(value);
 
   function commitTags(nextTags: string[]) {
-    onChange(nextTags.join(", "));
+    onChange(nextTags.join(', '));
   }
 
   function remove(tag: string) {
@@ -55,15 +55,15 @@ export function CommaTagInput({
     if (!t) return;
     const next = tags.includes(t) ? tags : [...tags, t];
     commitTags(next);
-    setDraft("");
+    setDraft('');
   }
 
   return (
     <div
       className={cn(
-        "flex min-h-11 w-full items-center gap-2 rounded-xl border border-border/70 bg-background px-3 py-2 text-sm shadow-inner transition",
-        "focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20",
-        disabled && "cursor-not-allowed opacity-60",
+        'flex min-h-11 w-full items-center gap-2 rounded-xl border border-border/70 bg-background px-3 py-2 text-sm shadow-inner transition',
+        'focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/20',
+        disabled && 'cursor-not-allowed opacity-60',
         hasError && FIELD_ERROR_BORDER,
       )}
     >
@@ -85,7 +85,9 @@ export function CommaTagInput({
               type="button"
               disabled={disabled}
               className="inline-flex shrink-0 rounded p-0.5 text-muted-foreground hover:bg-background/80 hover:text-foreground disabled:pointer-events-none"
-              onClick={() => remove(tag)}
+              onClick={() => {
+                remove(tag);
+              }}
               aria-label={`Remove ${tag}`}
             >
               <X className="h-3 w-3" aria-hidden />
@@ -96,18 +98,20 @@ export function CommaTagInput({
           id={id}
           type="text"
           disabled={disabled}
-          placeholder={tags.length ? "" : placeholder}
+          placeholder={tags.length ? '' : placeholder}
           aria-invalid={ariaInvalid}
           className="h-8 min-h-8 min-w-[8rem] flex-1 self-center border-0 bg-transparent px-0.5 py-1 align-middle text-sm leading-none shadow-none focus-visible:ring-0 disabled:opacity-60"
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            setDraft(e.target.value);
+          }}
           onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === ",") {
+            if (e.key === 'Enter' || e.key === ',') {
               e.preventDefault();
               addFromDraft();
             }
-            if (e.key === "Backspace" && !draft && tags.length > 0) {
-              remove(tags[tags.length - 1]!);
+            if (e.key === 'Backspace' && !draft && tags.length > 0) {
+              remove(tags[tags.length - 1]);
             }
           }}
           onBlur={() => {

@@ -7,13 +7,13 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|------:|
-| Total screens audited | **65** |
-| Total issues found | **9** |
-| Total issues fixed | **9** |
+| Metric                 |        Value |
+| ---------------------- | -----------: |
+| Total screens audited  |       **65** |
+| Total issues found     |        **9** |
+| Total issues fixed     |        **9** |
 | Shared component fixes | **13 files** |
-| Per-screen patches | **0** |
+| Per-screen patches     |        **0** |
 
 ---
 
@@ -24,6 +24,7 @@ The previous “touch-target gutter” (4px frame + 12px section inset) **did no
 Figma uses **one content column** with `padding: 0 16px` on the main frame (`102:270`, `170:27`). Back-button hit areas extend **12px left** of that column (x:4) while the **icon stays at x:16**.
 
 The split gutter:
+
 1. Double-padded welcome screens (16 + 12 = **28px** text)
 2. Centered the back icon in a 48×48 box at the wrong X (~28px instead of 16px)
 3. Failed to place the 48×48 hit area at x:4

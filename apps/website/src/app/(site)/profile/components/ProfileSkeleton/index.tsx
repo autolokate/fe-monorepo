@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /** Shimmer placeholder while `/v1/auth/me` is loading — mirrors the redesigned profile layout. */
 export function ProfileSkeleton() {

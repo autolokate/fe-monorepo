@@ -32,10 +32,7 @@ export const authJourneyPaths = new Proxy(
       const journeyId = parseJourneyIdFromPathname(
         typeof window !== 'undefined' ? window.location.pathname : '',
       );
-      if (
-        journeyId &&
-        (prop === 'mobile' || prop === 'otp' || prop === 'vehicleOwner')
-      ) {
+      if (journeyId && (prop === 'mobile' || prop === 'otp' || prop === 'vehicleOwner')) {
         const paths = buildAuthPaths(journeyId);
         if (prop === 'mobile') {
           return paths.mobile;

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Car, Check, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { SESSION_FEE } from "../../constants";
-import { HERO_CHECKLIST, HERO_CHIPS } from "./constants";
+import { Car, Check, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { SESSION_FEE } from '../../constants';
+import { HERO_CHECKLIST, HERO_CHIPS } from './constants';
 
 export function HeroBanner() {
   return (
@@ -32,13 +32,11 @@ export function HeroBanner() {
               className="font-display mt-2.5 max-w-3xl text-3xl font-bold leading-[1.08] tracking-tight text-foreground sm:mt-3 sm:text-4xl sm:leading-[1.05] lg:text-[2.75rem]"
             >
               A clear car decision
-              <span className="mt-1 block text-primary sm:mt-0">
-                in 15 minutes.
-              </span>
+              <span className="mt-1 block text-primary sm:mt-0">in 15 minutes.</span>
             </h1>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:text-base">
-              One session with an Autolokate advisor — same practical lens as Indian Drive
-              Guide / Deepak Chaudhary. Flat fee, no dealer kickbacks.
+              One session with an Autolokate advisor — same practical lens as Indian Drive Guide /
+              Deepak Chaudhary. Flat fee, no dealer kickbacks.
             </p>
 
             <div className="mt-4 flex flex-wrap gap-2 sm:mt-5">
@@ -46,17 +44,14 @@ export function HeroBanner() {
                 <span
                   key={label}
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium sm:px-3.5",
+                    'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium sm:px-3.5',
                     accent
-                      ? "border-primary/25 bg-primary/10 font-semibold text-primary"
-                      : "border-border/70 bg-white/60 text-muted-foreground backdrop-blur-sm",
+                      ? 'border-primary/25 bg-primary/10 font-semibold text-primary'
+                      : 'border-border/70 bg-white/60 text-muted-foreground backdrop-blur-sm',
                   )}
                 >
                   <Icon
-                    className={cn(
-                      "h-3.5 w-3.5",
-                      accent ? "" : "text-muted-foreground",
-                    )}
+                    className={cn('h-3.5 w-3.5', accent ? '' : 'text-muted-foreground')}
                     aria-hidden
                   />
                   {label}
@@ -65,11 +60,7 @@ export function HeroBanner() {
             </div>
 
             <div className="mt-6 sm:mt-7">
-              <Button
-                variant="default"
-                className="h-11 px-6 text-sm font-semibold"
-                asChild
-              >
+              <Button variant="default" className="h-11 px-6 text-sm font-semibold" asChild>
                 <a href="#book-session">
                   <Clock className="mr-2 h-4 w-4" aria-hidden />
                   Book a session — pick a slot
@@ -93,9 +84,7 @@ export function HeroBanner() {
             <div className="my-4 border-t border-border/60" />
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                From
-              </p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">From</p>
               <p className="font-display mt-0.5 text-[2rem] font-bold leading-none tabular-nums text-foreground">
                 ₹{SESSION_FEE}
               </p>
@@ -104,10 +93,7 @@ export function HeroBanner() {
 
             <ul className="mt-4 space-y-2">
               {HERO_CHECKLIST.map((c) => (
-                <li
-                  key={c}
-                  className="flex items-center gap-2 text-xs text-muted-foreground"
-                >
+                <li key={c} className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Check
                     className="h-3.5 w-3.5 shrink-0 text-primary"
                     strokeWidth={2.5}

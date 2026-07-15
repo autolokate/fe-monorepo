@@ -1,5 +1,5 @@
-import type { ApiEnvelope } from "@/services/auth/types";
-import type { BookingType } from "@/lib/booking/types";
+import type { ApiEnvelope } from '@/services/auth/types';
+import type { BookingType } from '@/lib/booking/types';
 
 /** Body for `POST /v1/bookings/book` — mirrors the backend `CreateBookingDto`. */
 export interface CreateBookingPayload {

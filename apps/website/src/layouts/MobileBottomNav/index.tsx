@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter } from "next/navigation";
-import { AlBottomNav, type AlBottomNavItem } from "@autolokate/ui/bottom-nav";
-import { isNavItemActive, primaryNavItems } from "@/layouts/Header/constants";
+import { usePathname, useRouter } from 'next/navigation';
+import { AlBottomNav, type AlBottomNavItem } from '@autolokate/ui/bottom-nav';
+import { isNavItemActive, primaryNavItems } from '@/layouts/Header/constants';
 
 /**
  * Mobile-only bottom tab bar built on the shared design-system `AlBottomNav`.
@@ -21,7 +21,9 @@ export function MobileBottomNav() {
       label: item.shortLabel ?? item.label,
       icon: Icon ? <Icon size={22} aria-hidden /> : undefined,
       active: isNavItemActive(pathname, item.href),
-      onClick: () => router.push(item.href),
+      onClick: () => {
+        router.push(item.href);
+      },
     };
   });
 

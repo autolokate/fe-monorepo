@@ -40,7 +40,13 @@ export function PwaSpringPress({ children, className, ...props }: HTMLMotionProp
 }
 
 /** Status hero — subtle scale only (no opacity flash). */
-export function PwaHeroReveal({ children, className }: { children: ReactNode; className?: string }) {
+export function PwaHeroReveal({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <motion.div
       className={className}

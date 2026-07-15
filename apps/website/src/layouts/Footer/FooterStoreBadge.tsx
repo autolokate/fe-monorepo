@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
 interface FooterStoreBadgeProps {
   href: string;
@@ -23,7 +23,7 @@ export function FooterStoreBadge({
       rel="noopener noreferrer"
       aria-label={`${topLabel} ${bottomLabel}`}
       className={cn(
-        "inline-flex h-11 w-fit max-w-full shrink-0 items-center gap-2.5 rounded-xl border border-white/20 bg-transparent px-3.5 text-white transition-colors hover:border-white/35 hover:bg-white/5 sm:h-12 sm:px-4",
+        'inline-flex h-11 w-fit max-w-full shrink-0 items-center gap-2.5 rounded-xl border border-white/20 bg-transparent px-3.5 text-white transition-colors hover:border-white/35 hover:bg-white/5 sm:h-12 sm:px-4',
         className,
       )}
     >

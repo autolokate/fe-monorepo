@@ -1,4 +1,4 @@
-import { FormSection, HeroBanner, SupportSection, contactMetadata } from "./";
+import { FormSection, HeroBanner, SupportSection, contactMetadata } from './';
 
 export const metadata = contactMetadata;
 

@@ -10,9 +10,7 @@ export function PurchaseRoutes() {
 
   return (
     <PurchaseRouteHydrationProvider>
-      <PurchaseSegmentBootstrap>
-        {resolvePurchaseRouteContent(pathname)}
-      </PurchaseSegmentBootstrap>
+      <PurchaseSegmentBootstrap>{resolvePurchaseRouteContent(pathname)}</PurchaseSegmentBootstrap>
     </PurchaseRouteHydrationProvider>
   );
 }

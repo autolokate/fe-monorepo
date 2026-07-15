@@ -361,9 +361,12 @@ export function useQrCodeScanner(onCode: (raw: string) => void) {
     void tryAttachVideo();
   }, [state, tryAttachVideo]);
 
-  useEffect(() => () => {
-    releaseStream();
-  }, [releaseStream]);
+  useEffect(
+    () => () => {
+      releaseStream();
+    },
+    [releaseStream],
+  );
 
   return { state, errorMessage, start, stop, registerVideoElement };
 }

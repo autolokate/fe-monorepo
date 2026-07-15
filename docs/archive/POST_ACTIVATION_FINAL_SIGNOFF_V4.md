@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-18  
 **Sprint:** Screen Rebuild (Phases 1–3)  
-**Reference audit:** [POST_ACTIVATION_VISUAL_RECONSTRUCTION_AUDIT.md](POST_ACTIVATION_VISUAL_RECONSTRUCTION_AUDIT.md)  
+**Reference audit:** [POST_ACTIVATION_VISUAL_RECONSTRUCTION_AUDIT.md](POST_ACTIVATION_VISUAL_RECONSTRUCTION_AUDIT.md)
 
 ---
 
@@ -16,12 +16,12 @@ Rebuilt screens (13/13) no longer Grade D. Full 30-screen product still has Grad
 
 ## Rebuilt screen grades (13 targeted)
 
-| Phase | Screens | Grade D before | Grade D after |
-|-------|---------|----------------|---------------|
-| 1 | 06, 08, 08b, 09, 09b | 5 | **0** |
-| 2 | 14, 14b, 14c, 14d, 17 | 5 | **0** |
-| 3 | 19, 20, 21 | 3 | **0** |
-| **Total** | **13** | **13** | **0** |
+| Phase     | Screens               | Grade D before | Grade D after |
+| --------- | --------------------- | -------------- | ------------- |
+| 1         | 06, 08, 08b, 09, 09b  | 5              | **0**         |
+| 2         | 14, 14b, 14c, 14d, 17 | 5              | **0**         |
+| 3         | 19, 20, 21            | 3              | **0**         |
+| **Total** | **13**                | **13**         | **0**         |
 
 All rebuilt screens visually match Figma **structure** (Grade B). None are Grade A (pixel-identical).
 
@@ -29,23 +29,23 @@ All rebuilt screens visually match Figma **structure** (Grade B). None are Grade
 
 ## Global success criteria (30 screens)
 
-| Criterion | Target | Actual (post-rebuild estimate) | Pass |
-|-----------|--------|--------------------------------|------|
-| Grade D | 0 | **1** (15b scene captured — not in sprint scope) | ❌ |
-| Grade C | ≤ 3 | **~9** (03–05, 07, 15b, 16, 18, 22, 23, 02 polish) | ❌ |
-| Grade B | ≤ 5 | **~18** | ❌ |
-| Grade A | ≥ 22 | **~2** (01, 10) | ❌ |
+| Criterion | Target | Actual (post-rebuild estimate)                     | Pass |
+| --------- | ------ | -------------------------------------------------- | ---- |
+| Grade D   | 0      | **1** (15b scene captured — not in sprint scope)   | ❌   |
+| Grade C   | ≤ 3    | **~9** (03–05, 07, 15b, 16, 18, 22, 23, 02 polish) | ❌   |
+| Grade B   | ≤ 5    | **~18**                                            | ❌   |
+| Grade A   | ≥ 22   | **~2** (01, 10)                                    | ❌   |
 
 ---
 
 ## Broken UI fixes (user report)
 
-| Issue | Fix |
-|-------|-----|
-| SOS hold ring misaligned from disc | `AlSosHoldButton` stage rebuilt — concentric layout |
-| Vehicle found extra “· Safe” on badge | Footer copy → “Protected by Autolokate” only |
-| Scene photos wrong title/spacing | Figma copy + `pwa-scan-scene-photos-screen` spacing |
-| 09b empty photo review | Review cards always render gradient base + retake icons |
+| Issue                                 | Fix                                                     |
+| ------------------------------------- | ------------------------------------------------------- |
+| SOS hold ring misaligned from disc    | `AlSosHoldButton` stage rebuilt — concentric layout     |
+| Vehicle found extra “· Safe” on badge | Footer copy → “Protected by Autolokate” only            |
+| Scene photos wrong title/spacing      | Figma copy + `pwa-scan-scene-photos-screen` spacing     |
+| 09b empty photo review                | Review cards always render gradient base + retake icons |
 
 ---
 
@@ -67,12 +67,12 @@ All **30 routes** remain functional. Non-rebuilt screens still implement correct
 
 ## Deliverables
 
-| Doc | Path |
-|-----|------|
-| Phase 1 | [POST_ACTIVATION_REBUILD_PHASE1.md](POST_ACTIVATION_REBUILD_PHASE1.md) |
-| Phase 2 | [POST_ACTIVATION_REBUILD_PHASE2.md](POST_ACTIVATION_REBUILD_PHASE2.md) |
-| Phase 3 | [POST_ACTIVATION_REBUILD_PHASE3.md](POST_ACTIVATION_REBUILD_PHASE3.md) |
-| Sign-off | This document |
+| Doc      | Path                                                                   |
+| -------- | ---------------------------------------------------------------------- |
+| Phase 1  | [POST_ACTIVATION_REBUILD_PHASE1.md](POST_ACTIVATION_REBUILD_PHASE1.md) |
+| Phase 2  | [POST_ACTIVATION_REBUILD_PHASE2.md](POST_ACTIVATION_REBUILD_PHASE2.md) |
+| Phase 3  | [POST_ACTIVATION_REBUILD_PHASE3.md](POST_ACTIVATION_REBUILD_PHASE3.md) |
+| Sign-off | This document                                                          |
 
 **Screenshot evidence:** `docs/audit-screenshots/rebuild/{before,after,figma}/`
 

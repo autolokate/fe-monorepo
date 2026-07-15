@@ -1,6 +1,6 @@
-import { CircleCheck, ShieldAlert } from "lucide-react";
-import { WHY_IT_MATTERS_COPY } from "./constants";
-import styles from "./index.module.css";
+import { CircleCheck, ShieldAlert } from 'lucide-react';
+import { WHY_IT_MATTERS_COPY } from './constants';
+import styles from './index.module.css';
 
 export function WhyItMattersSection() {
   const { eyebrow, stat, half, crash, footer } = WHY_IT_MATTERS_COPY;
@@ -27,9 +27,7 @@ export function WhyItMattersSection() {
 
       <div className={styles.content}>
         <div className={styles.text}>
-          <p
-            className={`${styles.accent} text-xs font-semibold uppercase tracking-[0.28em]`}
-          >
+          <p className={`${styles.accent} text-xs font-semibold uppercase tracking-[0.28em]`}>
             {eyebrow}
           </p>
 
@@ -44,8 +42,7 @@ export function WhyItMattersSection() {
           <div className={`${styles.divider} my-6`} aria-hidden />
 
           <p className="max-w-md text-base leading-relaxed sm:text-lg">
-            {half.lead}{" "}
-            <span className={`${styles.accent} font-semibold`}>{half.emphasis}</span>{" "}
+            {half.lead} <span className={`${styles.accent} font-semibold`}>{half.emphasis}</span>{' '}
             {half.body}
           </p>
 

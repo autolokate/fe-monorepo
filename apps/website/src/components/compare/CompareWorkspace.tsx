@@ -1,25 +1,22 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Car, CheckCircle2, Plus, Share2 } from "lucide-react";
-import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { cn, formatINR } from "@/lib/utils";
-import type { CatalogueModel, CatalogueVariant } from "@/lib/catalogue/types";
+import Image from 'next/image';
+import { Car, CheckCircle2, Plus, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { cn, formatINR } from '@/lib/utils';
+import type { CatalogueModel, CatalogueVariant } from '@/lib/catalogue/types';
 import {
   compareTrayPrice,
   compareTraySubtitle,
   compareTrayThumb,
   compareTrayTitleLine,
-} from "@/lib/catalogue/compare-tray-display";
-import type { TaxonomyBundle } from "@/services/taxonomy/taxonomy-api";
-import {
-  buildCompareRowsForTab,
-  type CompareTabId,
-} from "@/lib/catalogue/compare-matrix";
-import { COMPARE_TABS } from "@/components/compare/constants";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/lib/catalogue/compare-tray-display';
+import type { TaxonomyBundle } from '@/services/taxonomy/taxonomy-api';
+import { buildCompareRowsForTab, type CompareTabId } from '@/lib/catalogue/compare-matrix';
+import { COMPARE_TABS } from '@/components/compare/constants';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Props = {
   tab: CompareTabId;
@@ -49,11 +46,11 @@ export function CompareWorkspace({
 }: Props) {
   const share = async () => {
     try {
-      const url = typeof window !== "undefined" ? window.location.href : "";
+      const url = typeof window !== 'undefined' ? window.location.href : '';
       await navigator.clipboard.writeText(url);
-      toast.success("Comparison link copied");
+      toast.success('Comparison link copied');
     } catch {
-      toast.message("Could not copy link");
+      toast.message('Could not copy link');
     }
   };
 
@@ -62,17 +59,16 @@ export function CompareWorkspace({
       <div className="grid gap-8 lg:grid-cols-[minmax(0,260px)_1fr] lg:items-start">
         <aside className="space-y-5 rounded-2xl border border-border/80 bg-card p-6 shadow-sm ring-1 ring-foreground/[0.03]">
           <div>
-            <h2 className="font-display text-lg font-semibold text-foreground">Start your comparison</h2>
+            <h2 className="font-display text-lg font-semibold text-foreground">
+              Start your comparison
+            </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Add up to three new-car variants, then switch tabs to focus on specs, features, and safety.
+              Add up to three new-car variants, then switch tabs to focus on specs, features, and
+              safety.
             </p>
           </div>
           <ul className="space-y-2.5 text-sm text-foreground/90">
-            {[
-              "Detailed specifications",
-              "Feature comparison",
-              "Safety & ratings",
-            ].map((line) => (
+            {['Detailed specifications', 'Feature comparison', 'Safety & ratings'].map((line) => (
               <li key={line} className="flex gap-2">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" aria-hidden />
                 <span>{line}</span>
@@ -80,21 +76,11 @@ export function CompareWorkspace({
             ))}
           </ul>
           <div className="flex flex-col gap-2.5 pt-1">
-            <Button
-              type="button"
-              variant="default"
-              className="w-full"
-              onClick={onAddCar}
-            >
+            <Button type="button" variant="default" className="w-full" onClick={onAddCar}>
               <Plus className="h-4 w-4" aria-hidden />
               Add a car
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => void share()}
-            >
+            <Button type="button" variant="outline" className="w-full" onClick={() => void share()}>
               <Share2 className="h-3.5 w-3.5" />
               Share comparison
             </Button>
@@ -104,7 +90,9 @@ export function CompareWorkspace({
         <div className="min-w-0 space-y-6">
           <Tabs
             value={tab}
-            onValueChange={(v) => onTabChange(v as CompareTabId)}
+            onValueChange={(v) => {
+              onTabChange(v as CompareTabId);
+            }}
             className="w-full"
           >
             <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1 overflow-x-auto rounded-full border border-border/80 bg-card p-1 shadow-sm sm:flex-nowrap [scrollbar-width:thin]">
@@ -113,8 +101,8 @@ export function CompareWorkspace({
                   key={id}
                   value={id}
                   className={cn(
-                    "gap-2 rounded-full px-4 py-2 text-xs font-semibold text-muted-foreground sm:text-sm",
-                    "data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-sm",
+                    'gap-2 rounded-full px-4 py-2 text-xs font-semibold text-muted-foreground sm:text-sm',
+                    'data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-sm',
                   )}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -141,8 +129,8 @@ export function CompareWorkspace({
 
           <div className="border-t border-border/70 pt-6">
             <p className="max-w-2xl text-[11px] leading-relaxed text-muted-foreground">
-              Prices are indicative ex-showroom figures from the catalogue feed; on-road costs vary by city,
-              variant, and offers. Always confirm with an authorised dealer before you buy.
+              Prices are indicative ex-showroom figures from the catalogue feed; on-road costs vary
+              by city, variant, and offers. Always confirm with an authorised dealer before you buy.
             </p>
           </div>
         </div>
@@ -203,7 +191,7 @@ function CompareTableBody({
     return (
       <div className="rounded-2xl border border-destructive/30 bg-destructive/5 px-6 py-10 text-center">
         <p className="text-sm font-semibold text-foreground">Could not load comparison</p>
-        <p className="mt-2 text-sm text-muted-foreground">{errorMessage ?? "Please try again."}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{errorMessage ?? 'Please try again.'}</p>
       </div>
     );
   }
@@ -230,8 +218,8 @@ function CompareTableBody({
     <div className="overflow-hidden rounded-2xl border border-border/80 shadow-sm">
       <div
         className={cn(
-          "max-h-[min(70vh,36rem)] overflow-auto [scrollbar-width:thin]",
-          "overscroll-y-contain",
+          'max-h-[min(70vh,36rem)] overflow-auto [scrollbar-width:thin]',
+          'overscroll-y-contain',
         )}
       >
         <table className="w-full min-w-[720px] border-separate border-spacing-0 text-sm">
@@ -241,16 +229,16 @@ function CompareTableBody({
                 Highlights
               </th>
               {orderedVariants.map((v, vi) => {
-                const variantId = String(v.id ?? ids[vi] ?? "").trim();
+                const variantId = (v.id ?? ids[vi]).trim();
                 const modelRow = variantId ? modelDetailByVariantId[variantId] : undefined;
-                const titleLine = compareTrayTitleLine(v, modelRow) || "—";
+                const titleLine = compareTrayTitleLine(v, modelRow) || '—';
                 const subtitle = compareTraySubtitle(v, modelRow);
                 const thumb = compareTrayThumb(v, modelRow);
                 const price = compareTrayPrice(v, modelRow);
                 const showSubtitle = subtitle && subtitle !== titleLine;
                 return (
                   <th
-                    key={variantId || `col-${vi}`}
+                    key={variantId || `col-${String(vi)}`}
                     className="sticky top-0 z-20 bg-muted px-4 py-4 text-left align-top"
                   >
                     <div className="flex min-h-[8rem] min-w-[10rem] flex-col gap-1.5">
@@ -280,11 +268,17 @@ function CompareTableBody({
                       <div className="mt-auto space-y-0.5">
                         {price != null ? (
                           <>
-                            <span className="text-xs font-semibold text-primary">{formatINR(price)}</span>
-                            <span className="block text-[10px] text-muted-foreground">Ex-showroom</span>
+                            <span className="text-xs font-semibold text-primary">
+                              {formatINR(price)}
+                            </span>
+                            <span className="block text-[10px] text-muted-foreground">
+                              Ex-showroom
+                            </span>
                           </>
                         ) : (
-                          <span className="text-xs font-semibold text-muted-foreground">Price on request</span>
+                          <span className="text-xs font-semibold text-muted-foreground">
+                            Price on request
+                          </span>
                         )}
                       </div>
                     </div>
@@ -298,8 +292,8 @@ function CompareTableBody({
               <tr
                 key={row.key}
                 className={cn(
-                  "border-b border-border/80 last:border-b-0",
-                  ri % 2 === 0 ? "bg-card" : "bg-background",
+                  'border-b border-border/80 last:border-b-0',
+                  ri % 2 === 0 ? 'bg-card' : 'bg-background',
                 )}
               >
                 <td className="sticky left-0 z-10 border-r border-border/60 bg-card px-4 py-3 text-xs font-semibold text-muted-foreground">
@@ -307,10 +301,10 @@ function CompareTableBody({
                 </td>
                 {row.values.map((cell, ci) => (
                   <td
-                    key={`${row.key}-${ci}`}
+                    key={`${row.key}-${String(ci)}`}
                     className={cn(
-                      "relative z-0 px-4 py-3 text-sm leading-relaxed text-foreground",
-                      ri % 2 === 0 ? "bg-card" : "bg-background",
+                      'relative z-0 px-4 py-3 text-sm leading-relaxed text-foreground',
+                      ri % 2 === 0 ? 'bg-card' : 'bg-background',
                     )}
                   >
                     {cell}

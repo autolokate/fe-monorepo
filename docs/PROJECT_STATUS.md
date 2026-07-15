@@ -11,12 +11,12 @@
 
 Effective **2026-06-17**. This implementation is the **reference architecture** for all future Autolokate work.
 
-| Domain | Status |
-|--------|--------|
-| UI / Figma | PIXEL PERFECT VERIFIED |
-| Architecture | Locked — see `ARCHITECTURE_PRINCIPLES.md` |
-| Engineering | READY WITH KNOWN GAPS — see `FINAL_SANITY_REPORT.md` |
-| Device QA | Pending — see `REAL_DEVICE_EVIDENCE_REPORT.md` |
+| Domain       | Status                                               |
+| ------------ | ---------------------------------------------------- |
+| UI / Figma   | PIXEL PERFECT VERIFIED                               |
+| Architecture | Locked — see `ARCHITECTURE_PRINCIPLES.md`            |
+| Engineering  | READY WITH KNOWN GAPS — see `FINAL_SANITY_REPORT.md` |
+| Device QA    | Pending — see `REAL_DEVICE_EVIDENCE_REPORT.md`       |
 
 Permanent charter: `PROJECT_CHARTER.md` · `ARCHITECTURE_PRINCIPLES.md` · `DEVELOPMENT_STANDARDS.md`
 
@@ -40,14 +40,14 @@ This repo is the **Autolokate Onboarding + Activation + Post-Activation PWA** on
 
 ## Current Flows
 
-| Flow | Entry | Status |
-|------|-------|--------|
-| **Purchase** | `/journey` → Auth → R03–R10 → Emergency | PIXEL PERFECT |
-| **Prepaid** | `/journey` → PrepaidWelcome → Auth → Emergency | Active / Functional |
-| **B2B2C** | `/journey` → PartnerWelcome → Auth → Emergency | Active / Functional |
-| **Emergency** | After activation (all flows) | PIXEL PERFECT |
-| **Auth (Shared)** | `/journey/auth/*` | PIXEL PERFECT |
-| **Post-Activation PWA** | `/pwa/scan/*` | PIXEL PERFECT |
+| Flow                    | Entry                                          | Status              |
+| ----------------------- | ---------------------------------------------- | ------------------- |
+| **Purchase**            | `/journey` → Auth → R03–R10 → Emergency        | PIXEL PERFECT       |
+| **Prepaid**             | `/journey` → PrepaidWelcome → Auth → Emergency | Active / Functional |
+| **B2B2C**               | `/journey` → PartnerWelcome → Auth → Emergency | Active / Functional |
+| **Emergency**           | After activation (all flows)                   | PIXEL PERFECT       |
+| **Auth (Shared)**       | `/journey/auth/*`                              | PIXEL PERFECT       |
+| **Post-Activation PWA** | `/pwa/scan/*`                                  | PIXEL PERFECT       |
 
 ---
 
@@ -162,12 +162,12 @@ This repo is the **Autolokate Onboarding + Activation + Post-Activation PWA** on
 
 ### Component Ownership (Precise)
 
-| Component | Correct usage |
-|-----------|---------------|
+| Component                   | Correct usage                                           |
+| --------------------------- | ------------------------------------------------------- |
 | `AlVehicleConfirmationCard` | Scanner confirmation only — NOT for purchase RC confirm |
-| `AlScannedVehicleCard` | Scan result display only |
-| `AlDispatchTimeline` | Shared timeline primitive |
-| `AlSosHoldButton` | Single implementation — no alternates |
+| `AlScannedVehicleCard`      | Scan result display only                                |
+| `AlDispatchTimeline`        | Shared timeline primitive                               |
+| `AlSosHoldButton`           | Single implementation — no alternates                   |
 
 ### Design Rules
 
@@ -195,23 +195,23 @@ Do not redesign flows, business rules, or session architecture without explicit 
 
 ## Latest Active Documents
 
-| Document | Purpose |
-|----------|---------|
-| **`PROJECT_CHARTER.md`** | **Baseline lock + change control** |
-| **`ARCHITECTURE_PRINCIPLES.md`** | **Locked architecture reference** |
-| **`DEVELOPMENT_STANDARDS.md`** | **Engineering + PWA standards** |
-| `FINAL_SANITY_REPORT.md` | Latest engineering verdict — READY WITH KNOWN GAPS |
-| `ENGINEERING_HARDENING_REPORT.md` | Full hardening sprint audit |
-| `VISUAL_TRUTH_MATRIX_V2.md` | Visual source of truth — PIXEL PERFECT VERIFIED |
-| `FINAL_THEME_SIGNOFF.md` | Dark + light theme signoff |
-| `FINAL_PRODUCTION_READINESS.md` | Production readiness baseline |
-| `CLAUDE_PROJECT_INDEX.md` | Route maps, architecture, component inventory |
-| `QR_ENTRY_STRATEGY.md` | QR encoding for four flows |
-| `IOS_CONTACT_SUPPORT_REPORT.md` | iOS contact picker policy |
-| `RIDER_SKIP_CONFIRMATION_REPORT.md` | Rider skip behaviour |
-| `REAL_DEVICE_EVIDENCE_REPORT.md` | Device matrix — no evidence attached |
-| `MEMORY_UPDATE_REPORT.md` | Lockdown changelog |
-| `memory/MEMORY.md` | Agent memory index |
+| Document                            | Purpose                                            |
+| ----------------------------------- | -------------------------------------------------- |
+| **`PROJECT_CHARTER.md`**            | **Baseline lock + change control**                 |
+| **`ARCHITECTURE_PRINCIPLES.md`**    | **Locked architecture reference**                  |
+| **`DEVELOPMENT_STANDARDS.md`**      | **Engineering + PWA standards**                    |
+| `FINAL_SANITY_REPORT.md`            | Latest engineering verdict — READY WITH KNOWN GAPS |
+| `ENGINEERING_HARDENING_REPORT.md`   | Full hardening sprint audit                        |
+| `VISUAL_TRUTH_MATRIX_V2.md`         | Visual source of truth — PIXEL PERFECT VERIFIED    |
+| `FINAL_THEME_SIGNOFF.md`            | Dark + light theme signoff                         |
+| `FINAL_PRODUCTION_READINESS.md`     | Production readiness baseline                      |
+| `CLAUDE_PROJECT_INDEX.md`           | Route maps, architecture, component inventory      |
+| `QR_ENTRY_STRATEGY.md`              | QR encoding for four flows                         |
+| `IOS_CONTACT_SUPPORT_REPORT.md`     | iOS contact picker policy                          |
+| `RIDER_SKIP_CONFIRMATION_REPORT.md` | Rider skip behaviour                               |
+| `REAL_DEVICE_EVIDENCE_REPORT.md`    | Device matrix — no evidence attached               |
+| `MEMORY_UPDATE_REPORT.md`           | Lockdown changelog                                 |
+| `memory/MEMORY.md`                  | Agent memory index                                 |
 
 Historical sprint reports: **`docs/archive/sprint-reports-2026-06-17/`** (46 files) + **`docs/archive/`** (231+ files)
 
@@ -223,25 +223,25 @@ Visual evidence samples: **`docs/visual-truth/samples/`** (10 PNG) · Completed 
 
 **No P0 or P1 issues remain.** All items below are P2 (non-blocking, visual refinement).
 
-| Priority | Area | Issue |
-|----------|------|-------|
-| ~~HIGH~~ | ~~Purchase~~ | ~~Post-payment browser-back guards missing~~ — **RESOLVED 2026-06-19** |
-| ~~HIGH~~ | ~~Auth~~ | ~~OTP screen A2 layout drift~~ — **VERIFIED CORRECT 2026-06-19** |
-| ~~HIGH~~ | ~~Emergency~~ | ~~OTP screens R2/E2 layout drift~~ — **VERIFIED ACCEPTABLE 2026-06-19** |
-| ~~MED~~ | ~~Emergency~~ | ~~R0 offline chip placement + copy~~ — **RESOLVED (headerAccessory)** |
-| ~~MED~~ | ~~Emergency~~ | ~~E0 trust row fixed position~~ — **RESOLVED 2026-06-19** |
-| ~~MED~~ | ~~Purchase~~ | ~~R08c/R09b/R10c pixel gaps~~ — **RESOLVED (all implemented)** |
-| ~~LOW~~ | ~~CSS~~ | ~~Hardcoded hex in pwa-emergency-screen.css~~ — **RESOLVED 2026-06-19** |
-| ~~MED~~ | ~~Purchase~~ | ~~R04b missing `redirectIfPaymentSucceeded` guard~~ — **FIXED 2026-06-20** |
-| ~~MED~~ | ~~PWA~~ | ~~ParkMe Permissions back target wrong for protected flow~~ — **FIXED 2026-06-20** |
-| P2 | Purchase | R07 extra plan-context line not in Figma |
-| P2 | Purchase | R08d no-rider path shows promo field (Figma hides it) |
-| P2 | Auth | L1/L2 legal screens not full routes — linked text only |
-| P2 | PWA | Heading weight: h2 token=700, Figma=600 — design token constraint |
-| LOW | Purchase | P01–P06 orphan screens in codebase, not in active route graph |
-| LOW | Codebase | Auth dead code: AuthFlowApp, SharedAuthSegment — safe to delete |
-| LOW | Codebase | PurchaseStepShell, HomeScreen, EmergencyPlaceholderScreen, QrScanRoute — orphan files |
-| LOW | Icons | RetakeIcon inline in packages/ui — should be in @autolokate/icons pipeline |
+| Priority | Area          | Issue                                                                                 |
+| -------- | ------------- | ------------------------------------------------------------------------------------- |
+| ~~HIGH~~ | ~~Purchase~~  | ~~Post-payment browser-back guards missing~~ — **RESOLVED 2026-06-19**                |
+| ~~HIGH~~ | ~~Auth~~      | ~~OTP screen A2 layout drift~~ — **VERIFIED CORRECT 2026-06-19**                      |
+| ~~HIGH~~ | ~~Emergency~~ | ~~OTP screens R2/E2 layout drift~~ — **VERIFIED ACCEPTABLE 2026-06-19**               |
+| ~~MED~~  | ~~Emergency~~ | ~~R0 offline chip placement + copy~~ — **RESOLVED (headerAccessory)**                 |
+| ~~MED~~  | ~~Emergency~~ | ~~E0 trust row fixed position~~ — **RESOLVED 2026-06-19**                             |
+| ~~MED~~  | ~~Purchase~~  | ~~R08c/R09b/R10c pixel gaps~~ — **RESOLVED (all implemented)**                        |
+| ~~LOW~~  | ~~CSS~~       | ~~Hardcoded hex in pwa-emergency-screen.css~~ — **RESOLVED 2026-06-19**               |
+| ~~MED~~  | ~~Purchase~~  | ~~R04b missing `redirectIfPaymentSucceeded` guard~~ — **FIXED 2026-06-20**            |
+| ~~MED~~  | ~~PWA~~       | ~~ParkMe Permissions back target wrong for protected flow~~ — **FIXED 2026-06-20**    |
+| P2       | Purchase      | R07 extra plan-context line not in Figma                                              |
+| P2       | Purchase      | R08d no-rider path shows promo field (Figma hides it)                                 |
+| P2       | Auth          | L1/L2 legal screens not full routes — linked text only                                |
+| P2       | PWA           | Heading weight: h2 token=700, Figma=600 — design token constraint                     |
+| LOW      | Purchase      | P01–P06 orphan screens in codebase, not in active route graph                         |
+| LOW      | Codebase      | Auth dead code: AuthFlowApp, SharedAuthSegment — safe to delete                       |
+| LOW      | Codebase      | PurchaseStepShell, HomeScreen, EmergencyPlaceholderScreen, QrScanRoute — orphan files |
+| LOW      | Icons         | RetakeIcon inline in packages/ui — should be in @autolokate/icons pipeline            |
 
 → Open issues and decisions: `memory/MEMORY.md` · Full architecture: `CLAUDE_PROJECT_INDEX.md`
 
@@ -249,14 +249,14 @@ Visual evidence samples: **`docs/visual-truth/samples/`** (10 PNG) · Completed 
 
 ## Route Ownership Quick Reference
 
-| Route segment | Owner file |
-|--------------|------------|
-| `/journey/auth/*` | `journey/routes/AuthRoutes.tsx` |
-| `/journey/purchase/*` | `journey/routes/PurchaseRoutes.tsx` |
-| `/journey/prepaid/*` | `journey/routes/PrepaidRoutes.tsx` |
-| `/journey/b2b2c/*` | `journey/routes/B2b2cRoutes.tsx` |
-| `/journey/emergency/*` | `journey/routes/EmergencyRoutes.tsx` |
-| `/pwa/scan/*` | `features/post-activation-pwa/routes/PwaScanRoutes.tsx` |
+| Route segment          | Owner file                                              |
+| ---------------------- | ------------------------------------------------------- |
+| `/journey/auth/*`      | `journey/routes/AuthRoutes.tsx`                         |
+| `/journey/purchase/*`  | `journey/routes/PurchaseRoutes.tsx`                     |
+| `/journey/prepaid/*`   | `journey/routes/PrepaidRoutes.tsx`                      |
+| `/journey/b2b2c/*`     | `journey/routes/B2b2cRoutes.tsx`                        |
+| `/journey/emergency/*` | `journey/routes/EmergencyRoutes.tsx`                    |
+| `/pwa/scan/*`          | `features/post-activation-pwa/routes/PwaScanRoutes.tsx` |
 
 ---
 

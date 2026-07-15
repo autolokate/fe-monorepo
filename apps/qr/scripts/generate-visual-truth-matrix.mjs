@@ -32,7 +32,9 @@ const FIGMA_DRIFT = {};
 
 async function main() {
   const measurements = JSON.parse(
-    await readFile(path.join(ROOT, 'docs/visual-truth/measurements.json'), 'utf8').catch(() => '[]'),
+    await readFile(path.join(ROOT, 'docs/visual-truth/measurements.json'), 'utf8').catch(
+      () => '[]',
+    ),
   );
 
   const rows = new Map();
@@ -131,16 +133,24 @@ async function main() {
   }
 
   const allRows = [...rows.values()].sort(
-    (a, b) => a.flow.localeCompare(b.flow) || a.screenId.localeCompare(b.screenId) || a.state.localeCompare(b.state),
+    (a, b) =>
+      a.flow.localeCompare(b.flow) ||
+      a.screenId.localeCompare(b.screenId) ||
+      a.state.localeCompare(b.state),
   );
 
   const totalExpected = allRows.reduce((n, r) => n + r.responsive.total, 0);
   const totalCaptured = allRows.reduce((n, r) => n + r.responsive.captured, 0);
-  const driftRows = allRows.filter((r) => r.severity !== 'none' || r.drift.some((d) => !d.includes('within tolerance')));
+  const driftRows = allRows.filter(
+    (r) => r.severity !== 'none' || r.drift.some((d) => !d.includes('within tolerance')),
+  );
   const p0Rows = allRows.filter((r) => r.severity === 'P0');
-  const verdict = totalCaptured === totalExpected && p0Rows.length === 0 && !allRows.some((r) => r.severity === 'P1')
-    ? 'PIXEL PERFECT VERIFIED'
-    : 'ISSUES REMAIN';
+  const verdict =
+    totalCaptured === totalExpected &&
+    p0Rows.length === 0 &&
+    !allRows.some((r) => r.severity === 'P1')
+      ? 'PIXEL PERFECT VERIFIED'
+      : 'ISSUES REMAIN';
 
   let md = `# Visual Truth Matrix V2\n\n`;
   md += `**Date:** ${new Date().toISOString().slice(0, 10)}\n`;
@@ -165,12 +175,14 @@ async function main() {
 
   for (const row of allRows) {
     const darkStatus = row.dark.captured === 6 ? 'verified 6/6' : `captured ${row.dark.captured}/6`;
-    const lightStatus = row.light.captured === 6 ? 'verified 6/6' : `captured ${row.light.captured}/6`;
+    const lightStatus =
+      row.light.captured === 6 ? 'verified 6/6' : `captured ${row.light.captured}/6`;
     const respStatus =
       row.responsive.captured === 12 ? 'verified 12/12' : `captured ${row.responsive.captured}/12`;
     const driftText =
       row.drift.length > 0
-        ? row.drift.slice(0, 2).join('; ') + (row.drift.length > 2 ? ` (+${row.drift.length - 2} more)` : '')
+        ? row.drift.slice(0, 2).join('; ') +
+          (row.drift.length > 2 ? ` (+${row.drift.length - 2} more)` : '')
         : row.responsive.captured === 12
           ? 'compared — no drift recorded'
           : 'pending capture';
@@ -182,16 +194,76 @@ async function main() {
   md += `|-------|--------|------|-------|--------|\n`;
 
   const checks = [
-    ['Back button x=16', 'r07, e10, a1-empty, pwa-sos', 'verified', 'verified', 'compared vs Figma — confirmed x=16'],
-    ['Add rider row visible', 'e10 default', 'captured', 'captured', 'confirmed "Add another rider" in screenshots; height 48px'],
-    ['Checkbox clipping', 'a1-empty', 'captured', 'captured', 'screenshot verified — no visual clip; 48dp target at x=3'],
-    ['Input active state', 'a2-typing', 'captured', 'captured', 'focus ring captured on active input'],
-    ['Light theme contrast', 'pwa-sos location chip', 'n/a', 'verified', 'light chip bg rgb(255,255,255) not #1A1A1A'],
-    ['Timeline/card spacing', 'r07, r08', 'captured', 'captured', 'card gap 12px anchors confirmed on r07'],
-    ['SOS hold button layout', 'pwa-sos', 'captured', 'captured', '200px disc + rings confirmed in screenshots'],
-    ['Footer/CTA placement', 'e10, r07, prepaid-welcome', 'captured', 'captured', 'CTA height 58px confirmed on anchor screens'],
-    ['Async welcome load', 'prepaid-welcome, b2b2c', 'captured', 'captured', 're-captured after 2200ms settle — loaded state confirmed'],
-    ['Completion animation', 'completed', 'captured', 'captured', 're-captured after 900ms settle — full content visible'],
+    [
+      'Back button x=16',
+      'r07, e10, a1-empty, pwa-sos',
+      'verified',
+      'verified',
+      'compared vs Figma — confirmed x=16',
+    ],
+    [
+      'Add rider row visible',
+      'e10 default',
+      'captured',
+      'captured',
+      'confirmed "Add another rider" in screenshots; height 48px',
+    ],
+    [
+      'Checkbox clipping',
+      'a1-empty',
+      'captured',
+      'captured',
+      'screenshot verified — no visual clip; 48dp target at x=3',
+    ],
+    [
+      'Input active state',
+      'a2-typing',
+      'captured',
+      'captured',
+      'focus ring captured on active input',
+    ],
+    [
+      'Light theme contrast',
+      'pwa-sos location chip',
+      'n/a',
+      'verified',
+      'light chip bg rgb(255,255,255) not #1A1A1A',
+    ],
+    [
+      'Timeline/card spacing',
+      'r07, r08',
+      'captured',
+      'captured',
+      'card gap 12px anchors confirmed on r07',
+    ],
+    [
+      'SOS hold button layout',
+      'pwa-sos',
+      'captured',
+      'captured',
+      '200px disc + rings confirmed in screenshots',
+    ],
+    [
+      'Footer/CTA placement',
+      'e10, r07, prepaid-welcome',
+      'captured',
+      'captured',
+      'CTA height 58px confirmed on anchor screens',
+    ],
+    [
+      'Async welcome load',
+      'prepaid-welcome, b2b2c',
+      'captured',
+      'captured',
+      're-captured after 2200ms settle — loaded state confirmed',
+    ],
+    [
+      'Completion animation',
+      'completed',
+      'captured',
+      'captured',
+      're-captured after 900ms settle — full content visible',
+    ],
   ];
 
   for (const [check, target, dark, light, result] of checks) {

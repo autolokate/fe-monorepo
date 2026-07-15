@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
-import { ApiError, extractApiErrorMessage } from "@/lib/api/error";
+import { ApiError, extractApiErrorMessage } from '@/lib/api/error';
 import {
   bookingIdFromCreateResponse,
   meetLinkFromVerify,
   parsePaymentOrderResponse,
-} from "@/lib/booking/normalize";
+} from '@/lib/booking/normalize';
 import {
   ensureRazorpayScript,
   extractRazorpayFailureMessage,
   type RazorpayHandlerResponse,
-} from "@/lib/booking/razorpay";
-import { storeConsultReceipt } from "@/lib/booking/receipt-storage";
-import type { ExpertTimeSlot } from "@/lib/booking/types";
-import { createBooking } from "@/services/booking";
-import { createPaymentOrder, verifyPayment } from "@/services/payment";
+} from '@/lib/booking/razorpay';
+import { storeConsultReceipt } from '@/lib/booking/receipt-storage';
+import type { ExpertTimeSlot } from '@/lib/booking/types';
+import { createBooking } from '@/services/booking';
+import { createPaymentOrder, verifyPayment } from '@/services/payment';
 
 export interface BookSessionInput {
   name: string;
@@ -41,8 +41,8 @@ function amountInrFromOrder(parsed: { amountPaise: number }): number {
 }
 
 function newIdempotencyKey(prefix: string): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `${prefix}-${Date.now()}`;
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return `${prefix}-${Date.now().toString()}`;
 }
 
 interface OpenCheckoutArgs {
@@ -59,18 +59,19 @@ async function openRazorpayCheckout(args: OpenCheckoutArgs): Promise<void> {
   const parsed = parsePaymentOrderResponse(orderRaw);
   const publicKey =
     parsed.keyId ||
-    (typeof process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID === "string"
+    (typeof process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID === 'string'
       ? process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID
-      : "");
+      : '');
 
   if (!parsed.razorpayOrderId || !publicKey || !parsed.amountPaise) {
-    toast.error("Could not start payment. Try again in a moment.");
+    toast.error('Could not start payment. Try again in a moment.');
     return;
   }
 
   const scriptOk = await ensureRazorpayScript();
-  if (!scriptOk || !window.Razorpay) {
-    toast.error("Could not load Razorpay. Check your connection.");
+  const Razorpay = window.Razorpay;
+  if (!scriptOk || !Razorpay) {
+    toast.error('Could not load Razorpay. Check your connection.');
     return;
   }
 
@@ -84,15 +85,19 @@ async function openRazorpayCheckout(args: OpenCheckoutArgs): Promise<void> {
       resolve();
     };
 
-    const rzp = new window.Razorpay!({
+    const rzp = new Razorpay({
       key: publicKey,
       amount: parsed.amountPaise,
-      currency: parsed.currency || "INR",
-      name: "Autolokate",
-      description: "15-minute expert session",
+      currency: parsed.currency || 'INR',
+      name: 'Autolokate',
+      description: '15-minute expert session',
       order_id: parsed.razorpayOrderId,
       prefill: { name: name.trim(), contact: phone.trim() },
-      modal: { ondismiss: () => settle() },
+      modal: {
+        ondismiss: () => {
+          settle();
+        },
+      },
       handler: async (response: RazorpayHandlerResponse) => {
         try {
           const verified = await verifyPayment({
@@ -104,25 +109,24 @@ async function openRazorpayCheckout(args: OpenCheckoutArgs): Promise<void> {
 
           storeConsultReceipt({
             ok: true,
-            provider: "razorpay",
+            provider: 'razorpay',
             name: name.trim(),
             phone: phone.trim(),
             date: slotDate,
             time: timeLabel,
             amountInr: amountInrFromOrder(parsed),
-            currency: parsed.currency || "INR",
+            currency: parsed.currency || 'INR',
             reference: response.razorpay_payment_id,
             customerEmail: null,
             paidAt: new Date().toISOString(),
             meetLink,
           });
 
-          toast.success("Payment received. Your session is confirmed.");
+          toast.success('Payment received. Your session is confirmed.');
           window.location.assign(redirectTo);
         } catch (err) {
-          const msg =
-            err instanceof ApiError ? err.message : extractApiErrorMessage(err);
-          toast.error(msg || "Payment verification failed.");
+          const msg = err instanceof ApiError ? err.message : extractApiErrorMessage(err);
+          toast.error(msg || 'Payment verification failed.');
         } finally {
           settle();
         }
@@ -132,7 +136,7 @@ async function openRazorpayCheckout(args: OpenCheckoutArgs): Promise<void> {
     // Razorpay calls `payment.failed` for card declines, wrong OTP,
     // insufficient funds, network drops, etc. `handler` does NOT fire in
     // these cases, so without this listener the modal would close silently.
-    rzp.on("payment.failed", (raw: unknown) => {
+    rzp.on('payment.failed', (raw: unknown) => {
       toast.error(extractRazorpayFailureMessage(raw));
       settle();
     });
@@ -161,7 +165,7 @@ export interface UseBookSessionOptions {
 export function useBookSession(options: UseBookSessionOptions = {}) {
   const router = useRouter();
   const [paying, setPaying] = useState(false);
-  const redirectTo = options.redirectTo ?? "/book-session";
+  const redirectTo = options.redirectTo ?? '/book-session';
 
   const pay = useCallback(
     async ({ name, phone, slot, slotDate }: BookSessionInput) => {
@@ -171,12 +175,12 @@ export function useBookSession(options: UseBookSessionOptions = {}) {
           slot_date: slotDate,
           slot_start_time: slot.slotStartTime,
           slot_end_time: slot.slotEndTime,
-          booking_type: "founder_call",
+          booking_type: 'founder_call',
         });
 
         const bookingId = bookingIdFromCreateResponse(bookingRaw);
         if (!bookingId) {
-          toast.error("Could not create booking. Please try another slot.");
+          toast.error('Could not create booking. Please try another slot.');
           return;
         }
 
@@ -195,7 +199,7 @@ export function useBookSession(options: UseBookSessionOptions = {}) {
         });
       } catch (err) {
         const msg = err instanceof ApiError ? err.message : extractApiErrorMessage(err);
-        toast.error(msg || "Something went wrong. Please try again.");
+        toast.error(msg || 'Something went wrong. Please try again.');
       } finally {
         setPaying(false);
         await options.onSettled?.();
@@ -222,7 +226,7 @@ export function useBookSession(options: UseBookSessionOptions = {}) {
         });
       } catch (err) {
         const msg = err instanceof ApiError ? err.message : extractApiErrorMessage(err);
-        toast.error(msg || "Could not resume payment.");
+        toast.error(msg || 'Could not resume payment.');
       } finally {
         setPaying(false);
         await options.onSettled?.();

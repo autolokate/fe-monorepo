@@ -13,11 +13,7 @@ function optionalIntField(min: number, max?: number) {
 
 export const createPromoSchema = z
   .object({
-    code: z
-      .string()
-      .trim()
-      .min(1, 'Promo code is required.')
-      .max(64, 'Promo code is too long.'),
+    code: z.string().trim().min(1, 'Promo code is required.').max(64, 'Promo code is too long.'),
     discountPercent: optionalIntField(1, 100),
     discountRupees: optionalRupeeAmount,
     validFrom: z.string().min(1, 'Start date is required.'),

@@ -3,10 +3,7 @@ export function isIosDevice(): boolean {
     return false;
   }
   const ua = navigator.userAgent;
-  return (
-    /iPad|iPhone|iPod/.test(ua) ||
-    (/\bMac\b/.test(ua) && navigator.maxTouchPoints > 1)
-  );
+  return /iPad|iPhone|iPod/.test(ua) || (/\bMac\b/.test(ua) && navigator.maxTouchPoints > 1);
 }
 
 export function isIosSafari(): boolean {

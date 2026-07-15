@@ -28,7 +28,7 @@ export interface NavigationItem {
 export interface ActionButton {
   label: string;
   href: string;
-  variant: "primary" | "secondary";
+  variant: 'primary' | 'secondary';
   icon?: string;
   iconAlt?: string;
   external?: boolean;
@@ -48,11 +48,11 @@ export interface HeaderConfig {
 // Core navigation types
 export type NavigationConfig = FeatureNavigation[];
 export type FeatureId =
-  | "home"
-  | "explore-mentors"
-  | "book-session"
-  | "community"
-  | "explore-premium";
+  | 'home'
+  | 'explore-mentors'
+  | 'book-session'
+  | 'community'
+  | 'explore-premium';
 
 // Helper interface for navigation utilities
 export interface NavigationHelpers {

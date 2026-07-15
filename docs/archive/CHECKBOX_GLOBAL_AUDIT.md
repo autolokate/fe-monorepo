@@ -7,23 +7,23 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|------:|
-| Checkbox consumers in app | **2** |
-| DS preview consumer | **1** (`AlCheckboxPage`) |
-| Issues found | **3** |
-| Issues fixed | **3** |
-| Per-screen patches | **0** |
+| Metric                    |                    Value |
+| ------------------------- | -----------------------: |
+| Checkbox consumers in app |                    **2** |
+| DS preview consumer       | **1** (`AlCheckboxPage`) |
+| Issues found              |                    **3** |
+| Issues fixed              |                    **3** |
+| Per-screen patches        |                    **0** |
 
 ---
 
 ## All Consumers
 
-| # | Consumer | Screen(s) | Layout | Shell |
-|---|----------|-----------|--------|-------|
-| 1 | `InlineConsentBlock` | A1 Mobile, PWA Verify Mobile (bystander) | Icon-only + external copy | `AuthStepShell`, `PwaVerifyShell` |
-| 2 | `R06LegalConsentScreen` | Legacy purchase activation (component) | Default labeled | `FlowStepShell` |
-| 3 | `AlCheckboxPage` | UI preview docs | Showcase | N/A |
+| #   | Consumer                | Screen(s)                                | Layout                    | Shell                             |
+| --- | ----------------------- | ---------------------------------------- | ------------------------- | --------------------------------- |
+| 1   | `InlineConsentBlock`    | A1 Mobile, PWA Verify Mobile (bystander) | Icon-only + external copy | `AuthStepShell`, `PwaVerifyShell` |
+| 2   | `R06LegalConsentScreen` | Legacy purchase activation (component)   | Default labeled           | `FlowStepShell`                   |
+| 3   | `AlCheckboxPage`        | UI preview docs                          | Showcase                  | N/A                               |
 
 **Flow Entry has no checkbox.**
 
@@ -72,20 +72,20 @@ column-gap: 12px;
 
 ## Verification Checklist (all consumers)
 
-| Check | InlineConsent | R06 Legal |
-|-------|:-------------:|:---------:|
-| Container width | ✅ 48px column | ✅ inline-flex |
-| Container height | ✅ 48px | ✅ auto + 48px control |
-| Tap target | ✅ 48×48 | ✅ 48×48 |
-| Overflow | ✅ no clip | ✅ no clip |
-| Padding / margin | ✅ grid gap 12px | ✅ DS gap sm |
-| Alignment | ✅ center in column | ✅ flex-start |
-| Checked | ✅ green fill | ✅ |
-| Unchecked | ✅ 1.5px outline | ✅ |
-| Disabled | ✅ muted | ✅ |
-| Error | ✅ sr-only on icon-only | ✅ errorText |
-| Dark / Light | ✅ tokens | ✅ tokens |
-| 320 / 360 / 375 / 390 / 393 / 414 | ✅ gutter math | ✅ step shell |
+| Check                             |      InlineConsent      |       R06 Legal        |
+| --------------------------------- | :---------------------: | :--------------------: |
+| Container width                   |     ✅ 48px column      |     ✅ inline-flex     |
+| Container height                  |         ✅ 48px         | ✅ auto + 48px control |
+| Tap target                        |        ✅ 48×48         |        ✅ 48×48        |
+| Overflow                          |       ✅ no clip        |       ✅ no clip       |
+| Padding / margin                  |    ✅ grid gap 12px     |      ✅ DS gap sm      |
+| Alignment                         |   ✅ center in column   |     ✅ flex-start      |
+| Checked                           |      ✅ green fill      |           ✅           |
+| Unchecked                         |    ✅ 1.5px outline     |           ✅           |
+| Disabled                          |        ✅ muted         |           ✅           |
+| Error                             | ✅ sr-only on icon-only |      ✅ errorText      |
+| Dark / Light                      |        ✅ tokens        |       ✅ tokens        |
+| 320 / 360 / 375 / 390 / 393 / 414 |     ✅ gutter math      |     ✅ step shell      |
 
 ---
 
@@ -103,12 +103,12 @@ column-gap: 12px;
 
 ## Before / After
 
-| State | Before | After |
-|-------|--------|-------|
-| A1 unchecked @ 375px | Left border of 22×22 box clipped | Full box visible |
-| A1 checked @ 320px | Checkmark partially clipped | Full box + checkmark |
-| PWA verify mobile | Same inline consent path | Same global fix |
-| R06 labeled checkbox | Unaffected visually | Inherits shell gutter (no regression) |
+| State                | Before                           | After                                 |
+| -------------------- | -------------------------------- | ------------------------------------- |
+| A1 unchecked @ 375px | Left border of 22×22 box clipped | Full box visible                      |
+| A1 checked @ 320px   | Checkmark partially clipped      | Full box + checkmark                  |
+| PWA verify mobile    | Same inline consent path         | Same global fix                       |
+| R06 labeled checkbox | Unaffected visually              | Inherits shell gutter (no regression) |
 
 ---
 

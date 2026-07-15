@@ -1,5 +1,9 @@
 import type { ActivationFlowId } from './types';
-import { ROUTE_NAMESPACE, buildQrEntryPath, LEGACY_FLAT_PATHS } from './routing/journey-url-routing';
+import {
+  ROUTE_NAMESPACE,
+  buildQrEntryPath,
+  LEGACY_FLAT_PATHS,
+} from './routing/journey-url-routing';
 
 export const JOURNEY_STORAGE_KEY = 'al-journey-v1';
 

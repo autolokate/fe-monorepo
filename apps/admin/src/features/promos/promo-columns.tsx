@@ -2,10 +2,7 @@ import type { AdminPromoDto } from '@autolokate/api-client';
 import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
-import {
-  formatPromoDiscount,
-  getPromoLifecycleStatus,
-} from '@/services/promos/promo-metrics';
+import { formatPromoDiscount, getPromoLifecycleStatus } from '@/services/promos/promo-metrics';
 
 function formatDateTime(value: string | null): string {
   if (!value) {
@@ -14,7 +11,9 @@ function formatDateTime(value: string | null): string {
   return new Date(value).toLocaleString();
 }
 
-function lifecycleTone(status: ReturnType<typeof getPromoLifecycleStatus>): 'active' | 'pending' | 'inactive' {
+function lifecycleTone(
+  status: ReturnType<typeof getPromoLifecycleStatus>,
+): 'active' | 'pending' | 'inactive' {
   switch (status) {
     case 'ACTIVE':
       return 'active';

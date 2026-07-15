@@ -11,22 +11,24 @@ export function usePromoMutations() {
   const queryClient = useQueryClient();
 
   const createPromoMutation = useMutation({
-    mutationFn: ({ body, signal }: { body: Parameters<typeof createPromo>[0]; signal?: AbortSignal }) =>
-      createPromo(body, signal),
+    mutationFn: ({
+      body,
+      signal,
+    }: {
+      body: Parameters<typeof createPromo>[0];
+      signal?: AbortSignal;
+    }) => createPromo(body, signal),
     retry: 0,
     onSuccess: async (promo) => {
-      queryClient.setQueriesData<AdminPromoDto[]>(
-        { queryKey: promosQueryKeys.all },
-        (current) => {
-          if (!current) {
-            return current;
-          }
-          if (current.some((entry) => entry.id === promo.id)) {
-            return current.map((entry) => (entry.id === promo.id ? promo : entry));
-          }
-          return [promo, ...current];
-        },
-      );
+      queryClient.setQueriesData<AdminPromoDto[]>({ queryKey: promosQueryKeys.all }, (current) => {
+        if (!current) {
+          return current;
+        }
+        if (current.some((entry) => entry.id === promo.id)) {
+          return current.map((entry) => (entry.id === promo.id ? promo : entry));
+        }
+        return [promo, ...current];
+      });
       await queryClient.invalidateQueries({ queryKey: promosQueryKeys.all });
       showSuccessToast(`Promo ${promo.code} created.`);
     },

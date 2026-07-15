@@ -32,9 +32,7 @@ export function E02RiderMobileScreen({
   const interactive = mobileValue !== undefined && onMobileChange !== undefined;
   const resolvedMobile = interactive ? mobileValue : '';
   const hasMobile = resolvedMobile.replace(/\D/g, '').length > 0;
-  const fieldError = isError
-    ? errorMessage?.trim() || LOCAL_MOBILE_VALIDATION_ERROR
-    : null;
+  const fieldError = isError ? errorMessage?.trim() || LOCAL_MOBILE_VALIDATION_ERROR : null;
 
   return (
     <FlowStepShell
@@ -65,7 +63,9 @@ export function E02RiderMobileScreen({
           prefix="+91"
           placeholder="Mobile number"
           state={isError ? 'error' : 'default'}
-          aria-describedby={isError ? 'e02-mobile-error' : isOffline ? 'e02-mobile-offline' : undefined}
+          aria-describedby={
+            isError ? 'e02-mobile-error' : isOffline ? 'e02-mobile-offline' : undefined
+          }
           disabled={isOffline}
           inputMode="numeric"
           autoComplete="tel"

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { ChevronRight, LayoutGrid, Loader2, Plus } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { ChevronRight, LayoutGrid, Loader2, Plus } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { PageFade } from "@/components/shared/PageFade";
-import { Button } from "@/components/ui/button";
-import { useCatalogueExploreModels } from "@/hooks/catalogue";
-import type { VehicleCategory } from "@/lib/preferences";
+import { PageFade } from '@/components/shared/PageFade';
+import { Button } from '@/components/ui/button';
+import { useCatalogueExploreModels } from '@/hooks/catalogue';
+import type { VehicleCategory } from '@/lib/preferences';
 
-import { BrandCatalogueListing } from "../BrandModelsPage/BrandCatalogueListing";
-import { EXPLORE_BANNER_BACKGROUND, EXPLORE_CATALOGUE_COPY } from "./constants";
+import { BrandCatalogueListing } from '../BrandModelsPage/BrandCatalogueListing';
+import { EXPLORE_BANNER_BACKGROUND, EXPLORE_CATALOGUE_COPY } from './constants';
 
 export interface CatalogueExplorePageProps {
   vehicleType: VehicleCategory;
@@ -31,20 +31,13 @@ export interface CatalogueExplorePageProps {
 export function CatalogueExplorePage({ vehicleType }: CatalogueExplorePageProps) {
   const copy = EXPLORE_CATALOGUE_COPY[vehicleType];
   const hub = `/${vehicleType}`;
-  const vehicleLabel = vehicleType === "cars" ? "Cars" : "Bikes";
+  const vehicleLabel = vehicleType === 'cars' ? 'Cars' : 'Bikes';
   const subtitle =
-    vehicleType === "cars"
-      ? "At Autolokate, find the perfect car for every need — filter by brand, body type, fuel, and sort by price."
-      : "At Autolokate, find the perfect bike for every need — filter by brand, body type, fuel, and sort by price.";
-  const {
-    models,
-    hasMore,
-    isLoading,
-    isFetchingMore,
-    isError,
-    loadMore,
-    refetch,
-  } = useCatalogueExploreModels(vehicleType);
+    vehicleType === 'cars'
+      ? 'At Autolokate, find the perfect car for every need — filter by brand, body type, fuel, and sort by price.'
+      : 'At Autolokate, find the perfect bike for every need — filter by brand, body type, fuel, and sort by price.';
+  const { models, hasMore, isLoading, isFetchingMore, isError, loadMore, refetch } =
+    useCatalogueExploreModels(vehicleType);
 
   return (
     <PageFade>
@@ -81,12 +74,7 @@ export function CatalogueExplorePage({ vehicleType }: CatalogueExplorePageProps)
             {subtitle}
           </p>
 
-          <Button
-            type="button"
-            size="sm"
-            className="mt-4 h-10 px-5 text-sm font-semibold"
-            asChild
-          >
+          <Button type="button" size="sm" className="mt-4 h-10 px-5 text-sm font-semibold" asChild>
             <Link href={hub}>
               <LayoutGrid className="h-4 w-4" aria-hidden />
               {copy.directoryLinkLabel}
@@ -118,14 +106,16 @@ export function CatalogueExplorePage({ vehicleType }: CatalogueExplorePageProps)
                 size="lg"
                 className="px-8"
                 disabled={isFetchingMore || isLoading}
-                onClick={() => void loadMore()}
+                onClick={() => {
+                  loadMore();
+                }}
               >
                 {isFetchingMore ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 ) : (
                   <Plus className="h-4 w-4" aria-hidden />
                 )}
-                {isFetchingMore ? "Loading…" : copy.loadMore}
+                {isFetchingMore ? 'Loading…' : copy.loadMore}
               </Button>
             </div>
           ) : null

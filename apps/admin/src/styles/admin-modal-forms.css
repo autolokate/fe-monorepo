@@ -71,6 +71,15 @@
   opacity: 1;
 }
 
+/* Multi-line reason fields reuse the field input styling but need vertical room. */
+.al-page-layout textarea.al-field__input,
+.al-modal textarea.al-field__input {
+  min-height: 5.5rem;
+  padding: var(--al-space-2) var(--al-space-3);
+  line-height: var(--al-text-body-line-height);
+  resize: vertical;
+}
+
 .al-page-layout .al-select,
 .al-modal .al-select {
   min-height: 2.25rem;

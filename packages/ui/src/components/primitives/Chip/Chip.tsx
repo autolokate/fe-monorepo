@@ -24,7 +24,11 @@ export function AlChip({
 
   const chipContent = (
     <>
-      {icon ? <span className="al-chip__icon">{icon}</span> : <span className="al-chip__dot" aria-hidden />}
+      {icon ? (
+        <span className="al-chip__icon">{icon}</span>
+      ) : (
+        <span className="al-chip__dot" aria-hidden />
+      )}
       <span className="al-chip__label">{content}</span>
     </>
   );

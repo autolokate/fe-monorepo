@@ -21,7 +21,11 @@ function formatRcDate(value: string | null): string | null {
   }).format(new Date(parsed));
 }
 
-function pushField(fields: AlVehicleRcField[], label: string, value: string | number | null | undefined): void {
+function pushField(
+  fields: AlVehicleRcField[],
+  label: string,
+  value: string | number | null | undefined,
+): void {
   if (value === null || value === undefined) {
     return;
   }
@@ -47,7 +51,9 @@ export function mapRcRecordToFields(record: RcRecordDto): AlVehicleRcField[] {
   return fields;
 }
 
-export function mapRcRecordToVehicleSession(record: RcRecordDto): Pick<VehicleSession, 'plate' | 'fields'> {
+export function mapRcRecordToVehicleSession(
+  record: RcRecordDto,
+): Pick<VehicleSession, 'plate' | 'fields'> {
   return {
     plate: normalizePlate(formatVehicleRegistration(record.registration)),
     fields: mapRcRecordToFields(record),

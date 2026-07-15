@@ -6,7 +6,7 @@ function shortenMake(maker: string): string {
   if (!trimmed) {
     return '';
   }
-  return trimmed.includes('Maruti') ? 'Maruti' : trimmed.split(' ')[0] ?? trimmed;
+  return trimmed.includes('Maruti') ? 'Maruti' : (trimmed.split(' ')[0] ?? trimmed);
 }
 
 function shortenModel(model: string): string {

@@ -1,6 +1,6 @@
-import { ContactForm } from "../ContactForm";
-import { Sidebar } from "../Sidebar";
-import styles from "./index.module.css";
+import { ContactForm } from '../ContactForm';
+import { Sidebar } from '../Sidebar';
+import styles from './index.module.css';
 
 export function FormSection() {
   return (

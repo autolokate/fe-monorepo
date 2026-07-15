@@ -79,13 +79,19 @@ export async function payOrder(
 }
 
 /** GET /v1/orders/{orderId}/payment — poll coarse payment outcome. */
-export async function getOrderPayment(client: ApiClient, orderId: string): Promise<PaymentOutcomeDto> {
+export async function getOrderPayment(
+  client: ApiClient,
+  orderId: string,
+): Promise<PaymentOutcomeDto> {
   const response = await client.get<unknown>(endpoints.orders.payment(orderId));
   return unwrapEnvelope(response) as PaymentOutcomeDto;
 }
 
 /** GET /v1/orders/{orderId}/invoice — GST tax invoice for a paid order. */
-export async function getOrderInvoice(client: ApiClient, orderId: string): Promise<OrderInvoiceDto> {
+export async function getOrderInvoice(
+  client: ApiClient,
+  orderId: string,
+): Promise<OrderInvoiceDto> {
   const response = await client.get<unknown>(endpoints.orders.invoice(orderId));
   return unwrapEnvelope(response) as OrderInvoiceDto;
 }

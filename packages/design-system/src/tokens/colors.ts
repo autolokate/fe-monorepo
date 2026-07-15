@@ -50,10 +50,8 @@ export const gradients = {
     'radial-gradient(circle at 50% 50%, rgba(229, 52, 42, 0.08) 0%, rgba(229, 52, 42, 0) 100%)',
   '--al-gradient-emergency':
     'radial-gradient(ellipse at center, rgba(229, 52, 42, 0.18) 0%, rgba(229, 52, 42, 0) 70%)',
-  '--al-gradient-vehicle-rc-dark':
-    'linear-gradient(180deg, #252525 0%, #1a1a1a 100%)',
-  '--al-gradient-vehicle-rc-light':
-    'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
+  '--al-gradient-vehicle-rc-dark': 'linear-gradient(180deg, #252525 0%, #1a1a1a 100%)',
+  '--al-gradient-vehicle-rc-light': 'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
   '--al-gradient-plan-badge': 'rgba(31, 162, 74, 0.16)',
 } as const satisfies Record<string, string>;
 

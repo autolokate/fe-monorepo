@@ -28,30 +28,27 @@ function applyBatchSummaryToCaches(
 ) {
   queryClient.setQueryData(inventoryQueryKeys.byId(batch.id), batch);
 
-  queryClient.setQueriesData(
-    { queryKey: inventoryQueryKeys.all },
-    (current: unknown) => {
-      if (!current) {
-        return current;
-      }
+  queryClient.setQueriesData({ queryKey: inventoryQueryKeys.all }, (current: unknown) => {
+    if (!current) {
+      return current;
+    }
 
-      // Detail queries under the same inventory prefix store a single batch.
-      if (!Array.isArray(current)) {
-        const detail = current as BatchSummaryDto;
-        return detail.id === batch.id ? batch : detail;
-      }
+    // Detail queries under the same inventory prefix store a single batch.
+    if (!Array.isArray(current)) {
+      const detail = current as BatchSummaryDto;
+      return detail.id === batch.id ? batch : detail;
+    }
 
-      const list = current as BatchSummaryDto[];
-      const index = list.findIndex((entry) => entry.id === batch.id);
-      if (index === -1) {
-        return options.appendIfMissing ? [batch, ...list] : list;
-      }
+    const list = current as BatchSummaryDto[];
+    const index = list.findIndex((entry) => entry.id === batch.id);
+    if (index === -1) {
+      return options.appendIfMissing ? [batch, ...list] : list;
+    }
 
-      const next = list.slice();
-      next[index] = batch;
-      return next;
-    },
-  );
+    const next = list.slice();
+    next[index] = batch;
+    return next;
+  });
 }
 
 export function useQrBatchMutations() {
@@ -76,8 +73,13 @@ export function useQrBatchMutations() {
   };
 
   const createBatchMutation = useMutation({
-    mutationFn: ({ body, signal }: { body: Parameters<typeof createBatch>[0]; signal?: AbortSignal }) =>
-      createBatch(body, signal),
+    mutationFn: ({
+      body,
+      signal,
+    }: {
+      body: Parameters<typeof createBatch>[0];
+      signal?: AbortSignal;
+    }) => createBatch(body, signal),
     retry: 0,
     onSuccess: async (batch) => {
       applyBatchSummaryToCaches(queryClient, batch, { appendIfMissing: true });
@@ -143,7 +145,8 @@ export function useQrBatchMutations() {
   });
 
   const replaceMutation = useMutation({
-    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) => replaceCode(code, signal),
+    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) =>
+      replaceCode(code, signal),
     retry: 0,
     onSuccess: async (result) => {
       await invalidateBatchCodes();
@@ -156,7 +159,8 @@ export function useQrBatchMutations() {
   });
 
   const retireMutation = useMutation({
-    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) => retireCode(code, signal),
+    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) =>
+      retireCode(code, signal),
     retry: 0,
     onSuccess: async (result) => {
       await invalidateBatchCodes();
@@ -174,9 +178,7 @@ export function useQrBatchMutations() {
     retry: 0,
     onSuccess: async (result) => {
       await invalidateInventory();
-      showSuccessToast(
-        `Reorder fulfilled — ${result.allocated.toLocaleString()} codes allocated.`,
-      );
+      showSuccessToast(`Reorder fulfilled — ${result.allocated.toLocaleString()} codes allocated.`);
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'qr-batches:fulfil-reorder', toast: true });

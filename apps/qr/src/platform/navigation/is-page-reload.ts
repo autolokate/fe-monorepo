@@ -23,7 +23,9 @@ export function wasReloadEntryPath(pathname: string): boolean {
     return false;
   }
 
-  const entry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+  const entry = performance.getEntriesByType('navigation')[0] as
+    | PerformanceNavigationTiming
+    | undefined;
   if (!entry?.name) {
     return false;
   }

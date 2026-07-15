@@ -43,9 +43,7 @@ export function R05ConfirmVehicleScreen({
         className={protectedPlan ? 'ob-r05-vehicle-rc-card--protected' : undefined}
       />
       {protectedPlan && planLabel ? (
-        <p className="ob-r05-protected-label">
-          Protected by Autolokate · {planLabel}
-        </p>
+        <p className="ob-r05-protected-label">Protected by Autolokate · {planLabel}</p>
       ) : null}
     </AuthStepShell>
   );

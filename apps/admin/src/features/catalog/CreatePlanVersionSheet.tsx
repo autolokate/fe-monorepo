@@ -129,6 +129,7 @@ export function CreatePlanVersionSheet({
         </div>
       }
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- form-level Enter-to-submit handler; the submit button lives in the sheet footer and is associated via the form attribute, so this keyboard handler is legitimate form interaction */}
       <form
         id="create-plan-version-form"
         onSubmit={(event) => {
@@ -138,10 +139,10 @@ export function CreatePlanVersionSheet({
       >
         <AlStack gap="md">
           <AlText variant="caption" tone="muted">
-            A live Subscription pins the plan version it was sold on, so an existing version can never be
-            repriced — customers who already paid would be retro-repriced. Minting {planTierLabel(tier)} v
-            {String(nextVersion)} leaves every current subscriber on their own version, and copies the
-            outgoing version&apos;s feature bullets forward.
+            A live Subscription pins the plan version it was sold on, so an existing version can
+            never be repriced — customers who already paid would be retro-repriced. Minting{' '}
+            {planTierLabel(tier)} v{String(nextVersion)} leaves every current subscriber on their
+            own version, and copies the outgoing version&apos;s feature bullets forward.
           </AlText>
 
           <Controller

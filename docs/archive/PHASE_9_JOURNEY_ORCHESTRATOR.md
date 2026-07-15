@@ -19,43 +19,43 @@ Phase 9 introduces a **Journey Orchestrator** layer that implements the approved
 
 ## 1. Route map
 
-| Path | Phase | Component | Notes |
-|------|-------|-----------|-------|
-| `/` | — | Redirect | → `/journey` |
-| `/journey` | `home` / `flow-select` | `HomeScreen` | Three consumer flows + theme toggle |
-| `/journey/auth/*` | `shared-auth` | `SharedAuthSegment` | R01–R06; guarded by `RequireSelectedFlow` |
-| `/journey/purchase/*` | `activation` | `ActivationPlaceholderScreen` | Entry: `/journey/purchase/qr-scan` |
-| `/journey/prepaid/*` | `activation` | `ActivationPlaceholderScreen` | Entry: `/journey/prepaid/entry` |
-| `/journey/b2b2c/*` | `activation` | `ActivationPlaceholderScreen` | Entry: `/journey/b2b2c/partner-bridge` |
-| `/journey/emergency/*` | `emergency` | `EmergencyPlaceholderScreen` | Routing contract only |
-| `/journey/completed` | `completed` | `JourneyCompletedScreen` | Terminal success + start over |
-| `?dev=1` (any URL) | — | `ScreenDevApp` | Unchanged dev preview |
+| Path                   | Phase                  | Component                     | Notes                                     |
+| ---------------------- | ---------------------- | ----------------------------- | ----------------------------------------- |
+| `/`                    | —                      | Redirect                      | → `/journey`                              |
+| `/journey`             | `home` / `flow-select` | `HomeScreen`                  | Three consumer flows + theme toggle       |
+| `/journey/auth/*`      | `shared-auth`          | `SharedAuthSegment`           | R01–R06; guarded by `RequireSelectedFlow` |
+| `/journey/purchase/*`  | `activation`           | `ActivationPlaceholderScreen` | Entry: `/journey/purchase/qr-scan`        |
+| `/journey/prepaid/*`   | `activation`           | `ActivationPlaceholderScreen` | Entry: `/journey/prepaid/entry`           |
+| `/journey/b2b2c/*`     | `activation`           | `ActivationPlaceholderScreen` | Entry: `/journey/b2b2c/partner-bridge`    |
+| `/journey/emergency/*` | `emergency`            | `EmergencyPlaceholderScreen`  | Routing contract only                     |
+| `/journey/completed`   | `completed`            | `JourneyCompletedScreen`      | Terminal success + start over             |
+| `?dev=1` (any URL)     | —                      | `ScreenDevApp`                | Unchanged dev preview                     |
 
 ### Auth sub-paths (URL contract; step driven by segment state today)
 
-| Path slug | Step |
-|-----------|------|
-| `/journey/auth/r01-vehicle-number` | R01 |
-| `/journey/auth/r02-vehicle-details` | R02 |
-| … | … |
-| `/journey/auth/r06-legal-consent` | R06 → handoff |
+| Path slug                           | Step          |
+| ----------------------------------- | ------------- |
+| `/journey/auth/r01-vehicle-number`  | R01           |
+| `/journey/auth/r02-vehicle-details` | R02           |
+| …                                   | …             |
+| `/journey/auth/r06-legal-consent`   | R06 → handoff |
 
 ### Activation entry paths (placeholders)
 
-| Flow | `selectedFlow` | Entry path | Step ID |
-|------|----------------|------------|---------|
-| Purchase | `purchase` | `/journey/purchase/qr-scan` | `purchase.qr-scan` |
-| Pre-Paid | `prepaid` | `/journey/prepaid/entry` | `prepaid.entry` |
-| B2B2C | `b2b2c` | `/journey/b2b2c/partner-bridge` | `b2b2c.partner-bridge` |
+| Flow     | `selectedFlow` | Entry path                      | Step ID                |
+| -------- | -------------- | ------------------------------- | ---------------------- |
+| Purchase | `purchase`     | `/journey/purchase/qr-scan`     | `purchase.qr-scan`     |
+| Pre-Paid | `prepaid`      | `/journey/prepaid/entry`        | `prepaid.entry`        |
+| B2B2C    | `b2b2c`        | `/journey/b2b2c/partner-bridge` | `b2b2c.partner-bridge` |
 
 ### Emergency suffix (contract only)
 
-| Path | Step ID |
-|------|---------|
-| `/journey/emergency/rider-setup` | `emergency.rider-setup` |
+| Path                                 | Step ID                     |
+| ------------------------------------ | --------------------------- |
+| `/journey/emergency/rider-setup`     | `emergency.rider-setup`     |
 | `/journey/emergency/contact-capture` | `emergency.contact-capture` |
-| `/journey/emergency/plan-addon` | `emergency.plan-addon` |
-| `/journey/emergency/confirmation` | `emergency.confirmation` |
+| `/journey/emergency/plan-addon`      | `emergency.plan-addon`      |
+| `/journey/emergency/confirmation`    | `emergency.confirmation`    |
 
 ---
 
@@ -67,41 +67,41 @@ Phase 9 introduces a **Journey Orchestrator** layer that implements the approved
 home → flow-select → shared-auth → activation → emergency → completed
 ```
 
-| Phase | Set when | UI surface |
-|-------|----------|------------|
-| `home` | App load / `clearJourney()` | Home |
-| `flow-select` | `setSelectedFlow()` | Transient (same Home action) |
-| `shared-auth` | Flow chosen → navigate auth | R01–R06 |
-| `activation` | `completeAuth()` + activation route | Placeholder |
-| `emergency` | Simulated activation complete | Placeholder |
-| `completed` | Simulated emergency complete | Completed |
+| Phase         | Set when                            | UI surface                   |
+| ------------- | ----------------------------------- | ---------------------------- |
+| `home`        | App load / `clearJourney()`         | Home                         |
+| `flow-select` | `setSelectedFlow()`                 | Transient (same Home action) |
+| `shared-auth` | Flow chosen → navigate auth         | R01–R06                      |
+| `activation`  | `completeAuth()` + activation route | Placeholder                  |
+| `emergency`   | Simulated activation complete       | Placeholder                  |
+| `completed`   | Simulated emergency complete        | Completed                    |
 
 ### Persisted state
 
-| Key | Storage | Field | Values |
-|-----|---------|-------|--------|
-| `al-journey-v1` | `sessionStorage` | Full journey blob | `{ selectedFlow, authStatus, session }` |
-| `al-selected-flow` | `localStorage` | `selectedFlow` | `purchase` \| `prepaid` \| `b2b2c` |
-| `al-qr-theme` | `localStorage` | Theme | `light` \| `dark` |
+| Key                | Storage          | Field             | Values                                  |
+| ------------------ | ---------------- | ----------------- | --------------------------------------- |
+| `al-journey-v1`    | `sessionStorage` | Full journey blob | `{ selectedFlow, authStatus, session }` |
+| `al-selected-flow` | `localStorage`   | `selectedFlow`    | `purchase` \| `prepaid` \| `b2b2c`      |
+| `al-qr-theme`      | `localStorage`   | Theme             | `light` \| `dark`                       |
 
 ### Context API (`useJourney`)
 
-| Property / method | Purpose |
-|-------------------|---------|
-| `selectedFlow` | Active consumer flow |
-| `authStatus` | `pending` \| `AUTH_COMPLETED` |
-| `session` | Reserved for future form persistence |
-| `phase` | Current journey phase |
-| `setSelectedFlow(flow)` | Persist flow + set phase `flow-select` |
-| `completeAuth()` | Set `authStatus = AUTH_COMPLETED`, phase `activation` |
-| `clearJourney()` | Reset persistence + phase `home` |
-| `setPhase(phase)` | Explicit phase transitions |
+| Property / method       | Purpose                                               |
+| ----------------------- | ----------------------------------------------------- |
+| `selectedFlow`          | Active consumer flow                                  |
+| `authStatus`            | `pending` \| `AUTH_COMPLETED`                         |
+| `session`               | Reserved for future form persistence                  |
+| `phase`                 | Current journey phase                                 |
+| `setSelectedFlow(flow)` | Persist flow + set phase `flow-select`                |
+| `completeAuth()`        | Set `authStatus = AUTH_COMPLETED`, phase `activation` |
+| `clearJourney()`        | Reset persistence + phase `home`                      |
+| `setPhase(phase)`       | Explicit phase transitions                            |
 
 ### Route guards
 
-| Guard | Condition | Redirect |
-|-------|-----------|----------|
-| `RequireSelectedFlow` | No `selectedFlow` | `/journey` |
+| Guard                  | Condition               | Redirect                           |
+| ---------------------- | ----------------------- | ---------------------------------- |
+| `RequireSelectedFlow`  | No `selectedFlow`       | `/journey`                         |
 | `RequireAuthCompleted` | No flow or auth pending | `/journey/auth/r01-vehicle-number` |
 
 ---
@@ -231,13 +231,13 @@ apps/qr/src/features/shared-auth/auth-flow/
 
 ## 7. Config alignment changes
 
-| File | Change |
-|------|--------|
-| `flows.config.ts` | **prepaid:** auth before `prepaid.entry` suffix |
-| `flows.config.ts` | **b2b2c:** `b2b2c.partner-bridge` moved to post-auth suffix |
-| `flow/guards/catalog.ts` | `guard.voucher-valid` → `prepaid.entry` |
-| `router/routes.schema.ts` | Added `routePaths.journey.*` + `journeyOrchestratorRoutes` |
-| `main.tsx` | Default: `JourneyOrchestrator`; `?dev=1` → `ScreenDevApp` |
+| File                      | Change                                                      |
+| ------------------------- | ----------------------------------------------------------- |
+| `flows.config.ts`         | **prepaid:** auth before `prepaid.entry` suffix             |
+| `flows.config.ts`         | **b2b2c:** `b2b2c.partner-bridge` moved to post-auth suffix |
+| `flow/guards/catalog.ts`  | `guard.voucher-valid` → `prepaid.entry`                     |
+| `router/routes.schema.ts` | Added `routePaths.journey.*` + `journeyOrchestratorRoutes`  |
+| `main.tsx`                | Default: `JourneyOrchestrator`; `?dev=1` → `ScreenDevApp`   |
 
 **Unchanged (deferred):**
 
@@ -257,11 +257,11 @@ apps/qr/src/features/shared-auth/auth-flow/
 
 ## 9. Dev mode
 
-| URL | Entry |
-|-----|-------|
-| `/` | Journey orchestrator |
-| `/?dev=1` | ScreenDevApp |
-| `/journey?dev=1` | ScreenDevApp |
+| URL              | Entry                |
+| ---------------- | -------------------- |
+| `/`              | Journey orchestrator |
+| `/?dev=1`        | ScreenDevApp         |
+| `/journey?dev=1` | ScreenDevApp         |
 
 Dev preview remains isolated from journey persistence.
 
@@ -269,15 +269,15 @@ Dev preview remains isolated from journey persistence.
 
 ## 10. Alignment score after implementation
 
-| Dimension | Weight | Pre (8.5) | Post (9) | Notes |
-|-----------|--------|-----------|----------|-------|
-| Shared screen reuse (R01–R06) | 15% | 95 | 95 | Unchanged — same screens |
-| Purchase order vs target | 15% | 85 | 85 | Journey entry = `qr-scan`; config graph unchanged |
-| Prepaid order vs target | 15% | 35 | **90** | Config reordered: auth → suffix |
-| B2B2C order vs target | 10% | 30 | **80** | Partner bridge post-auth in config + routing |
-| Emergency placement | 15% | 25 | **55** | Journey suffix routing contract; config + screens deferred |
-| Journey orchestration | 20% | 40 | **92** | Home, selector, handoff, guards, persistence |
-| Route/schema readiness | 10% | 55 | **85** | `/journey/*` in router + schema |
+| Dimension                     | Weight | Pre (8.5) | Post (9) | Notes                                                      |
+| ----------------------------- | ------ | --------- | -------- | ---------------------------------------------------------- |
+| Shared screen reuse (R01–R06) | 15%    | 95        | 95       | Unchanged — same screens                                   |
+| Purchase order vs target      | 15%    | 85        | 85       | Journey entry = `qr-scan`; config graph unchanged          |
+| Prepaid order vs target       | 15%    | 35        | **90**   | Config reordered: auth → suffix                            |
+| B2B2C order vs target         | 10%    | 30        | **80**   | Partner bridge post-auth in config + routing               |
+| Emergency placement           | 15%    | 25        | **55**   | Journey suffix routing contract; config + screens deferred |
+| Journey orchestration         | 20%    | 40        | **92**   | Home, selector, handoff, guards, persistence               |
+| Route/schema readiness        | 10%    | 55        | **85**   | `/journey/*` in router + schema                            |
 
 ### **Overall alignment: 82 / 100 (B)**
 
@@ -313,12 +313,12 @@ pnpm --filter @autolokate/qr dev
 
 ## 12. Related documents
 
-| Document | Relationship |
-|----------|--------------|
-| [FLOW_ALIGNMENT_REPORT.md](./FLOW_ALIGNMENT_REPORT.md) | Phase 8.5 baseline + recommendations |
-| [AUTH_FLOW_SIGNOFF.md](./AUTH_FLOW_SIGNOFF.md) | R01–R06 implementation sign-off |
-| [PHASE_7_PREPAID.md](./PHASE_7_PREPAID.md) | Prepaid screens (dev preview; graph position updated) |
-| [ONBOARDING_ARCHITECTURE.md](./ONBOARDING_ARCHITECTURE.md) | Update recommended in Phase 10 |
+| Document                                                   | Relationship                                          |
+| ---------------------------------------------------------- | ----------------------------------------------------- |
+| [FLOW_ALIGNMENT_REPORT.md](./FLOW_ALIGNMENT_REPORT.md)     | Phase 8.5 baseline + recommendations                  |
+| [AUTH_FLOW_SIGNOFF.md](./AUTH_FLOW_SIGNOFF.md)             | R01–R06 implementation sign-off                       |
+| [PHASE_7_PREPAID.md](./PHASE_7_PREPAID.md)                 | Prepaid screens (dev preview; graph position updated) |
+| [ONBOARDING_ARCHITECTURE.md](./ONBOARDING_ARCHITECTURE.md) | Update recommended in Phase 10                        |
 
 ---
 

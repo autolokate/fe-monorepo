@@ -8,8 +8,7 @@ const headed =
   process.env.E2E_PAUSE === 'true';
 const slowMoMs = Number(process.env.E2E_SLOWMO_MS ?? (headed ? '0' : '0'));
 /** When pausing for inspection, don't kill the test after 90s. */
-const pause =
-  process.env.E2E_PAUSE === '1' || process.env.E2E_PAUSE === 'true';
+const pause = process.env.E2E_PAUSE === '1' || process.env.E2E_PAUSE === 'true';
 
 /**
  * Admin UI e2e — QR provisioning and related admin-plane flows.

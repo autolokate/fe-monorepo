@@ -8,13 +8,13 @@
 
 ## Summary
 
-| Issue | Status | Primary files |
-|-------|--------|---------------|
-| Checkbox parity | Fixed | `Checkbox.css`, `inline-consent-block.css` |
-| Input active state | Fixed | `TextField.css`, `TextField.tsx`, `Input.css`, `OtpInput.css`, `auth-step-shell.css` |
-| Back button | Fixed | `step-shell-chrome.css`, `pwa-scan-shell.css` |
-| Text alignment | Verified | Existing `step-shell-chrome` left-aligned headings — no drift |
-| UI breakage | Partial | Photo card height + shell backgrounds fixed in prior pass |
+| Issue              | Status   | Primary files                                                                        |
+| ------------------ | -------- | ------------------------------------------------------------------------------------ |
+| Checkbox parity    | Fixed    | `Checkbox.css`, `inline-consent-block.css`                                           |
+| Input active state | Fixed    | `TextField.css`, `TextField.tsx`, `Input.css`, `OtpInput.css`, `auth-step-shell.css` |
+| Back button        | Fixed    | `step-shell-chrome.css`, `pwa-scan-shell.css`                                        |
+| Text alignment     | Verified | Existing `step-shell-chrome` left-aligned headings — no drift                        |
+| UI breakage        | Partial  | Photo card height + shell backgrounds fixed in prior pass                            |
 
 **Verdict:** **MORE FIXES REQUIRED** — core component fixes applied; full 95-frame screenshot matrix at 320–414 not re-run this session.
 
@@ -24,33 +24,33 @@
 
 ### A1 Mobile — Input default state (screenshot issue)
 
-| | Detail |
-|---|--------|
-| **Screen** | Auth A1 · `102:268` |
-| **Component** | `AlTextField` + `.ob-auth-mobile-field` |
+|                | Detail                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Screen**     | Auth A1 · `102:268`                                                                                           |
+| **Component**  | `AlTextField` + `.ob-auth-mobile-field`                                                                       |
 | **Root cause** | Base `AlTextField` used 2px white border + hover white border on all states, making empty fields look focused |
-| **Fix** | Default: `1.5px #4A4A4A`; active: `2px #FFFFFF` only on `:focus-within` or `.al-text-field--filled` |
-| **Before** | White border on empty mobile field |
-| **After** | Gray neutral border until focus or digits entered |
+| **Fix**        | Default: `1.5px #4A4A4A`; active: `2px #FFFFFF` only on `:focus-within` or `.al-text-field--filled`           |
+| **Before**     | White border on empty mobile field                                                                            |
+| **After**      | Gray neutral border until focus or digits entered                                                             |
 
 ### Consent checkbox
 
-| | Detail |
-|---|--------|
-| **Screen** | Auth A1 · Figma `AlCheckbox/Off` `81:25` |
-| **Component** | `AlCheckbox`, `InlineConsentBlock` |
-| **Root cause** | 22px hit target (should be 48×48); unchecked box had surface fill; checkmark offset drift |
-| **Fix** | 22×22 box, 8px radius, 1.5px `#4A4A4A` border, transparent bg; checked `#1FA24A`; 48×48 tap target with `-13px` offset |
-| **Figma ref** | EL-d00a1a60 (off), EL-39d54cd1 (on) |
+|                | Detail                                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Screen**     | Auth A1 · Figma `AlCheckbox/Off` `81:25`                                                                               |
+| **Component**  | `AlCheckbox`, `InlineConsentBlock`                                                                                     |
+| **Root cause** | 22px hit target (should be 48×48); unchecked box had surface fill; checkmark offset drift                              |
+| **Fix**        | 22×22 box, 8px radius, 1.5px `#4A4A4A` border, transparent bg; checked `#1FA24A`; 48×48 tap target with `-13px` offset |
+| **Figma ref**  | EL-d00a1a60 (off), EL-39d54cd1 (on)                                                                                    |
 
 ### Back button
 
-| | Detail |
-|---|--------|
-| **Screens** | All auth / flow / PWA shells |
-| **Component** | `AlIconButton` in step chrome |
-| **Root cause** | 24×24 visual only; hover lift + gray fill not in Figma |
-| **Fix** | 48×48 hit area, `-12px` inset (auth), no hover background/transform; 24px arrow icon preserved |
+|                | Detail                                                                                         |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| **Screens**    | All auth / flow / PWA shells                                                                   |
+| **Component**  | `AlIconButton` in step chrome                                                                  |
+| **Root cause** | 24×24 visual only; hover lift + gray fill not in Figma                                         |
+| **Fix**        | 48×48 hit area, `-12px` inset (auth), no hover background/transform; 24px arrow icon preserved |
 
 ---
 

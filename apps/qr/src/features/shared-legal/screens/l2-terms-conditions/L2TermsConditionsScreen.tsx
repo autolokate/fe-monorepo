@@ -7,7 +7,11 @@ import type { L2TermsConditionsScreenProps } from '@/features/shared-auth/types'
 import './legal-reader.css';
 
 /** L2 · Terms & Conditions — Figma 61:163 */
-export function L2TermsConditionsScreen({ onBack, onContinue, showBack = true }: L2TermsConditionsScreenProps) {
+export function L2TermsConditionsScreen({
+  onBack,
+  onContinue,
+  showBack = true,
+}: L2TermsConditionsScreenProps) {
   return (
     <AlScreenBg variant="protected" className="ob-step-chrome-screen ob-legal-reader">
       <div className="ob-step-chrome__frame ob-legal-reader__frame">

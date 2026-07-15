@@ -57,10 +57,7 @@ export function useQrBatchCodes(
     }
   }, [query.data, query.error, query.isError]);
 
-  const codes = useMemo(
-    () => query.data?.pages.flatMap((page) => page.codes) ?? [],
-    [query.data],
-  );
+  const codes = useMemo(() => query.data?.pages.flatMap((page) => page.codes) ?? [], [query.data]);
 
   const latestPage = query.data?.pages.at(-1);
   const hasMore = latestPage?.pagination?.hasMore ?? false;
