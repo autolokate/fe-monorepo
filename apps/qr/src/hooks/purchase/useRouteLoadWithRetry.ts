@@ -62,7 +62,7 @@ export function useRouteLoadWithRetry({
       return;
     }
 
-    let cancelled = false;
+    const abortController = new AbortController();
     setLoadState({ status: 'loading' });
 
     void (async () => {
@@ -74,7 +74,7 @@ export function useRouteLoadWithRetry({
         result = await loadRef.current({ force: true });
       }
 
-      if (cancelled) {
+      if (abortController.signal.aborted) {
         return;
       }
 
@@ -90,7 +90,7 @@ export function useRouteLoadWithRetry({
     })();
 
     return () => {
-      cancelled = true;
+      abortController.abort();
     };
   }, [attempt, enabled, initiallyReady, reloadKey]);
 

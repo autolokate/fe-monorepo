@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { formatPlateInput } from '@autolokate/ui';
 
-import {
-  isPlateEntryReady,
-  normalizePlate,
-} from '../../../services/vehicle/index';
+import { isPlateEntryReady, normalizePlate } from '../../../services/vehicle/index';
 import { compactPlate } from '@/services/vehicle/vehicle-plate';
 import { useVehicleLookup } from '../../../hooks/vehicle/index';
 import {
@@ -29,10 +26,7 @@ import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service';
 import { qrAttachLogger } from '@/services/qr/qr-attach-logger';
 import { qrLogger } from '@/services/qr/qr-logger';
 import { vehicleLogger } from '@/services/vehicle/vehicle-logger';
-import {
-  getRiderOptionsForPlan,
-  isPlanRiderEligible,
-} from '@/services/plan/plan-mapper';
+import { getRiderOptionsForPlan, isPlanRiderEligible } from '@/services/plan/plan-mapper';
 import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
 import { useJourney } from '../../JourneyContext';
 import {
@@ -47,7 +41,7 @@ export function VehicleDetailsRoute() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { session, updateSession } = useJourney();
-  const vehicle = session.vehicle ?? {};
+  const vehicle = useMemo(() => session.vehicle ?? {}, [session.vehicle]);
 
   const blockedMessage =
     typeof (location.state as { vehicleBlockedMessage?: unknown } | null)?.vehicleBlockedMessage ===
@@ -68,8 +62,8 @@ export function VehicleDetailsRoute() {
     }
     return 'empty';
   });
-  const [plateErrorMessage, setPlateErrorMessage] = useState<string | undefined>(() =>
-    blockedMessage ?? undefined,
+  const [plateErrorMessage, setPlateErrorMessage] = useState<string | undefined>(
+    () => blockedMessage ?? undefined,
   );
 
   useEffect(() => {
@@ -103,7 +97,12 @@ export function VehicleDetailsRoute() {
 
     void resolveQrCode(code).then((result) => {
       if (!result.ok) {
-        reportUserError(qrLogger, 'purchase_resolve_refresh_failed', result.error, result.error.message);
+        reportUserError(
+          qrLogger,
+          'purchase_resolve_refresh_failed',
+          result.error,
+          result.error.message,
+        );
       }
     });
   }, [searchParams]);
@@ -276,7 +275,7 @@ export function VehicleConfirmationRoute({ registrationNumber }: { registrationN
   const [searchParams] = useSearchParams();
   const { session, updateSession, setPhase, selectedFlow } = useJourney();
   const { attachPurchaseQr, isPending: isAttachPending } = useQrAttach();
-  const vehicle = session.vehicle ?? {};
+  const vehicle = useMemo(() => session.vehicle ?? {}, [session.vehicle]);
   const attachStartedRef = useRef(false);
   const selectedPlanId = session.purchase?.selectedPlanId ?? DEFAULT_PURCHASE_PLAN_ID;
   const selectedRiderCount = session.purchase?.riderCount ?? 0;
@@ -335,7 +334,10 @@ export function VehicleConfirmationRoute({ registrationNumber }: { registrationN
       void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
       return;
     }
-    if (compactPlate(normalizePlate(vehicle.plate)) !== compactPlate(normalizePlate(registrationNumber))) {
+    if (
+      compactPlate(normalizePlate(vehicle.plate)) !==
+      compactPlate(normalizePlate(registrationNumber))
+    ) {
       void navigate(purchaseVehicleConfirmationPath(vehicle.plate), { replace: true });
     }
   }, [navigate, registrationNumber, vehicle.fields, vehicle.fetchStatus, vehicle.plate]);
@@ -470,17 +472,15 @@ export function VehicleConfirmationRoute({ registrationNumber }: { registrationN
     vehicle,
   ]);
 
-  const isUpgradeCheckout = Boolean(session.purchase?.upgradeCheckout) &&
-    !session.purchase?.skippedPlanUpgrade;
+  const isUpgradeCheckout =
+    Boolean(session.purchase?.upgradeCheckout) && !session.purchase?.skippedPlanUpgrade;
 
   return (
     <R05ConfirmVehicleScreen
       plate={vehicle.plate}
       fields={vehicle.fields}
       footerLoading={!isUpgradeCheckout && isAttachPending}
-      footerLabel={
-        !isUpgradeCheckout && isAttachPending ? 'Linking…' : 'Looks right'
-      }
+      footerLabel={!isUpgradeCheckout && isAttachPending ? 'Linking…' : 'Looks right'}
       onBack={() => {
         void navigate(purchaseJourneyPaths.vehicleDetails);
       }}

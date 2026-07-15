@@ -14,18 +14,18 @@ import { DEFAULT_PURCHASE_PLAN_ID } from '../../../features/qr-purchase/data/pur
 import { getVehicle } from '@/storage/index';
 import { buildOrderSummary } from '../../../features/qr-purchase/data/purchase-pricing';
 import { normalizePromoCode } from '../../../features/qr-purchase/data/purchase-promo';
-import {
-  getCheckoutSummary,
-  type CheckoutParams,
-} from '../../../services/checkout/index';
+import { getCheckoutSummary, type CheckoutParams } from '../../../services/checkout/index';
 import { reportUserError } from '@/platform/feedback/index';
 import { purchaseJourneyPaths } from '../../purchase/purchase-paths-runtime';
 import { useJourney } from '../../JourneyContext';
+import type { JourneySession } from '../../types';
 import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code';
 import { validatePromoCheckout } from '@/services/promo/index';
 import { promoLogger } from '@/services/promo/promo-logger';
 import { qrLogger } from '@/services/qr/qr-logger';
 import { resetProcessingPaymentAttempt } from './processing-payment-attempt';
+
+type PurchaseSessionPatch = Partial<NonNullable<JourneySession['purchase']>>;
 
 export function PurchaseRouteLoader({ label = 'Loading order' }: { label?: string }) {
   return (
@@ -48,12 +48,7 @@ export function PurchaseSegmentBootstrap({ children }: { children: ReactNode }) 
   }
 
   if (hydrationError && !plansReady) {
-    return (
-      <PurchaseRouteError
-        message={hydrationError}
-        onRetry={retryHydration}
-      />
-    );
+    return <PurchaseRouteError message={hydrationError} onRetry={retryHydration} />;
   }
 
   return children;
@@ -68,7 +63,7 @@ export function usePurchaseCheckout() {
   const riderCount = purchase?.riderCount ?? storedVehicle?.riderCount ?? 1;
 
   const patchPurchase = useCallback(
-    (patch: Partial<NonNullable<typeof session.purchase>>) => {
+    (patch: PurchaseSessionPatch) => {
       // JourneyContext deep-merges `purchase` against latest persisted state.
       updateSession({ purchase: patch });
     },
@@ -82,7 +77,9 @@ export function getOrderSummaryPath(promoApplied?: boolean, promoInvalid?: boole
   if (promoInvalid) {
     return purchaseJourneyPaths.orderSummaryInvalidPromo;
   }
-  return promoApplied ? purchaseJourneyPaths.orderSummaryPromoApplied : purchaseJourneyPaths.orderSummary;
+  return promoApplied
+    ? purchaseJourneyPaths.orderSummaryPromoApplied
+    : purchaseJourneyPaths.orderSummary;
 }
 
 /** After payment success, resume at R10 until the user continues to emergency. */
@@ -90,7 +87,9 @@ export function getPostPaymentSuccessPath(): string {
   return purchaseJourneyPaths.paymentSuccess;
 }
 
-export function getPostPaymentResumePath(purchase: ReturnType<typeof usePurchaseCheckout>['purchase']): string | null {
+export function getPostPaymentResumePath(
+  purchase: ReturnType<typeof usePurchaseCheckout>['purchase'],
+): string | null {
   if (!purchase?.checkoutReady) {
     return null;
   }

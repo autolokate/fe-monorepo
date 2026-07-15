@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -11,9 +11,7 @@ import {
 } from '../../../features/qr-purchase/screens/index';
 import { useCheckout } from '../../../hooks/checkout/index';
 import { usePaymentPolling } from '../../../hooks/checkout/index';
-import {
-  resetCheckoutForRetry,
-} from '../../../services/checkout/index';
+import { resetCheckoutForRetry } from '../../../services/checkout/index';
 import {
   openOrderInvoice,
   prefetchOrderInvoice,
@@ -119,7 +117,12 @@ export function ProcessingPaymentRoute() {
           return;
         }
 
-        reportUserError(checkoutLogger, 'purchase_payment_failed', result.error, result.error.message);
+        reportUserError(
+          checkoutLogger,
+          'purchase_payment_failed',
+          result.error,
+          result.error.message,
+        );
         patchPurchase({ paymentStatus: 'failed' });
         void navigate(purchaseJourneyPaths.paymentFailed);
         return;
@@ -157,22 +160,16 @@ export function PaymentStillConfirmingRoute() {
   const { session, purchase, patchPurchase } = usePurchaseCheckout();
   const { pollPaymentStatus } = usePaymentPolling();
 
-    useEffect(() => {
+  useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
       return;
     }
-    if (shouldLeavePaymentScreen(session.purchase, ['confirming', 'unconfirmed', 'success', 'failed'])) {
-      void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
+    if (shouldLeavePaymentScreen(purchase, ['confirming', 'unconfirmed', 'success', 'failed'])) {
+      void navigate(getOrderSummaryPath(purchase?.promoApplied, purchase?.promoInvalid), {
         replace: true,
       });
     }
-  }, [
-    navigate,
-    purchase,
-    session.purchase?.paymentStatus,
-    session.purchase?.promoApplied,
-    session.purchase?.promoInvalid,
-  ]);
+  }, [navigate, purchase]);
 
   useEffect(() => {
     if (session.purchase?.paymentStatus !== 'confirming') {
@@ -196,7 +193,12 @@ export function PaymentStillConfirmingRoute() {
       }
 
       if (!result.ok) {
-        reportUserError(checkoutLogger, 'purchase_payment_poll_failed', result.error, result.error.message);
+        reportUserError(
+          checkoutLogger,
+          'purchase_payment_poll_failed',
+          result.error,
+          result.error.message,
+        );
         return;
       }
 
@@ -228,13 +230,16 @@ export function PaymentSuccessRoute() {
   const [invoiceDownloading, setInvoiceDownloading] = useState(false);
   const paidAmountInr = purchase?.paidAmountInr ?? 0;
   const orderId = resolveCheckoutOrderId();
-  const vehicle = session.vehicle ?? {};
+  const vehicle = useMemo(() => session.vehicle ?? {}, [session.vehicle]);
 
   useEffect(() => {
     if (session.purchase?.paymentStatus !== 'success') {
-      void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
-        replace: true,
-      });
+      void navigate(
+        getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
+        {
+          replace: true,
+        },
+      );
     }
   }, [
     navigate,
@@ -250,7 +255,12 @@ export function PaymentSuccessRoute() {
     vehiclesSyncedRef.current = true;
     void syncVehiclesAfterPayment().then((result) => {
       if (!result.ok) {
-        reportUserError(vehicleLogger, 'purchase_vehicle_sync_failed', result.error, result.error.message);
+        reportUserError(
+          vehicleLogger,
+          'purchase_vehicle_sync_failed',
+          result.error,
+          result.error.message,
+        );
       }
     });
   }, [session.purchase?.paymentStatus]);
@@ -394,11 +404,7 @@ export function PaymentFailedRoute() {
         replace: true,
       });
     }
-  }, [
-    navigate,
-    orderSummaryPath,
-    session.purchase?.paymentStatus,
-  ]);
+  }, [navigate, orderSummaryPath, session.purchase?.paymentStatus]);
 
   return (
     <R10bPaymentFailedScreen
@@ -424,20 +430,15 @@ export function PaymentFailedRoute() {
 
 export function PaymentUnconfirmedRoute() {
   const navigate = useNavigate();
-  const { session, patchPurchase } = usePurchaseCheckout();
+  const { purchase, patchPurchase } = usePurchaseCheckout();
   const { pollPayment } = useCheckout();
   useEffect(() => {
-    if (shouldLeavePaymentScreen(session.purchase, ['unconfirmed', 'success', 'failed'])) {
-      void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
+    if (shouldLeavePaymentScreen(purchase, ['unconfirmed', 'success', 'failed'])) {
+      void navigate(getOrderSummaryPath(purchase?.promoApplied, purchase?.promoInvalid), {
         replace: true,
       });
     }
-  }, [
-    navigate,
-    session.purchase?.paymentStatus,
-    session.purchase?.promoApplied,
-    session.purchase?.promoInvalid,
-  ]);
+  }, [navigate, purchase]);
 
   return (
     <R10cPaymentUnconfirmedScreen
@@ -453,7 +454,12 @@ export function PaymentUnconfirmedRoute() {
         void (async () => {
           const result = await pollPayment(resumedOrderId);
           if (!result.ok) {
-            reportUserError(checkoutLogger, 'purchase_payment_status_failed', result.error, result.error.message);
+            reportUserError(
+              checkoutLogger,
+              'purchase_payment_status_failed',
+              result.error,
+              result.error.message,
+            );
             return;
           }
           if (

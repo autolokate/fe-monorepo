@@ -10,7 +10,6 @@ export {
   getActivationEntryPath,
   getCompletedPath,
   getEmergencyHandoffPath,
-  getPurchasePostPaymentEmergencyPath,
 } from './activation-routing';
 export {
   getNextPurchasePath,
