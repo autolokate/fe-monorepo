@@ -449,6 +449,46 @@ export type AdminOrdersPageResult = {
   correlationId: string | null;
 };
 
+/** OpenAPI `AdminSubscriptionSummary.status` / `AdminSubscriptionDetail.status` — the subscription lifecycle. */
+export type AdminSubscriptionStatus = 'ACTIVE' | 'LAPSED' | 'CANCELLED' | 'REFUNDED';
+
+/** OpenAPI `AdminSubscriptionSummary.activatedVia` — how the live subscription was activated. */
+export type AdminSubscriptionActivatedVia =
+  | 'PARTNER_PREPAID_B2B2C'
+  | 'PARTNER_PREPAID_B2B'
+  | 'CONSUMER_PREPAID_COMMERCE'
+  | 'CONSUMER_PREPAID_RETAIL';
+
+/** OpenAPI `AdminSubscriptionSummary` — one row in the admin subscriptions list (money-free, no PII). */
+export type AdminSubscriptionSummary = {
+  subscriptionId: string;
+  accountId: string;
+  qrCodeId: string;
+  vehicleId: string;
+  planId: string;
+  planTier: ApiPlanTier;
+  planVersion: number;
+  status: AdminSubscriptionStatus;
+  activatedVia: AdminSubscriptionActivatedVia;
+  autoRenew: boolean;
+  startedAt: string | null;
+  renewsAt: string | null;
+};
+
+/** OpenAPI `AdminSubscriptionDetail` — a single subscription with its billing-mandate link (money-free, no PII). */
+export type AdminSubscriptionDetail = AdminSubscriptionSummary & {
+  billingMandateId: string | null;
+};
+
+/** Query for `GET /admin/v1/subscriptions` — offset-paginated; every field optional. */
+export type ListAdminSubscriptionsQuery = {
+  status?: AdminSubscriptionStatus;
+  planId?: string;
+  accountId?: string;
+  limit?: number;
+  offset?: number;
+};
+
 function buildQuery(params: Record<string, string | number | undefined>): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
@@ -883,6 +923,40 @@ export async function getAdminOrder(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as AdminOrderDetail;
+}
+
+/**
+ * GET /admin/v1/subscriptions — the account-wide subscription list.
+ * Offset-paginated on the server, so `data` is a bare array (no pagination meta on the envelope).
+ */
+export async function listAdminSubscriptions(
+  client: ApiClient,
+  query: ListAdminSubscriptionsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSubscriptionSummary[]> {
+  const path = `${endpoints.admin.adminSubscriptions}${buildQuery({
+    status: query.status,
+    planId: query.planId,
+    accountId: query.accountId,
+    limit: query.limit,
+    offset: query.offset,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminSubscriptionSummary[];
+}
+
+/** GET /admin/v1/subscriptions/{subscriptionId} */
+export async function getAdminSubscription(
+  client: ApiClient,
+  subscriptionId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSubscriptionDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminSubscription(subscriptionId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminSubscriptionDetail;
 }
 
 /** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */

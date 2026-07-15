@@ -228,6 +228,36 @@
   color: #94a3b8;
 }
 
+/* —— Subscriptions (AdminSubscriptionSummary.status) —— */
+
+.admin-entity-status-badge--subscription-ACTIVE {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
+.admin-entity-status-badge--subscription-LAPSED {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--subscription-CANCELLED {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+.admin-entity-status-badge--subscription-REFUNDED {
+  background: color-mix(in srgb, var(--al-signal-red) 12%, var(--al-color-surface));
+  color: var(--al-signal-red);
+}
+
+[data-theme='dark'] .admin-entity-status-badge--subscription-CANCELLED {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--subscription-REFUNDED {
+  color: var(--al-signal-red-bright);
+}
+
 /* —— Audit events (AuditEventDto.action) —— */
 
 .admin-entity-status-badge--audit {

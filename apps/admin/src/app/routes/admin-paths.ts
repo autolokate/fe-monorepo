@@ -7,6 +7,7 @@ export const adminPaths = {
   catalog: '/catalog',
   promos: '/promos',
   orders: '/orders',
+  subscriptions: '/subscriptions',
   auditEvents: '/audit-events',
   finance: '/finance',
   ownershipTransfers: '/ownership-transfers',
@@ -63,6 +64,12 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.orders,
     label: 'Orders',
     description: 'Customer orders',
+    nav: true,
+  },
+  {
+    path: adminPaths.subscriptions,
+    label: 'Subscriptions',
+    description: 'Customer subscriptions',
     nav: true,
   },
   {

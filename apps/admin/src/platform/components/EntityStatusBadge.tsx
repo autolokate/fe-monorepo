@@ -1,5 +1,6 @@
 import type {
   AdminOrderStatus,
+  AdminSubscriptionStatus,
   AuditAction,
   QrBatchStatus,
   QrCodeStatus,
@@ -34,6 +35,15 @@ export function BatchStatusBadge({ status }: { status: QrBatchStatus }) {
 export function OrderStatusBadge({ status }: { status: AdminOrderStatus }) {
   return (
     <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--order-${status}`} />
+  );
+}
+
+export function SubscriptionStatusBadge({ status }: { status: AdminSubscriptionStatus }) {
+  return (
+    <EntityStatusBadge
+      label={status}
+      modifier={`admin-entity-status-badge--subscription-${status}`}
+    />
   );
 }
 

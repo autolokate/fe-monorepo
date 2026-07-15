@@ -6,6 +6,7 @@ import {
   HouseIcon,
   ReceiptTextIcon,
   ScanLineIcon,
+  ShieldCheckIcon,
   StoreIcon,
 } from '@autolokate/icons';
 import { AlText } from '@autolokate/ui';
@@ -22,6 +23,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/catalog': StoreIcon,
   '/promos': CreditCardIcon,
   '/orders': ReceiptTextIcon,
+  '/subscriptions': ShieldCheckIcon,
   '/audit-events': ActivityIcon,
   '/finance': CreditCardIcon,
   '/ownership-transfers': CircleUserIcon,
