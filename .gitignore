@@ -18,6 +18,11 @@ out/
 coverage/
 .nyc_output/
 
+# Playwright — generated reports + run artifacts (match under any app in the monorepo)
+playwright-report/
+test-results/
+playwright/.cache/
+
 # Environment variables
 .env
 .env.*
