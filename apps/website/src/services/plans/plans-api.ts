@@ -48,6 +48,11 @@ function stringOrNull(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
+/** Read a loosely-typed row field as a string, falling back when it isn't one. */
+function stringOr(value: unknown, fallback: string): string {
+  return typeof value === 'string' ? value : fallback;
+}
+
 function normalizeRiderOption(raw: unknown): PlanRiderOption {
   const row = readObject(raw);
   return {
@@ -61,12 +66,12 @@ function normalizeRiderOption(raw: unknown): PlanRiderOption {
 function normalizePlan(raw: unknown): Plan {
   const row = readObject(raw);
   return {
-    id: String(row.id ?? ''),
-    tier: String(row.tier ?? '').trim(),
+    id: stringOr(row.id, ''),
+    tier: stringOr(row.tier, '').trim(),
     version: numeric(row.version, 1),
-    name: String(row.name ?? '').trim(),
+    name: stringOr(row.name, '').trim(),
     pricePaise: numeric(row.pricePaise),
-    period: String(row.period ?? 'YEARLY').trim(),
+    period: stringOr(row.period, 'YEARLY').trim(),
     riderEligible: Boolean(row.riderEligible),
     features: Array.isArray(row.features)
       ? (row.features as unknown[]).map((f) => String(f)).filter(Boolean)
@@ -97,7 +102,7 @@ export function getPlans(sku: string = DEFAULT_PLANS_SKU): Promise<Plan[]> {
 
   const request = (async () => {
     try {
-      const res = await ApiService.get<unknown>(endpoints.plans.list(sku), {
+      const res = await ApiService.get(endpoints.plans.list(sku), {
         withAuth: false,
         baseURL: PLANS_API_BASE_URL,
         // ngrok's free tier serves an HTML interstitial to browsers unless this

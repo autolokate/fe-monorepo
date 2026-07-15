@@ -83,7 +83,7 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
 
   const name = fields.full_name.trim();
   if (name.length > MAX_NAME) {
-    errors.full_name = `Use at most ${MAX_NAME} characters.`;
+    errors.full_name = `Use at most ${MAX_NAME.toString()} characters.`;
   } else if (name.length === 1) {
     errors.full_name = 'Enter at least 2 characters or leave blank.';
   }
@@ -98,7 +98,7 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
 
   const city = fields.city_id.trim();
   if (city.length > MAX_CITY_ID) {
-    errors.city_id = `Use at most ${MAX_CITY_ID} characters.`;
+    errors.city_id = `Use at most ${MAX_CITY_ID.toString()} characters.`;
   }
   if (city && /[\r\n\t]/.test(fields.city_id)) {
     errors.city_id = 'Remove line breaks from this field.';
@@ -117,11 +117,11 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
 
   const fuels = parseCommaList(fields.preferred_fuel_types);
   if (fuels.length > MAX_LIST_ITEMS) {
-    errors.preferred_fuel_types = `At most ${MAX_LIST_ITEMS} fuel types, comma-separated.`;
+    errors.preferred_fuel_types = `At most ${MAX_LIST_ITEMS.toString()} fuel types, comma-separated.`;
   } else {
     for (const f of fuels) {
       if (f.length > MAX_TOKEN_LEN) {
-        errors.preferred_fuel_types = `Each fuel type must be at most ${MAX_TOKEN_LEN} characters.`;
+        errors.preferred_fuel_types = `Each fuel type must be at most ${MAX_TOKEN_LEN.toString()} characters.`;
         break;
       }
       if (!LIST_TOKEN.test(f)) {
@@ -134,11 +134,11 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
 
   const bodies = parseCommaList(fields.preferred_body_types);
   if (bodies.length > MAX_LIST_ITEMS) {
-    errors.preferred_body_types = `At most ${MAX_LIST_ITEMS} body types, comma-separated.`;
+    errors.preferred_body_types = `At most ${MAX_LIST_ITEMS.toString()} body types, comma-separated.`;
   } else {
     for (const b of bodies) {
       if (b.length > MAX_TOKEN_LEN) {
-        errors.preferred_body_types = `Each body type must be at most ${MAX_TOKEN_LEN} characters.`;
+        errors.preferred_body_types = `Each body type must be at most ${MAX_TOKEN_LEN.toString()} characters.`;
         break;
       }
       if (!LIST_TOKEN.test(b)) {

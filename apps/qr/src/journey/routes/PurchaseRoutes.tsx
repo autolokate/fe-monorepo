@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -118,8 +118,10 @@ function usePurchaseCheckout() {
     purchase?.selectedPlanId ?? storedVehicle?.selectedPlanId ?? DEFAULT_PURCHASE_PLAN_ID;
   const riderCount = purchase?.riderCount ?? storedVehicle?.riderCount ?? 1;
 
+  type PurchasePatch = Partial<NonNullable<typeof session.purchase>>;
+
   const patchPurchase = useCallback(
-    (patch: Partial<NonNullable<typeof session.purchase>>) => {
+    (patch: PurchasePatch) => {
       updateSession({
         purchase: {
           ...(session.purchase ?? {}),
@@ -332,7 +334,7 @@ function VehicleDetailsRoute() {
   const { session, updateSession, selectedFlow } = useJourney();
   const journeyId = useActiveJourneyId();
   const { purchase } = usePurchaseCheckout();
-  const vehicle = session.vehicle ?? {};
+  const vehicle = useMemo(() => session.vehicle ?? {}, [session.vehicle]);
 
   const blockedMessage =
     typeof (location.state as { vehicleBlockedMessage?: unknown } | null)?.vehicleBlockedMessage ===
@@ -581,7 +583,7 @@ function VehicleConfirmationRoute({ registrationNumber }: { registrationNumber: 
   const { session, updateSession } = useJourney();
   const { purchase } = usePurchaseCheckout();
   const { attachPurchaseQr, isPending: isAttachPending } = useQrAttach();
-  const vehicle = session.vehicle ?? {};
+  const vehicle = useMemo(() => session.vehicle ?? {}, [session.vehicle]);
   const attachStartedRef = useRef(false);
 
   const proceedToChoosePlan = useCallback(() => {
@@ -1019,14 +1021,7 @@ function ProcessingPaymentRoute() {
         },
       );
     }
-  }, [
-    navigate,
-    purchase,
-    session.purchase?.checkoutReady,
-    session.purchase?.paymentStatus,
-    session.purchase?.promoApplied,
-    session.purchase?.promoInvalid,
-  ]);
+  }, [navigate, purchase, session.purchase]);
 
   useEffect(() => {
     if (session.purchase?.paymentStatus !== 'processing' || purchase?.paymentStatus === 'success') {
@@ -1132,13 +1127,7 @@ function PaymentStillConfirmingRoute() {
         },
       );
     }
-  }, [
-    navigate,
-    purchase,
-    session.purchase?.paymentStatus,
-    session.purchase?.promoApplied,
-    session.purchase?.promoInvalid,
-  ]);
+  }, [navigate, purchase, session.purchase]);
 
   useEffect(() => {
     if (session.purchase?.paymentStatus !== 'confirming' || !orderId) {
@@ -1323,12 +1312,7 @@ function PaymentUnconfirmedRoute() {
         },
       );
     }
-  }, [
-    navigate,
-    session.purchase?.paymentStatus,
-    session.purchase?.promoApplied,
-    session.purchase?.promoInvalid,
-  ]);
+  }, [navigate, session.purchase]);
 
   return (
     <R10cPaymentUnconfirmedScreen

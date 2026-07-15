@@ -2,13 +2,25 @@
 
 import { useMemo } from 'react';
 
-import type { CatalogueBrand } from '@/lib/catalogue/types';
 import { fromApiVehicleCategory, type VehicleCategory } from '@/lib/preferences';
 import { slugifyPart } from '@/lib/seo';
 
 import { useBrands } from './useBrands';
 
 export type CatalogueBrandOption = { name: string; slug: string };
+
+/**
+ * Loosely-typed brand row: the shared `CatalogueBrand` marks these fields as
+ * always-present, but API rows can omit either the `brand_*` or the bare
+ * variant — so treat them as optional at the use-site where we fall back.
+ */
+type LooseBrandRow = {
+  brand_name?: string;
+  name?: string;
+  slug?: string;
+  brand_slug?: string;
+  vehicle_category?: string | null;
+};
 
 /**
  * Deduped brands sorted by name, optionally filtered by `vehicle_category` when
@@ -24,9 +36,9 @@ export function useCatalogueBrandsForCategory(
   const brandOptions = useMemo<CatalogueBrandOption[]>(() => {
     const cards = (rawBrands ?? [])
       .map((brand) => {
-        const row = brand as CatalogueBrand;
-        const name = String(row.brand_name ?? row.name ?? '').trim();
-        const slug = String(row.slug ?? row.brand_slug ?? slugifyPart(name)).trim();
+        const row = brand as LooseBrandRow;
+        const name = (row.brand_name ?? row.name ?? '').trim();
+        const slug = (row.slug ?? row.brand_slug ?? slugifyPart(name)).trim();
         if (!name || !slug) return null;
         return { name, slug };
       })
@@ -42,25 +54,18 @@ export function useCatalogueBrandsForCategory(
     );
 
     const all = rawBrands ?? [];
-    const anyClassified = all.some((b) => Boolean((b as CatalogueBrand).vehicle_category));
+    const anyClassified = all.some((b) => Boolean(b.vehicle_category));
     if (!anyClassified) return list;
 
     const allowedSlugs = new Set(
       all
-        .filter(
-          (b) => fromApiVehicleCategory((b as CatalogueBrand).vehicle_category) === vehicleType,
-        )
-        .map((b) =>
-          String(
-            (b as CatalogueBrand).slug ??
-              (b as CatalogueBrand).brand_slug ??
-              slugifyPart(
-                String((b as CatalogueBrand).brand_name ?? (b as CatalogueBrand).name ?? ''),
-              ),
-          )
+        .filter((b) => fromApiVehicleCategory(b.vehicle_category) === vehicleType)
+        .map((b) => {
+          const row = b as LooseBrandRow;
+          return (row.slug ?? row.brand_slug ?? slugifyPart(row.brand_name ?? row.name ?? ''))
             .trim()
-            .toLowerCase(),
-        )
+            .toLowerCase();
+        })
         .filter(Boolean),
     );
     return list.filter((b) => allowedSlugs.has(b.slug.toLowerCase()));

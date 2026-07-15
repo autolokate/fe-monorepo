@@ -90,7 +90,9 @@ export function CompareWorkspace({
         <div className="min-w-0 space-y-6">
           <Tabs
             value={tab}
-            onValueChange={(v) => onTabChange(v as CompareTabId)}
+            onValueChange={(v) => {
+              onTabChange(v as CompareTabId);
+            }}
             className="w-full"
           >
             <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1 overflow-x-auto rounded-full border border-border/80 bg-card p-1 shadow-sm sm:flex-nowrap [scrollbar-width:thin]">
@@ -227,7 +229,7 @@ function CompareTableBody({
                 Highlights
               </th>
               {orderedVariants.map((v, vi) => {
-                const variantId = String(v.id ?? ids[vi] ?? '').trim();
+                const variantId = (v.id ?? ids[vi]).trim();
                 const modelRow = variantId ? modelDetailByVariantId[variantId] : undefined;
                 const titleLine = compareTrayTitleLine(v, modelRow) || '—';
                 const subtitle = compareTraySubtitle(v, modelRow);
@@ -236,7 +238,7 @@ function CompareTableBody({
                 const showSubtitle = subtitle && subtitle !== titleLine;
                 return (
                   <th
-                    key={variantId || `col-${vi}`}
+                    key={variantId || `col-${String(vi)}`}
                     className="sticky top-0 z-20 bg-muted px-4 py-4 text-left align-top"
                   >
                     <div className="flex min-h-[8rem] min-w-[10rem] flex-col gap-1.5">
@@ -299,7 +301,7 @@ function CompareTableBody({
                 </td>
                 {row.values.map((cell, ci) => (
                   <td
-                    key={`${row.key}-${ci}`}
+                    key={`${row.key}-${String(ci)}`}
                     className={cn(
                       'relative z-0 px-4 py-3 text-sm leading-relaxed text-foreground',
                       ri % 2 === 0 ? 'bg-card' : 'bg-background',

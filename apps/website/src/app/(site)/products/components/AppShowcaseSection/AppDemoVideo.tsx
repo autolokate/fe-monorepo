@@ -17,7 +17,8 @@ export function AppDemoVideo({ src, poster, label }: AppDemoVideoProps) {
   const handlePlay = () => {
     const video = videoRef.current;
     if (!video) return;
-    video.play();
+    // Gesture/autoplay policies can reject play(); ignore rather than crash.
+    void video.play().catch(() => undefined);
     setIsPlaying(true);
   };
 
@@ -32,9 +33,15 @@ export function AppDemoVideo({ src, poster, label }: AppDemoVideoProps) {
         playsInline
         preload="metadata"
         aria-label={`${label} demo video`}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-      />
+        onPlay={() => {
+          setIsPlaying(true);
+        }}
+        onPause={() => {
+          setIsPlaying(false);
+        }}
+      >
+        <track kind="captions" />
+      </video>
 
       {!isPlaying && (
         <button

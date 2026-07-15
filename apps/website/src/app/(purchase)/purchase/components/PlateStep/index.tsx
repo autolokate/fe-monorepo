@@ -9,12 +9,19 @@ export function PlateStep({ state, plan, update, goTo }: StepProps) {
   const mobileShown = state.mobile.trim() || '98765 43210';
   const canLookup = state.plate.trim().length >= 6;
 
-  const setPlate = (value: string) =>
+  const setPlate = (value: string) => {
     update({ plate: value.toUpperCase().slice(0, 13), rcVerified: false });
+  };
 
   return (
     <div className={styles.wrap}>
-      <button type="button" onClick={() => goTo('scan')} className={styles.back}>
+      <button
+        type="button"
+        onClick={() => {
+          goTo('scan');
+        }}
+        className={styles.back}
+      >
         <ArrowLeft className="h-4 w-4" aria-hidden />
         Back
       </button>
@@ -30,7 +37,9 @@ export function PlateStep({ state, plan, update, goTo }: StepProps) {
           id="plate"
           className={styles.plate}
           value={state.plate}
-          onChange={(e) => setPlate(e.target.value)}
+          onChange={(e) => {
+            setPlate(e.target.value);
+          }}
           placeholder="HR 26 DK 8337"
           autoComplete="off"
         />
@@ -42,7 +51,9 @@ export function PlateStep({ state, plan, update, goTo }: StepProps) {
             variant="primary"
             className={styles.action}
             disabled={!canLookup}
-            onClick={() => update({ rcVerified: true })}
+            onClick={() => {
+              update({ rcVerified: true });
+            }}
           >
             Look up RC on VAHAN
           </AlButton>
@@ -70,7 +81,9 @@ export function PlateStep({ state, plan, update, goTo }: StepProps) {
               radius="lg"
               variant="primary"
               className={styles.action}
-              onClick={() => goTo('contacts')}
+              onClick={() => {
+                goTo('contacts');
+              }}
             >
               Activate {plan.name} — no payment
             </AlButton>

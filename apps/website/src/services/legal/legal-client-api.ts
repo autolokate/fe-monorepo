@@ -26,12 +26,12 @@ export async function getLegalDocument(kind: LegalDocumentKind): Promise<LegalDo
   const res = await PurchaseApi.get<Enveloped<Partial<LegalDocument>>>(
     endpoints.legal.document(kind),
   );
-  const d = res.data?.data ?? {};
+  const d = res.data.data ?? {};
   return {
-    kind: String(d.kind ?? kind),
-    version: String(d.version ?? ''),
-    title: String(d.title ?? ''),
-    body: String(d.body ?? ''),
-    effectiveDate: String(d.effectiveDate ?? ''),
+    kind: d.kind ?? kind,
+    version: d.version ?? '',
+    title: d.title ?? '',
+    body: d.body ?? '',
+    effectiveDate: d.effectiveDate ?? '',
   };
 }

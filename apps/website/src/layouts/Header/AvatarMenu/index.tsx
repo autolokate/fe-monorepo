@@ -21,7 +21,9 @@ interface AvatarMenuProps {
 export function AvatarMenu({ label = 'Account', className }: AvatarMenuProps) {
   const router = useRouter();
   const logout = useLogout({
-    onSuccess: () => router.push('/'),
+    onSuccess: () => {
+      router.push('/');
+    },
   });
 
   function handleSelect(item: AvatarMenuItem) {
@@ -60,7 +62,9 @@ export function AvatarMenu({ label = 'Account', className }: AvatarMenuProps) {
             const row = (
               <DropdownMenu.Item
                 key={item.id}
-                onSelect={() => handleSelect(item)}
+                onSelect={() => {
+                  handleSelect(item);
+                }}
                 className={cn(
                   'flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium outline-none transition-colors',
                   item.tone === 'danger'

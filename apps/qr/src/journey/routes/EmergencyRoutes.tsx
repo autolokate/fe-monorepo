@@ -620,7 +620,7 @@ function E0Route() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [navigate, patchEmergency, refreshContacts]);
 
   const goToManualEntry = useCallback(() => {
     void navigate(emergencyJourneyPaths.contactMobile);

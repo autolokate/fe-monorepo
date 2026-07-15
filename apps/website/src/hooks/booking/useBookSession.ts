@@ -42,7 +42,7 @@ function amountInrFromOrder(parsed: { amountPaise: number }): number {
 
 function newIdempotencyKey(prefix: string): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
-  return `${prefix}-${Date.now()}`;
+  return `${prefix}-${Date.now().toString()}`;
 }
 
 interface OpenCheckoutArgs {
@@ -69,7 +69,8 @@ async function openRazorpayCheckout(args: OpenCheckoutArgs): Promise<void> {
   }
 
   const scriptOk = await ensureRazorpayScript();
-  if (!scriptOk || !window.Razorpay) {
+  const Razorpay = window.Razorpay;
+  if (!scriptOk || !Razorpay) {
     toast.error('Could not load Razorpay. Check your connection.');
     return;
   }
@@ -84,7 +85,7 @@ async function openRazorpayCheckout(args: OpenCheckoutArgs): Promise<void> {
       resolve();
     };
 
-    const rzp = new window.Razorpay!({
+    const rzp = new Razorpay({
       key: publicKey,
       amount: parsed.amountPaise,
       currency: parsed.currency || 'INR',
@@ -92,7 +93,11 @@ async function openRazorpayCheckout(args: OpenCheckoutArgs): Promise<void> {
       description: '15-minute expert session',
       order_id: parsed.razorpayOrderId,
       prefill: { name: name.trim(), contact: phone.trim() },
-      modal: { ondismiss: () => settle() },
+      modal: {
+        ondismiss: () => {
+          settle();
+        },
+      },
       handler: async (response: RazorpayHandlerResponse) => {
         try {
           const verified = await verifyPayment({

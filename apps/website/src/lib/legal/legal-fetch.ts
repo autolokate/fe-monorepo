@@ -44,11 +44,11 @@ export async function fetchLegalDocument(kind: LegalDocumentKind): Promise<Legal
     if (!data || typeof data.body !== 'string') return null;
 
     return {
-      kind: String(data.kind ?? kind),
-      version: String(data.version ?? ''),
-      title: String(data.title ?? ''),
+      kind: data.kind ?? kind,
+      version: data.version ?? '',
+      title: data.title ?? '',
       body: data.body,
-      effectiveDate: String(data.effectiveDate ?? ''),
+      effectiveDate: data.effectiveDate ?? '',
     };
   } catch {
     return null;

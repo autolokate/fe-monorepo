@@ -58,7 +58,9 @@ export function PlansStep({ update }: StepProps) {
                 className={styles.cta}
                 icon={<ArrowRight className="h-4 w-4" aria-hidden />}
                 iconPosition="end"
-                onClick={() => update({ planId: plan.id, step: 'configure' })}
+                onClick={() => {
+                  update({ planId: plan.id, step: 'configure' });
+                }}
               >
                 Choose {plan.name}
               </AlButton>

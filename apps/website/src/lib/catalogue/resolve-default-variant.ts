@@ -30,9 +30,8 @@ export function pickDefaultCatalogueVariant(variants: CatalogueVariant[]): Catal
       price: readNumber(v.ex_showroom_price ?? v.min_price ?? v.price) ?? Number.POSITIVE_INFINITY,
     }))
     .sort((a, b) => a.price - b.price);
-  if (priced[0]?.row) return priced[0].row;
-
-  return variants[0] ?? null;
+  // `priced` is a 1:1 map of the (already non-empty) `variants`, so `priced[0]` always exists.
+  return priced[0].row;
 }
 
 function readBrandSlugFromModel(model: CatalogueModel): string | null {

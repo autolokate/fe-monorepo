@@ -27,7 +27,12 @@ export interface CancelDialogProps {
  */
 export function CancelDialog({ target, onClose, onConfirm, loading }: CancelDialogProps) {
   return (
-    <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={target !== null}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Cancel this booking?</DialogTitle>

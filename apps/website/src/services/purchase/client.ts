@@ -41,7 +41,7 @@ const client = axios.create({
 });
 
 client.interceptors.request.use((config) => {
-  const headers = AxiosHeaders.from(config.headers ?? {});
+  const headers = AxiosHeaders.from(config.headers);
   const token = getPurchaseToken();
   if (token) headers.set('Authorization', `Bearer ${token}`);
   headers.set('ngrok-skip-browser-warning', 'true');
@@ -87,6 +87,9 @@ async function doRefresh(): Promise<string | null> {
       },
     );
 
+    // axios types `res.data` as always-present T, but an empty 2xx body
+    // deserialises to undefined at runtime — guard before reading its fields.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- runtime response.data can be undefined despite the non-null generic
     const body = res.data ?? {};
     const data: RefreshResult = body.data ?? body;
     const accessToken = data.accessToken ?? data.access_token;
@@ -127,18 +130,19 @@ export async function refreshPurchaseSession(): Promise<string | null> {
 
 client.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const config = error?.config as
+  async (error: unknown) => {
+    const axiosError = axios.isAxiosError(error) ? error : undefined;
+    const config = axiosError?.config as
       | (InternalAxiosRequestConfig & { _retried?: boolean })
       | undefined;
-    const status = error?.response?.status;
+    const status = axiosError?.response?.status;
 
     // One shot: on a 401, try a silent refresh and replay the original request.
     if (status === 401 && config && !config._retried && getPurchaseSession()?.refreshToken) {
       config._retried = true;
       const token = await refreshPurchaseSession();
       if (token) {
-        const headers = AxiosHeaders.from(config.headers ?? {});
+        const headers = AxiosHeaders.from(config.headers);
         headers.set('Authorization', `Bearer ${token}`);
         config.headers = headers;
         return client.request(config);

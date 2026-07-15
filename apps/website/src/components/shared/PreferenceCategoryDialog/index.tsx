@@ -55,16 +55,16 @@ export function PreferenceCategoryDialog({
 }: PreferenceCategoryDialogProps) {
   const groupName = useId();
   const [selected, setSelected] = useState<VehicleCategory>(
-    defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0]!.value,
+    defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0].value,
   );
 
   useEffect(() => {
     if (open) {
-      setSelected(defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0]!.value);
+      setSelected(defaultValue ?? VEHICLE_CATEGORY_OPTIONS[0].value);
     }
   }, [open, defaultValue]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(selected);
   };
@@ -104,7 +104,9 @@ export function PreferenceCategoryDialog({
                     name={groupName}
                     value={option.value}
                     checked={active}
-                    onChange={() => setSelected(option.value)}
+                    onChange={() => {
+                      setSelected(option.value);
+                    }}
                     className="sr-only"
                   />
                   <span
@@ -139,7 +141,13 @@ export function PreferenceCategoryDialog({
           </fieldset>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                onOpenChange(false);
+              }}
+            >
               <X className="h-4 w-4" aria-hidden />
               {cancelLabel}
             </Button>

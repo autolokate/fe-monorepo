@@ -41,7 +41,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
     const id = window.setInterval(() => {
       setResendIn((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+    };
   }, [state.otpSent]);
 
   const handleSendOtp = async () => {
@@ -86,7 +88,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
       title="Verify your number"
       subtitle="We'll send a code on WhatsApp (or SMS)"
       backLabel="Back"
-      onBack={() => goTo('configure')}
+      onBack={() => {
+        goTo('configure');
+      }}
     >
       <div className={styles.card}>
         {!state.otpSent ? (
@@ -100,16 +104,17 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               autoComplete="tel-national"
               placeholder="98765 43210"
               helperText="OTP will be sent to this number"
+              // eslint-disable-next-line jsx-a11y/no-autofocus -- sole field on a dedicated verify-number step; focusing it is the expected entry action
               autoFocus
               value={state.mobile}
-              onChange={(e) =>
+              onChange={(e) => {
                 update({
                   mobile: e.target.value
                     .replace(/\D/g, '')
                     .replace(/^0+/, '')
                     .slice(0, MOBILE_LENGTH),
-                })
-              }
+                });
+              }}
             />
 
             <div className={styles.consent}>
@@ -117,15 +122,19 @@ export function LoginStep({ state, update, goTo }: StepProps) {
                 id="purchase-terms"
                 layout="icon-only"
                 label="I agree to the Privacy Policy and Terms"
-                checked={state.accepted ?? false}
-                onChange={(e) => update({ accepted: e.target.checked })}
+                checked={state.accepted}
+                onChange={(e) => {
+                  update({ accepted: e.target.checked });
+                }}
               />
               <p className={styles.consentText}>
                 So Autolokate can keep you safe and run your vehicle services, I agree to the{' '}
                 <button
                   type="button"
                   className={styles.consentLink}
-                  onClick={() => setLegalDoc('PRIVACY_POLICY')}
+                  onClick={() => {
+                    setLegalDoc('PRIVACY_POLICY');
+                  }}
                 >
                   Privacy Policy
                 </button>{' '}
@@ -133,7 +142,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
                 <button
                   type="button"
                   className={styles.consentLink}
-                  onClick={() => setLegalDoc('TERMS')}
+                  onClick={() => {
+                    setLegalDoc('TERMS');
+                  }}
                 >
                   Terms
                 </button>
@@ -154,7 +165,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               variant="primary"
               className={styles.action}
               disabled={!canSendOtp || sendingOtp}
-              onClick={handleSendOtp}
+              onClick={() => {
+                void handleSendOtp();
+              }}
             >
               {sendingOtp ? 'Sending…' : 'Send OTP'}
             </AlButton>
@@ -166,7 +179,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               <button
                 type="button"
                 className={styles.edit}
-                onClick={() => update({ otpSent: false, otp: '' })}
+                onClick={() => {
+                  update({ otpSent: false, otp: '' });
+                }}
                 aria-label="Edit mobile number"
                 title="Edit mobile number"
               >
@@ -177,7 +192,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               label="Enter OTP"
               length={OTP_LENGTH}
               value={state.otp}
-              onChange={(next) => update({ otp: next })}
+              onChange={(next) => {
+                update({ otp: next });
+              }}
             />
             <AlButton
               size="lg"
@@ -185,7 +202,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               variant="primary"
               className={styles.action}
               disabled={!otpOk || submittingOtp}
-              onClick={handleVerify}
+              onClick={() => {
+                void handleVerify();
+              }}
             >
               {submittingOtp ? 'Verifying…' : verified ? 'Try again' : 'Verify & continue'}
             </AlButton>
@@ -200,7 +219,9 @@ export function LoginStep({ state, update, goTo }: StepProps) {
                   <button
                     type="button"
                     className={styles.resendLink}
-                    onClick={handleResend}
+                    onClick={() => {
+                      void handleResend();
+                    }}
                     disabled={sendingOtp}
                   >
                     {sendingOtp ? 'Sending…' : 'Resend'}

@@ -21,8 +21,12 @@ export function HeroAppMockup() {
   const [t, setT] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => setT((s) => (s + 1) % 10), 1000);
-    return () => clearInterval(timer);
+    const timer = setInterval(() => {
+      setT((s) => (s + 1) % 10);
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
   }, []);
 
   let mode: Mode = 'monitor';

@@ -110,7 +110,9 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
               <input
                 type="text"
                 value={brandQuery}
-                onChange={(e) => setBrandQuery(e.target.value)}
+                onChange={(e) => {
+                  setBrandQuery(e.target.value);
+                }}
                 placeholder={copy.searchPlaceholder}
                 aria-label="Filter brands by name"
                 className={cn(
@@ -129,7 +131,7 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
                 </span>{' '}
                 {filteredBrands.length === categoryFilteredBrands.length
                   ? `brand${filteredBrands.length === 1 ? '' : 's'}`
-                  : `of ${categoryFilteredBrands.length} brand${
+                  : `of ${categoryFilteredBrands.length.toString()} brand${
                       categoryFilteredBrands.length === 1 ? '' : 's'
                     }`}
               </span>
@@ -145,7 +147,9 @@ export function BrandsDirectoryPage({ vehicleType }: BrandsDirectoryPageProps) {
             <EmptyState
               title={copy.emptyTitle}
               query={brandQuery.trim()}
-              onClear={() => setBrandQuery('')}
+              onClear={() => {
+                setBrandQuery('');
+              }}
             />
           ) : (
             <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">

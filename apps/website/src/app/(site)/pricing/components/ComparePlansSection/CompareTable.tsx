@@ -98,7 +98,9 @@ export function CompareTable() {
         type="button"
         className={styles.toggle}
         aria-expanded={expanded}
-        onClick={() => setExpanded((v) => !v)}
+        onClick={() => {
+          setExpanded((v) => !v);
+        }}
       >
         {expanded ? COMPARE_COPY.expandedLabel : COMPARE_COPY.collapsedLabel}
         <ChevronDown

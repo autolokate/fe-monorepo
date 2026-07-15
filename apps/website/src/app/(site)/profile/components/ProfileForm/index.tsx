@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -144,9 +144,8 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
   function clearError(key: ProfileFieldKey) {
     setErrors((prev) => {
       if (!prev[key]) return prev;
-      const cp = { ...prev };
-      delete cp[key];
-      return cp;
+      const { [key]: _removed, ...rest } = prev;
+      return rest;
     });
   }
 
@@ -155,13 +154,14 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     const checked = validateProfileForm(form);
     if (!checked.ok) {
       setErrors(checked.errors);
+      // `ok` is false only when `errors` is non-empty, so there's always a message.
       const first = Object.values(checked.errors)[0];
-      toast.error(first ?? 'Check the highlighted fields.');
+      toast.error(first);
       return;
     }
     setErrors({});
@@ -233,7 +233,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                 <button
                   key={id}
                   type="button"
-                  onClick={() => scrollToSection(id)}
+                  onClick={() => {
+                    scrollToSection(id);
+                  }}
                   className={cn(
                     'flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm transition',
                     active
@@ -307,7 +309,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                         errors.full_name && FIELD_ERROR_BORDER,
                       )}
                       value={form.full_name}
-                      onChange={(e) => patch('full_name', e.target.value)}
+                      onChange={(e) => {
+                        patch('full_name', e.target.value);
+                      }}
                     />
                   </div>
                 </Field>
@@ -334,7 +338,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                         errors.phone && FIELD_ERROR_BORDER,
                       )}
                       value={form.phone}
-                      onChange={(e) => patch('phone', e.target.value)}
+                      onChange={(e) => {
+                        patch('phone', e.target.value);
+                      }}
                     />
                   </div>
                 </Field>
@@ -371,7 +377,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                         errors.city_id && FIELD_ERROR_BORDER,
                       )}
                       value={form.city_id}
-                      onChange={(e) => patch('city_id', e.target.value)}
+                      onChange={(e) => {
+                        patch('city_id', e.target.value);
+                      }}
                     />
                   </div>
                 </Field>
@@ -412,7 +420,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                   <InrAmountInput
                     id="budget_min"
                     value={form.budget_min}
-                    onChange={(v) => patch('budget_min', v)}
+                    onChange={(v) => {
+                      patch('budget_min', v);
+                    }}
                     disabled={saving}
                     hasError={Boolean(errors.budget_min)}
                   />
@@ -421,7 +431,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                   <InrAmountInput
                     id="budget_max"
                     value={form.budget_max}
-                    onChange={(v) => patch('budget_max', v)}
+                    onChange={(v) => {
+                      patch('budget_max', v);
+                    }}
                     disabled={saving}
                     hasError={Boolean(errors.budget_max)}
                   />
@@ -444,7 +456,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                     id="preferred_fuel_types"
                     placeholder="Add fuel (e.g. cng, diesel) — press Enter"
                     value={form.preferred_fuel_types}
-                    onChange={(v) => patch('preferred_fuel_types', v)}
+                    onChange={(v) => {
+                      patch('preferred_fuel_types', v);
+                    }}
                     disabled={saving}
                     hasError={Boolean(errors.preferred_fuel_types)}
                     aria-invalid={Boolean(errors.preferred_fuel_types)}
@@ -461,7 +475,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                     id="preferred_body_types"
                     placeholder="Add style (e.g. suv, hatchback) — press Enter"
                     value={form.preferred_body_types}
-                    onChange={(v) => patch('preferred_body_types', v)}
+                    onChange={(v) => {
+                      patch('preferred_body_types', v);
+                    }}
                     disabled={saving}
                     hasError={Boolean(errors.preferred_body_types)}
                     aria-invalid={Boolean(errors.preferred_body_types)}
@@ -480,7 +496,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                 variant="ghost"
                 className="h-11 text-muted-foreground hover:text-foreground"
                 disabled={saving}
-                onClick={() => router.push('/')}
+                onClick={() => {
+                  router.push('/');
+                }}
               >
                 <X className="h-4 w-4" aria-hidden />
                 Cancel
@@ -578,9 +596,15 @@ function InrAmountInput({
         placeholder="e.g. 5,00,000"
         className={cn('h-11 pl-10 text-[0.9375rem]', hasError && FIELD_ERROR_BORDER)}
         value={display}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onChange={(e) => onChange(e.target.value.replace(/\D/g, ''))}
+        onFocus={() => {
+          setFocused(true);
+        }}
+        onBlur={() => {
+          setFocused(false);
+        }}
+        onChange={(e) => {
+          onChange(e.target.value.replace(/\D/g, ''));
+        }}
       />
     </div>
   );

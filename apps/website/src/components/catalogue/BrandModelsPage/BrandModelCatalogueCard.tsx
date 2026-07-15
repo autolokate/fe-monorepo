@@ -33,7 +33,7 @@ export function BrandModelCatalogueCard({
   pageBrandSlug: string;
   displayFallback: string;
 }) {
-  const anchor = model.slug || model.model_slug || `model-${idx}`;
+  const anchor = model.slug || model.model_slug || `model-${idx.toString()}`;
   const safeHash = encodeURIComponent(anchor).replace(/%/g, '');
   const brandResolve = brandLabelForModel(model, displayFallback);
   const brandEyebrow = brandResolve.toUpperCase();

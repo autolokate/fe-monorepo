@@ -36,10 +36,14 @@ interface HeaderProps {
 function useScrolled(threshold = 8) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > threshold);
+    const onScroll = () => {
+      setScrolled(window.scrollY > threshold);
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
   }, [threshold]);
   return scrolled;
 }
@@ -72,7 +76,9 @@ export function Header({ variant = 'default', overDarkHero = false, className }:
   const logoTone: 'auto' | 'on-dark' = showDarkHeroStyle ? 'on-dark' : 'auto';
   const authed = useIsAuthenticated();
   const logout = useLogout({
-    onSuccess: () => router.push('/'),
+    onSuccess: () => {
+      router.push('/');
+    },
   });
 
   const DownloadIcon = downloadAppCta.icon;
@@ -148,7 +154,9 @@ export function Header({ variant = 'default', overDarkHero = false, className }:
             radius="pill"
             variant="primary"
             icon={<DownloadIcon className="h-4 w-4" aria-hidden />}
-            onClick={() => router.push(downloadAppCta.href)}
+            onClick={() => {
+              router.push(downloadAppCta.href);
+            }}
           >
             {downloadAppCta.label}
           </AlButton>
@@ -180,7 +188,9 @@ export function Header({ variant = 'default', overDarkHero = false, className }:
             style={onDarkSurfaceStyle}
             aria-expanded={open}
             aria-controls="header-mobile-menu"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => {
+              setOpen((v) => !v);
+            }}
           />
         </div>
       </div>
@@ -194,7 +204,9 @@ export function Header({ variant = 'default', overDarkHero = false, className }:
             type="button"
             aria-label="Close menu"
             className="absolute inset-0 bg-black/50"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+            }}
           />
           <div
             id="header-mobile-menu"
@@ -226,7 +238,9 @@ export function Header({ variant = 'default', overDarkHero = false, className }:
                     target={item.external ? '_blank' : undefined}
                     rel={item.external ? 'noreferrer noopener' : undefined}
                     aria-current={active ? 'page' : undefined}
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      setOpen(false);
+                    }}
                     className={cn(
                       'touch-target rounded-xl px-4 py-3 text-sm font-medium transition',
                       'text-foreground/85 hover:bg-foreground/5 hover:text-foreground',
@@ -262,7 +276,9 @@ export function Header({ variant = 'default', overDarkHero = false, className }:
                       <Link
                         key={item.id}
                         href={item.href}
-                        onClick={() => setOpen(false)}
+                        onClick={() => {
+                          setOpen(false);
+                        }}
                         className={rowClass}
                       >
                         <Icon className="h-4 w-4 shrink-0" aria-hidden />

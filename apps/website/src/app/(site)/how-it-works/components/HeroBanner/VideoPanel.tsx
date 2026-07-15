@@ -78,7 +78,7 @@ export function VideoPanel({ video, playing, onPlay }: VideoPanelProps) {
           <span className={styles.scrubber}>
             <span
               className={styles.scrubberFill}
-              style={{ width: `${Math.round(video.progress * 100)}%` }}
+              style={{ width: `${String(Math.round(video.progress * 100))}%` }}
             />
           </span>
 

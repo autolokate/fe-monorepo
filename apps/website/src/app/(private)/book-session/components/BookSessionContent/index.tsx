@@ -107,7 +107,9 @@ export function BookSessionContent() {
 
       <CancelDialog
         target={cancelTarget}
-        onClose={() => setCancelTarget(null)}
+        onClose={() => {
+          setCancelTarget(null);
+        }}
         onConfirm={handleConfirmCancel}
         loading={cancelMutation.isLoading}
       />

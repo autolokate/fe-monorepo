@@ -15,7 +15,9 @@ export function QrCta() {
       variant="primary"
       className="mt-8"
       icon={<QrCode className="h-4 w-4" aria-hidden />}
-      onClick={() => router.push(QR_SECTION_COPY.primaryCta.href)}
+      onClick={() => {
+        router.push(QR_SECTION_COPY.primaryCta.href);
+      }}
     >
       {QR_SECTION_COPY.primaryCta.label}
     </AlButton>

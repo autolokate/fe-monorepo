@@ -15,9 +15,7 @@ import {
 
 function isEvVariant(v: CatalogueVariant | undefined): boolean {
   if (!v) return false;
-  const raw = String(v.fuel_type ?? '')
-    .trim()
-    .toLowerCase();
+  const raw = (v.fuel_type ?? '').trim().toLowerCase();
   if (!raw) return false;
   return raw.includes('electric') || raw.includes('ev') || raw === 'ev' || raw.includes('battery');
 }
@@ -68,10 +66,17 @@ export function CompareSlots({
               variant={variantsById.get(variantId)}
               modelDetail={modelDetailByVariantId[variantId]}
               showBest={bestValueId === variantId}
-              onRemove={() => onRemove(variantId)}
+              onRemove={() => {
+                onRemove(variantId);
+              }}
             />
           ) : (
-            <EmptySlotCard slotIndex={idx} onClick={() => onRequestAdd(idx)} />
+            <EmptySlotCard
+              slotIndex={idx}
+              onClick={() => {
+                onRequestAdd(idx);
+              }}
+            />
           )}
         </div>
       ))}

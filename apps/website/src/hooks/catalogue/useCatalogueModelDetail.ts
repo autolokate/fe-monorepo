@@ -11,8 +11,8 @@ export function useCatalogueModelDetail(
   options: { enabled?: boolean } = {},
 ) {
   const { enabled = true } = options;
-  const b = String(brandSlug ?? '').trim();
-  const m = String(modelSlug ?? '').trim();
+  const b = (brandSlug ?? '').trim();
+  const m = (modelSlug ?? '').trim();
   const canRun = Boolean(enabled && b && m);
 
   return useApiQuery<CatalogueModelDetailPayload>(

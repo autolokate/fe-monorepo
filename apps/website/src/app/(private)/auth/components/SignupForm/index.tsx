@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Send, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,7 @@ export function SignupForm() {
     },
   });
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmedName = name.trim();
     const clean = normalizePhoneDigits(digits);
@@ -78,7 +78,9 @@ export function SignupForm() {
             placeholder="Your name"
             autoComplete="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
             disabled={requestOtp.isLoading}
             className={FIELD}
           />

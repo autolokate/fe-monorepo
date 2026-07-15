@@ -13,6 +13,7 @@
 // e.g. the CI `pnpm build` compile check — still succeeds without silently baking a stale URL.
 export const env = {
   // Node environment
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- NODE_ENV is typed as a required union but can be undefined at runtime (e.g. plain `node`); keep the default
   NODE_ENV: process.env.NODE_ENV || 'development',
 
   // API Configuration

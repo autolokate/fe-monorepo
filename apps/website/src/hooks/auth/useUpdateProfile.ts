@@ -27,7 +27,7 @@ export function useUpdateProfile(options?: UseApiMutationOptions<AuthUser, Updat
     // category field — otherwise the server may return the previous value
     // unchanged and we'd needlessly re-write the same key.
     if (Object.prototype.hasOwnProperty.call(payload, 'preferred_vehicle_category')) {
-      applyApiVehicleCategoryToStorage(user?.preferred_vehicle_category);
+      applyApiVehicleCategoryToStorage(user.preferred_vehicle_category);
     }
     return user;
   }, []);

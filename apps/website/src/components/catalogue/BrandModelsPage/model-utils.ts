@@ -18,8 +18,8 @@ export function humanizeSegment(raw: string): string {
 }
 
 export function primaryModelKey(model: CatalogueModel): string {
-  const key = model.id ?? model.slug ?? model.model_slug ?? model.model_name ?? '';
-  return String(key || 'model');
+  const key = model.id ?? model.slug;
+  return key || 'model';
 }
 
 /** Aligns with Autolokate `CarsPageApi` grid card pricing. */
@@ -41,27 +41,27 @@ export function formatModelPriceBlock(model: CatalogueModel): {
 }
 
 export function brandLabelForModel(model: CatalogueModel, fallback: string): string {
-  const direct = String(model.brand_name ?? '').trim();
+  const direct = (model.brand_name ?? '').trim();
   if (direct) return direct;
   const b = model.brand;
   if (b && typeof b === 'object' && typeof (b as Record<string, unknown>).name === 'string') {
-    const n = String((b as { name?: string }).name ?? '').trim();
+    const n = ((b as { name?: string }).name ?? '').trim();
     if (n) return n;
   }
   return fallback;
 }
 
 export function modelLabelFor(model: CatalogueModel): string {
-  return String(model.model_name ?? model.name ?? '').trim() || 'Model';
+  return model.model_name.trim() || 'Model';
 }
 
 export function buildModelMetaLine(model: CatalogueModel): string {
-  const bodyRaw = String(model.body_type ?? '').trim();
+  const bodyRaw = (model.body_type ?? '').trim();
   const body = bodyRaw ? humanizeSegment(bodyRaw) : '';
 
   const fuelParts =
     Array.isArray(model.fuel_types) && model.fuel_types.length
-      ? model.fuel_types.map((f) => humanizeSegment(String(f)))
+      ? model.fuel_types.map((f) => humanizeSegment(f))
       : [];
   const primaryFuel =
     typeof model.fuel_type === 'string' && model.fuel_type.trim()
@@ -69,7 +69,7 @@ export function buildModelMetaLine(model: CatalogueModel): string {
       : '';
   const fuelLabel = fuelParts.length ? fuelParts.join(' · ') : primaryFuel || '';
 
-  const launchYearRaw = model.launch_year as unknown;
+  const launchYearRaw = model.launch_year;
   const launchYear =
     typeof launchYearRaw === 'number' && launchYearRaw > 1900 ? launchYearRaw : null;
 
@@ -95,10 +95,10 @@ export function buildModelMetaLine(model: CatalogueModel): string {
   return [
     body || null,
     fuelLabel && fuelLabel !== '—' ? fuelLabel : null,
-    launchYear != null ? `Since ${launchYear}` : null,
+    launchYear != null ? `Since ${launchYear.toString()}` : null,
     vehicleCat,
     country,
-    variants != null ? `${variants} variants` : null,
+    variants != null ? `${variants.toString()} variants` : null,
     discontinued ? 'Discontinued' : null,
   ]
     .filter(Boolean)
@@ -110,8 +110,8 @@ export function detailsHrefForModel(
   pageBrandSlug: string,
   model: CatalogueModel,
 ): string {
-  const modelSlug = String(model.slug ?? model.model_slug ?? '').trim();
-  const brandSlug = String(model.brand_slug ?? '').trim() || pageBrandSlug;
+  const modelSlug = model.slug.trim();
+  const brandSlug = (model.brand_slug ?? '').trim() || pageBrandSlug;
   if (!modelSlug) return `/${vehicleType}/${encodeURIComponent(pageBrandSlug)}`;
   return `/${vehicleType}/${encodeURIComponent(brandSlug)}/${encodeURIComponent(modelSlug)}`;
 }
@@ -124,9 +124,7 @@ export function modelSearchBlob(
 ): string {
   const b = brandLabelForModel(model, displayFallback);
   const m = modelLabelFor(model);
-  return `${b} ${m} ${String(model.slug ?? '')} ${String(model.brand_slug ?? '')} ${pageBrandSlug}`
-    .toLowerCase()
-    .trim();
+  return `${b} ${m} ${model.slug} ${model.brand_slug ?? ''} ${pageBrandSlug}`.toLowerCase().trim();
 }
 
 export function sortModelLabelKey(model: CatalogueModel, displayFallback: string): string {

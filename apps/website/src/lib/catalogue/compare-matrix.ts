@@ -83,12 +83,12 @@ function labelForKey(key: string, taxonomy: TaxonomyBundle | undefined): string 
   if (!taxonomy) return humanizeKey(key);
 
   for (const s of taxonomy.specs) {
-    if (s.canonical_key?.toLowerCase() === lower) {
+    if (s.canonical_key.toLowerCase() === lower) {
       return s.display_name || humanizeKey(key);
     }
   }
   for (const f of taxonomy.features) {
-    if (f.canonical_key?.toLowerCase() === lower) {
+    if (f.canonical_key.toLowerCase() === lower) {
       return f.display_name || humanizeKey(key);
     }
   }
@@ -98,15 +98,15 @@ function labelForKey(key: string, taxonomy: TaxonomyBundle | undefined): string 
 function specGroupForKey(key: string, taxonomy: TaxonomyBundle | undefined): string | null {
   const lower = key.toLowerCase();
   if (!taxonomy) return null;
-  const row = taxonomy.specs.find((s) => s.canonical_key?.toLowerCase() === lower);
-  return row?.spec_group?.toLowerCase() ?? null;
+  const row = taxonomy.specs.find((s) => s.canonical_key.toLowerCase() === lower);
+  return row?.spec_group.toLowerCase() ?? null;
 }
 
 function featureGroupForKey(key: string, taxonomy: TaxonomyBundle | undefined): string | null {
   const lower = key.toLowerCase();
   if (!taxonomy) return null;
-  const row = taxonomy.features.find((f) => f.canonical_key?.toLowerCase() === lower);
-  return row?.feature_group?.toLowerCase() ?? null;
+  const row = taxonomy.features.find((f) => f.canonical_key.toLowerCase() === lower);
+  return row?.feature_group.toLowerCase() ?? null;
 }
 
 function collectScalarKeys(variants: CatalogueVariant[]): Set<string> {
@@ -148,8 +148,10 @@ export function flattenNestedFeatureRows(variants: CatalogueVariant[]): CompareM
     if (!feats || typeof feats !== 'object') return;
 
     for (const [group, bucket] of Object.entries(feats)) {
+      // Runtime guard: the typed inner value is a non-null object, but API JSON can hand us null.
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- loosely-typed API bucket may be null at runtime
       if (!bucket || typeof bucket !== 'object') continue;
-      for (const [subKey, raw] of Object.entries(bucket as Record<string, unknown>)) {
+      for (const [subKey, raw] of Object.entries(bucket)) {
         const label = `${humanizeKey(group)} · ${humanizeKey(subKey)}`;
         const cell =
           typeof raw === 'boolean'
@@ -158,15 +160,13 @@ export function flattenNestedFeatureRows(variants: CatalogueVariant[]): CompareM
               : 'No'
             : typeof raw === 'object'
               ? JSON.stringify(raw)
-              : String(raw ?? '—');
+              : String((raw as string | number | bigint | symbol | undefined) ?? '—');
 
-        if (!labelToValues.has(label)) {
-          labelToValues.set(
-            label,
-            Array.from({ length: variants.length }, () => '—'),
-          );
+        let arr = labelToValues.get(label);
+        if (!arr) {
+          arr = Array.from({ length: variants.length }, () => '—');
+          labelToValues.set(label, arr);
         }
-        const arr = labelToValues.get(label)!;
         arr[vi] = cell;
       }
     }
@@ -215,7 +215,7 @@ export function buildCompareRowsForTab(
       const kl = k.toLowerCase();
       if (overviewSet.has(kl)) return false;
       if (SAFETY_KEY_RE.test(kl)) return false;
-      if (taxonomy?.features.some((f) => f.canonical_key?.toLowerCase() === kl)) return false;
+      if (taxonomy?.features.some((f) => f.canonical_key.toLowerCase() === kl)) return false;
       const fg = featureGroupForKey(k, taxonomy);
       if (fg?.includes('safety')) return false;
       return true;
@@ -228,34 +228,31 @@ export function buildCompareRowsForTab(
     const featKeys = [...keys].filter((k) => {
       const kl = k.toLowerCase();
       if (SAFETY_KEY_RE.test(kl)) return false;
-      return taxonomy?.features.some((f) => f.canonical_key?.toLowerCase() === kl) === true;
+      return taxonomy?.features.some((f) => f.canonical_key.toLowerCase() === kl) === true;
     });
     featKeys.sort((a, b) => labelForKey(a, taxonomy).localeCompare(labelForKey(b, taxonomy)));
     const flatRows = featKeys.map((k) => rowFromKey(k, variants, taxonomy));
     return [...flatRows, ...nestedFeatures];
   }
 
-  if (tab === 'safety') {
-    const safetyKeys = [...keys].filter((k) => {
-      const kl = k.toLowerCase();
-      if (SAFETY_KEY_RE.test(kl)) return true;
-      const sg = specGroupForKey(k, taxonomy);
-      const fg = featureGroupForKey(k, taxonomy);
-      return Boolean(sg?.includes('safety') || fg?.includes('safety'));
-    });
-    safetyKeys.sort((a, b) => labelForKey(a, taxonomy).localeCompare(labelForKey(b, taxonomy)));
-    return safetyKeys.map((k) => rowFromKey(k, variants, taxonomy));
-  }
-
-  return [];
+  // Remaining CompareTabId is 'safety' (overview/specs/features returned above).
+  const safetyKeys = [...keys].filter((k) => {
+    const kl = k.toLowerCase();
+    if (SAFETY_KEY_RE.test(kl)) return true;
+    const sg = specGroupForKey(k, taxonomy);
+    const fg = featureGroupForKey(k, taxonomy);
+    return Boolean(sg?.includes('safety') || fg?.includes('safety'));
+  });
+  safetyKeys.sort((a, b) => labelForKey(a, taxonomy).localeCompare(labelForKey(b, taxonomy)));
+  return safetyKeys.map((k) => rowFromKey(k, variants, taxonomy));
 }
 
 export function variantDetailHref(
   v: CatalogueVariant,
   vehicleCategory: VehicleCategory,
 ): string | null {
-  const brand = String(v.brand_slug ?? '').trim();
-  const model = String(v.model_slug ?? '').trim();
+  const brand = (v.brand_slug ?? '').trim();
+  const model = (v.model_slug ?? '').trim();
   if (!brand || !model) return null;
   return `/${vehicleCategory}/${encodeURIComponent(brand)}/${encodeURIComponent(model)}`;
 }

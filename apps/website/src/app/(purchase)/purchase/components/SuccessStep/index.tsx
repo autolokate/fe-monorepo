@@ -44,7 +44,14 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
           Order <b className={styles.mono}>{orderRef}</b> couldn&apos;t be paid. No money was taken
           — you can try again.
         </p>
-        <AlButton size="lg" radius="lg" variant="primary" onClick={() => goTo('summary')}>
+        <AlButton
+          size="lg"
+          radius="lg"
+          variant="primary"
+          onClick={() => {
+            goTo('summary');
+          }}
+        >
           Back to payment
         </AlButton>
       </div>
@@ -126,7 +133,13 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
         <span className={styles.store}> App Store</span>
       </div>
 
-      <button type="button" className={styles.track} onClick={() => goTo('tracking')}>
+      <button
+        type="button"
+        className={styles.track}
+        onClick={() => {
+          goTo('tracking');
+        }}
+      >
         Track your shipment
         <ArrowRight className="h-4 w-4" aria-hidden />
       </button>

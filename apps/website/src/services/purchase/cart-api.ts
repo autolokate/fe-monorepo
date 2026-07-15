@@ -22,7 +22,7 @@ export async function createCart(payload: CreateCartPayload): Promise<Cart> {
   if (payload.promoCode?.trim()) body.promoCode = payload.promoCode.trim();
 
   const res = await PurchaseApi.post<Enveloped<Cart>>(endpoints.cart.create, body);
-  const cart = res.data?.data;
+  const cart = res.data.data;
   if (!cart?.cartId) throw new ApiError('Invalid cart response', 0, res.data);
   return cart;
 }
@@ -40,7 +40,7 @@ export async function updateCart(payload: UpdateCartPayload): Promise<Cart> {
   if (payload.registration?.trim()) body.registration = payload.registration.trim();
 
   const res = await PurchaseApi.patch<Enveloped<Cart>>(endpoints.cart.update(payload.cartId), body);
-  const cart = res.data?.data;
+  const cart = res.data.data;
   if (!cart) throw new ApiError('Invalid cart response', 0, res.data);
   // Fall back to the id we patched in case the backend doesn't echo it.
   return { ...cart, cartId: cart.cartId || payload.cartId };

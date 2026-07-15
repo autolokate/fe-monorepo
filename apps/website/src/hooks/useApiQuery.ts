@@ -76,7 +76,6 @@ export function useApiQuery<TData>(
   useEffect(() => {
     if (!enabled) return;
     void run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, ...deps]);
 
   return {

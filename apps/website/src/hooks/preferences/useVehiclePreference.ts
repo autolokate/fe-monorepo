@@ -30,7 +30,9 @@ export function useVehiclePreference(): UseVehiclePreferenceResult {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const read = () => setValue(readVehiclePreference());
+    const read = () => {
+      setValue(readVehiclePreference());
+    };
     read();
     setHydrated(true);
     return subscribeVehiclePreference(read);

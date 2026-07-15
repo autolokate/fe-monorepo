@@ -72,7 +72,7 @@ export function BrandCatalogueHero({
                 <div className="flex h-full items-end justify-center gap-3 lg:justify-end">
                   {bannerImages.map((img, i) => (
                     <div
-                      key={`${img.url}-${i}`}
+                      key={`${img.url}-${i.toString()}`}
                       className={cn(
                         'relative shrink-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-lg ring-1 ring-black/[0.06]',
                         'transition-transform duration-300 dark:ring-white/10',

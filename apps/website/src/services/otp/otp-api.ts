@@ -60,7 +60,7 @@ export async function verifyPurchaseOtp(payload: VerifyOtpPayload): Promise<Veri
     baseURL: OTP_API_BASE_URL,
     headers: { 'ngrok-skip-browser-warning': 'true' },
   });
-  const data = res.data?.data;
+  const data = res.data.data;
   if (!data?.accessToken) throw new ApiError('Invalid verify OTP response', 0, res.data);
 
   setPurchaseSession({

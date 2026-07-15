@@ -51,17 +51,16 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
   // Prefill from user once it lands; never overwrite a value the user has typed.
   useEffect(() => {
     if (!user) return;
-    setName((prev) => prev.trim() || (user.full_name ? String(user.full_name) : ''));
-    setPhone((prev) => prev.trim() || (user.phone ? String(user.phone) : ''));
+    setName((prev) => prev.trim() || (user.full_name ? user.full_name : ''));
+    setPhone((prev) => prev.trim() || (user.phone ? user.phone : ''));
   }, [user]);
 
-  const effectiveName = name.trim() || (user?.full_name ? String(user.full_name) : '');
-  const effectivePhone = phone.trim() || (user?.phone ? String(user.phone) : '');
+  const effectiveName = name.trim() || (user?.full_name ? user.full_name : '');
+  const effectivePhone = phone.trim() || (user?.phone ? user.phone : '');
   const phoneDigits = digitsOnly(phone).length;
 
-  const contactReady = Boolean(
-    authed === true && effectiveName.length > 0 && digitsOnly(effectivePhone).length >= 10,
-  );
+  const contactReady =
+    authed === true && effectiveName.length > 0 && digitsOnly(effectivePhone).length >= 10;
   const ready = Boolean(contactReady && date && selectedSlot);
 
   const inputCls = cn(INPUT_BASE, INPUT_LIGHT);
@@ -145,7 +144,9 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
               id="bs-name"
               placeholder="Name on ID"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
               className={inputCls}
               autoComplete="name"
               disabled={authed !== true}
@@ -161,7 +162,9 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
               inputMode="numeric"
               placeholder="10-digit number"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+              }}
               className={inputCls}
               autoComplete="tel"
               disabled={authed !== true}
@@ -227,12 +230,14 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
               {slotsQuery.slots.map((slot) => {
                 const active =
                   selectedSlot?.slotStartTime === slot.slotStartTime &&
-                  selectedSlot?.slotEndTime === slot.slotEndTime;
+                  selectedSlot.slotEndTime === slot.slotEndTime;
                 return (
                   <button
                     key={`${slot.slotStartTime}|${slot.slotEndTime}`}
                     type="button"
-                    onClick={() => setSelectedSlot(slot)}
+                    onClick={() => {
+                      setSelectedSlot(slot);
+                    }}
                     className={cn(
                       'min-h-10 rounded-lg border px-1.5 py-2 text-center text-xs font-semibold leading-tight transition-all',
                       active
@@ -256,7 +261,9 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
           variant="default"
           className="h-11 w-full gap-2 text-sm font-semibold"
           disabled={!ready || paying || authed !== true}
-          onClick={handlePay}
+          onClick={() => {
+            void handlePay();
+          }}
         >
           {paying ? (
             <>

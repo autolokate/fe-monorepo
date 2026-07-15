@@ -85,7 +85,9 @@ export function CommaTagInput({
               type="button"
               disabled={disabled}
               className="inline-flex shrink-0 rounded p-0.5 text-muted-foreground hover:bg-background/80 hover:text-foreground disabled:pointer-events-none"
-              onClick={() => remove(tag)}
+              onClick={() => {
+                remove(tag);
+              }}
               aria-label={`Remove ${tag}`}
             >
               <X className="h-3 w-3" aria-hidden />
@@ -100,14 +102,16 @@ export function CommaTagInput({
           aria-invalid={ariaInvalid}
           className="h-8 min-h-8 min-w-[8rem] flex-1 self-center border-0 bg-transparent px-0.5 py-1 align-middle text-sm leading-none shadow-none focus-visible:ring-0 disabled:opacity-60"
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          onChange={(e) => {
+            setDraft(e.target.value);
+          }}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ',') {
               e.preventDefault();
               addFromDraft();
             }
             if (e.key === 'Backspace' && !draft && tags.length > 0) {
-              remove(tags[tags.length - 1]!);
+              remove(tags[tags.length - 1]);
             }
           }}
           onBlur={() => {

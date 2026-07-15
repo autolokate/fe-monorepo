@@ -4,6 +4,17 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return v !== null && typeof v === 'object' && !Array.isArray(v);
 }
 
+/**
+ * Coerce a loosely-typed catalogue field to a string. Strings pass through and
+ * numbers stringify; objects/arrays/nullish collapse to `''` (so a nested object
+ * never leaks as `[object Object]`).
+ */
+export function toStr(v: unknown): string {
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return String(v);
+  return '';
+}
+
 export function readArray<T>(value: unknown): T[] {
   if (Array.isArray(value)) return value as T[];
   if (!isRecord(value)) return [];
@@ -19,6 +30,7 @@ export function readObject(value: unknown): Record<string, unknown> {
 }
 
 /** Unwrap a `{ success, data }` envelope, returning the inner value. */
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters -- T is load-bearing: callers (e.g. prices-api) rely on contextual inference of the return type; this is the documented unbox<T>() cast contract, and dropping the generic would break call sites outside this file.
 export function unbox<T>(payload: unknown): T {
   if (isRecord(payload) && 'data' in payload) {
     return (payload.data ?? null) as T;
@@ -28,8 +40,8 @@ export function unbox<T>(payload: unknown): T {
 
 export function normalizeBrand(raw: unknown): CatalogueBrand {
   const row = readObject(raw);
-  const name = String(row.name ?? row.brand_name ?? row.title ?? '').trim();
-  const slug = String(row.slug ?? row.brand_slug ?? '').trim();
+  const name = toStr(row.name ?? row.brand_name ?? row.title).trim();
+  const slug = toStr(row.slug ?? row.brand_slug).trim();
   return {
     ...row,
     name,
@@ -47,10 +59,10 @@ export function normalizeBrand(raw: unknown): CatalogueBrand {
 export function normalizeModel(raw: unknown): CatalogueModel {
   const row = readObject(raw);
   const brand = readObject(row.brand);
-  const brandName = String(row.brand_name ?? brand.name ?? '').trim();
-  const brandSlug = String(row.brand_slug ?? brand.slug ?? '').trim();
-  const modelName = String(row.model_name ?? row.name ?? '').trim();
-  const modelSlug = String(row.model_slug ?? row.slug ?? '').trim();
+  const brandName = toStr(row.brand_name ?? brand.name).trim();
+  const brandSlug = toStr(row.brand_slug ?? brand.slug).trim();
+  const modelName = toStr(row.model_name ?? row.name).trim();
+  const modelSlug = toStr(row.model_slug ?? row.slug).trim();
   const fuelTypes = Array.isArray(row.fuel_types)
     ? (row.fuel_types as unknown[]).map((f) => String(f))
     : [];
@@ -94,18 +106,16 @@ function numericOrNull(v: unknown): number | null {
 
 export function normalizeVariant(raw: unknown): CatalogueVariant {
   const row = readObject(raw);
-  const brand = readObject(row.brand);
-  const model = readObject(row.model);
   const price = readObject(row.price);
   const exShowroom = row.ex_showroom_price ?? row.price ?? row.min_price ?? price.ex_showroom_price;
   return {
     ...row,
-    variant_name: String(row.variant_name ?? row.name ?? ''),
-    brand_slug: row.brand_slug != null ? String(row.brand_slug ?? brand.slug ?? '') : undefined,
-    brand_name: row.brand_name != null ? String(row.brand_name ?? brand.name ?? '') : undefined,
-    model_slug: row.model_slug != null ? String(row.model_slug ?? model.slug ?? '') : undefined,
-    model_name: row.model_name != null ? String(row.model_name ?? model.name ?? '') : undefined,
-    fuel_type: row.fuel_type != null ? String(row.fuel_type ?? row.fuel ?? '') : undefined,
+    variant_name: toStr(row.variant_name ?? row.name),
+    brand_slug: row.brand_slug != null ? toStr(row.brand_slug) : undefined,
+    brand_name: row.brand_name != null ? toStr(row.brand_name) : undefined,
+    model_slug: row.model_slug != null ? toStr(row.model_slug) : undefined,
+    model_name: row.model_name != null ? toStr(row.model_name) : undefined,
+    fuel_type: row.fuel_type != null ? toStr(row.fuel_type) : undefined,
     ex_showroom_price: numericOrNull(exShowroom),
     min_price: numericOrNull(row.min_price ?? exShowroom),
     max_price: numericOrNull(row.max_price ?? exShowroom),
@@ -116,7 +126,7 @@ export function normalizeVariant(raw: unknown): CatalogueVariant {
 export function dedupeBrandNames(rows: CatalogueBrand[]): string[] {
   const set = new Set<string>();
   for (const r of rows) {
-    const n = r.brand_name?.trim();
+    const n = r.brand_name.trim();
     if (n) set.add(n);
   }
   return Array.from(set);

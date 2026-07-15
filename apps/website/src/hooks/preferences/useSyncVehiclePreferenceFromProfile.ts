@@ -45,7 +45,7 @@ export function useSyncVehiclePreferenceFromProfile(): void {
         try {
           const user = await fetchCurrentUser();
           if (cancelled) return;
-          applyApiVehicleCategoryToStorage(user?.preferred_vehicle_category);
+          applyApiVehicleCategoryToStorage(user.preferred_vehicle_category);
         } catch {
           // Best-effort sync — failures are swallowed so a hiccup on
           // /v1/auth/me never bubbles up as a user-visible error. The next

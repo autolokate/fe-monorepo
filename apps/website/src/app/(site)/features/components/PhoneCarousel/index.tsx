@@ -69,10 +69,18 @@ export function PhoneCarousel({ shots, autoRotateMs = 4000 }: PhoneCarouselProps
         ref={trackRef}
         className={styles.track}
         onScroll={handleScroll}
-        onPointerDown={() => setPaused(true)}
-        onPointerUp={() => setPaused(false)}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
+        onPointerDown={() => {
+          setPaused(true);
+        }}
+        onPointerUp={() => {
+          setPaused(false);
+        }}
+        onMouseEnter={() => {
+          setPaused(true);
+        }}
+        onMouseLeave={() => {
+          setPaused(false);
+        }}
       >
         {shots.map((shot) => (
           <div key={shot.id} className={styles.slide}>
@@ -93,7 +101,9 @@ export function PhoneCarousel({ shots, autoRotateMs = 4000 }: PhoneCarouselProps
           <button
             key={shot.id}
             type="button"
-            onClick={() => goTo(index)}
+            onClick={() => {
+              goTo(index);
+            }}
             className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show ${shot.alt}`}
             aria-current={index === active}

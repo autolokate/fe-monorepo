@@ -15,7 +15,13 @@ export function useCurrentUser(options?: UseApiQueryOptions<AuthUser>) {
   const [authedTick, setAuthedTick] = useState(0);
   const enabled = options?.enabled ?? hasAuthTokens();
 
-  useEffect(() => subscribeAuthChange(() => setAuthedTick((t) => t + 1)), []);
+  useEffect(
+    () =>
+      subscribeAuthChange(() => {
+        setAuthedTick((t) => t + 1);
+      }),
+    [],
+  );
 
   const fn = useCallback(() => fetchCurrentUser(), []);
   return useApiQuery<AuthUser>(fn, [authedTick], { ...options, enabled });

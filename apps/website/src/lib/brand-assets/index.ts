@@ -5,7 +5,7 @@ import { slugifyPart } from '@/lib/seo/slugs';
  * logo across the long tail of legal-name variants ("Tata Motors" → "tata",
  * "Maruti Suzuki India" → "maruti-suzuki", etc.).
  */
-const BRAND_LOGO_SLUG_ALIASES: Record<string, string> = {
+const BRAND_LOGO_SLUG_ALIASES: Record<string, string | undefined> = {
   maruti: 'maruti-suzuki',
   'tata-motors': 'tata',
   'bajaj-auto': 'bajaj',
@@ -33,7 +33,7 @@ const BRAND_LOGO_SLUG_ALIASES: Record<string, string> = {
  * Remote brand marks (Wikimedia Commons, Simple Icons, World Vector Logo).
  * Keys are slugs produced by {@link slugifyPart}.
  */
-const BRAND_LOGO_REMOTE: Record<string, string> = {
+const BRAND_LOGO_REMOTE: Record<string, string | undefined> = {
   audi: 'https://upload.wikimedia.org/wikipedia/commons/9/92/Audi-Logo_2016.svg',
   bmw: 'https://upload.wikimedia.org/wikipedia/commons/4/44/BMW.svg',
   citroen: 'https://cdn.simpleicons.org/citroen',
@@ -58,7 +58,7 @@ const BRAND_LOGO_REMOTE: Record<string, string> = {
 };
 
 /** Local assets, primarily two-wheeler brands shipped in `public/brands/`. */
-const BRAND_LOGO_LOCAL: Record<string, string> = {
+const BRAND_LOGO_LOCAL: Record<string, string | undefined> = {
   ktm: '/brands/ktm.svg',
   'royal-enfield': '/brands/royal-enfield.svg',
   hero: '/brands/hero.svg',

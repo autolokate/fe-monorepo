@@ -75,7 +75,9 @@ export function TestimonialCarousel() {
           <button
             key={testimonial.id}
             type="button"
-            onClick={() => scrollToIndex(index)}
+            onClick={() => {
+              scrollToIndex(index);
+            }}
             className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show testimonial from ${testimonial.name}`}
             aria-current={index === active}

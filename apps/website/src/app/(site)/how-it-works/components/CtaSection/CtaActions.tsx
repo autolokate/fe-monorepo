@@ -17,7 +17,9 @@ export function CtaActions() {
         className={styles.ctaPrimary}
         icon={<ArrowRight className="h-4 w-4" />}
         iconPosition="end"
-        onClick={() => router.push(CTA_COPY.primaryCta.href)}
+        onClick={() => {
+          router.push(CTA_COPY.primaryCta.href);
+        }}
       >
         {CTA_COPY.primaryCta.label}
       </AlButton>
@@ -27,7 +29,9 @@ export function CtaActions() {
         variant="outline"
         className={styles.ctaSecondary}
         icon={<Download className="h-4 w-4" />}
-        onClick={() => router.push(CTA_COPY.secondaryCta.href)}
+        onClick={() => {
+          router.push(CTA_COPY.secondaryCta.href);
+        }}
       >
         {CTA_COPY.secondaryCta.label}
       </AlButton>

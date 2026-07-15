@@ -25,8 +25,8 @@ function trendingModelMatchesCategory(
   vehicleCategory: VehicleCategory,
 ): boolean {
   const raw = model.vehicle_category;
-  if (raw == null || String(raw).trim() === '') return true;
-  const mapped = fromApiVehicleCategory(String(raw));
+  if (raw == null || raw.trim() === '') return true;
+  const mapped = fromApiVehicleCategory(raw);
   if (!mapped) return true;
   return mapped === vehicleCategory;
 }
@@ -65,8 +65,8 @@ export async function fetchCompareSuggestedEntries(
       variantId,
       brandSlug: segment.brandSlug,
       modelSlug: segment.modelSlug,
-      brandLabel: String(row.brand_name ?? '').trim() || '—',
-      modelLabel: String(row.model_name ?? row.name ?? '').trim() || '—',
+      brandLabel: (row.brand_name ?? '').trim() || '—',
+      modelLabel: row.model_name.trim() || '—',
       image: heroOrThumb(row),
       price,
     });
@@ -79,7 +79,7 @@ export function groupCompareSuggestedPairs(
 ): [CompareSuggestedEntry, CompareSuggestedEntry][] {
   const pairs: [CompareSuggestedEntry, CompareSuggestedEntry][] = [];
   for (let i = 0; i + 1 < entries.length && pairs.length < MAX_PAIRS; i += 2) {
-    pairs.push([entries[i]!, entries[i + 1]!]);
+    pairs.push([entries[i], entries[i + 1]]);
   }
   return pairs;
 }

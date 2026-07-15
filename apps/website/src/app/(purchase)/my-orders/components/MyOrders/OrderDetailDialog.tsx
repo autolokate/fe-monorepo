@@ -117,11 +117,13 @@ export function OrderDetailDialog({ order, open, onOpenChange }: OrderDetailDial
                   statusPillClass(status),
                 )}
               >
+                {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- backend OrderStatus can outrun the FE union; fall back to the raw code */}
                 {STATUS_LABELS[status] ?? status}
               </span>
             ) : null}
           </div>
           <DialogDescription>
+            {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- backend OrderKind can outrun the FE union; fall back to the raw code */}
             {kind ? (ORDER_KIND_LABELS[kind] ?? kind) : 'Order'}
             {order?.orderId ? ` · #${order.orderId.slice(0, 8).toUpperCase()}` : ''}
           </DialogDescription>

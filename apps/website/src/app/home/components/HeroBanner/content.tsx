@@ -27,6 +27,7 @@ function toTrendingItems(models: CatalogueModel[]): TrendingModel[] {
         : m.model_slug
           ? `/cars/${encodeURIComponent(m.model_slug)}`
           : '/how-it-works';
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- fuel_types is typed string[] but this index-signature API row may omit it at runtime
     const subtitle = [m.body_type, ...(m.fuel_types ?? [])]
       .filter((s): s is string => Boolean(s))
       .slice(0, 3)
@@ -34,6 +35,7 @@ function toTrendingItems(models: CatalogueModel[]): TrendingModel[] {
       .join(' · ');
 
     return {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- model_slug is typed string but this index-signature API row may omit it at runtime
       id: typeof m.id === 'string' ? m.id : `${m.brand_slug ?? 'model'}-${m.model_slug ?? idx}`,
       href,
       title: [m.brand_name, m.model_name].filter(Boolean).join(' ') || m.model_name,

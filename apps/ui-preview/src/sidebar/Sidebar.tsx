@@ -86,6 +86,7 @@ export function DocsSidebar({
           />
         </div>
 
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- nav landmark hosts a roving arrow-key focus manager for its interactive [data-doc-link] buttons; the handler only moves focus, it does not make the nav itself an interactive control */}
         <nav
           ref={navRef}
           className="ds-docs-sidebar__groups"

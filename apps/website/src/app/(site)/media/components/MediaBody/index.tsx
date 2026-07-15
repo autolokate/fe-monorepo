@@ -49,7 +49,9 @@ export function MediaBody() {
                   size="sm"
                   variant={active ? 'default' : 'outline'}
                   className="px-4"
-                  onClick={() => setFilter(id)}
+                  onClick={() => {
+                    setFilter(id);
+                  }}
                 >
                   <Icon className="h-3.5 w-3.5" aria-hidden />
                   {label}

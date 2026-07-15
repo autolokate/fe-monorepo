@@ -17,7 +17,9 @@ export function ActiveStep({ state, plan, update }: StepProps) {
     renewLine,
   ];
 
-  const restart = () => update({ step: 'plans', otpSent: false, otp: '', rcVerified: false });
+  const restart = () => {
+    update({ step: 'plans', otpSent: false, otp: '', rcVerified: false });
+  };
 
   return (
     <div className={styles.wrap}>

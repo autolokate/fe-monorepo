@@ -49,7 +49,7 @@ export const OtpField = forwardRef<HTMLInputElement, OtpFieldProps>(function Otp
 
       <div className="pointer-events-none grid grid-cols-6 gap-2 sm:gap-2.5">
         {CELL_INDEXES.map((i) => {
-          const digit = value[i];
+          const digit = value[i] ?? '';
           const isFilled = value.length > i;
           const isActive = value.length === i;
           return (
@@ -64,7 +64,7 @@ export const OtpField = forwardRef<HTMLInputElement, OtpFieldProps>(function Otp
                     : 'border-border/80 text-muted-foreground',
               )}
             >
-              {digit ?? ''}
+              {digit}
             </div>
           );
         })}

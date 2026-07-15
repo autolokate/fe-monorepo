@@ -28,7 +28,9 @@ export function ContactsStep({ state, update, goTo }: StepProps) {
             prefix=""
             placeholder="Name · +91 mobile"
             value={state.contact1}
-            onChange={(e) => update({ contact1: e.target.value })}
+            onChange={(e) => {
+              update({ contact1: e.target.value });
+            }}
           />
           <AlTextField
             id="contact-2"
@@ -36,14 +38,18 @@ export function ContactsStep({ state, update, goTo }: StepProps) {
             prefix=""
             placeholder="Name · +91 mobile"
             value={state.contact2}
-            onChange={(e) => update({ contact2: e.target.value })}
+            onChange={(e) => {
+              update({ contact2: e.target.value });
+            }}
           />
         </div>
 
         <button
           type="button"
           className={cn(styles.riders, state.addRiders && styles.ridersOn)}
-          onClick={() => update({ addRiders: !state.addRiders })}
+          onClick={() => {
+            update({ addRiders: !state.addRiders });
+          }}
           aria-pressed={state.addRiders}
         >
           <span className={cn(styles.check, state.addRiders && styles.checkOn)} aria-hidden>
@@ -61,7 +67,9 @@ export function ContactsStep({ state, update, goTo }: StepProps) {
           variant="primary"
           className={styles.action}
           disabled={!canFinish}
-          onClick={() => goTo('active')}
+          onClick={() => {
+            goTo('active');
+          }}
         >
           Finish setup
         </AlButton>

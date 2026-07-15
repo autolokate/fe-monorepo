@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Phone, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,7 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
     },
   });
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const clean = normalizePhoneDigits(digits);
     if (clean.length !== PHONE_DIGITS) {
@@ -70,6 +70,7 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
           value={digits}
           onChange={setDigits}
           disabled={requestOtp.isLoading}
+          // eslint-disable-next-line jsx-a11y/no-autofocus -- the phone input is the sole, primary control on this dedicated login step; focusing it on mount is the intended UX and there is no preceding content a screen-reader user would skip past
           autoFocus
         />
 

@@ -21,7 +21,7 @@ export function PwaOfflineScreen({ onRetry }: PwaOfflineScreenProps) {
         variant={themeMode === 'dark' ? 'dark' : 'light'}
         aria-label="Autolokate"
       />
-      <AlHeading variant="h2">You're offline</AlHeading>
+      <AlHeading variant="h2">You&apos;re offline</AlHeading>
       <AlText tone="muted" className="pwa-offline-screen__description">
         Autolokate needs a connection to continue. Check your network, then try again.
       </AlText>

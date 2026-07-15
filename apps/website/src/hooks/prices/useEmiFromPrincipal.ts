@@ -16,10 +16,14 @@ export function useEmiFromPrincipal(
     typeof principal === 'number' && Number.isFinite(principal) && principal >= 10_000
       ? principal
       : null;
-  const canRun = Boolean(enabled && p != null);
+  const canRun = enabled && p != null;
 
   return useApiQuery<EmiQuote>(
-    () => getEmiQuote({ principal: p!, rate: EMI_RATE, tenure_months: EMI_MONTHS }),
+    () => {
+      // `canRun` gates the fetch, so `p` is always a valid principal here.
+      if (p == null) throw new Error('EMI query ran without a principal');
+      return getEmiQuote({ principal: p, rate: EMI_RATE, tenure_months: EMI_MONTHS });
+    },
     [p, enabled],
     { enabled: canRun },
   );

@@ -69,7 +69,9 @@ export function subscribeVehiclePreference(handler: () => void): () => void {
   const onStorage = (e: StorageEvent) => {
     if (!e.key || e.key === VEHICLE_PREFERENCE_STORAGE_KEY) handler();
   };
-  const onCustom = () => handler();
+  const onCustom = () => {
+    handler();
+  };
 
   window.addEventListener('storage', onStorage);
   window.addEventListener(VEHICLE_PREFERENCE_CHANGE_EVENT, onCustom);

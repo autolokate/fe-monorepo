@@ -14,7 +14,9 @@ export function HeroCtas() {
         size="md"
         className={styles.ctaPrimary}
         variant="primary"
-        onClick={() => router.push(HERO_COPY.primaryCta.href)}
+        onClick={() => {
+          router.push(HERO_COPY.primaryCta.href);
+        }}
       >
         {HERO_COPY.primaryCta.label}
       </AlButton>

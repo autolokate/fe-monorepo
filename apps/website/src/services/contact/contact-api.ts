@@ -8,7 +8,7 @@ const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'obj
 
 /** POST /v1/contact-us — public enquiry form (no auth). */
 export async function submitContactUs(payload: ContactUsPayload): Promise<ContactUsResponse> {
-  const res = await ApiService.post<unknown>(endpoints.contact.submit, payload, {
+  const res = await ApiService.post(endpoints.contact.submit, payload, {
     withAuth: false,
   });
   const data = res.data;

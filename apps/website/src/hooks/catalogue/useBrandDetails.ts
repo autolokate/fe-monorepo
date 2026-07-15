@@ -13,7 +13,7 @@ export function useBrandDetails(
   options: { enabled?: boolean } = {},
 ) {
   const { enabled = true } = options;
-  const slug = String(brandSlug ?? '').trim();
+  const slug = (brandSlug ?? '').trim();
   const canRun = Boolean(enabled && slug);
 
   return useApiQuery<CatalogueBrand | null>(() => getBrandDetails(slug), [slug, enabled], {

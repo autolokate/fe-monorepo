@@ -30,7 +30,11 @@ export async function openRazorpayCheckout(
   if (!options.keyId || !options.orderId) return { status: 'unavailable' };
 
   const ready = await ensureRazorpayScript();
-  if (!ready || typeof window === 'undefined' || !window.Razorpay) {
+  if (!ready || typeof window === 'undefined') {
+    return { status: 'unavailable' };
+  }
+  const Razorpay = window.Razorpay;
+  if (!Razorpay) {
     return { status: 'unavailable' };
   }
 
@@ -42,7 +46,7 @@ export async function openRazorpayCheckout(
       resolve(result);
     };
 
-    const rzp = new window.Razorpay!({
+    const rzp = new Razorpay({
       key: options.keyId,
       order_id: options.orderId,
       amount: options.amountPaise,
@@ -51,11 +55,19 @@ export async function openRazorpayCheckout(
       description: options.description,
       prefill: options.prefill,
       theme: { color: '#0f172a' },
-      handler: () => finish({ status: 'paid' }),
-      modal: { ondismiss: () => finish({ status: 'dismissed' }) },
+      handler: () => {
+        finish({ status: 'paid' });
+      },
+      modal: {
+        ondismiss: () => {
+          finish({ status: 'dismissed' });
+        },
+      },
     });
     // Card declines / wrong OTP fire `payment.failed` instead of `handler`.
-    rzp.on('payment.failed', () => finish({ status: 'dismissed' }));
+    rzp.on('payment.failed', () => {
+      finish({ status: 'dismissed' });
+    });
     rzp.open();
   });
 }

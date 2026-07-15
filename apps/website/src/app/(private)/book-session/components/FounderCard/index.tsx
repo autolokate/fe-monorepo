@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { YoutubeIcon } from '@/layouts/Footer/constants';
 import { IDG_FOUNDER, INDIAN_DRIVE_GUIDE_CHANNEL_URL } from '@/lib/idg';
 
 export function FounderCard() {
@@ -61,7 +61,7 @@ export function FounderCard() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Youtube className="h-4 w-4 shrink-0" aria-hidden />
+                  <YoutubeIcon className="h-4 w-4 shrink-0" aria-hidden />
                   Watch on YouTube
                 </Link>
               </Button>

@@ -19,21 +19,21 @@ export async function createPaymentOrder(
 ): Promise<unknown> {
   const body: CreatePaymentOrderPayload = {
     booking_id: bookingId,
-    idempotency_key: idempotencyKey ?? `order-${bookingId}-${Date.now()}`,
+    idempotency_key: idempotencyKey ?? `order-${bookingId}-${Date.now().toString()}`,
   };
 
-  const res = await ApiService.post<PaymentEnvelope<unknown>>(endpoints.payments.createOrder, body);
+  const res = await ApiService.post(endpoints.payments.createOrder, body);
   return unbox(res.data);
 }
 
 /** POST /v1/payments/verify — server-side signature check. */
 export async function verifyPayment(payload: VerifyPaymentPayload): Promise<unknown> {
-  const res = await ApiService.post<PaymentEnvelope<unknown>>(endpoints.payments.verify, payload);
+  const res = await ApiService.post(endpoints.payments.verify, payload);
   return unbox(res.data);
 }
 
 /** GET /v1/payments/{id} — fetch a single payment record. */
 export async function getPaymentById(paymentId: string): Promise<unknown> {
-  const res = await ApiService.get<PaymentEnvelope<unknown>>(endpoints.payments.byId(paymentId));
+  const res = await ApiService.get(endpoints.payments.byId(paymentId));
   return unbox(res.data);
 }

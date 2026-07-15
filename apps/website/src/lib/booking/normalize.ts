@@ -5,6 +5,13 @@ function asRecord(v: unknown): Record<string, unknown> | null {
   return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
 }
 
+/** Coerce a loosely-typed API field to a string; objects/other types fall back. */
+function toStr(v: unknown, fallback = ''): string {
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'bigint') return String(v);
+  return fallback;
+}
+
 /** Format an ISO start string into a user-friendly IST label (e.g. "3:00 PM"). */
 export function formatSlotLabel(isoStart: string): string {
   const d = parseISO(isoStart);
@@ -58,7 +65,7 @@ export function normalizeSlotsForDate(raw: unknown, yyyyMmDd: string): ExpertTim
   if (Array.isArray(raw)) {
     for (const item of raw) {
       const day = asRecord(item);
-      if (day && Array.isArray(day.slots)) rows.push(...day.slots);
+      if (day && Array.isArray(day.slots)) rows.push(...(day.slots as unknown[]));
       else rows.push(item);
     }
   } else {
@@ -67,10 +74,10 @@ export function normalizeSlotsForDate(raw: unknown, yyyyMmDd: string): ExpertTim
     if (Array.isArray(data)) {
       for (const item of data) {
         const day = asRecord(item);
-        if (day && Array.isArray(day.slots)) rows.push(...day.slots);
+        if (day && Array.isArray(day.slots)) rows.push(...(day.slots as unknown[]));
         else rows.push(item);
       }
-    } else if (Array.isArray((top as { slots?: unknown[] })?.slots)) {
+    } else if (Array.isArray((top as { slots?: unknown[] } | null)?.slots)) {
       rows.push(...(top as { slots: unknown[] }).slots);
     }
   }
@@ -91,15 +98,13 @@ export function normalizeSlotsForDate(raw: unknown, yyyyMmDd: string): ExpertTim
 export function parsePaymentOrderResponse(raw: unknown): ParsedPaymentOrder {
   const top = asRecord(raw) ?? {};
   const data = asRecord(top.data) ?? top;
-  const razorpayOrderId = String(
-    data.razorpay_order_id ?? data.order_id ?? data.id ?? data.razorpayOrderId ?? '',
+  const razorpayOrderId = toStr(
+    data.razorpay_order_id ?? data.order_id ?? data.id ?? data.razorpayOrderId,
   );
   const amountRaw = data.amount ?? data.amount_paise ?? data.amount_in_paise;
   const amountPaise = typeof amountRaw === 'number' ? amountRaw : Number(amountRaw ?? 0);
-  const currency = String(data.currency ?? 'INR');
-  const keyId = String(
-    data.key_id ?? data.razorpay_key_id ?? data.public_key_id ?? data.keyId ?? '',
-  );
+  const currency = toStr(data.currency, 'INR');
+  const keyId = toStr(data.key_id ?? data.razorpay_key_id ?? data.public_key_id ?? data.keyId);
   return {
     razorpayOrderId,
     amountPaise: Number.isFinite(amountPaise) ? amountPaise : 0,
@@ -130,12 +135,12 @@ export function normalizeMyBookings(raw: unknown): UserBookingSummary[] {
   for (const item of list) {
     const o = asRecord(item);
     if (!o) continue;
-    const id = String(o.id ?? o.booking_id ?? '');
+    const id = toStr(o.id ?? o.booking_id);
     if (!id) continue;
-    const status = String(o.status ?? o.booking_status ?? 'unknown');
-    const slotDate = String(o.slot_date ?? o.slotDate ?? '').slice(0, 10);
-    const startIso = String(o.slot_start_time ?? o.slotStartTime ?? '');
-    const endIso = String(o.slot_end_time ?? o.slotEndTime ?? '');
+    const status = toStr(o.status ?? o.booking_status, 'unknown');
+    const slotDate = toStr(o.slot_date ?? o.slotDate).slice(0, 10);
+    const startIso = toStr(o.slot_start_time ?? o.slotStartTime);
+    const endIso = toStr(o.slot_end_time ?? o.slotEndTime);
     const meetLink =
       typeof o.google_meet_link === 'string' && o.google_meet_link
         ? o.google_meet_link
@@ -186,7 +191,7 @@ export function bookingIdFromCreateResponse(raw: unknown): string {
   const o = asRecord(raw) ?? {};
   const nested = asRecord(o.data) ?? asRecord(o.booking) ?? asRecord(o.result) ?? o;
   const id = nested.id ?? nested.booking_id ?? o.booking_id;
-  return typeof id === 'string' ? id : String(id ?? '');
+  return toStr(id);
 }
 
 /** Pick a Meet URL out of `POST /v1/payments/verify`, if the backend returned one. */

@@ -47,7 +47,9 @@ export function subscribeAuthChange(handler: () => void): () => void {
   const onStorage = (e: StorageEvent) => {
     if (!e.key || e.key.startsWith('autolokate_')) handler();
   };
-  const onCustom = () => handler();
+  const onCustom = () => {
+    handler();
+  };
 
   window.addEventListener('storage', onStorage);
   window.addEventListener(AUTH_CHANGE_EVENT, onCustom);
@@ -74,7 +76,7 @@ export function writeAuthTokens(tokens: AuthTokens): void {
   localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, tokens.accessToken);
   localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, tokens.refreshToken);
 
-  const maxAge = AUTH_COOKIE_MAX_AGE_SECONDS;
+  const maxAge = String(AUTH_COOKIE_MAX_AGE_SECONDS);
   document.cookie = `${ACCESS_TOKEN_COOKIE_KEY}=${encodeURIComponent(tokens.accessToken)}; path=/; max-age=${maxAge}; samesite=lax`;
   document.cookie = `${REFRESH_TOKEN_COOKIE_KEY}=${encodeURIComponent(tokens.refreshToken)}; path=/; max-age=${maxAge}; samesite=lax`;
   notifyAuthChange();
@@ -91,5 +93,5 @@ export function clearAuthTokens(): void {
 
 export function hasAuthTokens(): boolean {
   const tokens = readAuthTokens();
-  return Boolean(tokens?.accessToken && tokens?.refreshToken);
+  return Boolean(tokens?.accessToken && tokens.refreshToken);
 }

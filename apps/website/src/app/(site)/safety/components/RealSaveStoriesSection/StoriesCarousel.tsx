@@ -82,7 +82,9 @@ export function StoriesCarousel() {
           <button
             key={story.id}
             type="button"
-            onClick={() => scrollToIndex(index)}
+            onClick={() => {
+              scrollToIndex(index);
+            }}
             className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show story from ${story.name}`}
             aria-current={index === active}

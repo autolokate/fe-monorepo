@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { type SubmitEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -47,14 +47,18 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
   // 30-second resend cooldown tick.
   useEffect(() => {
     if (cooldown <= 0) return;
-    const t = setTimeout(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
-    return () => clearTimeout(t);
+    const t = setTimeout(() => {
+      setCooldown((c) => Math.max(0, c - 1));
+    }, 1000);
+    return () => {
+      clearTimeout(t);
+    };
   }, [cooldown]);
 
-  function submit(e: FormEvent<HTMLFormElement>) {
+  function submit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     if (otp.length !== OTP_LENGTH) {
-      toast.error(`Enter the ${OTP_LENGTH}-digit OTP.`);
+      toast.error(`Enter the ${String(OTP_LENGTH)}-digit OTP.`);
       return;
     }
     void verify.mutate({ phone, otp });
@@ -130,7 +134,7 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
           {resend.isLoading
             ? 'Resending…'
             : cooldown > 0
-              ? `Resend in ${cooldown}s`
+              ? `Resend in ${String(cooldown)}s`
               : 'Resend code'}
         </button>
         <span aria-hidden className="h-3 w-px bg-border/70" />

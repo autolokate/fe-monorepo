@@ -32,7 +32,7 @@ type Props = {
 
 function hitLabel(hit: CatalogueSearchHit): string {
   if (hit.kind === 'variant') {
-    return String(hit.row.variant_name ?? hit.row.name ?? 'Variant').trim();
+    return (hit.row.variant_name ?? hit.row.name ?? 'Variant').trim();
   }
   if (hit.kind === 'model') {
     return [hit.row.brand_name, hit.row.model_name].filter(Boolean).join(' ').trim() || 'Model';
@@ -58,11 +58,13 @@ export function CompareAddDialog({ open, onOpenChange, excludeIds, onPickVariant
 
   const exclude = new Set(excludeIds.map((id) => id.trim()).filter(Boolean));
 
-  const attemptAddVariant = async (variantId: string, meta?: CompareModelSegment) => {
+  const attemptAddVariant = (variantId: string, meta?: CompareModelSegment) => {
     const trimmed = variantId.trim();
     if (!trimmed || exclude.has(trimmed)) return;
     if (excludeIds.length >= COMPARE_MAX_SLOTS) {
-      toast.message(`You can compare up to ${COMPARE_MAX_SLOTS} cars. Remove one to add another.`);
+      toast.message(
+        `You can compare up to ${String(COMPARE_MAX_SLOTS)} cars. Remove one to add another.`,
+      );
       return;
     }
     onPickVariant(trimmed, meta);
@@ -73,7 +75,7 @@ export function CompareAddDialog({ open, onOpenChange, excludeIds, onPickVariant
 
   const onHitClick = async (hit: CatalogueSearchHit, dedupeKey: string) => {
     if (excludeIds.length >= COMPARE_MAX_SLOTS) {
-      toast.message(`Compare is full (${COMPARE_MAX_SLOTS} max).`);
+      toast.message(`Compare is full (${String(COMPARE_MAX_SLOTS)} max).`);
       return;
     }
     if (hit.kind === 'variant') {
@@ -82,7 +84,7 @@ export function CompareAddDialog({ open, onOpenChange, excludeIds, onPickVariant
         toast.message('This variant could not be added.');
         return;
       }
-      await attemptAddVariant(id, compareSegmentFromVariant(hit.row) ?? undefined);
+      attemptAddVariant(id, compareSegmentFromVariant(hit.row) ?? undefined);
       return;
     }
     if (hit.kind === 'brand') {
@@ -97,7 +99,7 @@ export function CompareAddDialog({ open, onOpenChange, excludeIds, onPickVariant
         toast.message('Could not resolve a default variant for this model.');
         return;
       }
-      await attemptAddVariant(variantId, compareSegmentFromModel(hit.row) ?? undefined);
+      attemptAddVariant(variantId, compareSegmentFromModel(hit.row) ?? undefined);
     } finally {
       setResolvingKey(null);
     }
@@ -117,7 +119,9 @@ export function CompareAddDialog({ open, onOpenChange, excludeIds, onPickVariant
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => {
+                setQ(e.target.value);
+              }}
               placeholder="Search cars, brands, variants…"
               className="h-11 rounded-xl pl-10"
               aria-label="Search catalogue"
@@ -142,7 +146,7 @@ export function CompareAddDialog({ open, onOpenChange, excludeIds, onPickVariant
           ) : (
             <ul className="space-y-1.5 pb-2">
               {search.data.map((hit, idx) => {
-                const dedupeKey = `${hit.kind}-${idx}-${hitLabel(hit)}`;
+                const dedupeKey = `${hit.kind}-${String(idx)}-${hitLabel(hit)}`;
                 const disabled =
                   hit.kind === 'variant' &&
                   typeof hit.row.id === 'string' &&
@@ -183,7 +187,13 @@ export function CompareAddDialog({ open, onOpenChange, excludeIds, onPickVariant
           )}
         </div>
         <div className="flex justify-end border-t border-border/70 px-6 py-4">
-          <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
             <X className="h-4 w-4" aria-hidden />
             Close
           </Button>

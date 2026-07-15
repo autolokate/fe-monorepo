@@ -53,10 +53,22 @@ export async function ensureRazorpayScript(): Promise<boolean> {
   );
   if (existing) {
     return new Promise<boolean>((resolve) => {
-      existing.addEventListener('load', () => resolve(Boolean(window.Razorpay)), {
-        once: true,
-      });
-      existing.addEventListener('error', () => resolve(false), { once: true });
+      existing.addEventListener(
+        'load',
+        () => {
+          resolve(Boolean(window.Razorpay));
+        },
+        {
+          once: true,
+        },
+      );
+      existing.addEventListener(
+        'error',
+        () => {
+          resolve(false);
+        },
+        { once: true },
+      );
     });
   }
 
@@ -64,8 +76,12 @@ export async function ensureRazorpayScript(): Promise<boolean> {
     const script = document.createElement('script');
     script.src = RAZORPAY_CHECKOUT_URL;
     script.async = true;
-    script.onload = () => resolve(Boolean(window.Razorpay));
-    script.onerror = () => resolve(false);
+    script.onload = () => {
+      resolve(Boolean(window.Razorpay));
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
     document.body.appendChild(script);
   });
 }

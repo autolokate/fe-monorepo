@@ -1,5 +1,5 @@
 import axios, {
-  AxiosError,
+  type AxiosError,
   AxiosHeaders,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
@@ -43,7 +43,7 @@ const apiInstance = axios.create({
 });
 
 apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const headers = AxiosHeaders.from(config.headers ?? {});
+  const headers = AxiosHeaders.from(config.headers);
 
   if (config.withAuth !== false) {
     const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE_KEY);
@@ -115,7 +115,7 @@ function handleAuthFailureRedirect(): void {
 apiInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const config = error.config as AxiosRequestConfig | undefined;
+    const config = error.config;
     const status = error.response?.status;
 
     const wantsAuth = config?.withAuth !== false;
@@ -127,10 +127,12 @@ apiInstance.interceptors.response.use(
       refreshInFlight = null;
 
       if (next && config) {
+        const retryHeaders = AxiosHeaders.from(config.headers);
+        retryHeaders.set('Authorization', `Bearer ${next}`);
         return apiInstance.request({
           ...config,
           _retried: true,
-          headers: { ...(config.headers ?? {}), Authorization: `Bearer ${next}` },
+          headers: retryHeaders,
         });
       }
       handleAuthFailureRedirect();

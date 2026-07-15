@@ -30,7 +30,7 @@ function pickMessage(payload: unknown, fallback: string): string {
   if (p.message?.trim()) return p.message;
   if (p.error?.trim()) return p.error;
   if (p.detail?.trim()) return p.detail;
-  if (Array.isArray(p.errors) && p.errors[0]?.message) return p.errors[0].message!;
+  if (Array.isArray(p.errors) && p.errors[0]?.message) return p.errors[0].message;
   return fallback;
 }
 
@@ -45,7 +45,7 @@ export function toApiError(
   if (err instanceof ApiError) return err;
 
   if (axios.isAxiosError(err)) {
-    const axErr = err as AxiosError<unknown>;
+    const axErr = err as AxiosError;
     const status = axErr.response?.status ?? 0;
     const message = pickMessage(axErr.response?.data, axErr.message || fallback);
     return new ApiError(message, status, axErr.response?.data);

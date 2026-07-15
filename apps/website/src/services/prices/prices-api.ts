@@ -45,7 +45,7 @@ export async function getTco(
     withAuth: false,
     signal: options?.signal,
   });
-  return unbox(res.data) as TcoBreakdown;
+  return unbox(res.data);
 }
 
 export async function getEmiQuote(params: {
@@ -61,7 +61,7 @@ export async function getEmiQuote(params: {
   const res = await ApiService.get<Envelope<EmiQuote>>(`${endpoints.prices.emi}?${q.toString()}`, {
     withAuth: false,
   });
-  return unbox(res.data) as EmiQuote;
+  return unbox(res.data);
 }
 
 export async function getResaleEstimate(
@@ -73,7 +73,7 @@ export async function getResaleEstimate(
     `${endpoints.prices.resale(variantId)}?${q.toString()}`,
     { withAuth: false },
   );
-  return unbox(res.data) as ResaleEstimate;
+  return unbox(res.data);
 }
 
 export async function getEvSubsidies(): Promise<unknown[]> {

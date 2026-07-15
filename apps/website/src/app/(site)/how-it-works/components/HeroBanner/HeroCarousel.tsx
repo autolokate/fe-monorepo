@@ -35,7 +35,9 @@ export function HeroCarousel() {
     const id = window.setInterval(() => {
       setActive((prev) => (prev + 1) % count);
     }, AUTO_ROTATE_MS);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+    };
   }, [paused, playing, count]);
 
   const slide = slides[active];
@@ -43,10 +45,18 @@ export function HeroCarousel() {
   return (
     <div
       className={styles.carousel}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
+      onMouseEnter={() => {
+        setPaused(true);
+      }}
+      onMouseLeave={() => {
+        setPaused(false);
+      }}
+      onFocusCapture={() => {
+        setPaused(true);
+      }}
+      onBlurCapture={() => {
+        setPaused(false);
+      }}
     >
       <div key={slide.id} className={styles.slide}>
         <div className={styles.copy}>
@@ -69,7 +79,9 @@ export function HeroCarousel() {
               className={styles.ctaPrimary}
               icon={<ArrowRight className="h-4 w-4" />}
               iconPosition="end"
-              onClick={() => router.push(HERO_PRIMARY_CTA.href)}
+              onClick={() => {
+                router.push(HERO_PRIMARY_CTA.href);
+              }}
             >
               {HERO_PRIMARY_CTA.label}
             </AlButton>
@@ -80,7 +92,9 @@ export function HeroCarousel() {
           <VideoPanel
             video={slide.video}
             playing={playing}
-            onPlay={() => setPlaying((prev) => !prev)}
+            onPlay={() => {
+              setPlaying((prev) => !prev);
+            }}
           />
         </div>
       </div>
@@ -90,9 +104,11 @@ export function HeroCarousel() {
           <button
             key={s.id}
             type="button"
-            onClick={() => select(index)}
+            onClick={() => {
+              select(index);
+            }}
             className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
-            aria-label={`Show slide ${index + 1}`}
+            aria-label={`Show slide ${String(index + 1)}`}
             aria-current={index === active}
           />
         ))}

@@ -129,7 +129,7 @@ export function listAddresses(): Promise<SavedAddress[]> {
   listInFlight = (async () => {
     try {
       const res = await PurchaseApi.get<Enveloped<SavedAddress[]>>(endpoints.addresses.list);
-      return Array.isArray(res.data?.data) ? res.data.data : [];
+      return Array.isArray(res.data.data) ? res.data.data : [];
     } finally {
       listInFlight = null;
     }
@@ -143,7 +143,7 @@ export async function createAddress(payload: CreateAddressPayload): Promise<Save
     endpoints.addresses.create,
     pruneAddressBody(payload),
   );
-  const data = res.data?.data;
+  const data = res.data.data;
   if (!data?.id) throw new ApiError('Invalid address response', 0, res.data);
   return data;
 }
@@ -157,7 +157,7 @@ export async function updateAddress(
     endpoints.addresses.byId(id),
     pruneAddressBody(payload),
   );
-  const data = res.data?.data;
+  const data = res.data.data;
   if (!data?.id) throw new ApiError('Invalid address response', 0, res.data);
   return data;
 }
@@ -178,7 +178,7 @@ export async function suggestAddresses(q: string, session?: string): Promise<Add
   const res = await PurchaseApi.get<Enveloped<AddressSuggestResult>>(endpoints.addresses.suggest, {
     params: session ? { q, session } : { q },
   });
-  const data = res.data?.data;
+  const data = res.data.data;
   if (!data?.session) {
     throw new ApiError('Invalid address suggestions response', 0, res.data);
   }
@@ -199,7 +199,7 @@ export async function resolveAddress(placeId: string, session?: string): Promise
     endpoints.addresses.resolve(placeId),
     { params: session ? { session } : {} },
   );
-  const data = res.data?.data;
+  const data = res.data.data;
   if (!data?.line1) {
     throw new ApiError('Invalid address response', 0, res.data);
   }

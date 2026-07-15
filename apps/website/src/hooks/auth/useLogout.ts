@@ -23,7 +23,7 @@ export function useLogout(options?: UseApiMutationOptions<void, void>) {
     clearVehiclePreference();
   }, []);
 
-  return useApiMutation<void, void>(fn, {
+  return useApiMutation(fn, {
     successToast: 'Signed out',
     ...options,
   });

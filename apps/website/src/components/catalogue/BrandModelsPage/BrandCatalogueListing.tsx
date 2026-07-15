@@ -84,9 +84,9 @@ export function BrandCatalogueListing({
 
   const bodyOptions = useMemo(
     () =>
-      Array.from(
-        new Set(listings.map((r) => String(r.body_type || '').trim()).filter(Boolean)),
-      ).sort((a, b) => a.localeCompare(b)),
+      Array.from(new Set(listings.map((r) => (r.body_type || '').trim()).filter(Boolean))).sort(
+        (a, b) => a.localeCompare(b),
+      ),
     [listings],
   );
 
@@ -97,8 +97,8 @@ export function BrandCatalogueListing({
           listings
             .flatMap((r) =>
               Array.isArray(r.fuel_types) && r.fuel_types.length
-                ? r.fuel_types.map((fuel) => String(fuel || '').trim())
-                : [String(r.fuel_type || '').trim()],
+                ? r.fuel_types.map((fuel) => (fuel || '').trim())
+                : [(r.fuel_type || '').trim()],
             )
             .filter(Boolean),
         ),
@@ -113,14 +113,12 @@ export function BrandCatalogueListing({
       rows = rows.filter((r) => modelSearchBlob(r, displayName, pageBrandSlug).includes(q));
     }
     if (bodyType !== 'all') {
-      rows = rows.filter((r) => String(r.body_type ?? '') === bodyType);
+      rows = rows.filter((r) => (r.body_type ?? '') === bodyType);
     }
     if (fuelType !== 'all') {
       rows = rows.filter((r) => {
         const options =
-          Array.isArray(r.fuel_types) && r.fuel_types.length
-            ? r.fuel_types.map((fuel) => String(fuel))
-            : [String(r.fuel_type ?? '')];
+          Array.isArray(r.fuel_types) && r.fuel_types.length ? r.fuel_types : [r.fuel_type ?? ''];
         return options.includes(fuelType);
       });
     }
@@ -167,24 +165,37 @@ export function BrandCatalogueListing({
   const activePills: ActivePill[] = useMemo(() => {
     const out: ActivePill[] = [];
     const q = query.trim();
-    if (q) out.push({ id: 'q', label: `“${q}”`, onClear: () => setQuery('') });
+    if (q)
+      out.push({
+        id: 'q',
+        label: `“${q}”`,
+        onClear: () => {
+          setQuery('');
+        },
+      });
     if (bodyType !== 'all')
       out.push({
         id: 'body',
         label: humanizeSegment(bodyType),
-        onClear: () => setBodyType('all'),
+        onClear: () => {
+          setBodyType('all');
+        },
       });
     if (fuelType !== 'all')
       out.push({
         id: 'fuel',
         label: humanizeSegment(fuelType),
-        onClear: () => setFuelType('all'),
+        onClear: () => {
+          setFuelType('all');
+        },
       });
     if (priceSortLabel != null)
       out.push({
         id: 'price-sort',
         label: priceSortLabel,
-        onClear: () => setSort('popular'),
+        onClear: () => {
+          setSort('popular');
+        },
       });
     return out;
   }, [query, bodyType, fuelType, priceSortLabel]);
@@ -199,7 +210,9 @@ export function BrandCatalogueListing({
             variant="outline"
             size="sm"
             className="mt-4"
-            onClick={() => void onRetryModels()}
+            onClick={() => {
+              onRetryModels();
+            }}
           >
             <RefreshCw className="h-3.5 w-3.5" aria-hidden />
             Retry models
@@ -237,7 +250,9 @@ export function BrandCatalogueListing({
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
               placeholder="Brand or model name"
               className="h-10 w-full rounded-full border-border/70 bg-background pl-9 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-primary/30"
               aria-label="Search by brand or model name"
@@ -468,7 +483,9 @@ export function BrandCatalogueListing({
           <button
             type="button"
             aria-label="Grid view"
-            onClick={() => setView('grid')}
+            onClick={() => {
+              setView('grid');
+            }}
             className={cn(
               'flex h-7 w-7 items-center justify-center rounded-lg transition',
               view === 'grid'
@@ -481,7 +498,9 @@ export function BrandCatalogueListing({
           <button
             type="button"
             aria-label="List view"
-            onClick={() => setView('list')}
+            onClick={() => {
+              setView('list');
+            }}
             className={cn(
               'flex h-7 w-7 items-center justify-center rounded-lg transition',
               view === 'list'

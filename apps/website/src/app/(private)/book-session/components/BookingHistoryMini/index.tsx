@@ -60,7 +60,7 @@ export function BookingHistoryMini({
               <tr className="border-b border-border/50">
                 {['Booking ID', 'Date', 'Status', 'Time', ''].map((h, i) => (
                   <th
-                    key={`${h}-${i}`}
+                    key={`${h}-${String(i)}`}
                     className="px-4 py-2 text-left font-semibold uppercase tracking-wider text-muted-foreground"
                   >
                     {h}
@@ -106,7 +106,9 @@ export function BookingHistoryMini({
                         <button
                           type="button"
                           aria-label="Cancel booking"
-                          onClick={() => onRequestCancel(b)}
+                          onClick={() => {
+                            onRequestCancel(b);
+                          }}
                           disabled={isCancelling}
                           className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-border text-muted-foreground transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-50"
                         >
@@ -129,12 +131,12 @@ export function BookingHistoryMini({
       {bookings.some((b) => b.meetLink) && (
         <div className="border-t border-border/50 px-4 py-3">
           {bookings
-            .filter((b) => b.meetLink)
+            .filter((b): b is UserBookingSummary & { meetLink: string } => b.meetLink != null)
             .slice(0, 1)
             .map((b) => (
               <a
                 key={b.id}
-                href={b.meetLink!}
+                href={b.meetLink}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80"

@@ -1,5 +1,5 @@
 import { Command } from 'cmdk';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { adminPaths, adminRoutes } from '@/app/routes/admin-paths';
@@ -32,6 +32,15 @@ export type AdminCommandPaletteProps = {
 export function AdminCommandPalette({ open, onOpenChange }: AdminCommandPaletteProps) {
   const navigate = useNavigate();
   const routesByPath = new Map(adminRoutes.map((route) => [route.path, route]));
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Move focus into the palette input when it opens (dialog focus management),
+  // replacing autoFocus so it works with jsx-a11y and only fires on open.
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus();
+    }
+  }, [open]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -70,9 +79,9 @@ export function AdminCommandPalette({ open, onOpenChange }: AdminCommandPaletteP
       />
       <Command className="admin-command-palette__panel" label="Admin command palette">
         <Command.Input
+          ref={inputRef}
           placeholder="Jump to a page…"
           className="admin-command-palette__input"
-          autoFocus
         />
         <Command.List className="admin-command-palette__list">
           <Command.Empty className="admin-command-palette__empty">No results found.</Command.Empty>

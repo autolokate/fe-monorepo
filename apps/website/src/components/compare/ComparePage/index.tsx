@@ -43,19 +43,19 @@ function dedupePreserveOrder(ids: string[]): string[] {
 function segmentsForUrlFromState(
   variantIds: string[],
   variantsById: Map<string, CatalogueVariant>,
-  segmentByVariantId: Record<string, CompareModelSegment>,
+  segmentByVariantId: Partial<Record<string, CompareModelSegment>>,
 ): CompareModelSegment[] | null {
   const out: CompareModelSegment[] = [];
   for (const id of variantIds) {
     const v = variantsById.get(id);
-    const b = String(v?.brand_slug ?? '').trim();
-    const m = String(v?.model_slug ?? '').trim();
+    const b = (v?.brand_slug ?? '').trim();
+    const m = (v?.model_slug ?? '').trim();
     if (b && m) {
       out.push({ brandSlug: b, modelSlug: m });
       continue;
     }
     const cached = segmentByVariantId[id];
-    if (cached?.brandSlug && cached?.modelSlug) {
+    if (cached?.brandSlug && cached.modelSlug) {
       out.push(cached);
       continue;
     }
@@ -75,9 +75,9 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
   const idsQ = searchParams.get('ids') ?? '';
 
   const [variantIds, setVariantIds] = useState<string[]>([]);
-  const [segmentByVariantId, setSegmentByVariantId] = useState<Record<string, CompareModelSegment>>(
-    {},
-  );
+  const [segmentByVariantId, setSegmentByVariantId] = useState<
+    Partial<Record<string, CompareModelSegment>>
+  >({});
   const [resolvingUrl, setResolvingUrl] = useState(false);
   const [hydratedFromUrl, setHydratedFromUrl] = useState(false);
 
@@ -91,10 +91,12 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
 
   // Resolve `?model=` (or legacy `?ids=`) into variant UUIDs used by the compare API.
   useEffect(() => {
-    let cancelled = false;
+    // Widened to `boolean` so the async closure's `if (!cancelled)` guards read as real
+    // conditions — the cleanup below flips this after an await to skip stale setState.
+    let cancelled = false as boolean;
     skipNextUrlSyncRef.current = true;
 
-    (async () => {
+    void (async () => {
       if (modelQ.trim()) {
         if (skipModelResolutionFromUrlSyncRef.current) {
           skipModelResolutionFromUrlSyncRef.current = false;
@@ -167,19 +169,20 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
   const variantsById = useMemo(() => {
     const m = new Map<string, CatalogueVariant>();
     for (const v of compareQuery.data ?? []) {
-      const id = String(v.id ?? '').trim();
+      const id = (v.id ?? '').trim();
       if (id) m.set(id, v);
     }
     return m;
   }, [compareQuery.data]);
 
   useEffect(() => {
-    if (!compareQuery.data?.length) return;
+    const data = compareQuery.data;
+    if (!data?.length) return;
     setSegmentByVariantId((prev) => {
       const next = { ...prev };
       let changed = false;
-      for (const v of compareQuery.data!) {
-        const id = String(v.id ?? '').trim();
+      for (const v of data) {
+        const id = (v.id ?? '').trim();
         const seg = compareSegmentFromVariant(v);
         if (!id || !seg || next[id]) continue;
         next[id] = seg;
@@ -215,8 +218,8 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
         variantIds.map(async (id) => {
           const v = variantsById.get(id);
           const seg = segmentByVariantId[id] ?? (v ? compareSegmentFromVariant(v) : undefined);
-          const b = seg?.brandSlug?.trim();
-          const modelSlug = seg?.modelSlug?.trim();
+          const b = seg?.brandSlug.trim();
+          const modelSlug = seg?.modelSlug.trim();
           if (!b || !modelSlug) return;
 
           try {
@@ -284,8 +287,8 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
     if (orderedVariants.length < 2) return null;
     let best: { id: string; price: number } | null = null;
     for (const v of orderedVariants) {
-      const id = String(v.id ?? '').trim();
-      const p = Number(v.ex_showroom_price ?? v.min_price ?? NaN);
+      const id = (v.id ?? '').trim();
+      const p = v.ex_showroom_price ?? v.min_price ?? NaN;
       if (!id || !Number.isFinite(p)) continue;
       if (!best || p < best.price) best = { id, price: p };
     }
@@ -295,8 +298,7 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
   const removeVariant = (variantId: string) => {
     setVariantIds((prev) => prev.filter((x) => x !== variantId));
     setSegmentByVariantId((prev) => {
-      const next = { ...prev };
-      delete next[variantId];
+      const { [variantId]: _removed, ...next } = prev;
       return next;
     });
   };
@@ -317,7 +319,7 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
       if (withoutDup.length >= COMPARE_MAX_SLOTS) return prev;
       return [...withoutDup, v].slice(0, COMPARE_MAX_SLOTS);
     });
-    if (meta?.brandSlug && meta?.modelSlug) {
+    if (meta?.brandSlug && meta.modelSlug) {
       setSegmentByVariantId((prev) => ({ ...prev, [v]: meta }));
     }
   };
@@ -349,7 +351,9 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
           modelDetailByVariantId={modelDetailByVariantId}
           bestValueId={bestValueId}
           onRemove={removeVariant}
-          onRequestAdd={() => setDialogOpen(true)}
+          onRequestAdd={() => {
+            setDialogOpen(true);
+          }}
         />
         <CompareWorkspace
           tab={tab}
@@ -361,7 +365,9 @@ export function ComparePageContent({ vehicleCategory }: ComparePageContentProps)
           isLoading={compareQuery.isLoading || resolvingUrl}
           isError={compareQuery.isError}
           errorMessage={errMsg}
-          onAddCar={() => setDialogOpen(true)}
+          onAddCar={() => {
+            setDialogOpen(true);
+          }}
         />
       </div>
 

@@ -36,7 +36,7 @@ export async function getNoticeVersion(): Promise<string> {
     const res = await PurchaseApi.get<Enveloped<{ noticeVersion?: string }>>(
       endpoints.legal.documents,
     );
-    return res.data?.data?.noticeVersion || DEFAULT_NOTICE_VERSION;
+    return res.data.data?.noticeVersion || DEFAULT_NOTICE_VERSION;
   } catch {
     return DEFAULT_NOTICE_VERSION;
   }
@@ -51,7 +51,7 @@ export async function grantConsent(
     purpose,
     noticeVersion,
   });
-  const item = res.data?.data;
+  const item = res.data.data;
   if (!item?.purpose) throw new ApiError('Invalid consent response', 0, res.data);
   return item;
 }
@@ -68,7 +68,7 @@ export async function grantAccountConsent(): Promise<ConsentItem> {
 /** GET /v1/me/consents — the buyer's consent ledger (bearer). */
 export async function listConsents(): Promise<ConsentItem[]> {
   const res = await PurchaseApi.get<Enveloped<ConsentItem[]>>(endpoints.me.consents);
-  return Array.isArray(res.data?.data) ? res.data!.data! : [];
+  return Array.isArray(res.data.data) ? res.data.data : [];
 }
 
 /** POST /v1/me/consents/:purpose/withdraw — withdraw a consent (bearer). */
@@ -76,5 +76,5 @@ export async function withdrawConsent(purpose: ConsentPurpose): Promise<boolean>
   const res = await PurchaseApi.post<Enveloped<{ withdrawn?: boolean }>>(
     endpoints.me.withdrawConsent(purpose),
   );
-  return Boolean(res.data?.data?.withdrawn);
+  return Boolean(res.data.data?.withdrawn);
 }

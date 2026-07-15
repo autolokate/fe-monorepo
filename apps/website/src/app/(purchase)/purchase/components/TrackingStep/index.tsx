@@ -94,9 +94,7 @@ export function TrackingStep({ state, goTo }: StepProps) {
   const { data: order, isLoading } = useOrderTracking(state.orderId);
 
   const fulfillment = order?.fulfillment ?? null;
-  const rows: TimelineRow[] = order
-    ? buildTimeline(fulfillment ?? {})
-    : (TRACKING_STEPS as unknown as TimelineRow[]);
+  const rows: TimelineRow[] = order ? buildTimeline(fulfillment ?? {}) : TRACKING_STEPS;
 
   const orderRef = state.orderId ? `#${state.orderId.slice(0, 8).toUpperCase()}` : '#AL-48291';
 
@@ -104,7 +102,9 @@ export function TrackingStep({ state, goTo }: StepProps) {
     <StepShell
       title="Your kit is on its way"
       backLabel="Order confirmation"
-      onBack={() => goTo('success')}
+      onBack={() => {
+        goTo('success');
+      }}
     >
       <p className={styles.meta}>
         Order <b className={styles.mono}>{orderRef}</b>
@@ -199,7 +199,9 @@ export function TrackingStep({ state, goTo }: StepProps) {
         className={styles.action}
         icon={<ArrowRight className="h-4 w-4" aria-hidden />}
         iconPosition="end"
-        onClick={() => goTo('scan')}
+        onClick={() => {
+          goTo('scan');
+        }}
       >
         Delivered? Scan the QR to activate
       </AlButton>

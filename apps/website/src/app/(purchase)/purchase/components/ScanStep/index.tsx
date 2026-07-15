@@ -47,7 +47,9 @@ export function ScanStep({ plan, goTo }: StepProps) {
           className={styles.action}
           icon={<ArrowRight className="h-4 w-4" aria-hidden />}
           iconPosition="end"
-          onClick={() => goTo('plate')}
+          onClick={() => {
+            goTo('plate');
+          }}
         >
           Set it up
         </AlButton>

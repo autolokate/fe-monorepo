@@ -9,7 +9,7 @@ export function useCatalogueTaxonomy(
   options: { enabled?: boolean } = {},
 ) {
   const { enabled = true } = options;
-  const c = String(category ?? '').trim();
+  const c = (category ?? '').trim();
   const canRun = Boolean(enabled && c);
 
   return useApiQuery<TaxonomyBundle>(() => getTaxonomy({ category: c }), [c, enabled], {

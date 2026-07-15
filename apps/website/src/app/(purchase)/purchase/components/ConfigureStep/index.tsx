@@ -27,15 +27,25 @@ export function ConfigureStep({
   const currentDiscount = activeOption?.discountPercent ?? 0;
   const toRupees = (paise: number) => formatInr(Math.round(paise / 100));
 
-  const decQty = () => update({ qty: Math.max(0, state.qty - 1) });
-  const incQty = () => update({ qty: Math.min(maxQty, state.qty + 1) });
+  const decQty = () => {
+    update({ qty: Math.max(0, state.qty - 1) });
+  };
+  const incQty = () => {
+    update({ qty: Math.min(maxQty, state.qty + 1) });
+  };
 
   return (
     <StepShell
       title={`${planName} plan`}
       subtitle="How many riders do you want to cover?"
       backLabel={canBrowsePlans ? 'All plans' : 'Back'}
-      onBack={canBrowsePlans ? () => goTo('plans') : exitToOrigin}
+      onBack={
+        canBrowsePlans
+          ? () => {
+              goTo('plans');
+            }
+          : exitToOrigin
+      }
     >
       <div className={styles.card}>
         <div className={styles.qtyRow}>
@@ -107,7 +117,9 @@ export function ConfigureStep({
         className={styles.continue}
         icon={<ArrowRight className="h-4 w-4" aria-hidden />}
         iconPosition="end"
-        onClick={() => goTo('login')}
+        onClick={() => {
+          goTo('login');
+        }}
       >
         {state.qty < 1 ? "Skip, I'll ride solo" : 'Continue'}
       </AlButton>

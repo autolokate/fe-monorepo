@@ -29,7 +29,7 @@ export function compareTraySubtitle(
   variant: CatalogueVariant | undefined,
   model: CatalogueModel | undefined,
 ): string {
-  const trim = (variant && String(variant.variant_name ?? variant.name ?? '').trim()) || '';
+  const trim = (variant && (variant.variant_name ?? variant.name ?? '').trim()) || '';
   const body = bodyTypeLine(model);
   if (trim && body) return `${trim} · ${body}`;
   return trim || body || (variant ? 'Variant' : 'Model');

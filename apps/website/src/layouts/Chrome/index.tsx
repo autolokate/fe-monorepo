@@ -13,6 +13,7 @@ import { MobileBottomNav } from '@/layouts/MobileBottomNav';
  * or footer, so this wrapper opts out for those paths.
  */
 export function Chrome({ children }: { children: ReactNode }) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- usePathname() is typed string but can be null in practice; keep the fallback
   const pathname = usePathname() ?? '/';
   const isBareLayout = pathname.startsWith('/auth/');
   const isHome = pathname === '/';

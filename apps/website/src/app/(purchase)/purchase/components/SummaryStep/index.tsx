@@ -46,7 +46,7 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
   const priceCart = useCallback(
     async (promoCode: string) => {
       if (!planId) return;
-      const key = `${planId}|${state.qty}|${promoCode}`;
+      const key = `${planId}|${String(state.qty)}|${promoCode}`;
       // Skip a duplicate request for the same inputs already in flight.
       if (pricingBusyRef.current && pricingKeyRef.current === key) return;
       pricingKeyRef.current = key;
@@ -86,7 +86,9 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [planId, state.qty, appliedPromo]);
 
-  const applyPromo = () => setAppliedPromo(promoInput.trim());
+  const applyPromo = () => {
+    setAppliedPromo(promoInput.trim());
+  };
   const clearPromo = () => {
     setPromoInput('');
     setAppliedPromo('');
@@ -118,7 +120,7 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
           orderId: ref.providerOrderId,
           amountPaise: cart.totalPaise,
           name: 'Autolokate',
-          description: `${state.qty} × ${planName} plan`,
+          description: `${String(state.qty)} × ${planName} plan`,
           prefill: { name: state.name, contact: state.mobile },
         });
       }
@@ -147,7 +149,9 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
               <button
                 type="button"
                 className={styles.retry}
-                onClick={() => priceCart(appliedPromo)}
+                onClick={() => {
+                  void priceCart(appliedPromo);
+                }}
                 disabled={cartLoading}
               >
                 {cartLoading ? 'Retrying…' : 'Try again'}
@@ -203,7 +207,9 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
                 className={styles.promoInput}
                 placeholder="e.g. FRIEND50"
                 value={promoInput}
-                onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                onChange={(e) => {
+                  setPromoInput(e.target.value.toUpperCase());
+                }}
                 aria-label="Promo code"
               />
               {cart?.appliedPromoCode ? (
@@ -237,7 +243,9 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
             <button
               type="button"
               className={cn(styles.renew, state.autoRenew && styles.renewOn)}
-              onClick={() => update({ autoRenew: !state.autoRenew })}
+              onClick={() => {
+                update({ autoRenew: !state.autoRenew });
+              }}
               aria-pressed={state.autoRenew}
             >
               <span className={cn(styles.check, state.autoRenew && styles.checkOn)} aria-hidden>
@@ -260,7 +268,9 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
               variant="primary"
               className={styles.payBtn}
               disabled={payDisabled}
-              onClick={handlePay}
+              onClick={() => {
+                void handlePay();
+              }}
             >
               {submitting ? 'Processing…' : `Pay ${totalLabel}`}
             </AlButton>

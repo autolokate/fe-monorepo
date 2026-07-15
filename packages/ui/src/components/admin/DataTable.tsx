@@ -193,6 +193,7 @@ export function AlDataTable<TData>({
         ),
         cell: ({ row }) => (
           <div
+            role="presentation"
             onClick={(event) => {
               event.stopPropagation();
             }}
@@ -307,6 +308,8 @@ export function AlDataTable<TData>({
     [onRowClick, table],
   );
 
+  const rowCount = table.getRowModel().rows.length;
+
   useEffect(() => {
     if (focusedRowIndex === null) {
       return;
@@ -315,7 +318,7 @@ export function AlDataTable<TData>({
       `tbody tr[data-row-index="${String(focusedRowIndex)}"]`,
     );
     row?.focus();
-  }, [focusedRowIndex, table.getRowModel().rows.length]);
+  }, [focusedRowIndex, rowCount]);
 
   const selectedCount = Object.keys(rowSelection ?? internalRowSelection).length;
   const filteredCount = table.getFilteredRowModel().rows.length;

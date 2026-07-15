@@ -21,7 +21,7 @@ interface Enveloped<T> {
 /** GET /v1/orders — the buyer's order history, newest first (bearer). */
 export async function listOrders(limit = 20): Promise<OrderSummary[]> {
   const res = await PurchaseApi.get<Enveloped<OrderSummary[]>>(endpoints.orders.list(limit));
-  return res.data?.data ?? [];
+  return res.data.data ?? [];
 }
 
 /**
@@ -35,7 +35,7 @@ export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
   const res = await PurchaseApi.post<Enveloped<Order>>(endpoints.orders.create, body, {
     headers: { 'Idempotency-Key': newIdempotencyKey() },
   });
-  const order = res.data?.data;
+  const order = res.data.data;
   if (!order?.orderId) throw new ApiError('Invalid order response', 0, res.data);
   return order;
 }
@@ -50,7 +50,7 @@ export async function payOrder(orderId: string, payload: PayOrderPayload): Promi
     payload,
     { headers: { 'Idempotency-Key': newIdempotencyKey() } },
   );
-  const ref = res.data?.data;
+  const ref = res.data.data;
   if (!ref?.paymentRef) throw new ApiError('Invalid payment response', 0, res.data);
   return ref;
 }
@@ -60,7 +60,7 @@ export async function getOrderPayment(orderId: string): Promise<PaymentOutcome> 
   const res = await PurchaseApi.get<Enveloped<{ outcome: PaymentOutcome }>>(
     endpoints.orders.payment(orderId),
   );
-  const outcome = res.data?.data?.outcome;
+  const outcome = res.data.data?.outcome;
   if (!outcome) throw new ApiError('Invalid payment outcome response', 0, res.data);
   return outcome;
 }
@@ -68,7 +68,7 @@ export async function getOrderPayment(orderId: string): Promise<PaymentOutcome> 
 /** GET /v1/orders/:id — order status + shipping fulfillment (bearer). */
 export async function getOrder(orderId: string): Promise<OrderTracking> {
   const res = await PurchaseApi.get<Enveloped<OrderTracking>>(endpoints.orders.byId(orderId));
-  const order = res.data?.data;
+  const order = res.data.data;
   if (!order?.orderId) throw new ApiError('Invalid order response', 0, res.data);
   return order;
 }
@@ -76,7 +76,7 @@ export async function getOrder(orderId: string): Promise<OrderTracking> {
 /** GET /v1/orders/:id/invoice — the GST invoice for a paid order (bearer). */
 export async function getOrderInvoice(orderId: string): Promise<Invoice> {
   const res = await PurchaseApi.get<Enveloped<Invoice>>(endpoints.orders.invoice(orderId));
-  const invoice = res.data?.data;
+  const invoice = res.data.data;
   if (!invoice?.id && !invoice?.invoiceNumber) {
     throw new ApiError('Invalid invoice response', 0, res.data);
   }

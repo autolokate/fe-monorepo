@@ -37,7 +37,7 @@ export function validateContactForm(fields: ContactFormFields): string | null {
   const name = fields.name.trim();
   if (!name) return 'Please enter your name.';
   if (name.length > MAX_CONTACT_NAME) {
-    return `Name must be at most ${MAX_CONTACT_NAME} characters.`;
+    return `Name must be at most ${String(MAX_CONTACT_NAME)} characters.`;
   }
 
   const numberRaw = fields.number.trim();
@@ -53,7 +53,7 @@ export function validateContactForm(fields: ContactFormFields): string | null {
   const message = fields.message.trim();
   if (!message) return 'Please enter your message.';
   if (message.length > MAX_CONTACT_MESSAGE) {
-    return `Message must be at most ${MAX_CONTACT_MESSAGE} characters.`;
+    return `Message must be at most ${String(MAX_CONTACT_MESSAGE)} characters.`;
   }
 
   return null;

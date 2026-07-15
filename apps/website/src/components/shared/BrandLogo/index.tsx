@@ -56,7 +56,7 @@ export function BrandLogo({ brand, size = 22, variant = 'square', className }: B
         alt={`${brand} logo`}
         fill
         className="object-contain p-1"
-        sizes={`${Math.max(width, 24)}px`}
+        sizes={`${String(Math.max(width, 24))}px`}
         unoptimized={remote}
       />
     </span>

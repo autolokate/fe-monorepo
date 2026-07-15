@@ -24,6 +24,7 @@ export function PlanCarousel() {
   // the purchase flow can preselect the plan and send them back on "back".
   const choosePlan = useCallback(
     (planId: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- usePathname() is typed string but can be null in practice; keep the fallback
       writePurchaseIntent({ plan: planId, from: pathname ?? '/' });
       router.push(PURCHASE_ROUTE);
     },
@@ -57,7 +58,9 @@ export function PlanCarousel() {
     const id = window.setInterval(() => {
       setActive((prev) => (prev + 1) % count);
     }, AUTO_ROTATE_MS);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+    };
   }, [paused, count]);
 
   if (count === 0) {
@@ -77,14 +80,24 @@ export function PlanCarousel() {
   return (
     <div
       className={styles.carousel}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
+      onMouseEnter={() => {
+        setPaused(true);
+      }}
+      onMouseLeave={() => {
+        setPaused(false);
+      }}
+      onFocusCapture={() => {
+        setPaused(true);
+      }}
+      onBlurCapture={() => {
+        setPaused(false);
+      }}
     >
       <button
         type="button"
-        onClick={() => go(-1)}
+        onClick={() => {
+          go(-1);
+        }}
         className={`${styles.navButton} ${styles.navPrev}`}
         aria-label="Previous plan"
       >
@@ -112,10 +125,18 @@ export function PlanCarousel() {
                   className={styles.slotClick}
                   tabIndex={-1}
                   aria-label={`Show ${plan.tierLabel} plan`}
-                  onClick={() => setActive(index)}
+                  onClick={() => {
+                    setActive(index);
+                  }}
                 />
               ) : null}
-              <PlanCard plan={plan} focused={isCenter} onChoose={() => choosePlan(plan.id)} />
+              <PlanCard
+                plan={plan}
+                focused={isCenter}
+                onChoose={() => {
+                  choosePlan(plan.id);
+                }}
+              />
             </div>
           );
         })}
@@ -123,7 +144,9 @@ export function PlanCarousel() {
 
       <button
         type="button"
-        onClick={() => go(1)}
+        onClick={() => {
+          go(1);
+        }}
         className={`${styles.navButton} ${styles.navNext}`}
         aria-label="Next plan"
       >
@@ -135,7 +158,9 @@ export function PlanCarousel() {
           <button
             key={plan.id}
             type="button"
-            onClick={() => setActive(index)}
+            onClick={() => {
+              setActive(index);
+            }}
             className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show ${plan.tierLabel} plan`}
             aria-current={index === active}

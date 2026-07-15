@@ -53,7 +53,7 @@ export function buildCompareData(plans: Plan[]): CompareData {
     id: plan.id,
     title: plan.name,
     rows: plan.features.map((label, rowIndex) => ({
-      id: `${plan.id}-${rowIndex}`,
+      id: `${plan.id}-${String(rowIndex)}`,
       label,
       cells: sorted.map((_, colIndex) => colIndex >= introIndex),
     })),

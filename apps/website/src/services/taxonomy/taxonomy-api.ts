@@ -2,7 +2,7 @@
 
 import { endpoints } from '@/lib/api/endpoints';
 import { ApiService } from '@/services/api.service';
-import { readObject, unbox } from '@/lib/catalogue/normalize';
+import { readObject, toStr, unbox } from '@/lib/catalogue/normalize';
 
 type Envelope<T> = { success?: boolean; data?: T };
 
@@ -26,18 +26,18 @@ export type TaxonomyBundle = {
 function normalizeSpec(raw: unknown): TaxonomySpecRow {
   const row = readObject(raw);
   return {
-    canonical_key: String(row.canonical_key ?? row.key ?? '').trim(),
-    display_name: String(row.display_name ?? '').trim(),
-    spec_group: String(row.spec_group ?? 'other').trim(),
+    canonical_key: toStr(row.canonical_key ?? row.key).trim(),
+    display_name: toStr(row.display_name).trim(),
+    spec_group: row.spec_group != null ? toStr(row.spec_group).trim() : 'other',
   };
 }
 
 function normalizeFeature(raw: unknown): TaxonomyFeatureRow {
   const row = readObject(raw);
   return {
-    canonical_key: String(row.canonical_key ?? row.key ?? '').trim(),
-    display_name: String(row.display_name ?? '').trim(),
-    feature_group: String(row.feature_group ?? 'other').trim(),
+    canonical_key: toStr(row.canonical_key ?? row.key).trim(),
+    display_name: toStr(row.display_name).trim(),
+    feature_group: row.feature_group != null ? toStr(row.feature_group).trim() : 'other',
   };
 }
 

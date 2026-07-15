@@ -7,7 +7,7 @@ import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { PageFade } from '@/components/shared/PageFade';
 import { Button } from '@/components/ui/button';
 import { useBrandDetails, useBrandModels, useCatalogueBrandsForCategory } from '@/hooks/catalogue';
-import type { CatalogueModel } from '@/lib/catalogue/types';
+import type { VehicleCategory } from '@/lib/preferences';
 
 import { BrandCatalogueHero, BrandCatalogueHeroSkeleton } from './BrandHero';
 import { BrandCatalogueListing } from './BrandCatalogueListing';
@@ -19,7 +19,7 @@ const BRAND_PAGE_HERO_SHELL =
   'relative overflow-hidden border-b border-border bg-gradient-to-br from-zinc-50 via-zinc-100/60 to-zinc-50';
 
 export interface BrandModelsPageProps {
-  vehicleType: import('@/lib/preferences').VehicleCategory;
+  vehicleType: VehicleCategory;
   brandSlug: string;
 }
 
@@ -40,7 +40,7 @@ function slugToLabel(slug: string): string {
 export function BrandModelsPage({ vehicleType, brandSlug }: BrandModelsPageProps) {
   const copy = BRAND_MODELS_COPY[vehicleType];
 
-  const slug = decodeURIComponent(String(brandSlug ?? '').trim());
+  const slug = decodeURIComponent(brandSlug.trim());
 
   const {
     data: brand,
@@ -62,8 +62,8 @@ export function BrandModelsPage({ vehicleType, brandSlug }: BrandModelsPageProps
   );
 
   const displayName =
-    brand?.brand_name?.trim() ||
-    models?.find((m) => (m as CatalogueModel).brand_name)?.brand_name?.trim() ||
+    brand?.brand_name.trim() ||
+    models?.find((m) => m.brand_name)?.brand_name?.trim() ||
     slugToLabel(slug);
 
   const hasModelsPayload = models !== undefined;
@@ -74,7 +74,7 @@ export function BrandModelsPage({ vehicleType, brandSlug }: BrandModelsPageProps
       (m) => typeof m.hero_image_url === 'string' && m.hero_image_url.trim().length > 0,
     );
     return withImg.slice(0, 3).map((m) => ({
-      url: m.hero_image_url!.trim(),
+      url: (m.hero_image_url ?? '').trim(),
       label: `${displayName} ${m.model_name || m.name || 'Model'}`,
     }));
   }, [resolvedModels, displayName]);
@@ -170,7 +170,7 @@ export function BrandModelsPage({ vehicleType, brandSlug }: BrandModelsPageProps
           lockedBrandBadge={displayName}
           modelsHeading={copy.modelsHeading}
           emptyCatalogueCopy={copy.emptyModels}
-          isInitialLoading={Boolean(modelsLoading && models === undefined)}
+          isInitialLoading={modelsLoading && models === undefined}
           modelsError={modelsError}
           onRetryModels={() => void refetchModels()}
         />

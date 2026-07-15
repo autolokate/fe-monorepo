@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 import {
   CheckCircle2,
   Loader2,
@@ -34,7 +34,9 @@ export function ContactForm() {
       setSuccess(true);
       reset();
     },
-    onError: (apiErr) => setError(apiErr.message),
+    onError: (apiErr) => {
+      setError(apiErr.message);
+    },
   });
 
   function reset() {
@@ -44,7 +46,7 @@ export function ContactForm() {
     setMessage('');
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
 
@@ -99,7 +101,9 @@ export function ContactForm() {
               placeholder="Your Name"
               autoComplete="name"
               value={name}
-              onChange={(e) => setName(e.target.value.slice(0, MAX_CONTACT_NAME))}
+              onChange={(e) => {
+                setName(e.target.value.slice(0, MAX_CONTACT_NAME));
+              }}
               className={styles.fieldInput}
               required
               maxLength={MAX_CONTACT_NAME}
@@ -114,7 +118,9 @@ export function ContactForm() {
               placeholder="Email Address"
               autoComplete="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
               className={styles.fieldInput}
               required
             />
@@ -129,7 +135,9 @@ export function ContactForm() {
               placeholder="Phone Number"
               autoComplete="tel"
               value={number}
-              onChange={(e) => setNumber(e.target.value)}
+              onChange={(e) => {
+                setNumber(e.target.value);
+              }}
               className={styles.fieldInput}
               required
             />
@@ -142,7 +150,9 @@ export function ContactForm() {
               rows={4}
               placeholder="How can we help you today?"
               value={message}
-              onChange={(e) => setMessage(e.target.value.slice(0, MAX_CONTACT_MESSAGE))}
+              onChange={(e) => {
+                setMessage(e.target.value.slice(0, MAX_CONTACT_MESSAGE));
+              }}
               className={`${styles.fieldInput} ${styles.textarea}`}
               required
               maxLength={MAX_CONTACT_MESSAGE}

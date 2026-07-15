@@ -144,6 +144,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
         </div>
       }
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- form-level Enter-to-submit handler; the submit button lives in the sheet footer and is associated via the form attribute, so this keyboard handler is legitimate form interaction */}
       <form
         id="create-sku-form"
         onSubmit={(event) => {

@@ -23,14 +23,14 @@ export function useCartPricing(params: CheckoutParams): {
     void (async () => {
       let result = await priceCheckoutCart(params);
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `cancelled` is flipped by the effect cleanup (async closure); the rule can't see that mutation
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- cancelled is flipped true by the effect cleanup during the await; TS narrows it to false and can't model the async race.
       if (!cancelled && !result.ok && result.error.code === 'catalog_stale') {
         clearPlansCache();
         await loadPlans();
         result = await priceCheckoutCart(params, { force: true });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `cancelled` is flipped by the effect cleanup (async closure); the rule can't see that mutation
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- cancelled is flipped true by the effect cleanup during the await; TS narrows it to false and can't model the async race.
       if (cancelled) {
         return;
       }

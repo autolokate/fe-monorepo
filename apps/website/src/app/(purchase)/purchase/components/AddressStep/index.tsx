@@ -259,7 +259,9 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   };
 
   const handleBlur = () => {
-    blurTimer.current = setTimeout(() => setOpen(false), 150);
+    blurTimer.current = setTimeout(() => {
+      setOpen(false);
+    }, 150);
   };
 
   const handleClearSearch = () => {
@@ -392,7 +394,9 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               <div
                 key={a.id}
                 className={cn(styles.addrCard, active && styles.addrCardActive)}
-                onClick={() => setSelectedId(a.id)}
+                onClick={() => {
+                  setSelectedId(a.id);
+                }}
                 role="radio"
                 aria-checked={active}
                 tabIndex={0}
@@ -475,8 +479,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
         <DeleteDialog
           target={deleteTarget}
           deleting={deleting}
-          onCancel={() => setDeleteTarget(null)}
-          onConfirm={confirmDelete}
+          onCancel={() => {
+            setDeleteTarget(null);
+          }}
+          onConfirm={() => {
+            void confirmDelete();
+          }}
         />
       </StepShell>
     );
@@ -499,8 +507,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           value={state.name}
           state={nameTouched && !nameValid ? 'error' : 'default'}
           errorText={nameTouched && !nameValid ? 'Full name is required' : undefined}
-          onChange={(e) => update({ name: e.target.value })}
-          onBlur={() => setNameTouched(true)}
+          onChange={(e) => {
+            update({ name: e.target.value });
+          }}
+          onBlur={() => {
+            setNameTouched(true);
+          }}
           autoComplete="name"
         />
         <AlTextField
@@ -516,12 +528,14 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               ? 'Enter a valid 10-digit Indian mobile number'
               : undefined
           }
-          onChange={(e) =>
+          onChange={(e) => {
             update({
               orderMobile: e.target.value.replace(/\D/g, '').slice(0, MOBILE_LENGTH),
-            })
-          }
-          onBlur={() => setMobileTouched(true)}
+            });
+          }}
+          onBlur={() => {
+            setMobileTouched(true);
+          }}
           autoComplete="tel"
         />
         <AlTextField
@@ -535,8 +549,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           value={state.email}
           state={emailTouched && !emailValid ? 'error' : 'default'}
           errorText={emailTouched && !emailValid ? 'Enter a valid email address' : undefined}
-          onChange={(e) => update({ email: e.target.value })}
-          onBlur={() => setEmailTouched(true)}
+          onChange={(e) => {
+            update({ email: e.target.value });
+          }}
+          onBlur={() => {
+            setEmailTouched(true);
+          }}
           autoComplete="email"
         />
 
@@ -548,9 +566,13 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
             className={cn(query.trim().length > 0 && styles.clearable)}
             placeholder="Start typing — e.g. Rajiv Chowk"
             value={query}
-            onChange={(e) => handleQueryChange(e.target.value)}
+            onChange={(e) => {
+              handleQueryChange(e.target.value);
+            }}
             onKeyDown={handleKeyDown}
-            onFocus={() => query.trim() && setOpen(true)}
+            onFocus={() => {
+              if (query.trim()) setOpen(true);
+            }}
             onBlur={handleBlur}
             autoComplete="off"
             role="combobox"
@@ -585,9 +607,15 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                         styles.suggestion,
                         i === activeIndex && styles.suggestionActive,
                       )}
-                      onMouseEnter={() => setActiveIndex(i)}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handlePick(s)}
+                      onMouseEnter={() => {
+                        setActiveIndex(i);
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                      }}
+                      onClick={() => {
+                        void handlePick(s);
+                      }}
                     >
                       <MapPin className={styles.pin} aria-hidden />
                       <span className={styles.suggestionText}>
@@ -618,8 +646,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               value={state.addr}
               state={addrTouched && !addrValid ? 'error' : 'default'}
               errorText={addrTouched && !addrValid ? 'This field is required' : undefined}
-              onChange={(e) => update({ addr: e.target.value })}
-              onBlur={() => setAddrTouched(true)}
+              onChange={(e) => {
+                update({ addr: e.target.value });
+              }}
+              onBlur={() => {
+                setAddrTouched(true);
+              }}
               autoComplete="street-address"
             />
             <AlTextField
@@ -630,8 +662,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               value={state.line2}
               state={line2Touched && !line2Valid ? 'error' : 'default'}
               errorText={line2Touched && !line2Valid ? 'This field is required' : undefined}
-              onChange={(e) => update({ line2: e.target.value })}
-              onBlur={() => setLine2Touched(true)}
+              onChange={(e) => {
+                update({ line2: e.target.value });
+              }}
+              onBlur={() => {
+                setLine2Touched(true);
+              }}
               autoComplete="address-line2"
             />
             <div className={styles.row}>
@@ -646,12 +682,16 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                 className={cn(pinLocked && styles.locked)}
                 state={pinTouched && !pinValid ? 'error' : 'default'}
                 errorText={
-                  pinTouched && !pinValid ? `Enter a ${PIN_LENGTH}-digit PIN code` : undefined
+                  pinTouched && !pinValid
+                    ? `Enter a ${String(PIN_LENGTH)}-digit PIN code`
+                    : undefined
                 }
-                onChange={(e) =>
-                  update({ pin: e.target.value.replace(/\D/g, '').slice(0, PIN_LENGTH) })
-                }
-                onBlur={() => setPinTouched(true)}
+                onChange={(e) => {
+                  update({ pin: e.target.value.replace(/\D/g, '').slice(0, PIN_LENGTH) });
+                }}
+                onBlur={() => {
+                  setPinTouched(true);
+                }}
                 autoComplete="postal-code"
               />
               <AlTextField
@@ -664,8 +704,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                 className={cn(lockResolved && styles.locked)}
                 state={cityTouched && !cityValid ? 'error' : 'default'}
                 errorText={cityTouched && !cityValid ? 'City is required' : undefined}
-                onChange={(e) => update({ city: e.target.value })}
-                onBlur={() => setCityTouched(true)}
+                onChange={(e) => {
+                  update({ city: e.target.value });
+                }}
+                onBlur={() => {
+                  setCityTouched(true);
+                }}
                 autoComplete="address-level2"
               />
             </div>
@@ -679,8 +723,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               className={cn(lockResolved && styles.locked)}
               state={regionTouched && !regionValid ? 'error' : 'default'}
               errorText={regionTouched && !regionValid ? 'State is required' : undefined}
-              onChange={(e) => update({ region: e.target.value })}
-              onBlur={() => setRegionTouched(true)}
+              onChange={(e) => {
+                update({ region: e.target.value });
+              }}
+              onBlur={() => {
+                setRegionTouched(true);
+              }}
               autoComplete="address-level1"
             />
           </>
@@ -695,7 +743,9 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
         icon={<ArrowRight className="h-4 w-4" aria-hidden />}
         iconPosition="end"
         disabled={!addressOk || savingForm}
-        onClick={handleFormContinue}
+        onClick={() => {
+          void handleFormContinue();
+        }}
       >
         {savingForm ? 'Saving…' : 'Review order'}
       </AlButton>

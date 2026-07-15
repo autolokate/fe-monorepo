@@ -28,7 +28,9 @@ export function ProtectionCarousel() {
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   return (
@@ -52,7 +54,7 @@ export function ProtectionCarousel() {
         {PROTECTION_CARDS.map((card, index) => (
           <li
             key={card.id}
-            style={{ transitionDelay: `${index * 90}ms` }}
+            style={{ transitionDelay: `${String(index * 90)}ms` }}
             className={`${styles.reveal} ${revealed ? styles.revealIn : ''} min-w-0 shrink-0 basis-[80%] snap-start min-[480px]:basis-[55%] sm:basis-[44%] lg:basis-[calc((100%-3rem)/4)]`}
           >
             <ProtectionCard card={card} />

@@ -13,7 +13,9 @@ export function useIsAuthenticated(): boolean | null {
   const [authed, setAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const read = () => setAuthed(hasAuthTokens());
+    const read = () => {
+      setAuthed(hasAuthTokens());
+    };
     read();
     return subscribeAuthChange(read);
   }, []);

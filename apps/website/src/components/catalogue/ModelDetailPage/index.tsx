@@ -72,7 +72,7 @@ function findSpec(specGroups: SpecGroupRow[], needles: string[]): string | null 
 }
 
 function variantFuelKey(v: CatalogueVariant): string {
-  const raw = String(v.fuel_type ?? '').toLowerCase();
+  const raw = (v.fuel_type ?? '').toLowerCase();
   if (/electric|ev\b|battery/.test(raw)) return 'electric';
   if (raw.includes('cng')) return 'cng';
   if (raw.includes('diesel')) return 'diesel';
@@ -84,11 +84,18 @@ function groupVariantsByFuel(variants: CatalogueVariant[]) {
   const map = new Map<string, CatalogueVariant[]>();
   for (const v of variants) {
     const k = variantFuelKey(v);
-    if (!map.has(k)) map.set(k, []);
-    map.get(k)!.push(v);
+    let items = map.get(k);
+    if (!items) {
+      items = [];
+      map.set(k, items);
+    }
+    items.push(v);
   }
   const order = ['diesel', 'petrol', 'cng', 'electric', 'other'];
-  return order.filter((k) => map.has(k)).map((k) => ({ fuel: k, items: map.get(k)! }));
+  return order.flatMap((k) => {
+    const items = map.get(k);
+    return items ? [{ fuel: k, items }] : [];
+  });
 }
 
 /** Fixed site header (~64–88px) — used so anchor scroll lands below it. */
@@ -114,7 +121,9 @@ function FloatingDock() {
         type="button"
         title="Price, EMI & compare"
         aria-label="Scroll to price, EMI and compare section"
-        onClick={() => scrollToSection('finance-strip')}
+        onClick={() => {
+          scrollToSection('finance-strip');
+        }}
       >
         <Wallet className="h-4 w-4 shrink-0" aria-hidden />
       </Button>
@@ -171,23 +180,23 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
     }
     setSelectedKey((prev) => {
       if (prev && variants.some((v) => String(v.slug ?? v.id) === prev)) return prev;
-      return String(variants[0]?.slug ?? variants[0]?.id ?? '');
+      return variants[0]?.slug ?? variants[0]?.id ?? '';
     });
   }, [variants]);
 
   const selectedVariant = useMemo(() => {
     if (!variants.length) return null;
     const k = selectedKey;
-    return variants.find((v) => String(v.slug ?? v.id) === k) ?? variants[0] ?? null;
+    return variants.find((v) => String(v.slug ?? v.id) === k) ?? variants[0];
   }, [variants, selectedKey]);
 
-  const variantId = String(selectedVariant?.id ?? '').trim();
+  const variantId = (selectedVariant?.id ?? '').trim();
 
   const fuelGroups = useMemo(() => groupVariantsByFuel(variants), [variants]);
   const [fuelTab, setFuelTab] = useState<string>('diesel');
   useEffect(() => {
     if (fuelGroups.length && !fuelGroups.some((g) => g.fuel === fuelTab)) {
-      setFuelTab(fuelGroups[0]!.fuel);
+      setFuelTab(fuelGroups[0].fuel);
     }
   }, [fuelGroups, fuelTab]);
 
@@ -207,21 +216,21 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
   const specKeyLabel = useMemo(() => {
     const m = new Map<string, string>();
     for (const s of taxonomyQuery.data?.specs ?? []) {
-      const k = s.canonical_key?.toLowerCase();
+      const k = s.canonical_key.toLowerCase();
       if (k) m.set(k, s.display_name);
     }
     return m;
   }, [taxonomyQuery.data]);
 
   const heroTitle = listing
-    ? `${humanizeSegment(String(listing.brand_name ?? slugBrand))} ${modelLabelFor(listing)}`
+    ? `${humanizeSegment(listing.brand_name ?? slugBrand)} ${modelLabelFor(listing)}`
     : humanizeSegment(slugModel);
 
   const heroImages = useMemo(() => {
     const urls: string[] = [];
     const imgs = data?.modelImages ?? [];
     for (const row of imgs) {
-      const u = imageUrlFrom(row as Record<string, unknown>);
+      const u = imageUrlFrom(row);
       if (u) urls.push(u);
     }
     const hero = listing?.hero_image_url;
@@ -232,9 +241,8 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
 
   const activeHero = heroImages[Math.min(thumbIndex, heroImages.length - 1)] ?? '';
 
-  const reviewCount = data?.reviews?.length ?? 0;
-  const ratingFromApi =
-    typeof data?.details?.rating === 'number' ? (data.details.rating as number) : 4.2;
+  const reviewCount = data?.reviews.length ?? 0;
+  const ratingFromApi = typeof data?.details.rating === 'number' ? data.details.rating : 4.2;
 
   const exPrice =
     selectedVariant?.ex_showroom_price ??
@@ -307,9 +315,11 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
               <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
                 {heroImages.map((src, i) => (
                   <button
-                    key={`${src}-${i}`}
+                    key={`${src}-${String(i)}`}
                     type="button"
-                    onClick={() => setThumbIndex(i)}
+                    onClick={() => {
+                      setThumbIndex(i);
+                    }}
                     className={cn(
                       'h-14 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all sm:h-16 sm:w-24',
                       i === thumbIndex
@@ -330,8 +340,8 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
                 {selectedVariant
-                  ? String(selectedVariant.variant_name ?? selectedVariant.name ?? 'Variant')
-                  : `${modelLabelFor(listing!)} — India`}
+                  ? (selectedVariant.variant_name ?? selectedVariant.name ?? 'Variant')
+                  : `${modelLabelFor(data.listing)} — India`}
               </p>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -376,7 +386,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       variant="ghost"
                       type="button"
                       className="mt-2 h-auto px-0 text-xs font-semibold text-primary hover:bg-transparent hover:text-primary/90"
-                      onClick={() => setOnRoadPanelOpen(true)}
+                      onClick={() => {
+                        setOnRoadPanelOpen(true);
+                      }}
                     >
                       <ChevronDown className="h-3.5 w-3.5" aria-hidden />
                       Show full breakdown
@@ -390,7 +402,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       variant="primary"
                       type="button"
                       className="h-12 w-full sm:max-w-sm"
-                      onClick={() => setOnRoadPanelOpen(true)}
+                      onClick={() => {
+                        setOnRoadPanelOpen(true);
+                      }}
                     >
                       <MapIcon className="h-4 w-4" aria-hidden />
                       Check on-road price
@@ -409,7 +423,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       </label>
                       <Select
                         value={tcoCity ?? ON_ROAD_CITY_UNSET}
-                        onValueChange={(v) => setTcoCity(v === ON_ROAD_CITY_UNSET ? null : v)}
+                        onValueChange={(v) => {
+                          setTcoCity(v === ON_ROAD_CITY_UNSET ? null : v);
+                        }}
                       >
                         <SelectTrigger
                           id="on-road-city"
@@ -512,7 +528,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       variant="ghost"
                       type="button"
                       className="h-auto w-full justify-center py-2 text-xs text-muted-foreground hover:text-foreground"
-                      onClick={() => setOnRoadPanelOpen(false)}
+                      onClick={() => {
+                        setOnRoadPanelOpen(false);
+                      }}
                     >
                       <ChevronUp className="h-3.5 w-3.5" aria-hidden />
                       Hide on-road details
@@ -559,7 +577,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                             >
                               <dt className="text-muted-foreground">{label}</dt>
                               <dd className="text-right font-medium tabular-nums">
-                                {val && String(val).trim() && val !== '—' ? val : '—'}
+                                {val && val.trim() && val !== '—' ? val : '—'}
                               </dd>
                             </div>
                           ))}
@@ -658,14 +676,16 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       <div className="flex gap-2 overflow-x-auto pb-2">
                         {g.items.map((v, idx) => {
                           const key = String(v.slug ?? v.id ?? idx);
-                          const name = String(v.variant_name ?? v.name ?? key);
+                          const name = v.variant_name ?? v.name ?? key;
                           const price = v.ex_showroom_price ?? v.min_price;
                           const selected = selectedKey === key;
                           return (
                             <button
                               key={key}
                               type="button"
-                              onClick={() => setSelectedKey(key)}
+                              onClick={() => {
+                                setSelectedKey(key);
+                              }}
                               className={cn(
                                 'min-w-[148px] max-w-[200px] shrink-0 rounded-xl border px-3 py-2.5 text-left transition-all sm:min-w-[156px] sm:max-w-[210px]',
                                 selected
@@ -687,7 +707,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                                 {typeof price === 'number' && price > 0 ? formatINR(price) : '—'}
                               </p>
                               <p className="mt-0.5 text-[10px] text-muted-foreground capitalize leading-tight sm:text-xs">
-                                {String(v.fuel_type ?? g.fuel)} · variant
+                                {v.fuel_type ?? g.fuel} · variant
                               </p>
                             </button>
                           );
@@ -723,8 +743,8 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                         >
                           {data.specGroups.map((g, i) => (
                             <AccordionItem
-                              key={`${g.group}-${i}`}
-                              value={`spec-group-${i}`}
+                              key={`${g.group}-${String(i)}`}
+                              value={`spec-group-${String(i)}`}
                               className="border-border/60 px-4 last:border-b-0"
                             >
                               <AccordionTrigger className="py-3.5 text-base font-semibold capitalize text-foreground hover:no-underline hover:text-primary [&[data-state=open]]:text-primary">
@@ -762,7 +782,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                 <TabsContent value="features" className="mt-0">
                   {data.featureGroups[0]?.features?.length ? (
                     <div className="space-y-4">
-                      {data.featureGroups[0]!.features.map((f) => (
+                      {data.featureGroups[0].features.map((f) => (
                         <Card key={f.key} className="border-border/80 bg-card/90 dark:bg-card/60">
                           <CardHeader className="pb-2">
                             <CardTitle className="text-base capitalize">{f.display_name}</CardTitle>
@@ -792,12 +812,17 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   <div className="flex flex-wrap gap-3">
                     {data.modelColors.length ? (
                       data.modelColors.map((c, i) => {
-                        const rec = c as Record<string, unknown>;
-                        const name = String(rec.name ?? rec.label ?? `Colour ${i + 1}`);
-                        const hex = String(rec.hex ?? rec.color_code ?? '#999');
+                        const rec = c;
+                        const rawName = rec.name ?? rec.label;
+                        const name =
+                          typeof rawName === 'string' && rawName
+                            ? rawName
+                            : `Colour ${String(i + 1)}`;
+                        const rawHex = rec.hex ?? rec.color_code;
+                        const hex = typeof rawHex === 'string' && rawHex ? rawHex : '#999';
                         return (
                           <div
-                            key={`${name}-${i}`}
+                            key={`${name}-${String(i)}`}
                             className="flex items-center gap-2 rounded-xl border border-border/80 bg-card px-3 py-2"
                           >
                             <span
@@ -894,7 +919,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   variant="outline"
                   className="h-11 w-full shrink-0 justify-center border-primary/70 font-semibold text-primary shadow-[0_2px_12px_-4px_rgba(15,23,42,0.18)] hover:border-primary hover:bg-primary/10 hover:text-primary"
                   type="button"
-                  onClick={() => scrollToSection('variants')}
+                  onClick={() => {
+                    scrollToSection('variants');
+                  }}
                 >
                   <GitCompare className="h-4 w-4" aria-hidden />
                   Compare variants

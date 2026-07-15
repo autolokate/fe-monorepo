@@ -49,7 +49,7 @@ export function useOrderPayment(orderId: string | null, intervalMs = 3000): UseO
       } catch {
         // Transient failure — keep polling.
       }
-      if (active) timerRef.current = window.setTimeout(tick, intervalMs);
+      if (active) timerRef.current = window.setTimeout(() => void tick(), intervalMs);
     };
 
     void tick();

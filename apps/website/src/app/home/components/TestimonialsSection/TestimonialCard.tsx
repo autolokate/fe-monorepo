@@ -25,7 +25,7 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
 
       <div
         className="mt-4 flex items-center gap-1"
-        aria-label={`${rating} out of ${MAX_STARS} stars`}
+        aria-label={`${String(rating)} out of ${String(MAX_STARS)} stars`}
       >
         {Array.from({ length: MAX_STARS }).map((_, index) => (
           <Star

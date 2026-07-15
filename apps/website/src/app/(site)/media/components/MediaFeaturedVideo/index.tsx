@@ -31,7 +31,9 @@ export function MediaFeaturedVideo() {
           ) : (
             <button
               type="button"
-              onClick={() => setPlaying(true)}
+              onClick={() => {
+                setPlaying(true);
+              }}
               aria-label={`Play video: ${title}`}
               className="group absolute inset-0 flex items-center justify-center"
             >

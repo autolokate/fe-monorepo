@@ -39,7 +39,9 @@ function OrderRow({
       <button
         type="button"
         className={styles.card}
-        onClick={() => onSelect(order)}
+        onClick={() => {
+          onSelect(order);
+        }}
         aria-label={`View details for ${order.planName} order`}
       >
         <div className={styles.cardHead}>
@@ -49,10 +51,12 @@ function OrderRow({
             </span>
             <div>
               <p className={styles.planName}>{order.planName}</p>
+              {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- backend OrderKind can outrun the FE union; fall back to the raw code */}
               <p className={styles.kind}>{ORDER_KIND_LABELS[order.orderKind] ?? order.orderKind}</p>
             </div>
           </div>
           <span className={cn(styles.pill, statusClass(order.status))}>
+            {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- backend OrderStatus can outrun the FE union; fall back to the raw code */}
             {STATUS_LABELS[order.status] ?? order.status}
           </span>
         </div>
@@ -69,16 +73,14 @@ function OrderRow({
           <div className={styles.ship}>
             <span className={styles.shipStatus}>
               {shipStatus === 'DELIVERED'
-                ? `Delivered${fulfillment?.deliveredAt ? ` · ${formatDate(fulfillment.deliveredAt)}` : ''}`
+                ? `Delivered${fulfillment.deliveredAt ? ` · ${formatDate(fulfillment.deliveredAt)}` : ''}`
                 : shipStatus === 'SHIPPED' || shipStatus === 'IN_TRANSIT'
-                  ? `In transit${fulfillment?.courier ? ` · ${fulfillment.courier}` : ''}`
+                  ? `In transit${fulfillment.courier ? ` · ${fulfillment.courier}` : ''}`
                   : shipStatus === 'PAID'
                     ? 'Preparing your kit'
                     : shipStatus}
             </span>
-            {fulfillment?.awbNo ? (
-              <span className={styles.awb}>AWB {fulfillment.awbNo}</span>
-            ) : null}
+            {fulfillment.awbNo ? <span className={styles.awb}>AWB {fulfillment.awbNo}</span> : null}
             <span className={styles.viewDetail} aria-hidden>
               View details
               <ChevronRight className="h-3.5 w-3.5" />
@@ -138,7 +140,7 @@ export function MyOrders() {
     );
   }
 
-  const firstName = profile?.name?.trim().split(' ')[0] || 'there';
+  const firstName = profile?.name.trim().split(' ')[0] || 'there';
   const list = orders ?? [];
 
   return (
@@ -185,7 +187,9 @@ export function MyOrders() {
               size="sm"
               radius="lg"
               variant="primary"
-              onClick={() => router.push('/purchase')}
+              onClick={() => {
+                router.push('/purchase');
+              }}
             >
               Browse plans
             </AlButton>

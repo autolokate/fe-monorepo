@@ -47,15 +47,17 @@ export function IndianDriveGuidePlayer({
     if (!el) return;
     const obs = new IntersectionObserver(
       ([e]) => {
-        if (e?.isIntersecting) setInView(true);
+        if (e.isIntersecting) setInView(true);
       },
       { threshold: 0.28, rootMargin: '0px 0px -8% 0px' },
     );
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+    };
   }, [autoplayWhenVisible, reduceMotion]);
 
-  const autoplay = Boolean(inView && !reduceMotion && autoplayWhenVisible);
+  const autoplay = inView && !reduceMotion && autoplayWhenVisible;
   const iframeBase =
     'border-0 [contain:strict] pointer-events-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
 

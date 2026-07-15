@@ -21,7 +21,9 @@ export function MobileBottomNav() {
       label: item.shortLabel ?? item.label,
       icon: Icon ? <Icon size={22} aria-hidden /> : undefined,
       active: isNavItemActive(pathname, item.href),
-      onClick: () => router.push(item.href),
+      onClick: () => {
+        router.push(item.href);
+      },
     };
   });
 

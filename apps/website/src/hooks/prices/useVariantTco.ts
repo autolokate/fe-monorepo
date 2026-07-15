@@ -10,8 +10,8 @@ export function useVariantTco(
   options: { enabled?: boolean } = {},
 ) {
   const { enabled = true } = options;
-  const id = String(variantId ?? '').trim();
-  const c = String(city ?? '').trim();
+  const id = (variantId ?? '').trim();
+  const c = (city ?? '').trim();
   const canRun = Boolean(enabled && id && c);
 
   return useApiQuery<TcoBreakdown>(() => getTco(id, c), [id, c, enabled], {
