@@ -35,7 +35,12 @@ export function resolveJourneyCanonicalPath(context: CanonicalJourneyContext): s
     return paths.auth.mobile;
   }
 
-  if (authStatus !== AUTH_COMPLETED && hasAuthTokens() && session.auth?.isNewUser && !session.auth?.ownerName) {
+  if (
+    authStatus !== AUTH_COMPLETED &&
+    hasAuthTokens() &&
+    session.auth?.isNewUser &&
+    !session.auth.ownerName
+  ) {
     return paths.auth.vehicleOwner;
   }
 

@@ -5,7 +5,6 @@ import { AutolokateRootProvider } from '../platform/AutolokateRootProvider';
 import { ThemeProvider } from '../platform/theme/ThemeProvider';
 import { AuthSessionRegistrar } from '../platform/auth/AuthSessionRegistrar';
 import { DeviceRegistrationRegistrar } from '../platform/device/DeviceRegistrationRegistrar';
-import { PwaScanRoutes } from '../features/post-activation-pwa/routes/PwaScanRoutes';
 import { ScanRoutes } from '../features/post-activation-pwa/routes/ScanRoutes';
 import { PwaAppShell } from '../pwa/index';
 import { JourneyRoutes } from './routes/JourneyRoutes';

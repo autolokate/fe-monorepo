@@ -1,7 +1,4 @@
-import {
-  buildPurchasePaths,
-  parseJourneyIdFromPathname,
-} from '../routing/journey-url-routing';
+import { buildPurchasePaths, parseJourneyIdFromPathname } from '../routing/journey-url-routing';
 
 import { legacyPurchasePathRedirects, purchaseJourneyPathsFor } from './purchase-routing';
 
@@ -25,8 +22,6 @@ export const purchaseJourneyPaths = new Proxy({} as ReturnType<typeof purchaseJo
   },
 });
 
-export function purchaseVehicleLookupPath(registration: string): string;
-export function purchaseVehicleLookupPath(journeyId: string, registration: string): string;
 export function purchaseVehicleLookupPath(
   journeyIdOrRegistration: string,
   registration?: string,
@@ -38,8 +33,6 @@ export function purchaseVehicleLookupPath(
   return buildPurchasePaths(journeyId).vehicleLookup(journeyIdOrRegistration);
 }
 
-export function purchaseVehicleConfirmationPath(registration: string): string;
-export function purchaseVehicleConfirmationPath(journeyId: string, registration: string): string;
 export function purchaseVehicleConfirmationPath(
   journeyIdOrRegistration: string,
   registration?: string,

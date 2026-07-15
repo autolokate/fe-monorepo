@@ -23,12 +23,14 @@ export function useCartPricing(params: CheckoutParams): {
     void (async () => {
       let result = await priceCheckoutCart(params);
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `cancelled` is flipped by the effect cleanup (async closure); the rule can't see that mutation
       if (!cancelled && !result.ok && result.error.code === 'catalog_stale') {
         clearPlansCache();
         await loadPlans();
         result = await priceCheckoutCart(params, { force: true });
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- `cancelled` is flipped by the effect cleanup (async closure); the rule can't see that mutation
       if (cancelled) {
         return;
       }
@@ -39,12 +41,7 @@ export function useCartPricing(params: CheckoutParams): {
         return;
       }
 
-      reportUserError(
-        checkoutLogger,
-        'price_cart_failed',
-        result.error,
-        result.error.message,
-      );
+      reportUserError(checkoutLogger, 'price_cart_failed', result.error, result.error.message);
       setCartReady(true);
     })();
 

@@ -5,7 +5,7 @@ import {
   purchaseJourneyPathsFor,
   purchaseVehicleConfirmationPath,
 } from '@/journey/purchase/purchase-routing';
-import { buildQrEntryPath, parseJourneyIdFromPathname } from '@/journey/routing/journey-url-routing';
+import { buildQrEntryPath } from '@/journey/routing/journey-url-routing';
 import type { JourneySession } from '@/journey/types';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { getVehicle } from '@/storage/index';
@@ -21,7 +21,8 @@ export const PURCHASE_JOURNEY_KIND = {
   RESUME_CHECKOUT: 'resume_checkout',
 } as const;
 
-export type PurchaseJourneyKind = (typeof PURCHASE_JOURNEY_KIND)[keyof typeof PURCHASE_JOURNEY_KIND];
+export type PurchaseJourneyKind =
+  (typeof PURCHASE_JOURNEY_KIND)[keyof typeof PURCHASE_JOURNEY_KIND];
 
 export const PURCHASE_ROUTE_ID = {
   vehicleDetails: 'vehicle-details',
@@ -79,11 +80,10 @@ export function readPurchaseJourneyState(
   const stored = qrStorageRepository.readResolved();
   const skipsVehicleSteps = Boolean(stored && isAttachedQrLifecycleStatus(stored.qrStatus));
   const resolvedJourneyId =
-    journeyId?.trim() ||
-    resolvePurchaseQrCode(searchParams) ||
-    stored?.qrCode ||
-    null;
-  const paths = resolvedJourneyId ? purchaseJourneyPathsFor(resolvedJourneyId) : purchaseJourneyPathsFor('_');
+    journeyId?.trim() || resolvePurchaseQrCode(searchParams) || stored?.qrCode || null;
+  const paths = resolvedJourneyId
+    ? purchaseJourneyPathsFor(resolvedJourneyId)
+    : purchaseJourneyPathsFor('_');
 
   return {
     kind: skipsVehicleSteps
@@ -175,8 +175,7 @@ export function evaluatePurchaseRouteAccess(
 
   if (CHECKOUT_ROUTE_IDS.has(routeId)) {
     const hasPlanSelection =
-      Boolean(session.purchase?.selectedPlanId) ||
-      Boolean(getVehicle()?.selectedPlanId);
+      Boolean(session.purchase?.selectedPlanId) || Boolean(getVehicle()?.selectedPlanId);
 
     if (!hasPlanSelection && routeId !== PURCHASE_ROUTE_ID.choosePlan) {
       return { allowed: false, redirectTo: paths.choosePlan };

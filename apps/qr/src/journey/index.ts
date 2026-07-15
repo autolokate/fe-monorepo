@@ -15,7 +15,6 @@ export {
 export {
   getNextPurchasePath,
   getPrevPurchasePath,
-  purchaseJourneyPaths,
   purchaseStepPathSequence,
   purchaseVehicleConfirmationPath,
   purchaseVehicleLookupPath,

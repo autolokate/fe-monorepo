@@ -77,7 +77,9 @@ export function mapPlanOptionToDefinition(option: PlanOptionDto): PurchasePlanDe
   };
 }
 
-export function sortPlansByCarouselOrder(plans: PurchasePlanDefinition[]): PurchasePlanDefinition[] {
+export function sortPlansByCarouselOrder(
+  plans: PurchasePlanDefinition[],
+): PurchasePlanDefinition[] {
   return [...plans].sort(
     (left, right) => PURCHASE_PLAN_ORDER.indexOf(left.id) - PURCHASE_PLAN_ORDER.indexOf(right.id),
   );
@@ -96,7 +98,7 @@ export function getPlanVersionId(
   planId: PurchasePlanId,
 ): string | null {
   const plan = plans.find((entry) => entry.id === planId);
-  const versionId = plan?.planVersionId?.trim();
+  const versionId = plan?.planVersionId.trim();
   return versionId ? versionId : null;
 }
 

@@ -1,6 +1,5 @@
 import { Route, Routes, useParams } from 'react-router-dom';
 
-import { pwaScanPaths } from '../constants/pwa-scan-paths';
 import { PreserveSearchRedirect } from '../../../journey/guards/PreserveSearchRedirect';
 import { PwaScanErrorBoundary } from '../components/PwaScanErrorBoundary';
 import { buildScanPaths } from '../../../journey/routing/journey-url-routing';

@@ -1,19 +1,22 @@
-import { purchaseJourneyPaths, isPurchaseRoutePath } from '../purchase/purchase-routing';
+import { purchaseJourneyPathsFor, isPurchaseRoutePath } from '../purchase/purchase-routing';
 
 import type { RouteProgressConfig } from './route-progress.types';
 
 const NO_PROGRESS: RouteProgressConfig | null = null;
 
+// Journey-agnostic ('') purchase paths — identical to the former deprecated alias, without the symbol.
+const purchasePaths = purchaseJourneyPathsFor('');
+
 const STATIC_PURCHASE_PROGRESS: Record<string, RouteProgressConfig | null> = {
-  [purchaseJourneyPaths.vehicleDetails]: NO_PROGRESS,
-  [purchaseJourneyPaths.vehicleLookupFailed]: NO_PROGRESS,
-  [purchaseJourneyPaths.choosePlan]: NO_PROGRESS,
-  [purchaseJourneyPaths.riderCover]: NO_PROGRESS,
-  [purchaseJourneyPaths.orderSummary]: NO_PROGRESS,
-  [purchaseJourneyPaths.orderSummaryPromoApplied]: NO_PROGRESS,
-  [purchaseJourneyPaths.processingPayment]: NO_PROGRESS,
-  [purchaseJourneyPaths.paymentSuccess]: NO_PROGRESS,
-  [purchaseJourneyPaths.paymentFailed]: NO_PROGRESS,
+  [purchasePaths.vehicleDetails]: NO_PROGRESS,
+  [purchasePaths.vehicleLookupFailed]: NO_PROGRESS,
+  [purchasePaths.choosePlan]: NO_PROGRESS,
+  [purchasePaths.riderCover]: NO_PROGRESS,
+  [purchasePaths.orderSummary]: NO_PROGRESS,
+  [purchasePaths.orderSummaryPromoApplied]: NO_PROGRESS,
+  [purchasePaths.processingPayment]: NO_PROGRESS,
+  [purchasePaths.paymentSuccess]: NO_PROGRESS,
+  [purchasePaths.paymentFailed]: NO_PROGRESS,
 };
 
 export const purchaseRouteProgressByPath = STATIC_PURCHASE_PROGRESS;

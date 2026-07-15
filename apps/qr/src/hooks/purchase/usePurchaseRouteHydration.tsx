@@ -61,7 +61,7 @@ async function runPurchaseHydration(
   }
 
   const plansResult = await loadPlans();
-  if (!plansResult.ok && plansResult.error) {
+  if (!plansResult.ok) {
     reportUserError(
       planLogger,
       'purchase_plans_reload_failed',

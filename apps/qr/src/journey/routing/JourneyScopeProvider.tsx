@@ -1,12 +1,6 @@
-import {
-  createContext,
-  useContext,
-  useMemo,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 
-import { useJourney } from '../JourneyContext';
 import {
   buildJourneyScopedPaths,
   parseJourneyIdFromPathname,
@@ -25,7 +19,10 @@ export type JourneyScopeProviderProps = {
  * Binds the active journey id from the URL and exposes scoped path builders.
  * Does not block render — existing screen flows own QR resolve / API calls.
  */
-export function JourneyScopeProvider({ children, journeyId: journeyIdProp }: JourneyScopeProviderProps) {
+export function JourneyScopeProvider({
+  children,
+  journeyId: journeyIdProp,
+}: JourneyScopeProviderProps) {
   const params = useParams<{ journeyId?: string; qrCode?: string }>();
   const location = useLocation();
 
@@ -36,18 +33,13 @@ export function JourneyScopeProvider({ children, journeyId: journeyIdProp }: Jou
     parseJourneyIdFromPathname(location.pathname) ||
     '';
 
-  const paths = useMemo(
-    () => (journeyId ? buildJourneyScopedPaths(journeyId) : null),
-    [journeyId],
-  );
+  const paths = useMemo(() => (journeyId ? buildJourneyScopedPaths(journeyId) : null), [journeyId]);
 
   if (!journeyId || !paths) {
     return children;
   }
 
-  return (
-    <JourneyScopeContext.Provider value={paths}>{children}</JourneyScopeContext.Provider>
-  );
+  return <JourneyScopeContext.Provider value={paths}>{children}</JourneyScopeContext.Provider>;
 }
 
 export function useJourneyScope(): JourneyScopedPaths {

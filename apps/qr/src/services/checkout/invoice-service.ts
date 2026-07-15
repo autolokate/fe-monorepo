@@ -34,7 +34,7 @@ async function loadInvoiceUrl(orderId: string): Promise<string | null> {
   try {
     const client = getQrApiClient();
     const invoice = await getOrderInvoiceApi(client, orderId);
-    const url = resolveInvoiceUrl(invoice as Record<string, unknown>);
+    const url = resolveInvoiceUrl(invoice);
     if (!url) {
       checkoutLogger.warn('order_invoice_missing_url', { orderId, invoice });
       return null;

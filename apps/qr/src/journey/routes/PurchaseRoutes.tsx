@@ -2,13 +2,13 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { usePurchaseRouteHydration, PurchaseRouteHydrationProvider } from '../../hooks/purchase/usePurchaseRouteHydration';
+import {
+  usePurchaseRouteHydration,
+  PurchaseRouteHydrationProvider,
+} from '../../hooks/purchase/usePurchaseRouteHydration';
 import { AlScreenBg, AlScreenSpinner, formatPlateInput } from '@autolokate/ui';
 
-import {
-  isPlateEntryReady,
-  normalizePlate,
-} from '../../services/vehicle/index';
+import { isPlateEntryReady, normalizePlate } from '../../services/vehicle/index';
 import { compactPlate } from '@/services/vehicle/vehicle-plate';
 import { useVehicleLookup } from '../../hooks/vehicle/index';
 import {
@@ -28,10 +28,7 @@ import {
   R10cPaymentUnconfirmedScreen,
 } from '../../features/qr-purchase/screens/index';
 import type { PurchaseVehiclePlateState } from '../../features/qr-purchase/types-vehicle';
-import type {
-  PurchasePlanId,
-  PurchaseRiderCount,
-} from '../../features/qr-purchase/types-checkout';
+import type { PurchasePlanId, PurchaseRiderCount } from '../../features/qr-purchase/types-checkout';
 import { DEFAULT_PURCHASE_PLAN_ID } from '../../features/qr-purchase/data/purchase-plans';
 import { getVehicle } from '@/storage/index';
 import { buildOrderSummary } from '../../features/qr-purchase/data/purchase-pricing';
@@ -57,16 +54,17 @@ import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { reportUserError } from '@/platform/feedback/index';
 import { getPurchasePostPaymentEmergencyPath } from '../activation-routing';
-import { persistPurchaseSelections, persistVehicleContext } from '@/services/purchase/purchase-context-service';
+import {
+  persistPurchaseSelections,
+  persistVehicleContext,
+} from '@/services/purchase/purchase-context-service';
 import { checkoutLogger } from '@/services/checkout/checkout-logger';
 import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code';
 import { clearPromoPreviewCache, validatePromoCheckout } from '@/services/promo/index';
 import { promoLogger } from '@/services/promo/promo-logger';
 import { planLogger } from '@/services/plan/plan-logger';
 import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service';
-import {
-  PURCHASE_ROUTE_ID,
-} from '@/journey/state/purchase-journey-state-machine';
+import { PURCHASE_ROUTE_ID } from '@/journey/state/purchase-journey-state-machine';
 import { PurchaseRouteGate } from '../guards/PurchaseRouteGate';
 import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
 import { qrAttachLogger } from '@/services/qr/qr-attach-logger';
@@ -139,7 +137,9 @@ function getOrderSummaryPath(promoApplied?: boolean, promoInvalid?: boolean) {
   if (promoInvalid) {
     return purchaseJourneyPaths.orderSummaryInvalidPromo;
   }
-  return promoApplied ? purchaseJourneyPaths.orderSummaryPromoApplied : purchaseJourneyPaths.orderSummary;
+  return promoApplied
+    ? purchaseJourneyPaths.orderSummaryPromoApplied
+    : purchaseJourneyPaths.orderSummary;
 }
 
 /** After payment success, resume at R10 until the user continues to emergency. */
@@ -147,7 +147,9 @@ function getPostPaymentSuccessPath(): string {
   return purchaseJourneyPaths.paymentSuccess;
 }
 
-function getPostPaymentResumePath(purchase: ReturnType<typeof usePurchaseCheckout>['purchase']): string | null {
+function getPostPaymentResumePath(
+  purchase: ReturnType<typeof usePurchaseCheckout>['purchase'],
+): string | null {
   if (!purchase?.checkoutReady) {
     return null;
   }
@@ -351,8 +353,8 @@ function VehicleDetailsRoute() {
     }
     return 'empty';
   });
-  const [plateErrorMessage, setPlateErrorMessage] = useState<string | undefined>(() =>
-    blockedMessage ?? undefined,
+  const [plateErrorMessage, setPlateErrorMessage] = useState<string | undefined>(
+    () => blockedMessage ?? undefined,
   );
 
   useEffect(() => {
@@ -390,7 +392,12 @@ function VehicleDetailsRoute() {
 
     void resolveQrCode(code).then((result) => {
       if (!result.ok) {
-        reportUserError(qrLogger, 'purchase_resolve_refresh_failed', result.error, result.error.message);
+        reportUserError(
+          qrLogger,
+          'purchase_resolve_refresh_failed',
+          result.error,
+          result.error.message,
+        );
       }
     });
   }, [searchParams]);
@@ -605,13 +612,7 @@ function VehicleConfirmationRoute({ registrationNumber }: { registrationNumber: 
       });
     });
     void navigate(purchaseJourneyPaths.choosePlan, { replace: true });
-  }, [
-    navigate,
-    session.auth?.languageId,
-    session.auth?.ownerName,
-    updateSession,
-    vehicle,
-  ]);
+  }, [navigate, session.auth?.languageId, session.auth?.ownerName, updateSession, vehicle]);
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -621,7 +622,10 @@ function VehicleConfirmationRoute({ registrationNumber }: { registrationNumber: 
       void navigate(purchaseJourneyPaths.vehicleDetails, { replace: true });
       return;
     }
-    if (compactPlate(normalizePlate(vehicle.plate)) !== compactPlate(normalizePlate(registrationNumber))) {
+    if (
+      compactPlate(normalizePlate(vehicle.plate)) !==
+      compactPlate(normalizePlate(registrationNumber))
+    ) {
       void navigate(purchaseVehicleConfirmationPath(vehicle.plate), { replace: true });
     }
   }, [navigate, purchase, registrationNumber, vehicle.fields, vehicle.fetchStatus, vehicle.plate]);
@@ -728,7 +732,12 @@ function ChoosePlanRoute() {
   useEffect(() => {
     void ensurePlansLoaded().then((result) => {
       if (!result.ok) {
-        reportUserError(planLogger, 'purchase_plans_load_failed', result.error, result.error.message);
+        reportUserError(
+          planLogger,
+          'purchase_plans_load_failed',
+          result.error,
+          result.error.message,
+        );
       }
     });
   }, [ensurePlansLoaded]);
@@ -752,7 +761,10 @@ function ChoosePlanRoute() {
         persistPurchaseSelections({ selectedPlanId: planId });
         patchPurchase({ selectedPlanId: planId });
         const catalog = getPurchasePlansCatalog();
-        if (isPlanRiderEligible(catalog, planId) && getRiderOptionsForPlan(catalog, planId).length > 0) {
+        if (
+          isPlanRiderEligible(catalog, planId) &&
+          getRiderOptionsForPlan(catalog, planId).length > 0
+        ) {
           void navigate(purchaseJourneyPaths.riderCover);
         } else {
           persistPurchaseSelections({ riderCount: 0 });
@@ -835,7 +847,7 @@ function OrderSummaryRoute() {
 
   return (
     <R08OrderSummaryScreen
-      key={`${plansRevision}-${cartRevision}`}
+      key={`${String(plansRevision)}-${String(cartRevision)}`}
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoInput}
@@ -847,9 +859,11 @@ function OrderSummaryRoute() {
           return;
         }
         setPromoApplying(true);
-        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(() => {
-          setPromoApplying(false);
-        });
+        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(
+          () => {
+            setPromoApplying(false);
+          },
+        );
       }}
       onBack={() => {
         void navigate(purchaseJourneyPaths.riderCover);
@@ -906,9 +920,11 @@ function OrderSummaryInvalidPromoRoute() {
       }}
       onApplyPromo={() => {
         setPromoApplying(true);
-        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(() => {
-          setPromoApplying(false);
-        });
+        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(
+          () => {
+            setPromoApplying(false);
+          },
+        );
       }}
       onBack={() => {
         patchPurchase({ promoInvalid: false, promoCode: null });
@@ -941,7 +957,13 @@ function OrderSummaryPromoAppliedRoute() {
     if (!session.purchase?.promoApplied || !session.purchase.promoCode) {
       void navigate(getOrderSummaryPath(false, session.purchase?.promoInvalid), { replace: true });
     }
-  }, [navigate, purchase, session.purchase?.promoApplied, session.purchase?.promoCode, session.purchase?.promoInvalid]);
+  }, [
+    navigate,
+    purchase,
+    session.purchase?.promoApplied,
+    session.purchase?.promoCode,
+    session.purchase?.promoInvalid,
+  ]);
 
   if (!cartReady) {
     return <PurchaseRouteLoader />;
@@ -990,9 +1012,12 @@ function ProcessingPaymentRoute() {
       !session.purchase?.checkoutReady ||
       shouldLeavePaymentScreen(session.purchase, ['processing', 'confirming'])
     ) {
-      void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
-        replace: true,
-      });
+      void navigate(
+        getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
+        {
+          replace: true,
+        },
+      );
     }
   }, [
     navigate,
@@ -1022,7 +1047,12 @@ function ProcessingPaymentRoute() {
       if (!result.ok) {
         if (result.phase === 'prepare' || result.error.code === 'payment_cancelled') {
           if (result.error.code !== 'payment_cancelled') {
-            reportUserError(checkoutLogger, 'purchase_checkout_prepare_failed', result.error, result.error.message);
+            reportUserError(
+              checkoutLogger,
+              'purchase_checkout_prepare_failed',
+              result.error,
+              result.error.message,
+            );
           }
           patchPurchase({ paymentStatus: 'idle', checkoutReady: false });
           if (result.error.code === 'promo_invalid') {
@@ -1044,7 +1074,12 @@ function ProcessingPaymentRoute() {
           return;
         }
 
-        reportUserError(checkoutLogger, 'purchase_payment_failed', result.error, result.error.message);
+        reportUserError(
+          checkoutLogger,
+          'purchase_payment_failed',
+          result.error,
+          result.error.message,
+        );
         patchPurchase({ paymentStatus: 'failed' });
         void navigate(purchaseJourneyPaths.paymentFailed);
         return;
@@ -1087,10 +1122,15 @@ function PaymentStillConfirmingRoute() {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
       return;
     }
-    if (shouldLeavePaymentScreen(session.purchase, ['confirming', 'unconfirmed', 'success', 'failed'])) {
-      void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
-        replace: true,
-      });
+    if (
+      shouldLeavePaymentScreen(session.purchase, ['confirming', 'unconfirmed', 'success', 'failed'])
+    ) {
+      void navigate(
+        getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
+        {
+          replace: true,
+        },
+      );
     }
   }, [
     navigate,
@@ -1115,7 +1155,12 @@ function PaymentStillConfirmingRoute() {
       }
 
       if (!result.ok) {
-        reportUserError(checkoutLogger, 'purchase_payment_poll_failed', result.error, result.error.message);
+        reportUserError(
+          checkoutLogger,
+          'purchase_payment_poll_failed',
+          result.error,
+          result.error.message,
+        );
         return;
       }
 
@@ -1147,9 +1192,12 @@ function PaymentSuccessRoute() {
 
   useEffect(() => {
     if (session.purchase?.paymentStatus !== 'success') {
-      void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
-        replace: true,
-      });
+      void navigate(
+        getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
+        {
+          replace: true,
+        },
+      );
     }
   }, [
     navigate,
@@ -1165,7 +1213,12 @@ function PaymentSuccessRoute() {
     vehiclesSyncedRef.current = true;
     void syncVehiclesAfterPayment().then((result) => {
       if (!result.ok) {
-        reportUserError(vehicleLogger, 'purchase_vehicle_sync_failed', result.error, result.error.message);
+        reportUserError(
+          vehicleLogger,
+          'purchase_vehicle_sync_failed',
+          result.error,
+          result.error.message,
+        );
       }
     });
   }, [session.purchase?.paymentStatus]);
@@ -1208,9 +1261,7 @@ function PaymentSuccessRoute() {
           },
           purchase: {
             ...purchaseSession,
-            riderCount:
-              purchaseSession.riderCount ??
-              (purchaseSession.selectedPlanId ? 1 : 0),
+            riderCount: purchaseSession.riderCount ?? (purchaseSession.selectedPlanId ? 1 : 0),
           },
         });
         void navigate(getPurchasePostPaymentEmergencyPath(), { replace: true });
@@ -1233,11 +1284,7 @@ function PaymentFailedRoute() {
         replace: true,
       });
     }
-  }, [
-    navigate,
-    orderSummaryPath,
-    session.purchase?.paymentStatus,
-  ]);
+  }, [navigate, orderSummaryPath, session.purchase?.paymentStatus]);
 
   return (
     <R10bPaymentFailedScreen
@@ -1269,9 +1316,12 @@ function PaymentUnconfirmedRoute() {
 
   useEffect(() => {
     if (shouldLeavePaymentScreen(session.purchase, ['unconfirmed', 'success', 'failed'])) {
-      void navigate(getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid), {
-        replace: true,
-      });
+      void navigate(
+        getOrderSummaryPath(session.purchase?.promoApplied, session.purchase?.promoInvalid),
+        {
+          replace: true,
+        },
+      );
     }
   }, [
     navigate,
@@ -1293,7 +1343,12 @@ function PaymentUnconfirmedRoute() {
         void (async () => {
           const result = await pollPayment(orderId);
           if (!result.ok) {
-            reportUserError(checkoutLogger, 'purchase_payment_status_failed', result.error, result.error.message);
+            reportUserError(
+              checkoutLogger,
+              'purchase_payment_status_failed',
+              result.error,
+              result.error.message,
+            );
             return;
           }
           if (
@@ -1391,9 +1446,7 @@ export function PurchaseRoutes() {
 
   return (
     <PurchaseRouteHydrationProvider>
-      <PurchaseSegmentBootstrap>
-        {resolvePurchaseRouteContent(pathname)}
-      </PurchaseSegmentBootstrap>
+      <PurchaseSegmentBootstrap>{resolvePurchaseRouteContent(pathname)}</PurchaseSegmentBootstrap>
     </PurchaseRouteHydrationProvider>
   );
 }

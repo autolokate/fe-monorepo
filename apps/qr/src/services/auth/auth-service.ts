@@ -8,12 +8,9 @@ import {
   type RequestOtpResult,
   type TokenPair,
 } from '@autolokate/api-client';
-import { getDeviceId, getTokenManager } from '@autolokate/auth';
+import { getTokenManager } from '@autolokate/auth';
 
-import {
-  getQrApiClient,
-  getQrBootstrapClient,
-} from '@/platform/api/qr-api-client';
+import { getQrApiClient, getQrBootstrapClient } from '@/platform/api/qr-api-client';
 
 import { authLogger } from './auth-logger';
 import { grantSignupConsents } from './consent-sync';
