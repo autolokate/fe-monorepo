@@ -1,3 +1,4 @@
+import type { AdminOrderSummary } from '@autolokate/api-client';
 import {
   AlDataTable,
   AlErrorState,
@@ -5,15 +6,17 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ORDERS_STATUS_FILTERS } from '@/features/orders/orders-filters';
 import { useOrdersColumns } from '@/features/orders/orders-columns';
+import { RefundOrderDialog } from '@/features/orders/RefundOrderDialog';
 import { useOrders } from '@/hooks/orders/useOrders';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { buildPageSummary } from '@/platform/components/build-page-summary';
+import { useCanRefundOrders } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function OrdersPage() {
@@ -27,7 +30,10 @@ export function OrdersPage() {
     refresh,
   } = useOrders();
 
-  const columns = useOrdersColumns();
+  const canRefund = useCanRefundOrders();
+  const [refundTarget, setRefundTarget] = useState<AdminOrderSummary | null>(null);
+
+  const columns = useOrdersColumns({ canRefund, onRefund: setRefundTarget });
 
   const pageDescription = useMemo(() => {
     if (isLoading) {
@@ -92,6 +98,15 @@ export function OrdersPage() {
             getRowId={(row) => row.orderId}
           />
         </AdminDataBlock>
+
+        <RefundOrderDialog
+          order={refundTarget}
+          onOpenChange={(open) => {
+            if (!open) {
+              setRefundTarget(null);
+            }
+          }}
+        />
       </AlStack>
     </RequirePermission>
   );

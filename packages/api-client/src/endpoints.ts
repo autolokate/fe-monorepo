@@ -91,6 +91,7 @@ export const endpoints = {
       `/admin/v1/partner-reorders/${encodeURIComponent(id)}/fulfil`,
     adminOrders: '/admin/v1/orders',
     adminOrder: (id: string) => `/admin/v1/orders/${encodeURIComponent(id)}`,
+    refundAdminOrder: (id: string) => `/admin/v1/orders/${encodeURIComponent(id)}/refund`,
     adminSubscriptions: '/admin/v1/subscriptions',
     adminSubscription: (id: string) => `/admin/v1/subscriptions/${encodeURIComponent(id)}`,
     adminShipments: '/admin/v1/shipments',

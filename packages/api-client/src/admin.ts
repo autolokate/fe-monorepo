@@ -926,6 +926,35 @@ export async function getAdminOrder(
 }
 
 /**
+ * OpenAPI `RefundOrderResult` — the result of `POST /admin/v1/orders/{orderId}/refund`.
+ * The refund is ASYNC: the response settles at `REFUND_PENDING`; the terminal `REFUNDED` state lands
+ * later via the payment provider's webhook.
+ */
+export type RefundOrderResult = {
+  paymentRef: string;
+  state: 'REFUND_PENDING';
+  amountPaise: number;
+  refundRef: string;
+};
+
+/**
+ * POST /admin/v1/orders/{orderId}/refund — initiate a FULL refund of a PAID order (FINANCE·step_up).
+ * Only a PAID order with a captured payment is refundable; the server returns 409 `order_not_refundable`
+ * (or 404) otherwise.
+ */
+export async function refundAdminOrder(
+  client: ApiClient,
+  orderId: string,
+  body: { reason: string },
+  options: { signal?: AbortSignal } = {},
+): Promise<RefundOrderResult> {
+  const response = await client.post<unknown>(endpoints.admin.refundAdminOrder(orderId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as RefundOrderResult;
+}
+
+/**
  * GET /admin/v1/subscriptions — the account-wide subscription list.
  * Offset-paginated on the server, so `data` is a bare array (no pagination meta on the envelope).
  */

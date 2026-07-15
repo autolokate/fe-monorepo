@@ -30,6 +30,7 @@ export type AdminPermission =
   | 'catalog:read'
   | 'catalog:write'
   | 'orders:view'
+  | 'orders:refund'
   | 'subscriptions:view'
   | 'shipments:view'
   | 'payments:view'
@@ -61,6 +62,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'catalog:read',
     'catalog:write',
     'orders:view',
+    // A full money refund — SUPER_ADMIN + FINANCE only, never the broad orders:view set.
+    'orders:refund',
     'subscriptions:view',
     'shipments:view',
     'payments:view',
@@ -120,6 +123,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'promo:view',
     'catalog:read',
     'orders:view',
+    // Refunds are a finance money action (FINANCE·step_up).
+    'orders:refund',
     'subscriptions:view',
     'shipments:view',
     'payments:view',
