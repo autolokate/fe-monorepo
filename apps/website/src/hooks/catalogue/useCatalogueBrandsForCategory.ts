@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 
-import type { CatalogueBrand } from "@/lib/catalogue/types";
-import { fromApiVehicleCategory, type VehicleCategory } from "@/lib/preferences";
-import { slugifyPart } from "@/lib/seo";
+import type { CatalogueBrand } from '@/lib/catalogue/types';
+import { fromApiVehicleCategory, type VehicleCategory } from '@/lib/preferences';
+import { slugifyPart } from '@/lib/seo';
 
-import { useBrands } from "./useBrands";
+import { useBrands } from './useBrands';
 
 export type CatalogueBrandOption = { name: string; slug: string };
 
@@ -19,19 +19,13 @@ export function useCatalogueBrandsForCategory(
   opts: { enabled?: boolean } = {},
 ) {
   const { enabled = true } = opts;
-  const {
-    data: rawBrands,
-    isLoading,
-    isFetching,
-    isError,
-    refetch,
-  } = useBrands({ enabled });
+  const { data: rawBrands, isLoading, isFetching, isError, refetch } = useBrands({ enabled });
 
   const brandOptions = useMemo<CatalogueBrandOption[]>(() => {
     const cards = (rawBrands ?? [])
       .map((brand) => {
         const row = brand as CatalogueBrand;
-        const name = String(row.brand_name ?? row.name ?? "").trim();
+        const name = String(row.brand_name ?? row.name ?? '').trim();
         const slug = String(row.slug ?? row.brand_slug ?? slugifyPart(name)).trim();
         if (!name || !slug) return null;
         return { name, slug };
@@ -44,13 +38,11 @@ export function useCatalogueBrandsForCategory(
       if (!deduped.has(key)) deduped.set(key, card);
     }
     const list = [...deduped.values()].sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
     );
 
     const all = rawBrands ?? [];
-    const anyClassified = all.some((b) =>
-      Boolean((b as CatalogueBrand).vehicle_category),
-    );
+    const anyClassified = all.some((b) => Boolean((b as CatalogueBrand).vehicle_category));
     if (!anyClassified) return list;
 
     const allowedSlugs = new Set(
@@ -62,7 +54,9 @@ export function useCatalogueBrandsForCategory(
           String(
             (b as CatalogueBrand).slug ??
               (b as CatalogueBrand).brand_slug ??
-              slugifyPart(String((b as CatalogueBrand).brand_name ?? (b as CatalogueBrand).name ?? "")),
+              slugifyPart(
+                String((b as CatalogueBrand).brand_name ?? (b as CatalogueBrand).name ?? ''),
+              ),
           )
             .trim()
             .toLowerCase(),

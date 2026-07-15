@@ -100,7 +100,13 @@ export type AlToolbarProps = {
   className?: string;
 };
 
-export function AlToolbar({ leading, trailing, children, inset = false, className }: AlToolbarProps) {
+export function AlToolbar({
+  leading,
+  trailing,
+  children,
+  inset = false,
+  className,
+}: AlToolbarProps) {
   return (
     <div className={cn('al-toolbar', inset && 'al-toolbar--inset', className)}>
       {leading ? <div className="al-toolbar__leading">{leading}</div> : null}

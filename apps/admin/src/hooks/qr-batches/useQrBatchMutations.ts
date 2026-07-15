@@ -31,8 +31,13 @@ export function useQrBatchMutations() {
   };
 
   const createBatchMutation = useMutation({
-    mutationFn: ({ body, signal }: { body: Parameters<typeof createBatch>[0]; signal?: AbortSignal }) =>
-      createBatch(body, signal),
+    mutationFn: ({
+      body,
+      signal,
+    }: {
+      body: Parameters<typeof createBatch>[0];
+      signal?: AbortSignal;
+    }) => createBatch(body, signal),
     retry: 0,
     onSuccess: async (batch) => {
       await invalidateInventory();
@@ -85,7 +90,8 @@ export function useQrBatchMutations() {
   });
 
   const replaceMutation = useMutation({
-    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) => replaceCode(code, signal),
+    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) =>
+      replaceCode(code, signal),
     retry: 0,
     onSuccess: async (result) => {
       await invalidateBatchCodes();
@@ -97,7 +103,8 @@ export function useQrBatchMutations() {
   });
 
   const retireMutation = useMutation({
-    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) => retireCode(code, signal),
+    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) =>
+      retireCode(code, signal),
     retry: 0,
     onSuccess: async (result) => {
       await invalidateBatchCodes();
@@ -114,9 +121,7 @@ export function useQrBatchMutations() {
     retry: 0,
     onSuccess: async (result) => {
       await invalidateInventory();
-      showSuccessToast(
-        `Reorder fulfilled — ${result.allocated.toLocaleString()} codes allocated.`,
-      );
+      showSuccessToast(`Reorder fulfilled — ${result.allocated.toLocaleString()} codes allocated.`);
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'qr-batches:fulfil-reorder', toast: true });

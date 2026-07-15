@@ -120,151 +120,151 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
         }}
       >
         <Controller
+          control={form.control}
+          name="code"
+          render={({ field, fieldState }) => (
+            <AlInput
+              label="Promo code"
+              mono
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              errorText={fieldState.error?.message}
+              helperText="Unique code customers enter at checkout."
+              autoComplete="off"
+            />
+          )}
+        />
+
+        <div className="promo-form-grid">
+          <Controller
             control={form.control}
-            name="code"
+            name="discountPercent"
             render={({ field, fieldState }) => (
               <AlInput
-                label="Promo code"
-                mono
+                label="Discount percent"
+                type="number"
+                min={1}
+                max={100}
+                value={field.value ?? ''}
+                onChange={(event) => {
+                  const next = event.target.value;
+                  field.onChange(next === '' ? undefined : event.target.valueAsNumber);
+                }}
+                onBlur={field.onBlur}
+                errorText={fieldState.error?.message}
+                helperText="1–100. Flat rupee amount takes precedence when both are set."
+              />
+            )}
+          />
+
+          <Controller
+            control={form.control}
+            name="discountRupees"
+            render={({ field, fieldState }) => (
+              <AlInput
+                label="Discount (₹)"
+                inputMode="decimal"
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 errorText={fieldState.error?.message}
-                helperText="Unique code customers enter at checkout."
+                helperText="Flat discount in rupees. Up to 2 decimals."
                 autoComplete="off"
               />
             )}
           />
+        </div>
 
-          <div className="promo-form-grid">
-            <Controller
-              control={form.control}
-              name="discountPercent"
-              render={({ field, fieldState }) => (
-                <AlInput
-                  label="Discount percent"
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={field.value ?? ''}
-                  onChange={(event) => {
-                    const next = event.target.value;
-                    field.onChange(next === '' ? undefined : event.target.valueAsNumber);
-                  }}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="1–100. Flat rupee amount takes precedence when both are set."
-                />
-              )}
-            />
-
-            <Controller
-              control={form.control}
-              name="discountRupees"
-              render={({ field, fieldState }) => (
-                <AlInput
-                  label="Discount (₹)"
-                  inputMode="decimal"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Flat discount in rupees. Up to 2 decimals."
-                  autoComplete="off"
-                />
-              )}
-            />
-          </div>
-
-          <div className="promo-form-grid">
-            <Controller
-              control={form.control}
-              name="validFrom"
-              render={({ field, fieldState }) => (
-                <AlInput
-                  label="Valid from"
-                  type="datetime-local"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                />
-              )}
-            />
-
-            <Controller
-              control={form.control}
-              name="validTo"
-              render={({ field, fieldState }) => (
-                <AlInput
-                  label="Valid to"
-                  type="datetime-local"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                />
-              )}
-            />
-          </div>
-
-          <div className="promo-form-grid">
-            <Controller
-              control={form.control}
-              name="maxRedemptions"
-              render={({ field, fieldState }) => (
-                <AlInput
-                  label="Max redemptions"
-                  type="number"
-                  min={1}
-                  value={field.value ?? ''}
-                  onChange={(event) => {
-                    const next = event.target.value;
-                    field.onChange(next === '' ? undefined : event.target.valueAsNumber);
-                  }}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Global cap. Leave empty for unlimited."
-                />
-              )}
-            />
-
-            <Controller
-              control={form.control}
-              name="maxPerAccount"
-              render={({ field, fieldState }) => (
-                <AlInput
-                  label="Max per account"
-                  type="number"
-                  min={1}
-                  value={field.value ?? ''}
-                  onChange={(event) => {
-                    const next = event.target.value;
-                    field.onChange(next === '' ? undefined : event.target.valueAsNumber);
-                  }}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Per-account cap. Leave empty for unlimited."
-                />
-              )}
-            />
-          </div>
-
+        <div className="promo-form-grid">
           <Controller
             control={form.control}
-            name="active"
-            render={({ field }) => (
-              <AlCheckbox
-                label="Active on creation"
-                checked={field.value}
-                onChange={(event) => {
-                  field.onChange(event.target.checked);
-                }}
+            name="validFrom"
+            render={({ field, fieldState }) => (
+              <AlInput
+                label="Valid from"
+                type="datetime-local"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                errorText={fieldState.error?.message}
               />
             )}
           />
 
-          {submitError ? <p className="admin-form-error">{submitError}</p> : null}
+          <Controller
+            control={form.control}
+            name="validTo"
+            render={({ field, fieldState }) => (
+              <AlInput
+                label="Valid to"
+                type="datetime-local"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                errorText={fieldState.error?.message}
+              />
+            )}
+          />
+        </div>
+
+        <div className="promo-form-grid">
+          <Controller
+            control={form.control}
+            name="maxRedemptions"
+            render={({ field, fieldState }) => (
+              <AlInput
+                label="Max redemptions"
+                type="number"
+                min={1}
+                value={field.value ?? ''}
+                onChange={(event) => {
+                  const next = event.target.value;
+                  field.onChange(next === '' ? undefined : event.target.valueAsNumber);
+                }}
+                onBlur={field.onBlur}
+                errorText={fieldState.error?.message}
+                helperText="Global cap. Leave empty for unlimited."
+              />
+            )}
+          />
+
+          <Controller
+            control={form.control}
+            name="maxPerAccount"
+            render={({ field, fieldState }) => (
+              <AlInput
+                label="Max per account"
+                type="number"
+                min={1}
+                value={field.value ?? ''}
+                onChange={(event) => {
+                  const next = event.target.value;
+                  field.onChange(next === '' ? undefined : event.target.valueAsNumber);
+                }}
+                onBlur={field.onBlur}
+                errorText={fieldState.error?.message}
+                helperText="Per-account cap. Leave empty for unlimited."
+              />
+            )}
+          />
+        </div>
+
+        <Controller
+          control={form.control}
+          name="active"
+          render={({ field }) => (
+            <AlCheckbox
+              label="Active on creation"
+              checked={field.value}
+              onChange={(event) => {
+                field.onChange(event.target.checked);
+              }}
+            />
+          )}
+        />
+
+        {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
     </AlModal>
   );

@@ -4,11 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthStepShell } from '@/components/auth-step-shell/index';
 import { authJourneyPaths } from '@/journey/auth/auth-routing';
 import { useAuthRouteProgress } from '@/journey/progress/index';
-import {
-  AlOfflineChip,
-  InlineConsentBlock,
-  TrustRow,
-} from '@/components/compositions/index';
+import { AlOfflineChip, InlineConsentBlock, TrustRow } from '@/components/compositions/index';
 import { MOBILE_INPUT_DISPLAY_MAX } from '../../auth-flow/auth-flow.validation';
 import type { A1MobileScreenProps } from '../../types';
 

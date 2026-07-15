@@ -1,4 +1,8 @@
-import { buildB2b2cPaths, parseJourneyIdFromPathname, ROUTE_NAMESPACE } from '../routing/journey-url-routing';
+import {
+  buildB2b2cPaths,
+  parseJourneyIdFromPathname,
+  ROUTE_NAMESPACE,
+} from '../routing/journey-url-routing';
 
 function readJourneyIdFromUrl(): string {
   if (typeof window === 'undefined') {

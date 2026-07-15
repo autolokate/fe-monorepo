@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { CheckCircle2, Quote } from "lucide-react";
-import { SAVE_STORIES } from "./constants";
-import styles from "./index.module.css";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CheckCircle2, Quote } from 'lucide-react';
+import { SAVE_STORIES } from './constants';
+import styles from './index.module.css';
 
 export function StoriesCarousel() {
   const trackRef = useRef<HTMLUListElement>(null);
@@ -17,7 +17,7 @@ export function StoriesCarousel() {
       const clamped = Math.max(0, Math.min(index, count - 1));
       const card = track.children[clamped] as HTMLElement | undefined;
       if (card) {
-        track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: "smooth" });
+        track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: 'smooth' });
       }
     },
     [count],
@@ -46,9 +46,9 @@ export function StoriesCarousel() {
       });
     };
 
-    track.addEventListener("scroll", onScroll, { passive: true });
+    track.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      track.removeEventListener("scroll", onScroll);
+      track.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(frame);
     };
   }, []);
@@ -83,7 +83,7 @@ export function StoriesCarousel() {
             key={story.id}
             type="button"
             onClick={() => scrollToIndex(index)}
-            className={`${styles.dot} ${index === active ? styles.dotActive : ""}`}
+            className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show story from ${story.name}`}
             aria-current={index === active}
           />

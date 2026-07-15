@@ -77,7 +77,9 @@
   align-items: center;
   justify-content: center;
   color: var(--primary);
-  transition: color 0.15s ease, opacity 0.15s ease;
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .edit:hover {

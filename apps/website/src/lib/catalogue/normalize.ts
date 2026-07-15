@@ -1,7 +1,7 @@
-import type { CatalogueBrand, CatalogueModel, CatalogueVariant } from "./types";
+import type { CatalogueBrand, CatalogueModel, CatalogueVariant } from './types';
 
 function isRecord(v: unknown): v is Record<string, unknown> {
-  return v !== null && typeof v === "object" && !Array.isArray(v);
+  return v !== null && typeof v === 'object' && !Array.isArray(v);
 }
 
 export function readArray<T>(value: unknown): T[] {
@@ -20,7 +20,7 @@ export function readObject(value: unknown): Record<string, unknown> {
 
 /** Unwrap a `{ success, data }` envelope, returning the inner value. */
 export function unbox<T>(payload: unknown): T {
-  if (isRecord(payload) && "data" in payload) {
+  if (isRecord(payload) && 'data' in payload) {
     return (payload.data ?? null) as T;
   }
   return payload as T;
@@ -28,8 +28,8 @@ export function unbox<T>(payload: unknown): T {
 
 export function normalizeBrand(raw: unknown): CatalogueBrand {
   const row = readObject(raw);
-  const name = String(row.name ?? row.brand_name ?? row.title ?? "").trim();
-  const slug = String(row.slug ?? row.brand_slug ?? "").trim();
+  const name = String(row.name ?? row.brand_name ?? row.title ?? '').trim();
+  const slug = String(row.slug ?? row.brand_slug ?? '').trim();
   return {
     ...row,
     name,
@@ -37,41 +37,38 @@ export function normalizeBrand(raw: unknown): CatalogueBrand {
     slug,
     brand_slug: slug,
     logo_url:
-      (typeof row.logo_url === "string" && row.logo_url) ||
-      (typeof row.image_url === "string" && row.image_url) ||
+      (typeof row.logo_url === 'string' && row.logo_url) ||
+      (typeof row.image_url === 'string' && row.image_url) ||
       null,
-    vehicle_category:
-      typeof row.vehicle_category === "string" ? row.vehicle_category : null,
+    vehicle_category: typeof row.vehicle_category === 'string' ? row.vehicle_category : null,
   };
 }
 
 export function normalizeModel(raw: unknown): CatalogueModel {
   const row = readObject(raw);
   const brand = readObject(row.brand);
-  const brandName = String(row.brand_name ?? brand.name ?? "").trim();
-  const brandSlug = String(row.brand_slug ?? brand.slug ?? "").trim();
-  const modelName = String(row.model_name ?? row.name ?? "").trim();
-  const modelSlug = String(row.model_slug ?? row.slug ?? "").trim();
+  const brandName = String(row.brand_name ?? brand.name ?? '').trim();
+  const brandSlug = String(row.brand_slug ?? brand.slug ?? '').trim();
+  const modelName = String(row.model_name ?? row.name ?? '').trim();
+  const modelSlug = String(row.model_slug ?? row.slug ?? '').trim();
   const fuelTypes = Array.isArray(row.fuel_types)
     ? (row.fuel_types as unknown[]).map((f) => String(f))
     : [];
-  const primaryFuel = typeof row.fuel_type === "string" ? row.fuel_type : fuelTypes[0];
+  const primaryFuel = typeof row.fuel_type === 'string' ? row.fuel_type : fuelTypes[0];
 
-  const startingPrice = numericOrNull(
-    row.starting_price ?? row.min_price ?? row.max_price,
-  );
+  const startingPrice = numericOrNull(row.starting_price ?? row.min_price ?? row.max_price);
   const minPrice = numericOrNull(row.min_price ?? row.starting_price);
   const maxPrice = numericOrNull(row.max_price ?? row.ending_price);
 
   const heroImage =
-    (typeof row.hero_image_url === "string" && row.hero_image_url) ||
-    (typeof row.image_url === "string" && row.image_url) ||
-    (typeof row.thumbnail_url === "string" && row.thumbnail_url) ||
+    (typeof row.hero_image_url === 'string' && row.hero_image_url) ||
+    (typeof row.image_url === 'string' && row.image_url) ||
+    (typeof row.thumbnail_url === 'string' && row.thumbnail_url) ||
     null;
 
   return {
     ...row,
-    id: typeof row.id === "string" ? row.id : undefined,
+    id: typeof row.id === 'string' ? row.id : undefined,
     slug: modelSlug,
     name: modelName,
     model_name: modelName,
@@ -84,15 +81,14 @@ export function normalizeModel(raw: unknown): CatalogueModel {
     min_price: minPrice,
     max_price: maxPrice,
     hero_image_url: heroImage,
-    body_type: typeof row.body_type === "string" ? row.body_type : null,
-    vehicle_category:
-      typeof row.vehicle_category === "string" ? row.vehicle_category : null,
+    body_type: typeof row.body_type === 'string' ? row.body_type : null,
+    vehicle_category: typeof row.vehicle_category === 'string' ? row.vehicle_category : null,
   };
 }
 
 function numericOrNull(v: unknown): number | null {
-  if (v === null || v === undefined || v === "") return null;
-  const n = typeof v === "number" ? v : Number(v);
+  if (v === null || v === undefined || v === '') return null;
+  const n = typeof v === 'number' ? v : Number(v);
   return Number.isFinite(n) ? n : null;
 }
 
@@ -101,16 +97,15 @@ export function normalizeVariant(raw: unknown): CatalogueVariant {
   const brand = readObject(row.brand);
   const model = readObject(row.model);
   const price = readObject(row.price);
-  const exShowroom =
-    row.ex_showroom_price ?? row.price ?? row.min_price ?? price.ex_showroom_price;
+  const exShowroom = row.ex_showroom_price ?? row.price ?? row.min_price ?? price.ex_showroom_price;
   return {
     ...row,
-    variant_name: String(row.variant_name ?? row.name ?? ""),
-    brand_slug: row.brand_slug != null ? String(row.brand_slug ?? brand.slug ?? "") : undefined,
-    brand_name: row.brand_name != null ? String(row.brand_name ?? brand.name ?? "") : undefined,
-    model_slug: row.model_slug != null ? String(row.model_slug ?? model.slug ?? "") : undefined,
-    model_name: row.model_name != null ? String(row.model_name ?? model.name ?? "") : undefined,
-    fuel_type: row.fuel_type != null ? String(row.fuel_type ?? row.fuel ?? "") : undefined,
+    variant_name: String(row.variant_name ?? row.name ?? ''),
+    brand_slug: row.brand_slug != null ? String(row.brand_slug ?? brand.slug ?? '') : undefined,
+    brand_name: row.brand_name != null ? String(row.brand_name ?? brand.name ?? '') : undefined,
+    model_slug: row.model_slug != null ? String(row.model_slug ?? model.slug ?? '') : undefined,
+    model_name: row.model_name != null ? String(row.model_name ?? model.name ?? '') : undefined,
+    fuel_type: row.fuel_type != null ? String(row.fuel_type ?? row.fuel ?? '') : undefined,
     ex_showroom_price: numericOrNull(exShowroom),
     min_price: numericOrNull(row.min_price ?? exShowroom),
     max_price: numericOrNull(row.max_price ?? exShowroom),

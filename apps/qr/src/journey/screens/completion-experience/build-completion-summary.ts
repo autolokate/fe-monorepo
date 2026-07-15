@@ -1,4 +1,7 @@
-import { getEmergencyPlanLimits, resolvePurchasePlanId } from '@/features/emergency/emergency-limits';
+import {
+  getEmergencyPlanLimits,
+  resolvePurchasePlanId,
+} from '@/features/emergency/emergency-limits';
 import { getPurchasePlan } from '@/features/qr-purchase/data/purchase-plans';
 import { AUTH_COMPLETED } from '@/features/shared-auth/types';
 import type { JourneySession } from '../../types';

@@ -21,11 +21,20 @@ export default defineConfig({
       '@autolokate/design-system': path.resolve(rootDir, '../../packages/design-system/src'),
       '@autolokate/icons': path.resolve(rootDir, '../../packages/icons/src'),
       '@autolokate/icons/common': path.resolve(rootDir, '../../packages/icons/src/common/index.ts'),
-      '@autolokate/icons/vehicle': path.resolve(rootDir, '../../packages/icons/src/vehicle/index.ts'),
+      '@autolokate/icons/vehicle': path.resolve(
+        rootDir,
+        '../../packages/icons/src/vehicle/index.ts',
+      ),
       '@autolokate/icons/safety': path.resolve(rootDir, '../../packages/icons/src/safety/index.ts'),
       '@autolokate/icons/qr': path.resolve(rootDir, '../../packages/icons/src/qr/index.ts'),
-      '@autolokate/icons/utility': path.resolve(rootDir, '../../packages/icons/src/utility/index.ts'),
-      '@autolokate/icons/partner': path.resolve(rootDir, '../../packages/icons/src/partner/index.ts'),
+      '@autolokate/icons/utility': path.resolve(
+        rootDir,
+        '../../packages/icons/src/utility/index.ts',
+      ),
+      '@autolokate/icons/partner': path.resolve(
+        rootDir,
+        '../../packages/icons/src/partner/index.ts',
+      ),
       '@autolokate/types': path.resolve(rootDir, '../../packages/types/src'),
       '@autolokate/utils': path.resolve(rootDir, '../../packages/utils/src'),
     },

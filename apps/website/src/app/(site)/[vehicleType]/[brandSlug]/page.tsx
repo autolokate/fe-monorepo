@@ -1,25 +1,25 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
-import { BrandModelsPage } from "@/components/catalogue/BrandModelsPage";
-import { env } from "@/config/env.config";
-import { fetchBrandNameForMeta } from "@/lib/catalogue/brand-catalogue-fetch";
-import type { VehicleCategory } from "@/lib/preferences";
+import { BrandModelsPage } from '@/components/catalogue/BrandModelsPage';
+import { env } from '@/config/env.config';
+import { fetchBrandNameForMeta } from '@/lib/catalogue/brand-catalogue-fetch';
+import type { VehicleCategory } from '@/lib/preferences';
 
 type Props = { params: Promise<{ vehicleType: string; brandSlug: string }> };
 
 function isVehicleCategory(v: string): v is VehicleCategory {
-  return v === "cars" || v === "bikes";
+  return v === 'cars' || v === 'bikes';
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { vehicleType, brandSlug } = await params;
   if (!isVehicleCategory(vehicleType)) {
-    return { title: "Not found" };
+    return { title: 'Not found' };
   }
 
   const name = await fetchBrandNameForMeta(brandSlug);
-  const base = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  const base = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
   const segment = encodeURIComponent(brandSlug);
   const path = `/${vehicleType}/${segment}`;
   const title = name
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       url: `${base}${path}`,
-      type: "website",
+      type: 'website',
     },
   };
 }
@@ -54,13 +54,13 @@ export default async function VehicleBrandHubPage({ params }: Props) {
 function slugToLabel(slug: string): string {
   try {
     const decoded = decodeURIComponent(slug.trim());
-    if (!decoded) return "Brand hub";
+    if (!decoded) return 'Brand hub';
     return decoded
-      .split("-")
+      .split('-')
       .filter(Boolean)
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ");
+      .join(' ');
   } catch {
-    return "Brand hub";
+    return 'Brand hub';
   }
 }

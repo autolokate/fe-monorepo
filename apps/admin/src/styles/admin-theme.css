@@ -254,7 +254,10 @@
   font-weight: var(--al-font-weight-medium);
   letter-spacing: 0;
   text-transform: none;
-  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 86%, transparent));
+  color: var(
+    --al-admin-label-color,
+    color-mix(in srgb, var(--al-color-on-surface) 86%, transparent)
+  );
 }
 
 .admin-filter-field__control {

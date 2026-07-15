@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { QrCode } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { QR_SECTION_COPY } from "./constants";
+import { useRouter } from 'next/navigation';
+import { QrCode } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { QR_SECTION_COPY } from './constants';
 
 /** Primary CTA wired to the shared design-system button (matches hero/header). */
 export function QrCta() {

@@ -1,5 +1,5 @@
-import { contactCards, socials } from "./constants";
-import styles from "./index.module.css";
+import { contactCards, socials } from './constants';
+import styles from './index.module.css';
 
 export function Sidebar() {
   return (
@@ -13,7 +13,7 @@ export function Sidebar() {
               className={styles.iconWrap}
               aria-hidden="true"
               data-contact={key}
-              style={{ "--contact-brand": brandColor } as React.CSSProperties}
+              style={{ '--contact-brand': brandColor } as React.CSSProperties}
             >
               <Icon />
             </span>
@@ -22,8 +22,8 @@ export function Sidebar() {
               {href ? (
                 <a
                   href={href}
-                  target={href.startsWith("http") ? "_blank" : undefined}
-                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  target={href.startsWith('http') ? '_blank' : undefined}
+                  rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   className={`${styles.value} ${styles.valueLink}`}
                 >
                   {primary}
@@ -48,7 +48,7 @@ export function Sidebar() {
                 rel="noopener noreferrer"
                 className={styles.socialLink}
                 data-social={id}
-                style={{ "--social-brand": brandColor } as React.CSSProperties}
+                style={{ '--social-brand': brandColor } as React.CSSProperties}
               >
                 <Icon />
               </a>

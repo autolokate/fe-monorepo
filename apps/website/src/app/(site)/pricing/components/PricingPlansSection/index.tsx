@@ -1,7 +1,7 @@
-import { Check } from "lucide-react";
-import { SAFETY_PACKS_COPY } from "@/app/home/components/SafetyPacksSection/constants";
-import { PlanCarousel } from "@/app/home/components/SafetyPacksSection/PlanCarousel";
-import styles from "./index.module.css";
+import { Check } from 'lucide-react';
+import { SAFETY_PACKS_COPY } from '@/app/home/components/SafetyPacksSection/constants';
+import { PlanCarousel } from '@/app/home/components/SafetyPacksSection/PlanCarousel';
+import styles from './index.module.css';
 
 export function PricingPlansSection() {
   return (

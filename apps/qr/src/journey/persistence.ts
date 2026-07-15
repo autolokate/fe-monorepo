@@ -47,7 +47,10 @@ export function clearJourneyPersistence(): void {
   }
 }
 
-export function updateAuthStatus(authStatus: AuthStatus, session?: JourneySession): PersistedJourneyState {
+export function updateAuthStatus(
+  authStatus: AuthStatus,
+  session?: JourneySession,
+): PersistedJourneyState {
   const current = loadJourneyState();
   const next = { ...current, authStatus, session: session ?? current.session };
   saveJourneyState(next);

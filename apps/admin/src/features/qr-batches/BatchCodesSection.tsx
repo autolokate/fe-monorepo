@@ -35,7 +35,11 @@ function triggerBrowserDownload(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function BatchCodesSection({ batchId, enabled, layout = 'section' }: BatchCodesSectionProps) {
+export function BatchCodesSection({
+  batchId,
+  enabled,
+  layout = 'section',
+}: BatchCodesSectionProps) {
   const [statusFilter, setStatusFilter] = useState<BatchCodeStatusFilter>('ALL');
   const [exporting, setExporting] = useState(false);
   const exportAbortRef = useRef<AbortController | null>(null);
@@ -180,11 +184,7 @@ export function BatchCodesSection({ batchId, enabled, layout = 'section' }: Batc
           actions={exportButton}
         />
         <AdminDataBlock
-          filters={
-            <AdminFilterField label="Status">
-              {statusFilters}
-            </AdminFilterField>
-          }
+          filters={<AdminFilterField label="Status">{statusFilters}</AdminFilterField>}
         >
           {codesTable}
         </AdminDataBlock>

@@ -26,10 +26,5 @@ export function AuthEntryLegacyRedirect() {
   }
 
   const search = next.toString();
-  return (
-    <Navigate
-      to={{ pathname: journeyPaths.auth, ...(search ? { search } : {}) }}
-      replace
-    />
-  );
+  return <Navigate to={{ pathname: journeyPaths.auth, ...(search ? { search } : {}) }} replace />;
 }

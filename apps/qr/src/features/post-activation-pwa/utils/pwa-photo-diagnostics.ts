@@ -48,7 +48,12 @@ export function readPhotoDiagnostics(): PhotoDiagnosticEntry[] {
 
 export function estimateSessionPhotoBytes(session: {
   parkMePhotos: { front: string | null; rear: string | null };
-  sosPhotos: { front: string | null; rear: string | null; left: string | null; right: string | null };
+  sosPhotos: {
+    front: string | null;
+    rear: string | null;
+    left: string | null;
+    right: string | null;
+  };
 }): number {
   const urls = [
     session.parkMePhotos.front,

@@ -109,10 +109,7 @@ function formatCellValue(value: unknown): string {
   }
 }
 
-export function exportTableToCsv<TData>(
-  table: Table<TData>,
-  filename: string,
-): void {
+export function exportTableToCsv<TData>(table: Table<TData>, filename: string): void {
   if (typeof window === 'undefined') {
     return;
   }
@@ -121,12 +118,14 @@ export function exportTableToCsv<TData>(
     .getAllLeafColumns()
     .filter((column) => column.getIsVisible() && column.id !== '__select');
 
-  const headerRow = columns.map((column) => escapeCsvValue(getColumnDisplayLabel(column))).join(',');
-  const bodyRows = table.getFilteredRowModel().rows.map((row: Row<TData>) =>
-    columns
-      .map((column) => escapeCsvValue(formatCellValue(row.getValue(column.id))))
-      .join(','),
-  );
+  const headerRow = columns
+    .map((column) => escapeCsvValue(getColumnDisplayLabel(column)))
+    .join(',');
+  const bodyRows = table
+    .getFilteredRowModel()
+    .rows.map((row: Row<TData>) =>
+      columns.map((column) => escapeCsvValue(formatCellValue(row.getValue(column.id)))).join(','),
+    );
 
   const csv = [headerRow, ...bodyRows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -142,7 +141,11 @@ export async function copyCellValue(value: unknown): Promise<void> {
   const text = formatCellValue(value);
   // DOM types declare navigator.clipboard as always-present, but it's absent in insecure contexts /
   // SSR — the `| undefined` cast keeps this a real runtime guard without tripping no-unnecessary-condition.
-  if (!text || typeof navigator === 'undefined' || !(navigator.clipboard as Clipboard | undefined)) {
+  if (
+    !text ||
+    typeof navigator === 'undefined' ||
+    !(navigator.clipboard as Clipboard | undefined)
+  ) {
     return;
   }
   await navigator.clipboard.writeText(text);

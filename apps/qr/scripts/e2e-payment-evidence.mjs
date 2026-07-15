@@ -78,7 +78,9 @@ async function acceptConsent(page) {
 }
 
 async function clickFooterCta(page, labelRe) {
-  const btn = page.locator('.ob-auth-shell__cta, .ob-step-chrome__cta').filter({ hasText: labelRe });
+  const btn = page
+    .locator('.ob-auth-shell__cta, .ob-step-chrome__cta')
+    .filter({ hasText: labelRe });
   await btn.waitFor({ state: 'visible', timeout: 20000 });
   await page.waitForFunction(
     (re) => {
@@ -97,21 +99,36 @@ async function clickFooterCta(page, labelRe) {
 async function tryFrameNetbanking(page, frame) {
   // Dismiss Razorpay intro / offer overlays if present
   const backdrop = frame.locator('#overlay-backdrop, [data-testid^="overlay"]');
-  if (await backdrop.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+  if (
+    await backdrop
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false)
+  ) {
     await page.keyboard.press('Escape').catch(() => undefined);
-    await backdrop.first().click({ force: true, timeout: 2000 }).catch(() => undefined);
+    await backdrop
+      .first()
+      .click({ force: true, timeout: 2000 })
+      .catch(() => undefined);
     await page.waitForTimeout(800);
   }
 
   const phoneInput = frame.locator(
     'input[name="contact"], input[type="tel"], input[placeholder*="mobile" i], input[placeholder*="phone" i]',
   );
-  if (await phoneInput.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+  if (
+    await phoneInput
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false)
+  ) {
     await phoneInput.first().fill(RAZORPAY_CONTACT);
     await page.waitForTimeout(500);
   }
 
-  const netbanking = frame.locator('[data-testid="Netbanking"], [data-testid="netbanking"]').first();
+  const netbanking = frame
+    .locator('[data-testid="Netbanking"], [data-testid="netbanking"]')
+    .first();
   if (await netbanking.isVisible({ timeout: 5000 }).catch(() => false)) {
     await netbanking.click({ force: true, timeout: 10000 });
     await page.waitForTimeout(1200);
@@ -139,7 +156,12 @@ async function tryFrameNetbanking(page, frame) {
   const payBtn = frame.locator(
     'button:has-text("Pay"), button:has-text("Continue"), button#pay-now, button[type="submit"]',
   );
-  if (await payBtn.first().isVisible({ timeout: 3000 }).catch(() => false)) {
+  if (
+    await payBtn
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false)
+  ) {
     await payBtn.first().click({ timeout: 10000 });
     await page.waitForTimeout(3000);
   }
@@ -149,8 +171,15 @@ async function tryFrameNetbanking(page, frame) {
     const success = f.getByText(/success/i).first();
     if (await success.isVisible({ timeout: 5000 }).catch(() => false)) {
       await success.click({ timeout: 5000 }).catch(() => undefined);
-      const submit = f.locator('button:has-text("Submit"), button:has-text("Continue"), button[type="submit"]');
-      if (await submit.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+      const submit = f.locator(
+        'button:has-text("Submit"), button:has-text("Continue"), button[type="submit"]',
+      );
+      if (
+        await submit
+          .first()
+          .isVisible({ timeout: 2000 })
+          .catch(() => false)
+      ) {
         await submit.first().click({ timeout: 5000 });
       }
       console.log('[razorpay] clicked test bank success');
@@ -191,7 +220,12 @@ async function readFrontendState(page) {
     const keys = Object.keys(sessionStorage);
     const ss = {};
     for (const k of keys) {
-      if (k.includes('journey') || k.includes('purchase') || k.includes('checkout') || k.includes('order')) {
+      if (
+        k.includes('journey') ||
+        k.includes('purchase') ||
+        k.includes('checkout') ||
+        k.includes('order')
+      ) {
         try {
           ss[k] = JSON.parse(sessionStorage.getItem(k) ?? 'null');
         } catch {
@@ -216,7 +250,12 @@ async function main() {
   page.on('console', (msg) => {
     const text = msg.text();
     consoleLogs.push({ type: msg.type(), text });
-    if (text.includes('[EVIDENCE]') || text.includes('[poll]') || text.includes('[razorpay]') || text.includes('[orders]')) {
+    if (
+      text.includes('[EVIDENCE]') ||
+      text.includes('[poll]') ||
+      text.includes('[razorpay]') ||
+      text.includes('[orders]')
+    ) {
       console.log('[browser]', text);
     }
   });
@@ -268,7 +307,10 @@ async function main() {
         status: response.status(),
         responseBody,
       });
-      console.log(`[EVIDENCE] Poll #${pollResponses.length} orderId=${pollOid}`, JSON.stringify(responseBody));
+      console.log(
+        `[EVIDENCE] Poll #${pollResponses.length} orderId=${pollOid}`,
+        JSON.stringify(responseBody),
+      );
     }
 
     console.log(`[net ${netOrder}] ${method} ${response.status()} ${url.replace(API_BASE, '')}`);

@@ -1,10 +1,6 @@
-import {
-  TESTIMONIALS_COPY,
-  TESTIMONIALS_SECTION_ID,
-  TESTIMONIAL_STATS,
-} from "./constants";
-import { TestimonialCarousel } from "./TestimonialCarousel";
-import styles from "./index.module.css";
+import { TESTIMONIALS_COPY, TESTIMONIALS_SECTION_ID, TESTIMONIAL_STATS } from './constants';
+import { TestimonialCarousel } from './TestimonialCarousel';
+import styles from './index.module.css';
 
 export function TestimonialsSection() {
   const { eyebrow, headlinePrefix, headlineEmphasis, headlineSuffix, subheading, trustline } =

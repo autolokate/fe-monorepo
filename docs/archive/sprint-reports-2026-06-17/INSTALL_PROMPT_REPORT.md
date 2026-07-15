@@ -8,11 +8,11 @@
 
 ## Implementation
 
-| File | Role |
-|------|------|
-| `src/pwa/use-pwa-install.ts` | Captures deferred install prompt |
-| `src/pwa/components/PwaInstallBanner.tsx` | Install CTA UI |
-| `src/journey/screens/FlowEntryScreen.tsx` | Banner mount point (`/journey`) |
+| File                                      | Role                             |
+| ----------------------------------------- | -------------------------------- |
+| `src/pwa/use-pwa-install.ts`              | Captures deferred install prompt |
+| `src/pwa/components/PwaInstallBanner.tsx` | Install CTA UI                   |
+| `src/journey/screens/FlowEntryScreen.tsx` | Banner mount point (`/journey`)  |
 
 ---
 
@@ -30,8 +30,8 @@
 
 ## Storage Keys
 
-| Key | Purpose |
-|-----|---------|
+| Key                           | Purpose                  |
+| ----------------------------- | ------------------------ |
 | `al-pwa-install-dismissed-at` | Epoch ms of last dismiss |
 
 Re-prompt after **7 days** (`PWA_INSTALL_DISMISS_MS`).
@@ -41,8 +41,8 @@ Re-prompt after **7 days** (`PWA_INSTALL_DISMISS_MS`).
 ## Standalone Detection
 
 ```ts
-matchMedia('(display-mode: standalone)').matches
-navigator.standalone // iOS legacy
+matchMedia('(display-mode: standalone)').matches;
+navigator.standalone; // iOS legacy
 ```
 
 Banner hidden when already installed.

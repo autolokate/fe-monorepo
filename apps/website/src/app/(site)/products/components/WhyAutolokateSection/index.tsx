@@ -1,5 +1,5 @@
-import { WHY_COPY, WHY_POINTS } from "./constants";
-import styles from "./index.module.css";
+import { WHY_COPY, WHY_POINTS } from './constants';
+import styles from './index.module.css';
 
 export function WhyAutolokateSection() {
   return (

@@ -1,12 +1,8 @@
-import { Fragment } from "react";
-import { ChevronRight } from "lucide-react";
-import {
-  GETTING_STARTED_COPY,
-  GETTING_STARTED_FEATURES,
-  GETTING_STARTED_STEPS,
-} from "./constants";
-import { ProtectionCarousel } from "./ProtectionCarousel";
-import styles from "./index.module.css";
+import { Fragment } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { GETTING_STARTED_COPY, GETTING_STARTED_FEATURES, GETTING_STARTED_STEPS } from './constants';
+import { ProtectionCarousel } from './ProtectionCarousel';
+import styles from './index.module.css';
 
 export function GettingStartedSection() {
   const {
@@ -81,10 +77,7 @@ export function GettingStartedSection() {
                 </li>
 
                 {index < GETTING_STARTED_STEPS.length - 1 ? (
-                  <li
-                    aria-hidden
-                    className="flex shrink-0 items-center px-2 pt-[2.2rem] xl:px-3"
-                  >
+                  <li aria-hidden className="flex shrink-0 items-center px-2 pt-[2.2rem] xl:px-3">
                     <span className={styles.connectorLine} />
                     <ChevronRight
                       className={`${styles.amber} -ml-1 h-4 w-4 shrink-0`}
@@ -104,7 +97,7 @@ export function GettingStartedSection() {
             const isLast = index === GETTING_STARTED_STEPS.length - 1;
 
             return (
-              <li key={id} className={`flex gap-4 ${isLast ? "" : "pb-7"}`}>
+              <li key={id} className={`flex gap-4 ${isLast ? '' : 'pb-7'}`}>
                 <div className="relative shrink-0">
                   {!isLast ? (
                     <span

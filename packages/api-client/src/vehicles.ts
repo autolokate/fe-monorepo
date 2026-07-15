@@ -53,7 +53,10 @@ export async function listVehicles(client: ApiClient): Promise<VehicleSummaryDto
 }
 
 /** GET /v1/vehicles/{id} — fetch a single vehicle by id. */
-export async function getVehicleById(client: ApiClient, vehicleId: string): Promise<VehicleDetailDto> {
+export async function getVehicleById(
+  client: ApiClient,
+  vehicleId: string,
+): Promise<VehicleDetailDto> {
   const response = await client.get<unknown>(endpoints.vehicles.detail(vehicleId));
   return unwrapEnvelope(response) as VehicleDetailDto;
 }

@@ -106,7 +106,12 @@ const sosStepsReceived: StepInput[] = [
     subtitle: 'Checking your photo and location',
     activeGlyph: 'activity',
   },
-  { id: '3', label: 'Ambulance', subtitle: 'Finding the nearest unit', activeGlyph: 'shield-check' },
+  {
+    id: '3',
+    label: 'Ambulance',
+    subtitle: 'Finding the nearest unit',
+    activeGlyph: 'shield-check',
+  },
   { id: '4', label: 'Emergency contacts', subtitle: 'Preparing to call and message' },
   { id: '5', label: 'WhatsApp to contacts', subtitle: 'Photo, location and map' },
   { id: '6', label: 'Roadside help', subtitle: 'If your plan covers towing' },

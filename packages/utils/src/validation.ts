@@ -2,9 +2,7 @@ const INDIAN_MOBILE_PATTERN = /^[6-9]\d{9}$/;
 const OTP_PATTERN = /^\d{4,6}$/;
 const VEHICLE_REGISTRATION_PATTERN = /^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{1,4}$/i;
 
-export type ValidationResult =
-  | { valid: true }
-  | { valid: false; message: string };
+export type ValidationResult = { valid: true } | { valid: false; message: string };
 
 /** Validate a 10-digit Indian mobile number. */
 export function validateMobileNumber(mobile: string): ValidationResult {

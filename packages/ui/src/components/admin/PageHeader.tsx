@@ -36,7 +36,11 @@ export function AlSectionHeader({ title, description, actions }: AlSectionHeader
     <div className="al-section-header">
       <AlStack gap="xs">
         <AlHeading variant="h4">{title}</AlHeading>
-        {description ? <AlText tone="muted" variant="caption">{description}</AlText> : null}
+        {description ? (
+          <AlText tone="muted" variant="caption">
+            {description}
+          </AlText>
+        ) : null}
       </AlStack>
       {actions ? <div className="al-section-header__actions">{actions}</div> : null}
     </div>
@@ -57,12 +61,7 @@ export function AlPageHeaderAction({
   variant = 'primary',
 }: AlPageHeaderActionProps) {
   return (
-    <AlButton
-      variant={variant}
-      size="sm"
-      {...(loading ? { loading: true } : {})}
-      onClick={onClick}
-    >
+    <AlButton variant={variant} size="sm" {...(loading ? { loading: true } : {})} onClick={onClick}>
       {label}
     </AlButton>
   );

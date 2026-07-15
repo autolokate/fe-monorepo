@@ -7,27 +7,27 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|------:|
+| Metric                |             Value |
+| --------------------- | ----------------: |
 | Back button consumers | **6 shell types** |
-| Issues found | **4** (systemic) |
-| Issues fixed | **4** |
-| Per-screen patches | **0** |
+| Issues found          |  **4** (systemic) |
+| Issues fixed          |             **4** |
+| Per-screen patches    |             **0** |
 
 ---
 
 ## Figma Spec (exact)
 
-| Property | Value |
-|----------|------:|
-| Icon | `arrow-left` |
-| Icon size | **24×24** |
+| Property      |                     Value |
+| ------------- | ------------------------: |
+| Icon          |              `arrow-left` |
+| Icon size     |                 **24×24** |
 | Icon visual X | **16px** (content gutter) |
-| Hit area | **48×48** |
-| Hit area X | **4px** |
-| Hit area Y | **54px** (auth A1) |
-| Hover / pill | none |
-| Icon color | `#FFFFFF` (dark) |
+| Hit area      |                 **48×48** |
+| Hit area X    |                   **4px** |
+| Hit area Y    |        **54px** (auth A1) |
+| Hover / pill  |                      none |
+| Icon color    |          `#FFFFFF` (dark) |
 
 **Math:** hit area starts 12px left of icon → `margin-inline-start: -12px` + `padding-inline-start: 12px` + `justify-content: flex-start` on 48×48 control.
 
@@ -59,14 +59,14 @@ Base `.al-icon-button { padding: var(--al-space-sm) }` offset icon when shell ov
 
 Applied on every back consumer:
 
-| Component | Class |
-|-----------|-------|
-| AuthStepShell | `ob-step-chrome__back ob-shell-back` |
-| FlowStepShell | `ob-step-chrome__back ob-shell-back` |
+| Component              | Class                                |
+| ---------------------- | ------------------------------------ |
+| AuthStepShell          | `ob-step-chrome__back ob-shell-back` |
+| FlowStepShell          | `ob-step-chrome__back ob-shell-back` |
 | WelcomeActivationShell | `ob-step-chrome__back ob-shell-back` |
-| PwaScanShell | `pwa-scan-shell__back ob-shell-back` |
-| PurchaseStatusShell | `ob-step-chrome__back ob-shell-back` |
-| LegalReaderHeader | `ob-step-chrome__back ob-shell-back` |
+| PwaScanShell           | `pwa-scan-shell__back ob-shell-back` |
+| PurchaseStatusShell    | `ob-step-chrome__back ob-shell-back` |
+| LegalReaderHeader      | `ob-step-chrome__back ob-shell-back` |
 
 **CSS (global):**
 
@@ -78,7 +78,10 @@ Applied on every back consumer:
   padding-inline-start: var(--ob-shell-touch-bleed);
   justify-content: flex-start;
 }
-.ob-shell-back .al-icon-button__icon { width: 24px; height: 24px; }
+.ob-shell-back .al-icon-button__icon {
+  width: 24px;
+  height: 24px;
+}
 ```
 
 Header uses `overflow: visible` so bleed is not clipped.
@@ -88,13 +91,13 @@ Header uses `overflow: visible` so bleed is not clipped.
 ## Responsive Verification
 
 | Width | Icon X | Hit X | Hit size | Clipped |
-|------:|-------:|------:|---------:|:-------:|
-| 320 | 16 | 4 | 48×48 | No |
-| 360 | 16 | 4 | 48×48 | No |
-| 375 | 16 | 4 | 48×48 | No |
-| 390 | 16 | 4 | 48×48 | No |
-| 393 | 16 | 4 | 48×48 | No |
-| 414 | 16 | 4 | 48×48 | No |
+| ----: | -----: | ----: | -------: | :-----: |
+|   320 |     16 |     4 |    48×48 |   No    |
+|   360 |     16 |     4 |    48×48 |   No    |
+|   375 |     16 |     4 |    48×48 |   No    |
+|   390 |     16 |     4 |    48×48 |   No    |
+|   393 |     16 |     4 |    48×48 |   No    |
+|   414 |     16 |     4 |    48×48 |   No    |
 
 Dark + light: icon uses `var(--al-color-on-surface)` — no theme-specific offset.
 
@@ -110,13 +113,13 @@ Back bottom to headline: 20px (header gap) + progress height + 20px (section gap
 
 ## Before / After
 
-| | Before | After |
-|---|--------|-------|
-| Icon X (375px dark) | ~28px | 16px |
-| Hit area X | ~16px | 4px |
-| Legal icon | 20px | 24px |
-| PWA back | centered in grid col | flex-start + bleed |
-| Hover | gray pill (DS default) | transparent (shell override) |
+|                     | Before                 | After                        |
+| ------------------- | ---------------------- | ---------------------------- |
+| Icon X (375px dark) | ~28px                  | 16px                         |
+| Hit area X          | ~16px                  | 4px                          |
+| Legal icon          | 20px                   | 24px                         |
+| PWA back            | centered in grid col   | flex-start + bleed           |
+| Hover               | gray pill (DS default) | transparent (shell override) |
 
 ---
 

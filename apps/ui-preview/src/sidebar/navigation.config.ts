@@ -99,9 +99,7 @@ export const navigationGroups: DocNavGroup[] = [
   {
     id: 'admin',
     label: 'Admin Platform',
-    items: [
-      { id: 'admin-data-table', label: 'Admin components', icon: 'store' },
-    ],
+    items: [{ id: 'admin-data-table', label: 'Admin components', icon: 'store' }],
   },
   {
     id: 'composition-validation',

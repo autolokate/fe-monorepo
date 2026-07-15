@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { type CSSProperties, useEffect, useState } from "react";
-import { Menu } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { AlIconButton } from "@autolokate/ui/icon-button";
-import { cn } from "@/lib/utils";
-import { useIsAuthenticated, useLogout } from "@/hooks/auth";
-import { AvatarMenu } from "./AvatarMenu";
-import { avatarMenuItems } from "./AvatarMenu/constants";
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { type CSSProperties, useEffect, useState } from 'react';
+import { Menu } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { AlIconButton } from '@autolokate/ui/icon-button';
+import { cn } from '@/lib/utils';
+import { useIsAuthenticated, useLogout } from '@/hooks/auth';
+import { AvatarMenu } from './AvatarMenu';
+import { avatarMenuItems } from './AvatarMenu/constants';
 import {
   CloseIcon,
   Logo,
@@ -17,9 +17,9 @@ import {
   isNavItemActive,
   primaryNavItems,
   secondaryNavItems,
-} from "./constants";
+} from './constants';
 
-export type HeaderVariant = "default" | "premium";
+export type HeaderVariant = 'default' | 'premium';
 
 interface HeaderProps {
   /**
@@ -38,48 +38,41 @@ function useScrolled(threshold = 8) {
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > threshold);
     onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, [threshold]);
   return scrolled;
 }
 
 /** Desktop top-nav links — Home is reachable via the logo, so it's omitted. */
-const desktopNavItems = primaryNavItems.filter((item) => item.href !== "/");
+const desktopNavItems = primaryNavItems.filter((item) => item.href !== '/');
 
 function navLinkClass(active: boolean, onDarkHero: boolean) {
   return cn(
-    "rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
+    'rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
     onDarkHero
-      ? "text-white hover:bg-white/10 hover:text-white"
-      : "text-foreground/70 hover:bg-foreground/5 hover:text-foreground",
-    active &&
-      (onDarkHero
-        ? "bg-white/15 text-white"
-        : "bg-primary/15 text-primary shadow-sm"),
+      ? 'text-white hover:bg-white/10 hover:text-white'
+      : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground',
+    active && (onDarkHero ? 'bg-white/15 text-white' : 'bg-primary/15 text-primary shadow-sm'),
   );
 }
 
-export function Header({
-  variant = "default",
-  overDarkHero = false,
-  className,
-}: HeaderProps) {
+export function Header({ variant = 'default', overDarkHero = false, className }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const scrolled = useScrolled();
   const [open, setOpen] = useState(false);
-  const isPremium = variant === "premium";
+  const isPremium = variant === 'premium';
   // The home hero plate is always dark, so over it (premium + not scrolled) the
   // header uses the white-on-dark nav treatment.
   const onDarkHero = overDarkHero && isPremium && !scrolled;
   const showDarkHeroStyle = onDarkHero && !open;
   // The logo ink must match the surface behind it: white over the dark hero,
   // otherwise the default dark wordmark.
-  const logoTone: "auto" | "on-dark" = showDarkHeroStyle ? "on-dark" : "auto";
+  const logoTone: 'auto' | 'on-dark' = showDarkHeroStyle ? 'on-dark' : 'auto';
   const authed = useIsAuthenticated();
   const logout = useLogout({
-    onSuccess: () => router.push("/"),
+    onSuccess: () => router.push('/'),
   });
 
   const DownloadIcon = downloadAppCta.icon;
@@ -88,9 +81,9 @@ export function Header({
   // so override the relevant custom properties for ghost/icon affordances.
   const onDarkSurfaceStyle: CSSProperties | undefined = showDarkHeroStyle
     ? ({
-        color: "#fff",
-        "--al-color-on-surface": "#fff",
-        "--al-color-surface-variant": "rgba(255,255,255,0.16)",
+        color: '#fff',
+        '--al-color-on-surface': '#fff',
+        '--al-color-surface-variant': 'rgba(255,255,255,0.16)',
       } as CSSProperties)
     : undefined;
 
@@ -101,7 +94,7 @@ export function Header({
   useEffect(() => {
     if (!open) return;
     const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = original;
     };
@@ -110,12 +103,12 @@ export function Header({
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 flex flex-col transition-colors",
+        'fixed inset-x-0 top-0 z-50 flex flex-col transition-colors',
         open
-          ? "bottom-0 bg-background lg:bottom-auto"
+          ? 'bottom-0 bg-background lg:bottom-auto'
           : isPremium && !scrolled
-            ? "bg-transparent"
-            : "border-b border-border/70 bg-background/80 shadow-[0_8px_32px_-12px_rgba(24,24,27,0.08)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-background/72",
+            ? 'bg-transparent'
+            : 'border-b border-border/70 bg-background/80 shadow-[0_8px_32px_-12px_rgba(24,24,27,0.08)] backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-background/72',
         className,
       )}
     >
@@ -138,9 +131,9 @@ export function Header({
               <Link
                 key={item.href}
                 href={item.href}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noreferrer noopener" : undefined}
-                aria-current={active ? "page" : undefined}
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noreferrer noopener' : undefined}
+                aria-current={active ? 'page' : undefined}
                 className={navLinkClass(active, showDarkHeroStyle)}
               >
                 {item.label}
@@ -183,7 +176,7 @@ export function Header({
         <div className="flex items-center justify-end gap-1">
           <AlIconButton
             icon={open ? <CloseIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            label={open ? "Close menu" : "Open menu"}
+            label={open ? 'Close menu' : 'Open menu'}
             style={onDarkSurfaceStyle}
             aria-expanded={open}
             aria-controls="header-mobile-menu"
@@ -230,14 +223,14 @@ export function Header({
                   <Link
                     key={item.href}
                     href={item.href}
-                    target={item.external ? "_blank" : undefined}
-                    rel={item.external ? "noreferrer noopener" : undefined}
-                    aria-current={active ? "page" : undefined}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noreferrer noopener' : undefined}
+                    aria-current={active ? 'page' : undefined}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "touch-target rounded-xl px-4 py-3 text-sm font-medium transition",
-                      "text-foreground/85 hover:bg-foreground/5 hover:text-foreground",
-                      active && "bg-primary/15 text-primary",
+                      'touch-target rounded-xl px-4 py-3 text-sm font-medium transition',
+                      'text-foreground/85 hover:bg-foreground/5 hover:text-foreground',
+                      active && 'bg-primary/15 text-primary',
                     )}
                   >
                     {item.label}
@@ -255,11 +248,13 @@ export function Header({
                 {avatarMenuItems.map((item) => {
                   const Icon = item.icon;
                   const rowClass = cn(
-                    "touch-target flex w-full items-center gap-2.5 rounded-xl px-4 py-3 text-left text-sm font-medium transition",
-                    item.tone === "danger"
-                      ? "text-rose-600 hover:bg-rose-500/10"
-                      : "text-foreground/85 hover:bg-foreground/5 hover:text-foreground",
-                    logout.isLoading && item.action === "logout" && "pointer-events-none opacity-60",
+                    'touch-target flex w-full items-center gap-2.5 rounded-xl px-4 py-3 text-left text-sm font-medium transition',
+                    item.tone === 'danger'
+                      ? 'text-rose-600 hover:bg-rose-500/10'
+                      : 'text-foreground/85 hover:bg-foreground/5 hover:text-foreground',
+                    logout.isLoading &&
+                      item.action === 'logout' &&
+                      'pointer-events-none opacity-60',
                   );
 
                   if (item.href) {
@@ -284,7 +279,7 @@ export function Header({
                       onClick={() => void logout.mutate()}
                     >
                       <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                      {logout.isLoading ? "Signing out…" : item.label}
+                      {logout.isLoading ? 'Signing out…' : item.label}
                     </button>
                   );
                 })}
@@ -298,6 +293,6 @@ export function Header({
 }
 
 /** Glassy/transparent variant used over hero imagery. */
-export function PremiumHeader(props: Omit<HeaderProps, "variant">) {
+export function PremiumHeader(props: Omit<HeaderProps, 'variant'>) {
   return <Header variant="premium" {...props} />;
 }

@@ -1,5 +1,5 @@
-import { HERO_COPY, HERO_FEATURES } from "./constants";
-import styles from "./index.module.css";
+import { HERO_COPY, HERO_FEATURES } from './constants';
+import styles from './index.module.css';
 
 export function HeroBanner() {
   return (

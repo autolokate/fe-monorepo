@@ -3,17 +3,14 @@ import axios, {
   AxiosHeaders,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
-} from "axios";
-import Cookies from "js-cookie";
+} from 'axios';
+import Cookies from 'js-cookie';
 
-import { env } from "@/config/env.config";
-import { endpoints } from "@/lib/api/endpoints";
-import { toApiError } from "@/lib/api/error";
-import {
-  ACCESS_TOKEN_COOKIE_KEY,
-  REFRESH_TOKEN_COOKIE_KEY,
-} from "@/lib/auth/constants";
-import { clearAuthTokens, writeAuthTokens } from "@/lib/auth/storage";
+import { env } from '@/config/env.config';
+import { endpoints } from '@/lib/api/endpoints';
+import { toApiError } from '@/lib/api/error';
+import { ACCESS_TOKEN_COOKIE_KEY, REFRESH_TOKEN_COOKIE_KEY } from '@/lib/auth/constants';
+import { clearAuthTokens, writeAuthTokens } from '@/lib/auth/storage';
 
 export const BASE_URL = env.NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL;
 
@@ -24,7 +21,7 @@ export const ACCESS_TOKEN_COOKIE = ACCESS_TOKEN_COOKIE_KEY;
 // Add a couple of per-request flags so callers can opt out of auth or
 // disable the refresh-on-401 dance for endpoints where it would loop.
 
-declare module "axios" {
+declare module 'axios' {
   export interface AxiosRequestConfig {
     /** Attach Authorization header from cookie. Default: true. */
     withAuth?: boolean;
@@ -41,7 +38,7 @@ declare module "axios" {
 
 const apiInstance = axios.create({
   baseURL: BASE_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: { 'Content-Type': 'application/json' },
   timeout: 30_000,
 });
 
@@ -50,12 +47,12 @@ apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   if (config.withAuth !== false) {
     const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE_KEY);
-    if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+    if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
   } else {
-    headers.delete("Authorization");
+    headers.delete('Authorization');
   }
 
-  if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+  if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
   config.headers = headers;
   return config;
 });
@@ -63,23 +60,20 @@ apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 // ─── Refresh-on-401 ─────────────────────────────────────────────────
 
 function isRec(v: unknown): v is Record<string, unknown> {
-  return typeof v === "object" && v !== null;
+  return typeof v === 'object' && v !== null;
 }
 
 /** Pull a fresh access token out of any shape the refresh endpoint returns. */
 function pickAccessToken(payload: unknown): string | null {
   if (!isRec(payload)) return null;
-  if (typeof payload.access_token === "string") return payload.access_token;
+  if (typeof payload.access_token === 'string') return payload.access_token;
   if (isRec(payload.data)) {
-    if (typeof payload.data.access_token === "string") return payload.data.access_token;
-    if (
-      isRec(payload.data.session) &&
-      typeof payload.data.session.access_token === "string"
-    ) {
+    if (typeof payload.data.access_token === 'string') return payload.data.access_token;
+    if (isRec(payload.data.session) && typeof payload.data.session.access_token === 'string') {
       return payload.data.session.access_token;
     }
   }
-  if (isRec(payload.session) && typeof payload.session.access_token === "string") {
+  if (isRec(payload.session) && typeof payload.session.access_token === 'string') {
     return payload.session.access_token;
   }
   return null;
@@ -109,13 +103,13 @@ async function refreshAccessToken(): Promise<string | null> {
 
 function handleAuthFailureRedirect(): void {
   clearAuthTokens();
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
   // Already on home or the auth pages — nothing to do.
   const path = window.location.pathname;
-  if (path === "/" || path.startsWith("/auth/")) return;
+  if (path === '/' || path.startsWith('/auth/')) return;
   // For everything else, bounce to home. The auth-change event will refresh
   // any mounted hooks, and the Log in CTA in the header is still accessible.
-  window.location.replace("/");
+  window.location.replace('/');
 }
 
 apiInstance.interceptors.response.use(
@@ -150,7 +144,7 @@ apiInstance.interceptors.response.use(
 
 // ─── Public surface ─────────────────────────────────────────────────
 
-interface Config extends Omit<AxiosRequestConfig, "url" | "method" | "data"> {
+interface Config extends Omit<AxiosRequestConfig, 'url' | 'method' | 'data'> {
   params?: Record<string, unknown>;
   headers?: Record<string, string>;
 }
@@ -165,8 +159,7 @@ interface Config extends Omit<AxiosRequestConfig, "url" | "method" | "data"> {
  *   const res = await ApiService.post<VerifyOtpResponse>("/v1/auth/verify-otp", body);
  */
 export const ApiService = {
-  get: <T = unknown>(endpoint: string, config: Config = {}) =>
-    apiInstance.get<T>(endpoint, config),
+  get: <T = unknown>(endpoint: string, config: Config = {}) => apiInstance.get<T>(endpoint, config),
 
   post: <T = unknown>(endpoint: string, data?: unknown, config: Config = {}) =>
     apiInstance.post<T>(endpoint, data, config),

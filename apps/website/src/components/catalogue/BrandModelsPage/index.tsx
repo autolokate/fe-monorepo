@@ -1,43 +1,36 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useMemo } from "react";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import Link from 'next/link';
+import { useMemo } from 'react';
+import { ArrowLeft, RefreshCw } from 'lucide-react';
 
-import { PageFade } from "@/components/shared/PageFade";
-import { Button } from "@/components/ui/button";
-import {
-  useBrandDetails,
-  useBrandModels,
-  useCatalogueBrandsForCategory,
-} from "@/hooks/catalogue";
-import type { CatalogueModel } from "@/lib/catalogue/types";
+import { PageFade } from '@/components/shared/PageFade';
+import { Button } from '@/components/ui/button';
+import { useBrandDetails, useBrandModels, useCatalogueBrandsForCategory } from '@/hooks/catalogue';
+import type { CatalogueModel } from '@/lib/catalogue/types';
 
-import {
-  BrandCatalogueHero,
-  BrandCatalogueHeroSkeleton,
-} from "./BrandHero";
-import { BrandCatalogueListing } from "./BrandCatalogueListing";
-import { BrandPageBrandSwitcher } from "./BrandPageBrandSwitcher";
-import { BRAND_MODELS_COPY } from "./constants";
+import { BrandCatalogueHero, BrandCatalogueHeroSkeleton } from './BrandHero';
+import { BrandCatalogueListing } from './BrandCatalogueListing';
+import { BrandPageBrandSwitcher } from './BrandPageBrandSwitcher';
+import { BRAND_MODELS_COPY } from './constants';
 
 /** Autolokate `CarsPageApi` banner gutter — reused for skeleton / errors. */
 const BRAND_PAGE_HERO_SHELL =
-  "relative overflow-hidden border-b border-border bg-gradient-to-br from-zinc-50 via-zinc-100/60 to-zinc-50";
+  'relative overflow-hidden border-b border-border bg-gradient-to-br from-zinc-50 via-zinc-100/60 to-zinc-50';
 
 export interface BrandModelsPageProps {
-  vehicleType: import("@/lib/preferences").VehicleCategory;
+  vehicleType: import('@/lib/preferences').VehicleCategory;
   brandSlug: string;
 }
 
 function slugToLabel(slug: string): string {
   const s = slug.trim();
-  if (!s) return "Brand";
+  if (!s) return 'Brand';
   return s
-    .split("-")
+    .split('-')
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+    .join(' ');
 }
 
 /**
@@ -47,7 +40,7 @@ function slugToLabel(slug: string): string {
 export function BrandModelsPage({ vehicleType, brandSlug }: BrandModelsPageProps) {
   const copy = BRAND_MODELS_COPY[vehicleType];
 
-  const slug = decodeURIComponent(String(brandSlug ?? "").trim());
+  const slug = decodeURIComponent(String(brandSlug ?? '').trim());
 
   const {
     data: brand,
@@ -78,21 +71,16 @@ export function BrandModelsPage({ vehicleType, brandSlug }: BrandModelsPageProps
 
   const bannerImages = useMemo(() => {
     const withImg = resolvedModels.filter(
-      (m) =>
-        typeof m.hero_image_url === "string" &&
-        m.hero_image_url.trim().length > 0,
+      (m) => typeof m.hero_image_url === 'string' && m.hero_image_url.trim().length > 0,
     );
     return withImg.slice(0, 3).map((m) => ({
       url: m.hero_image_url!.trim(),
-      label: `${displayName} ${m.model_name || m.name || "Model"}`,
+      label: `${displayName} ${m.model_name || m.name || 'Model'}`,
     }));
   }, [resolvedModels, displayName]);
 
   const showHeroSkeleton =
-    Boolean(slug) &&
-    brandLoading &&
-    brand === undefined &&
-    resolvedModels.length === 0;
+    Boolean(slug) && brandLoading && brand === undefined && resolvedModels.length === 0;
 
   const showEmptyBrand =
     hasModelsPayload &&

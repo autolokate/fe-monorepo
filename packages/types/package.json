@@ -15,5 +15,7 @@
     "lint": "eslint .",
     "clean": "rm -rf dist *.tsbuildinfo"
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }

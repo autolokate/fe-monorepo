@@ -32,7 +32,10 @@ function failure(status: 'not-found' | 'error', plate: string): VehicleLookupRes
   return { status, plate };
 }
 
-async function fetchVehicleLookup(lookupKey: string, displayPlate: string): Promise<VehicleLookupResult> {
+async function fetchVehicleLookup(
+  lookupKey: string,
+  displayPlate: string,
+): Promise<VehicleLookupResult> {
   try {
     const client = getQrApiClient();
     const record = await lookupVehicleApi(client, lookupKey);

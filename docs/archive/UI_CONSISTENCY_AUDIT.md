@@ -7,63 +7,68 @@
 
 ## Audit Dimensions
 
-| Dimension | Standard | Result |
-|-----------|----------|--------|
-| Header background | Matches shell `var(--al-color-background)` | Fixed |
-| Safe-area padding | `env(safe-area-inset-*)` on header/footer | OK |
-| Footer gradient | Theme-token based, no hardcoded rgba seams | Fixed |
-| Icons | Figma exports / `@autolokate/icons` | Retake unified; camera via AlIcon |
-| Card spacing | 16px screen gap, 12px grid gaps | OK |
-| CTA spacing | Sticky footer 12px top padding | OK |
-| Timeline spacing | Status screens use `pwa-scan-status-timeline-screen` | OK |
-| SOS hold spacing | 228px stage, 20px hint margin | OK |
+| Dimension         | Standard                                             | Result                            |
+| ----------------- | ---------------------------------------------------- | --------------------------------- |
+| Header background | Matches shell `var(--al-color-background)`           | Fixed                             |
+| Safe-area padding | `env(safe-area-inset-*)` on header/footer            | OK                                |
+| Footer gradient   | Theme-token based, no hardcoded rgba seams           | Fixed                             |
+| Icons             | Figma exports / `@autolokate/icons`                  | Retake unified; camera via AlIcon |
+| Card spacing      | 16px screen gap, 12px grid gaps                      | OK                                |
+| CTA spacing       | Sticky footer 12px top padding                       | OK                                |
+| Timeline spacing  | Status screens use `pwa-scan-status-timeline-screen` | OK                                |
+| SOS hold spacing  | 228px stage, 20px hint margin                        | OK                                |
 
 ---
 
 ## Screen Inventory
 
-| # | Route | Shell Variant | Issues Found | Status |
-|---|-------|---------------|--------------|--------|
-| 01 | loading | protected | None @ 320 | Pass |
-| 02 | vehicle | protected | None | Pass |
-| 03–05 | verify mobile/otp/name | protected | OTP success hold (prior fix) | Pass |
-| 06–08 | park-me vehicle/confirm | protected | None | Pass |
-| 09 | park-me/photos | protected | Two-step flow | **Fixed** |
-| 09b | park-me/review | protected | Hardcoded location | **Redirect** |
-| 10–13 | park-me status | protected | None | Pass |
-| 14 | sos | emergency | Loader iOS | **Fix pending device QA** |
-| 14b | sos/holding | emergency | Loader iOS | **Fix pending device QA** |
-| 14c–14e | sos location sheets | emergency | None | Pass |
-| 15–16 | sos scene photos | emergency | None | Pass |
-| 17–21 | sos status | emergency | Header bg | **Fixed** |
-| 22 | sos/contacts-only | emergency | None | Pass |
+| #       | Route                   | Shell Variant | Issues Found                 | Status                    |
+| ------- | ----------------------- | ------------- | ---------------------------- | ------------------------- |
+| 01      | loading                 | protected     | None @ 320                   | Pass                      |
+| 02      | vehicle                 | protected     | None                         | Pass                      |
+| 03–05   | verify mobile/otp/name  | protected     | OTP success hold (prior fix) | Pass                      |
+| 06–08   | park-me vehicle/confirm | protected     | None                         | Pass                      |
+| 09      | park-me/photos          | protected     | Two-step flow                | **Fixed**                 |
+| 09b     | park-me/review          | protected     | Hardcoded location           | **Redirect**              |
+| 10–13   | park-me status          | protected     | None                         | Pass                      |
+| 14      | sos                     | emergency     | Loader iOS                   | **Fix pending device QA** |
+| 14b     | sos/holding             | emergency     | Loader iOS                   | **Fix pending device QA** |
+| 14c–14e | sos location sheets     | emergency     | None                         | Pass                      |
+| 15–16   | sos scene photos        | emergency     | None                         | Pass                      |
+| 17–21   | sos status              | emergency     | Header bg                    | **Fixed**                 |
+| 22      | sos/contacts-only       | emergency     | None                         | Pass                      |
 
 ---
 
 ## P0 Consistency Fixes Applied
 
 ### 1. Shell Surface Unification
+
 **Issue:** Black header block / background shade mismatch.  
 **Root cause:** Missing inherited background on nested shell layers; hardcoded footer fade colors.  
 **Fix:** `pwa-scan-shell.css`, `ScreenBg.css`.  
 **Screens:** All.
 
 ### 2. SOS Without Auth Chrome
+
 **Issue:** Verify screens appeared before SOS.  
 **Fix:** `startFlow('sos')` bypasses auth.  
 **Screens:** 02 → 14 direct.
 
 ### 3. Location Labels
+
 **Issue:** Demo city name on review.  
 **Fix:** Session-driven labels via `format-pwa-location.ts`.  
 **Screens:** Park Me photos, SOS chip.
 
 ### 4. Retake Icons
+
 **Issue:** Duplicate inline SVGs.  
 **Fix:** Shared `RetakeIcon` (Figma 1059:281).  
 **Screens:** PhotoGrid review tiles, ScenePhotoCard filled slots.
 
 ### 5. SOS Tap Highlight
+
 **Issue:** Light blue block on tap (prior fix).  
 **Status:** `-webkit-tap-highlight-color: transparent` on hold disc.
 
@@ -78,6 +83,7 @@ Source: `layout-audit-results.json` — 320px width, dark theme, all registered 
 - **issueCount:** 0 for audited screens in last full run (pre-fix baseline).
 
 Post-fix recapture @ 320px:
+
 - `live/14-sos.png`
 - `live/19-help-received.png`
 - `live/20-help-dispatched.png`
@@ -91,14 +97,14 @@ Post-fix recapture @ 320px:
 
 ## Animation Quality
 
-| Animation | Check | Status |
-|-----------|-------|--------|
-| SOS hold progress | CSS ring + SVG, 60ms linear | Improved WebKit path |
-| SOS aura pulse | CSS keyframes, reduced-motion respected | OK |
-| Help dispatched/received | Timeline step transitions via `PwaFade` | OK |
-| Photo fill | `al-scene-photo-fill` spring | OK |
-| OTP success | 2s green hold (prior fix) | OK |
-| CTA reveal | `PwaCtaReveal` footer | OK |
+| Animation                | Check                                   | Status               |
+| ------------------------ | --------------------------------------- | -------------------- |
+| SOS hold progress        | CSS ring + SVG, 60ms linear             | Improved WebKit path |
+| SOS aura pulse           | CSS keyframes, reduced-motion respected | OK                   |
+| Help dispatched/received | Timeline step transitions via `PwaFade` | OK                   |
+| Photo fill               | `al-scene-photo-fill` spring            | OK                   |
+| OTP success              | 2s green hold (prior fix)               | OK                   |
+| CTA reveal               | `PwaCtaReveal` footer                   | OK                   |
 
 No new double-animation or opacity blink introduced in this pass.
 

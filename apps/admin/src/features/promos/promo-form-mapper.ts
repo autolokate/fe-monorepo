@@ -5,7 +5,9 @@ import { toIsoDateTime, type CreatePromoFormValues } from '@/features/promos/cre
 
 export function toCreatePromoBody(values: CreatePromoFormValues): CreatePromoBody {
   const discountPaise =
-    values.discountRupees.trim() === '' ? undefined : (rupeesToPaise(values.discountRupees) ?? undefined);
+    values.discountRupees.trim() === ''
+      ? undefined
+      : (rupeesToPaise(values.discountRupees) ?? undefined);
 
   return {
     code: values.code,

@@ -1,10 +1,10 @@
-import Link from "next/link";
-import { Check } from "lucide-react";
-import { Logo } from "@/layouts/Header/constants";
-import { cn } from "@/lib/utils";
-import { PWA_STEPS, STEPPER_LABELS, STEP_TO_STEPPER_INDEX } from "../../constants";
-import type { PurchaseStep } from "../../types";
-import styles from "./index.module.css";
+import Link from 'next/link';
+import { Check } from 'lucide-react';
+import { Logo } from '@/layouts/Header/constants';
+import { cn } from '@/lib/utils';
+import { PWA_STEPS, STEPPER_LABELS, STEP_TO_STEPPER_INDEX } from '../../constants';
+import type { PurchaseStep } from '../../types';
+import styles from './index.module.css';
 
 interface CheckoutHeaderProps {
   step: PurchaseStep;
@@ -33,24 +33,11 @@ export function CheckoutHeader({ step }: CheckoutHeaderProps) {
               return (
                 <li key={label} className={styles.step}>
                   <span
-                    className={cn(
-                      styles.dot,
-                      done && styles.dotDone,
-                      active && styles.dotActive,
-                    )}
+                    className={cn(styles.dot, done && styles.dotDone, active && styles.dotActive)}
                   >
-                    {done ? (
-                      <Check className="h-3 w-3 stroke-[3]" aria-hidden />
-                    ) : (
-                      index + 1
-                    )}
+                    {done ? <Check className="h-3 w-3 stroke-[3]" aria-hidden /> : index + 1}
                   </span>
-                  <span
-                    className={cn(
-                      styles.stepLabel,
-                      (done || active) && styles.stepLabelOn,
-                    )}
-                  >
+                  <span className={cn(styles.stepLabel, (done || active) && styles.stepLabelOn)}>
                     {label}
                   </span>
                   {index < STEPPER_LABELS.length - 1 ? (

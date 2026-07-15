@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiError } from "@/lib/api/error";
-import { PurchaseApi } from "./client";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiError } from '@/lib/api/error';
+import { PurchaseApi } from './client';
 
 export interface Profile {
   name: string;
@@ -29,7 +29,7 @@ export async function updateProfile(payload: UpdateProfilePayload): Promise<Prof
 
   const res = await PurchaseApi.patch<Enveloped<Profile>>(endpoints.profile, body);
   const profile = res.data?.data;
-  if (!profile) throw new ApiError("Invalid profile response", 0, res.data);
+  if (!profile) throw new ApiError('Invalid profile response', 0, res.data);
   return profile;
 }
 
@@ -37,6 +37,6 @@ export async function updateProfile(payload: UpdateProfilePayload): Promise<Prof
 export async function getProfile(): Promise<Profile> {
   const res = await PurchaseApi.get<Enveloped<Profile>>(endpoints.profile);
   const profile = res.data?.data;
-  if (!profile) throw new ApiError("Invalid profile response", 0, res.data);
+  if (!profile) throw new ApiError('Invalid profile response', 0, res.data);
   return profile;
 }

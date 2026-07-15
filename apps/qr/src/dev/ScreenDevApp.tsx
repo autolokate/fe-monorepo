@@ -159,9 +159,7 @@ const emergencyScreens: EmergencyDevScreen[] = [
     states: ['default', 'error', 'offline'],
     render: (state) => (
       <E02RiderMobileScreen
-        mobileState={
-          state === 'error' ? 'error' : state === 'offline' ? 'offline' : 'default'
-        }
+        mobileState={state === 'error' ? 'error' : state === 'offline' ? 'offline' : 'default'}
       />
     ),
   },
@@ -196,9 +194,7 @@ const emergencyScreens: EmergencyDevScreen[] = [
       <E04RiderNameScreen
         relation="spouse"
         nameValue="Rahul Sharma"
-        formState={
-          state === 'loading' ? 'submitting' : state === 'error' ? 'error' : 'default'
-        }
+        formState={state === 'loading' ? 'submitting' : state === 'error' ? 'error' : 'default'}
       />
     ),
   },
@@ -216,9 +212,7 @@ const emergencyScreens: EmergencyDevScreen[] = [
     states: ['default', 'error', 'offline'],
     render: (state) => (
       <E06ContactMobileScreen
-        mobileState={
-          state === 'error' ? 'error' : state === 'offline' ? 'offline' : 'default'
-        }
+        mobileState={state === 'error' ? 'error' : state === 'offline' ? 'offline' : 'default'}
       />
     ),
   },
@@ -319,17 +313,13 @@ const sharedAuthScreens: SharedAuthStateScreen[] = [
     id: 'a1-ready',
     label: 'A1 · Mobile · Ready',
     group: 'shared',
-    render: () => (
-      <A1MobileScreen mobileState="ready" mobileValue="99999 99999" consentAccepted />
-    ),
+    render: () => <A1MobileScreen mobileState="ready" mobileValue="99999 99999" consentAccepted />,
   },
   {
     id: 'a1-error',
     label: 'A1 · Mobile · Error',
     group: 'shared',
-    render: () => (
-      <A1MobileScreen mobileState="error" mobileValue="99999 99999" consentAccepted />
-    ),
+    render: () => <A1MobileScreen mobileState="error" mobileValue="99999 99999" consentAccepted />,
   },
   {
     id: 'a1-offline',
@@ -355,17 +345,13 @@ const sharedAuthScreens: SharedAuthStateScreen[] = [
     id: 'a2-verifying',
     label: 'A2 · OTP · Verifying',
     group: 'shared',
-    render: () => (
-      <A2OtpScreen otpState="verifying" mobile="9999999999" otpValue={demoOtp} />
-    ),
+    render: () => <A2OtpScreen otpState="verifying" mobile="9999999999" otpValue={demoOtp} />,
   },
   {
     id: 'a2-success',
     label: 'A2 · OTP · Success',
     group: 'shared',
-    render: () => (
-      <A2OtpScreen otpState="success" mobile="9999999999" otpValue={demoOtp} />
-    ),
+    render: () => <A2OtpScreen otpState="success" mobile="9999999999" otpValue={demoOtp} />,
   },
   {
     id: 'a2-error',
@@ -385,25 +371,26 @@ const sharedAuthScreens: SharedAuthStateScreen[] = [
     id: 'a2-network',
     label: 'A2 · OTP · Network error',
     group: 'shared',
-    render: () => (
-      <A2OtpScreen otpState="network-error" mobile="9999999999" otpValue={demoOtp} />
-    ),
+    render: () => <A2OtpScreen otpState="network-error" mobile="9999999999" otpValue={demoOtp} />,
   },
   {
     id: 'a2-resend',
     label: 'A2 · OTP · Resend',
     group: 'shared',
     render: () => (
-      <A2OtpScreen otpState="resend" mobile="9999999999" otpValue={demoOtp} resendCooldownSeconds={0} />
+      <A2OtpScreen
+        otpState="resend"
+        mobile="9999999999"
+        otpValue={demoOtp}
+        resendCooldownSeconds={0}
+      />
     ),
   },
   {
     id: 'a2-resend-failed',
     label: 'A2 · OTP · Resend failed',
     group: 'shared',
-    render: () => (
-      <A2OtpScreen otpState="resend-failed" mobile="9999999999" otpValue={demoOtp} />
-    ),
+    render: () => <A2OtpScreen otpState="resend-failed" mobile="9999999999" otpValue={demoOtp} />,
   },
   {
     id: 'a3-empty',
@@ -464,10 +451,7 @@ const purchasePhaseAScreens: (PurchaseVehicleDevScreen | PurchasePhaseAStatusDev
     label: 'R03 · Vehicle number',
     group: 'purchase',
     render: (state) => (
-      <R03VehicleNumberScreen
-        plateValue={state === 'empty' ? '' : demoPlate}
-        plateState={state}
-      />
+      <R03VehicleNumberScreen plateValue={state === 'empty' ? '' : demoPlate} plateState={state} />
     ),
   },
   {
@@ -638,7 +622,13 @@ const sharedStates: ScreenViewState[] = ['default', 'loading', 'error', 'empty',
 const purchaseVehicleStates: PurchaseVehiclePlateState[] = ['empty', 'filled', 'error', 'loading'];
 const r06PlanStates: PurchasePlanId[] = ['safe', 'secure', 'shield', 'shield-plus'];
 const prepaidStates: PrepaidScreenState[] = ['default', 'loading', 'error', 'success'];
-const emergencyStates: EmergencyDevState[] = ['default', 'error', 'offline', 'loading', 'network-error'];
+const emergencyStates: EmergencyDevState[] = [
+  'default',
+  'error',
+  'offline',
+  'loading',
+  'network-error',
+];
 
 const viewportWidths = [320, 360, 375, 390, 393, 414] as const;
 const THEME_KEY = 'al-qr-theme';
@@ -722,13 +712,13 @@ export function ScreenDevApp() {
     ? (emergencyEntry?.states ?? emergencyStates)
     : activeScreen === 'r06-plan'
       ? r06PlanStates
-    : isPrepaid
-      ? prepaidStates
-      : isPurchasePhaseA && activeScreen === 'r03'
-        ? purchaseVehicleStates
-        : isSharedAuthFrame
-          ? []
-          : sharedStates;
+      : isPrepaid
+        ? prepaidStates
+        : isPurchasePhaseA && activeScreen === 'r03'
+          ? purchaseVehicleStates
+          : isSharedAuthFrame
+            ? []
+            : sharedStates;
 
   const resolvedSharedState = useMemo((): ScreenViewState => {
     if (sharedStates.includes(activeState as ScreenViewState)) {
@@ -772,35 +762,39 @@ export function ScreenDevApp() {
     resolvedEmergencyState === state;
 
   const frameContent =
-    isEmergency && emergencyEntry
-      ? emergencyEntry.render(resolvedEmergencyState)
-      : isFlowScreen && flowEntry
-        ? <DevFlowFrame>{flowEntry.render()}</DevFlowFrame>
-        : isPrepaid && prepaidEntry
-          ? prepaidEntry.render(resolvedPrepaidState)
-          : isPurchasePhaseA && purchasePhaseAEntry
-            ? purchasePhaseAEntry.id === 'r03'
-              ? purchasePhaseAEntry.render(resolvedPurchaseVehicleState)
-              : purchasePhaseAEntry.render()
-            : isPurchasePhaseB && purchasePhaseBEntry
-              ? purchasePhaseBEntry.id === 'r06-plan'
-                ? (
-                    <R06ChoosePlanScreen
-                      selectedPlanId={resolvedR06PlanId}
-                      onSelectPlan={(planId) => {
-                        setActiveState(planId);
-                      }}
-                      showBack={false}
-                    />
-                  )
-                : purchasePhaseBEntry.render()
-              : isPurchasePhaseC && purchasePhaseCEntry
-                ? purchasePhaseCEntry.render()
-                : sharedAuthEntry
-                  ? sharedAuthEntry.render('default')
-                  : deprecatedEntry
-                    ? deprecatedEntry.render()
-                    : defaultSharedScreen.render('default');
+    isEmergency && emergencyEntry ? (
+      emergencyEntry.render(resolvedEmergencyState)
+    ) : isFlowScreen && flowEntry ? (
+      <DevFlowFrame>{flowEntry.render()}</DevFlowFrame>
+    ) : isPrepaid && prepaidEntry ? (
+      prepaidEntry.render(resolvedPrepaidState)
+    ) : isPurchasePhaseA && purchasePhaseAEntry ? (
+      purchasePhaseAEntry.id === 'r03' ? (
+        purchasePhaseAEntry.render(resolvedPurchaseVehicleState)
+      ) : (
+        purchasePhaseAEntry.render()
+      )
+    ) : isPurchasePhaseB && purchasePhaseBEntry ? (
+      purchasePhaseBEntry.id === 'r06-plan' ? (
+        <R06ChoosePlanScreen
+          selectedPlanId={resolvedR06PlanId}
+          onSelectPlan={(planId) => {
+            setActiveState(planId);
+          }}
+          showBack={false}
+        />
+      ) : (
+        purchasePhaseBEntry.render()
+      )
+    ) : isPurchasePhaseC && purchasePhaseCEntry ? (
+      purchasePhaseCEntry.render()
+    ) : sharedAuthEntry ? (
+      sharedAuthEntry.render('default')
+    ) : deprecatedEntry ? (
+      deprecatedEntry.render()
+    ) : (
+      defaultSharedScreen.render('default')
+    );
 
   return (
     <div className={initialParams.captureMode ? 'ob-dev ob-dev--capture' : 'ob-dev'}>
@@ -808,7 +802,9 @@ export function ScreenDevApp() {
         <aside className="ob-dev__panel">
           <AlStack gap="md">
             <AlHeading variant="h3">QR · Dev preview</AlHeading>
-            <AlText tone="muted">Shared + Purchase + Prepaid + Emergency — no routing or API</AlText>
+            <AlText tone="muted">
+              Shared + Purchase + Prepaid + Emergency — no routing or API
+            </AlText>
             <AlText variant="label">Shared Auth (Figma 91:268)</AlText>
             <AlStack gap="xs">
               {sharedAuthScreens.map((screen) => (
@@ -892,18 +888,18 @@ export function ScreenDevApp() {
             <AlText variant="label">Prepaid (Phase 7)</AlText>
             <AlStack gap="xs">
               {prepaidScreens.map((screen) => (
-                  <AlButton
-                    key={screen.id}
-                    size="sm"
-                    variant={activeScreen === screen.id ? 'primary' : 'secondary'}
-                    onClick={() => {
-                      setActiveScreen(screen.id);
-                      setActiveState('default');
-                    }}
-                  >
-                    {screen.label}
-                  </AlButton>
-                ))}
+                <AlButton
+                  key={screen.id}
+                  size="sm"
+                  variant={activeScreen === screen.id ? 'primary' : 'secondary'}
+                  onClick={() => {
+                    setActiveScreen(screen.id);
+                    setActiveState('default');
+                  }}
+                >
+                  {screen.label}
+                </AlButton>
+              ))}
             </AlStack>
             <AlText variant="label">B2B2C · Prepaid welcome · Completed</AlText>
             <AlStack gap="xs">

@@ -1,19 +1,15 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiService } from "@/services/api.service";
-import type {
-  BookingEnvelope,
-  BookingSlotsQuery,
-  CreateBookingPayload,
-} from "./types";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiService } from '@/services/api.service';
+import type { BookingEnvelope, BookingSlotsQuery, CreateBookingPayload } from './types';
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null && !Array.isArray(v);
+  typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** Unwrap `{ success, data }` envelopes; return the raw value for anything else. */
 function unbox<T>(res: BookingEnvelope<T>): T {
-  if (isRecord(res) && "data" in res) return (res as { data: T }).data;
+  if (isRecord(res) && 'data' in res) return (res as { data: T }).data;
   return res as T;
 }
 
@@ -50,10 +46,7 @@ export async function createBooking(payload: CreateBookingPayload): Promise<unkn
   };
   if (payload.car_profile_id) body.car_profile_id = payload.car_profile_id;
 
-  const res = await ApiService.post<BookingEnvelope<unknown>>(
-    endpoints.bookings.create,
-    body,
-  );
+  const res = await ApiService.post<BookingEnvelope<unknown>>(endpoints.bookings.create, body);
   return unbox(res.data);
 }
 
@@ -65,16 +58,12 @@ export async function getMyBookings(): Promise<unknown[]> {
 
 /** GET /v1/bookings/{id} — single booking lookup. */
 export async function getBookingById(bookingId: string): Promise<unknown> {
-  const res = await ApiService.get<BookingEnvelope<unknown>>(
-    endpoints.bookings.byId(bookingId),
-  );
+  const res = await ApiService.get<BookingEnvelope<unknown>>(endpoints.bookings.byId(bookingId));
   return unbox(res.data);
 }
 
 /** POST /v1/bookings/{id}/cancel. */
 export async function cancelBooking(bookingId: string): Promise<unknown> {
-  const res = await ApiService.post<BookingEnvelope<unknown>>(
-    endpoints.bookings.cancel(bookingId),
-  );
+  const res = await ApiService.post<BookingEnvelope<unknown>>(endpoints.bookings.cancel(bookingId));
   return unbox(res.data);
 }

@@ -8,18 +8,18 @@
 
 ## Promoted components (10)
 
-| Component | Path | Figma frames | Usage count |
-|-----------|------|--------------|-------------|
-| `AlScannerHubCard` | `packages/ui/src/components/primitives/ScannerHubCard/` | 02 | 2 (Park Me + Emergency) |
-| `AlDispatchTimeline` | `packages/ui/src/components/primitives/DispatchTimeline/` | 10–12, 19–21, 23 | 6+ |
-| `AlStatusTracker` | `packages/ui/src/components/primitives/StatusTracker/` | 10–12, 19–21, 23 | 6+ |
-| `AlScenePhotoCard` | `packages/ui/src/components/primitives/ScenePhotoCard/` | 09, 15, 15b | 6+ |
-| `AlPhotoGrid` | `packages/ui/src/components/primitives/PhotoGrid/` | 09, 15, 15b | 3 |
-| `AlSosHoldButton` | `packages/ui/src/components/primitives/SosHoldButton/` | 14, 14b | 2 |
-| `AlPermissionSheet` | `packages/ui/src/components/primitives/PermissionSheet/` | 09a, 14c, 14d | 3 |
-| `AlIncidentStatusHero` | `packages/ui/src/components/primitives/IncidentStatusHero/` | 16, 18, 22 | 3 |
-| `AlVehicleConfirmationCard` | `packages/ui/src/components/primitives/VehicleConfirmationCard/` | 08, 08b | 2 |
-| `AlScannedVehicleCard` | `packages/ui/src/components/primitives/ScannedVehicleCard/` | 02 | 1 |
+| Component                   | Path                                                             | Figma frames     | Usage count             |
+| --------------------------- | ---------------------------------------------------------------- | ---------------- | ----------------------- |
+| `AlScannerHubCard`          | `packages/ui/src/components/primitives/ScannerHubCard/`          | 02               | 2 (Park Me + Emergency) |
+| `AlDispatchTimeline`        | `packages/ui/src/components/primitives/DispatchTimeline/`        | 10–12, 19–21, 23 | 6+                      |
+| `AlStatusTracker`           | `packages/ui/src/components/primitives/StatusTracker/`           | 10–12, 19–21, 23 | 6+                      |
+| `AlScenePhotoCard`          | `packages/ui/src/components/primitives/ScenePhotoCard/`          | 09, 15, 15b      | 6+                      |
+| `AlPhotoGrid`               | `packages/ui/src/components/primitives/PhotoGrid/`               | 09, 15, 15b      | 3                       |
+| `AlSosHoldButton`           | `packages/ui/src/components/primitives/SosHoldButton/`           | 14, 14b          | 2                       |
+| `AlPermissionSheet`         | `packages/ui/src/components/primitives/PermissionSheet/`         | 09a, 14c, 14d    | 3                       |
+| `AlIncidentStatusHero`      | `packages/ui/src/components/primitives/IncidentStatusHero/`      | 16, 18, 22       | 3                       |
+| `AlVehicleConfirmationCard` | `packages/ui/src/components/primitives/VehicleConfirmationCard/` | 08, 08b          | 2                       |
+| `AlScannedVehicleCard`      | `packages/ui/src/components/primitives/ScannedVehicleCard/`      | 02               | 1                       |
 
 **Export surface:** `packages/ui/src/components/primitives/index.ts`
 
@@ -92,11 +92,11 @@
 
 ## App-layer compositions (not promoted — reuse onboarding)
 
-| Composition | Source | PWA usage |
-|-------------|--------|-----------|
-| `PwaScanShell` | `features/post-activation-pwa/components/` | Logo header chrome (no status bar) |
-| `PwaMotion` | `features/post-activation-pwa/components/` | Framer Motion wrappers |
-| `PurchaseStatusShell` | onboarding compositions | Loading + error status screens |
+| Composition           | Source                                     | PWA usage                          |
+| --------------------- | ------------------------------------------ | ---------------------------------- |
+| `PwaScanShell`        | `features/post-activation-pwa/components/` | Logo header chrome (no status bar) |
+| `PwaMotion`           | `features/post-activation-pwa/components/` | Framer Motion wrappers             |
+| `PurchaseStatusShell` | onboarding compositions                    | Loading + error status screens     |
 
 ---
 
@@ -104,14 +104,14 @@
 
 These were **not duplicated** — optional props added with unchanged defaults:
 
-| Screen | New optional props |
-|--------|-------------------|
-| `A1MobileScreen` | `title`, `description`, `footerLabel`, `hideProgress`, `consentVariant` |
-| `A2OtpScreen` | `title` |
-| `A3VehicleOwnerScreen` | `title`, `description`, `footerLabel` |
-| `R03VehicleNumberScreen` | `title`, `description` |
-| `R05ConfirmVehicleScreen` | `title`, `description`, `protectedPlan`, `planLabel` |
-| `InlineConsentBlock` | `variant: 'owner' \| 'bystander'` |
+| Screen                    | New optional props                                                      |
+| ------------------------- | ----------------------------------------------------------------------- |
+| `A1MobileScreen`          | `title`, `description`, `footerLabel`, `hideProgress`, `consentVariant` |
+| `A2OtpScreen`             | `title`                                                                 |
+| `A3VehicleOwnerScreen`    | `title`, `description`, `footerLabel`                                   |
+| `R03VehicleNumberScreen`  | `title`, `description`                                                  |
+| `R05ConfirmVehicleScreen` | `title`, `description`, `protectedPlan`, `planLabel`                    |
+| `InlineConsentBlock`      | `variant: 'owner' \| 'bystander'`                                       |
 
 ---
 

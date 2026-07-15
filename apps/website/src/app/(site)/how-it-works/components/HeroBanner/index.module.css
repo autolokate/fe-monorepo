@@ -18,7 +18,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/new-design/newDesignHeroBgMobile.png");
+  background-image: url('/images/new-design/newDesignHeroBgMobile.png');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -47,7 +47,7 @@
 
 @media (min-width: 1024px) {
   .bgImage {
-    background-image: url("/images/new-design/newDesignHeroBg.png");
+    background-image: url('/images/new-design/newDesignHeroBg.png');
     background-position: center center;
   }
 
@@ -297,7 +297,7 @@ button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
 }
 
 .stepper::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 1.1rem;
   bottom: 1.1rem;

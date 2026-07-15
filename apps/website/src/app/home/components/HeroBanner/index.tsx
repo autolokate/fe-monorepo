@@ -1,7 +1,7 @@
-import { HeroAppMockup } from "./HeroAppMockup";
-import { HeroCtas } from "./HeroCtas";
-import { HERO_COPY } from "./constants";
-import styles from "./index.module.css";
+import { HeroAppMockup } from './HeroAppMockup';
+import { HeroCtas } from './HeroCtas';
+import { HERO_COPY } from './constants';
+import styles from './index.module.css';
 
 export function HeroBanner() {
   return (
@@ -18,7 +18,7 @@ export function HeroBanner() {
             <span className={styles.badge}>{HERO_COPY.badge}</span>
 
             <h1 id="home-hero-heading" className={styles.headline}>
-              {HERO_COPY.headline}{" "}
+              {HERO_COPY.headline}{' '}
               <span className={styles.headlineAccent}>{HERO_COPY.headlineAccent}</span>
             </h1>
 

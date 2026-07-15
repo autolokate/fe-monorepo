@@ -1,7 +1,7 @@
-import { CircleCheck } from "lucide-react";
-import { HeroCta } from "./HeroCta";
-import { HERO_COPY } from "./constants";
-import styles from "./index.module.css";
+import { CircleCheck } from 'lucide-react';
+import { HeroCta } from './HeroCta';
+import { HERO_COPY } from './constants';
+import styles from './index.module.css';
 
 export function HeroBanner() {
   return (

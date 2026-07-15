@@ -13,11 +13,12 @@ import {
   AlScreenSpinner,
 } from '@autolokate/ui';
 
+import { isPlateEntryReady, normalizePlate } from '@/services/vehicle/index';
 import {
-  isPlateEntryReady,
-  normalizePlate,
-} from '@/services/vehicle/index';
-import { useParkVehicleLookup, useParkCheckingFlow, useParkTrackerPoll } from '../../../hooks/scanner/index';
+  useParkVehicleLookup,
+  useParkCheckingFlow,
+  useParkTrackerPoll,
+} from '../../../hooks/scanner/index';
 import { reportUserError } from '../../../platform/feedback/report-user-error';
 import { scannerLogger } from '../../../services/scanner/index';
 import { pwaScanPaths } from '../constants/pwa-scan-paths';
@@ -69,7 +70,9 @@ export function PwaParkMeVehicleNumberRoute() {
     >
       <PwaFade className="pwa-scan-screen pwa-scan-form-screen">
         <AlHeading variant="h2">Your vehicle number</AlHeading>
-        <AlText tone="muted">The car that&apos;s blocked. We&apos;ll share it with the owner.</AlText>
+        <AlText tone="muted">
+          The car that&apos;s blocked. We&apos;ll share it with the owner.
+        </AlText>
         <AlPlateInput
           value={session.reporterPlate}
           error={plateError}
@@ -117,7 +120,7 @@ export function PwaParkMeLookingUpRoute() {
         reporterPlate: result.plate,
         reporterFields: result.fields,
         reporterProtected: isProtected,
-        reporterPlanLabel: isProtected ? session.scannedVehicle.planLabel ?? 'Shield plan' : null,
+        reporterPlanLabel: isProtected ? (session.scannedVehicle.planLabel ?? 'Shield plan') : null,
       });
       void navigate(
         isProtected ? pwaScanPaths.parkMeConfirmProtected : pwaScanPaths.parkMeConfirm,
@@ -293,7 +296,11 @@ export function PwaParkMePermissionsRoute() {
       variant="protected"
       showBack
       onBack={() => {
-        void navigate(session.reporterProtected ? pwaScanPaths.parkMeConfirmProtected : pwaScanPaths.parkMeConfirm);
+        void navigate(
+          session.reporterProtected
+            ? pwaScanPaths.parkMeConfirmProtected
+            : pwaScanPaths.parkMeConfirm,
+        );
       }}
     >
       <div className="pwa-scan-permission-backdrop" aria-hidden>
@@ -337,11 +344,11 @@ export function PwaParkMePermissionsRoute() {
 export function PwaParkMePhotosRoute() {
   const navigate = useNavigate();
   const { session, updateSession } = usePwaScan();
-  const { activeSlot, isUploading, captureError, clearCaptureError, captureToSlot } = usePwaPhotoCapture(
-    'park-me/photos',
-    'parkMePhotos',
-    { kind: 'park', photoIdsField: 'parkMePhotoIds' },
-  );
+  const { activeSlot, isUploading, captureError, clearCaptureError, captureToSlot } =
+    usePwaPhotoCapture('park-me/photos', 'parkMePhotos', {
+      kind: 'park',
+      photoIdsField: 'parkMePhotoIds',
+    });
   const { requestLocation, loading: geoLoading, error: geoError } = useGeolocationCapture();
   useResolveStoredLocationName();
   const [isLocating, setIsLocating] = useState(false);
@@ -365,7 +372,8 @@ export function PwaParkMePhotosRoute() {
   const hasBothPhotoIds = Boolean(session.parkMePhotoIds.front && session.parkMePhotoIds.rear);
   const hasLocation = Boolean(session.location);
   const locationLoading = isLocating || (geoLoading && !hasLocation);
-  const canContinue = hasBothPhotos && hasBothPhotoIds && hasLocation && !locationLoading && !isUploading;
+  const canContinue =
+    hasBothPhotos && hasBothPhotoIds && hasLocation && !locationLoading && !isUploading;
   const initialLocateRef = useRef(false);
 
   useEffect(() => {
@@ -392,7 +400,9 @@ export function PwaParkMePhotosRoute() {
           showBack
           onBack={() => {
             void navigate(
-              session.reporterProtected ? pwaScanPaths.parkMeConfirmProtected : pwaScanPaths.parkMeConfirm,
+              session.reporterProtected
+                ? pwaScanPaths.parkMeConfirmProtected
+                : pwaScanPaths.parkMeConfirm,
             );
           }}
           footer={
@@ -422,7 +432,12 @@ export function PwaParkMePhotosRoute() {
                 {
                   id: 'front',
                   label: 'The vehicle blocking you',
-                  state: activeSlot === 'front' ? 'capturing' : session.parkMePhotos.front ? 'filled' : 'empty',
+                  state:
+                    activeSlot === 'front'
+                      ? 'capturing'
+                      : session.parkMePhotos.front
+                        ? 'filled'
+                        : 'empty',
                   imageUrl: session.parkMePhotos.front,
                   onCapture: () => {
                     void captureToSlot('front');
@@ -432,7 +447,12 @@ export function PwaParkMePhotosRoute() {
                 {
                   id: 'rear',
                   label: 'Your car, blocked',
-                  state: activeSlot === 'rear' ? 'capturing' : session.parkMePhotos.rear ? 'filled' : 'empty',
+                  state:
+                    activeSlot === 'rear'
+                      ? 'capturing'
+                      : session.parkMePhotos.rear
+                        ? 'filled'
+                        : 'empty',
                   imageUrl: session.parkMePhotos.rear,
                   onCapture: () => {
                     void captureToSlot('rear');
@@ -471,7 +491,6 @@ export function PwaParkMePhotosRoute() {
 export function PwaParkMeReviewRoute() {
   return <Navigate to={pwaScanPaths.parkMePhotos} replace />;
 }
-
 
 /** 11 · Status — calling owner. */
 export function PwaParkMeStatusCheckingRoute() {
@@ -593,17 +612,17 @@ export function PwaParkMePhotoNotClearRoute() {
           }
         >
           <PwaFade className="pwa-scan-screen pwa-scan-status-timeline-screen" immediate>
-        <div className="pwa-scan-screen__intro">
-          <AlHeading variant="h2">Photo wasn&apos;t clear</AlHeading>
-          <AlText tone="muted">One of your photos was unclear. Please retake it.</AlText>
-        </div>
-        <AlStatusTracker
-          plate={session.scannedVehicle.plate}
-          model={session.scannedVehicle.modelSummary}
-          steps={parkMeTimelineSteps.photoError}
-          variant="park-me"
-        />
-      </PwaFade>
+            <div className="pwa-scan-screen__intro">
+              <AlHeading variant="h2">Photo wasn&apos;t clear</AlHeading>
+              <AlText tone="muted">One of your photos was unclear. Please retake it.</AlText>
+            </div>
+            <AlStatusTracker
+              plate={session.scannedVehicle.plate}
+              model={session.scannedVehicle.modelSummary}
+              steps={parkMeTimelineSteps.photoError}
+              variant="park-me"
+            />
+          </PwaFade>
         </PwaScanShell>
       </PwaPhotoRouteGuard>
     </PwaScanErrorBoundary>

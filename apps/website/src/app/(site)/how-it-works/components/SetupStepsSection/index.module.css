@@ -33,7 +33,7 @@
 
 .badge {
   display: inline-block;
-  font-family: ui-monospace, "Space Mono", SFMono-Regular, monospace;
+  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.28em;
@@ -179,7 +179,7 @@
 }
 
 .connector::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-top: 2px dashed color-mix(in srgb, var(--al-signal-green) 45%, #cbd2dc);

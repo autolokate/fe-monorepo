@@ -226,11 +226,7 @@ export function AuditEventsPage() {
           </div>
         ) : null}
 
-        <AuditDetailSheet
-          event={selectedEvent}
-          open={detailOpen}
-          onOpenChange={setDetailOpen}
-        />
+        <AuditDetailSheet event={selectedEvent} open={detailOpen} onOpenChange={setDetailOpen} />
       </AlStack>
     </RequirePermission>
   );

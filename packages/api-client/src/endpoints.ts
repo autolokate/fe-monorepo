@@ -46,8 +46,7 @@ export const endpoints = {
     validate: '/v1/promos/validate',
   },
   activation: {
-    preview: (code: string) =>
-      `/v1/activation/preview?code=${encodeURIComponent(code)}`,
+    preview: (code: string) => `/v1/activation/preview?code=${encodeURIComponent(code)}`,
     redeem: '/v1/activation/redeem',
   },
   emergencyContacts: {
@@ -55,8 +54,7 @@ export const endpoints = {
     otpRequest: '/v1/emergency-contacts/otp/request',
     otpVerify: '/v1/emergency-contacts/otp/verify',
     create: '/v1/emergency-contacts',
-    delete: (contactId: string) =>
-      `/v1/emergency-contacts/${encodeURIComponent(contactId)}`,
+    delete: (contactId: string) => `/v1/emergency-contacts/${encodeURIComponent(contactId)}`,
   },
   riders: {
     list: (subscriptionId: string) =>
@@ -67,27 +65,20 @@ export const endpoints = {
     delete: (riderId: string) => `/v1/riders/${encodeURIComponent(riderId)}`,
   },
   scanner: {
-    parkOtpRequest: (code: string) =>
-      `/v1/qr/${encodeURIComponent(code)}/park/otp/request`,
-    parkOtpVerify: (code: string) =>
-      `/v1/qr/${encodeURIComponent(code)}/park/otp/verify`,
-    parkVehicleLookup: (code: string) =>
-      `/v1/qr/${encodeURIComponent(code)}/park/vehicles/lookup`,
+    parkOtpRequest: (code: string) => `/v1/qr/${encodeURIComponent(code)}/park/otp/request`,
+    parkOtpVerify: (code: string) => `/v1/qr/${encodeURIComponent(code)}/park/otp/verify`,
+    parkVehicleLookup: (code: string) => `/v1/qr/${encodeURIComponent(code)}/park/vehicles/lookup`,
     parkMedia: (code: string) => `/v1/qr/${encodeURIComponent(code)}/park/media`,
     parkMediaComplete: (code: string, mediaId: string) =>
       `/v1/qr/${encodeURIComponent(code)}/park/media/${encodeURIComponent(mediaId)}/complete`,
     parkOpen: (code: string) => `/v1/qr/${encodeURIComponent(code)}/park`,
-    parkStatus: (notificationId: string) =>
-      `/v1/park/${encodeURIComponent(notificationId)}`,
-    emergencyMedia: (code: string) =>
-      `/v1/qr/${encodeURIComponent(code)}/emergency/media`,
+    parkStatus: (notificationId: string) => `/v1/park/${encodeURIComponent(notificationId)}`,
+    emergencyMedia: (code: string) => `/v1/qr/${encodeURIComponent(code)}/emergency/media`,
     emergencyMediaComplete: (code: string, mediaId: string) =>
       `/v1/qr/${encodeURIComponent(code)}/emergency/media/${encodeURIComponent(mediaId)}/complete`,
     emergencyOpen: (code: string) => `/v1/qr/${encodeURIComponent(code)}/emergency`,
-    emergencyStatus: (alertId: string) =>
-      `/v1/emergency/${encodeURIComponent(alertId)}`,
-    emergencyCancel: (alertId: string) =>
-      `/v1/emergency/${encodeURIComponent(alertId)}/cancel`,
+    emergencyStatus: (alertId: string) => `/v1/emergency/${encodeURIComponent(alertId)}`,
+    emergencyCancel: (alertId: string) => `/v1/emergency/${encodeURIComponent(alertId)}/cancel`,
   },
   admin: {
     auditEvents: '/admin/v1/audit-events',
@@ -101,20 +92,16 @@ export const endpoints = {
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',
-    generateQrBatch: (id: string) =>
-      `/admin/v1/qr-batches/${encodeURIComponent(id)}/generate`,
-    provisionQrBatch: (id: string) =>
-      `/admin/v1/qr-batches/${encodeURIComponent(id)}/provision`,
-    qrBatchCodes: (id: string) =>
-      `/admin/v1/qr-batches/${encodeURIComponent(id)}/codes`,
+    generateQrBatch: (id: string) => `/admin/v1/qr-batches/${encodeURIComponent(id)}/generate`,
+    provisionQrBatch: (id: string) => `/admin/v1/qr-batches/${encodeURIComponent(id)}/provision`,
+    qrBatchCodes: (id: string) => `/admin/v1/qr-batches/${encodeURIComponent(id)}/codes`,
     exportQrBatchCodes: (id: string) =>
       `/admin/v1/qr-batches/${encodeURIComponent(id)}/codes/export`,
     skus: '/admin/v1/skus',
     sku: (id: string) => `/admin/v1/skus/${encodeURIComponent(id)}`,
     plans: '/admin/v1/plans',
     plan: (planId: string) => `/admin/v1/plans/${encodeURIComponent(planId)}`,
-    planFeatures: (planId: string) =>
-      `/admin/v1/plans/${encodeURIComponent(planId)}/features`,
+    planFeatures: (planId: string) => `/admin/v1/plans/${encodeURIComponent(planId)}/features`,
     replaceQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/replace`,
     retireQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/retire`,
     settlementBatch: '/admin/v1/settlement-batch',

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { PurchaseApi } from "@/services/purchase/client";
+import { endpoints } from '@/lib/api/endpoints';
+import { PurchaseApi } from '@/services/purchase/client';
 
-export type LegalDocumentKind = "PRIVACY_POLICY" | "TERMS";
+export type LegalDocumentKind = 'PRIVACY_POLICY' | 'TERMS';
 
 export interface LegalDocument {
   kind: string;
@@ -29,9 +29,9 @@ export async function getLegalDocument(kind: LegalDocumentKind): Promise<LegalDo
   const d = res.data?.data ?? {};
   return {
     kind: String(d.kind ?? kind),
-    version: String(d.version ?? ""),
-    title: String(d.title ?? ""),
-    body: String(d.body ?? ""),
-    effectiveDate: String(d.effectiveDate ?? ""),
+    version: String(d.version ?? ''),
+    title: String(d.title ?? ''),
+    body: String(d.body ?? ''),
+    effectiveDate: String(d.effectiveDate ?? ''),
   };
 }

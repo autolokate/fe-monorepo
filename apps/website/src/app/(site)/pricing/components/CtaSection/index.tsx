@@ -1,6 +1,6 @@
-import { CtaActions } from "./CtaActions";
-import { CTA_COPY } from "./constants";
-import styles from "./index.module.css";
+import { CtaActions } from './CtaActions';
+import { CTA_COPY } from './constants';
+import styles from './index.module.css';
 
 export function CtaSection() {
   return (

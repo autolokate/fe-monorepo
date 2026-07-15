@@ -1,5 +1,13 @@
 import { AlBrandMark } from '@autolokate/brand';
-import { ActivityIcon, CircleUserIcon, CreditCardIcon, HouseIcon, ReceiptTextIcon, ScanLineIcon, StoreIcon } from '@autolokate/icons';
+import {
+  ActivityIcon,
+  CircleUserIcon,
+  CreditCardIcon,
+  HouseIcon,
+  ReceiptTextIcon,
+  ScanLineIcon,
+  StoreIcon,
+} from '@autolokate/icons';
 import { AlText } from '@autolokate/ui';
 import { NavLink } from 'react-router-dom';
 
@@ -86,9 +94,21 @@ export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminS
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
             {collapsed ? (
-              <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M6 4l4 4-4 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             ) : (
-              <path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M10 4L6 8l4 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             )}
           </svg>
         </button>

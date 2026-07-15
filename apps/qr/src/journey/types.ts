@@ -1,4 +1,7 @@
-import type { B2b2cLandingSession, PrepaidLandingSession } from '../features/b2b-shared/types-landing';
+import type {
+  B2b2cLandingSession,
+  PrepaidLandingSession,
+} from '../features/b2b-shared/types-landing';
 import type { EmergencySession } from '../features/emergency/types';
 import type { PurchaseCheckoutSession } from '../features/qr-purchase/types-checkout';
 import type { AuthLanguageId } from '../features/shared-auth/types';

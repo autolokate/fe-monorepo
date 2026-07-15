@@ -95,7 +95,9 @@
   border: 1.5px solid var(--border);
   border-radius: 0.9rem;
   background: var(--background);
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .renewOn {

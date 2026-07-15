@@ -6,7 +6,11 @@ import { getLegalNoticeVersion, saveLegalNoticeVersion } from '@/storage/index';
 import { authLogger } from '../auth/auth-logger';
 
 export type LoadLegalDocumentsResult =
-  | { ok: true; noticeVersion: string | null; documents: Awaited<ReturnType<typeof getLegalDocuments>>['documents'] }
+  | {
+      ok: true;
+      noticeVersion: string | null;
+      documents: Awaited<ReturnType<typeof getLegalDocuments>>['documents'];
+    }
   | { ok: false; error: unknown };
 
 let inflightLegalDocuments: Promise<LoadLegalDocumentsResult> | null = null;

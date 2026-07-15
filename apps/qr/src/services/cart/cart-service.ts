@@ -8,10 +8,7 @@ import {
   readCheckoutState,
   updateCheckoutState,
 } from '@/services/checkout/checkout-cache';
-import {
-  buildCheckoutParamsKey,
-  type CheckoutParams,
-} from '@/services/checkout/checkout-mapper';
+import { buildCheckoutParamsKey, type CheckoutParams } from '@/services/checkout/checkout-mapper';
 import { mapCheckoutApiError, type CheckoutError } from '@/services/checkout/checkout-errors';
 import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code';
 
@@ -20,9 +17,7 @@ import { getInflightPriceCart, setInflightPriceCart } from './cart-cache';
 import { mapCartToSummary } from './cart-mapper';
 import { cartLogger } from './cart-logger';
 
-export type PriceCartResult =
-  | { ok: true; revision: number }
-  | { ok: false; error: CheckoutError };
+export type PriceCartResult = { ok: true; revision: number } | { ok: false; error: CheckoutError };
 
 function isCartExpired(expiresAt: string | null): boolean {
   if (!expiresAt) {
@@ -51,7 +46,10 @@ async function createCartForParams(
 
   const planVersionId = resolvePlanVersionId(params);
   if (!planVersionId) {
-    cartLogger.warn('price_cart_blocked', { reason: 'missing_plan_version_id', planId: params.planId });
+    cartLogger.warn('price_cart_blocked', {
+      reason: 'missing_plan_version_id',
+      planId: params.planId,
+    });
     return {
       ok: false,
       error: { code: 'unavailable', message: 'Plan pricing is not available yet.' },

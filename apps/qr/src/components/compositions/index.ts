@@ -24,8 +24,4 @@ export type { TrustRowProps } from './trust-row/TrustRow';
 export { VahanPreviewChips } from './vahan-preview-chips/index';
 export { PurchaseStatusShell } from './purchase-status-shell/index';
 export type { PurchaseStatusShellProps } from './purchase-status-shell/index';
-export type {
-  CompositionDefinition,
-  CompositionId,
-  CompositionInventory,
-} from './inventory';
+export type { CompositionDefinition, CompositionId, CompositionInventory } from './inventory';

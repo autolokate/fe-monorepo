@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { getBookingSlotsByDate } from "@/services/booking";
-import { normalizeSlotsForDate } from "@/lib/booking/normalize";
-import type { ExpertTimeSlot } from "@/lib/booking/types";
+import { useMemo } from 'react';
+import { useApiQuery } from '@/hooks/useApiQuery';
+import { getBookingSlotsByDate } from '@/services/booking';
+import { normalizeSlotsForDate } from '@/lib/booking/normalize';
+import type { ExpertTimeSlot } from '@/lib/booking/types';
 
 export interface UseBookingSlotsArgs {
   /** ISO yyyy-MM-dd. When falsy the query is disabled. */
@@ -18,11 +18,9 @@ export interface UseBookingSlotsArgs {
  * Re-runs whenever `date` or `enabled` change.
  */
 export function useBookingSlots({ date, enabled = true }: UseBookingSlotsArgs) {
-  const query = useApiQuery(
-    () => getBookingSlotsByDate(date),
-    [date, enabled],
-    { enabled: Boolean(enabled && date) },
-  );
+  const query = useApiQuery(() => getBookingSlotsByDate(date), [date, enabled], {
+    enabled: Boolean(enabled && date),
+  });
 
   const slots: ExpertTimeSlot[] = useMemo(() => {
     if (!query.data || !date) return [];

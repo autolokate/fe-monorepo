@@ -70,19 +70,17 @@ flowchart LR
 
 ## Plan routing matrix
 
-| Plan | `selectedPlanId` | R10 Continue destination | First screen shown | Emergency limits |
-|------|------------------|--------------------------|--------------------|------------------|
-| **Safe** | `safe` | `/journey/emergency/contacts-empty` | **E0** No contacts | 1 contact, 0 riders |
-| **Secure** | `secure` | `/journey/emergency/rider-prompt` | **R0** Rider prompt | 2 contacts, up to 2 riders |
-| **Shield** | `shield` | `/journey/emergency/rider-prompt` | **R0** Rider prompt | 3 contacts, up to 2 riders |
-| **Shield+** | `shield-plus` | `/journey/emergency/rider-prompt` | **R0** Rider prompt | 3 contacts, up to 2 riders |
+| Plan        | `selectedPlanId` | R10 Continue destination            | First screen shown  | Emergency limits           |
+| ----------- | ---------------- | ----------------------------------- | ------------------- | -------------------------- |
+| **Safe**    | `safe`           | `/journey/emergency/contacts-empty` | **E0** No contacts  | 1 contact, 0 riders        |
+| **Secure**  | `secure`         | `/journey/emergency/rider-prompt`   | **R0** Rider prompt | 2 contacts, up to 2 riders |
+| **Shield**  | `shield`         | `/journey/emergency/rider-prompt`   | **R0** Rider prompt | 3 contacts, up to 2 riders |
+| **Shield+** | `shield-plus`    | `/journey/emergency/rider-prompt`   | **R0** Rider prompt | 3 contacts, up to 2 riders |
 
 **Handoff function** (`activation-routing.ts`):
 
 ```typescript
-export function getEmergencyHandoffPath(
-  session?: Pick<JourneySession, 'purchase'>,
-): string {
+export function getEmergencyHandoffPath(session?: Pick<JourneySession, 'purchase'>): string {
   const planId = resolvePurchasePlanId(session?.purchase?.selectedPlanId);
   if (planId === 'safe') {
     return emergencyJourneyPaths.contactsEmpty;
@@ -97,12 +95,12 @@ export function getEmergencyHandoffPath(
 
 ## Files changed
 
-| File | Change |
-|------|--------|
-| `apps/qr/src/journey/activation-routing.ts` | Plan-aware `getEmergencyHandoffPath(session)` |
-| `apps/qr/src/journey/routes/PurchaseRoutes.tsx` | R10 `onContinue` → emergency; P06 passes `session` |
-| `apps/qr/src/journey/purchase/purchase-routing.ts` | Comment: R10 → Emergency (not terminal) |
-| `apps/qr/src/router/routes.schema.ts` | R10 label updated |
+| File                                               | Change                                             |
+| -------------------------------------------------- | -------------------------------------------------- |
+| `apps/qr/src/journey/activation-routing.ts`        | Plan-aware `getEmergencyHandoffPath(session)`      |
+| `apps/qr/src/journey/routes/PurchaseRoutes.tsx`    | R10 `onContinue` → emergency; P06 passes `session` |
+| `apps/qr/src/journey/purchase/purchase-routing.ts` | Comment: R10 → Emergency (not terminal)            |
+| `apps/qr/src/router/routes.schema.ts`              | R10 label updated                                  |
 
 **Not modified:** `R10PaymentSuccessScreen.tsx`, any emergency screen component, any other purchase screen component.
 
@@ -119,14 +117,14 @@ onContinue={() => {
 }}
 ```
 
-| Field | Cleared on handoff? | Still read by emergency? |
-|-------|---------------------|--------------------------|
-| `session.purchase.selectedPlanId` | ❌ No | ✅ `resolveEmergencyFoundationContext()` |
-| `session.purchase.riderCount` | ❌ No | ✅ `getEntitledRiderSlots()` |
-| `session.purchase.paymentStatus` | ❌ No | ✅ Stays `'success'` |
-| `session.purchase.paidAmountInr` | ❌ No | ✅ Retained for R10 back-navigation display |
-| `session.auth.*` | ❌ No | — |
-| `session.vehicle.*` | ❌ No | — |
+| Field                             | Cleared on handoff? | Still read by emergency?                    |
+| --------------------------------- | ------------------- | ------------------------------------------- |
+| `session.purchase.selectedPlanId` | ❌ No               | ✅ `resolveEmergencyFoundationContext()`    |
+| `session.purchase.riderCount`     | ❌ No               | ✅ `getEntitledRiderSlots()`                |
+| `session.purchase.paymentStatus`  | ❌ No               | ✅ Stays `'success'`                        |
+| `session.purchase.paidAmountInr`  | ❌ No               | ✅ Retained for R10 back-navigation display |
+| `session.auth.*`                  | ❌ No               | —                                           |
+| `session.vehicle.*`               | ❌ No               | —                                           |
 
 No `patchPurchase`, `updateSession({ purchase: undefined })`, or `clearJourney()` on handoff.
 
@@ -145,23 +143,23 @@ session.purchase.selectedPlanId
 
 ### Full path: Auth → Purchase → R10 → Emergency → Completed
 
-| Step | Route | Verified |
-|------|-------|----------|
-| 1 | `/journey/auth/*` → vehicle owner | ✅ Existing |
-| 2 | `/journey/purchase/r03-vehicle` … `r09-processing-payment` | ✅ Existing |
-| 3 | R09 success → `r10-payment-success` | ✅ `paymentStatus: 'success'` set |
-| 4 | R10 Continue → emergency entry | ✅ **Fixed** |
-| 5 | Emergency suffix → E5 Continue | ✅ `getCompletedPath()` |
-| 6 | `/journey/completed` | ✅ Existing |
+| Step | Route                                                      | Verified                          |
+| ---- | ---------------------------------------------------------- | --------------------------------- |
+| 1    | `/journey/auth/*` → vehicle owner                          | ✅ Existing                       |
+| 2    | `/journey/purchase/r03-vehicle` … `r09-processing-payment` | ✅ Existing                       |
+| 3    | R09 success → `r10-payment-success`                        | ✅ `paymentStatus: 'success'` set |
+| 4    | R10 Continue → emergency entry                             | ✅ **Fixed**                      |
+| 5    | Emergency suffix → E5 Continue                             | ✅ `getCompletedPath()`           |
+| 6    | `/journey/completed`                                       | ✅ Existing                       |
 
 ### Per-plan handoff (static analysis + build)
 
-| Plan | R10 → | Expected first UI | Limits at E5 |
-|------|-------|-------------------|--------------|
-| **Safe** | `contacts-empty` | E05ContactsEmptyScreen, max 1 contact | `canAddEmergencyContact` caps at 1 |
-| **Secure** | `rider-prompt` | E01RiderPromptScreen (if riders entitled) | max 2 contacts |
-| **Shield** | `rider-prompt` | E01RiderPromptScreen | max 3 contacts |
-| **Shield+** | `rider-prompt` | E01RiderPromptScreen | max 3 contacts |
+| Plan        | R10 →            | Expected first UI                         | Limits at E5                       |
+| ----------- | ---------------- | ----------------------------------------- | ---------------------------------- |
+| **Safe**    | `contacts-empty` | E05ContactsEmptyScreen, max 1 contact     | `canAddEmergencyContact` caps at 1 |
+| **Secure**  | `rider-prompt`   | E01RiderPromptScreen (if riders entitled) | max 2 contacts                     |
+| **Shield**  | `rider-prompt`   | E01RiderPromptScreen                      | max 3 contacts                     |
+| **Shield+** | `rider-prompt`   | E01RiderPromptScreen                      | max 3 contacts                     |
 
 ### Safe plan shortcut
 
@@ -169,21 +167,21 @@ Safe users **skip R0 entirely** — land directly on E0. Matches product rule: S
 
 ### Secure / Shield / Shield+ rider flow
 
-1. R10 → R0  
-2. User continues or skips rider → E0  
-3. Contact capture loop → E5  
-4. E5 Continue → Completed  
+1. R10 → R0
+2. User continues or skips rider → E0
+3. Contact capture loop → E5
+4. E5 Continue → Completed
 
 R4 (riders summary) appears when entitled rider slots > 0 and user completes rider capture.
 
 ### Regression checks
 
-| Case | Result |
-|------|--------|
-| R10 without `paymentStatus: 'success'` | Redirect to R08 (unchanged guard) |
-| Payment success resume (`redirectIfPaymentSucceeded`) | Still lands on R10 before Continue |
-| P06 legacy handoff | Uses same plan-aware `getEmergencyHandoffPath(session)` |
-| R0 back from emergency | Still → `r10-payment-success` (unchanged) |
+| Case                                                  | Result                                                  |
+| ----------------------------------------------------- | ------------------------------------------------------- |
+| R10 without `paymentStatus: 'success'`                | Redirect to R08 (unchanged guard)                       |
+| Payment success resume (`redirectIfPaymentSucceeded`) | Still lands on R10 before Continue                      |
+| P06 legacy handoff                                    | Uses same plan-aware `getEmergencyHandoffPath(session)` |
+| R0 back from emergency                                | Still → `r10-payment-success` (unchanged)               |
 
 ---
 
@@ -191,12 +189,12 @@ R4 (riders summary) appears when entitled rider slots > 0 and user completes rid
 
 Run `pnpm --filter @autolokate/qr dev`, complete purchase for each plan, tap **Continue** on R10:
 
-- [ ] **Safe** — lands on E0; description shows 1 contact max  
-- [ ] **Secure** — lands on R0; rider prompt copy reflects entitled slots  
-- [ ] **Shield** — lands on R0; E5 allows up to 3 contacts  
-- [ ] **Shield+** — lands on R0; same as Shield  
-- [ ] After E5 Continue — reaches `/journey/completed`  
-- [ ] Browser refresh on emergency route — `selectedPlanId` still drives limits  
+- [ ] **Safe** — lands on E0; description shows 1 contact max
+- [ ] **Secure** — lands on R0; rider prompt copy reflects entitled slots
+- [ ] **Shield** — lands on R0; E5 allows up to 3 contacts
+- [ ] **Shield+** — lands on R0; same as Shield
+- [ ] After E5 Continue — reaches `/journey/completed`
+- [ ] Browser refresh on emergency route — `selectedPlanId` still drives limits
 
 ---
 
@@ -210,4 +208,4 @@ Run `pnpm --filter @autolokate/qr dev`, complete purchase for each plan, tap **C
 
 ---
 
-*Handoff fix complete. R10 is no longer terminal.*
+_Handoff fix complete. R10 is no longer terminal._

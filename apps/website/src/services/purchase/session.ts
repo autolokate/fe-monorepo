@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * The bearer session for the purchase flow. It's issued by the new backend's
@@ -9,7 +9,7 @@
  * logged in across refreshes, new tabs, and browser restarts — as long as the
  * token hasn't expired they never have to re-enter their phone + OTP.
  */
-const STORAGE_KEY = "autolokate:purchase-session";
+const STORAGE_KEY = 'autolokate:purchase-session';
 
 export interface PurchaseSession {
   accessToken: string;
@@ -24,7 +24,7 @@ let cached: PurchaseSession | null = null;
 
 export function setPurchaseSession(session: PurchaseSession | null): void {
   cached = session;
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
   try {
     if (session) {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
@@ -38,7 +38,7 @@ export function setPurchaseSession(session: PurchaseSession | null): void {
 
 export function getPurchaseSession(): PurchaseSession | null {
   if (cached) return cached;
-  if (typeof window === "undefined") return null;
+  if (typeof window === 'undefined') return null;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     cached = raw ? (JSON.parse(raw) as PurchaseSession) : null;

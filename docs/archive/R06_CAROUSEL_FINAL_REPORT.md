@@ -12,21 +12,24 @@
 ## Changes
 
 ### PlanCarousel.tsx
-| Setting | Before | After |
-|---------|--------|-------|
-| Scroll settle debounce | 150ms | **175ms** |
-| Center hysteresis | 24px (blocked selection) | **Removed** — nearest card always wins |
-| Scroll-end detection | scroll + scrollend + debounce | unchanged (already correct) |
+
+| Setting                | Before                        | After                                  |
+| ---------------------- | ----------------------------- | -------------------------------------- |
+| Scroll settle debounce | 150ms                         | **175ms**                              |
+| Center hysteresis      | 24px (blocked selection)      | **Removed** — nearest card always wins |
+| Scroll-end detection   | scroll + scrollend + debounce | unchanged (already correct)            |
 
 ### plan-carousel.css
-| Property | Before | After |
-|----------|--------|-------|
-| `scroll-snap-type` | `x mandatory` | **`x proximity`** |
-| `scroll-snap-stop` | `always` | **`normal`** |
-| Motion easing | `cubic-bezier(0.22, 1, 0.36, 1)` | **`cubic-bezier(0.34, 1.15, 0.64, 1)`** (spring-like) |
-| Select transition | 220ms | **320ms** |
+
+| Property           | Before                           | After                                                 |
+| ------------------ | -------------------------------- | ----------------------------------------------------- |
+| `scroll-snap-type` | `x mandatory`                    | **`x proximity`**                                     |
+| `scroll-snap-stop` | `always`                         | **`normal`**                                          |
+| Motion easing      | `cubic-bezier(0.22, 1, 0.36, 1)` | **`cubic-bezier(0.34, 1.15, 0.64, 1)`** (spring-like) |
+| Select transition  | 220ms                            | **320ms**                                             |
 
 ### R06ChoosePlanScreen.tsx
+
 - Added `ctaHelper={plan.priceLabel}` for footer price sync with selected plan
 
 ## Expected behavior (after)
@@ -45,11 +48,11 @@
 
 ## Before / after (behavioral)
 
-| Before | After |
-|--------|-------|
-| Hard mandatory snap at card boundaries | Proximity snap — softer settle |
-| Selection sometimes stuck mid-swipe | Nearest center card always selected on settle |
-| Price under CTA missing | Price label syncs with selection |
+| Before                                 | After                                         |
+| -------------------------------------- | --------------------------------------------- |
+| Hard mandatory snap at card boundaries | Proximity snap — softer settle                |
+| Selection sometimes stuck mid-swipe    | Nearest center card always selected on settle |
+| Price under CTA missing                | Price label syncs with selection              |
 
 ## Remaining drift
 

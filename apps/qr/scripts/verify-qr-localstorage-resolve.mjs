@@ -74,7 +74,9 @@ async function main() {
 
   const ok =
     storage.localStorage_qr_code === QR_CODE &&
-    resolveRequests.some((r) => r.url.includes(encodeURIComponent(QR_CODE)) || r.url.includes(QR_CODE));
+    resolveRequests.some(
+      (r) => r.url.includes(encodeURIComponent(QR_CODE)) || r.url.includes(QR_CODE),
+    );
 
   await browser.close();
   process.exit(ok ? 0 : 1);

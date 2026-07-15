@@ -11,12 +11,7 @@ export type ProductAreaId =
   | 'shared-auth'
   | 'shared-legal';
 
-export type FlowId =
-  | 'purchase'
-  | 'b2b'
-  | 'prepaid'
-  | 'b2b2c'
-  | 'emergency';
+export type FlowId = 'purchase' | 'b2b' | 'prepaid' | 'b2b2c' | 'emergency';
 
 export type SharedFlowId = 'shared' | 'auth' | 'legal';
 
@@ -52,20 +47,11 @@ export type PurchaseStepId =
   | 'purchase.checkout-summary'
   | 'purchase.payment-processing';
 
-export type B2bStepId =
-  | 'b2b.org-verify'
-  | 'b2b.fleet-assign'
-  | 'b2b.confirmation';
+export type B2bStepId = 'b2b.org-verify' | 'b2b.fleet-assign' | 'b2b.confirmation';
 
-export type PrepaidStepId =
-  | 'prepaid.entry'
-  | 'prepaid.activation-code'
-  | 'prepaid.code-validation';
+export type PrepaidStepId = 'prepaid.entry' | 'prepaid.activation-code' | 'prepaid.code-validation';
 
-export type B2b2cStepId =
-  | 'b2b2c.partner-bridge'
-  | 'b2b2c.offer-select'
-  | 'b2b2c.confirmation';
+export type B2b2cStepId = 'b2b2c.partner-bridge' | 'b2b2c.offer-select' | 'b2b2c.confirmation';
 
 export type EmergencyStepId =
   | 'emergency.rider-prompt'

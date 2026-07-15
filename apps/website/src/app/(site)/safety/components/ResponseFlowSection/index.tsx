@@ -1,6 +1,6 @@
-import { Fragment } from "react";
-import { RESPONSE_COPY, RESPONSE_OUTCOMES, RESPONSE_STEPS } from "./constants";
-import styles from "./index.module.css";
+import { Fragment } from 'react';
+import { RESPONSE_COPY, RESPONSE_OUTCOMES, RESPONSE_STEPS } from './constants';
+import styles from './index.module.css';
 
 export function ResponseFlowSection() {
   return (

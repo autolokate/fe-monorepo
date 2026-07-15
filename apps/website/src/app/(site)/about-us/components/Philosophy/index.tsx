@@ -1,13 +1,7 @@
-import { AlertTriangle, CheckCircle2, Lock } from "lucide-react";
-import {
-  BELIEFS_CARD_TITLE,
-  IMPORTANT_CARD_TITLE,
-  beliefs,
-  importantInfo,
-} from "./constants";
+import { AlertTriangle, CheckCircle2, Lock } from 'lucide-react';
+import { BELIEFS_CARD_TITLE, IMPORTANT_CARD_TITLE, beliefs, importantInfo } from './constants';
 
-const sectionTitle =
-  "font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl";
+const sectionTitle = 'font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl';
 
 export function Philosophy() {
   return (

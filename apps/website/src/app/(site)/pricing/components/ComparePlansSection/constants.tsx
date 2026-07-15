@@ -1,10 +1,10 @@
-import type { Plan } from "@/services/plans";
-import { formatRupeesFromPaise } from "@/app/home/components/SafetyPacksSection/constants";
+import type { Plan } from '@/services/plans';
+import { formatRupeesFromPaise } from '@/app/home/components/SafetyPacksSection/constants';
 
 export const COMPARE_COPY = {
-  heading: "Compare plans",
-  collapsedLabel: "View all features",
-  expandedLabel: "Show fewer features",
+  heading: 'Compare plans',
+  collapsedLabel: 'View all features',
+  expandedLabel: 'Show fewer features',
 } as const;
 
 /** A plan column in the compare table. */

@@ -1,6 +1,10 @@
 import type { QrResolution } from '@autolokate/api-client';
 
-import { buildB2b2cPaths, buildPrepaidPaths, parseJourneyIdFromPathname } from '@/journey/routing/journey-url-routing';
+import {
+  buildB2b2cPaths,
+  buildPrepaidPaths,
+  parseJourneyIdFromPathname,
+} from '@/journey/routing/journey-url-routing';
 import type { ActivationFlowId } from '@/journey/types';
 import {
   type PartnerActivationKind,

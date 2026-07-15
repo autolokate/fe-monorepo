@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { hasAuthTokens, subscribeAuthChange } from "@/lib/auth/storage";
-import { fetchCurrentUser } from "@/services/auth";
-import type { AuthUser } from "@/services/auth/types";
-import { useApiQuery, type UseApiQueryOptions } from "@/hooks/useApiQuery";
+import { useCallback, useEffect, useState } from 'react';
+import { hasAuthTokens, subscribeAuthChange } from '@/lib/auth/storage';
+import { fetchCurrentUser } from '@/services/auth';
+import type { AuthUser } from '@/services/auth/types';
+import { useApiQuery, type UseApiQueryOptions } from '@/hooks/useApiQuery';
 
 /**
  * `GET /v1/auth/me` — returns the signed-in user. Skips automatically when

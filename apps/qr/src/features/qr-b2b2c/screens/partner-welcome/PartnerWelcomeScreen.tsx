@@ -26,8 +26,7 @@ export type PartnerWelcomeScreenProps = {
 
 const PARTNER_BODY_COPY: Record<PartnerLandingVariant, string> = {
   'plan-only': 'Your partner set up and paid for your plan. Activate it now.',
-  'plan-rider':
-    'Your partner set up and paid for your plan and rider. Activate it now.',
+  'plan-rider': 'Your partner set up and paid for your plan and rider. Activate it now.',
 };
 
 export function PartnerWelcomeScreen({ variant = 'plan-only' }: PartnerWelcomeScreenProps) {
@@ -47,7 +46,11 @@ export function PartnerWelcomeScreen({ variant = 'plan-only' }: PartnerWelcomeSc
     const resolvedVariant = resolvePartnerVariantFromRiderCount(config.riderCount);
     setSelectedFlow('b2b2c');
     updateSession({
-      b2b2c: { entitlement: config, variant: resolvedVariant, partnerId: activationCode ?? undefined },
+      b2b2c: {
+        entitlement: config,
+        variant: resolvedVariant,
+        partnerId: activationCode ?? undefined,
+      },
       ...applyLandingEntitlementToSession(config),
     });
     setPhase('shared-auth');

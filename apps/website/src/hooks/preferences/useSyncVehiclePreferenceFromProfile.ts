@@ -1,12 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { hasAuthTokens, subscribeAuthChange } from "@/lib/auth/storage";
-import {
-  applyApiVehicleCategoryToStorage,
-  clearVehiclePreference,
-} from "@/lib/preferences";
-import { fetchCurrentUser } from "@/services/auth";
+import { useEffect, useRef } from 'react';
+import { hasAuthTokens, subscribeAuthChange } from '@/lib/auth/storage';
+import { applyApiVehicleCategoryToStorage, clearVehiclePreference } from '@/lib/preferences';
+import { fetchCurrentUser } from '@/services/auth';
 
 /**
  * Side-effect hook that keeps `localStorage.autolokate_vehicle_preference` in

@@ -1,27 +1,24 @@
-"use client";
+'use client';
 
-import { ExternalLink, Loader2, Video, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { canCancelBooking } from "@/lib/booking/normalize";
-import type { UserBookingSummary } from "@/lib/booking/types";
+import { ExternalLink, Loader2, Video, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { canCancelBooking } from '@/lib/booking/normalize';
+import type { UserBookingSummary } from '@/lib/booking/types';
 
 function statusBadge(status: string): string {
   const s = status.toLowerCase();
-  if (s.includes("confirm"))
-    return "text-emerald-700 bg-emerald-50 border-emerald-200";
-  if (s.includes("cancel"))
-    return "text-rose-600 bg-rose-50 border-rose-200";
-  if (s.includes("pending"))
-    return "text-amber-700 bg-amber-50 border-amber-200";
-  return "text-zinc-600 bg-zinc-100 border-zinc-300";
+  if (s.includes('confirm')) return 'text-emerald-700 bg-emerald-50 border-emerald-200';
+  if (s.includes('cancel')) return 'text-rose-600 bg-rose-50 border-rose-200';
+  if (s.includes('pending')) return 'text-amber-700 bg-amber-50 border-amber-200';
+  return 'text-zinc-600 bg-zinc-100 border-zinc-300';
 }
 
 function statusDot(status: string): string {
   const s = status.toLowerCase();
-  if (s.includes("confirm")) return "bg-emerald-500";
-  if (s.includes("cancel")) return "bg-rose-500";
-  if (s.includes("pending")) return "bg-amber-400";
-  return "bg-zinc-400";
+  if (s.includes('confirm')) return 'bg-emerald-500';
+  if (s.includes('cancel')) return 'bg-rose-500';
+  if (s.includes('pending')) return 'bg-amber-400';
+  return 'bg-zinc-400';
 }
 
 export interface BookingHistoryMiniProps {
@@ -61,7 +58,7 @@ export function BookingHistoryMini({
           <table className="w-full min-w-[380px] text-xs">
             <thead>
               <tr className="border-b border-border/50">
-                {["Booking ID", "Date", "Status", "Time", ""].map((h, i) => (
+                {['Booking ID', 'Date', 'Status', 'Time', ''].map((h, i) => (
                   <th
                     key={`${h}-${i}`}
                     className="px-4 py-2 text-left font-semibold uppercase tracking-wider text-muted-foreground"
@@ -84,7 +81,7 @@ export function BookingHistoryMini({
                       <span className="flex items-center gap-1.5">
                         <span
                           className={cn(
-                            "inline-block h-1.5 w-1.5 shrink-0 rounded-full",
+                            'inline-block h-1.5 w-1.5 shrink-0 rounded-full',
                             statusDot(b.status),
                           )}
                           aria-hidden
@@ -92,22 +89,18 @@ export function BookingHistoryMini({
                         {b.id.length > 12 ? `${b.id.slice(0, 12)}…` : b.id}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">
-                      {b.slotDate || "—"}
-                    </td>
+                    <td className="px-4 py-2.5 text-muted-foreground">{b.slotDate || '—'}</td>
                     <td className="px-4 py-2.5">
                       <span
                         className={cn(
-                          "inline-flex rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                          'inline-flex rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
                           statusBadge(b.status),
                         )}
                       >
                         {b.status}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">
-                      {b.slotStartLabel || "—"}
-                    </td>
+                    <td className="px-4 py-2.5 text-muted-foreground">{b.slotStartLabel || '—'}</td>
                     <td className="px-4 py-2.5 text-right">
                       {cancellable && onRequestCancel ? (
                         <button

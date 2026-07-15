@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiError } from "@/lib/api/error";
-import { PurchaseApi, newIdempotencyKey } from "./client";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiError } from '@/lib/api/error';
+import { PurchaseApi, newIdempotencyKey } from './client';
 import type {
   CreateOrderPayload,
   Invoice,
@@ -12,7 +12,7 @@ import type {
   PayOrderPayload,
   PaymentOutcome,
   PaymentRef,
-} from "./types";
+} from './types';
 
 interface Enveloped<T> {
   data?: T;
@@ -20,9 +20,7 @@ interface Enveloped<T> {
 
 /** GET /v1/orders — the buyer's order history, newest first (bearer). */
 export async function listOrders(limit = 20): Promise<OrderSummary[]> {
-  const res = await PurchaseApi.get<Enveloped<OrderSummary[]>>(
-    endpoints.orders.list(limit),
-  );
+  const res = await PurchaseApi.get<Enveloped<OrderSummary[]>>(endpoints.orders.list(limit));
   return res.data?.data ?? [];
 }
 
@@ -35,10 +33,10 @@ export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
   const body = { cartId: payload.cartId, addressId: payload.addressId };
 
   const res = await PurchaseApi.post<Enveloped<Order>>(endpoints.orders.create, body, {
-    headers: { "Idempotency-Key": newIdempotencyKey() },
+    headers: { 'Idempotency-Key': newIdempotencyKey() },
   });
   const order = res.data?.data;
-  if (!order?.orderId) throw new ApiError("Invalid order response", 0, res.data);
+  if (!order?.orderId) throw new ApiError('Invalid order response', 0, res.data);
   return order;
 }
 
@@ -46,17 +44,14 @@ export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
  * POST /v1/orders/:id/pay — kicks off payment + (optionally) the auto-renew
  * mandate (bearer + a fresh `Idempotency-Key`). Returns the Razorpay handles.
  */
-export async function payOrder(
-  orderId: string,
-  payload: PayOrderPayload,
-): Promise<PaymentRef> {
+export async function payOrder(orderId: string, payload: PayOrderPayload): Promise<PaymentRef> {
   const res = await PurchaseApi.post<Enveloped<PaymentRef>>(
     endpoints.orders.pay(orderId),
     payload,
-    { headers: { "Idempotency-Key": newIdempotencyKey() } },
+    { headers: { 'Idempotency-Key': newIdempotencyKey() } },
   );
   const ref = res.data?.data;
-  if (!ref?.paymentRef) throw new ApiError("Invalid payment response", 0, res.data);
+  if (!ref?.paymentRef) throw new ApiError('Invalid payment response', 0, res.data);
   return ref;
 }
 
@@ -66,17 +61,15 @@ export async function getOrderPayment(orderId: string): Promise<PaymentOutcome> 
     endpoints.orders.payment(orderId),
   );
   const outcome = res.data?.data?.outcome;
-  if (!outcome) throw new ApiError("Invalid payment outcome response", 0, res.data);
+  if (!outcome) throw new ApiError('Invalid payment outcome response', 0, res.data);
   return outcome;
 }
 
 /** GET /v1/orders/:id — order status + shipping fulfillment (bearer). */
 export async function getOrder(orderId: string): Promise<OrderTracking> {
-  const res = await PurchaseApi.get<Enveloped<OrderTracking>>(
-    endpoints.orders.byId(orderId),
-  );
+  const res = await PurchaseApi.get<Enveloped<OrderTracking>>(endpoints.orders.byId(orderId));
   const order = res.data?.data;
-  if (!order?.orderId) throw new ApiError("Invalid order response", 0, res.data);
+  if (!order?.orderId) throw new ApiError('Invalid order response', 0, res.data);
   return order;
 }
 
@@ -85,7 +78,7 @@ export async function getOrderInvoice(orderId: string): Promise<Invoice> {
   const res = await PurchaseApi.get<Enveloped<Invoice>>(endpoints.orders.invoice(orderId));
   const invoice = res.data?.data;
   if (!invoice?.id && !invoice?.invoiceNumber) {
-    throw new ApiError("Invalid invoice response", 0, res.data);
+    throw new ApiError('Invalid invoice response', 0, res.data);
   }
   return invoice;
 }

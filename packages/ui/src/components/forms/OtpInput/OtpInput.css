@@ -23,9 +23,7 @@
 .al-otp-input__cell {
   box-sizing: border-box;
   flex: 0 0
-    calc(
-      (100% - ((var(--al-otp-count, 6) - 1) * var(--al-comp-otp-gap))) / var(--al-otp-count, 6)
-    );
+    calc((100% - ((var(--al-otp-count, 6) - 1) * var(--al-comp-otp-gap))) / var(--al-otp-count, 6));
   width: calc(
     (100% - ((var(--al-otp-count, 6) - 1) * var(--al-comp-otp-gap))) / var(--al-otp-count, 6)
   );

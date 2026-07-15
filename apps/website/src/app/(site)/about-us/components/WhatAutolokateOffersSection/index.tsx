@@ -2,9 +2,9 @@ import {
   OFFER_FEATURES,
   OFFERS_SECTION_COPY,
   WHAT_AUTOLOKATE_OFFERS_SECTION_ID,
-} from "./constants";
-import { OfferCard } from "./OfferCard";
-import { PartnerNetworkBanner } from "./PartnerNetworkBanner";
+} from './constants';
+import { OfferCard } from './OfferCard';
+import { PartnerNetworkBanner } from './PartnerNetworkBanner';
 
 export function WhatAutolokateOffersSection() {
   return (

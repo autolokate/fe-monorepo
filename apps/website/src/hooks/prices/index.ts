@@ -1,2 +1,2 @@
-export { useVariantTco } from "./useVariantTco";
-export { useEmiFromPrincipal } from "./useEmiFromPrincipal";
+export { useVariantTco } from './useVariantTco';
+export { useEmiFromPrincipal } from './useEmiFromPrincipal';

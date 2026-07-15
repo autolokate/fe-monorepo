@@ -1,17 +1,16 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useState } from "react";
-import { Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { YoutubeIcon } from "@/layouts/Footer/constants";
-import { INDIAN_DRIVE_GUIDE_CHANNEL_URL } from "@/lib/idg";
-import { MEDIA_FEATURED_VIDEO, videoThumbnailSrc } from "../../constants";
+import Image from 'next/image';
+import { useState } from 'react';
+import { Play } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { YoutubeIcon } from '@/layouts/Footer/constants';
+import { INDIAN_DRIVE_GUIDE_CHANNEL_URL } from '@/lib/idg';
+import { MEDIA_FEATURED_VIDEO, videoThumbnailSrc } from '../../constants';
 
 export function MediaFeaturedVideo() {
   const [playing, setPlaying] = useState(false);
-  const { videoId, title, duration, viewsLabel, publishedLabel } =
-    MEDIA_FEATURED_VIDEO;
+  const { videoId, title, duration, viewsLabel, publishedLabel } = MEDIA_FEATURED_VIDEO;
   const thumb = videoThumbnailSrc(videoId);
   const ytWatchUrl = `https://youtu.be/${videoId}`;
   const embedSrc = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
@@ -69,7 +68,7 @@ export function MediaFeaturedVideo() {
             {title}
           </h2>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            From the{" "}
+            From the{' '}
             <a
               href={INDIAN_DRIVE_GUIDE_CHANNEL_URL}
               target="_blank"
@@ -77,7 +76,7 @@ export function MediaFeaturedVideo() {
               className="font-medium text-primary underline-offset-4 hover:underline"
             >
               Indian Drive Guide
-            </a>{" "}
+            </a>{' '}
             channel — practical context filmed on Indian roads.
           </p>
           <div className="pt-1">

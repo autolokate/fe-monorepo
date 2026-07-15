@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   createOrder,
   payOrder,
@@ -8,8 +8,8 @@ import {
   type Order,
   type PaymentRef,
   type PayOrderPayload,
-} from "@/services/purchase";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
+} from '@/services/purchase';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /** `POST /v1/orders` — creates the order from the latest cart + address. */
 export function useCreateOrder(options?: UseApiMutationOptions<Order, CreateOrderPayload>) {
@@ -25,7 +25,9 @@ interface PayVariables {
 /** `POST /v1/orders/:id/pay` — starts payment + optional auto-renew mandate. */
 export function usePayOrder(options?: UseApiMutationOptions<PaymentRef, PayVariables>) {
   const fn = useMemo(
-    () => ({ orderId, payload }: PayVariables) => payOrder(orderId, payload),
+    () =>
+      ({ orderId, payload }: PayVariables) =>
+        payOrder(orderId, payload),
     [],
   );
   return useApiMutation(fn, options);

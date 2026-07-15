@@ -28,9 +28,7 @@ const DEFAULT_VALUES: CreateBatchFormValues = {
 };
 
 /** Map B2B plan enum → fixed catalog sku_code. */
-function b2bSkuCodeForPlan(
-  planTier: CreateBatchFormValues['planTier'],
-): string | null {
+function b2bSkuCodeForPlan(planTier: CreateBatchFormValues['planTier']): string | null {
   if (planTier === 'SECURE') return 'SKU-B2B-SECURE';
   if (planTier === 'SHIELD') return 'SKU-B2B-SHIELD';
   if (planTier === 'SHIELD_PLUS') return 'SKU-B2B-SHIELDPLUS';
@@ -104,10 +102,9 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
     }
   }, [channel, channelSkus, form, planTier]);
 
-  const submitError =
-    createBatchMutation.isError
-      ? mapMutationError(createBatchMutation.error).userMessage
-      : null;
+  const submitError = createBatchMutation.isError
+    ? mapMutationError(createBatchMutation.error).userMessage
+    : null;
 
   const pinnedSkuCode = b2bSkuCodeForPlan(planTier);
   const skuHelper = skusQuery.isError
@@ -143,9 +140,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
             channel: values.channel,
             skuId: values.skuId,
             totalCount: values.totalCount,
-            ...(values.channel === 'B2B' && values.planTier
-              ? { planTier: values.planTier }
-              : {}),
+            ...(values.channel === 'B2B' && values.planTier ? { planTier: values.planTier } : {}),
           },
           signal: controller.signal,
         });
@@ -241,9 +236,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
               <AlSelect
                 label="SKU"
                 placeholder={
-                  channel === 'B2B' && !planTier
-                    ? 'Select plan tier first'
-                    : 'Select SKU'
+                  channel === 'B2B' && !planTier ? 'Select plan tier first' : 'Select SKU'
                 }
                 options={skuOptions}
                 value={field.value}
@@ -281,9 +274,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
             )}
           />
 
-          {submitError ? (
-            <AlText role="alert">{submitError}</AlText>
-          ) : null}
+          {submitError ? <AlText role="alert">{submitError}</AlText> : null}
         </AlStack>
       </form>
     </AlModal>

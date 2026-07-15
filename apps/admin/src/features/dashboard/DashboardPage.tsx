@@ -68,7 +68,9 @@ function DashboardPageCard({
         </div>
       </div>
 
-      <div className={`dashboard-page-card__hero ${toneClass('dashboard-page-card__hero', primaryTone)}`}>
+      <div
+        className={`dashboard-page-card__hero ${toneClass('dashboard-page-card__hero', primaryTone)}`}
+      >
         <span className="dashboard-page-card__hero-value">{primaryValue}</span>
         <span className="dashboard-page-card__hero-label">{primaryLabel}</span>
       </div>
@@ -101,7 +103,11 @@ type DashboardLinkCardProps = {
 
 function DashboardLinkCard({ title, description, icon, onClick }: DashboardLinkCardProps) {
   return (
-    <button type="button" className="dashboard-page-card dashboard-page-card--link" onClick={onClick}>
+    <button
+      type="button"
+      className="dashboard-page-card dashboard-page-card--link"
+      onClick={onClick}
+    >
       <div className="dashboard-page-card__head">
         <div className="dashboard-page-card__icon">{icon}</div>
         <div className="dashboard-page-card__titles">

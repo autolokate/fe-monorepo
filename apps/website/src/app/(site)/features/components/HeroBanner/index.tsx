@@ -1,6 +1,6 @@
-import { HERO_COPY } from "./constants";
-import { StoreBadges } from "./StoreBadges";
-import styles from "./index.module.css";
+import { HERO_COPY } from './constants';
+import { StoreBadges } from './StoreBadges';
+import styles from './index.module.css';
 
 export function HeroBanner() {
   return (
@@ -14,7 +14,7 @@ export function HeroBanner() {
       <div className={styles.inner}>
         <div className={styles.copy}>
           <h1 className={styles.headline}>
-            {HERO_COPY.headline}{" "}
+            {HERO_COPY.headline}{' '}
             <span className={styles.headlineAccent}>{HERO_COPY.headlineAccent}</span>
           </h1>
 

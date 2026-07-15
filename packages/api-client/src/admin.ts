@@ -511,11 +511,9 @@ export async function updateSku(
   body: UpdateSkuBody,
   options: { signal?: AbortSignal } = {},
 ): Promise<SkuSummaryDto> {
-  const response = await client.patch<unknown>(
-    endpoints.admin.sku(skuId),
-    body,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.patch<unknown>(endpoints.admin.sku(skuId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as SkuSummaryDto;
 }
 
@@ -551,11 +549,9 @@ export async function updatePlan(
   body: UpdatePlanBody,
   options: { signal?: AbortSignal } = {},
 ): Promise<AdminPlanDto> {
-  const response = await client.patch<unknown>(
-    endpoints.admin.plan(planId),
-    body,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.patch<unknown>(endpoints.admin.plan(planId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as AdminPlanDto;
 }
 
@@ -565,10 +561,9 @@ export async function getPlanFeatures(
   planId: string,
   options: { signal?: AbortSignal } = {},
 ): Promise<PlanFeaturesDto> {
-  const response = await client.get<unknown>(
-    endpoints.admin.planFeatures(planId),
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.get<unknown>(endpoints.admin.planFeatures(planId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as PlanFeaturesDto;
 }
 
@@ -579,11 +574,9 @@ export async function updatePlanFeatures(
   body: UpdatePlanFeaturesBody,
   options: { signal?: AbortSignal } = {},
 ): Promise<PlanFeaturesDto> {
-  const response = await client.patch<unknown>(
-    endpoints.admin.planFeatures(planId),
-    body,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.patch<unknown>(endpoints.admin.planFeatures(planId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as PlanFeaturesDto;
 }
 
@@ -605,11 +598,9 @@ export async function generateQrBatchCodes(
   batchId: string,
   options: { signal?: AbortSignal } = {},
 ): Promise<BatchSummaryDto> {
-  const response = await client.post<unknown>(
-    endpoints.admin.generateQrBatch(batchId),
-    undefined,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.post<unknown>(endpoints.admin.generateQrBatch(batchId), undefined, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as BatchSummaryDto;
 }
 

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   getProfile,
   updateProfile,
   type Profile,
   type UpdateProfilePayload,
-} from "@/services/purchase";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
-import { useApiQuery } from "@/hooks/useApiQuery";
+} from '@/services/purchase';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
+import { useApiQuery } from '@/hooks/useApiQuery';
 
 /** `PATCH /v1/profile` — capture the buyer's profile name (and optionally more). */
 export function useUpdatePurchaseProfile(

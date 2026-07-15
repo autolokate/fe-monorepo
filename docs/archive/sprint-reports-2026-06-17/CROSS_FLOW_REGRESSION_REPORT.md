@@ -7,18 +7,18 @@
 
 ## Test matrix
 
-| ID | Path | Provider reset | Session loss | Unexpected redirect | Result |
-|----|------|----------------|--------------|---------------------|--------|
-| CF-01 | Purchase → Completed → Go home → PWA | No | Journey cleared on go home only | No | ✅ Pass |
-| CF-02 | Purchase → Completed → PWA (skip go home) | No | None | No | ✅ Pass |
-| CF-03 | PWA → `/journey` → Purchase | No | None | No | ✅ Pass |
-| CF-04 | Prepaid → Home → PWA | No | None | No | ✅ Pass |
-| CF-05 | B2B2C → Home → Purchase | No | None | No | ✅ Pass |
-| CF-06 | `/journey` → PWA → browser back | No | None | Back to entry | ✅ Pass |
-| CF-07 | Theme toggle → cross-nav | No | Theme in localStorage | No | ✅ Pass |
-| CF-08 | Refresh mid-flow | Full remount | Reload from storage | No | ✅ Pass |
+| ID    | Path                                      | Provider reset | Session loss                    | Unexpected redirect | Result  |
+| ----- | ----------------------------------------- | -------------- | ------------------------------- | ------------------- | ------- |
+| CF-01 | Purchase → Completed → Go home → PWA      | No             | Journey cleared on go home only | No                  | ✅ Pass |
+| CF-02 | Purchase → Completed → PWA (skip go home) | No             | None                            | No                  | ✅ Pass |
+| CF-03 | PWA → `/journey` → Purchase               | No             | None                            | No                  | ✅ Pass |
+| CF-04 | Prepaid → Home → PWA                      | No             | None                            | No                  | ✅ Pass |
+| CF-05 | B2B2C → Home → Purchase                   | No             | None                            | No                  | ✅ Pass |
+| CF-06 | `/journey` → PWA → browser back           | No             | None                            | Back to entry       | ✅ Pass |
+| CF-07 | Theme toggle → cross-nav                  | No             | Theme in localStorage           | No                  | ✅ Pass |
+| CF-08 | Refresh mid-flow                          | Full remount   | Reload from storage             | No                  | ✅ Pass |
 
-*Static code-path verification. Manual browser E2E recommended.*
+_Static code-path verification. Manual browser E2E recommended._
 
 ---
 
@@ -67,11 +67,11 @@ Bundle: 1,083.68 kB JS (gzip 275.81 kB), ~+0.8 kB vs pre-Phase-1
 
 **None blocking.**
 
-| ID | Info |
-|----|------|
-| INFO-01 | Dual session by design — slices independent |
+| ID      | Info                                          |
+| ------- | --------------------------------------------- |
+| INFO-01 | Dual session by design — slices independent   |
 | INFO-02 | `clearJourney` only on completed "Go to home" |
-| INFO-03 | Dev preview uses standalone JourneyProvider |
+| INFO-03 | Dev preview uses standalone JourneyProvider   |
 
 ---
 

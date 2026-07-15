@@ -16,7 +16,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/contact/contact_us_banner_bg.png");
+  background-image: url('/images/contact/contact_us_banner_bg.png');
   background-size: cover;
   background-position: 72% center;
   background-repeat: no-repeat;

@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
 /**
  * Legacy `/explore` — catalogue browse now lives under `/cars/explore` and `/bikes/explore`.
@@ -12,8 +12,8 @@ export default async function LegacyExploreRedirectPage({
   const sp = await searchParams;
   const q = new URLSearchParams();
   for (const [key, value] of Object.entries(sp)) {
-    if (typeof value === "string" && value.trim()) q.set(key, value);
+    if (typeof value === 'string' && value.trim()) q.set(key, value);
   }
   const qs = q.toString();
-  redirect(`/cars/explore${qs ? `?${qs}` : ""}`);
+  redirect(`/cars/explore${qs ? `?${qs}` : ''}`);
 }

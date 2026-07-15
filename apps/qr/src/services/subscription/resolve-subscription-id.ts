@@ -10,9 +10,7 @@ export type SubscriptionResolveError = {
 };
 
 /** Resolve subscriptionId from stored attach/redeem — never guess. */
-export function resolveActiveSubscriptionId(
-  selectedFlow: ActivationFlowId | null,
-): string | null {
+export function resolveActiveSubscriptionId(selectedFlow: ActivationFlowId | null): string | null {
   if (selectedFlow === 'purchase') {
     return purchaseStorageRepository.readAttachResult()?.subscriptionId?.trim() ?? null;
   }

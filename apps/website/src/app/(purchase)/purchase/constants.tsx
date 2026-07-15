@@ -1,14 +1,14 @@
-import { Shield, ShieldCheck, ShieldPlus } from "lucide-react";
+import { Shield, ShieldCheck, ShieldPlus } from 'lucide-react';
 import type {
   PayMethod,
   PurchasePlan,
   PurchasePlanId,
   PurchasePricing,
   PurchaseStep,
-} from "./types";
+} from './types';
 
 /** Route the pricing / home plan cards point at. */
-export const PURCHASE_ROUTE = "/purchase";
+export const PURCHASE_ROUTE = '/purchase';
 
 export const MOBILE_LENGTH = 10;
 /** The backend sends a 6-digit code (matches the auth flow). */
@@ -23,57 +23,52 @@ export const GST_RATE = 0.18;
 
 export const PURCHASE_PLANS: PurchasePlan[] = [
   {
-    id: "secure",
-    name: "Secure",
-    tag: "The essentials",
+    id: 'secure',
+    name: 'Secure',
+    tag: 'The essentials',
     price: 999,
     Icon: ShieldCheck,
-    features: [
-      "Smart QR protection",
-      "Emergency contacts",
-      "Parking help",
-      "Service history",
-    ],
+    features: ['Smart QR protection', 'Emergency contacts', 'Parking help', 'Service history'],
   },
   {
-    id: "shield",
-    name: "Shield",
-    tag: "Full crash protection",
+    id: 'shield',
+    name: 'Shield',
+    tag: 'Full crash protection',
     price: 1999,
     Icon: Shield,
     popular: true,
-    popularBadge: "Most Popular · 7 in 10 choose this",
+    popularBadge: 'Most Popular · 7 in 10 choose this',
     features: [
-      "Everything in Secure",
-      "Automatic crash detection",
-      "Family alerts + live location",
-      "Roadside assistance tools",
-      "Priority support",
+      'Everything in Secure',
+      'Automatic crash detection',
+      'Family alerts + live location',
+      'Roadside assistance tools',
+      'Priority support',
     ],
   },
   {
-    id: "shield-plus",
-    name: "Shield+",
-    tag: "Whole-family cover",
+    id: 'shield-plus',
+    name: 'Shield+',
+    tag: 'Whole-family cover',
     price: 2999,
     Icon: ShieldPlus,
     features: [
-      "Everything in Shield",
-      "Family safety circle",
-      "Advanced alerts",
-      "Resale & transfer support",
+      'Everything in Shield',
+      'Family safety circle',
+      'Advanced alerts',
+      'Resale & transfer support',
     ],
   },
 ];
 
 export const PAY_METHODS: { id: PayMethod; label: string }[] = [
-  { id: "upi", label: "UPI" },
-  { id: "card", label: "Card" },
-  { id: "netbanking", label: "Netbanking" },
+  { id: 'upi', label: 'UPI' },
+  { id: 'card', label: 'Card' },
+  { id: 'netbanking', label: 'Netbanking' },
 ];
 
 /** Progress rail shown for the pre-delivery purchase screens. */
-export const STEPPER_LABELS = ["Plan", "Verify", "Address", "Pay", "Done"] as const;
+export const STEPPER_LABELS = ['Plan', 'Verify', 'Address', 'Pay', 'Done'] as const;
 
 /** Maps a flow step to its index on the progress rail (PWA screens reuse the last). */
 export const STEP_TO_STEPPER_INDEX: Record<PurchaseStep, number> = {
@@ -91,41 +86,41 @@ export const STEP_TO_STEPPER_INDEX: Record<PurchaseStep, number> = {
 };
 
 /** Steps that belong to the post-delivery PWA activation sub-flow. */
-export const PWA_STEPS: PurchaseStep[] = ["scan", "plate", "contacts", "active"];
+export const PWA_STEPS: PurchaseStep[] = ['scan', 'plate', 'contacts', 'active'];
 
 export const TRACKING_STEPS = [
   {
-    title: "Order confirmed",
-    desc: "Payment received · GST invoice emailed",
-    state: "done" as const,
+    title: 'Order confirmed',
+    desc: 'Payment received · GST invoice emailed',
+    state: 'done' as const,
   },
   {
-    title: "QR code allocated",
-    desc: "Your unique vehicle QR is reserved and printed",
-    state: "done" as const,
+    title: 'QR code allocated',
+    desc: 'Your unique vehicle QR is reserved and printed',
+    state: 'done' as const,
   },
   {
-    title: "Shipped via Shiprocket",
-    desc: "AWB SR-77120394 · left our facility today",
-    state: "done" as const,
+    title: 'Shipped via Shiprocket',
+    desc: 'AWB SR-77120394 · left our facility today',
+    state: 'done' as const,
   },
   {
-    title: "In transit",
-    desc: "With the courier — arriving Thu, 16 Jul",
-    state: "active" as const,
+    title: 'In transit',
+    desc: 'With the courier — arriving Thu, 16 Jul',
+    state: 'active' as const,
   },
   {
-    title: "Delivered → ready to activate",
-    desc: "QR becomes scannable · activate in the app",
-    state: "pending" as const,
+    title: 'Delivered → ready to activate',
+    desc: 'QR becomes scannable · activate in the app',
+    state: 'pending' as const,
   },
 ];
 
 /** Purchase-flow slug → backend tier code (matches the plans API). */
 export const PLAN_ID_TO_TIER: Record<PurchasePlanId, string> = {
-  secure: "SECURE",
-  shield: "SHIELD",
-  "shield-plus": "SHIELD_PLUS",
+  secure: 'SECURE',
+  shield: 'SHIELD',
+  'shield-plus': 'SHIELD_PLUS',
 };
 
 /** Paise → "1,999" (whole rupees, Indian grouping, no symbol). */
@@ -138,7 +133,7 @@ export function getPlan(planId: PurchasePlanId): PurchasePlan {
 }
 
 export function isPurchasePlanId(value: string | null): value is PurchasePlanId {
-  return value === "secure" || value === "shield" || value === "shield-plus";
+  return value === 'secure' || value === 'shield' || value === 'shield-plus';
 }
 
 /**
@@ -146,21 +141,19 @@ export function isPurchasePlanId(value: string | null): value is PurchasePlanId 
  * redirect. Anything else falls back to the pricing page.
  */
 export function pickSafeOrigin(from: string | null): string {
-  if (from && from.startsWith("/") && !from.startsWith("//")) return from;
-  return "/pricing";
+  if (from && from.startsWith('/') && !from.startsWith('//')) return from;
+  return '/pricing';
 }
 
 /** Indian-format currency without the symbol (e.g. 1,999). */
 export function formatInr(amount: number): string {
-  return amount.toLocaleString("en-IN");
+  return amount.toLocaleString('en-IN');
 }
 
 export function computePricing(price: number, qty: number): PurchasePricing {
   const subtotal = price * qty;
   const multiDiscount = qty >= 2;
-  const discountAmount = multiDiscount
-    ? Math.round(subtotal * MULTI_VEHICLE_DISCOUNT)
-    : 0;
+  const discountAmount = multiDiscount ? Math.round(subtotal * MULTI_VEHICLE_DISCOUNT) : 0;
   const total = subtotal - discountAmount;
   const gstIncluded = Math.round(total - total / (1 + GST_RATE));
 

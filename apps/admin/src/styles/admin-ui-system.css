@@ -265,11 +265,17 @@
 
 .al-page-layout .al-data-table__toolbar .al-text--muted,
 .al-page-layout .al-data-table__toolbar .al-toolbar__meta {
-  color: var(--al-admin-hint-color, color-mix(in srgb, var(--al-color-on-surface) 72%, transparent));
+  color: var(
+    --al-admin-hint-color,
+    color-mix(in srgb, var(--al-color-on-surface) 72%, transparent)
+  );
 }
 
 .al-page-layout .al-data-table__table th {
-  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 84%, transparent));
+  color: var(
+    --al-admin-label-color,
+    color-mix(in srgb, var(--al-color-on-surface) 84%, transparent)
+  );
   background: color-mix(in srgb, var(--al-color-on-surface) 5%, var(--al-color-surface));
 }
 
@@ -286,7 +292,10 @@
   letter-spacing: 0;
   font-weight: var(--al-font-weight-medium);
   font-size: var(--al-text-label-size);
-  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 88%, transparent));
+  color: var(
+    --al-admin-label-color,
+    color-mix(in srgb, var(--al-color-on-surface) 88%, transparent)
+  );
 }
 
 /* ── Page rhythm ─────────────────────────────────────────────────── */
@@ -496,4 +505,3 @@
 .al-page-layout .al-error-state .al-text--muted {
   color: var(--al-admin-hint-color);
 }
-

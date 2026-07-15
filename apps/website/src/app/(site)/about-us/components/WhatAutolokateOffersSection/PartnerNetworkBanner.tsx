@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { PARTNER_BANNER_BACKGROUND, PARTNER_BANNER_COPY, PARTNER_CATEGORIES } from "./constants";
+import Image from 'next/image';
+import { PARTNER_BANNER_BACKGROUND, PARTNER_BANNER_COPY, PARTNER_CATEGORIES } from './constants';
 
 export function PartnerNetworkBanner() {
   return (

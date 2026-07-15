@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { getOrderInvoice, type Invoice } from "@/services/purchase";
-import { ApiError } from "@/lib/api/error";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
+import { useMemo } from 'react';
+import { getOrderInvoice, type Invoice } from '@/services/purchase';
+import { ApiError } from '@/lib/api/error';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /**
  * `GET /v1/orders/:id/invoice` — fetches the GST invoice and opens the
@@ -14,9 +14,9 @@ export function useDownloadInvoice(options?: UseApiMutationOptions<Invoice, stri
     () => async (orderId: string) => {
       const invoice = await getOrderInvoice(orderId);
       if (!invoice.downloadUrl) {
-        throw new ApiError("Invoice PDF is not ready yet", 0, invoice);
+        throw new ApiError('Invoice PDF is not ready yet', 0, invoice);
       }
-      window.open(invoice.downloadUrl, "_blank", "noopener,noreferrer");
+      window.open(invoice.downloadUrl, '_blank', 'noopener,noreferrer');
       return invoice;
     },
     [],

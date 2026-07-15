@@ -1,6 +1,6 @@
-import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
-import { PurchaseFlow, purchaseMetadata } from "./";
+import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
+import { PurchaseFlow, purchaseMetadata } from './';
 
 export const metadata = purchaseMetadata;
 

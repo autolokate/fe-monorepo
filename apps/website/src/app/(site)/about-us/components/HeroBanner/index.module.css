@@ -18,7 +18,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/about/about_banner.png");
+  background-image: url('/images/about/about_banner.png');
   background-size: cover;
   background-position: 72% center;
   background-repeat: no-repeat;
@@ -100,7 +100,7 @@
 
 .eyebrow {
   display: inline-block;
-  font-family: ui-monospace, "Space Mono", SFMono-Regular, monospace;
+  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.18em;

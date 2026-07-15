@@ -45,7 +45,14 @@ export {
   type QrStatus,
 } from './qr';
 export { getLegalDocuments, type LegalDocuments } from './legal';
-export { lookupVehicle, listVehicles, getVehicleById, type RcRecordDto, type VehicleDetailDto, type VehicleSummaryDto } from './vehicles';
+export {
+  lookupVehicle,
+  listVehicles,
+  getVehicleById,
+  type RcRecordDto,
+  type VehicleDetailDto,
+  type VehicleSummaryDto,
+} from './vehicles';
 export {
   listPlans,
   type ApiPlanTier,
@@ -69,17 +76,8 @@ export {
   type PaymentOutcomeDto,
   type PaymentRefDto,
 } from './orders';
-export {
-  createCart,
-  getCart,
-  type CartDto,
-  type CreateCartBody,
-} from './cart';
-export {
-  validatePromo,
-  type PromoPreviewDto,
-  type ValidatePromoBody,
-} from './promos';
+export { createCart, getCart, type CartDto, type CreateCartBody } from './cart';
+export { validatePromo, type PromoPreviewDto, type ValidatePromoBody } from './promos';
 export {
   previewActivation,
   redeemActivation,
@@ -157,7 +155,12 @@ export {
 } from './scanner';
 export { normalizeApiError, type NormalizedApiError, type NormalizedErrorCode } from './errors';
 export { wireTokenRefresh } from './interceptors';
-export { unwrapEnvelope, readEnvelopeMeta, type ApiEnvelope, type ApiErrorEnvelope } from './envelope';
+export {
+  unwrapEnvelope,
+  readEnvelopeMeta,
+  type ApiEnvelope,
+  type ApiErrorEnvelope,
+} from './envelope';
 export { endpoints, type EndpointGroup } from './endpoints';
 export {
   createAdminPromo,

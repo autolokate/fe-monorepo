@@ -7,16 +7,16 @@
 
 ## Summary
 
-| Check | Dark | Light | Action |
-|-------|------|-------|--------|
-| Icons visible | ✅ | ✅ | Fixed 10 generated icons + 4 UI inline SVGs |
-| Contrast | ✅ | ✅ | `currentColor` + semantic parent `color` |
-| Opacity | ✅ | ✅ | No theme-specific opacity hacks |
-| Container background | ✅ | ✅ | Icon tiles use `--al-color-surface-variant` |
-| Hover/focus | ✅ | ✅ | Inherited from button/card focus tokens |
-| White-on-white | ✅ Fixed | Was broken on PhotoGrid map, timeline | Token classes |
-| Dark-on-dark | ✅ Fixed | IncidentStatusHero used `#0A0A0C` always | `--al-color-on-surface` |
-| Invisible icons | ✅ Fixed | See below | |
+| Check                | Dark     | Light                                    | Action                                      |
+| -------------------- | -------- | ---------------------------------------- | ------------------------------------------- |
+| Icons visible        | ✅       | ✅                                       | Fixed 10 generated icons + 4 UI inline SVGs |
+| Contrast             | ✅       | ✅                                       | `currentColor` + semantic parent `color`    |
+| Opacity              | ✅       | ✅                                       | No theme-specific opacity hacks             |
+| Container background | ✅       | ✅                                       | Icon tiles use `--al-color-surface-variant` |
+| Hover/focus          | ✅       | ✅                                       | Inherited from button/card focus tokens     |
+| White-on-white       | ✅ Fixed | Was broken on PhotoGrid map, timeline    | Token classes                               |
+| Dark-on-dark         | ✅ Fixed | IncidentStatusHero used `#0A0A0C` always | `--al-color-on-surface`                     |
+| Invisible icons      | ✅ Fixed | See below                                |                                             |
 
 ---
 
@@ -31,29 +31,29 @@ Halo / status icons are multi-colour SVGs — use **CSS variables** in stroke/fi
 
 ## Icons fixed (hardcoded hex → tokens)
 
-| Icon file | Before | After |
-|-----------|--------|-------|
-| `activation-complete-halo.tsx` | `#1FA24A` stroke | `var(--al-color-success)` |
-| `location-unavailable-halo.tsx` | Amber + `#0A0A0C` | `--al-signal-amber`, `--al-color-on-surface` |
-| `couldnt-send-halo.tsx` | Amber + `#0A0A0C` | Tokenized |
-| `alert-cancelled-halo.tsx` | Grey + `#0A0A0C` | `--al-neutral-500`, `--al-color-on-surface` |
-| `timeline-complete-check.tsx` | `#1FA24A` | `--al-color-success` |
-| `payment-success-halo.tsx` | Green fills/strokes | Signal/success tokens |
-| `payment-unconfirmed-halo.tsx` | `#F5A623` | `--al-color-warning` |
-| `fetch-failed-halo.tsx` | `#F5A623` | `--al-color-warning` |
-| `credit-card.tsx` | `#C9CDD2` | `currentColor` (parent muted) |
-| `circle-x.tsx` | `#E5342A` | `--al-color-danger` |
+| Icon file                       | Before              | After                                        |
+| ------------------------------- | ------------------- | -------------------------------------------- |
+| `activation-complete-halo.tsx`  | `#1FA24A` stroke    | `var(--al-color-success)`                    |
+| `location-unavailable-halo.tsx` | Amber + `#0A0A0C`   | `--al-signal-amber`, `--al-color-on-surface` |
+| `couldnt-send-halo.tsx`         | Amber + `#0A0A0C`   | Tokenized                                    |
+| `alert-cancelled-halo.tsx`      | Grey + `#0A0A0C`    | `--al-neutral-500`, `--al-color-on-surface`  |
+| `timeline-complete-check.tsx`   | `#1FA24A`           | `--al-color-success`                         |
+| `payment-success-halo.tsx`      | Green fills/strokes | Signal/success tokens                        |
+| `payment-unconfirmed-halo.tsx`  | `#F5A623`           | `--al-color-warning`                         |
+| `fetch-failed-halo.tsx`         | `#F5A623`           | `--al-color-warning`                         |
+| `credit-card.tsx`               | `#C9CDD2`           | `currentColor` (parent muted)                |
+| `circle-x.tsx`                  | `#E5342A`           | `--al-color-danger`                          |
 
 ---
 
 ## UI inline SVG fixes
 
-| Component | Issue (light) | Fix |
-|-----------|---------------|-----|
-| `PhotoGrid` map pin | White stroke on light-green map tile | `.al-photo-grid__review-map-pin { color: var(--al-color-success) }` |
-| `DispatchTimeline` active glyphs | White on amber (wrong vs Figma) | `--al-color-on-warning` via `currentColor` |
-| `CircleCheckIconGlyph` | Hardcoded green | `.al-circle-check-glyph path { stroke: var(--al-color-success) }` |
-| `IncidentStatusHero` | Fixed dark strokes | `var(--al-color-on-surface)` |
+| Component                        | Issue (light)                        | Fix                                                                 |
+| -------------------------------- | ------------------------------------ | ------------------------------------------------------------------- |
+| `PhotoGrid` map pin              | White stroke on light-green map tile | `.al-photo-grid__review-map-pin { color: var(--al-color-success) }` |
+| `DispatchTimeline` active glyphs | White on amber (wrong vs Figma)      | `--al-color-on-warning` via `currentColor`                          |
+| `CircleCheckIconGlyph`           | Hardcoded green                      | `.al-circle-check-glyph path { stroke: var(--al-color-success) }`   |
+| `IncidentStatusHero`             | Fixed dark strokes                   | `var(--al-color-on-surface)`                                        |
 
 ---
 
@@ -76,12 +76,12 @@ Icons consumed via `<AlIcon name="…" />` across:
 
 ## PWA icon containers
 
-| Location | Dark | Light |
-|----------|------|-------|
-| ScannerHubCard icon tile | `surface-variant` / red emergency tile | ✅ Same tokens |
-| PhotoGrid retake button | `--al-color-overlay` + on-emergency | ✅ |
-| Emergency location chip | `--al-color-surface` + on-surface | ✅ F (was dark fill) |
-| Status tracker complete check | Success token | ✅ |
+| Location                      | Dark                                   | Light                |
+| ----------------------------- | -------------------------------------- | -------------------- |
+| ScannerHubCard icon tile      | `surface-variant` / red emergency tile | ✅ Same tokens       |
+| PhotoGrid retake button       | `--al-color-overlay` + on-emergency    | ✅                   |
+| Emergency location chip       | `--al-color-surface` + on-surface      | ✅ F (was dark fill) |
+| Status tracker complete check | Success token                          | ✅                   |
 
 ---
 

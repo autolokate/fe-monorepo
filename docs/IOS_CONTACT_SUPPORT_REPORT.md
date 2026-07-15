@@ -8,12 +8,12 @@
 
 ## Requirement
 
-| Platform | Behaviour |
-|----------|-----------|
-| Android Chrome | Native Contact Picker API — **Add from contacts** visible |
-| iOS (all browsers + PWA standalone) | If API unavailable → **hide Add from contacts** entirely |
-| iOS with API (experimental only) | Native picker only — no custom modal |
-| Unsupported | Manual **Enter mobile number** only on E0 |
+| Platform                            | Behaviour                                                 |
+| ----------------------------------- | --------------------------------------------------------- |
+| Android Chrome                      | Native Contact Picker API — **Add from contacts** visible |
+| iOS (all browsers + PWA standalone) | If API unavailable → **hide Add from contacts** entirely  |
+| iOS with API (experimental only)    | Native picker only — no custom modal                      |
+| Unsupported                         | Manual **Enter mobile number** only on E0                 |
 
 ---
 
@@ -21,14 +21,14 @@
 
 Runtime check: `isContactPickerSupported()` → secure context + `typeof navigator.contacts?.select === 'function'`.
 
-| Environment | Contact Picker API | Add from contacts CTA |
-|-------------|-------------------|------------------------|
-| Android Chrome | ✅ Supported | ✅ Shown |
-| iPhone Safari | ❌ Not in production | ❌ Hidden |
-| iPhone Chrome (CriOS) | ❌ Not in production | ❌ Hidden |
-| iPhone Edge (EdgiOS) | ❌ Not in production | ❌ Hidden |
-| iOS PWA standalone | ❌ Same WebKit — not available | ❌ Hidden |
-| iOS browser mode | ❌ Not available | ❌ Hidden |
+| Environment           | Contact Picker API             | Add from contacts CTA |
+| --------------------- | ------------------------------ | --------------------- |
+| Android Chrome        | ✅ Supported                   | ✅ Shown              |
+| iPhone Safari         | ❌ Not in production           | ❌ Hidden             |
+| iPhone Chrome (CriOS) | ❌ Not in production           | ❌ Hidden             |
+| iPhone Edge (EdgiOS)  | ❌ Not in production           | ❌ Hidden             |
+| iOS PWA standalone    | ❌ Same WebKit — not available | ❌ Hidden             |
+| iOS browser mode      | ❌ Not available               | ❌ Hidden             |
 
 **We do not fake native support on iOS.** No manual fallback modal, fake picker, or unsupported CTA.
 
@@ -36,12 +36,12 @@ Runtime check: `isContactPickerSupported()` → secure context + `typeof navigat
 
 ## Implementation
 
-| File | Change |
-|------|--------|
+| File                             | Change                                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------- |
 | `utils/device-contact-picker.ts` | `shouldShowAddFromContactsCTA()` = `isContactPickerSupported()`; removed fallback helpers |
-| `E05ContactsEmptyScreen.tsx` | `showAddFromContacts` prop — manual-only footer when false |
-| `EmergencyRoutes.tsx` E0 | Native picker when supported; removed `IosContactPickSheet` |
-| Deleted | `ios-contact-pick-sheet/` component |
+| `E05ContactsEmptyScreen.tsx`     | `showAddFromContacts` prop — manual-only footer when false                                |
+| `EmergencyRoutes.tsx` E0         | Native picker when supported; removed `IosContactPickSheet`                               |
+| Deleted                          | `ios-contact-pick-sheet/` component                                                       |
 
 ### E0 UX when picker hidden (iOS)
 

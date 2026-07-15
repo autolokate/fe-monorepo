@@ -1,1 +1,1 @@
-export { slugifyPart } from "./slugs";
+export { slugifyPart } from './slugs';

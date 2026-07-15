@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { ArrowRight } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { ABOUT_HERO_COPY } from "./constants";
-import styles from "./index.module.css";
+import { ArrowRight } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { ABOUT_HERO_COPY } from './constants';
+import styles from './index.module.css';
 
 export function HeroCta() {
   return (

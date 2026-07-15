@@ -186,7 +186,8 @@
 .al-data-table__sort-icon {
   display: inline-flex;
   opacity: 0.45;
-  transition: opacity var(--al-motion-fast) var(--al-admin-ease-sidebar),
+  transition:
+    opacity var(--al-motion-fast) var(--al-admin-ease-sidebar),
     transform var(--al-motion-fast) var(--al-admin-ease-sidebar);
 }
 

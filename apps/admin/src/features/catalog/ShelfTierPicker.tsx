@@ -32,8 +32,8 @@ export function ShelfTierPicker({
     <AlStack gap="sm">
       <AlText variant="label">Shelf — offered tiers</AlText>
       <AlText variant="caption" tone="muted">
-        A tier that is not on the shelf cannot be sold against this SKU&apos;s stock. The server enforces
-        this, so an empty shelf sells nothing.
+        A tier that is not on the shelf cannot be sold against this SKU&apos;s stock. The server
+        enforces this, so an empty shelf sells nothing.
       </AlText>
 
       {selectableTiers.length === 0 ? (

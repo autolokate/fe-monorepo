@@ -8,13 +8,13 @@
 
 ## Scope constraints (honored)
 
-| Constraint | Status |
-|------------|--------|
-| Flow order | ✅ Unchanged |
-| Business rules | ✅ Unchanged |
-| Session architecture | ✅ Unchanged |
+| Constraint            | Status       |
+| --------------------- | ------------ |
+| Flow order            | ✅ Unchanged |
+| Business rules        | ✅ Unchanged |
+| Session architecture  | ✅ Unchanged |
 | Provider architecture | ✅ Unchanged |
-| Routing | ✅ Unchanged |
+| Routing               | ✅ Unchanged |
 
 Changes limited to UX, device behavior, and visual parity at the component layer.
 
@@ -22,14 +22,14 @@ Changes limited to UX, device behavior, and visual parity at the component layer
 
 ## Issue summary
 
-| # | Issue | Verdict | Report |
-|---|-------|---------|--------|
-| 1 | iOS Chrome install guidance | **FIXED** | [IOS_INSTALL_RECOVERY_REPORT.md](./IOS_INSTALL_RECOVERY_REPORT.md) |
-| 2 | Add from contacts — Contact Picker API | **FIXED** | [CONTACT_PICKER_REPORT.md](./CONTACT_PICKER_REPORT.md) |
-| 3 | A1 consent checkbox baseline alignment | **FIXED** | Inline — `inline-consent-block.css` |
-| 4 | Global input active/filled state | **FIXED** | [INPUT_STATE_REPORT.md](./INPUT_STATE_REPORT.md) |
-| 5 | Back button → title spacing | **FIXED** | [BACK_BUTTON_SPACING_REPORT.md](./BACK_BUTTON_SPACING_REPORT.md) |
-| 6 | OTP cell stretch | **FIXED** | [OTP_PARITY_REPORT.md](./OTP_PARITY_REPORT.md) |
+| #   | Issue                                  | Verdict   | Report                                                             |
+| --- | -------------------------------------- | --------- | ------------------------------------------------------------------ |
+| 1   | iOS Chrome install guidance            | **FIXED** | [IOS_INSTALL_RECOVERY_REPORT.md](./IOS_INSTALL_RECOVERY_REPORT.md) |
+| 2   | Add from contacts — Contact Picker API | **FIXED** | [CONTACT_PICKER_REPORT.md](./CONTACT_PICKER_REPORT.md)             |
+| 3   | A1 consent checkbox baseline alignment | **FIXED** | Inline — `inline-consent-block.css`                                |
+| 4   | Global input active/filled state       | **FIXED** | [INPUT_STATE_REPORT.md](./INPUT_STATE_REPORT.md)                   |
+| 5   | Back button → title spacing            | **FIXED** | [BACK_BUTTON_SPACING_REPORT.md](./BACK_BUTTON_SPACING_REPORT.md)   |
+| 6   | OTP cell stretch                       | **FIXED** | [OTP_PARITY_REPORT.md](./OTP_PARITY_REPORT.md)                     |
 
 ---
 
@@ -57,12 +57,12 @@ apps/qr — lint PASS (pwa, shells, emergency routes)
 
 ## Global audit
 
-| Package | Changes |
-|---------|---------|
-| `@autolokate/ui` | TextField, Input, OtpInput, PlateInput |
-| `@autolokate/qr` | PWA install, emergency picker, shells, consent, promo field |
-| `@autolokate/icons` | No changes |
-| `@autolokate/design-system` | No token changes — existing tokens used |
+| Package                     | Changes                                                     |
+| --------------------------- | ----------------------------------------------------------- |
+| `@autolokate/ui`            | TextField, Input, OtpInput, PlateInput                      |
+| `@autolokate/qr`            | PWA install, emergency picker, shells, consent, promo field |
+| `@autolokate/icons`         | No changes                                                  |
+| `@autolokate/design-system` | No token changes — existing tokens used                     |
 
 No screen-specific CSS hacks added. No duplicated override chains.
 
@@ -70,14 +70,14 @@ No screen-specific CSS hacks added. No duplicated override chains.
 
 ## Recommended manual verification
 
-| Flow | Check |
-|------|-------|
-| Purchase / Prepaid / B2B2C | Back spacing, OTP, inputs |
-| Post Activation / PWA | OTP verify shell, dark + light |
-| iPhone Safari | Install banner |
-| iPhone Chrome | Install sheet (no Android banner) |
-| Android Chrome | Native install banner |
-| Emergency E0 | Contact picker + manual fallback |
+| Flow                       | Check                             |
+| -------------------------- | --------------------------------- |
+| Purchase / Prepaid / B2B2C | Back spacing, OTP, inputs         |
+| Post Activation / PWA      | OTP verify shell, dark + light    |
+| iPhone Safari              | Install banner                    |
+| iPhone Chrome              | Install sheet (no Android banner) |
+| Android Chrome             | Native install banner             |
+| Emergency E0               | Contact picker + manual fallback  |
 
 ---
 

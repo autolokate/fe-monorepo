@@ -5,7 +5,11 @@ import {
   hasLegacyQrEntryParams,
   parseQrFromSearchParams,
 } from '@/platform/qr/parse-qr-url';
-import type { QrDecodeResult, QrDispatchError, QrPayload } from '@/platform/qr/qr-dispatch-contract';
+import type {
+  QrDecodeResult,
+  QrDispatchError,
+  QrPayload,
+} from '@/platform/qr/qr-dispatch-contract';
 import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
 
 import { seedActivationFromQrPayload } from '@/services/activation/activation-service';
@@ -14,11 +18,7 @@ import { saveQrCode, saveResolvedQr, getResolvedQr, type StoredQrResolve } from 
 
 import { clearResolvedQrCache, peekResolvedQr, rememberResolvedQr } from './qr-cache';
 import { mapQrApiError, mapQrStatusError } from './qr-errors';
-import {
-  isActivatedQrResolution,
-  isExpiredQrStatus,
-  mapResolutionToPayload,
-} from './qr-mapper';
+import { isActivatedQrResolution, isExpiredQrStatus, mapResolutionToPayload } from './qr-mapper';
 import { qrLogger } from './qr-logger';
 
 export type ResolveQrCodeResult =
@@ -61,7 +61,11 @@ function validateResolution(code: string, resolution: QrResolution): QrDispatchE
     return mapQrStatusError('This QR code cannot be used for activation.', 'invalid');
   }
 
-  qrLogger.debug('resolve_validated', { code, journey: resolution.journey, status: resolution.qrStatus });
+  qrLogger.debug('resolve_validated', {
+    code,
+    journey: resolution.journey,
+    status: resolution.qrStatus,
+  });
   return null;
 }
 
@@ -97,7 +101,9 @@ export async function resolveQrCode(code: string): Promise<ResolveQrCodeResult> 
       return failure(validationError);
     }
     const result = finalizeResolvedPayload(trimmed, cached);
-    return result ?? failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'));
+    return (
+      result ?? failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'))
+    );
   }
 
   try {
@@ -124,7 +130,10 @@ export async function resolveQrCode(code: string): Promise<ResolveQrCodeResult> 
       });
 
       const result = finalizeResolvedPayload(trimmed, resolution);
-      return result ?? failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'));
+      return (
+        result ??
+        failure(mapQrStatusError('This QR code cannot be used for activation.', 'invalid'))
+      );
     })();
 
     inflightResolveByCode.set(trimmed, request);
@@ -182,7 +191,10 @@ export function getStoredPurchaseQrResolve():
   if (!code) {
     return {
       ok: false,
-      error: mapQrStatusError('Your purchase QR code is missing. Scan your Autolokate sticker or open your purchase link again.', 'invalid'),
+      error: mapQrStatusError(
+        'Your purchase QR code is missing. Scan your Autolokate sticker or open your purchase link again.',
+        'invalid',
+      ),
     };
   }
 
@@ -190,7 +202,10 @@ export function getStoredPurchaseQrResolve():
   if (!stored || stored.qrCode !== code) {
     return {
       ok: false,
-      error: mapQrStatusError('QR details are missing. Scan your Autolokate sticker or open your purchase link again.', 'invalid'),
+      error: mapQrStatusError(
+        'QR details are missing. Scan your Autolokate sticker or open your purchase link again.',
+        'invalid',
+      ),
     };
   }
 

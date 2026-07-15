@@ -1,1 +1,1 @@
-export { useLegalDocument } from "./useLegalDocument";
+export { useLegalDocument } from './useLegalDocument';

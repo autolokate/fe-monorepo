@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { TESTIMONIALS } from "./constants";
-import { TestimonialCard } from "./TestimonialCard";
-import styles from "./index.module.css";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { TESTIMONIALS } from './constants';
+import { TestimonialCard } from './TestimonialCard';
+import styles from './index.module.css';
 
 export function TestimonialCarousel() {
   const trackRef = useRef<HTMLUListElement>(null);
@@ -17,7 +17,7 @@ export function TestimonialCarousel() {
       const clamped = Math.max(0, Math.min(index, count - 1));
       const card = track.children[clamped] as HTMLElement | undefined;
       if (card) {
-        track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: "smooth" });
+        track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: 'smooth' });
       }
     },
     [count],
@@ -47,9 +47,9 @@ export function TestimonialCarousel() {
       });
     };
 
-    track.addEventListener("scroll", onScroll, { passive: true });
+    track.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      track.removeEventListener("scroll", onScroll);
+      track.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(frame);
     };
   }, []);
@@ -76,7 +76,7 @@ export function TestimonialCarousel() {
             key={testimonial.id}
             type="button"
             onClick={() => scrollToIndex(index)}
-            className={`${styles.dot} ${index === active ? styles.dotActive : ""}`}
+            className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show testimonial from ${testimonial.name}`}
             aria-current={index === active}
           />

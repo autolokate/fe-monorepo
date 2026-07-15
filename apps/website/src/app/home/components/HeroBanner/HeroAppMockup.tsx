@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Ambulance, Check, MapPin, User, Users, Wifi } from "lucide-react";
-import styles from "./index.module.css";
+import { useEffect, useState } from 'react';
+import { Ambulance, Check, MapPin, User, Users, Wifi } from 'lucide-react';
+import styles from './index.module.css';
 
 const DISPATCHED = [
-  { Icon: Ambulance, title: "Ambulance routed", sub: "ETA 6 min" },
-  { Icon: Users, title: "Priya & Dad notified", sub: "" },
-  { Icon: MapPin, title: "Live location shared", sub: "" },
+  { Icon: Ambulance, title: 'Ambulance routed', sub: 'ETA 6 min' },
+  { Icon: Users, title: 'Priya & Dad notified', sub: '' },
+  { Icon: MapPin, title: 'Live location shared', sub: '' },
 ] as const;
 
-type Mode = "monitor" | "impact" | "count" | "safe";
+type Mode = 'monitor' | 'impact' | 'count' | 'safe';
 
 /**
  * Animated "app" preview that mirrors a full Autolokate crash detection,
@@ -25,14 +25,14 @@ export function HeroAppMockup() {
     return () => clearInterval(timer);
   }, []);
 
-  let mode: Mode = "monitor";
-  let countNum = "";
-  if (t < 2) mode = "monitor";
-  else if (t === 2) mode = "impact";
+  let mode: Mode = 'monitor';
+  let countNum = '';
+  if (t < 2) mode = 'monitor';
+  else if (t === 2) mode = 'impact';
   else if (t >= 3 && t <= 7) {
-    mode = "count";
+    mode = 'count';
     countNum = String(8 - t);
-  } else mode = "safe";
+  } else mode = 'safe';
 
   return (
     <div className={styles.mockupStack} aria-hidden="true">
@@ -66,15 +66,15 @@ export function HeroAppMockup() {
             </span>
           </div>
 
-          {mode === "monitor" && (
-            <div className={styles.stateWrap} style={{ gap: "24px" }}>
+          {mode === 'monitor' && (
+            <div className={styles.stateWrap} style={{ gap: '24px' }}>
               <div className={styles.driveMode}>
                 <span className={styles.liveDot} />
                 DRIVE MODE
               </div>
               <div className={styles.radar}>
                 <span className={styles.radarRing} />
-                <span className={styles.radarRing} style={{ animationDelay: "1.2s" }} />
+                <span className={styles.radarRing} style={{ animationDelay: '1.2s' }} />
                 <span className={styles.radarCore}>62</span>
               </div>
               <div>
@@ -84,8 +84,8 @@ export function HeroAppMockup() {
             </div>
           )}
 
-          {mode === "impact" && (
-            <div className={styles.stateWrap} style={{ gap: "20px" }}>
+          {mode === 'impact' && (
+            <div className={styles.stateWrap} style={{ gap: '20px' }}>
               <div className={styles.impactCircle}>!</div>
               <div>
                 <div className={styles.impactTitle}>
@@ -98,21 +98,19 @@ export function HeroAppMockup() {
             </div>
           )}
 
-          {mode === "count" && (
-            <div className={styles.stateWrap} style={{ gap: "18px" }}>
+          {mode === 'count' && (
+            <div className={styles.stateWrap} style={{ gap: '18px' }}>
               <div className={styles.countLabel}>CALLING FOR HELP IN</div>
               <div className={styles.countCircle}>
                 <span>{countNum}</span>
               </div>
-              <div className={styles.countSub}>
-                Notifying family &amp; dispatching an ambulance
-              </div>
+              <div className={styles.countSub}>Notifying family &amp; dispatching an ambulance</div>
               <div className={styles.cancelBtn}>I&apos;m OK — Cancel</div>
             </div>
           )}
 
-          {mode === "safe" && (
-            <div className={styles.stateWrap} style={{ gap: "16px" }}>
+          {mode === 'safe' && (
+            <div className={styles.stateWrap} style={{ gap: '16px' }}>
               <div className={styles.safeCircle}>
                 <Check className="h-9 w-9" strokeWidth={3} />
               </div>

@@ -24,8 +24,7 @@ export function tokensFromEnv(): AdminTokenPair | null {
   const refreshToken = process.env.E2E_ADMIN_REFRESH_TOKEN?.trim();
   const userId = process.env.E2E_ADMIN_USER_ID?.trim();
   const expiresAt =
-    process.env.E2E_ADMIN_EXPIRES_AT?.trim() ??
-    new Date(Date.now() + 14 * 60 * 1000).toISOString();
+    process.env.E2E_ADMIN_EXPIRES_AT?.trim() ?? new Date(Date.now() + 14 * 60 * 1000).toISOString();
   if (!accessToken || !refreshToken || !userId) {
     return null;
   }

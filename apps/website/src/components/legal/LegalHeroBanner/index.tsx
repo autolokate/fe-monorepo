@@ -1,5 +1,5 @@
-import type { LegalHeroBannerCopy } from "./types";
-import styles from "./index.module.css";
+import type { LegalHeroBannerCopy } from './types';
+import styles from './index.module.css';
 
 export function LegalHeroBanner({
   badgeLabel,

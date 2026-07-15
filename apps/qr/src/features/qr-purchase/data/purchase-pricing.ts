@@ -1,10 +1,6 @@
 import { formatInrFromPaise } from '@autolokate/utils';
 
-import type {
-  OrderSummaryTotals,
-  PurchasePlanId,
-  PurchaseRiderCount,
-} from '../types-checkout';
+import type { OrderSummaryTotals, PurchasePlanId, PurchaseRiderCount } from '../types-checkout';
 
 import { getPurchasePlan } from './purchase-plans';
 import { buildCheckoutParamsKey } from '@/services/checkout/checkout-mapper';

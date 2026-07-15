@@ -58,7 +58,12 @@ export function RiderCoverOptions({ options, selectedCount, onSelect }: RiderCov
                 className="ob-rider-cover-option__radio ob-rider-cover-option__radio--check"
               />
             </span>
-            <AlIcon name={option.icon} size={22} className="ob-rider-cover-option__icon" aria-hidden />
+            <AlIcon
+              name={option.icon}
+              size={22}
+              className="ob-rider-cover-option__icon"
+              aria-hidden
+            />
             <div className="ob-rider-cover-option__body">
               <div className="ob-rider-cover-option__title-row">
                 <span className="ob-rider-cover-option__title">{option.label}</span>

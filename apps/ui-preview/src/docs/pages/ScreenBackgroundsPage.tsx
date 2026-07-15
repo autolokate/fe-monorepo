@@ -1,10 +1,4 @@
-import {
-  AlHeading,
-  AlScreenBg,
-  type AlScreenBgVariant,
-  AlStack,
-  AlText,
-} from '@autolokate/ui';
+import { AlHeading, AlScreenBg, type AlScreenBgVariant, AlStack, AlText } from '@autolokate/ui';
 
 import './screen-backgrounds.css';
 
@@ -50,10 +44,7 @@ function ThemeSection({ theme }: { theme: 'light' | 'dark' }) {
   return (
     <section className="ds-card ds-card--showcase">
       <AlHeading variant="h3">{theme === 'light' ? 'Light theme' : 'Dark theme'}</AlHeading>
-      <div
-        className={`ds-screen-bg-theme ds-screen-bg-theme--${theme}`}
-        data-theme={theme}
-      >
+      <div className={`ds-screen-bg-theme ds-screen-bg-theme--${theme}`} data-theme={theme}>
         <div className="ds-screen-bg-grid">
           {variants.map((variant) => (
             <VariantPreview key={`${theme}-${variant.id}`} variant={variant.id} />

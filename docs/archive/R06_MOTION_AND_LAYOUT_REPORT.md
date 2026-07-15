@@ -8,15 +8,15 @@
 
 ## Summary
 
-| Area | Before | After |
-|------|--------|-------|
-| Feature rows | Ellipsis + 13px compressed line-height | Full text, 13/18 line-height, wrap allowed |
-| Card hierarchy | flex-grow features + overflow clip | Figma column: badge → name → price → includes → features → addon |
-| Selected card | Static | scale **1.03**, glow fade-in **220ms** |
-| Neighbors | Full opacity | opacity **0.75**, scale **0.96** |
-| Check icon | Instant | Pop **0→1**, **180ms** |
-| Carousel scroll | Instant jump | **Smooth** one-step (±1) or smooth center (±2+) |
-| CTA | Static label swap | Label fade-in + pulse on plan change |
+| Area            | Before                                 | After                                                            |
+| --------------- | -------------------------------------- | ---------------------------------------------------------------- |
+| Feature rows    | Ellipsis + 13px compressed line-height | Full text, 13/18 line-height, wrap allowed                       |
+| Card hierarchy  | flex-grow features + overflow clip     | Figma column: badge → name → price → includes → features → addon |
+| Selected card   | Static                                 | scale **1.03**, glow fade-in **220ms**                           |
+| Neighbors       | Full opacity                           | opacity **0.75**, scale **0.96**                                 |
+| Check icon      | Instant                                | Pop **0→1**, **180ms**                                           |
+| Carousel scroll | Instant jump                           | **Smooth** one-step (±1) or smooth center (±2+)                  |
+| CTA             | Static label swap                      | Label fade-in + pulse on plan change                             |
 
 ---
 
@@ -31,13 +31,13 @@
 
 ### Verified — Secure features (no truncation)
 
-| Feature | Truncated |
-|---------|-----------|
-| Automatic crash detection | No |
-| Ambulance + ₹3,000 cover | No |
-| 3 contacts + AI calling | No |
-| ₹1L accidental · ₹1,000/day hospital | No |
-| Driver score & leaderboard | No |
+| Feature                              | Truncated |
+| ------------------------------------ | --------- |
+| Automatic crash detection            | No        |
+| Ambulance + ₹3,000 cover             | No        |
+| 3 contacts + AI calling              | No        |
+| ₹1L accidental · ₹1,000/day hospital | No        |
+| Driver score & leaderboard           | No        |
 
 Long strings wrap naturally (e.g. Shield+ hospital line) instead of ellipsizing.
 
@@ -55,46 +55,46 @@ Long strings wrap naturally (e.g. Shield+ hospital line) instead of ellipsizing.
 
 ### Selected card
 
-| Property | Value |
-|----------|-------|
-| Scale | **1.03** |
-| Glow | `::after` ring opacity **0 → 1** |
-| Duration | **220ms** |
-| Easing | `cubic-bezier(0.22, 1, 0.36, 1)` |
+| Property | Value                            |
+| -------- | -------------------------------- |
+| Scale    | **1.03**                         |
+| Glow     | `::after` ring opacity **0 → 1** |
+| Duration | **220ms**                        |
+| Easing   | `cubic-bezier(0.22, 1, 0.36, 1)` |
 
 ### Check icon
 
-| Property | Value |
-|----------|-------|
+| Property  | Value                              |
+| --------- | ---------------------------------- |
 | Animation | scale **0 → 1**, opacity **0 → 1** |
-| Duration | **180ms** |
-| Easing | `cubic-bezier(0.22, 1, 0.36, 1)` |
+| Duration  | **180ms**                          |
+| Easing    | `cubic-bezier(0.22, 1, 0.36, 1)`   |
 
 ### Neighbor cards
 
-| Property | Value |
-|----------|-------|
-| Opacity | **0.75** |
-| Scale | **0.96** |
+| Property   | Value                 |
+| ---------- | --------------------- |
+| Opacity    | **0.75**              |
+| Scale      | **0.96**              |
 | Transition | **220ms** shared ease |
 
 ### Carousel
 
-| Behavior | Implementation |
-|----------|----------------|
-| Snap one card | `scroll-snap-type: x mandatory` + `scroll-snap-stop: always` |
-| Adjacent select | `scrollBy(±284px, smooth)` — one card step |
-| Distant select | `scrollTo(center, smooth)` — no instant full-track jump |
-| Initial mount | `behavior: auto` (no flash) |
-| Selected centers | `offsetLeft − (clientWidth − slideWidth) / 2` |
+| Behavior         | Implementation                                               |
+| ---------------- | ------------------------------------------------------------ |
+| Snap one card    | `scroll-snap-type: x mandatory` + `scroll-snap-stop: always` |
+| Adjacent select  | `scrollBy(±284px, smooth)` — one card step                   |
+| Distant select   | `scrollTo(center, smooth)` — no instant full-track jump      |
+| Initial mount    | `behavior: auto` (no flash)                                  |
+| Selected centers | `offsetLeft − (clientWidth − slideWidth) / 2`                |
 
 ### CTA
 
-| Behavior | Implementation |
-|----------|----------------|
-| Label transition | `ob-plan-cta-label-in` — opacity + 4px translateY, **220ms** |
-| Pulse on plan change | `ob-plan-cta-pulse` — scale to **1.02**, **320ms** |
-| Trigger | `footerCtaKey={selectedPlanId}` remounts CTA |
+| Behavior             | Implementation                                               |
+| -------------------- | ------------------------------------------------------------ |
+| Label transition     | `ob-plan-cta-label-in` — opacity + 4px translateY, **220ms** |
+| Pulse on plan change | `ob-plan-cta-pulse` — scale to **1.02**, **320ms**           |
+| Trigger              | `footerCtaKey={selectedPlanId}` remounts CTA                 |
 
 All motion respects `prefers-reduced-motion: reduce`.
 
@@ -156,13 +156,13 @@ Screenshot sequence above documents static end-states for all four plans.
 
 ## Files changed
 
-| File | Changes |
-|------|---------|
-| `plan-carousel.css` | Layout hierarchy, motion keyframes, neighbor opacity/scale |
-| `PlanCarousel.tsx` | One-step smooth scroll, initial mount handling |
-| `auth-step-shell.css` | CTA pulse + label transition |
-| `AuthStepShell.tsx` | Optional `footerCtaKey` for CTA remount |
-| `R06ChoosePlanScreen.tsx` | Pass `footerCtaKey={selectedPlanId}` |
+| File                      | Changes                                                    |
+| ------------------------- | ---------------------------------------------------------- |
+| `plan-carousel.css`       | Layout hierarchy, motion keyframes, neighbor opacity/scale |
+| `PlanCarousel.tsx`        | One-step smooth scroll, initial mount handling             |
+| `auth-step-shell.css`     | CTA pulse + label transition                               |
+| `AuthStepShell.tsx`       | Optional `footerCtaKey` for CTA remount                    |
+| `R06ChoosePlanScreen.tsx` | Pass `footerCtaKey={selectedPlanId}`                       |
 
 **Not modified:** routing, session, plan data, pricing copy
 

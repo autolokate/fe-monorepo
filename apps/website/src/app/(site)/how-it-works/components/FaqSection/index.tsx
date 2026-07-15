@@ -1,6 +1,6 @@
-import { ChevronDown } from "lucide-react";
-import { FAQ_COPY, FAQS, type FaqItem } from "./constants";
-import styles from "./index.module.css";
+import { ChevronDown } from 'lucide-react';
+import { FAQ_COPY, FAQS, type FaqItem } from './constants';
+import styles from './index.module.css';
 
 function FaqCard({ item }: { item: FaqItem }) {
   return (

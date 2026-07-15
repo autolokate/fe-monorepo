@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { getMyBookings } from "@/services/booking";
-import { normalizeMyBookings } from "@/lib/booking/normalize";
-import type { UserBookingSummary } from "@/lib/booking/types";
+import { useMemo } from 'react';
+import { useApiQuery } from '@/hooks/useApiQuery';
+import { getMyBookings } from '@/services/booking';
+import { normalizeMyBookings } from '@/lib/booking/normalize';
+import type { UserBookingSummary } from '@/lib/booking/types';
 
 export interface UseMyBookingsArgs {
   /** Skip the request when the user isn't signed in. */

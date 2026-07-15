@@ -106,13 +106,10 @@ export function App() {
 
   const filteredSearch =
     search.trim().length > 0
-      ? searchItems.filter((item) =>
-          item.label.toLowerCase().includes(search.toLowerCase()),
-        )
+      ? searchItems.filter((item) => item.label.toLowerCase().includes(search.toLowerCase()))
       : [];
 
-  const activeLabel =
-    searchItems.find((item) => item.page === activePage)?.label ?? 'Overview';
+  const activeLabel = searchItems.find((item) => item.page === activePage)?.label ?? 'Overview';
   const activeDescription =
     filteredSearch.length > 0
       ? 'Search across documentation and component showcase pages'
@@ -172,10 +169,7 @@ export function App() {
             <AlText tone="muted">{activeDescription}</AlText>
           </div>
           <div className="ds-theme-switcher">
-            <motion.div
-              layout={!prefersReducedMotion}
-              className="ds-theme-switcher__inner"
-            >
+            <motion.div layout={!prefersReducedMotion} className="ds-theme-switcher__inner">
               <AlButton
                 variant={theme === 'light' ? 'primary' : 'secondary'}
                 size="sm"
@@ -202,15 +196,11 @@ export function App() {
           <motion.section
             key={filteredSearch.length > 0 ? `search-${search}` : activePage}
             className="ds-content-stage"
-            initial={
-              prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }
-            }
+            initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: -6 }}
             transition={
-              prefersReducedMotion
-                ? { duration: 0 }
-                : { duration: 0.22, ease: 'easeOut' }
+              prefersReducedMotion ? { duration: 0 } : { duration: 0.22, ease: 'easeOut' }
             }
           >
             {filteredSearch.length > 0 ? (

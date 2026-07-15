@@ -100,7 +100,8 @@
   font-size: var(--al-text-label-size);
   font-weight: var(--al-font-weight-medium);
   line-height: var(--al-text-label-line-height);
-  transition: background var(--al-motion-fast) var(--al-admin-ease-sidebar),
+  transition:
+    background var(--al-motion-fast) var(--al-admin-ease-sidebar),
     color var(--al-motion-fast) var(--al-admin-ease-sidebar);
 }
 
@@ -174,7 +175,8 @@
   background: transparent;
   color: var(--al-color-text-muted);
   cursor: pointer;
-  transition: background var(--al-motion-fast) var(--al-admin-ease-sidebar),
+  transition:
+    background var(--al-motion-fast) var(--al-admin-ease-sidebar),
     color var(--al-motion-fast) var(--al-admin-ease-sidebar);
 }
 

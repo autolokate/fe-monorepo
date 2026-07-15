@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { usePathname, useRouter } from "next/navigation";
-import { AlBottomNav, type AlBottomNavItem } from "@autolokate/ui/bottom-nav";
-import { isNavItemActive, primaryNavItems } from "@/layouts/Header/constants";
+import { usePathname, useRouter } from 'next/navigation';
+import { AlBottomNav, type AlBottomNavItem } from '@autolokate/ui/bottom-nav';
+import { isNavItemActive, primaryNavItems } from '@/layouts/Header/constants';
 
 /**
  * Mobile-only bottom tab bar built on the shared design-system `AlBottomNav`.

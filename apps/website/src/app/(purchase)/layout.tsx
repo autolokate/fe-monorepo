@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 /**
  * Focused checkout shell — deliberately renders without the marketing Chrome

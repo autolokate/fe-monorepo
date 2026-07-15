@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiService } from "@/services/api.service";
-import type { ContactUsPayload, ContactUsResponse } from "./types";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiService } from '@/services/api.service';
+import type { ContactUsPayload, ContactUsResponse } from './types';
 
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null;
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
 /** POST /v1/contact-us — public enquiry form (no auth). */
 export async function submitContactUs(payload: ContactUsPayload): Promise<ContactUsResponse> {
@@ -17,7 +16,7 @@ export async function submitContactUs(payload: ContactUsPayload): Promise<Contac
   if (isRecord(data)) {
     return {
       success: data.success !== false,
-      message: typeof data.message === "string" ? data.message : undefined,
+      message: typeof data.message === 'string' ? data.message : undefined,
     };
   }
 

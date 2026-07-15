@@ -1,8 +1,8 @@
-import { Fragment } from "react";
-import type { CSSProperties } from "react";
-import { ArrowDown, ArrowRight } from "lucide-react";
-import { ECOSYSTEM_COPY, ECOSYSTEM_NODES } from "./constants";
-import styles from "./index.module.css";
+import { Fragment } from 'react';
+import type { CSSProperties } from 'react';
+import { ArrowDown, ArrowRight } from 'lucide-react';
+import { ECOSYSTEM_COPY, ECOSYSTEM_NODES } from './constants';
+import styles from './index.module.css';
 
 export function EcosystemSection() {
   return (
@@ -15,7 +15,7 @@ export function EcosystemSection() {
         <ol className={styles.flow}>
           {ECOSYSTEM_NODES.map(({ id, title, description, accent, Icon }, index) => (
             <Fragment key={id}>
-              <li className={styles.node} style={{ "--accent": accent } as CSSProperties}>
+              <li className={styles.node} style={{ '--accent': accent } as CSSProperties}>
                 <span className={styles.nodeIcon} aria-hidden>
                   <Icon className="h-6 w-6 stroke-[1.9]" />
                 </span>

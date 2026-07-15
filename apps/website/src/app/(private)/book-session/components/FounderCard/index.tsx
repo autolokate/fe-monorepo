@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { Youtube } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { IDG_FOUNDER, INDIAN_DRIVE_GUIDE_CHANNEL_URL } from "@/lib/idg";
+import Image from 'next/image';
+import Link from 'next/link';
+import { Youtube } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { IDG_FOUNDER, INDIAN_DRIVE_GUIDE_CHANNEL_URL } from '@/lib/idg';
 
 export function FounderCard() {
   return (
@@ -49,8 +49,8 @@ export function FounderCard() {
                 </p>
               </header>
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
-                Sessions follow the same approach as the channel: shortlist, budget,
-                ownership reality — straight talk, no scripts.
+                Sessions follow the same approach as the channel: shortlist, budget, ownership
+                reality — straight talk, no scripts.
               </p>
               <Button
                 className="h-10 w-full gap-2 border-0 bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-950/40 hover:brightness-110 sm:w-auto sm:px-5"

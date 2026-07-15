@@ -1,6 +1,6 @@
-import { MapPin, Star } from "lucide-react";
-import type { Testimonial } from "./types";
-import styles from "./index.module.css";
+import { MapPin, Star } from 'lucide-react';
+import type { Testimonial } from './types';
+import styles from './index.module.css';
 
 interface TestimonialCardProps {
   testimonial: Testimonial;
@@ -23,7 +23,10 @@ export function TestimonialCard({ testimonial }: TestimonialCardProps) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-1" aria-label={`${rating} out of ${MAX_STARS} stars`}>
+      <div
+        className="mt-4 flex items-center gap-1"
+        aria-label={`${rating} out of ${MAX_STARS} stars`}
+      >
         {Array.from({ length: MAX_STARS }).map((_, index) => (
           <Star
             key={index}

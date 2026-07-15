@@ -310,7 +310,9 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--foreground);
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .toggle:hover {

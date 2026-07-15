@@ -1,5 +1,5 @@
-import { ChevronDown } from "lucide-react";
-import { faqs, type FaqItem } from "./constants";
+import { ChevronDown } from 'lucide-react';
+import { faqs, type FaqItem } from './constants';
 
 function FaqCard({ item }: { item: FaqItem }) {
   return (

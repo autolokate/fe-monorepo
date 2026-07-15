@@ -6,7 +6,10 @@ import { useEffect, useRef } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 
 import { toUpdatePlanFeaturesBody } from '@/features/catalog/catalog-form-mapper';
-import { planFeaturesSchema, type PlanFeaturesFormValues } from '@/features/catalog/catalog-schemas';
+import {
+  planFeaturesSchema,
+  type PlanFeaturesFormValues,
+} from '@/features/catalog/catalog-schemas';
 import { catalogQueryKeys } from '@/hooks/catalog/catalog-query-keys';
 import { useCatalogMutations } from '@/hooks/catalog/useCatalogMutations';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
@@ -62,9 +65,7 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
     }
     form.reset({
       features:
-        loaded.features.length > 0
-          ? loaded.features.map((value) => ({ value }))
-          : [{ value: '' }],
+        loaded.features.length > 0 ? loaded.features.map((value) => ({ value })) : [{ value: '' }],
       badge: loaded.badge ?? '',
       includesLabel: loaded.includesLabel ?? '',
     });

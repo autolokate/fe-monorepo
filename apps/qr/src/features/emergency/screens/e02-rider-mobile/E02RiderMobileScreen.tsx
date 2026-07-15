@@ -57,7 +57,9 @@ export function E02RiderMobileScreen({
           prefix="+91"
           placeholder="Mobile number"
           state={isError ? 'error' : 'default'}
-          aria-describedby={isError ? 'e02-mobile-error' : isOffline ? 'e02-mobile-offline' : undefined}
+          aria-describedby={
+            isError ? 'e02-mobile-error' : isOffline ? 'e02-mobile-offline' : undefined
+          }
           disabled={isOffline}
           inputMode="numeric"
           autoComplete="tel"

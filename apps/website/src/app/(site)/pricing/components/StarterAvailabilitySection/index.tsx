@@ -1,6 +1,6 @@
-import { ShieldCheck } from "lucide-react";
-import { STARTER_COPY, STARTER_RETAILERS, type RetailerId } from "./constants";
-import styles from "./index.module.css";
+import { ShieldCheck } from 'lucide-react';
+import { STARTER_COPY, STARTER_RETAILERS, type RetailerId } from './constants';
+import styles from './index.module.css';
 
 const RETAILER_CLASS: Record<RetailerId, string> = {
   blinkit: styles.blinkit,
@@ -22,7 +22,7 @@ export function StarterAvailabilitySection() {
                 {STARTER_COPY.heading}
               </p>
               <p className={styles.description}>
-                {STARTER_COPY.descriptionLead}{" "}
+                {STARTER_COPY.descriptionLead}{' '}
                 <span className={styles.descriptionEmphasis}>
                   {STARTER_COPY.descriptionEmphasis}
                 </span>
@@ -36,13 +36,8 @@ export function StarterAvailabilitySection() {
               {STARTER_RETAILERS.map(({ id, label }) => (
                 <li key={id} className={`${styles.retailer} ${RETAILER_CLASS[id]}`}>
                   <span className={styles.wordmark}>{label}</span>
-                  {id === "amazon" ? (
-                    <svg
-                      className={styles.amazonSmile}
-                      viewBox="0 0 64 14"
-                      fill="none"
-                      aria-hidden
-                    >
+                  {id === 'amazon' ? (
+                    <svg className={styles.amazonSmile} viewBox="0 0 64 14" fill="none" aria-hidden>
                       <path
                         d="M3 4c11 8 47 8 58 0"
                         stroke="currentColor"

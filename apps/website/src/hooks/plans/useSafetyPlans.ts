@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { DEFAULT_PLANS_SKU, getPlans } from "@/services/plans";
+import { useApiQuery } from '@/hooks/useApiQuery';
+import { DEFAULT_PLANS_SKU, getPlans } from '@/services/plans';
 
 /**
  * Reactive list of protection plans for a SKU. Public endpoint — no auth.

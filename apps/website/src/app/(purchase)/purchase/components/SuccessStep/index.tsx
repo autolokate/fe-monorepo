@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { ArrowRight, Check, Download, Loader2, X } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { cn } from "@/lib/utils";
-import { useDownloadInvoice, useOrderPayment } from "@/hooks/purchase";
-import type { StepProps } from "../../types";
-import styles from "./index.module.css";
+import { ArrowRight, Check, Download, Loader2, X } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { cn } from '@/lib/utils';
+import { useDownloadInvoice, useOrderPayment } from '@/hooks/purchase';
+import type { StepProps } from '../../types';
+import styles from './index.module.css';
 
 export function SuccessStep({ state, plan, goTo }: StepProps) {
-  const firstName = state.name.trim().split(" ")[0] || "driver";
+  const firstName = state.name.trim().split(' ')[0] || 'driver';
   // `setupMandate` sent to the pay API is `state.autoRenew`.
   const renewNote = state.autoRenew
-    ? "Auto-renewal is enabled, so your current price is locked in for next year."
-    : "Auto-renewal is disabled, so your current price is not locked in for next year.";
+    ? 'Auto-renewal is enabled, so your current price is locked in for next year.'
+    : 'Auto-renewal is disabled, so your current price is not locked in for next year.';
 
   const { outcome, isSettled } = useOrderPayment(state.orderId);
   const { mutateAsync: downloadInvoice, isLoading: downloadingInvoice } = useDownloadInvoice({
     errorToast: true,
-    successToast: "Opening your invoice",
+    successToast: 'Opening your invoice',
   });
 
   const handleDownloadInvoice = () => {
@@ -29,9 +29,9 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
 
   // With no order id (e.g. a direct visit) we optimistically show the confirmed
   // state; otherwise we reflect the polled payment outcome.
-  const failed = outcome === "FAILED" || outcome === "REFUNDED";
+  const failed = outcome === 'FAILED' || outcome === 'REFUNDED';
   const confirming = Boolean(state.orderId) && !isSettled && !failed;
-  const orderRef = state.orderId ? `#${state.orderId}` : "#AL-48291";
+  const orderRef = state.orderId ? `#${state.orderId}` : '#AL-48291';
 
   if (failed) {
     return (
@@ -39,12 +39,12 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
         <span className={cn(styles.badge, styles.badgeFailed)} aria-hidden>
           <X className="h-8 w-8 stroke-[3]" />
         </span>
-        <h1 className={cn(styles.title, "font-display")}>Payment didn&apos;t go through</h1>
+        <h1 className={cn(styles.title, 'font-display')}>Payment didn&apos;t go through</h1>
         <p className={styles.lead}>
-          Order <b className={styles.mono}>{orderRef}</b> couldn&apos;t be paid. No money was
-          taken — you can try again.
+          Order <b className={styles.mono}>{orderRef}</b> couldn&apos;t be paid. No money was taken
+          — you can try again.
         </p>
-        <AlButton size="lg" radius="lg" variant="primary" onClick={() => goTo("summary")}>
+        <AlButton size="lg" radius="lg" variant="primary" onClick={() => goTo('summary')}>
           Back to payment
         </AlButton>
       </div>
@@ -57,7 +57,7 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
         <span className={cn(styles.badge, styles.badgePending)} aria-hidden>
           <Loader2 className="h-8 w-8 animate-spin" />
         </span>
-        <h1 className={cn(styles.title, "font-display")}>Confirming your payment…</h1>
+        <h1 className={cn(styles.title, 'font-display')}>Confirming your payment…</h1>
         <p className={styles.lead}>
           Hang tight — we&apos;re confirming order <b className={styles.mono}>{orderRef}</b> with
           your bank. This usually takes a few seconds.
@@ -72,7 +72,7 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
         <Check className="h-8 w-8 stroke-[3]" />
       </span>
 
-      <h1 className={cn(styles.title, "font-display")}>You&apos;re covered, {firstName}.</h1>
+      <h1 className={cn(styles.title, 'font-display')}>You&apos;re covered, {firstName}.</h1>
       <p className={cn(styles.lead, styles.leadTight)}>
         Order <b className={styles.mono}>{orderRef}</b> confirmed! 🎉
       </p>
@@ -89,7 +89,7 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
             <span className={styles.num}>1.</span> Download the Autolokate app
           </li>
           <li>
-            <span className={styles.num}>2.</span> Sign in with +91 {state.mobile || "your number"}
+            <span className={styles.num}>2.</span> Sign in with +91 {state.mobile || 'your number'}
           </li>
           <li>
             <span className={styles.num}>3.</span> When the kit arrives, scan the QR &amp; enter
@@ -97,7 +97,7 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
           </li>
           {state.orderId ? (
             <li>
-              <span className={styles.num}>4.</span> Need it for records?{" "}
+              <span className={styles.num}>4.</span> Need it for records?{' '}
               <button
                 type="button"
                 className={styles.invoiceLink}
@@ -126,7 +126,7 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
         <span className={styles.store}> App Store</span>
       </div>
 
-      <button type="button" className={styles.track} onClick={() => goTo("tracking")}>
+      <button type="button" className={styles.track} onClick={() => goTo('tracking')}>
         Track your shipment
         <ArrowRight className="h-4 w-4" aria-hidden />
       </button>

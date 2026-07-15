@@ -15,10 +15,12 @@ import { useActivationPreview } from '@/hooks/activation/index';
 import { journeyPaths } from '@/journey/constants';
 import { useJourney } from '@/journey/JourneyContext';
 import { authMobileUrl } from '@/journey/auth/auth-routing';
-import { readStoredActivationPreviewCode, readStoredActivationQrCode } from '@/services/activation/activation-service';
+import {
+  readStoredActivationPreviewCode,
+  readStoredActivationQrCode,
+} from '@/services/activation/activation-service';
 
-const PREPAID_SUCCESS_BODY =
-  'Your sponsor set up and paid for your plan. Nothing to pay.';
+const PREPAID_SUCCESS_BODY = 'Your sponsor set up and paid for your plan. Nothing to pay.';
 
 export function PrepaidWelcomeScreen() {
   const navigate = useNavigate();

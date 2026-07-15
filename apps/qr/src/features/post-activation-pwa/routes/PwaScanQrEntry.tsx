@@ -4,10 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { usePwaScan } from '../context/PwaScanContext';
 import { pwaScanPaths } from '../constants/pwa-scan-paths';
 import { useQrResolve } from '../../../hooks/qr/useQrResolve';
-import {
-  applyActivatedQrToPwaSession,
-  isQrEntryUrl,
-} from '../../../platform/index';
+import { applyActivatedQrToPwaSession, isQrEntryUrl } from '../../../platform/index';
 
 /** Applies activated QR params then routes into the PWA bootstrap screen. */
 export function PwaScanQrEntryRedirect() {

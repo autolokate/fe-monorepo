@@ -1,4 +1,4 @@
-import type { OfferFeature } from "./types";
+import type { OfferFeature } from './types';
 
 interface OfferCardProps {
   feature: OfferFeature;

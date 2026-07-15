@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { Car, FileText, GitCompare } from "lucide-react";
-import { toast } from "sonner";
+import { Car, FileText, GitCompare } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { BrandLogo } from "@/components/shared/BrandLogo";
-import { Button } from "@/components/ui/button";
-import type { CatalogueModel } from "@/lib/catalogue/types";
-import type { VehicleCategory } from "@/lib/preferences";
-import { cn } from "@/lib/utils";
+import { BrandLogo } from '@/components/shared/BrandLogo';
+import { Button } from '@/components/ui/button';
+import type { CatalogueModel } from '@/lib/catalogue/types';
+import type { VehicleCategory } from '@/lib/preferences';
+import { cn } from '@/lib/utils';
 
 import {
   brandLabelForModel,
@@ -18,7 +18,7 @@ import {
   detailsHrefForModel,
   formatModelPriceBlock,
   modelLabelFor,
-} from "./model-utils";
+} from './model-utils';
 
 export function BrandModelCatalogueCard({
   model,
@@ -34,7 +34,7 @@ export function BrandModelCatalogueCard({
   displayFallback: string;
 }) {
   const anchor = model.slug || model.model_slug || `model-${idx}`;
-  const safeHash = encodeURIComponent(anchor).replace(/%/g, "");
+  const safeHash = encodeURIComponent(anchor).replace(/%/g, '');
   const brandResolve = brandLabelForModel(model, displayFallback);
   const brandEyebrow = brandResolve.toUpperCase();
   const modelLabel = modelLabelFor(model);
@@ -43,23 +43,22 @@ export function BrandModelCatalogueCard({
   const href = detailsHrefForModel(vehicleType, pageBrandSlug, model);
 
   const heroUrl =
-    typeof model.hero_image_url === "string" && model.hero_image_url.trim()
+    typeof model.hero_image_url === 'string' && model.hero_image_url.trim()
       ? model.hero_image_url.trim()
       : null;
 
   const discontinued = model.is_discontinued === true;
 
-  const onCompare = () =>
-    toast.message("Compare isn’t wired on this catalogue view yet.");
+  const onCompare = () => toast.message('Compare isn’t wired on this catalogue view yet.');
 
   return (
     <li id={`m-${safeHash}`} className="min-h-0 scroll-mt-24">
       <div
         className={cn(
-          "group flex h-full flex-col overflow-hidden rounded-2xl border border-border/80 bg-card text-left shadow-[0_2px_12px_-6px_rgba(15,23,42,0.12)] ring-1 ring-black/[0.03]",
-          "transition-[transform,box-shadow,border-color] duration-200",
-          "hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_28px_-10px_rgba(15,23,42,0.18)] motion-reduce:transition-none motion-reduce:hover:translate-y-0",
-          "dark:shadow-none dark:ring-white/[0.03] dark:hover:border-primary/35 dark:hover:shadow-[0_0_0_1px_hsl(var(--primary)/0.2),0_8px_32px_-12px_hsl(var(--primary)/0.25)]",
+          'group flex h-full flex-col overflow-hidden rounded-2xl border border-border/80 bg-card text-left shadow-[0_2px_12px_-6px_rgba(15,23,42,0.12)] ring-1 ring-black/[0.03]',
+          'transition-[transform,box-shadow,border-color] duration-200',
+          'hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_8px_28px_-10px_rgba(15,23,42,0.18)] motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+          'dark:shadow-none dark:ring-white/[0.03] dark:hover:border-primary/35 dark:hover:shadow-[0_0_0_1px_hsl(var(--primary)/0.2),0_8px_32px_-12px_hsl(var(--primary)/0.25)]',
         )}
       >
         <Link href={href} tabIndex={-1} aria-hidden className="block shrink-0">
@@ -119,7 +118,9 @@ export function BrandModelCatalogueCard({
               {price.line}
             </p>
             {price.hint ? (
-              <p className="mt-0.5 text-[10px] text-muted-foreground sm:text-[11px]">{price.hint}</p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground sm:text-[11px]">
+                {price.hint}
+              </p>
             ) : null}
           </div>
         </Link>

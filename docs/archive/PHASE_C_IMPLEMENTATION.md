@@ -9,14 +9,14 @@
 
 ## Implemented screens
 
-| Figma | Node | Route | Component |
-|-------|------|-------|-----------|
-| R09 · Processing payment | `192:25` | `/journey/purchase/r09-processing-payment` | `R09ProcessingPaymentScreen` |
-| R10 · Payment success | `193:25` | `/journey/purchase/r10-payment-success` | `R10PaymentSuccessScreen` |
-| R10b · Payment failed | `194:25` | `/journey/purchase/r10b-payment-failed` | `R10bPaymentFailedScreen` |
-| R14 · Permissions | `32:132` | `/journey/purchase/r14-permissions` | `R14PermissionsScreen` |
-| R14b · All on (dev) | `764:2199` | *(inline state on R14)* | all toggles on → Allow CTA |
-| R15 · Activation complete | `171:59` | `/journey/purchase/r15-activation-complete` | `R15ActivationCompleteScreen` |
+| Figma                     | Node       | Route                                       | Component                     |
+| ------------------------- | ---------- | ------------------------------------------- | ----------------------------- |
+| R09 · Processing payment  | `192:25`   | `/journey/purchase/r09-processing-payment`  | `R09ProcessingPaymentScreen`  |
+| R10 · Payment success     | `193:25`   | `/journey/purchase/r10-payment-success`     | `R10PaymentSuccessScreen`     |
+| R10b · Payment failed     | `194:25`   | `/journey/purchase/r10b-payment-failed`     | `R10bPaymentFailedScreen`     |
+| R14 · Permissions         | `32:132`   | `/journey/purchase/r14-permissions`         | `R14PermissionsScreen`        |
+| R14b · All on (dev)       | `764:2199` | _(inline state on R14)_                     | all toggles on → Allow CTA    |
+| R15 · Activation complete | `171:59`   | `/journey/purchase/r15-activation-complete` | `R15ActivationCompleteScreen` |
 
 ---
 
@@ -46,13 +46,13 @@ flowchart TD
 
 ### Guards
 
-| Route | Redirect if |
-|-------|-------------|
-| R09 | `paymentStatus !== 'processing'` or `checkoutReady !== true` → R08/R08b |
-| R10 | `paymentStatus !== 'success'` → R08/R08b |
-| R10b | `paymentStatus !== 'failed'` → R08/R08b |
-| R14 | `paymentStatus !== 'success'` → R08/R08b |
-| R15 | payment not success or `permissionOutcome` not `granted`/`skipped` → R14 |
+| Route | Redirect if                                                              |
+| ----- | ------------------------------------------------------------------------ |
+| R09   | `paymentStatus !== 'processing'` or `checkoutReady !== true` → R08/R08b  |
+| R10   | `paymentStatus !== 'success'` → R08/R08b                                 |
+| R10b  | `paymentStatus !== 'failed'` → R08/R08b                                  |
+| R14   | `paymentStatus !== 'success'` → R08/R08b                                 |
+| R15   | payment not success or `permissionOutcome` not `granted`/`skipped` → R14 |
 
 ---
 
@@ -86,12 +86,12 @@ activationComplete?: boolean
 
 ## Payment matrix (demo routing)
 
-| Plan | `selectedPlanId` | Demo outcome | Next screen |
-|------|------------------|--------------|-------------|
-| Safe | `safe` | Success | R10 |
-| Secure | `secure` | Success | R10 |
-| Shield | `shield` | Success | R10 |
-| Shield+ | `shield-plus` | **Failed** | R10b |
+| Plan    | `selectedPlanId` | Demo outcome | Next screen |
+| ------- | ---------------- | ------------ | ----------- |
+| Safe    | `safe`           | Success      | R10         |
+| Secure  | `secure`         | Success      | R10         |
+| Shield  | `shield`         | Success      | R10         |
+| Shield+ | `shield-plus`    | **Failed**   | R10b        |
 
 **Processing hold:** `PAYMENT_PROCESSING_MS = 3000` (3 seconds on R09).
 
@@ -103,17 +103,17 @@ activationComplete?: boolean
 
 ## Permission matrix
 
-| Permission | Icon | Recommended copy | Off consequence |
-|------------|------|------------------|-----------------|
-| Location | `map-pin` | Recommended · Guide help to your exact spot in a crash | Off · we can't guide help to your spot in a crash |
-| Crash detection | `shield-check` | Recommended · Sense a serious impact automatically | Off · you won't be auto-alerted in a crash |
-| Notifications | `bell` | Renewals, bookings and safety alerts | Off · you may miss renewals and safety alerts |
+| Permission      | Icon           | Recommended copy                                       | Off consequence                                   |
+| --------------- | -------------- | ------------------------------------------------------ | ------------------------------------------------- |
+| Location        | `map-pin`      | Recommended · Guide help to your exact spot in a crash | Off · we can't guide help to your spot in a crash |
+| Crash detection | `shield-check` | Recommended · Sense a serious impact automatically     | Off · you won't be auto-alerted in a crash        |
+| Notifications   | `bell`         | Renewals, bookings and safety alerts                   | Off · you may miss renewals and safety alerts     |
 
-| User action | `permissionOutcome` | CTA state | Next |
-|-------------|---------------------|-----------|------|
-| All toggles off | `pending` | ctaHelper only · no primary CTA | — |
-| All toggles on | — | **Allow & continue** visible | R15 (`granted`) |
-| **Skip** link | `skipped` | Always available | R15 (`skipped`) |
+| User action     | `permissionOutcome` | CTA state                       | Next            |
+| --------------- | ------------------- | ------------------------------- | --------------- |
+| All toggles off | `pending`           | ctaHelper only · no primary CTA | —               |
+| All toggles on  | —                   | **Allow & continue** visible    | R15 (`granted`) |
+| **Skip** link   | `skipped`           | Always available                | R15 (`skipped`) |
 
 Off-consequence amber text hidden when toggle is on (Figma R14b).
 
@@ -121,12 +121,12 @@ Off-consequence amber text hidden when toggle is on (Figma R14b).
 
 ## Dynamic R15 copy
 
-| Field | Source |
-|-------|--------|
-| Title | `{Plan} is active` |
+| Field       | Source                                                        |
+| ----------- | ------------------------------------------------------------- |
+| Title       | `{Plan} is active`                                            |
 | Description | `{plate} is now protected by {Plan}. Crash detection is live` |
-| Chip | `{Plan} · active` (AlChip green) |
-| Plate | `session.vehicle.plate` |
+| Chip        | `{Plan} · active` (AlChip green)                              |
+| Plate       | `session.vehicle.plate`                                       |
 
 **Terminal behaviour:** `Go to home` sets `activationComplete: true` and disables CTA — **no route navigation** (no dashboard).
 
@@ -134,15 +134,15 @@ Off-consequence amber text hidden when toggle is on (Figma R14b).
 
 ## Reused compositions (documented — not promoted to `@autolokate/ui`)
 
-| Composition / primitive | Path | Used on | Reuse |
-|-------------------------|------|---------|-------|
-| **PurchaseStatusShell** | `compositions/purchase-status-shell/` | R09, R10, R10b, R15 | **4** |
-| **PermissionRow** | `compositions/permission-row/` | R14 | 1 |
-| **AuthStepShell** | `auth-step-shell/` | R14 | 1 |
-| **AlScreenSpinner** | `@autolokate/ui` | R09 | 1 |
-| **`payment-success-halo`** | `@autolokate/icons` | R10 | 1 |
-| **`fetch-failed-halo`** | `@autolokate/icons` | R10b | 1 |
-| **`activation-complete-halo`** | `@autolokate/icons` | R15 | 1 |
+| Composition / primitive        | Path                                  | Used on             | Reuse |
+| ------------------------------ | ------------------------------------- | ------------------- | ----- |
+| **PurchaseStatusShell**        | `compositions/purchase-status-shell/` | R09, R10, R10b, R15 | **4** |
+| **PermissionRow**              | `compositions/permission-row/`        | R14                 | 1     |
+| **AuthStepShell**              | `auth-step-shell/`                    | R14                 | 1     |
+| **AlScreenSpinner**            | `@autolokate/ui`                      | R09                 | 1     |
+| **`payment-success-halo`**     | `@autolokate/icons`                   | R10                 | 1     |
+| **`fetch-failed-halo`**        | `@autolokate/icons`                   | R10b                | 1     |
+| **`activation-complete-halo`** | `@autolokate/icons`                   | R15                 | 1     |
 
 `PurchaseStatusShell.bodyAccessory` extended for R15 green chip placement after description.
 
@@ -150,24 +150,24 @@ Off-consequence amber text hidden when toggle is on (Figma R14b).
 
 ## Figma parity checklist
 
-| Item | Figma | Implementation | Status |
-|------|-------|----------------|--------|
-| R09 title | Processing your payment (Display) | `PurchaseStatusShell` h1 | ✅ |
-| R09 description | Securing your payment… | ✓ | ✅ |
-| R09 loader | 60×60 `#1FA24A` | `AlScreenSpinner` lg | ✅ |
-| R09 CTA | None | `hideFooter` | ✅ |
-| R10 hero | Green halo 240×240 + check | `payment-success-halo` | ✅ |
-| R10 CTA | Continue | ✓ | ✅ |
-| R10b hero | Amber halo + circle-x | `fetch-failed-halo` | ✅ |
-| R10b CTA | Retry payment | ✓ | ✅ |
-| R14 cards | 3 rows · 16px radius · toggles | `PermissionRow` | ✅ |
-| R14 ctaHelper | Turn on all permissions… | ✓ | ✅ |
-| R14 Allow | Allow & continue (all on) | gated on all toggles | ✅ |
-| R14 Skip | — | Skip link (journey req.) | ✅ |
-| R15 hero | Green radial halo + shield | `activation-complete-halo` | ✅ |
-| R15 chip | Secure · active | `AlChip` green | ✅ |
-| R15 CTA | Go to home (terminal) | disabled after tap | ✅ |
-| No back | R09/R10/R10b/R15 | `PurchaseStatusShell` | ✅ |
+| Item            | Figma                             | Implementation             | Status |
+| --------------- | --------------------------------- | -------------------------- | ------ |
+| R09 title       | Processing your payment (Display) | `PurchaseStatusShell` h1   | ✅     |
+| R09 description | Securing your payment…            | ✓                          | ✅     |
+| R09 loader      | 60×60 `#1FA24A`                   | `AlScreenSpinner` lg       | ✅     |
+| R09 CTA         | None                              | `hideFooter`               | ✅     |
+| R10 hero        | Green halo 240×240 + check        | `payment-success-halo`     | ✅     |
+| R10 CTA         | Continue                          | ✓                          | ✅     |
+| R10b hero       | Amber halo + circle-x             | `fetch-failed-halo`        | ✅     |
+| R10b CTA        | Retry payment                     | ✓                          | ✅     |
+| R14 cards       | 3 rows · 16px radius · toggles    | `PermissionRow`            | ✅     |
+| R14 ctaHelper   | Turn on all permissions…          | ✓                          | ✅     |
+| R14 Allow       | Allow & continue (all on)         | gated on all toggles       | ✅     |
+| R14 Skip        | —                                 | Skip link (journey req.)   | ✅     |
+| R15 hero        | Green radial halo + shield        | `activation-complete-halo` | ✅     |
+| R15 chip        | Secure · active                   | `AlChip` green             | ✅     |
+| R15 CTA         | Go to home (terminal)             | disabled after tap         | ✅     |
+| No back         | R09/R10/R10b/R15                  | `PurchaseStatusShell`      | ✅     |
 
 ---
 
@@ -175,14 +175,14 @@ Off-consequence amber text hidden when toggle is on (Figma R14b).
 
 Dev preview (`ScreenDevApp` → **Purchase · Phase C**) supports **320 / 360 / 375 / 390 / 414** and **light/dark**.
 
-| Screen | 320 | 360 | 375 | 390 | 414 | Light | Dark |
-|--------|-----|-----|-----|-----|-----|-------|------|
-| R09 · Processing | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| R10 · Success | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| R10b · Failed | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| R14 · All off | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| R14b · All on | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| R15 · Complete | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Screen           | 320 | 360 | 375 | 390 | 414 | Light | Dark |
+| ---------------- | --- | --- | --- | --- | --- | ----- | ---- |
+| R09 · Processing | ✓   | ✓   | ✓   | ✓   | ✓   | ✓     | ✓    |
+| R10 · Success    | ✓   | ✓   | ✓   | ✓   | ✓   | ✓     | ✓    |
+| R10b · Failed    | ✓   | ✓   | ✓   | ✓   | ✓   | ✓     | ✓    |
+| R14 · All off    | ✓   | ✓   | ✓   | ✓   | ✓   | ✓     | ✓    |
+| R14b · All on    | ✓   | ✓   | ✓   | ✓   | ✓   | ✓     | ✓    |
+| R15 · Complete   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓     | ✓    |
 
 **Notes:**
 
@@ -222,14 +222,14 @@ apps/qr/src/journey/
 
 ## Remaining gaps
 
-| Gap | Notes |
-|-----|-------|
-| **Real payment gateway** | Demo timer only — no Razorpay/Cashfree/PhonePe/API |
-| **R09b / R10c** | Extended confirming / ambiguous states not in Phase C scope |
-| **R15 exit** | Go to home is terminal — no `/journey/home` or dashboard wired |
-| **Legacy P01–P06** | Dev-only Phase 5 routes retained |
-| **OS permission prompts** | Toggle UI only — no native permission APIs |
-| **Pixel signoff** | Side-by-side Figma overlay QA manual via dev preview |
+| Gap                       | Notes                                                          |
+| ------------------------- | -------------------------------------------------------------- |
+| **Real payment gateway**  | Demo timer only — no Razorpay/Cashfree/PhonePe/API             |
+| **R09b / R10c**           | Extended confirming / ambiguous states not in Phase C scope    |
+| **R15 exit**              | Go to home is terminal — no `/journey/home` or dashboard wired |
+| **Legacy P01–P06**        | Dev-only Phase 5 routes retained                               |
+| **OS permission prompts** | Toggle UI only — no native permission APIs                     |
+| **Pixel signoff**         | Side-by-side Figma overlay QA manual via dev preview           |
 
 ---
 

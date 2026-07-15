@@ -1,6 +1,6 @@
-import { Quote, UserRound, UsersRound } from "lucide-react";
-import { FROM_OWNER_COPY, FROM_OWNER_SECTION_ID } from "./constants";
-import styles from "./index.module.css";
+import { Quote, UserRound, UsersRound } from 'lucide-react';
+import { FROM_OWNER_COPY, FROM_OWNER_SECTION_ID } from './constants';
+import styles from './index.module.css';
 
 export function FromOwnerSection() {
   const {

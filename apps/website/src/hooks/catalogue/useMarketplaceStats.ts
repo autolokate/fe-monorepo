@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { dedupeBrandNames } from "@/lib/catalogue/normalize";
-import { useBrands } from "./useBrands";
+import { useMemo } from 'react';
+import { dedupeBrandNames } from '@/lib/catalogue/normalize';
+import { useBrands } from './useBrands';
 
 /**
  * Headline marketplace counts. Mirrors Autolokate's `useMarketplaceStats`:

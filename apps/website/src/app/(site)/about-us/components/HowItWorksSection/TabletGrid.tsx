@@ -1,5 +1,5 @@
-import type { CrashToCareStep } from "./types";
-import { StepCard } from "./StepCard";
+import type { CrashToCareStep } from './types';
+import { StepCard } from './StepCard';
 
 interface TabletGridProps {
   steps: CrashToCareStep[];

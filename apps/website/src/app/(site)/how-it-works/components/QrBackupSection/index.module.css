@@ -43,7 +43,7 @@
 /* ---------- Header ---------- */
 .eyebrow {
   display: inline-block;
-  font-family: ui-monospace, "Space Mono", SFMono-Regular, monospace;
+  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.18em;

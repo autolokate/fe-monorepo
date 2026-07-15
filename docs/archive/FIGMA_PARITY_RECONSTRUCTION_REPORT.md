@@ -9,15 +9,15 @@
 
 ## Executive Summary
 
-| Flow | Frames | Parity | P0/P1 Blockers | P2 Improvements |
-|------|--------|--------|----------------|-----------------|
-| Shared Auth + Legal | 18 | ~89% | 0 | 3 |
-| Consumer Purchase | 23 | ~93% | 0 | 2 |
-| Emergency + Rider | 19 | ~91% | 0 | 1 |
-| B2B2C | 4 | ~95% | 0 | 0 |
-| Prepaid | 1 | ~95% | 0 | 0 |
-| Post-Activation PWA | 30 | ~96% | 0 | 0 |
-| **TOTAL** | **95** | **~93%** | **0** | **6** |
+| Flow                | Frames | Parity   | P0/P1 Blockers | P2 Improvements |
+| ------------------- | ------ | -------- | -------------- | --------------- |
+| Shared Auth + Legal | 18     | ~89%     | 0              | 3               |
+| Consumer Purchase   | 23     | ~93%     | 0              | 2               |
+| Emergency + Rider   | 19     | ~91%     | 0              | 1               |
+| B2B2C               | 4      | ~95%     | 0              | 0               |
+| Prepaid             | 1      | ~95%     | 0              | 0               |
+| Post-Activation PWA | 30     | ~96%     | 0              | 0               |
+| **TOTAL**           | **95** | **~93%** | **0**          | **6**           |
 
 No P0 or P1 blockers remain. All critical visual gaps identified in prior sessions have been resolved.
 
@@ -33,17 +33,18 @@ No P0 or P1 blockers remain. All critical visual gaps identified in prior sessio
 
 **Impact:** Light-mode theme switch would leave the chip in black/dark colours. `--al-neutral-700` in light mode is `#4a4a4a` (border, fine), but `#1a1a1a` as background and `#ffffff` as foreground would not invert on light mode.
 
-| Replaced | With |
-|----------|------|
-| `#4a4a4a` (light hint, border) | `var(--al-neutral-700)` |
-| `#0a0a0a` (holding hint) | `var(--al-color-on-surface)` |
-| `#1a1a1a` (chip bg) | `var(--al-color-surface)` |
-| `#ffffff` (chip fg) | `var(--al-color-on-surface)` |
-| `#4a4a4a` (chip border) | `var(--al-neutral-700)` |
+| Replaced                       | With                         |
+| ------------------------------ | ---------------------------- |
+| `#4a4a4a` (light hint, border) | `var(--al-neutral-700)`      |
+| `#0a0a0a` (holding hint)       | `var(--al-color-on-surface)` |
+| `#1a1a1a` (chip bg)            | `var(--al-color-surface)`    |
+| `#ffffff` (chip fg)            | `var(--al-color-on-surface)` |
+| `#4a4a4a` (chip border)        | `var(--al-neutral-700)`      |
 
 ### E0 — Emergency Trust Row Position Correction
 
 **Files:**
+
 - `apps/qr/src/features/emergency/screens/e05-contacts-empty/E05ContactsEmptyScreen.tsx`
 - `apps/qr/src/features/emergency/emergency.css`
 
@@ -56,15 +57,19 @@ No P0 or P1 blockers remain. All critical visual gaps identified in prior sessio
 ## Prior Session Resolutions (Documented Here)
 
 ### P0-A — R08c / R09b / R10c Not Implemented
+
 **Status:** RESOLVED (prior session). All three screens are implemented and mounted in `PurchaseRoutes.tsx`:
+
 - `R08cInvalidPromoScreen.tsx` — uses `PromoCodeField variant="invalid"` + `OrderSummaryCard`
 - `R09bStillConfirmingScreen.tsx` — uses `PurchaseStatusShell` with spinner
 - `R10cPaymentUnconfirmedScreen.tsx` — uses `PurchaseStatusShell ambient="attention"`
 
 ### P0-B — R10 Continue Does Not Navigate to Emergency
+
 **Status:** RESOLVED (prior session). `R10PaymentSuccessScreen.tsx` calls `setPhase('emergency')` on Continue, then navigates to `emergencyJourneyPaths.contacts`.
 
 ### P0-C — Post-Payment Back Guards Missing
+
 **Status:** RESOLVED (prior session). `redirectIfPaymentSucceeded` guard active in: R03, R05, R06, R07, R08, R08b, R08c, R09, R09b.
 
 ---
@@ -129,11 +134,11 @@ For each section, the following was performed:
 
 ## Accepted Web Adaptations (Not Drift)
 
-| Figma pattern | Web adaptation | Rationale |
-|---------------|----------------|-----------|
-| Fixed absolute CTA at y=762 | Fluid footer with `margin-block-start: auto` | Handles variable content height on real devices |
-| Device status bar (9:41, 5G, battery) | Removed entirely | Known exception — don't restore |
-| Language picker overlay | Removed | Known exception — don't restore |
-| Figma carousel drag on R06 | CSS `scroll-snap-type: x mandatory` | Equivalent browser behaviour |
-| Figma absolute Change link at x=right | `justify-content: space-between` flex row | Equivalent alignment, better accessibility |
-| AlSosHoldButton dark canvas | Light-mode chip token override via `[data-theme='light']` | Correct theming, not in Figma (dark-only frame) |
+| Figma pattern                         | Web adaptation                                            | Rationale                                       |
+| ------------------------------------- | --------------------------------------------------------- | ----------------------------------------------- |
+| Fixed absolute CTA at y=762           | Fluid footer with `margin-block-start: auto`              | Handles variable content height on real devices |
+| Device status bar (9:41, 5G, battery) | Removed entirely                                          | Known exception — don't restore                 |
+| Language picker overlay               | Removed                                                   | Known exception — don't restore                 |
+| Figma carousel drag on R06            | CSS `scroll-snap-type: x mandatory`                       | Equivalent browser behaviour                    |
+| Figma absolute Change link at x=right | `justify-content: space-between` flex row                 | Equivalent alignment, better accessibility      |
+| AlSosHoldButton dark canvas           | Light-mode chip token override via `[data-theme='light']` | Correct theming, not in Figma (dark-only frame) |

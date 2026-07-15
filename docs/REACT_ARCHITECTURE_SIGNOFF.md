@@ -29,10 +29,10 @@ Verified in `JourneyOrchestrator.tsx` and `AutolokateRootProvider.tsx`:
 </JourneyProvider>
 ```
 
-| Provider | Scope | Storage key |
-|----------|-------|-------------|
+| Provider          | Scope                                      | Storage key                      |
+| ----------------- | ------------------------------------------ | -------------------------------- |
 | `JourneyProvider` | Journey session, auth, purchase, emergency | `al-journey-v1` (sessionStorage) |
-| `PwaScanProvider` | Post-activation scan session | `al-pwa-scan-v1` |
+| `PwaScanProvider` | Post-activation scan session               | `al-pwa-scan-v1`                 |
 
 **No provider architecture changes made.**
 
@@ -40,11 +40,11 @@ Verified in `JourneyOrchestrator.tsx` and `AutolokateRootProvider.tsx`:
 
 ## Context Usage
 
-| Hook | Provider | Misuse check |
-|------|----------|--------------|
-| `useJourney()` | `JourneyProvider` | Used in journey routes/screens only |
+| Hook                    | Provider              | Misuse check                                 |
+| ----------------------- | --------------------- | -------------------------------------------- |
+| `useJourney()`          | `JourneyProvider`     | Used in journey routes/screens only          |
 | `useEmergencySession()` | Emergency sub-context | Patches via `patchEmergency` — single source |
-| `usePwaScan()` | `PwaScanProvider` | PWA routes only |
+| `usePwaScan()`          | `PwaScanProvider`     | PWA routes only                              |
 
 No duplicated journey state found outside providers.
 
@@ -54,12 +54,12 @@ No duplicated journey state found outside providers.
 
 Route modules own screen wiring (intentional pattern):
 
-| Module | Lines | `useEffect` count |
-|--------|------:|------------------:|
-| `EmergencyRoutes.tsx` | 918 | 7 |
-| `PurchaseRoutes.tsx` | 861 | 18 |
-| `pwa-sos-routes.tsx` | 749 | 10 |
-| `AuthRoutes.tsx` | 403 | 7 |
+| Module                | Lines | `useEffect` count |
+| --------------------- | ----: | ----------------: |
+| `EmergencyRoutes.tsx` |   918 |                 7 |
+| `PurchaseRoutes.tsx`  |   861 |                18 |
+| `pwa-sos-routes.tsx`  |   749 |                10 |
+| `AuthRoutes.tsx`      |   403 |                 7 |
 
 Effects reviewed for necessity — majority are navigation guards, payment timers, geolocation, and session restore. No setState-in-render patterns found.
 
@@ -67,11 +67,11 @@ Effects reviewed for necessity — majority are navigation guards, payment timer
 
 ## Memoization
 
-| Pattern | Usage |
-|---------|-------|
-| `useMemo` | Plate formatting (`JourneyCompletedScreen`), journey context value |
-| `useCallback` | Journey context setters, emergency patch handlers |
-| `React.memo` | Used in `@autolokate/ui` primitives |
+| Pattern       | Usage                                                              |
+| ------------- | ------------------------------------------------------------------ |
+| `useMemo`     | Plate formatting (`JourneyCompletedScreen`), journey context value |
+| `useCallback` | Journey context setters, emergency patch handlers                  |
+| `React.memo`  | Used in `@autolokate/ui` primitives                                |
 
 No excessive memoization anti-patterns identified.
 
@@ -79,12 +79,12 @@ No excessive memoization anti-patterns identified.
 
 ## Rerender / Stale Closure Risks
 
-| Area | Assessment |
-|------|------------|
-| Emergency contact save timers | `setTimeout` cleared on unmount in E3/E4 routes |
-| Purchase payment polling | Guards use refs + `redirectIfPaymentSucceeded` |
-| PWA geolocation | `use-geolocation.ts` — stable deps after prior hardening pass |
-| Rider skip | Synchronous state patch + navigate — no stale closure |
+| Area                          | Assessment                                                    |
+| ----------------------------- | ------------------------------------------------------------- |
+| Emergency contact save timers | `setTimeout` cleared on unmount in E3/E4 routes               |
+| Purchase payment polling      | Guards use refs + `redirectIfPaymentSucceeded`                |
+| PWA geolocation               | `use-geolocation.ts` — stable deps after prior hardening pass |
+| Rider skip                    | Synchronous state patch + navigate — no stale closure         |
 
 **Fix this pass:** Removed unused `selectedFlow` destructure in `E5Route` (lint + dead binding).
 
@@ -92,12 +92,12 @@ No excessive memoization anti-patterns identified.
 
 ## Component Ownership
 
-| Layer | Responsibility |
-|-------|----------------|
-| `@autolokate/ui` | Buttons, fields, OTP, chips, cards, sheets |
-| `@autolokate/icons` | Iconography |
-| `apps/onboarding/components/compositions/` | Flow-specific layout shells |
-| `apps/onboarding/features/*/screens/` | Screen compositions |
+| Layer                                      | Responsibility                             |
+| ------------------------------------------ | ------------------------------------------ |
+| `@autolokate/ui`                           | Buttons, fields, OTP, chips, cards, sheets |
+| `@autolokate/icons`                        | Iconography                                |
+| `apps/onboarding/components/compositions/` | Flow-specific layout shells                |
+| `apps/onboarding/features/*/screens/`      | Screen compositions                        |
 
 No duplicate primitive UI components in app layer.
 

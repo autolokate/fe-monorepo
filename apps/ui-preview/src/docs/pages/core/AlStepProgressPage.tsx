@@ -1,13 +1,9 @@
 import { AlStepProgress } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderStepProgressState(state: ShowcaseState) {
-  const step =
-    state === 'loading' ? 5 : state === 'active' ? 3 : state === 'disabled' ? 1 : 2;
+  const step = state === 'loading' ? 5 : state === 'active' ? 3 : state === 'disabled' ? 1 : 2;
 
   return <AlStepProgress step={step} total={5} />;
 }
@@ -47,7 +43,11 @@ export function AlStepProgressPage() {
       props={[
         { name: 'step', type: 'number', description: 'Current step (1-based).' },
         { name: 'total', type: 'number', defaultValue: '5', description: 'Total segments.' },
-        { name: 'label', type: 'string', description: 'Optional progress label (requires showMeta).' },
+        {
+          name: 'label',
+          type: 'string',
+          description: 'Optional progress label (requires showMeta).',
+        },
         {
           name: 'showMeta',
           type: 'boolean',

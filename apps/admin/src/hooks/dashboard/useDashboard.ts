@@ -12,8 +12,7 @@ export function useDashboard() {
     queries: [...dashboardQueryDefinitions],
   });
 
-  const isLoading =
-    inventoryQuery.isLoading || promosQuery.isLoading || auditQuery.isLoading;
+  const isLoading = inventoryQuery.isLoading || promosQuery.isLoading || auditQuery.isLoading;
   const isFetching =
     inventoryQuery.isFetching ||
     promosQuery.isFetching ||
@@ -21,10 +20,8 @@ export function useDashboard() {
     plansQuery.isFetching ||
     skusQuery.isFetching;
 
-  const coreError =
-    inventoryQuery.error ?? promosQuery.error ?? auditQuery.error ?? null;
-  const isCoreError =
-    inventoryQuery.isError || promosQuery.isError || auditQuery.isError;
+  const coreError = inventoryQuery.error ?? promosQuery.error ?? auditQuery.error ?? null;
+  const isCoreError = inventoryQuery.isError || promosQuery.isError || auditQuery.isError;
 
   const data = useMemo((): DashboardSnapshot | undefined => {
     if (!inventoryQuery.data || !promosQuery.data || !auditQuery.data) {
@@ -37,13 +34,7 @@ export function useDashboard() {
       plans: plansQuery.data ?? null,
       skus: skusQuery.data ?? null,
     };
-  }, [
-    auditQuery.data,
-    inventoryQuery.data,
-    plansQuery.data,
-    promosQuery.data,
-    skusQuery.data,
-  ]);
+  }, [auditQuery.data, inventoryQuery.data, plansQuery.data, promosQuery.data, skusQuery.data]);
 
   useEffect(() => {
     if (isCoreError && data) {

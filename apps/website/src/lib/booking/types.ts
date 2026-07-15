@@ -6,11 +6,7 @@ export type ExpertTimeSlot = {
 };
 
 /** Booking type values accepted by `POST /v1/bookings/book`. */
-export type BookingType =
-  | "founder_call"
-  | "test_drive"
-  | "service_appointment"
-  | "consultation";
+export type BookingType = 'founder_call' | 'test_drive' | 'service_appointment' | 'consultation';
 
 /** Normalised "my bookings" row used by the history table. */
 export type UserBookingSummary = {
@@ -34,7 +30,7 @@ export type ParsedPaymentOrder = {
 /** Receipt persisted in sessionStorage after a verified payment. */
 export type StoredConsultReceipt = {
   ok: true;
-  provider: "razorpay";
+  provider: 'razorpay';
   name: string;
   phone: string;
   date: string;

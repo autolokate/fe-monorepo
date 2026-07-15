@@ -1,17 +1,12 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiError } from "@/lib/api/error";
-import { PurchaseApi } from "./client";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiError } from '@/lib/api/error';
+import { PurchaseApi } from './client';
 
-export type ConsentPurpose =
-  | "ACCOUNT"
-  | "MANDATE"
-  | "MARKETING"
-  | "COMMUNITY"
-  | "TELEMATICS";
+export type ConsentPurpose = 'ACCOUNT' | 'MANDATE' | 'MARKETING' | 'COMMUNITY' | 'TELEMATICS';
 
-export type ConsentStatus = "GRANTED" | "WITHDRAWN";
+export type ConsentStatus = 'GRANTED' | 'WITHDRAWN';
 
 export interface ConsentItem {
   purpose: ConsentPurpose;
@@ -29,7 +24,7 @@ interface Enveloped<T> {
  * Fallback DPDP notice version, used only if the live privacy notice can't be
  * read. Kept in sync with `GET /v1/legal/documents/PRIVACY_POLICY`.
  */
-export const DEFAULT_NOTICE_VERSION = "2026-06-17";
+export const DEFAULT_NOTICE_VERSION = '2026-06-17';
 
 /**
  * The current notice version to pin on a consent grant (A1) — read from
@@ -57,7 +52,7 @@ export async function grantConsent(
     noticeVersion,
   });
   const item = res.data?.data;
-  if (!item?.purpose) throw new ApiError("Invalid consent response", 0, res.data);
+  if (!item?.purpose) throw new ApiError('Invalid consent response', 0, res.data);
   return item;
 }
 
@@ -67,7 +62,7 @@ export async function grantConsent(
  */
 export async function grantAccountConsent(): Promise<ConsentItem> {
   const noticeVersion = await getNoticeVersion();
-  return grantConsent("ACCOUNT", noticeVersion);
+  return grantConsent('ACCOUNT', noticeVersion);
 }
 
 /** GET /v1/me/consents — the buyer's consent ledger (bearer). */

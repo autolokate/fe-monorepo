@@ -1,5 +1,5 @@
-import { CompareTable } from "./CompareTable";
-import styles from "./index.module.css";
+import { CompareTable } from './CompareTable';
+import styles from './index.module.css';
 
 export function ComparePlansSection() {
   return (

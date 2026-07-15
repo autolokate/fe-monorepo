@@ -1,12 +1,12 @@
-import { Check, TrendingUp } from "lucide-react";
-import { PhoneCarousel } from "../PhoneCarousel";
+import { Check, TrendingUp } from 'lucide-react';
+import { PhoneCarousel } from '../PhoneCarousel';
 import {
   DRIVER_SCORE_ASIDE,
   DRIVER_SCORE_CHECKLIST,
   DRIVER_SCORE_COPY,
   DRIVER_SCORE_PHONE_SHOTS,
-} from "./constants";
-import styles from "./index.module.css";
+} from './constants';
+import styles from './index.module.css';
 
 export function DriverScoreSection() {
   return (

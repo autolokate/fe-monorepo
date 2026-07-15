@@ -1,10 +1,10 @@
-import { ArrowRight, Minus, PartyPopper, Plus } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { useSafetyPlans } from "@/hooks/plans";
-import { MAX_QTY, PLAN_ID_TO_TIER, formatInr } from "../../constants";
-import type { StepProps } from "../../types";
-import { StepShell } from "../StepShell";
-import styles from "./index.module.css";
+import { ArrowRight, Minus, PartyPopper, Plus } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { useSafetyPlans } from '@/hooks/plans';
+import { MAX_QTY, PLAN_ID_TO_TIER, formatInr } from '../../constants';
+import type { StepProps } from '../../types';
+import { StepShell } from '../StepShell';
+import styles from './index.module.css';
 
 export function ConfigureStep({
   state,
@@ -34,8 +34,8 @@ export function ConfigureStep({
     <StepShell
       title={`${planName} plan`}
       subtitle="How many riders do you want to cover?"
-      backLabel={canBrowsePlans ? "All plans" : "Back"}
-      onBack={canBrowsePlans ? () => goTo("plans") : exitToOrigin}
+      backLabel={canBrowsePlans ? 'All plans' : 'Back'}
+      onBack={canBrowsePlans ? () => goTo('plans') : exitToOrigin}
     >
       <div className={styles.card}>
         <div className={styles.qtyRow}>
@@ -69,12 +69,12 @@ export function ConfigureStep({
         {currentDiscount > 0 ? (
           <p className={styles.discount}>
             <PartyPopper className="h-4 w-4" aria-hidden />
-            {currentDiscount}% discount applied on {state.qty}{" "}
-            {state.qty === 1 ? "rider" : "riders"}
+            {currentDiscount}% discount applied on {state.qty}{' '}
+            {state.qty === 1 ? 'rider' : 'riders'}
           </p>
         ) : state.qty < maxQty ? (
           <p className={styles.upsell}>
-            Ride with a partner or family? Add more riders to unlock a{" "}
+            Ride with a partner or family? Add more riders to unlock a{' '}
             <strong>multi-rider discount</strong>.
           </p>
         ) : null}
@@ -107,9 +107,9 @@ export function ConfigureStep({
         className={styles.continue}
         icon={<ArrowRight className="h-4 w-4" aria-hidden />}
         iconPosition="end"
-        onClick={() => goTo("login")}
+        onClick={() => goTo('login')}
       >
-        {state.qty < 1 ? "Skip, I'll ride solo" : "Continue"}
+        {state.qty < 1 ? "Skip, I'll ride solo" : 'Continue'}
       </AlButton>
     </StepShell>
   );

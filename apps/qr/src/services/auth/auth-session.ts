@@ -19,7 +19,9 @@ export async function revokeAndClearAuthSession(): Promise<void> {
  * Align journey auth flags with token presence after reload.
  * Restores AUTH_COMPLETED when tokens exist; clears stale flags when tokens are gone.
  */
-export function reconcileAuthSession(state: PersistedJourneyState): Partial<PersistedJourneyState> | null {
+export function reconcileAuthSession(
+  state: PersistedJourneyState,
+): Partial<PersistedJourneyState> | null {
   const hasTokens = getTokenManager().hasSession();
 
   if (hasTokens && state.authStatus !== AUTH_COMPLETED) {

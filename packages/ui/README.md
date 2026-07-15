@@ -39,7 +39,11 @@ export function Example() {
     <AlCard variant="elevated" title="Activate protection">
       <AlHeading variant="h3">Vehicle onboarding</AlHeading>
       <AlText tone="muted">All UI styles come from design-system tokens.</AlText>
-      <AlInput label="Vehicle registration" placeholder="MH 12 AB 1234" helperText="Used for Vahan lookup" />
+      <AlInput
+        label="Vehicle registration"
+        placeholder="MH 12 AB 1234"
+        helperText="Used for Vahan lookup"
+      />
       <AlButton variant="primary" size="lg">
         Continue
       </AlButton>

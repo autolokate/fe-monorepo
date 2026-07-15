@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
-import { LoginForm } from "../components/LoginForm";
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
+import { LoginForm } from '../components/LoginForm';
 
 export const metadata: Metadata = {
-  title: "Sign in — Autolokate",
-  description: "Sign in to Autolokate with a one-time code sent to your phone.",
+  title: 'Sign in — Autolokate',
+  description: 'Sign in to Autolokate with a one-time code sent to your phone.',
 };
 
 function LoginFallback() {

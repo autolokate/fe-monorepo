@@ -7,10 +7,7 @@ export type Logger = {
   error: (message: string, context?: Record<string, unknown>) => void;
 };
 
-export function createLogger(options: {
-  enabled: boolean;
-  namespace?: string;
-}): Logger {
+export function createLogger(options: { enabled: boolean; namespace?: string }): Logger {
   const prefix = options.namespace ? `[${options.namespace}]` : '[auth]';
 
   const write = (level: LogLevel, message: string, context?: Record<string, unknown>) => {

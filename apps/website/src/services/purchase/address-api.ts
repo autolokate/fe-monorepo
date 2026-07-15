@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiError } from "@/lib/api/error";
-import { PurchaseApi } from "./client";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiError } from '@/lib/api/error';
+import { PurchaseApi } from './client';
 
 /**
  * Google-backed address autocomplete, proxied anonymously through our backend.
@@ -105,7 +105,7 @@ function pruneAddressBody(
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(payload)) {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       const trimmed = value.trim();
       if (trimmed) body[key] = trimmed;
     } else if (value !== undefined) {
@@ -128,9 +128,7 @@ export function listAddresses(): Promise<SavedAddress[]> {
   if (listInFlight) return listInFlight;
   listInFlight = (async () => {
     try {
-      const res = await PurchaseApi.get<Enveloped<SavedAddress[]>>(
-        endpoints.addresses.list,
-      );
+      const res = await PurchaseApi.get<Enveloped<SavedAddress[]>>(endpoints.addresses.list);
       return Array.isArray(res.data?.data) ? res.data.data : [];
     } finally {
       listInFlight = null;
@@ -146,7 +144,7 @@ export async function createAddress(payload: CreateAddressPayload): Promise<Save
     pruneAddressBody(payload),
   );
   const data = res.data?.data;
-  if (!data?.id) throw new ApiError("Invalid address response", 0, res.data);
+  if (!data?.id) throw new ApiError('Invalid address response', 0, res.data);
   return data;
 }
 
@@ -160,7 +158,7 @@ export async function updateAddress(
     pruneAddressBody(payload),
   );
   const data = res.data?.data;
-  if (!data?.id) throw new ApiError("Invalid address response", 0, res.data);
+  if (!data?.id) throw new ApiError('Invalid address response', 0, res.data);
   return data;
 }
 
@@ -176,17 +174,13 @@ export async function deleteAddress(id: string): Promise<void> {
  * @param session  The handle from the previous `suggest` in this picker. Omit
  *                 on the first keystroke so the server mints a fresh one.
  */
-export async function suggestAddresses(
-  q: string,
-  session?: string,
-): Promise<AddressSuggestResult> {
-  const res = await PurchaseApi.get<Enveloped<AddressSuggestResult>>(
-    endpoints.addresses.suggest,
-    { params: session ? { q, session } : { q } },
-  );
+export async function suggestAddresses(q: string, session?: string): Promise<AddressSuggestResult> {
+  const res = await PurchaseApi.get<Enveloped<AddressSuggestResult>>(endpoints.addresses.suggest, {
+    params: session ? { q, session } : { q },
+  });
   const data = res.data?.data;
   if (!data?.session) {
-    throw new ApiError("Invalid address suggestions response", 0, res.data);
+    throw new ApiError('Invalid address suggestions response', 0, res.data);
   }
   return {
     session: data.session,
@@ -200,17 +194,14 @@ export async function suggestAddresses(
  * handle still resolves (billed unsessioned) so checkout never fails over a
  * billing optimisation.
  */
-export async function resolveAddress(
-  placeId: string,
-  session?: string,
-): Promise<ResolvedAddress> {
+export async function resolveAddress(placeId: string, session?: string): Promise<ResolvedAddress> {
   const res = await PurchaseApi.get<Enveloped<ResolvedAddress>>(
     endpoints.addresses.resolve(placeId),
     { params: session ? { session } : {} },
   );
   const data = res.data?.data;
   if (!data?.line1) {
-    throw new ApiError("Invalid address response", 0, res.data);
+    throw new ApiError('Invalid address response', 0, res.data);
   }
   return data;
 }

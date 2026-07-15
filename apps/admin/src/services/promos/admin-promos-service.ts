@@ -1,4 +1,9 @@
-import { createAdminPromo, listAdminPromos, type AdminPromoDto, type CreatePromoBody } from '@autolokate/api-client';
+import {
+  createAdminPromo,
+  listAdminPromos,
+  type AdminPromoDto,
+  type CreatePromoBody,
+} from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
 

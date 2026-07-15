@@ -13,31 +13,31 @@
 ### Shared utilities (`auth-flow.validation.ts`)
 
 ```typescript
-MOBILE_DIGIT_MAX = 10
-MOBILE_INPUT_DISPLAY_MAX = 11  // "12345 67890"
+MOBILE_DIGIT_MAX = 10;
+MOBILE_INPUT_DISPLAY_MAX = 11; // "12345 67890"
 
-clampMobileInput(value)  // strips non-digits, slices to 10, formats
+clampMobileInput(value); // strips non-digits, slices to 10, formats
 ```
 
 ### Wired locations
 
-| Surface | Route / screen | Input clamp | maxLength |
-|---------|----------------|-------------|-----------|
-| Auth A1 | `/journey/auth/mobile` | `clampMobileInput` in AuthRoutes | 11 |
-| Emergency R1 | `/journey/emergency/rider-mobile` | `clampMobileInput` in EmergencyRoutes | 11 |
-| Emergency E1 | `/journey/emergency/contact-mobile` | `clampMobileInput` in EmergencyRoutes | 11 |
+| Surface      | Route / screen                      | Input clamp                           | maxLength |
+| ------------ | ----------------------------------- | ------------------------------------- | --------- |
+| Auth A1      | `/journey/auth/mobile`              | `clampMobileInput` in AuthRoutes      | 11        |
+| Emergency R1 | `/journey/emergency/rider-mobile`   | `clampMobileInput` in EmergencyRoutes | 11        |
+| Emergency E1 | `/journey/emergency/contact-mobile` | `clampMobileInput` in EmergencyRoutes | 11        |
 
 ### Files changed
 
-| File | Change |
-|------|--------|
+| File                                                     | Change                        |
+| -------------------------------------------------------- | ----------------------------- |
 | `features/shared-auth/auth-flow/auth-flow.validation.ts` | `clampMobileInput`, constants |
-| `features/emergency/emergency.validation.ts` | Re-export helpers |
-| `journey/routes/AuthRoutes.tsx` | Use clamp on change |
-| `journey/routes/EmergencyRoutes.tsx` | Use clamp on change |
-| `A1MobileScreen.tsx` | `maxLength={11}` |
-| `E02RiderMobileScreen.tsx` | `maxLength={11}` |
-| `E06ContactMobileScreen.tsx` | `maxLength={11}` |
+| `features/emergency/emergency.validation.ts`             | Re-export helpers             |
+| `journey/routes/AuthRoutes.tsx`                          | Use clamp on change           |
+| `journey/routes/EmergencyRoutes.tsx`                     | Use clamp on change           |
+| `A1MobileScreen.tsx`                                     | `maxLength={11}`              |
+| `E02RiderMobileScreen.tsx`                               | `maxLength={11}`              |
+| `E06ContactMobileScreen.tsx`                             | `maxLength={11}`              |
 
 ## Text selection — root cause
 
@@ -53,11 +53,11 @@ Global rules in `apps/qr/src/styles/screen-viewport.css`:
 
 ## Before / after
 
-| Before | After |
-|--------|-------|
+| Before                                                | After                                         |
+| ----------------------------------------------------- | --------------------------------------------- |
 | User could type 11+ digits in emergency mobile fields | Input stops at 10 digits (11 chars formatted) |
-| Auth allowed extra digits until submit normalization | Clamped on every keystroke |
-| Blue/gray selection blocks on mobile input | Subtle theme-aware selection tint |
+| Auth allowed extra digits until submit normalization  | Clamped on every keystroke                    |
+| Blue/gray selection blocks on mobile input            | Subtle theme-aware selection tint             |
 
 ## Parity score
 

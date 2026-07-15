@@ -1,10 +1,6 @@
-import { PhoneCarousel } from "../PhoneCarousel";
-import {
-  DAILY_UTILITY_COPY,
-  UTILITY_CARDS,
-  UTILITY_PHONE_SHOTS,
-} from "./constants";
-import styles from "./index.module.css";
+import { PhoneCarousel } from '../PhoneCarousel';
+import { DAILY_UTILITY_COPY, UTILITY_CARDS, UTILITY_PHONE_SHOTS } from './constants';
+import styles from './index.module.css';
 
 export function DailyUtilitySection() {
   return (

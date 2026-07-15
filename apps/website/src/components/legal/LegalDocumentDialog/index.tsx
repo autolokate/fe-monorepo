@@ -1,18 +1,13 @@
-"use client";
+'use client';
 
-import { Loader2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useLegalDocument } from "@/hooks/legal";
-import type { LegalDocumentKind } from "@/services/legal/legal-client-api";
+import { Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useLegalDocument } from '@/hooks/legal';
+import type { LegalDocumentKind } from '@/services/legal/legal-client-api';
 
 const FALLBACK_TITLE: Record<LegalDocumentKind, string> = {
-  PRIVACY_POLICY: "Privacy Policy",
-  TERMS: "Terms & Conditions",
+  PRIVACY_POLICY: 'Privacy Policy',
+  TERMS: 'Terms & Conditions',
 };
 
 interface LegalDocumentDialogProps {
@@ -25,11 +20,7 @@ interface LegalDocumentDialogProps {
  * Shows a legal document (Privacy Policy / Terms) in a modal — heading + the
  * HTML body fetched from the backend, no page navigation.
  */
-export function LegalDocumentDialog({
-  kind,
-  open,
-  onOpenChange,
-}: LegalDocumentDialogProps) {
+export function LegalDocumentDialog({ kind, open, onOpenChange }: LegalDocumentDialogProps) {
   const { data, isLoading, isError } = useLegalDocument(kind, open);
   const heading = data?.title || FALLBACK_TITLE[kind];
 
@@ -54,7 +45,7 @@ export function LegalDocumentDialog({
             <p className="py-10 text-center text-sm text-muted-foreground">
               {isError
                 ? "We couldn't load this document right now. Please try again shortly."
-                : "Nothing to show."}
+                : 'Nothing to show.'}
             </p>
           )}
         </div>

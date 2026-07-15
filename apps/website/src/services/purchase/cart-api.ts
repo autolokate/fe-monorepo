@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiError } from "@/lib/api/error";
-import { PurchaseApi } from "./client";
-import type { Cart, CreateCartPayload, UpdateCartPayload } from "./types";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiError } from '@/lib/api/error';
+import { PurchaseApi } from './client';
+import type { Cart, CreateCartPayload, UpdateCartPayload } from './types';
 
 interface Enveloped<T> {
   data?: T;
@@ -23,7 +23,7 @@ export async function createCart(payload: CreateCartPayload): Promise<Cart> {
 
   const res = await PurchaseApi.post<Enveloped<Cart>>(endpoints.cart.create, body);
   const cart = res.data?.data;
-  if (!cart?.cartId) throw new ApiError("Invalid cart response", 0, res.data);
+  if (!cart?.cartId) throw new ApiError('Invalid cart response', 0, res.data);
   return cart;
 }
 
@@ -39,12 +39,9 @@ export async function updateCart(payload: UpdateCartPayload): Promise<Cart> {
   if (payload.promoCode?.trim()) body.promoCode = payload.promoCode.trim();
   if (payload.registration?.trim()) body.registration = payload.registration.trim();
 
-  const res = await PurchaseApi.patch<Enveloped<Cart>>(
-    endpoints.cart.update(payload.cartId),
-    body,
-  );
+  const res = await PurchaseApi.patch<Enveloped<Cart>>(endpoints.cart.update(payload.cartId), body);
   const cart = res.data?.data;
-  if (!cart) throw new ApiError("Invalid cart response", 0, res.data);
+  if (!cart) throw new ApiError('Invalid cart response', 0, res.data);
   // Fall back to the id we patched in case the backend doesn't echo it.
   return { ...cart, cartId: cart.cartId || payload.cartId };
 }

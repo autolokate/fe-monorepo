@@ -12,7 +12,12 @@ export type AuditActionFilterProps = {
   compact?: boolean;
 };
 
-export function AuditActionFilter({ value, onChange, errorText, compact = false }: AuditActionFilterProps) {
+export function AuditActionFilter({
+  value,
+  onChange,
+  errorText,
+  compact = false,
+}: AuditActionFilterProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 

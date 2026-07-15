@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { ApiError } from "@/lib/api/error";
-import { ApiService } from "@/services/api.service";
+import { endpoints } from '@/lib/api/endpoints';
+import { ApiError } from '@/lib/api/error';
+import { ApiService } from '@/services/api.service';
 import type {
   ApiEnvelope,
   AuthUser,
@@ -13,10 +13,9 @@ import type {
   UpdateProfilePayload,
   VerifyOtpPayload,
   VerifyOtpResponse,
-} from "./types";
+} from './types';
 
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null;
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
 /** POST /v1/auth/login/otp — kicks off OTP delivery. */
 export async function requestOtp(payload: RequestOtpPayload): Promise<RequestOtpResponse> {
@@ -27,12 +26,12 @@ export async function requestOtp(payload: RequestOtpPayload): Promise<RequestOtp
   );
   const data = res.data;
 
-  if (isRecord(data) && "sent" in data) {
+  if (isRecord(data) && 'sent' in data) {
     const r = data as Record<string, unknown>;
     return {
       sent: Boolean(r.sent),
-      expires_in: typeof r.expires_in === "number" ? r.expires_in : 300,
-      message: typeof r.message === "string" ? r.message : undefined,
+      expires_in: typeof r.expires_in === 'number' ? r.expires_in : 300,
+      message: typeof r.message === 'string' ? r.message : undefined,
     };
   }
 
@@ -70,22 +69,22 @@ export async function verifyOtp(payload: VerifyOtpPayload): Promise<VerifyOtpRes
 
   if (
     isRecord(inner) &&
-    typeof inner.access_token === "string" &&
-    typeof inner.refresh_token === "string"
+    typeof inner.access_token === 'string' &&
+    typeof inner.refresh_token === 'string'
   ) {
     return {
       access_token: inner.access_token,
       refresh_token: inner.refresh_token,
       user: (isRecord(inner.user) ? inner.user : {}) as AuthUser,
-      is_new_user: typeof inner.is_new_user === "boolean" ? inner.is_new_user : false,
+      is_new_user: typeof inner.is_new_user === 'boolean' ? inner.is_new_user : false,
     };
   }
 
   if (
     isRecord(inner) &&
     isRecord(inner.session) &&
-    typeof inner.session.access_token === "string" &&
-    typeof inner.session.refresh_token === "string"
+    typeof inner.session.access_token === 'string' &&
+    typeof inner.session.refresh_token === 'string'
   ) {
     const sessionUser = isRecord(inner.session.user) ? inner.session.user : null;
     const topUser = isRecord(inner.user) ? inner.user : null;
@@ -93,11 +92,11 @@ export async function verifyOtp(payload: VerifyOtpPayload): Promise<VerifyOtpRes
       access_token: inner.session.access_token,
       refresh_token: inner.session.refresh_token,
       user: (topUser ?? sessionUser ?? {}) as AuthUser,
-      is_new_user: typeof inner.is_new_user === "boolean" ? inner.is_new_user : false,
+      is_new_user: typeof inner.is_new_user === 'boolean' ? inner.is_new_user : false,
     };
   }
 
-  throw new ApiError("Invalid verify OTP response", 0, root);
+  throw new ApiError('Invalid verify OTP response', 0, root);
 }
 
 /** GET /v1/auth/me — returns the signed-in user's profile. */
@@ -105,13 +104,15 @@ export async function fetchCurrentUser(): Promise<AuthUser> {
   const res = await ApiService.get<ApiEnvelope<AuthUser>>(endpoints.auth.me);
   const data = res.data;
 
-  if (isRecord(data) && "id" in data) return data as AuthUser;
-  if (isRecord(data) && isRecord(data.data) && "id" in data.data) return data.data as AuthUser;
-  throw new ApiError("Invalid profile response", 0, data);
+  if (isRecord(data) && 'id' in data) return data as AuthUser;
+  if (isRecord(data) && isRecord(data.data) && 'id' in data.data) return data.data as AuthUser;
+  throw new ApiError('Invalid profile response', 0, data);
 }
 
 /** POST /v1/auth/refresh — manual refresh. The interceptor also runs this automatically on 401. */
-export async function refreshAuthToken(payload: RefreshTokenPayload): Promise<RefreshTokenResponse> {
+export async function refreshAuthToken(
+  payload: RefreshTokenPayload,
+): Promise<RefreshTokenResponse> {
   const res = await ApiService.post<unknown>(endpoints.auth.refresh, payload, {
     withAuth: false,
     retryOnAuthFailure: false,
@@ -119,29 +120,26 @@ export async function refreshAuthToken(payload: RefreshTokenPayload): Promise<Re
   const root = res.data;
   const inner = isRecord(root) && isRecord(root.data) ? root.data : root;
 
-  if (isRecord(inner) && typeof inner.access_token === "string") {
+  if (isRecord(inner) && typeof inner.access_token === 'string') {
     return {
       access_token: inner.access_token,
-      refresh_token:
-        typeof inner.refresh_token === "string" ? inner.refresh_token : undefined,
+      refresh_token: typeof inner.refresh_token === 'string' ? inner.refresh_token : undefined,
       user: isRecord(inner.user) ? (inner.user as AuthUser) : undefined,
     };
   }
   if (
     isRecord(inner) &&
     isRecord(inner.session) &&
-    typeof inner.session.access_token === "string"
+    typeof inner.session.access_token === 'string'
   ) {
     return {
       access_token: inner.session.access_token,
       refresh_token:
-        typeof inner.session.refresh_token === "string"
-          ? inner.session.refresh_token
-          : undefined,
+        typeof inner.session.refresh_token === 'string' ? inner.session.refresh_token : undefined,
       user: isRecord(inner.user) ? (inner.user as AuthUser) : undefined,
     };
   }
-  throw new ApiError("Invalid refresh token response", 0, root);
+  throw new ApiError('Invalid refresh token response', 0, root);
 }
 
 /** PATCH /v1/auth/me — partial update of the current user's profile. */
@@ -149,9 +147,9 @@ export async function updateProfile(payload: UpdateProfilePayload): Promise<Auth
   const res = await ApiService.patch<ApiEnvelope<AuthUser>>(endpoints.auth.me, payload);
   const data = res.data;
 
-  if (isRecord(data) && "id" in data) return data as AuthUser;
-  if (isRecord(data) && isRecord(data.data) && "id" in data.data) return data.data as AuthUser;
-  throw new ApiError("Invalid update profile response", 0, data);
+  if (isRecord(data) && 'id' in data) return data as AuthUser;
+  if (isRecord(data) && isRecord(data.data) && 'id' in data.data) return data.data as AuthUser;
+  throw new ApiError('Invalid update profile response', 0, data);
 }
 
 /** POST /v1/auth/logout — server-side revoke. The hook handles local token cleanup. */

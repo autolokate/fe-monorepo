@@ -1,13 +1,13 @@
-import { Fragment } from "react";
-import Image from "next/image";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { Fragment } from 'react';
+import Image from 'next/image';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
 import {
   CRASH_DETECTION_COPY,
   CRASH_DETECTION_IMAGE,
   CRASH_FEATURES,
   CRASH_STEPS,
-} from "./constants";
-import styles from "./index.module.css";
+} from './constants';
+import styles from './index.module.css';
 
 export function CrashDetectionSection() {
   return (

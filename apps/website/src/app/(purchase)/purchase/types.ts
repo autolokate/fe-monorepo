@@ -1,22 +1,22 @@
-import type { ComponentType } from "react";
-import type { LucideProps } from "lucide-react";
+import type { ComponentType } from 'react';
+import type { LucideProps } from 'lucide-react';
 
-export type PurchasePlanId = "secure" | "shield" | "shield-plus";
+export type PurchasePlanId = 'secure' | 'shield' | 'shield-plus';
 
 /** The ordered screens the buyer moves through after picking a plan. */
 export type PurchaseStep =
-  | "plans"
-  | "configure"
-  | "login"
-  | "address"
-  | "summary"
-  | "success"
-  | "tracking"
+  | 'plans'
+  | 'configure'
+  | 'login'
+  | 'address'
+  | 'summary'
+  | 'success'
+  | 'tracking'
   // Post-delivery, scan-to-activate (PWA) sub-flow.
-  | "scan"
-  | "plate"
-  | "contacts"
-  | "active";
+  | 'scan'
+  | 'plate'
+  | 'contacts'
+  | 'active';
 
 export interface PurchasePlan {
   id: PurchasePlanId;
@@ -31,7 +31,7 @@ export interface PurchasePlan {
   features: string[];
 }
 
-export type PayMethod = "upi" | "card" | "netbanking";
+export type PayMethod = 'upi' | 'card' | 'netbanking';
 
 /** All buyer-entered state for the flow — kept in one place so steps stay dumb. */
 export interface PurchaseState {

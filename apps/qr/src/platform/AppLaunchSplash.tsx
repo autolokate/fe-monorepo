@@ -29,14 +29,8 @@ export function AppLaunchSplash({ children }: AppLaunchSplashProps) {
   const bootstrapRef = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    authStatus,
-    selectedFlow,
-    session,
-    phase,
-    lastRoutePath,
-    markAuthLoggedOut,
-  } = useJourney();
+  const { authStatus, selectedFlow, session, phase, lastRoutePath, markAuthLoggedOut } =
+    useJourney();
 
   const finishSplash = useCallback(() => {
     markAppStartupComplete();
@@ -74,10 +68,9 @@ export function AppLaunchSplash({ children }: AppLaunchSplashProps) {
           }
         } else if (location.pathname === '/' || location.pathname === '/scan') {
           const search = location.search;
-          void navigate(
-            search ? { pathname: journeyPaths.auth, search } : journeyPaths.auth,
-            { replace: true },
-          );
+          void navigate(search ? { pathname: journeyPaths.auth, search } : journeyPaths.auth, {
+            replace: true,
+          });
         }
       }
 

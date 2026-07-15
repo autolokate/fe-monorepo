@@ -8,13 +8,13 @@
 
 ## Executive Summary
 
-| Check | Before | After |
-|-------|--------|-------|
-| `pnpm run lint` (monorepo) | **31 errors** (onboarding) | **0 errors** |
-| `tsc --noEmit` (all packages) | 0 errors | 0 errors |
-| `pnpm run build` (onboarding) | Pass | Pass |
-| `console.log/warn/error` in `src/` | 2 intentional | 2 intentional |
-| `@ts-ignore` / `any` in TS source | 0 | 0 |
+| Check                              | Before                     | After         |
+| ---------------------------------- | -------------------------- | ------------- |
+| `pnpm run lint` (monorepo)         | **31 errors** (onboarding) | **0 errors**  |
+| `tsc --noEmit` (all packages)      | 0 errors                   | 0 errors      |
+| `pnpm run build` (onboarding)      | Pass                       | Pass          |
+| `console.log/warn/error` in `src/` | 2 intentional              | 2 intentional |
+| `@ts-ignore` / `any` in TS source  | 0                          | 0             |
 
 **Verdict:** Engineering quality improved; lint blockers removed. Release still gated on real-device evidence (see `FINAL_SANITY_REPORT.md`).
 
@@ -24,26 +24,26 @@
 
 ### Monorepo layout
 
-| Path | Role | Status |
-|------|------|--------|
-| `apps/onboarding/` | Production PWA + journey | Active |
-| `apps/ui-preview/` | Component preview | Active |
-| `packages/ui/` | Shared UI primitives | Active |
-| `packages/icons/` | Icon set | Active |
-| `packages/design-system/` | Tokens | Active |
-| `packages/brand/` | Brand assets | Active |
-| `docs/` | Active docs (10 files after cleanup) | Consolidated |
-| `docs/archive/` | Historical reports (231+ files) | Archive |
-| `apps/onboarding/scripts/` | 8 maintenance scripts | Active |
+| Path                       | Role                                 | Status       |
+| -------------------------- | ------------------------------------ | ------------ |
+| `apps/onboarding/`         | Production PWA + journey             | Active       |
+| `apps/ui-preview/`         | Component preview                    | Active       |
+| `packages/ui/`             | Shared UI primitives                 | Active       |
+| `packages/icons/`          | Icon set                             | Active       |
+| `packages/design-system/`  | Tokens                               | Active       |
+| `packages/brand/`          | Brand assets                         | Active       |
+| `docs/`                    | Active docs (10 files after cleanup) | Consolidated |
+| `docs/archive/`            | Historical reports (231+ files)      | Archive      |
+| `apps/onboarding/scripts/` | 8 maintenance scripts                | Active       |
 
 ### Dead / orphan inventory (documented, not removed — by constraint)
 
-| Item | Location | Evidence |
-|------|----------|----------|
-| Legacy P01–P06 purchase screens | `steps.config.ts` lines 57–94 marked `@deprecated` | Not mounted in `JourneyRoutes.tsx` |
-| `purchase-activation/` feature folder | `features/purchase-activation/screens/r01–r06` | Orphan screens; active purchase uses `qr-purchase/` |
-| Deleted iOS contact fallback | `ios-contact-pick-sheet/` | Glob search returns 0 files; no imports of `IosContactPickSheet` |
-| R14 / R15 routes | `routes.schema.ts` | Catalog-only; commented deprecated in PROJECT_STATUS |
+| Item                                  | Location                                           | Evidence                                                         |
+| ------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
+| Legacy P01–P06 purchase screens       | `steps.config.ts` lines 57–94 marked `@deprecated` | Not mounted in `JourneyRoutes.tsx`                               |
+| `purchase-activation/` feature folder | `features/purchase-activation/screens/r01–r06`     | Orphan screens; active purchase uses `qr-purchase/`              |
+| Deleted iOS contact fallback          | `ios-contact-pick-sheet/`                          | Glob search returns 0 files; no imports of `IosContactPickSheet` |
+| R14 / R15 routes                      | `routes.schema.ts`                                 | Catalog-only; commented deprecated in PROJECT_STATUS             |
 
 ### Scripts
 
@@ -51,10 +51,10 @@ All 8 scripts under `apps/onboarding/scripts/` are referenced by package workflo
 
 ### Assets
 
-| Asset | Size | Usage |
-|-------|------|-------|
-| `sos-emergency-alarm-*.wav` | 3,528 KB | Imported by SOS hold flow |
-| `al-logo-figma-dark-*.png` | 9 KB | Brand |
+| Asset                        | Size     | Usage                                 |
+| ---------------------------- | -------- | ------------------------------------- |
+| `sos-emergency-alarm-*.wav`  | 3,528 KB | Imported by SOS hold flow             |
+| `al-logo-figma-dark-*.png`   | 9 KB     | Brand                                 |
 | `docs/visual-truth/**/*.png` | 61 files | Visual evidence samples (not bundled) |
 
 ---
@@ -65,12 +65,12 @@ See `REACT_ARCHITECTURE_SIGNOFF.md` for detail.
 
 **Large route files (justified — route-as-composition pattern):**
 
-| File | Lines |
-|------|------:|
-| `EmergencyRoutes.tsx` | 918 |
-| `PurchaseRoutes.tsx` | 861 |
-| `pwa-sos-routes.tsx` | 749 |
-| `pwa-park-me-routes.tsx` | 605 |
+| File                     | Lines |
+| ------------------------ | ----: |
+| `EmergencyRoutes.tsx`    |   918 |
+| `PurchaseRoutes.tsx`     |   861 |
+| `pwa-sos-routes.tsx`     |   749 |
+| `pwa-park-me-routes.tsx` |   605 |
 
 **Provider tree (verified in code):**
 
@@ -102,10 +102,10 @@ See `TYPESCRIPT_SIGNOFF.md`. All packages pass `tsc --noEmit`.
 
 Grep across `apps/onboarding/src` and `packages/`:
 
-| File | Call | Classification |
-|------|------|----------------|
-| `PwaScanErrorBoundary.tsx:33` | `console.error('[pwa-scan-error-boundary]', …)` | Intentional error boundary telemetry |
-| `pwa-photo-diagnostics.ts:28` | `console.info('[pwa-photo]', …)` | Intentional diagnostics wrapper (dev/support) |
+| File                          | Call                                            | Classification                                |
+| ----------------------------- | ----------------------------------------------- | --------------------------------------------- |
+| `PwaScanErrorBoundary.tsx:33` | `console.error('[pwa-scan-error-boundary]', …)` | Intentional error boundary telemetry          |
+| `pwa-photo-diagnostics.ts:28` | `console.info('[pwa-photo]', …)`                | Intentional diagnostics wrapper (dev/support) |
 
 **Target met:** 0 stray `console.log` / `console.warn` in application source.
 
@@ -125,11 +125,11 @@ Production build (2026-06-17):
 
 ## Phase 6 — Import Architecture
 
-| Pattern | Count (onboarding `src/`) |
-|---------|---------------------------|
-| `@/` alias imports | ~60 files |
-| Relative `../` imports | ~120 files (typical for co-located routes) |
-| `../../../../` deep imports | **0** |
+| Pattern                     | Count (onboarding `src/`)                       |
+| --------------------------- | ----------------------------------------------- |
+| `@/` alias imports          | ~60 files                                       |
+| Relative `../` imports      | ~120 files (typical for co-located routes)      |
+| `../../../../` deep imports | **0**                                           |
 | `../../../` to platform/pwa | **5 files** (PWA routes → `platform/` / `pwa/`) |
 
 No circular import tooling run; manual inspection of provider graph shows acyclic: `platform/` → `journey/` + `features/` only.
@@ -146,15 +146,15 @@ App-level compositions (`EmergencyContactRow`, `InlineConsentBlock`, `AuthStepSh
 
 ## Phase 8 — Flow Regression (code-level)
 
-| Flow | Entry | Verified wiring |
-|------|-------|-----------------|
-| Purchase QR | `/journey?type=purchase&token=…` | `FlowEntryScreen` → `parseQrFromSearchParams` → `dispatchQrPayload` |
-| Prepaid | `?type=prepaid&voucherId=…` | Same dispatcher |
-| B2B2C | `?type=b2b2c&partnerId=…&variant=…` | Same dispatcher |
-| Post-activation | `?type=activated&vehicleId=…&plate=…` | PWA `/pwa/scan` + shared QR parser |
-| Rider skip | R0 confirmation sheet | `riderSkipped: true` → `setPhase('completed')` → `/journey/completed` (`EmergencyRoutes.tsx`) |
-| iOS contacts | E0 | `shouldShowAddFromContactsCTA()` → false on iOS (`device-contact-picker.ts`) |
-| Purchase → Emergency | R10 success | `getPurchasePostPaymentEmergencyPath()` → `contacts-empty` |
+| Flow                 | Entry                                 | Verified wiring                                                                               |
+| -------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Purchase QR          | `/journey?type=purchase&token=…`      | `FlowEntryScreen` → `parseQrFromSearchParams` → `dispatchQrPayload`                           |
+| Prepaid              | `?type=prepaid&voucherId=…`           | Same dispatcher                                                                               |
+| B2B2C                | `?type=b2b2c&partnerId=…&variant=…`   | Same dispatcher                                                                               |
+| Post-activation      | `?type=activated&vehicleId=…&plate=…` | PWA `/pwa/scan` + shared QR parser                                                            |
+| Rider skip           | R0 confirmation sheet                 | `riderSkipped: true` → `setPhase('completed')` → `/journey/completed` (`EmergencyRoutes.tsx`) |
+| iOS contacts         | E0                                    | `shouldShowAddFromContactsCTA()` → false on iOS (`device-contact-picker.ts`)                  |
+| Purchase → Emergency | R10 success                           | `getPurchasePostPaymentEmergencyPath()` → `contacts-empty`                                    |
 
 **Not verified this pass:** runtime behaviour on physical devices (see `REAL_DEVICE_EVIDENCE_REPORT.md`).
 
@@ -170,16 +170,16 @@ App-level compositions (`EmergencyContactRow`, `InlineConsentBlock`, `AuthStepSh
 
 ## Code Changes (This Pass)
 
-| File | Change |
-|------|--------|
-| `EmergencyRoutes.tsx` | Remove unused `selectedFlow` destructure |
-| `JourneyCompletedScreen.tsx` | Use `session.vehicle?.plate` only |
-| `emergency-limits.ts` | Remove redundant `Boolean()` cast |
-| `parse-qr-url.ts` | Lint-safe QR param parsing |
-| `flow-entry-registry.ts` | Explicit throw vs non-null assertion |
-| `generate-visual-truth-matrix.mjs` | Remove dead regression helpers |
-| `visual-truth-analyze.mjs` | Remove unused import |
-| `eslint.config.js` | Browser globals for Playwright scripts |
+| File                               | Change                                   |
+| ---------------------------------- | ---------------------------------------- |
+| `EmergencyRoutes.tsx`              | Remove unused `selectedFlow` destructure |
+| `JourneyCompletedScreen.tsx`       | Use `session.vehicle?.plate` only        |
+| `emergency-limits.ts`              | Remove redundant `Boolean()` cast        |
+| `parse-qr-url.ts`                  | Lint-safe QR param parsing               |
+| `flow-entry-registry.ts`           | Explicit throw vs non-null assertion     |
+| `generate-visual-truth-matrix.mjs` | Remove dead regression helpers           |
+| `visual-truth-analyze.mjs`         | Remove unused import                     |
+| `eslint.config.js`                 | Browser globals for Playwright scripts   |
 
 ---
 

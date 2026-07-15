@@ -1,4 +1,4 @@
-import { Award, Clock, MessageCircle, type LucideIcon } from "lucide-react";
+import { Award, Clock, MessageCircle, type LucideIcon } from 'lucide-react';
 
 export interface SupportHighlight {
   Icon: LucideIcon;
@@ -9,17 +9,17 @@ export interface SupportHighlight {
 export const supportHighlights: SupportHighlight[] = [
   {
     Icon: Clock,
-    title: "24/7 Availability",
+    title: '24/7 Availability',
     description: "We're always here when you need us.",
   },
   {
     Icon: MessageCircle,
-    title: "Real People",
-    description: "Talk to real experts who care.",
+    title: 'Real People',
+    description: 'Talk to real experts who care.',
   },
   {
     Icon: Award,
-    title: "Committed to You",
-    description: "Your satisfaction is our top priority.",
+    title: 'Committed to You',
+    description: 'Your satisfaction is our top priority.',
   },
 ];

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { hasAuthTokens, subscribeAuthChange } from "@/lib/auth/storage";
+import { useEffect, useState } from 'react';
+import { hasAuthTokens, subscribeAuthChange } from '@/lib/auth/storage';
 
 /**
  * Reactive boolean for "do we have tokens?".

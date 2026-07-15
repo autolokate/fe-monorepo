@@ -1,6 +1,6 @@
-import { Headphones } from "lucide-react";
-import { supportHighlights } from "./constants";
-import styles from "./index.module.css";
+import { Headphones } from 'lucide-react';
+import { supportHighlights } from './constants';
+import styles from './index.module.css';
 
 export function SupportSection() {
   return (

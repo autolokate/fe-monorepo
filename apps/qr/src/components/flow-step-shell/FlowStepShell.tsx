@@ -128,7 +128,9 @@ export function FlowStepShell({
 
   return (
     <AlScreenBg variant="protected" className={`ob-step-chrome-screen ${shellClassName}`}>
-      <div className={`ob-step-chrome__frame ob-shell__frame${shellModifiers ? ` ${shellModifiers}` : ''}`}>
+      <div
+        className={`ob-step-chrome__frame ob-shell__frame${shellModifiers ? ` ${shellModifiers}` : ''}`}
+      >
         <header
           className={`ob-step-chrome__header ob-shell__header${resolvedProgress ? '' : ' ob-step-chrome__header--compact'}`}
         >
@@ -154,7 +156,9 @@ export function FlowStepShell({
           ) : null}
         </header>
 
-        <div className={`ob-step-chrome__body ob-shell__body${resolvedBodyGap === 'otp' ? ' ob-shell__body--otp' : ''}`}>
+        <div
+          className={`ob-step-chrome__body ob-shell__body${resolvedBodyGap === 'otp' ? ' ob-shell__body--otp' : ''}`}
+        >
           <div className="ob-step-chrome__heading ob-shell__heading">
             <AlHeading variant="h2">{title}</AlHeading>
             {description ? (

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { searchCatalogueMixed } from "@/services/catalogue/catalogue-api";
+import { useEffect, useState } from 'react';
+import { useApiQuery } from '@/hooks/useApiQuery';
+import { searchCatalogueMixed } from '@/services/catalogue/catalogue-api';
 
 function useDebouncedValue<T>(value: T, ms: number): T {
   const [debounced, setDebounced] = useState(value);

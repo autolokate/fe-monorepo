@@ -24,7 +24,10 @@ export function AlVehicleRcCard({
   const rows = chunkFields(fields, 2);
 
   return (
-    <section className={cn('al-vehicle-rc-card', className)} aria-label="Vehicle registration details">
+    <section
+      className={cn('al-vehicle-rc-card', className)}
+      aria-label="Vehicle registration details"
+    >
       {watermarkIcon ? (
         <div className="al-vehicle-rc-card__watermark" aria-hidden>
           {watermarkIcon}

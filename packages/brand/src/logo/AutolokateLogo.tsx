@@ -13,8 +13,7 @@ export function AlLogo({
   'aria-label': ariaLabel = DEFAULT_LABEL,
   variant = 'light',
 }: BrandLogoProps) {
-  const height =
-    typeof size === 'number' ? Math.round(size / LOGO_ASPECT_RATIO) : undefined;
+  const height = typeof size === 'number' ? Math.round(size / LOGO_ASPECT_RATIO) : undefined;
 
   return (
     <img

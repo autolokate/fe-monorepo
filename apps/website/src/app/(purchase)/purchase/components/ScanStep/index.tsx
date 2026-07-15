@@ -1,13 +1,13 @@
-import { ArrowRight, Check } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { cn } from "@/lib/utils";
-import type { StepProps } from "../../types";
-import styles from "./index.module.css";
+import { ArrowRight, Check } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { cn } from '@/lib/utils';
+import type { StepProps } from '../../types';
+import styles from './index.module.css';
 
 const BULLETS = [
-  "1-year cover · already paid",
+  '1-year cover · already paid',
   "Activates only with the buyer's number",
-  "Takes about 2 minutes",
+  'Takes about 2 minutes',
 ];
 
 export function ScanStep({ plan, goTo }: StepProps) {
@@ -21,7 +21,7 @@ export function ScanStep({ plan, goTo }: StepProps) {
           <span className={styles.verified}>QR scanned · Verified</span>
         </div>
 
-        <h1 className={cn(styles.title, "font-display")}>
+        <h1 className={cn(styles.title, 'font-display')}>
           Covered with {plan.name}.
           <br />
           Set it up.
@@ -47,7 +47,7 @@ export function ScanStep({ plan, goTo }: StepProps) {
           className={styles.action}
           icon={<ArrowRight className="h-4 w-4" aria-hidden />}
           iconPosition="end"
-          onClick={() => goTo("plate")}
+          onClick={() => goTo('plate')}
         >
           Set it up
         </AlButton>

@@ -1,5 +1,5 @@
-import type { ComponentType } from "react";
-import type { LucideProps } from "lucide-react";
+import type { ComponentType } from 'react';
+import type { LucideProps } from 'lucide-react';
 
 export interface GettingStartedStep {
   id: string;
@@ -26,7 +26,7 @@ export interface GettingStartedCopy {
 
 export interface ProtectionImageCard {
   id: string;
-  kind: "image";
+  kind: 'image';
   step: string;
   title: string;
   body: string;
@@ -37,7 +37,7 @@ export interface ProtectionImageCard {
 
 export interface ProtectionCountdownCard {
   id: string;
-  kind: "countdown";
+  kind: 'countdown';
   step: string;
   title: string;
   body: string;
@@ -48,17 +48,14 @@ export interface ProtectionCountdownCard {
 
 export interface ProtectionNotifyCard {
   id: string;
-  kind: "notify";
+  kind: 'notify';
   step: string;
   title: string;
   body: string;
   alert: { title: string; detail: string; mapLine: string };
 }
 
-export type ProtectionCard =
-  | ProtectionImageCard
-  | ProtectionCountdownCard
-  | ProtectionNotifyCard;
+export type ProtectionCard = ProtectionImageCard | ProtectionCountdownCard | ProtectionNotifyCard;
 
 export interface ProtectionCopy {
   eyebrow: string;

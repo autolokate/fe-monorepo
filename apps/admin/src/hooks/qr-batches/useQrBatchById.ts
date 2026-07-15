@@ -14,7 +14,9 @@ function findBatchInCache(
   queryClient: ReturnType<typeof useQueryClient>,
   batchId: string,
 ): BatchSummaryDto | null {
-  const entries = queryClient.getQueriesData<BatchSummaryDto[]>({ queryKey: inventoryQueryKeys.all });
+  const entries = queryClient.getQueriesData<BatchSummaryDto[]>({
+    queryKey: inventoryQueryKeys.all,
+  });
   for (const [, data] of entries) {
     const found = data?.find((batch) => batch.id === batchId);
     if (found) {
@@ -33,7 +35,9 @@ export function useQrBatchById(batchId: string | undefined, initialBatch?: Batch
   );
 
   const query = useQuery({
-    queryKey: batchId ? qrBatchDetailQueryKeys.byId(batchId) : ['admin', 'inventory', 'by-id', 'missing'],
+    queryKey: batchId
+      ? qrBatchDetailQueryKeys.byId(batchId)
+      : ['admin', 'inventory', 'by-id', 'missing'],
     queryFn: async ({ signal }) => {
       if (!batchId) {
         throw new Error('Batch id is required.');

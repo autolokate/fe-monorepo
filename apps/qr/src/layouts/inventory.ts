@@ -2,12 +2,7 @@
  * Layout slot inventory — no layout components yet.
  * All layouts consume @autolokate/ui primitives only.
  */
-export type LayoutId =
-  | 'AppShell'
-  | 'FlowShell'
-  | 'AuthShell'
-  | 'LegalShell'
-  | 'StepScreen';
+export type LayoutId = 'AppShell' | 'FlowShell' | 'AuthShell' | 'LegalShell' | 'StepScreen';
 
 export type LayoutDefinition = {
   id: LayoutId;

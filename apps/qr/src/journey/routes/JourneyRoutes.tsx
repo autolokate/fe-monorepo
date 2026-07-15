@@ -62,18 +62,39 @@ function OnboardingJourneyRoutes() {
       <Route path="profile" element={<JourneySharedAuthRoute />} />
       <Route path="vehicle" element={<PurchaseActivationRoute />} />
       <Route path="vehicle/:registrationNumber/lookup" element={<PurchaseActivationRoute />} />
-      <Route path="vehicle/:registrationNumber/confirmation" element={<PurchaseActivationRoute />} />
-      <Route path={PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed} element={<PurchaseActivationRoute />} />
+      <Route
+        path="vehicle/:registrationNumber/confirmation"
+        element={<PurchaseActivationRoute />}
+      />
+      <Route
+        path={PURCHASE_ROUTE_SEGMENTS.vehicleLookupFailed}
+        element={<PurchaseActivationRoute />}
+      />
       <Route path={PURCHASE_ROUTE_SEGMENTS.choosePlan} element={<PurchaseActivationRoute />} />
       <Route path={PURCHASE_ROUTE_SEGMENTS.riderCover} element={<PurchaseActivationRoute />} />
       <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummary} element={<PurchaseActivationRoute />} />
-      <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied} element={<PurchaseActivationRoute />} />
-      <Route path={PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo} element={<PurchaseActivationRoute />} />
-      <Route path={PURCHASE_ROUTE_SEGMENTS.processingPayment} element={<PurchaseActivationRoute />} />
-      <Route path={PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming} element={<PurchaseActivationRoute />} />
+      <Route
+        path={PURCHASE_ROUTE_SEGMENTS.orderSummaryPromoApplied}
+        element={<PurchaseActivationRoute />}
+      />
+      <Route
+        path={PURCHASE_ROUTE_SEGMENTS.orderSummaryInvalidPromo}
+        element={<PurchaseActivationRoute />}
+      />
+      <Route
+        path={PURCHASE_ROUTE_SEGMENTS.processingPayment}
+        element={<PurchaseActivationRoute />}
+      />
+      <Route
+        path={PURCHASE_ROUTE_SEGMENTS.paymentStillConfirming}
+        element={<PurchaseActivationRoute />}
+      />
       <Route path={PURCHASE_ROUTE_SEGMENTS.paymentSuccess} element={<PurchaseActivationRoute />} />
       <Route path={PURCHASE_ROUTE_SEGMENTS.paymentFailed} element={<PurchaseActivationRoute />} />
-      <Route path={PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed} element={<PurchaseActivationRoute />} />
+      <Route
+        path={PURCHASE_ROUTE_SEGMENTS.paymentUnconfirmed}
+        element={<PurchaseActivationRoute />}
+      />
       <Route path="*" element={<PurchaseIndexRedirect />} />
     </Routes>
   );
@@ -147,7 +168,10 @@ export function JourneyRoutes() {
           path={journeyPaths.emergency}
           element={<LegacyEmergencyFlatRedirect suffix="/rider-prompt" />}
         />
-        <Route path={`${journeyPaths.emergency}/:segment`} element={<LegacyEmergencyFlatRedirect suffix="" />} />
+        <Route
+          path={`${journeyPaths.emergency}/:segment`}
+          element={<LegacyEmergencyFlatRedirect suffix="" />}
+        />
 
         {/* Legacy flat purchase → scoped */}
         <Route path="/purchase" element={<PurchaseIndexRedirect />} />
@@ -166,7 +190,9 @@ export function JourneyRoutes() {
         />
         <Route
           path={PURCHASE_ROUTE_PATTERNS.vehicleConfirmation}
-          element={<LegacyFlatToScopedRedirect suffix={PURCHASE_ROUTE_PATTERNS.vehicleConfirmation} />}
+          element={
+            <LegacyFlatToScopedRedirect suffix={PURCHASE_ROUTE_PATTERNS.vehicleConfirmation} />
+          }
         />
         {LEGACY_FLAT_PURCHASE_REDIRECTS.map(([segment]) => (
           <Route
@@ -177,8 +203,14 @@ export function JourneyRoutes() {
         ))}
 
         {/* Legacy prepaid/b2b2c without journey id */}
-        <Route path={`${journeyPaths.prepaid}/*`} element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
-        <Route path={`${journeyPaths.b2b2c}/*`} element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+        <Route
+          path={`${journeyPaths.prepaid}/*`}
+          element={<PreserveSearchRedirect to={journeyPaths.entry} />}
+        />
+        <Route
+          path={`${journeyPaths.b2b2c}/*`}
+          element={<PreserveSearchRedirect to={journeyPaths.entry} />}
+        />
 
         <Route path="*" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
       </Routes>

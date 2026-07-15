@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { AuthShell } from "../AuthShell";
-import { pickSafeNext } from "../constants";
-import { OtpStep } from "./OtpStep";
-import { PhoneStep } from "./PhoneStep";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { AuthShell } from '../AuthShell';
+import { pickSafeNext } from '../constants';
+import { OtpStep } from './OtpStep';
+import { PhoneStep } from './PhoneStep';
 
 /**
  * Two-step login flow on a single route.
@@ -18,15 +18,15 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const safeNext = pickSafeNext(searchParams.get("next"));
-  const stepParam = searchParams.get("step");
-  const phoneParam = (searchParams.get("phone") ?? "").trim();
-  const isOtpStep = stepParam === "otp" && phoneParam.length > 0;
+  const safeNext = pickSafeNext(searchParams.get('next'));
+  const stepParam = searchParams.get('step');
+  const phoneParam = (searchParams.get('phone') ?? '').trim();
+  const isOtpStep = stepParam === 'otp' && phoneParam.length > 0;
 
   // If someone lands on `?step=otp` without a phone, drop them back to step 1.
   useEffect(() => {
-    if (stepParam === "otp" && !phoneParam) {
-      router.replace(safeNext ? `/auth/login?next=${encodeURIComponent(safeNext)}` : "/auth/login");
+    if (stepParam === 'otp' && !phoneParam) {
+      router.replace(safeNext ? `/auth/login?next=${encodeURIComponent(safeNext)}` : '/auth/login');
     }
   }, [stepParam, phoneParam, safeNext, router]);
 

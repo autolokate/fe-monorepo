@@ -16,11 +16,11 @@ Target was **100%** exact Figma parity. Post-reconstruction evidence does not me
 
 ## Scores
 
-| Scope | V2 (pre-sprint) | V3 (post-reconstruction) | Target |
-|-------|-----------------|--------------------------|--------|
-| **30 screens (strict checklist)** | 67% | **85%** | 100% |
-| **5 rebuilt components (strict)** | 41–68% | **90%** | 100% |
-| **Automated pixel match (30 frames)** | — | **77.4%** | — |
+| Scope                                 | V2 (pre-sprint) | V3 (post-reconstruction) | Target |
+| ------------------------------------- | --------------- | ------------------------ | ------ |
+| **30 screens (strict checklist)**     | 67%             | **85%**                  | 100%   |
+| **5 rebuilt components (strict)**     | 41–68%          | **90%**                  | 100%   |
+| **Automated pixel match (30 frames)** | —               | **77.4%**                | —      |
 
 **Gap to READY:** 15 percentage points on screens · 10 on components
 
@@ -45,14 +45,14 @@ Plus hero-driven: 16 · 18 · 22
 
 ## Evidence (side-by-side)
 
-| Screen | Before (audit) | After (V3) | Compare |
-|--------|----------------|------------|---------|
-| 01 Loading | 8% | 88% | [01-loading.png](audit-screenshots/compare/01-loading.png) |
-| 09b Review | 31% | 85% | [09b-park-me-review.png](audit-screenshots/compare/09b-park-me-review.png) |
-| 10 Checking | 57% | 91% | [10-park-me-checking.png](audit-screenshots/compare/10-park-me-checking.png) |
-| 14 SOS | 44% | 78% | [14-sos.png](audit-screenshots/compare/14-sos.png) |
-| 18 Couldn't send | 41% | 92% | [18-couldnt-send.png](audit-screenshots/compare/18-couldnt-send.png) |
-| 19 Help received | 62% | 87% | [19-help-received.png](audit-screenshots/compare/19-help-received.png) |
+| Screen           | Before (audit) | After (V3) | Compare                                                                      |
+| ---------------- | -------------- | ---------- | ---------------------------------------------------------------------------- |
+| 01 Loading       | 8%             | 88%        | [01-loading.png](audit-screenshots/compare/01-loading.png)                   |
+| 09b Review       | 31%            | 85%        | [09b-park-me-review.png](audit-screenshots/compare/09b-park-me-review.png)   |
+| 10 Checking      | 57%            | 91%        | [10-park-me-checking.png](audit-screenshots/compare/10-park-me-checking.png) |
+| 14 SOS           | 44%            | 78%        | [14-sos.png](audit-screenshots/compare/14-sos.png)                           |
+| 18 Couldn't send | 41%            | 92%        | [18-couldnt-send.png](audit-screenshots/compare/18-couldnt-send.png)         |
+| 19 Help received | 62%            | 87%        | [19-help-received.png](audit-screenshots/compare/19-help-received.png)       |
 
 Full matrix: [POST_ACTIVATION_RECONSTRUCTION_REPORT.md](POST_ACTIVATION_RECONSTRUCTION_REPORT.md)
 
@@ -60,26 +60,26 @@ Full matrix: [POST_ACTIVATION_RECONSTRUCTION_REPORT.md](POST_ACTIVATION_RECONSTR
 
 ## Remaining drift (must fix for 100%)
 
-1. **StatusBar 9:2** — present in every Figma frame, absent in live shell  
-2. **Logo wordmark 158:25** — Figma full wordmark vs minimal mark in `PwaScanShell`  
-3. **SOS frame 14 layout** — y-band alignment for title, location chip, call fallback vs 848:278  
-4. **SOS timeline footer** — 10-step height clips secondary CTA at 852px on frames 19–20  
-5. **Auth / purchase shells** — frames 03–08 not reconstructed (74–88% unchanged)  
-6. **Park Me photos 09** — auto-geolocation fills GPS box on empty-state capture  
+1. **StatusBar 9:2** — present in every Figma frame, absent in live shell
+2. **Logo wordmark 158:25** — Figma full wordmark vs minimal mark in `PwaScanShell`
+3. **SOS frame 14 layout** — y-band alignment for title, location chip, call fallback vs 848:278
+4. **SOS timeline footer** — 10-step height clips secondary CTA at 852px on frames 19–20
+5. **Auth / purchase shells** — frames 03–08 not reconstructed (74–88% unchanged)
+6. **Park Me photos 09** — auto-geolocation fills GPS box on empty-state capture
 
 ---
 
 ## Signoff checklist
 
-| Requirement | Status |
-|-------------|--------|
-| All 30 frames captured post-reconstruction | ✅ |
-| Side-by-side comparisons generated | ✅ |
-| Sub-80% components rebuilt from Figma | ✅ |
-| Sub-80% listed screens reconstructed | ✅ |
-| Per-frame heroes (no reuse) | ✅ |
-| **100% strict parity** | ❌ **85%** |
-| **READY for production** | ❌ **NOT READY** |
+| Requirement                                | Status           |
+| ------------------------------------------ | ---------------- |
+| All 30 frames captured post-reconstruction | ✅               |
+| Side-by-side comparisons generated         | ✅               |
+| Sub-80% components rebuilt from Figma      | ✅               |
+| Sub-80% listed screens reconstructed       | ✅               |
+| Per-frame heroes (no reuse)                | ✅               |
+| **100% strict parity**                     | ❌ **85%**       |
+| **READY for production**                   | ❌ **NOT READY** |
 
 ---
 

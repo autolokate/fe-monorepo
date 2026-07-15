@@ -19,15 +19,15 @@ Phase DS-RC2 applies the Figma Foundations delta identified in the audit: light 
 
 ### T1 — Light background semantic role
 
-| Token | Before (light) | After (light) |
-|-------|----------------|---------------|
+| Token                   | Before (light)                    | After (light)                          |
+| ----------------------- | --------------------------------- | -------------------------------------- |
 | `--al-color-background` | `var(--al-neutral-0)` → `#FFFFFF` | `var(--al-neutral-canvas)` → `#F4F6F9` |
-| `--al-color-surface` | `var(--al-neutral-0)` → `#FFFFFF` | unchanged — `#FFFFFF` |
+| `--al-color-surface`    | `var(--al-neutral-0)` → `#FFFFFF` | unchanged — `#FFFFFF`                  |
 
 **New primitive:**
 
-| Token | Value |
-|-------|-------|
+| Token                 | Value     |
+| --------------------- | --------- |
 | `--al-neutral-canvas` | `#F4F6F9` |
 
 Dark theme `--al-color-background` remains `var(--al-neutral-950)` → `#0A0A0C`.
@@ -36,11 +36,11 @@ Dark theme `--al-color-background` remains `var(--al-neutral-950)` → `#0A0A0C`
 
 New tokens (Figma `544:262` · ~8% radial at center):
 
-| Token | Value |
-|-------|-------|
-| `--al-gradient-ambient-protected` | `radial-gradient(circle at 50% 50%, rgba(31, 162, 74, 0.08) 0%, rgba(31, 162, 74, 0) 100%)` |
+| Token                             | Value                                                                                         |
+| --------------------------------- | --------------------------------------------------------------------------------------------- |
+| `--al-gradient-ambient-protected` | `radial-gradient(circle at 50% 50%, rgba(31, 162, 74, 0.08) 0%, rgba(31, 162, 74, 0) 100%)`   |
 | `--al-gradient-ambient-attention` | `radial-gradient(circle at 50% 50%, rgba(245, 166, 35, 0.08) 0%, rgba(245, 166, 35, 0) 100%)` |
-| `--al-gradient-ambient-emergency` | `radial-gradient(circle at 50% 50%, rgba(229, 52, 42, 0.08) 0%, rgba(229, 52, 42, 0) 100%)` |
+| `--al-gradient-ambient-emergency` | `radial-gradient(circle at 50% 50%, rgba(229, 52, 42, 0.08) 0%, rgba(229, 52, 42, 0) 100%)`   |
 
 Existing hero gradients (`--al-gradient-protected`, `--al-gradient-emergency`) are **unchanged** — they serve different use cases (12–18% ellipse for hero surfaces, not screen ambient).
 
@@ -48,10 +48,10 @@ Existing hero gradients (`--al-gradient-protected`, `--al-gradient-emergency`) a
 
 Added to all three semantic blocks (`:root`/`[data-theme='light']`, `[data-theme='dark']`, `@media prefers-color-scheme: dark`):
 
-| Token | Value |
-|-------|-------|
+| Token                      | Value                     |
+| -------------------------- | ------------------------- |
 | `--al-color-plate-surface` | `var(--al-neutral-plate)` |
-| `--al-color-on-plate` | `var(--al-neutral-1000)` |
+| `--al-color-on-plate`      | `var(--al-neutral-1000)`  |
 
 Also added missing primitives to `:root` in `theme.css`:
 
@@ -60,10 +60,10 @@ Also added missing primitives to `:root` in `theme.css`:
 
 ### Component spacing tokens (AlScreenBg)
 
-| Token | Value |
-|-------|-------|
-| `--al-comp-screen-bg-tint-size` | `45rem` |
-| `--al-comp-screen-bg-tint-offset-y` | `7%` |
+| Token                               | Value   |
+| ----------------------------------- | ------- |
+| `--al-comp-screen-bg-tint-size`     | `45rem` |
+| `--al-comp-screen-bg-tint-offset-y` | `7%`    |
 
 ---
 
@@ -73,13 +73,13 @@ Also added missing primitives to `:root` in `theme.css`:
 
 All font-family tokens now resolve to **Inter**:
 
-| Token | Before | After |
-|-------|--------|-------|
-| `--al-font-family-sans` | Manrope | Inter |
-| `--al-font-family-ui` | Inter | Inter |
+| Token                   | Before         | After |
+| ----------------------- | -------------- | ----- |
+| `--al-font-family-sans` | Manrope        | Inter |
+| `--al-font-family-ui`   | Inter          | Inter |
 | `--al-font-family-mono` | JetBrains Mono | Inter |
-| `--al-text-sans-family` | Manrope | Inter |
-| `--al-text-ui-family` | Inter | Inter |
+| `--al-text-sans-family` | Manrope        | Inter |
+| `--al-text-ui-family`   | Inter          | Inter |
 | `--al-text-mono-family` | JetBrains Mono | Inter |
 
 **Google Fonts import:** Manrope removed; Inter 400/500/600/700 only.
@@ -94,10 +94,10 @@ All font-family tokens now resolve to **Inter**:
 
 ### Removed font dependencies
 
-| Font | Status |
-|------|--------|
-| Manrope | Removed from DS theme.css import |
-| JetBrains Mono | Removed from mono family tokens |
+| Font           | Status                           |
+| -------------- | -------------------------------- |
+| Manrope        | Removed from DS theme.css import |
+| JetBrains Mono | Removed from mono family tokens  |
 
 **Out of scope (unchanged):** `@autolokate/brand` SVG wordmarks still reference Manrope in embedded `<text>` — brand asset, not UI typography.
 
@@ -113,12 +113,12 @@ All font-family tokens now resolve to **Inter**:
 
 **Variants:**
 
-| Variant | Ambient token | Use |
-|---------|---------------|-----|
-| `default` | none | Neutral canvas only |
+| Variant     | Ambient token                     | Use                      |
+| ----------- | --------------------------------- | ------------------------ |
+| `default`   | none                              | Neutral canvas only      |
 | `protected` | `--al-gradient-ambient-protected` | Secure / protected flows |
-| `attention` | `--al-gradient-ambient-attention` | Caution / pending |
-| `emergency` | `--al-gradient-ambient-emergency` | Urgent / SOS |
+| `attention` | `--al-gradient-ambient-attention` | Caution / pending        |
+| `emergency` | `--al-gradient-ambient-emergency` | Urgent / SOS             |
 
 **Behavior:**
 
@@ -134,18 +134,18 @@ import { AlScreenBg, AlHeading } from '@autolokate/ui';
 
 <AlScreenBg variant="protected">
   <AlHeading variant="h2">Protected session</AlHeading>
-</AlScreenBg>
+</AlScreenBg>;
 ```
 
 ---
 
 ## 4. Core primitive updates
 
-| Component | Change |
-|-----------|--------|
-| `AlHeading` | `font-family: var(--al-text-ui-family)` on `.al-heading` |
-| `AlText` | `font-family: var(--al-text-ui-family)` on `.al-text`; tabular features on mono variant |
-| `AlInput` (mono field) | Tabular font features on `.al-field__input--mono` |
+| Component              | Change                                                                                  |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| `AlHeading`            | `font-family: var(--al-text-ui-family)` on `.al-heading`                                |
+| `AlText`               | `font-family: var(--al-text-ui-family)` on `.al-text`; tabular features on mono variant |
+| `AlInput` (mono field) | Tabular font features on `.al-field__input--mono`                                       |
 
 ---
 
@@ -169,12 +169,12 @@ Shows all four variants (`default`, `protected`, `attention`, `emergency`) in:
 
 ## 6. Breaking changes
 
-| Change | Impact | Mitigation |
-|--------|--------|------------|
+| Change                                    | Impact                                                                             | Mitigation                                                                  |
+| ----------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | Light `--al-color-background` → `#F4F6F9` | Any full-page background using the semantic token shifts from white to canvas grey | Cards/surfaces on `--al-color-surface` stay white; intentional Figma parity |
-| Global sans → Inter | Headings/body render Inter instead of Manrope | Visual glyph change only; token API unchanged |
-| Mono → Inter tabular | OTP/plate/metric text loses monospace glyph distinction | Tabular nums preserve alignment; matches Figma Mono role |
-| New export `AlScreenBg` | Additive — no existing imports break | Opt-in at app/shell level |
+| Global sans → Inter                       | Headings/body render Inter instead of Manrope                                      | Visual glyph change only; token API unchanged                               |
+| Mono → Inter tabular                      | OTP/plate/metric text loses monospace glyph distinction                            | Tabular nums preserve alignment; matches Figma Mono role                    |
+| New export `AlScreenBg`                   | Additive — no existing imports break                                               | Opt-in at app/shell level                                                   |
 
 **Non-breaking:** All existing CSS variable names retained. No component prop renames.
 
@@ -186,12 +186,12 @@ Shows all four variants (`default`, `protected`, `attention`, `emergency`) in:
 
 **Automatic effects when apps consume updated DS:**
 
-| Area | Effect |
-|------|--------|
-| Shell backgrounds (`--al-color-background`) | Light mode canvas becomes `#F4F6F9` without shell edits |
-| Headings / body copy | Inter via updated global + primitive CSS |
-| Ambient screen glow | **Not applied** — shells still use flat background; `AlScreenBg` wiring deferred to app-level follow-up |
-| Purchase / shared flows | No flow architecture or screen changes |
+| Area                                        | Effect                                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Shell backgrounds (`--al-color-background`) | Light mode canvas becomes `#F4F6F9` without shell edits                                                 |
+| Headings / body copy                        | Inter via updated global + primitive CSS                                                                |
+| Ambient screen glow                         | **Not applied** — shells still use flat background; `AlScreenBg` wiring deferred to app-level follow-up |
+| Purchase / shared flows                     | No flow architecture or screen changes                                                                  |
 
 **Recommended follow-up (post DS-RC2, separate phase):**
 
@@ -229,15 +229,15 @@ docs/DS_RC2_REPORT.md   (this file)
 
 ## 9. QA checklist
 
-| Check | Result |
-|-------|--------|
-| `pnpm build` (all 12 packages) | ✓ Pass |
-| `pnpm lint` (all 12 packages) | ✓ Pass |
-| Token usage — no hardcoded colors in AlScreenBg | ✓ |
+| Check                                                          | Result        |
+| -------------------------------------------------------------- | ------------- |
+| `pnpm build` (all 12 packages)                                 | ✓ Pass        |
+| `pnpm lint` (all 12 packages)                                  | ✓ Pass        |
+| Token usage — no hardcoded colors in AlScreenBg                | ✓             |
 | Theme switching — light/dark frames on Screen Backgrounds page | ✓ Implemented |
-| Responsive — viewport previews + fluid tint sizing | ✓ |
-| Onboarding screens untouched | ✓ |
-| B2B / Prepaid / new onboarding flows | Not in scope |
+| Responsive — viewport previews + fluid tint sizing             | ✓             |
+| Onboarding screens untouched                                   | ✓             |
+| B2B / Prepaid / new onboarding flows                           | Not in scope  |
 
 ---
 

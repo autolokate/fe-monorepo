@@ -1,24 +1,23 @@
-import { RotateCcw, ShieldCheck } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { cn } from "@/lib/utils";
-import type { StepProps } from "../../types";
-import styles from "./index.module.css";
+import { RotateCcw, ShieldCheck } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { cn } from '@/lib/utils';
+import type { StepProps } from '../../types';
+import styles from './index.module.css';
 
 export function ActiveStep({ state, plan, update }: StepProps) {
-  const plateShown = state.plate.trim() || "HR 26 DK 8337";
+  const plateShown = state.plate.trim() || 'HR 26 DK 8337';
   const renewLine = state.autoRenew
     ? "↻ Auto-renews 13 Jul 2027 at today's price"
-    : "⚠ No auto-renew — plan lapses 13 Jul 2027 unless re-subscribed";
+    : '⚠ No auto-renew — plan lapses 13 Jul 2027 unless re-subscribed';
 
   const checklist = [
-    "Crash detection & family alerts — ON",
-    "Emergency contacts saved",
-    "QR live: Park Me, Emergency Help, records",
+    'Crash detection & family alerts — ON',
+    'Emergency contacts saved',
+    'QR live: Park Me, Emergency Help, records',
     renewLine,
   ];
 
-  const restart = () =>
-    update({ step: "plans", otpSent: false, otp: "", rcVerified: false });
+  const restart = () => update({ step: 'plans', otpSent: false, otp: '', rcVerified: false });
 
   return (
     <div className={styles.wrap}>
@@ -29,7 +28,7 @@ export function ActiveStep({ state, plan, update }: StepProps) {
           </div>
         </div>
 
-        <h1 className={cn(styles.title, "font-display")}>You&apos;re protected.</h1>
+        <h1 className={cn(styles.title, 'font-display')}>You&apos;re protected.</h1>
         <p className={styles.sub}>
           {plan.name} is active on <b>{plateShown}</b> until <b>13 Jul 2027</b>. Crash detection is
           watching every drive.
@@ -41,12 +40,7 @@ export function ActiveStep({ state, plan, update }: StepProps) {
           ))}
         </ul>
 
-        <AlButton
-          size="lg"
-          radius="lg"
-          variant="primary"
-          className={styles.dashboard}
-        >
+        <AlButton size="lg" radius="lg" variant="primary" className={styles.dashboard}>
           Open your dashboard
         </AlButton>
 

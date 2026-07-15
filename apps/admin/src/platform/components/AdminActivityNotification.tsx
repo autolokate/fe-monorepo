@@ -21,7 +21,12 @@ function BellIcon() {
         strokeWidth="1.4"
         strokeLinejoin="round"
       />
-      <path d="M7.5 14a1.5 1.5 0 0 0 3 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path
+        d="M7.5 14a1.5 1.5 0 0 0 3 0"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

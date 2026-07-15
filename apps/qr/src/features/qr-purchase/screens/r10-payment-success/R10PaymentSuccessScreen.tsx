@@ -37,9 +37,7 @@ export function R10PaymentSuccessScreen({
           : undefined
       }
       onSecondaryFooter={onDownloadInvoice}
-      celebration={
-        <ConfettiLottie className="ob-purchase-success-hero__confetti" />
-      }
+      celebration={<ConfettiLottie className="ob-purchase-success-hero__confetti" />}
       visual={
         <div className="ob-purchase-success-hero">
           <AlIcon

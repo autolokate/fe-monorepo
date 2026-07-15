@@ -26,7 +26,9 @@ export function AdminModuleOperationsPanel({
   trailing,
 }: AdminModuleOperationsPanelProps) {
   if (operations.length === 0) {
-    return emptyMessage ? <div className="admin-action-bar admin-action-bar--notice">{emptyMessage}</div> : null;
+    return emptyMessage ? (
+      <div className="admin-action-bar admin-action-bar--notice">{emptyMessage}</div>
+    ) : null;
   }
 
   return (

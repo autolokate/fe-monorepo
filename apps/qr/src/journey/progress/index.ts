@@ -1,6 +1,4 @@
-export type {
-  RouteProgressConfig,
-} from './route-progress.types';
+export type { RouteProgressConfig } from './route-progress.types';
 export {
   SHARED_AUTH_PROGRESS_TOTAL,
   authRouteProgressByPath,

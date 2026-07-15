@@ -97,4 +97,8 @@ export type R04OtpVerificationScreenProps = AuthNavigationProps & {
 };
 
 /** @deprecated Purchase activation */
-export type { R01VehicleNumberScreenProps, R05AccountCreationScreenProps, R06LegalConsentScreenProps } from '../purchase-activation/types';
+export type {
+  R01VehicleNumberScreenProps,
+  R05AccountCreationScreenProps,
+  R06LegalConsentScreenProps,
+} from '../purchase-activation/types';

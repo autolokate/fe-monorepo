@@ -70,7 +70,9 @@
   border: 1.5px solid var(--border);
   border-radius: 0.85rem;
   background: var(--card);
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .ridersOn {

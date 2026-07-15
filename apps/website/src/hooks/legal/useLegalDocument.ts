@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
 import {
   getLegalDocument,
   type LegalDocument,
   type LegalDocumentKind,
-} from "@/services/legal/legal-client-api";
-import { useApiQuery } from "@/hooks/useApiQuery";
+} from '@/services/legal/legal-client-api';
+import { useApiQuery } from '@/hooks/useApiQuery';
 
 /**
  * Client-side read of a legal document (Privacy Policy / Terms). Only fetches

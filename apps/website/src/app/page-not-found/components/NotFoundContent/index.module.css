@@ -18,7 +18,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/shop/not_found_page.png");
+  background-image: url('/images/shop/not_found_page.png');
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;

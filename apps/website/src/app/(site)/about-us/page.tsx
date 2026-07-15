@@ -5,7 +5,7 @@ import {
   Philosophy,
   WhatAutolokateOffersSection,
   aboutMetadata,
-} from "./";
+} from './';
 
 export const metadata = aboutMetadata;
 

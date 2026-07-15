@@ -1,5 +1,5 @@
-import { profileMetadata } from "./config/metadata";
-import { ProfilePageContent } from "./components/ProfilePageContent";
+import { profileMetadata } from './config/metadata';
+import { ProfilePageContent } from './components/ProfilePageContent';
 
 export const metadata = profileMetadata;
 

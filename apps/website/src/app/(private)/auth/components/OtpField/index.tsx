@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { forwardRef } from "react";
-import { cn } from "@/lib/utils";
-import { OTP_LENGTH } from "../constants";
+import { forwardRef } from 'react';
+import { cn } from '@/lib/utils';
+import { OTP_LENGTH } from '../constants';
 
 interface OtpFieldProps {
   id?: string;
@@ -21,7 +21,7 @@ const CELL_INDEXES = Array.from({ length: OTP_LENGTH }, (_, i) => i);
  * codes work because we read from a real input element.
  */
 export const OtpField = forwardRef<HTMLInputElement, OtpFieldProps>(function OtpField(
-  { id = "auth-otp", value, onChange, onComplete, disabled },
+  { id = 'auth-otp', value, onChange, onComplete, disabled },
   ref,
 ) {
   return (
@@ -36,7 +36,7 @@ export const OtpField = forwardRef<HTMLInputElement, OtpFieldProps>(function Otp
         value={value}
         disabled={disabled}
         onChange={(e) => {
-          const next = e.target.value.replace(/\D/g, "").slice(0, OTP_LENGTH);
+          const next = e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH);
           onChange(next);
           if (next.length === OTP_LENGTH) onComplete?.(next);
         }}
@@ -56,15 +56,15 @@ export const OtpField = forwardRef<HTMLInputElement, OtpFieldProps>(function Otp
             <div
               key={i}
               className={cn(
-                "flex h-12 items-center justify-center rounded-xl border bg-background text-lg font-semibold tabular-nums shadow-inner transition-colors sm:h-14 sm:text-xl",
+                'flex h-12 items-center justify-center rounded-xl border bg-background text-lg font-semibold tabular-nums shadow-inner transition-colors sm:h-14 sm:text-xl',
                 isActive
-                  ? "border-border/80 peer-focus:border-primary peer-focus:ring-2 peer-focus:ring-primary/30"
+                  ? 'border-border/80 peer-focus:border-primary peer-focus:ring-2 peer-focus:ring-primary/30'
                   : isFilled
-                    ? "border-primary/40 text-foreground"
-                    : "border-border/80 text-muted-foreground",
+                    ? 'border-primary/40 text-foreground'
+                    : 'border-border/80 text-muted-foreground',
               )}
             >
-              {digit ?? ""}
+              {digit ?? ''}
             </div>
           );
         })}

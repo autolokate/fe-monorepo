@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { Pencil, ShieldCheck } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { AlCheckbox, AlOtpInput, AlTextField } from "@autolokate/ui";
-import { LegalDocumentDialog } from "@/components/legal/LegalDocumentDialog";
-import { useRequestPurchaseOtp, useVerifyPurchaseOtp } from "@/hooks/otp";
-import { useGrantAccountConsent } from "@/hooks/purchase";
-import type { LegalDocumentKind } from "@/services/legal/legal-client-api";
-import { MOBILE_LENGTH, OTP_LENGTH } from "../../constants";
-import type { StepProps } from "../../types";
-import { StepShell } from "../StepShell";
-import styles from "./index.module.css";
+import { useEffect, useState } from 'react';
+import { Pencil, ShieldCheck } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { AlCheckbox, AlOtpInput, AlTextField } from '@autolokate/ui';
+import { LegalDocumentDialog } from '@/components/legal/LegalDocumentDialog';
+import { useRequestPurchaseOtp, useVerifyPurchaseOtp } from '@/hooks/otp';
+import { useGrantAccountConsent } from '@/hooks/purchase';
+import type { LegalDocumentKind } from '@/services/legal/legal-client-api';
+import { MOBILE_LENGTH, OTP_LENGTH } from '../../constants';
+import type { StepProps } from '../../types';
+import { StepShell } from '../StepShell';
+import styles from './index.module.css';
 
 /** Seconds the buyer must wait before they can request a new OTP. */
 const RESEND_COOLDOWN_SECONDS = 30;
@@ -20,11 +20,10 @@ export function LoginStep({ state, update, goTo }: StepProps) {
   const canSendOtp = mobileOk && state.accepted;
 
   const { mutateAsync: sendOtp, isLoading: sendingOtp } = useRequestPurchaseOtp({
-    successToast: "OTP sent",
+    successToast: 'OTP sent',
   });
   const { mutateAsync: verifyOtp, isLoading: verifyingOtp } = useVerifyPurchaseOtp();
-  const { mutateAsync: grantAccountConsent, isLoading: grantingConsent } =
-    useGrantAccountConsent();
+  const { mutateAsync: grantAccountConsent, isLoading: grantingConsent } = useGrantAccountConsent();
 
   // Verify may succeed while the follow-up consent grant fails — track it so a
   // retry re-runs only the failed step (the OTP is single-use).
@@ -57,7 +56,7 @@ export function LoginStep({ state, update, goTo }: StepProps) {
   const handleResend = async () => {
     try {
       await sendOtp({ phone: `+91${state.mobile}` });
-      update({ otp: "" });
+      update({ otp: '' });
       setResendIn(RESEND_COOLDOWN_SECONDS);
     } catch {
       // Error toast is surfaced by the mutation hook.
@@ -74,7 +73,7 @@ export function LoginStep({ state, update, goTo }: StepProps) {
       // shown alongside the checkbox. Blocking — if it fails we stay on the step
       // so the buyer can retry (a retry re-runs only this call, not verify).
       await grantAccountConsent();
-      goTo("address");
+      goTo('address');
     } catch {
       // Both calls surface their own error toast ("Something went wrong…").
     }
@@ -87,7 +86,7 @@ export function LoginStep({ state, update, goTo }: StepProps) {
       title="Verify your number"
       subtitle="We'll send a code on WhatsApp (or SMS)"
       backLabel="Back"
-      onBack={() => goTo("configure")}
+      onBack={() => goTo('configure')}
     >
       <div className={styles.card}>
         {!state.otpSent ? (
@@ -106,8 +105,8 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               onChange={(e) =>
                 update({
                   mobile: e.target.value
-                    .replace(/\D/g, "")
-                    .replace(/^0+/, "")
+                    .replace(/\D/g, '')
+                    .replace(/^0+/, '')
                     .slice(0, MOBILE_LENGTH),
                 })
               }
@@ -122,20 +121,19 @@ export function LoginStep({ state, update, goTo }: StepProps) {
                 onChange={(e) => update({ accepted: e.target.checked })}
               />
               <p className={styles.consentText}>
-                So Autolokate can keep you safe and run your vehicle services, I agree to
-                the{" "}
+                So Autolokate can keep you safe and run your vehicle services, I agree to the{' '}
                 <button
                   type="button"
                   className={styles.consentLink}
-                  onClick={() => setLegalDoc("PRIVACY_POLICY")}
+                  onClick={() => setLegalDoc('PRIVACY_POLICY')}
                 >
                   Privacy Policy
-                </button>{" "}
-                and{" "}
+                </button>{' '}
+                and{' '}
                 <button
                   type="button"
                   className={styles.consentLink}
-                  onClick={() => setLegalDoc("TERMS")}
+                  onClick={() => setLegalDoc('TERMS')}
                 >
                   Terms
                 </button>
@@ -148,20 +146,18 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               Encrypted at rest · never sold to third parties
             </p>
 
-            {!state.accepted ? (
-              <p className={styles.gate}>Accept the terms to continue</p>
-            ) : null}
+            {!state.accepted ? <p className={styles.gate}>Accept the terms to continue</p> : null}
 
-                <AlButton
-                  size="lg"
-                  radius="lg"
-                  variant="primary"
-                  className={styles.action}
-                  disabled={!canSendOtp || sendingOtp}
-                  onClick={handleSendOtp}
-                >
-                  {sendingOtp ? "Sending…" : "Send OTP"}
-                </AlButton>
+            <AlButton
+              size="lg"
+              radius="lg"
+              variant="primary"
+              className={styles.action}
+              disabled={!canSendOtp || sendingOtp}
+              onClick={handleSendOtp}
+            >
+              {sendingOtp ? 'Sending…' : 'Send OTP'}
+            </AlButton>
           </>
         ) : (
           <>
@@ -170,7 +166,7 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               <button
                 type="button"
                 className={styles.edit}
-                onClick={() => update({ otpSent: false, otp: "" })}
+                onClick={() => update({ otpSent: false, otp: '' })}
                 aria-label="Edit mobile number"
                 title="Edit mobile number"
               >
@@ -191,28 +187,23 @@ export function LoginStep({ state, update, goTo }: StepProps) {
               disabled={!otpOk || submittingOtp}
               onClick={handleVerify}
             >
-              {submittingOtp
-                ? "Verifying…"
-                : verified
-                  ? "Try again"
-                  : "Verify & continue"}
+              {submittingOtp ? 'Verifying…' : verified ? 'Try again' : 'Verify & continue'}
             </AlButton>
             <p className={styles.resend}>
               {resendIn > 0 ? (
                 <>
-                  Resend code in{" "}
-                  <span className={styles.resendTimer}>{resendIn}s</span>
+                  Resend code in <span className={styles.resendTimer}>{resendIn}s</span>
                 </>
               ) : (
                 <>
-                  Didn&apos;t get it?{" "}
+                  Didn&apos;t get it?{' '}
                   <button
                     type="button"
                     className={styles.resendLink}
                     onClick={handleResend}
                     disabled={sendingOtp}
                   >
-                    {sendingOtp ? "Sending…" : "Resend"}
+                    {sendingOtp ? 'Sending…' : 'Resend'}
                   </button>
                 </>
               )}
@@ -222,7 +213,7 @@ export function LoginStep({ state, update, goTo }: StepProps) {
       </div>
 
       <LegalDocumentDialog
-        kind={legalDoc ?? "PRIVACY_POLICY"}
+        kind={legalDoc ?? 'PRIVACY_POLICY'}
         open={legalDoc !== null}
         onOpenChange={(next) => {
           if (!next) setLegalDoc(null);

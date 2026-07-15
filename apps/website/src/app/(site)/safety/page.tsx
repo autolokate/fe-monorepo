@@ -6,7 +6,7 @@ import {
   RealSaveStoriesSection,
   ResponseFlowSection,
   safetyMetadata,
-} from "./";
+} from './';
 
 export const metadata = safetyMetadata;
 

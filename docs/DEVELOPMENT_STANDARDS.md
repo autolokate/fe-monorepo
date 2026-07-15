@@ -21,14 +21,14 @@ Priority order — **never reverse**:
 
 ## 2. TypeScript Standards
 
-| Rule | Requirement |
-|------|-------------|
-| Strict mode | Enabled via shared `@autolokate/config` |
-| `any` | **Forbidden** unless justified in code review with comment |
-| `@ts-ignore` / `@ts-expect-error` | **Forbidden** in application source |
-| Route params | Typed via path constants and session types |
-| Provider APIs | Fully typed exports; no implicit `unknown` |
-| Exhaustive switches | Use `never` for discriminated unions (see `qr-entry-urls.ts`) |
+| Rule                              | Requirement                                                   |
+| --------------------------------- | ------------------------------------------------------------- |
+| Strict mode                       | Enabled via shared `@autolokate/config`                       |
+| `any`                             | **Forbidden** unless justified in code review with comment    |
+| `@ts-ignore` / `@ts-expect-error` | **Forbidden** in application source                           |
+| Route params                      | Typed via path constants and session types                    |
+| Provider APIs                     | Fully typed exports; no implicit `unknown`                    |
+| Exhaustive switches               | Use `never` for discriminated unions (see `qr-entry-urls.ts`) |
 
 **Gate before merge:** `pnpm exec tsc --noEmit` — 0 errors.
 
@@ -47,10 +47,10 @@ Allowed documented exceptions:
 
 ## 4. Console Standards
 
-| Allowed | Forbidden |
-|---------|-----------|
-| Intentional error boundary logging (`PwaScanErrorBoundary`) | `console.log` in feature code |
-| Diagnostics wrapper (`pwa-photo-diagnostics.ts`) | Stray `console.warn` / `console.error` |
+| Allowed                                                     | Forbidden                              |
+| ----------------------------------------------------------- | -------------------------------------- |
+| Intentional error boundary logging (`PwaScanErrorBoundary`) | `console.log` in feature code          |
+| Diagnostics wrapper (`pwa-photo-diagnostics.ts`)            | Stray `console.warn` / `console.error` |
 
 Target: **0 stray console calls** in application source.
 
@@ -93,13 +93,13 @@ Target: **0 stray console calls** in application source.
 
 ## 6. Import Standards
 
-| Pattern | Status |
-|---------|--------|
-| `@/` alias (`apps/onboarding/src/`) | **Preferred** for cross-feature imports |
-| `@autolokate/ui`, `@autolokate/icons`, etc. | **Required** for shared packages |
-| Relative `../` within same feature | Acceptable |
-| `../../../../` deep relative | **Forbidden** |
-| Circular imports | **Forbidden** |
+| Pattern                                     | Status                                  |
+| ------------------------------------------- | --------------------------------------- |
+| `@/` alias (`apps/onboarding/src/`)         | **Preferred** for cross-feature imports |
+| `@autolokate/ui`, `@autolokate/icons`, etc. | **Required** for shared packages        |
+| Relative `../` within same feature          | Acceptable                              |
+| `../../../../` deep relative                | **Forbidden**                           |
+| Circular imports                            | **Forbidden**                           |
 
 ---
 
@@ -115,19 +115,19 @@ All UI must come from:
 
 ### Never duplicate these primitives
 
-| Primitive | Package component |
-|-----------|-------------------|
-| Buttons | `AlButton` |
-| Text inputs | `AlTextField` |
-| OTP | `AlOtp` |
-| Cards | `AlVehicleConfirmationCard`, `AlScannedVehicleCard`, etc. |
-| Chips | `AlChip` |
-| Dialogs / sheets | `AlPermissionSheet`, `AlBottomSheet` |
-| Timelines | `AlDispatchTimeline` |
-| Status heroes | `AlScreenBg`, status hero compositions |
-| Scanner cards | `AlScannedVehicleCard` |
-| Permission sheets | `AlPermissionSheet` |
-| SOS buttons | `AlSosHoldButton` (4000ms hold — tap must never trigger) |
+| Primitive         | Package component                                         |
+| ----------------- | --------------------------------------------------------- |
+| Buttons           | `AlButton`                                                |
+| Text inputs       | `AlTextField`                                             |
+| OTP               | `AlOtp`                                                   |
+| Cards             | `AlVehicleConfirmationCard`, `AlScannedVehicleCard`, etc. |
+| Chips             | `AlChip`                                                  |
+| Dialogs / sheets  | `AlPermissionSheet`, `AlBottomSheet`                      |
+| Timelines         | `AlDispatchTimeline`                                      |
+| Status heroes     | `AlScreenBg`, status hero compositions                    |
+| Scanner cards     | `AlScannedVehicleCard`                                    |
+| Permission sheets | `AlPermissionSheet`                                       |
+| SOS buttons       | `AlSosHoldButton` (4000ms hold — tap must never trigger)  |
 
 ### Promotion rule
 
@@ -139,15 +139,15 @@ App-level compositions (`AuthStepShell`, `EmergencyContactRow`, `InlineConsentBl
 
 ## 8. UI / Figma Standards
 
-| Rule | Detail |
-|------|--------|
-| Source of truth | Figma |
-| Visual verification | `VISUAL_TRUTH_MATRIX_V2.md` + runtime captures |
-| Status bar | Never render |
-| Fake mobile chrome | Never render |
-| Battery / network indicators | Never render |
-| Theme toggle | `/journey` entry only |
-| Spacing / typography / icon sizes | Locked unless Figma changes |
+| Rule                              | Detail                                         |
+| --------------------------------- | ---------------------------------------------- |
+| Source of truth                   | Figma                                          |
+| Visual verification               | `VISUAL_TRUTH_MATRIX_V2.md` + runtime captures |
+| Status bar                        | Never render                                   |
+| Fake mobile chrome                | Never render                                   |
+| Battery / network indicators      | Never render                                   |
+| Theme toggle                      | `/journey` entry only                          |
+| Spacing / typography / icon sizes | Locked unless Figma changes                    |
 
 Do not change spacing, typography, icon sizes, layouts, button sizing, or screen structure without a Figma change and visual truth re-capture.
 
@@ -184,40 +184,40 @@ Migration requires new versioned storage key + migration function + rollback doc
 
 All future apps/modules must implement before release:
 
-| Capability | Reference |
-|------------|-----------|
-| Web manifest | Vite PWA config |
-| Service worker | Workbox generated |
-| Offline shell | `PwaOfflineScreen` |
-| Install prompt | Platform-specific (`PwaInstallPrompt`, `PwaIosInstallSheet`) |
-| Safe areas | PWA shell CSS |
-| Camera | Photo capture hooks |
-| Location | Geolocation hooks |
-| Permission recovery | `PwaPermissionRecoveryActions` |
-| Theme persistence | `al-onboarding-theme` in `localStorage` |
+| Capability          | Reference                                                    |
+| ------------------- | ------------------------------------------------------------ |
+| Web manifest        | Vite PWA config                                              |
+| Service worker      | Workbox generated                                            |
+| Offline shell       | `PwaOfflineScreen`                                           |
+| Install prompt      | Platform-specific (`PwaInstallPrompt`, `PwaIosInstallSheet`) |
+| Safe areas          | PWA shell CSS                                                |
+| Camera              | Photo capture hooks                                          |
+| Location            | Geolocation hooks                                            |
+| Permission recovery | `PwaPermissionRecoveryActions`                               |
+| Theme persistence   | `al-onboarding-theme` in `localStorage`                      |
 
 ---
 
 ## 12. Build & Quality Gates
 
-| Gate | Command | Target |
-|------|---------|--------|
-| Lint | `pnpm run lint` | 0 errors |
-| TypeScript | `pnpm exec tsc --noEmit` | 0 errors |
-| Build | `pnpm run build` | Success |
-| Console audit | grep `console.*` in src | Intentional only |
+| Gate          | Command                  | Target           |
+| ------------- | ------------------------ | ---------------- |
+| Lint          | `pnpm run lint`          | 0 errors         |
+| TypeScript    | `pnpm exec tsc --noEmit` | 0 errors         |
+| Build         | `pnpm run build`         | Success          |
+| Console audit | grep `console.*` in src  | Intentional only |
 
 ---
 
 ## 13. Documentation Standards
 
-| When | Update |
-|------|--------|
-| Any flow behaviour change | `PROJECT_STATUS.md`, `CLAUDE_PROJECT_INDEX.md` |
-| Architecture change | `ARCHITECTURE_PRINCIPLES.md` + charter review |
-| New signoff | Add to `memory/MEMORY.md` index |
-| Sprint reports | Archive to `docs/archive/` — do not accumulate at `docs/` root |
-| UI change | Re-capture visual truth samples |
+| When                      | Update                                                         |
+| ------------------------- | -------------------------------------------------------------- |
+| Any flow behaviour change | `PROJECT_STATUS.md`, `CLAUDE_PROJECT_INDEX.md`                 |
+| Architecture change       | `ARCHITECTURE_PRINCIPLES.md` + charter review                  |
+| New signoff               | Add to `memory/MEMORY.md` index                                |
+| Sprint reports            | Archive to `docs/archive/` — do not accumulate at `docs/` root |
+| UI change                 | Re-capture visual truth samples                                |
 
 Permanent reference docs (do not archive):
 

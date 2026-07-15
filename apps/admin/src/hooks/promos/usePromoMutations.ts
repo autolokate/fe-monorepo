@@ -10,8 +10,13 @@ export function usePromoMutations() {
   const queryClient = useQueryClient();
 
   const createPromoMutation = useMutation({
-    mutationFn: ({ body, signal }: { body: Parameters<typeof createPromo>[0]; signal?: AbortSignal }) =>
-      createPromo(body, signal),
+    mutationFn: ({
+      body,
+      signal,
+    }: {
+      body: Parameters<typeof createPromo>[0];
+      signal?: AbortSignal;
+    }) => createPromo(body, signal),
     retry: 0,
     onSuccess: async (promo) => {
       await queryClient.invalidateQueries({ queryKey: promosQueryKeys.all });

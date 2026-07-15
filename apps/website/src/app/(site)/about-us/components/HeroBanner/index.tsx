@@ -1,10 +1,6 @@
-import {
-  ABOUT_HERO_COPY,
-  ABOUT_HERO_FEATURES,
-  ABOUT_HERO_STATS,
-} from "./constants";
-import { HeroCta } from "./HeroCta";
-import styles from "./index.module.css";
+import { ABOUT_HERO_COPY, ABOUT_HERO_FEATURES, ABOUT_HERO_STATS } from './constants';
+import { HeroCta } from './HeroCta';
+import styles from './index.module.css';
 
 export function HeroBanner() {
   return (
@@ -22,10 +18,8 @@ export function HeroBanner() {
             <span className={styles.eyebrow}>{ABOUT_HERO_COPY.eyebrow}</span>
 
             <h1 id="about-hero-heading" className={styles.headline}>
-              {ABOUT_HERO_COPY.headline}{" "}
-              <span className={styles.headlineAccent}>
-                {ABOUT_HERO_COPY.headlineAccent}
-              </span>
+              {ABOUT_HERO_COPY.headline}{' '}
+              <span className={styles.headlineAccent}>{ABOUT_HERO_COPY.headlineAccent}</span>
             </h1>
 
             <p className={styles.subheading}>{ABOUT_HERO_COPY.subheading}</p>

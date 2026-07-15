@@ -17,24 +17,24 @@ Sprint 4.3 adds GPU-friendly CSS motion across cards, carousels, step shells, bu
 
 ## Design principles
 
-| Rule | Implementation |
-|------|----------------|
-| One card at a time | Carousel uses scroll-snap + single `--selected` slide; selectors are mutually exclusive |
-| No full-screen sliding | Step enter is 6px translate + fade, not page slide |
-| No excessive motion | Scale range 0.94–1.03; durations 180–260ms |
-| 60fps | `transform` / `opacity` / `box-shadow` only; no width/height/margin animation |
-| Reduced motion | Global + per-component `@media (prefers-reduced-motion: reduce)` blocks |
+| Rule                   | Implementation                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| One card at a time     | Carousel uses scroll-snap + single `--selected` slide; selectors are mutually exclusive |
+| No full-screen sliding | Step enter is 6px translate + fade, not page slide                                      |
+| No excessive motion    | Scale range 0.94–1.03; durations 180–260ms                                              |
+| 60fps                  | `transform` / `opacity` / `box-shadow` only; no width/height/margin animation           |
+| Reduced motion         | Global + per-component `@media (prefers-reduced-motion: reduce)` blocks                 |
 
 ### Shared motion tokens
 
 Defined in `apps/qr/src/styles/interaction-motion.css` and imported from `main.tsx`:
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `--ob-motion-spring` | `cubic-bezier(0.22, 1, 0.36, 1)` | Spring-like ease-out |
-| `--ob-motion-tap` | `180ms` | Press / active states |
-| `--ob-motion-select` | `220ms` | Selection glow / scale settle |
-| `--ob-motion-enter` | `260ms` | Step and list enter |
+| Token                | Value                            | Use                           |
+| -------------------- | -------------------------------- | ----------------------------- |
+| `--ob-motion-spring` | `cubic-bezier(0.22, 1, 0.36, 1)` | Spring-like ease-out          |
+| `--ob-motion-tap`    | `180ms`                          | Press / active states         |
+| `--ob-motion-select` | `220ms`                          | Selection glow / scale settle |
+| `--ob-motion-enter`  | `260ms`                          | Step and list enter           |
 
 Existing design-system tokens (`--al-motion-fast`, `--al-motion-scale-press`, etc.) are reused where components already depend on them.
 
@@ -48,11 +48,11 @@ Existing design-system tokens (`--al-motion-fast`, `--al-motion-scale-press`, et
 
 **Motion:** `.ob-step-chrome__frame` fades in and translates **6px** upward on mount.
 
-| Property | From → To |
-|----------|-----------|
-| Opacity | 0 → 1 |
-| Translate Y | 6px → 0 |
-| Duration | 260ms spring |
+| Property    | From → To    |
+| ----------- | ------------ |
+| Opacity     | 0 → 1        |
+| Translate Y | 6px → 0      |
+| Duration    | 260ms spring |
 
 **Reduced motion:** Animation disabled; frame shown at full opacity with no transform.
 
@@ -64,14 +64,14 @@ Existing design-system tokens (`--al-motion-fast`, `--al-motion-scale-press`, et
 
 **Behavior:**
 
-| State | Motion |
-|-------|--------|
-| Unselected slide | `opacity: 0.75`, `scale(0.96)` |
-| Selected slide | `opacity: 1`, `scale(1.03)`, green ring glow via `::after` |
-| Tap (unselected) | `scale(0.94)` |
-| Tap (selected) | `scale(1.01)` |
-| Check mark | Pop-in scale + opacity (180ms) |
-| Plan card selected | Spring scale 0.98 → 1 + success glow |
+| State              | Motion                                                     |
+| ------------------ | ---------------------------------------------------------- |
+| Unselected slide   | `opacity: 0.75`, `scale(0.96)`                             |
+| Selected slide     | `opacity: 1`, `scale(1.03)`, green ring glow via `::after` |
+| Tap (unselected)   | `scale(0.94)`                                              |
+| Tap (selected)     | `scale(1.01)`                                              |
+| Check mark         | Pop-in scale + opacity (180ms)                             |
+| Plan card selected | Spring scale 0.98 → 1 + success glow                       |
 
 Carousel scroll remains snap-based (not animated slide transition). Only the focused card scales/glows — one card emphasized at a time.
 
@@ -85,10 +85,10 @@ Carousel scroll remains snap-based (not animated slide transition). Only the foc
 
 **Behavior:**
 
-| State | Motion |
-|-------|--------|
-| Hover | `translateY(-2px)`, stronger border |
-| Tap | `scale(0.96)` |
+| State    | Motion                                           |
+| -------- | ------------------------------------------------ |
+| Hover    | `translateY(-2px)`, stronger border              |
+| Tap      | `scale(0.96)`                                    |
 | Selected | Green border, glow shadow, spring scale 0.94 → 1 |
 
 **Reduced motion:** No hover lift, tap scale, or select animation.
@@ -101,12 +101,12 @@ Carousel scroll remains snap-based (not animated slide transition). Only the foc
 
 **Behavior:**
 
-| State | Motion |
-|-------|--------|
+| State              | Motion                              |
+| ------------------ | ----------------------------------- |
 | Hover (unselected) | `translateY(-1px)`, border emphasis |
-| Tap | `scale(0.98)` |
-| Selected | Success glow, spring scale 0.97 → 1 |
-| Radio icon | Pop scale 0.6 → 1 + fade-in |
+| Tap                | `scale(0.98)`                       |
+| Selected           | Success glow, spring scale 0.97 → 1 |
+| Radio icon         | Pop scale 0.6 → 1 + fade-in         |
 
 **Reduced motion:** All transforms and animations disabled.
 
@@ -118,11 +118,11 @@ Carousel scroll remains snap-based (not animated slide transition). Only the foc
 
 **Summary list enter (E09 / E10):** `.ob-contact-card-list > .al-contact-card` staggers fade-up (40ms delay per child, max 3).
 
-| Property | From → To |
-|----------|-----------|
-| Opacity | 0 → 1 |
-| Translate Y | 8px → 0 |
-| Scale | 0.98 → 1 |
+| Property    | From → To |
+| ----------- | --------- |
+| Opacity     | 0 → 1     |
+| Translate Y | 8px → 0   |
+| Scale       | 0.98 → 1  |
 
 **Base card:** Transition on transform, border-color, box-shadow for future interactive use.
 
@@ -136,10 +136,10 @@ Carousel scroll remains snap-based (not animated slide transition). Only the foc
 
 **Behavior:**
 
-| State | Motion |
-|-------|--------|
-| Toggle on (`:has(input:checked)`) | Green-tinted border + soft glow |
-| Toggle press (`:has(input:active)`) | Row `scale(0.99)` |
+| State                               | Motion                          |
+| ----------------------------------- | ------------------------------- |
+| Toggle on (`:has(input:checked)`)   | Green-tinted border + soft glow |
+| Toggle press (`:has(input:active)`) | Row `scale(0.99)`               |
 
 Uses `:has()` so the card reacts without changing toggle markup.
 
@@ -153,10 +153,10 @@ Uses `:has()` so the card reacts without changing toggle markup.
 
 **Behavior:**
 
-| State | Motion |
-|-------|--------|
+| State | Motion                          |
+| ----- | ------------------------------- |
 | Hover | Border + subtle background fill |
-| Tap | `scale(0.98)` |
+| Tap   | `scale(0.98)`                   |
 
 **Reduced motion:** Press scale disabled.
 
@@ -176,10 +176,10 @@ Uses `:has()` so the card reacts without changing toggle markup.
 
 **Behavior:**
 
-| State | Motion |
-|-------|--------|
-| Hover | Opacity 0.94 |
-| Active | `scale(var(--al-motion-scale-press))` |
+| State   | Motion                                           |
+| ------- | ------------------------------------------------ |
+| Hover   | Opacity 0.94                                     |
+| Active  | `scale(var(--al-motion-scale-press))`            |
 | Loading | Spinner rotation (disabled under reduced motion) |
 
 **Reduced motion:** Active press scale and spinner animation disabled.
@@ -210,52 +210,52 @@ Already respects `prefers-reduced-motion` (confetti hidden, hero/checklist/foote
 
 ### New
 
-| File | Purpose |
-|------|---------|
-| `apps/qr/src/styles/interaction-motion.css` | Shared tokens, step enter, list stagger, loading breathe |
+| File                                                                                  | Purpose                                                  |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `apps/qr/src/styles/interaction-motion.css`                                           | Shared tokens, step enter, list stagger, loading breathe |
 | `apps/qr/src/components/compositions/emergency-contact-row/emergency-contact-row.css` | Contact row hook (width only; list motion in shared CSS) |
 
 ### Onboarding app
 
-| File | Change |
-|------|--------|
-| `main.tsx` | Import `interaction-motion.css` |
-| `RelationshipSelector.tsx` | `className="ob-relationship-selector"` on grid |
-| `EmergencyContactRow.tsx` | `className="ob-emergency-contact-card"` + CSS import |
-| `E09ContactsSummaryScreen.tsx` | `className="ob-contact-card-list"` on stack |
-| `E10RidersSummaryScreen.tsx` | `className="ob-contact-card-list"` on stack |
-| `plan-carousel.css` | Tap active scales + reduced-motion for `:active` |
-| `rider-cover-options.css` | Hover, tap, select glow, radio pop |
-| `permission-row.css` | Enabled glow, tap scale |
-| `add-contact-row.css` | Hover, tap |
-| `flow-option-card.css` | Reduced-motion block |
+| File                           | Change                                               |
+| ------------------------------ | ---------------------------------------------------- |
+| `main.tsx`                     | Import `interaction-motion.css`                      |
+| `RelationshipSelector.tsx`     | `className="ob-relationship-selector"` on grid       |
+| `EmergencyContactRow.tsx`      | `className="ob-emergency-contact-card"` + CSS import |
+| `E09ContactsSummaryScreen.tsx` | `className="ob-contact-card-list"` on stack          |
+| `E10RidersSummaryScreen.tsx`   | `className="ob-contact-card-list"` on stack          |
+| `plan-carousel.css`            | Tap active scales + reduced-motion for `:active`     |
+| `rider-cover-options.css`      | Hover, tap, select glow, radio pop                   |
+| `permission-row.css`           | Enabled glow, tap scale                              |
+| `add-contact-row.css`          | Hover, tap                                           |
+| `flow-option-card.css`         | Reduced-motion block                                 |
 
 ### UI package (`@autolokate/ui`)
 
-| File | Change |
-|------|--------|
-| `RelationGrid.css` | Hover lift, tap scale, select spring + glow |
-| `ContactCard.css` | Transition tokens |
-| `PlanCard.css` | Select spring animation + reduced motion |
-| `Button.css` | Reduced motion for press + spinner |
-| `ScreenSpinner.css` | Reduced motion for rotation |
+| File                | Change                                      |
+| ------------------- | ------------------------------------------- |
+| `RelationGrid.css`  | Hover lift, tap scale, select spring + glow |
+| `ContactCard.css`   | Transition tokens                           |
+| `PlanCard.css`      | Select spring animation + reduced motion    |
+| `Button.css`        | Reduced motion for press + spinner          |
+| `ScreenSpinner.css` | Reduced motion for rotation                 |
 
 ---
 
 ## Animation technique matrix
 
-| Surface | Scale | Elevation / translate | Glow | Spring | Opacity | Translate |
-|---------|:-----:|:---------------------:|:----:|:------:|:-------:|:---------:|
-| Step frame | — | 6px up | — | ✓ | ✓ | ✓ |
-| Plan carousel | ✓ | — | ✓ | ✓ | ✓ | — |
-| Relation tiles | ✓ | hover −2px | ✓ | ✓ | — | ✓ |
-| Rider options | ✓ | hover −1px | ✓ | ✓ | ✓ (radio) | ✓ |
-| Contact list | ✓ | 8px up | — | ✓ | ✓ | ✓ |
-| Permission rows | ✓ | — | ✓ | — | — | — |
-| Add contact | ✓ | — | — | ✓ | — | — |
-| Flow options | ✓ | — | — | — | — | — |
-| Buttons | ✓ | — | — | — | ✓ (hover) | — |
-| Loading | ✓ | — | — | — | ✓ | — |
+| Surface         | Scale | Elevation / translate | Glow | Spring |  Opacity  | Translate |
+| --------------- | :---: | :-------------------: | :--: | :----: | :-------: | :-------: |
+| Step frame      |   —   |        6px up         |  —   |   ✓    |     ✓     |     ✓     |
+| Plan carousel   |   ✓   |           —           |  ✓   |   ✓    |     ✓     |     —     |
+| Relation tiles  |   ✓   |      hover −2px       |  ✓   |   ✓    |     —     |     ✓     |
+| Rider options   |   ✓   |      hover −1px       |  ✓   |   ✓    | ✓ (radio) |     ✓     |
+| Contact list    |   ✓   |        8px up         |  —   |   ✓    |     ✓     |     ✓     |
+| Permission rows |   ✓   |           —           |  ✓   |   —    |     —     |     —     |
+| Add contact     |   ✓   |           —           |  —   |   ✓    |     —     |     —     |
+| Flow options    |   ✓   |           —           |  —   |   —    |     —     |     —     |
+| Buttons         |   ✓   |           —           |  —   |   —    | ✓ (hover) |     —     |
+| Loading         |   ✓   |           —           |  —   |   —    |     ✓     |     —     |
 
 ---
 
@@ -263,17 +263,17 @@ Already respects `prefers-reduced-motion` (confetti hidden, hero/checklist/foote
 
 Enable **Settings → Accessibility → Reduce motion** on macOS/iOS and repeat key flows.
 
-| Flow | Screen | What to verify |
-|------|--------|----------------|
-| Purchase | R03 plan carousel | Unselected cards dim/smaller; center card scales up + glow; tap feedback; no jank while scrolling |
-| Purchase | R07 riders | Option tap scale; selected glow + radio pop |
-| Purchase | R14 permissions | Toggle on adds glow; row compresses slightly on press |
-| Emergency | E03 relationship | Tile hover (desktop), tap scale, selected glow |
-| Emergency | E09/E10 summary | Contact cards fade up with stagger (≤3) |
-| Any step | Step shell | Subtle content fade-up on navigation (not full slide) |
-| Purchase | R04 status | Loading icon gentle pulse; spinner rotates |
-| Global | CTAs | Button press scale; loading spinner |
-| Reduced motion | All above | Instant state changes, no pulse/spin/pop |
+| Flow           | Screen            | What to verify                                                                                    |
+| -------------- | ----------------- | ------------------------------------------------------------------------------------------------- |
+| Purchase       | R03 plan carousel | Unselected cards dim/smaller; center card scales up + glow; tap feedback; no jank while scrolling |
+| Purchase       | R07 riders        | Option tap scale; selected glow + radio pop                                                       |
+| Purchase       | R14 permissions   | Toggle on adds glow; row compresses slightly on press                                             |
+| Emergency      | E03 relationship  | Tile hover (desktop), tap scale, selected glow                                                    |
+| Emergency      | E09/E10 summary   | Contact cards fade up with stagger (≤3)                                                           |
+| Any step       | Step shell        | Subtle content fade-up on navigation (not full slide)                                             |
+| Purchase       | R04 status        | Loading icon gentle pulse; spinner rotates                                                        |
+| Global         | CTAs              | Button press scale; loading spinner                                                               |
+| Reduced motion | All above         | Instant state changes, no pulse/spin/pop                                                          |
 
 ---
 

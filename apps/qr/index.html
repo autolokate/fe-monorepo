@@ -2,16 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0A0A0A" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Autolokate" />
-    <meta name="description" content="Vehicle protection activation, emergency SOS, and Park Me reporting." />
+    <meta
+      name="description"
+      content="Vehicle protection activation, emergency SOS, and Park Me reporting."
+    />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
@@ -48,13 +48,18 @@
             window.location.reload();
             return;
           }
-          navigator.serviceWorker.getRegistrations().then(function (registrations) {
-            return Promise.all(registrations.map(function (registration) {
-              return registration.unregister();
-            }));
-          }).finally(function () {
-            window.location.reload();
-          });
+          navigator.serviceWorker
+            .getRegistrations()
+            .then(function (registrations) {
+              return Promise.all(
+                registrations.map(function (registration) {
+                  return registration.unregister();
+                }),
+              );
+            })
+            .finally(function () {
+              window.location.reload();
+            });
         }
 
         window.addEventListener('error', function (event) {
@@ -78,7 +83,15 @@
   </head>
   <body>
     <div id="root">
-      <p style="margin:0;padding:24px;font-family:system-ui,sans-serif;color:#a3a3a3;text-align:center;">
+      <p
+        style="
+          margin: 0;
+          padding: 24px;
+          font-family: system-ui, sans-serif;
+          color: #a3a3a3;
+          text-align: center;
+        "
+      >
         Loading Autolokate…
       </p>
     </div>

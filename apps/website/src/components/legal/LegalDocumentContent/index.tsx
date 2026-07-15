@@ -1,20 +1,20 @@
-import Link from "next/link";
-import { Mail } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { fetchLegalDocument, type LegalDocumentKind } from "@/lib/legal/legal-fetch";
+import Link from 'next/link';
+import { Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { fetchLegalDocument, type LegalDocumentKind } from '@/lib/legal/legal-fetch';
 
 interface LegalDocumentContentProps {
   kind: LegalDocumentKind;
 }
 
 function formatEffectiveDate(iso: string): string {
-  if (!iso) return "";
+  if (!iso) return '';
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  return date.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 }
 
@@ -44,8 +44,8 @@ export async function LegalDocumentContent({ kind }: LegalDocumentContentProps) 
         ) : (
           <div className="rounded-2xl border border-border/70 bg-card/80 p-8 text-center shadow-app-soft backdrop-blur-sm">
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-              We couldn&apos;t load this document right now. Please refresh the page or
-              try again shortly.
+              We couldn&apos;t load this document right now. Please refresh the page or try again
+              shortly.
             </p>
           </div>
         )}
@@ -53,11 +53,11 @@ export async function LegalDocumentContent({ kind }: LegalDocumentContentProps) 
         {doc?.effectiveDate ? (
           <div className="mt-6 rounded-2xl border border-primary/25 bg-primary/[0.05] px-6 py-5 text-center shadow-app-soft">
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-              Effective as of{" "}
+              Effective as of{' '}
               <span className="font-semibold text-foreground">
                 {formatEffectiveDate(doc.effectiveDate)}
               </span>
-              {doc.version ? ` · version ${doc.version}` : ""}.
+              {doc.version ? ` · version ${doc.version}` : ''}.
             </p>
           </div>
         ) : null}

@@ -171,7 +171,9 @@ export function AuthStepShell({
           ) : null}
         </header>
 
-        <div className={`ob-step-chrome__body ob-auth-shell__body ob-auth-shell__body--${contentGap}`}>
+        <div
+          className={`ob-step-chrome__body ob-auth-shell__body ob-auth-shell__body--${contentGap}`}
+        >
           <div className="ob-step-chrome__heading ob-auth-shell__heading">
             <AlHeading variant="h2">{title}</AlHeading>
             {description ? (
@@ -190,7 +192,11 @@ export function AuthStepShell({
         {hideFooter ? null : (
           <footer className="ob-step-chrome__footer ob-auth-shell__footer">
             {ctaHelper ? (
-              <AlText variant="caption" tone="muted" className="ob-step-chrome__cta-helper ob-auth-shell__cta-helper">
+              <AlText
+                variant="caption"
+                tone="muted"
+                className="ob-step-chrome__cta-helper ob-auth-shell__cta-helper"
+              >
                 {ctaHelper}
               </AlText>
             ) : null}

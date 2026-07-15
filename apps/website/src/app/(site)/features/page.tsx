@@ -8,7 +8,7 @@ import {
   MultiVehicleSection,
   SafetyEmergencySection,
   featuresMetadata,
-} from "./";
+} from './';
 
 export const metadata = featuresMetadata;
 

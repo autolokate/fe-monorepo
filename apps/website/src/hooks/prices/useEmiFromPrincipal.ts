@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useApiQuery } from "@/hooks/useApiQuery";
-import type { EmiQuote } from "@/services/prices/prices-api";
-import { getEmiQuote } from "@/services/prices/prices-api";
+import { useApiQuery } from '@/hooks/useApiQuery';
+import type { EmiQuote } from '@/services/prices/prices-api';
+import { getEmiQuote } from '@/services/prices/prices-api';
 
 const EMI_RATE = 9.5;
 const EMI_MONTHS = 60;
@@ -13,7 +13,7 @@ export function useEmiFromPrincipal(
 ) {
   const { enabled = true } = options;
   const p =
-    typeof principal === "number" && Number.isFinite(principal) && principal >= 10_000
+    typeof principal === 'number' && Number.isFinite(principal) && principal >= 10_000
       ? principal
       : null;
   const canRun = Boolean(enabled && p != null);

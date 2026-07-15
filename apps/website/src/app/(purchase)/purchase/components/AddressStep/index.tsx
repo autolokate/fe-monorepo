@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
-import { ArrowRight, Loader2, MapPin, Pencil, Plus, Trash2, X } from "lucide-react";
-import { toast } from "sonner";
-import { AlButton } from "@autolokate/ui/button";
-import { AlTextField } from "@autolokate/ui";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
+import { ArrowRight, Loader2, MapPin, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { toast } from 'sonner';
+import { AlButton } from '@autolokate/ui/button';
+import { AlTextField } from '@autolokate/ui';
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
 import {
   useAddressAutocomplete,
   useCreateAddress,
@@ -21,21 +21,21 @@ import {
   usePurchaseAddresses,
   useUpdateAddress,
   useUpdatePurchaseProfile,
-} from "@/hooks/purchase";
+} from '@/hooks/purchase';
 import type {
   AddressSuggestion,
   CreateAddressPayload,
   SavedAddress,
   UpdateAddressPayload,
-} from "@/services/purchase";
-import { MOBILE_LENGTH, PIN_LENGTH } from "../../constants";
-import type { StepProps } from "../../types";
-import { StepShell } from "../StepShell";
-import styles from "./index.module.css";
+} from '@/services/purchase';
+import { MOBILE_LENGTH, PIN_LENGTH } from '../../constants';
+import type { StepProps } from '../../types';
+import { StepShell } from '../StepShell';
+import styles from './index.module.css';
 
 /** Which screen the step is showing. `loading` gates the first paint. */
-type View = "loading" | "list" | "form";
-type FormMode = "create" | "edit";
+type View = 'loading' | 'list' | 'form';
+type FormMode = 'create' | 'edit';
 
 export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps) {
   const {
@@ -44,8 +44,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
     isError: addressesError,
     refetch,
   } = usePurchaseAddresses(isAuthenticated);
-  const { mutateAsync: updateProfile, isLoading: savingProfile } =
-    useUpdatePurchaseProfile();
+  const { mutateAsync: updateProfile, isLoading: savingProfile } = useUpdatePurchaseProfile();
   const { mutateAsync: createAddress, isLoading: creating } = useCreateAddress({
     errorToast: true,
   });
@@ -59,8 +58,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
     useAddressAutocomplete();
 
   // ─── View orchestration ────────────────────────────────────────────
-  const [view, setView] = useState<View>("loading");
-  const [formMode, setFormMode] = useState<FormMode>("create");
+  const [view, setView] = useState<View>('loading');
+  const [formMode, setFormMode] = useState<FormMode>('create');
   const [editingId, setEditingId] = useState<string | null>(null);
   // The saved address being edited — kept to source masked contact hints.
   const [editingAddress, setEditingAddress] = useState<SavedAddress | null>(null);
@@ -69,7 +68,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   const decidedRef = useRef(false);
 
   // ─── Address-picker local state (never persisted) ───────────────────
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [pinTouched, setPinTouched] = useState(false);
@@ -85,7 +84,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listboxId = useId();
 
-  const isEditing = formMode === "edit";
+  const isEditing = formMode === 'edit';
 
   const resetTouched = () => {
     setNameTouched(false);
@@ -101,36 +100,36 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   // Open a blank form to add a new address. Keeps the buyer's name / contact
   // as a sensible default, but clears every address-specific field.
   const startCreate = () => {
-    setFormMode("create");
+    setFormMode('create');
     setEditingId(null);
     setEditingAddress(null);
-    setQuery("");
+    setQuery('');
     reset();
     setOpen(false);
     setActiveIndex(-1);
     setAddressResolved(false);
     setPinFromLookup(false);
-    update({ addr: "", line2: "", pin: "", city: "", region: "" });
+    update({ addr: '', line2: '', pin: '', city: '', region: '' });
     resetTouched();
-    setView("form");
+    setView('form');
   };
 
   // Open the form prefilled from a saved address. Contact fields come back
   // masked, so they start empty (optional on edit) with the mask as a hint.
   const startEdit = (a: SavedAddress) => {
-    setFormMode("edit");
+    setFormMode('edit');
     setEditingId(a.id);
     setEditingAddress(a);
-    setQuery("");
+    setQuery('');
     reset();
     setOpen(false);
     setActiveIndex(-1);
     update({
       name: a.name,
-      orderMobile: "",
-      email: "",
+      orderMobile: '',
+      email: '',
       addr: a.line1,
-      line2: a.line2 ?? "",
+      line2: a.line2 ?? '',
       city: a.city,
       region: a.state,
       pin: a.pincode,
@@ -138,7 +137,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
     setAddressResolved(true);
     setPinFromLookup(false);
     resetTouched();
-    setView("form");
+    setView('form');
   };
 
   // Copy a chosen saved address into the shared state the summary / order flow
@@ -147,7 +146,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
     update({
       name: a.name,
       addr: a.line1,
-      line2: a.line2 ?? "",
+      line2: a.line2 ?? '',
       city: a.city,
       region: a.state,
       pin: a.pincode,
@@ -172,7 +171,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
     if (addresses.length > 0) {
       const preferred = addresses.find((a) => a.isDefault) ?? addresses[0];
       setSelectedId(preferred.id);
-      setView("list");
+      setView('list');
     } else {
       startCreate();
     }
@@ -189,10 +188,10 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   // On edit, contact fields are optional (the saved ones are kept unless typed).
   const mobileValid = isEditing
-    ? state.orderMobile === "" || mobileRe.test(state.orderMobile)
+    ? state.orderMobile === '' || mobileRe.test(state.orderMobile)
     : mobileRe.test(state.orderMobile);
   const emailValid = isEditing
-    ? state.email.trim() === "" || emailRe.test(state.email.trim())
+    ? state.email.trim() === '' || emailRe.test(state.email.trim())
     : emailRe.test(state.email.trim());
   const nameValid = state.name.trim().length > 0;
   const addrValid = state.addr.trim().length > 0;
@@ -244,16 +243,16 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (!open || suggestions.length === 0) return;
-    if (e.key === "ArrowDown") {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       setActiveIndex((i) => (i + 1) % suggestions.length);
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setActiveIndex((i) => (i <= 0 ? suggestions.length - 1 : i - 1));
-    } else if (e.key === "Enter" && activeIndex >= 0) {
+    } else if (e.key === 'Enter' && activeIndex >= 0) {
       e.preventDefault();
       void handlePick(suggestions[activeIndex]);
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       setOpen(false);
       setActiveIndex(-1);
     }
@@ -265,11 +264,11 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
 
   const handleClearSearch = () => {
     if (blurTimer.current) clearTimeout(blurTimer.current);
-    setQuery("");
+    setQuery('');
     setOpen(false);
     setActiveIndex(-1);
     reset();
-    update({ addr: "", line2: "", pin: "", city: "", region: "" });
+    update({ addr: '', line2: '', pin: '', city: '', region: '' });
     // On edit we keep the fields visible so the buyer can re-enter by hand.
     if (!isEditing) {
       setAddressResolved(false);
@@ -316,7 +315,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
 
       // Carry the saved address id — the order is created from it, not the lines.
       update({ addressId: saved.id });
-      goTo("summary");
+      goTo('summary');
     } catch {
       // Error toast is surfaced by the mutation hooks.
     }
@@ -327,7 +326,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
     if (!chosen) return;
     applyAddressToState(chosen);
     update({ addressId: chosen.id });
-    goTo("summary");
+    goTo('summary');
   };
 
   const confirmDelete = async () => {
@@ -342,7 +341,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           const preferred = next.find((a) => a.isDefault) ?? next[0];
           setSelectedId(preferred.id);
         }
-        setView("list");
+        setView('list');
       } else {
         // Nothing left — drop straight into a blank form.
         startCreate();
@@ -354,17 +353,17 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
 
   const hasSaved = addresses.length > 0;
   const handleBack = () => {
-    if (view === "form" && hasSaved) {
-      setView("list");
+    if (view === 'form' && hasSaved) {
+      setView('list');
       return;
     }
-    goTo(isAuthenticated ? "configure" : "login");
+    goTo(isAuthenticated ? 'configure' : 'login');
   };
 
   const showList = open && query.trim().length > 0;
 
   // ─── Loading ───────────────────────────────────────────────────────
-  if (view === "loading") {
+  if (view === 'loading') {
     return (
       <StepShell
         title="Where should we ship?"
@@ -378,7 +377,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   }
 
   // ─── Saved-address list ────────────────────────────────────────────
-  if (view === "list") {
+  if (view === 'list') {
     return (
       <StepShell
         title="Where should we ship?"
@@ -398,7 +397,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                 aria-checked={active}
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
+                  if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     setSelectedId(a.id);
                   }
@@ -411,19 +410,17 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                   <div className={styles.addrTop}>
                     <span className={styles.addrName}>{a.name}</span>
                     {a.label ? <span className={styles.addrTag}>{a.label}</span> : null}
-                    {a.isDefault ? (
-                      <span className={styles.addrDefault}>Default</span>
-                    ) : null}
+                    {a.isDefault ? <span className={styles.addrDefault}>Default</span> : null}
                   </div>
                   <p className={styles.addrLines}>
                     {a.line1}
-                    {a.line2 ? `, ${a.line2}` : ""}
+                    {a.line2 ? `, ${a.line2}` : ''}
                     <br />
                     {a.city}, {a.state} {a.pincode}
                   </p>
                   <p className={styles.addrContact}>
                     {a.phoneMasked}
-                    {a.emailMasked ? ` · ${a.emailMasked}` : ""}
+                    {a.emailMasked ? ` · ${a.emailMasked}` : ''}
                   </p>
                 </div>
                 <div className={styles.addrActions}>
@@ -488,7 +485,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   // ─── Address form (create / edit) ──────────────────────────────────
   return (
     <StepShell
-      title={isEditing ? "Edit delivery address" : "Where should we ship?"}
+      title={isEditing ? 'Edit delivery address' : 'Where should we ship?'}
       subtitle="Your QR sticker kit arrives in 3–5 days. Shipping is free."
       backLabel="Back"
       onBack={handleBack}
@@ -500,8 +497,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           prefix=""
           placeholder="Aarav Mehta"
           value={state.name}
-          state={nameTouched && !nameValid ? "error" : "default"}
-          errorText={nameTouched && !nameValid ? "Full name is required" : undefined}
+          state={nameTouched && !nameValid ? 'error' : 'default'}
+          errorText={nameTouched && !nameValid ? 'Full name is required' : undefined}
           onChange={(e) => update({ name: e.target.value })}
           onBlur={() => setNameTouched(true)}
           autoComplete="name"
@@ -510,18 +507,18 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           id="ship-mobile"
           label="Mobile number"
           prefix=""
-          placeholder={editingAddress ? `Keep ${editingAddress.phoneMasked}` : "9876543210"}
+          placeholder={editingAddress ? `Keep ${editingAddress.phoneMasked}` : '9876543210'}
           inputMode="numeric"
           value={state.orderMobile}
-          state={mobileTouched && !mobileValid ? "error" : "default"}
+          state={mobileTouched && !mobileValid ? 'error' : 'default'}
           errorText={
             mobileTouched && !mobileValid
-              ? "Enter a valid 10-digit Indian mobile number"
+              ? 'Enter a valid 10-digit Indian mobile number'
               : undefined
           }
           onChange={(e) =>
             update({
-              orderMobile: e.target.value.replace(/\D/g, "").slice(0, MOBILE_LENGTH),
+              orderMobile: e.target.value.replace(/\D/g, '').slice(0, MOBILE_LENGTH),
             })
           }
           onBlur={() => setMobileTouched(true)}
@@ -533,15 +530,11 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           prefix=""
           type="email"
           placeholder={
-            editingAddress?.emailMasked
-              ? `Keep ${editingAddress.emailMasked}`
-              : "aarav@example.com"
+            editingAddress?.emailMasked ? `Keep ${editingAddress.emailMasked}` : 'aarav@example.com'
           }
           value={state.email}
-          state={emailTouched && !emailValid ? "error" : "default"}
-          errorText={
-            emailTouched && !emailValid ? "Enter a valid email address" : undefined
-          }
+          state={emailTouched && !emailValid ? 'error' : 'default'}
+          errorText={emailTouched && !emailValid ? 'Enter a valid email address' : undefined}
           onChange={(e) => update({ email: e.target.value })}
           onBlur={() => setEmailTouched(true)}
           autoComplete="email"
@@ -608,7 +601,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                 ))
               ) : (
                 <li className={styles.empty} role="presentation">
-                  {isSuggesting ? "Searching…" : "No matches — enter your address below"}
+                  {isSuggesting ? 'Searching…' : 'No matches — enter your address below'}
                 </li>
               )}
             </ul>
@@ -623,8 +616,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               prefix=""
               placeholder="Flat, street, area"
               value={state.addr}
-              state={addrTouched && !addrValid ? "error" : "default"}
-              errorText={addrTouched && !addrValid ? "This field is required" : undefined}
+              state={addrTouched && !addrValid ? 'error' : 'default'}
+              errorText={addrTouched && !addrValid ? 'This field is required' : undefined}
               onChange={(e) => update({ addr: e.target.value })}
               onBlur={() => setAddrTouched(true)}
               autoComplete="street-address"
@@ -635,8 +628,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               prefix=""
               placeholder="Near City Mall"
               value={state.line2}
-              state={line2Touched && !line2Valid ? "error" : "default"}
-              errorText={line2Touched && !line2Valid ? "This field is required" : undefined}
+              state={line2Touched && !line2Valid ? 'error' : 'default'}
+              errorText={line2Touched && !line2Valid ? 'This field is required' : undefined}
               onChange={(e) => update({ line2: e.target.value })}
               onBlur={() => setLine2Touched(true)}
               autoComplete="address-line2"
@@ -651,14 +644,12 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                 value={state.pin}
                 readOnly={pinLocked}
                 className={cn(pinLocked && styles.locked)}
-                state={pinTouched && !pinValid ? "error" : "default"}
+                state={pinTouched && !pinValid ? 'error' : 'default'}
                 errorText={
-                  pinTouched && !pinValid
-                    ? `Enter a ${PIN_LENGTH}-digit PIN code`
-                    : undefined
+                  pinTouched && !pinValid ? `Enter a ${PIN_LENGTH}-digit PIN code` : undefined
                 }
                 onChange={(e) =>
-                  update({ pin: e.target.value.replace(/\D/g, "").slice(0, PIN_LENGTH) })
+                  update({ pin: e.target.value.replace(/\D/g, '').slice(0, PIN_LENGTH) })
                 }
                 onBlur={() => setPinTouched(true)}
                 autoComplete="postal-code"
@@ -671,8 +662,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                 value={state.city}
                 readOnly={lockResolved}
                 className={cn(lockResolved && styles.locked)}
-                state={cityTouched && !cityValid ? "error" : "default"}
-                errorText={cityTouched && !cityValid ? "City is required" : undefined}
+                state={cityTouched && !cityValid ? 'error' : 'default'}
+                errorText={cityTouched && !cityValid ? 'City is required' : undefined}
                 onChange={(e) => update({ city: e.target.value })}
                 onBlur={() => setCityTouched(true)}
                 autoComplete="address-level2"
@@ -686,8 +677,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
               value={state.region}
               readOnly={lockResolved}
               className={cn(lockResolved && styles.locked)}
-              state={regionTouched && !regionValid ? "error" : "default"}
-              errorText={regionTouched && !regionValid ? "State is required" : undefined}
+              state={regionTouched && !regionValid ? 'error' : 'default'}
+              errorText={regionTouched && !regionValid ? 'State is required' : undefined}
               onChange={(e) => update({ region: e.target.value })}
               onBlur={() => setRegionTouched(true)}
               autoComplete="address-level1"
@@ -706,7 +697,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
         disabled={!addressOk || savingForm}
         onClick={handleFormContinue}
       >
-        {savingForm ? "Saving…" : "Review order"}
+        {savingForm ? 'Saving…' : 'Review order'}
       </AlButton>
     </StepShell>
   );
@@ -740,7 +731,7 @@ function DeleteDialog({ target, deleting, onCancel, onConfirm }: DeleteDialogPro
             <span className={styles.addrName}>{target.name}</span>
             <span>
               {target.line1}
-              {target.line2 ? `, ${target.line2}` : ""}, {target.city}, {target.state}{" "}
+              {target.line2 ? `, ${target.line2}` : ''}, {target.city}, {target.state}{' '}
               {target.pincode}
             </span>
           </div>
@@ -750,13 +741,8 @@ function DeleteDialog({ target, deleting, onCancel, onConfirm }: DeleteDialogPro
           <AlButton variant="secondary" radius="lg" onClick={onCancel} disabled={deleting}>
             No
           </AlButton>
-          <AlButton
-            variant="destructive"
-            radius="lg"
-            onClick={onConfirm}
-            disabled={deleting}
-          >
-            {deleting ? "Deleting…" : "Yes, delete"}
+          <AlButton variant="destructive" radius="lg" onClick={onConfirm} disabled={deleting}>
+            {deleting ? 'Deleting…' : 'Yes, delete'}
           </AlButton>
         </DialogFooter>
       </DialogContent>

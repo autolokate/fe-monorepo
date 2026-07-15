@@ -1,16 +1,9 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import {
-  Maximize2,
-  Pause,
-  Play,
-  Settings,
-  ShieldCheck,
-  Volume2,
-} from "lucide-react";
-import type { HeroVideo } from "./constants";
-import styles from "./index.module.css";
+import Image from 'next/image';
+import { Maximize2, Pause, Play, Settings, ShieldCheck, Volume2 } from 'lucide-react';
+import type { HeroVideo } from './constants';
+import styles from './index.module.css';
 
 interface VideoPanelProps {
   video: HeroVideo;
@@ -66,12 +59,12 @@ export function VideoPanel({ video, playing, onPlay }: VideoPanelProps) {
           )}
         </div>
 
-        <div className={styles.controls} aria-hidden={!playing ? "true" : undefined}>
+        <div className={styles.controls} aria-hidden={!playing ? 'true' : undefined}>
           <button
             type="button"
             className={styles.controlPlay}
             onClick={onPlay}
-            aria-label={playing ? "Pause video" : "Play video"}
+            aria-label={playing ? 'Pause video' : 'Play video'}
           >
             {playing ? (
               <Pause className="h-4 w-4 fill-current" />

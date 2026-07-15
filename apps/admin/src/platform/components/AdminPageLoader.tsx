@@ -5,10 +5,7 @@ export type AdminPageLoaderProps = {
   fullscreen?: boolean;
 };
 
-export function AdminPageLoader({
-  label = 'Loading…',
-  fullscreen = false,
-}: AdminPageLoaderProps) {
+export function AdminPageLoader({ label = 'Loading…', fullscreen = false }: AdminPageLoaderProps) {
   return (
     <div
       className={`admin-page-loader${fullscreen ? ' admin-page-loader--fullscreen' : ''}`}

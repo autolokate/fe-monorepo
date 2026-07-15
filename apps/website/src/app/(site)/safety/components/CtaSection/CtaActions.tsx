@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { ArrowRight, Download } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { CTA_COPY } from "./constants";
-import styles from "./index.module.css";
+import { useRouter } from 'next/navigation';
+import { ArrowRight, Download } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { CTA_COPY } from './constants';
+import styles from './index.module.css';
 
 export function CtaActions() {
   const router = useRouter();

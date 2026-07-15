@@ -1,6 +1,6 @@
-import { ShieldCheck } from "lucide-react";
-import { INSURANCE_COPY, INSURANCE_FEATURES } from "./constants";
-import styles from "./index.module.css";
+import { ShieldCheck } from 'lucide-react';
+import { INSURANCE_COPY, INSURANCE_FEATURES } from './constants';
+import styles from './index.module.css';
 
 export function InsuranceCoverSection() {
   return (

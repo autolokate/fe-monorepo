@@ -1,12 +1,12 @@
-import { Car, Check } from "lucide-react";
-import { PhoneCarousel } from "../PhoneCarousel";
+import { Car, Check } from 'lucide-react';
+import { PhoneCarousel } from '../PhoneCarousel';
 import {
   MULTI_VEHICLE_ASIDE,
   MULTI_VEHICLE_CHECKLIST,
   MULTI_VEHICLE_COPY,
   MULTI_VEHICLE_PHONE_SHOTS,
-} from "./constants";
-import styles from "./index.module.css";
+} from './constants';
+import styles from './index.module.css';
 
 export function MultiVehicleSection() {
   return (

@@ -1,21 +1,14 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
 import { AUTH_COMPLETED } from '../features/shared-auth/types';
 
-import { reconcileAuthSession, revokeAndClearAuthSession, createAuthFailureSessionPatch } from '../services/auth/auth-session';
-import { resetQrJourneyStorage } from '@/platform/storage/reset-qr-journey-storage';
 import {
-  loadJourneyState,
-  persistSelectedFlow,
-  saveJourneyState,
-} from './persistence';
+  reconcileAuthSession,
+  revokeAndClearAuthSession,
+  createAuthFailureSessionPatch,
+} from '../services/auth/auth-session';
+import { resetQrJourneyStorage } from '@/platform/storage/reset-qr-journey-storage';
+import { loadJourneyState, persistSelectedFlow, saveJourneyState } from './persistence';
 import type {
   ActivationFlowId,
   JourneyContextValue,

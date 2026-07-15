@@ -100,12 +100,18 @@ textarea {
   transition: background-color 600000s ease-in-out 0s;
 }
 
-:is(.al-text-field__input, .al-field__input, .al-otp-input__cell, .al-plate-input__value, .ob-promo-code-field__input):is(
-  :-webkit-autofill,
-  :-webkit-autofill:hover,
-  :-webkit-autofill:focus,
-  :-webkit-autofill:active
-)::selection {
+:is(
+    .al-text-field__input,
+    .al-field__input,
+    .al-otp-input__cell,
+    .al-plate-input__value,
+    .ob-promo-code-field__input
+  ):is(
+    :-webkit-autofill,
+    :-webkit-autofill:hover,
+    :-webkit-autofill:focus,
+    :-webkit-autofill:active
+  )::selection {
   background: transparent;
   -webkit-text-fill-color: inherit;
 }

@@ -1,25 +1,20 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { Check, Loader2, Lock } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { cn } from "@/lib/utils";
-import { useSafetyPlans } from "@/hooks/plans";
-import {
-  useCreateCart,
-  useCreateOrder,
-  usePayOrder,
-  useUpdateCart,
-} from "@/hooks/purchase";
-import { openRazorpayCheckout } from "@/lib/payments/razorpay";
-import type { Cart } from "@/services/purchase";
-import { PLAN_ID_TO_TIER, paiseToInr } from "../../constants";
-import type { StepProps } from "../../types";
-import styles from "./index.module.css";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { Check, Loader2, Lock } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { cn } from '@/lib/utils';
+import { useSafetyPlans } from '@/hooks/plans';
+import { useCreateCart, useCreateOrder, usePayOrder, useUpdateCart } from '@/hooks/purchase';
+import { openRazorpayCheckout } from '@/lib/payments/razorpay';
+import type { Cart } from '@/services/purchase';
+import { PLAN_ID_TO_TIER, paiseToInr } from '../../constants';
+import type { StepProps } from '../../types';
+import styles from './index.module.css';
 
 export function SummaryStep({ state, plan, update, goTo }: StepProps) {
-  const shipCity = state.city.trim() || "your city";
+  const shipCity = state.city.trim() || 'your city';
 
   const { data: plans } = useSafetyPlans();
   const apiPlan = (plans ?? []).find((p) => p.tier === PLAN_ID_TO_TIER[state.planId]);
@@ -42,7 +37,7 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
   // A ref (not just state) so back-to-back calls see the latest id synchronously.
   const cartIdRef = useRef<string | null>(state.cartId);
   // Collapses duplicate in-flight re-prices (incl. StrictMode's double effect).
-  const pricingKeyRef = useRef<string>("");
+  const pricingKeyRef = useRef<string>('');
   const pricingBusyRef = useRef(false);
 
   // Price the cart whenever the plan, quantity, or applied promo changes. All
@@ -74,7 +69,7 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
             });
         cartIdRef.current = next.cartId;
         setCart(next);
-        update({ cartId: next.cartId, promo: next.appliedPromoCode ?? "" });
+        update({ cartId: next.cartId, promo: next.appliedPromoCode ?? '' });
       } catch {
         setCart(null);
         setCartError(true);
@@ -93,15 +88,15 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
 
   const applyPromo = () => setAppliedPromo(promoInput.trim());
   const clearPromo = () => {
-    setPromoInput("");
-    setAppliedPromo("");
+    setPromoInput('');
+    setAppliedPromo('');
   };
 
   const handlePay = async () => {
     if (!cart) return;
     if (!state.addressId) {
-      toast.error("Please choose a delivery address.");
-      goTo("address");
+      toast.error('Please choose a delivery address.');
+      goTo('address');
       return;
     }
     setSubmitting(true);
@@ -122,13 +117,13 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
           keyId: ref.razorpayKeyId,
           orderId: ref.providerOrderId,
           amountPaise: cart.totalPaise,
-          name: "Autolokate",
+          name: 'Autolokate',
           description: `${state.qty} × ${planName} plan`,
           prefill: { name: state.name, contact: state.mobile },
         });
       }
 
-      goTo("success");
+      goTo('success');
     } catch {
       // Error toast is surfaced by the mutation hooks.
     } finally {
@@ -136,104 +131,102 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
     }
   };
 
-  const totalLabel = cart ? `₹${paiseToInr(cart.totalPaise)}` : "—";
+  const totalLabel = cart ? `₹${paiseToInr(cart.totalPaise)}` : '—';
   const payDisabled = !cart || cartLoading || submitting;
 
   return (
     <>
-      <h1 className={cn(styles.title, "font-display")}>Review &amp; pay</h1>
+      <h1 className={cn(styles.title, 'font-display')}>Review &amp; pay</h1>
       <div className={styles.layout}>
         <div className={styles.col}>
           {cartError && !cart ? (
-          <div className={styles.errorCard} role="alert">
-            <p className={styles.errorText}>
-              Something went wrong loading your order. Please try again.
-            </p>
-            <button
-              type="button"
-              className={styles.retry}
-              onClick={() => priceCart(appliedPromo)}
-              disabled={cartLoading}
-            >
-              {cartLoading ? "Retrying…" : "Try again"}
-            </button>
-          </div>
-        ) : null}
-
-        <div className={styles.card}>
-          <div className={styles.lineTop}>
-            <b>
-              {state.qty} × {planName} plan
-            </b>
-            <span className={styles.lineAmount}>
-              {cart ? `₹${paiseToInr(cart.subtotalPaise)}` : "—"}
-            </span>
-          </div>
-          <p className={styles.lineNote}>
-            1-year cover · smart QR kit per vehicle · ships to {shipCity}
-          </p>
-
-          {cart && cart.discountPaise > 0 ? (
-            <div className={styles.discountRow}>
-              <span>
-                Discount{cart.appliedPromoCode ? ` (${cart.appliedPromoCode})` : ""}
-              </span>
-              <span>−₹{paiseToInr(cart.discountPaise)}</span>
+            <div className={styles.errorCard} role="alert">
+              <p className={styles.errorText}>
+                Something went wrong loading your order. Please try again.
+              </p>
+              <button
+                type="button"
+                className={styles.retry}
+                onClick={() => priceCart(appliedPromo)}
+                disabled={cartLoading}
+              >
+                {cartLoading ? 'Retrying…' : 'Try again'}
+              </button>
             </div>
           ) : null}
 
-          <div className={styles.metaRow}>
-            <span>GST (18%, included) · invoice emailed</span>
-            <span>{cart ? `₹${paiseToInr(cart.gstPaise)}` : "—"}</span>
-          </div>
-          <div className={styles.metaRow}>
-            <span>Shipping (Shiprocket, 3–5 days)</span>
-            <span className={styles.free}>FREE</span>
-          </div>
-
-          <div className={styles.totalRow}>
-            <b>Total today</b>
-            <span className={styles.totalAmount}>
-              {cartLoading && !cart ? (
-                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-              ) : (
-                totalLabel
-              )}
-            </span>
-          </div>
-        </div>
-
-        <div className={styles.card}>
-          <p className={styles.payLabel}>Have a promo code?</p>
-          <div className={styles.promoRow}>
-            <input
-              className={styles.promoInput}
-              placeholder="e.g. FRIEND50"
-              value={promoInput}
-              onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
-              aria-label="Promo code"
-            />
-            {cart?.appliedPromoCode ? (
-              <button type="button" className={styles.promoClear} onClick={clearPromo}>
-                Remove
-              </button>
-            ) : (
-              <button
-                type="button"
-                className={styles.promoApply}
-                onClick={applyPromo}
-                disabled={!promoInput.trim() || cartLoading}
-              >
-                Apply
-              </button>
-            )}
-          </div>
-          {cart?.appliedPromoCode ? (
-            <p className={styles.promoOk}>
-              <Check className="h-3.5 w-3.5" aria-hidden /> {cart.appliedPromoCode} applied
+          <div className={styles.card}>
+            <div className={styles.lineTop}>
+              <b>
+                {state.qty} × {planName} plan
+              </b>
+              <span className={styles.lineAmount}>
+                {cart ? `₹${paiseToInr(cart.subtotalPaise)}` : '—'}
+              </span>
+            </div>
+            <p className={styles.lineNote}>
+              1-year cover · smart QR kit per vehicle · ships to {shipCity}
             </p>
-          ) : null}
-        </div>
+
+            {cart && cart.discountPaise > 0 ? (
+              <div className={styles.discountRow}>
+                <span>Discount{cart.appliedPromoCode ? ` (${cart.appliedPromoCode})` : ''}</span>
+                <span>−₹{paiseToInr(cart.discountPaise)}</span>
+              </div>
+            ) : null}
+
+            <div className={styles.metaRow}>
+              <span>GST (18%, included) · invoice emailed</span>
+              <span>{cart ? `₹${paiseToInr(cart.gstPaise)}` : '—'}</span>
+            </div>
+            <div className={styles.metaRow}>
+              <span>Shipping (Shiprocket, 3–5 days)</span>
+              <span className={styles.free}>FREE</span>
+            </div>
+
+            <div className={styles.totalRow}>
+              <b>Total today</b>
+              <span className={styles.totalAmount}>
+                {cartLoading && !cart ? (
+                  <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                ) : (
+                  totalLabel
+                )}
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.card}>
+            <p className={styles.payLabel}>Have a promo code?</p>
+            <div className={styles.promoRow}>
+              <input
+                className={styles.promoInput}
+                placeholder="e.g. FRIEND50"
+                value={promoInput}
+                onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                aria-label="Promo code"
+              />
+              {cart?.appliedPromoCode ? (
+                <button type="button" className={styles.promoClear} onClick={clearPromo}>
+                  Remove
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.promoApply}
+                  onClick={applyPromo}
+                  disabled={!promoInput.trim() || cartLoading}
+                >
+                  Apply
+                </button>
+              )}
+            </div>
+            {cart?.appliedPromoCode ? (
+              <p className={styles.promoOk}>
+                <Check className="h-3.5 w-3.5" aria-hidden /> {cart.appliedPromoCode} applied
+              </p>
+            ) : null}
+          </div>
         </div>
 
         <aside className={styles.rail}>
@@ -247,10 +240,7 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
               onClick={() => update({ autoRenew: !state.autoRenew })}
               aria-pressed={state.autoRenew}
             >
-              <span
-                className={cn(styles.check, state.autoRenew && styles.checkOn)}
-                aria-hidden
-              >
+              <span className={cn(styles.check, state.autoRenew && styles.checkOn)} aria-hidden>
                 {state.autoRenew ? <Check className="h-3.5 w-3.5 stroke-[3]" /> : null}
               </span>
               <span>
@@ -258,8 +248,8 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
                   Auto-renew next year &amp; lock this price
                 </span>
                 <span className={styles.renewDesc}>
-                  Your protection stays active without interruption. We&apos;ll remind you 7
-                  days before renewal, and you can cancel anytime.
+                  Your protection stays active without interruption. We&apos;ll remind you 7 days
+                  before renewal, and you can cancel anytime.
                 </span>
               </span>
             </button>
@@ -272,12 +262,12 @@ export function SummaryStep({ state, plan, update, goTo }: StepProps) {
               disabled={payDisabled}
               onClick={handlePay}
             >
-              {submitting ? "Processing…" : `Pay ${totalLabel}`}
+              {submitting ? 'Processing…' : `Pay ${totalLabel}`}
             </AlButton>
             <p className={styles.payFine}>
               <Lock className="mr-1 inline h-3 w-3" aria-hidden />
-              256-bit secure payments · Pay via UPI, cards, or net banking · GST invoice
-              included · 7-day replacement for damaged kits
+              256-bit secure payments · Pay via UPI, cards, or net banking · GST invoice included ·
+              7-day replacement for damaged kits
             </p>
           </div>
         </aside>

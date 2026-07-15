@@ -9,13 +9,13 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|------:|
-| Active screens | **65** |
-| Shell systems verified | **4** (step chrome, auth shell, PWA scan, welcome) |
-| Clipping issues found | **2** (checkbox, back) |
-| Clipping issues fixed | **2** |
-| Remaining overflow (intentional) | **2** (plan carousel) |
+| Metric                           |                                              Value |
+| -------------------------------- | -------------------------------------------------: |
+| Active screens                   |                                             **65** |
+| Shell systems verified           | **4** (step chrome, auth shell, PWA scan, welcome) |
+| Clipping issues found            |                             **2** (checkbox, back) |
+| Clipping issues fixed            |                                              **2** |
+| Remaining overflow (intentional) |                              **2** (plan carousel) |
 
 ---
 
@@ -29,6 +29,7 @@ Checkbox visual box   = 22×22 centered in 48×48
 ```
 
 At **320px** width:
+
 - Frame max-width 393px → full width
 - Inner content width = 320 - 8 (frame pad) - 24 (insets) = **288px** minimum for copy column
 - Checkbox column fixed **48px** — no horizontal clip
@@ -37,25 +38,25 @@ At **320px** width:
 
 ## Shell Coverage
 
-| Shell | Screens inheriting fix | Gutter source |
-|-------|------------------------|---------------|
-| `step-shell-chrome` | Auth, Purchase, Emergency, Prepaid, B2B2C, Flow steps | `touch-target-layout.css` |
-| `pwa-scan-shell` | All 29 PWA routes | imports same gutter tokens |
-| `auth-step-shell` | Auth variants | extends step chrome |
-| `welcome-activation` | Prepaid/B2B2C welcome | step chrome via welcome shell |
+| Shell                | Screens inheriting fix                                | Gutter source                 |
+| -------------------- | ----------------------------------------------------- | ----------------------------- |
+| `step-shell-chrome`  | Auth, Purchase, Emergency, Prepaid, B2B2C, Flow steps | `touch-target-layout.css`     |
+| `pwa-scan-shell`     | All 29 PWA routes                                     | imports same gutter tokens    |
+| `auth-step-shell`    | Auth variants                                         | extends step chrome           |
+| `welcome-activation` | Prepaid/B2B2C welcome                                 | step chrome via welcome shell |
 
 ---
 
 ## Per-Viewport Checks
 
 | Viewport | Checkbox clip | Back clip | CTA visible | Cards | Icons |
-|----------|:-------------:|:---------:|:-----------:|:-----:|:-----:|
-| 320 | ✅ Fixed | ✅ Fixed | ✅ | ✅ | ✅ |
-| 360 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 375 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 390 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 393 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 414 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| -------- | :-----------: | :-------: | :---------: | :---: | :---: |
+| 320      |   ✅ Fixed    | ✅ Fixed  |     ✅      |  ✅   |  ✅   |
+| 360      |      ✅       |    ✅     |     ✅      |  ✅   |  ✅   |
+| 375      |      ✅       |    ✅     |     ✅      |  ✅   |  ✅   |
+| 390      |      ✅       |    ✅     |     ✅      |  ✅   |  ✅   |
+| 393      |      ✅       |    ✅     |     ✅      |  ✅   |  ✅   |
+| 414      |      ✅       |    ✅     |     ✅      |  ✅   |  ✅   |
 
 Dark + Light: token-based colors; no viewport-specific theme breakage.
 
@@ -63,13 +64,13 @@ Dark + Light: token-based colors; no viewport-specific theme breakage.
 
 ## Overflow Audit
 
-| Location | `overflow-x: hidden` | Verdict |
-|----------|---------------------|---------|
-| `step-shell-chrome__body` | **Removed** | ✅ fix |
-| `step-shell-chrome__frame` | `overflow: hidden` (vertical shell) | ✅ OK — gutter prevents horizontal clip |
-| `auth-step-shell` plan screen | Yes (carousel peek) | ⚠️ intentional |
-| `plan-carousel` | Yes | ⚠️ intentional |
-| `purchase-status-shell` | Yes | ✅ status hero only |
+| Location                      | `overflow-x: hidden`                | Verdict                                 |
+| ----------------------------- | ----------------------------------- | --------------------------------------- |
+| `step-shell-chrome__body`     | **Removed**                         | ✅ fix                                  |
+| `step-shell-chrome__frame`    | `overflow: hidden` (vertical shell) | ✅ OK — gutter prevents horizontal clip |
+| `auth-step-shell` plan screen | Yes (carousel peek)                 | ⚠️ intentional                          |
+| `plan-carousel`               | Yes                                 | ⚠️ intentional                          |
+| `purchase-status-shell`       | Yes                                 | ✅ status hero only                     |
 
 **No negative horizontal margins remain** on interactive controls (grep verified).
 
@@ -77,20 +78,20 @@ Dark + Light: token-based colors; no viewport-specific theme breakage.
 
 ## Safe Areas
 
-| Shell | Top | Bottom |
-|-------|-----|--------|
+| Shell       | Top                                  | Bottom                                  |
+| ----------- | ------------------------------------ | --------------------------------------- |
 | Step chrome | `env(safe-area-inset-top)` on header | `env(safe-area-inset-bottom)` on footer |
-| PWA scan | header `max(8px, safe-top)` | footer padding + safe-bottom |
+| PWA scan    | header `max(8px, safe-top)`          | footer padding + safe-bottom            |
 
 ---
 
 ## Scroll Behavior
 
-| Pattern | Screens |
-|---------|---------|
-| Body scroll inside frame | Auth, purchase steps, emergency |
-| Sticky footer + main scroll | PWA SOS status, park-me photos |
-| Terminal / no scroll | Loading spinners, payment processing |
+| Pattern                     | Screens                              |
+| --------------------------- | ------------------------------------ |
+| Body scroll inside frame    | Auth, purchase steps, emergency      |
+| Sticky footer + main scroll | PWA SOS status, park-me photos       |
+| Terminal / no scroll        | Loading spinners, payment processing |
 
 ---
 

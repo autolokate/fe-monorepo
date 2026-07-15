@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { getOrderPayment, type PaymentOutcome } from "@/services/purchase";
+import { useEffect, useRef, useState } from 'react';
+import { getOrderPayment, type PaymentOutcome } from '@/services/purchase';
 
-const TERMINAL: PaymentOutcome[] = ["PAID", "FAILED", "REFUNDED"];
+const TERMINAL: PaymentOutcome[] = ['PAID', 'FAILED', 'REFUNDED'];
 
 export interface UseOrderPaymentResult {
   outcome: PaymentOutcome | null;
@@ -16,10 +16,7 @@ export interface UseOrderPaymentResult {
  * state (PAID / FAILED / REFUNDED). Razorpay captures via webhook, so the
  * outcome lands here a beat after the buyer finishes at the gateway.
  */
-export function useOrderPayment(
-  orderId: string | null,
-  intervalMs = 3000,
-): UseOrderPaymentResult {
+export function useOrderPayment(orderId: string | null, intervalMs = 3000): UseOrderPaymentResult {
   const [outcome, setOutcome] = useState<PaymentOutcome | null>(null);
   const [isPolling, setIsPolling] = useState(false);
   const timerRef = useRef<number | null>(null);

@@ -98,10 +98,20 @@ async function main() {
   };
 
   results.icons.push(
-    await renderTransparentIcon(192, ANY_MARK_RATIO, markOnLightBg, path.join(iconsDir, 'icon-192.png')),
+    await renderTransparentIcon(
+      192,
+      ANY_MARK_RATIO,
+      markOnLightBg,
+      path.join(iconsDir, 'icon-192.png'),
+    ),
   );
   results.icons.push(
-    await renderTransparentIcon(512, ANY_MARK_RATIO, markOnLightBg, path.join(iconsDir, 'icon-512.png')),
+    await renderTransparentIcon(
+      512,
+      ANY_MARK_RATIO,
+      markOnLightBg,
+      path.join(iconsDir, 'icon-512.png'),
+    ),
   );
   results.icons.push(
     await renderTransparentIcon(

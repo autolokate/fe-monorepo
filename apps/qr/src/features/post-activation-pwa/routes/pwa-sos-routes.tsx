@@ -17,10 +17,7 @@ import { PwaScanShell } from '../components/PwaScanShell';
 import { PwaStatusHeroScreen } from '../components/PwaStatusHeroScreen';
 import { PwaFade } from '../components/PwaMotion';
 import { PWA_SOS_HOLD_MS, pwaScanPaths } from '../constants/pwa-scan-paths';
-import {
-  PWA_SOS_HOLD_ENGAGE_MS,
-  type PwaSosHoldNavigationState,
-} from '../constants/pwa-sos-hold';
+import { PWA_SOS_HOLD_ENGAGE_MS, type PwaSosHoldNavigationState } from '../constants/pwa-sos-hold';
 import { sosTimelineSteps } from '../data/pwa-content';
 import { usePwaScan } from '../context/PwaScanContext';
 import { PwaPhotoRouteGuard } from '../components/PwaPhotoRouteGuard';

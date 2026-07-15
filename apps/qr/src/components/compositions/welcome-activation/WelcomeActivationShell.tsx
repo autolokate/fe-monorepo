@@ -3,10 +3,7 @@ import { AlIcon } from '@autolokate/icons';
 import { AlButton, AlHeading, AlIconButton, AlScreenBg, AlText } from '@autolokate/ui';
 import type { AlScreenBgVariant } from '@autolokate/ui';
 
-import {
-  B2B_ERROR_MESSAGE,
-  B2B_ERROR_TITLE,
-} from '@/features/b2b-shared/b2b-welcome-copy';
+import { B2B_ERROR_MESSAGE, B2B_ERROR_TITLE } from '@/features/b2b-shared/b2b-welcome-copy';
 import '../../step-shell-chrome/step-shell-chrome.css';
 import './welcome-activation-shell.css';
 import './partner-activation-card.css';

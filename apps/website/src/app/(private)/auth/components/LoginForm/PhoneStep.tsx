@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
-import { toast } from "sonner";
-import { Loader2, Phone, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRequestOtp } from "@/hooks/auth";
-import { BrandWordmark } from "../BrandWordmark";
-import { PhoneField } from "../PhoneField";
-import { PHONE_DIGITS, normalizePhoneDigits, toE164 } from "../constants";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { type FormEvent, useState } from 'react';
+import { toast } from 'sonner';
+import { Loader2, Phone, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useRequestOtp } from '@/hooks/auth';
+import { BrandWordmark } from '../BrandWordmark';
+import { PhoneField } from '../PhoneField';
+import { PHONE_DIGITS, normalizePhoneDigits, toE164 } from '../constants';
 
 interface PhoneStepProps {
   safeNext: string;
@@ -17,19 +17,19 @@ interface PhoneStepProps {
 
 export function PhoneStep({ safeNext }: PhoneStepProps) {
   const router = useRouter();
-  const [digits, setDigits] = useState("");
+  const [digits, setDigits] = useState('');
 
   const requestOtp = useRequestOtp({
     onSuccess: (response, vars) => {
       if (!response.sent) {
-        toast.error("Unable to send OTP. Please try again.");
+        toast.error('Unable to send OTP. Please try again.');
         return;
       }
-      toast.success(response.message || "OTP sent successfully.");
+      toast.success(response.message || 'OTP sent successfully.');
       const q = new URLSearchParams();
-      q.set("step", "otp");
-      q.set("phone", vars.phone);
-      if (safeNext) q.set("next", safeNext);
+      q.set('step', 'otp');
+      q.set('phone', vars.phone);
+      if (safeNext) q.set('next', safeNext);
       router.replace(`/auth/login?${q.toString()}`);
     },
   });
@@ -38,7 +38,7 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
     e.preventDefault();
     const clean = normalizePhoneDigits(digits);
     if (clean.length !== PHONE_DIGITS) {
-      toast.error("Please enter a valid 10-digit mobile number.");
+      toast.error('Please enter a valid 10-digit mobile number.');
       return;
     }
     void requestOtp.mutate({ phone: toE164(clean) });
@@ -57,8 +57,8 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
           Sign in with OTP
         </h1>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-          Enter your mobile number and we&apos;ll send a one-time code to verify it&apos;s
-          you — fast and secure.
+          Enter your mobile number and we&apos;ll send a one-time code to verify it&apos;s you —
+          fast and secure.
         </p>
       </div>
 
@@ -101,7 +101,7 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
       </div>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        New here?{" "}
+        New here?{' '}
         <Link
           href="/auth/signup"
           className="font-semibold text-primary underline-offset-4 hover:underline"

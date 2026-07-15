@@ -1,5 +1,5 @@
-import { HeroCarousel } from "./HeroCarousel";
-import styles from "./index.module.css";
+import { HeroCarousel } from './HeroCarousel';
+import styles from './index.module.css';
 
 export function HeroBanner() {
   return (

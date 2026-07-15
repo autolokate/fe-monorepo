@@ -1,9 +1,6 @@
 import { AlStack } from '@autolokate/ui';
 
-import {
-  AddContactRow,
-  EmergencyContactRow,
-} from '@/components/compositions/index';
+import { AddContactRow, EmergencyContactRow } from '@/components/compositions/index';
 import { FlowStepShell } from '@/components/flow-step-shell/index';
 import type { PurchasePlanId } from '@/features/qr-purchase/types-checkout';
 import {

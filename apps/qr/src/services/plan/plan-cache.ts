@@ -29,10 +29,7 @@ export function peekPlansCatalog(qrCode: string | null): PurchasePlanDefinition[
   return cache.plans;
 }
 
-export function rememberPlansCatalog(
-  plans: PurchasePlanDefinition[],
-  qrCode: string | null,
-): void {
+export function rememberPlansCatalog(plans: PurchasePlanDefinition[], qrCode: string | null): void {
   const revision = (cache?.revision ?? 0) + 1;
   cache = {
     qrCode,

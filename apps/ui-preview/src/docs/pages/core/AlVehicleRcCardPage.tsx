@@ -1,10 +1,7 @@
 import { AlIcon } from '@autolokate/icons';
 import { AlVehicleRcCard } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 const vehicleFields = [
   { label: 'Owner', value: 'Shibu Shrivastva' },
@@ -37,19 +34,19 @@ export function AlVehicleRcCardPage() {
       whenNotToUse="Do not use for editable forms — fields are read-only via AlField."
       overview={
         <p>
-          Figma node 170:79. Composes <code className="ds-inline-code">AlChip</code> (verified status)
-          and <code className="ds-inline-code">AlField</code> rows in a 2-column grid. Registration
-          number at 29px/700. Section labelled via{' '}
-          <code className="ds-inline-code">aria-label=&quot;Vehicle registration details&quot;</code>.
+          Figma node 170:79. Composes <code className="ds-inline-code">AlChip</code> (verified
+          status) and <code className="ds-inline-code">AlField</code> rows in a 2-column grid.
+          Registration number at 29px/700. Section labelled via{' '}
+          <code className="ds-inline-code">
+            aria-label=&quot;Vehicle registration details&quot;
+          </code>
+          .
         </p>
       }
       variants={
         <div className="preview-row" style={{ flexWrap: 'wrap' }}>
           {renderVehicleRcCard('default')}
-          <AlVehicleRcCard
-            registrationNumber="DL 01 CA 1234"
-            fields={vehicleFields.slice(0, 4)}
-          />
+          <AlVehicleRcCard registrationNumber="DL 01 CA 1234" fields={vehicleFields.slice(0, 4)} />
         </div>
       }
       renderStatePreview={renderVehicleRcCard}
@@ -79,10 +76,27 @@ import { AlVehicleRcCard } from '@autolokate/ui';
   ]}
 />`}
       props={[
-        { name: 'registrationNumber', type: 'string', description: 'Primary registration display.' },
-        { name: 'verifiedLabel', type: 'string', defaultValue: 'Verified', description: 'Chip label text.' },
-        { name: 'verifiedIcon', type: 'ReactNode', description: 'Optional icon inside verified chip.' },
-        { name: 'fields', type: 'AlVehicleRcField[]', description: 'Label/value pairs (2-column grid).' },
+        {
+          name: 'registrationNumber',
+          type: 'string',
+          description: 'Primary registration display.',
+        },
+        {
+          name: 'verifiedLabel',
+          type: 'string',
+          defaultValue: 'Verified',
+          description: 'Chip label text.',
+        },
+        {
+          name: 'verifiedIcon',
+          type: 'ReactNode',
+          description: 'Optional icon inside verified chip.',
+        },
+        {
+          name: 'fields',
+          type: 'AlVehicleRcField[]',
+          description: 'Label/value pairs (2-column grid).',
+        },
       ]}
     />
   );

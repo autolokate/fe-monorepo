@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   createAddress,
   deleteAddress,
@@ -9,9 +9,9 @@ import {
   type CreateAddressPayload,
   type SavedAddress,
   type UpdateAddressPayload,
-} from "@/services/purchase";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
-import { useApiQuery } from "@/hooks/useApiQuery";
+} from '@/services/purchase';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
+import { useApiQuery } from '@/hooks/useApiQuery';
 
 /** `GET /v1/addresses` — the buyer's saved delivery addresses. Gate with `enabled`. */
 export function usePurchaseAddresses(enabled = true) {
@@ -40,7 +40,9 @@ export function useUpdateAddress(
   options?: UseApiMutationOptions<SavedAddress, UpdateAddressVariables>,
 ) {
   const fn = useMemo(
-    () => ({ id, payload }: UpdateAddressVariables) => updateAddress(id, payload),
+    () =>
+      ({ id, payload }: UpdateAddressVariables) =>
+        updateAddress(id, payload),
     [],
   );
   return useApiMutation(fn, options);

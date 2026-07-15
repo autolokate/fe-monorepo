@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { Radio } from "lucide-react";
-import { MEDIA_HERO } from "../../constants";
-import { MEDIA_HERO_BG } from "./constants";
+import Image from 'next/image';
+import { Radio } from 'lucide-react';
+import { MEDIA_HERO } from '../../constants';
+import { MEDIA_HERO_BG } from './constants';
 
 export function HeroBanner() {
   return (
@@ -35,8 +35,7 @@ export function HeroBanner() {
         </span>
 
         <h1 className="font-display mt-6 max-w-3xl text-balance text-4xl font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem]">
-          {MEDIA_HERO.headline}{" "}
-          <span className="text-primary">{MEDIA_HERO.headlineEm}</span>{" "}
+          {MEDIA_HERO.headline} <span className="text-primary">{MEDIA_HERO.headlineEm}</span>{' '}
           {MEDIA_HERO.headlineSuffix}
         </h1>
 

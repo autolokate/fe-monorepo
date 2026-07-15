@@ -32,12 +32,7 @@ export interface Cart {
   expiresAt: string;
 }
 
-export type OrderStatus =
-  | "DRAFT"
-  | "PENDING_PAYMENT"
-  | "PAID"
-  | "FAILED"
-  | "CANCELLED";
+export type OrderStatus = 'DRAFT' | 'PENDING_PAYMENT' | 'PAID' | 'FAILED' | 'CANCELLED';
 
 export interface CreateOrderPayload {
   cartId: string;
@@ -68,23 +63,18 @@ export interface PaymentRef {
   razorpayKeyId?: string | null;
 }
 
-export type PaymentOutcome =
-  | "PENDING"
-  | "UNCONFIRMED"
-  | "PAID"
-  | "FAILED"
-  | "REFUNDED";
+export type PaymentOutcome = 'PENDING' | 'UNCONFIRMED' | 'PAID' | 'FAILED' | 'REFUNDED';
 
-export type OrderKind = "SCAN_SELF_PAY" | "RETAIL_SHIP" | "UPGRADE" | "RENEWAL";
+export type OrderKind = 'SCAN_SELF_PAY' | 'RETAIL_SHIP' | 'UPGRADE' | 'RENEWAL';
 
 export type FulfillmentStatus =
-  | "PAID"
-  | "ALLOCATED"
-  | "SHIPPED"
-  | "IN_TRANSIT"
-  | "DELIVERED"
-  | "RETURNED"
-  | "CANCELLED";
+  | 'PAID'
+  | 'ALLOCATED'
+  | 'SHIPPED'
+  | 'IN_TRANSIT'
+  | 'DELIVERED'
+  | 'RETURNED'
+  | 'CANCELLED';
 
 /** A single stage change in the shipment's lifecycle. */
 export interface FulfillmentEvent {

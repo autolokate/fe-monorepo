@@ -52,7 +52,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/new-design/pricingQRRedirection.png");
+  background-image: url('/images/new-design/pricingQRRedirection.png');
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;

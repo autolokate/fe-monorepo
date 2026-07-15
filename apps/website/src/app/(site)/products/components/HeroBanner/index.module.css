@@ -22,7 +22,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/new-design/productPageHeroMobile.png");
+  background-image: url('/images/new-design/productPageHeroMobile.png');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -196,7 +196,7 @@
 /* ---------- Responsive swap ---------- */
 @media (min-width: 1024px) {
   .bgImage {
-    background-image: url("/images/new-design/productPageHeroWeb.png");
+    background-image: url('/images/new-design/productPageHeroWeb.png');
     background-position: right center;
   }
 

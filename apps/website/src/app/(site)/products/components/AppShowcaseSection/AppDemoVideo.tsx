@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import { Play } from "lucide-react";
-import styles from "./index.module.css";
+import { useRef, useState } from 'react';
+import { Play } from 'lucide-react';
+import styles from './index.module.css';
 
 interface AppDemoVideoProps {
   src: string;

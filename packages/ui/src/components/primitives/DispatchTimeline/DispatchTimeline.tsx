@@ -78,13 +78,7 @@ function CompleteGlyph({ size }: { size: number }) {
   return <CircleCheckIconGlyph size={size} />;
 }
 
-function ActiveGlyph({
-  name,
-  size,
-}: {
-  name: AlDispatchTimelineActiveGlyph;
-  size: number;
-}) {
+function ActiveGlyph({ name, size }: { name: AlDispatchTimelineActiveGlyph; size: number }) {
   switch (name) {
     case 'phone':
       return (
@@ -231,8 +225,7 @@ export function AlDispatchTimeline({
     >
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
-        const connectorHeight =
-          step.connectorHeight ?? defaultConnectorHeight(variant, index);
+        const connectorHeight = step.connectorHeight ?? defaultConnectorHeight(variant, index);
         const connectorComplete = step.state === 'complete';
 
         return (
@@ -267,10 +260,7 @@ export function AlDispatchTimeline({
                 />
               ) : null}
             </div>
-            <div
-              className="al-dispatch-timeline__copy"
-              style={{ gap: metrics.copyGap }}
-            >
+            <div className="al-dispatch-timeline__copy" style={{ gap: metrics.copyGap }}>
               <p
                 className="al-dispatch-timeline__label"
                 style={{
@@ -296,4 +286,3 @@ export function AlDispatchTimeline({
     </ol>
   );
 }
-

@@ -1,7 +1,7 @@
-import { Check } from "lucide-react";
-import { ChooseComboButton } from "./ChooseComboButton";
-import { COVERAGE_COPY, PLAN_INCLUDES } from "./constants";
-import styles from "./index.module.css";
+import { Check } from 'lucide-react';
+import { ChooseComboButton } from './ChooseComboButton';
+import { COVERAGE_COPY, PLAN_INCLUDES } from './constants';
+import styles from './index.module.css';
 
 export function CoveragePlansSection() {
   return (
@@ -41,7 +41,7 @@ export function CoveragePlansSection() {
         <div className={styles.combo}>
           <div className={styles.comboInfo}>
             <p className={styles.comboTitle}>
-              {COVERAGE_COPY.combo.title}{" "}
+              {COVERAGE_COPY.combo.title}{' '}
               <span className={styles.comboTag}>{COVERAGE_COPY.combo.tag}</span>
             </p>
             <p className={styles.comboDesc}>{COVERAGE_COPY.combo.description}</p>

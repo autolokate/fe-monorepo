@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   ACCESS_TOKEN_COOKIE_KEY,
@@ -6,7 +6,7 @@ import {
   AUTH_COOKIE_MAX_AGE_SECONDS,
   REFRESH_TOKEN_COOKIE_KEY,
   REFRESH_TOKEN_STORAGE_KEY,
-} from "./constants";
+} from './constants';
 
 export type AuthTokens = {
   accessToken: string;
@@ -14,10 +14,10 @@ export type AuthTokens = {
 };
 
 /** Custom DOM event name dispatched whenever auth tokens are written or cleared. */
-export const AUTH_CHANGE_EVENT = "autolokate:auth-change";
+export const AUTH_CHANGE_EVENT = 'autolokate:auth-change';
 
 function canUseStorage(): boolean {
-  return typeof window !== "undefined";
+  return typeof window !== 'undefined';
 }
 
 /**
@@ -45,14 +45,14 @@ export function subscribeAuthChange(handler: () => void): () => void {
   if (!canUseStorage()) return () => {};
 
   const onStorage = (e: StorageEvent) => {
-    if (!e.key || e.key.startsWith("autolokate_")) handler();
+    if (!e.key || e.key.startsWith('autolokate_')) handler();
   };
   const onCustom = () => handler();
 
-  window.addEventListener("storage", onStorage);
+  window.addEventListener('storage', onStorage);
   window.addEventListener(AUTH_CHANGE_EVENT, onCustom);
   return () => {
-    window.removeEventListener("storage", onStorage);
+    window.removeEventListener('storage', onStorage);
     window.removeEventListener(AUTH_CHANGE_EVENT, onCustom);
   };
 }

@@ -35,7 +35,7 @@
 /* ---------- Left copy ---------- */
 .index {
   display: block;
-  font-family: ui-monospace, "Space Mono", SFMono-Regular, monospace;
+  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -132,4 +132,3 @@
   line-height: 1.6;
   color: #52525b;
 }
-

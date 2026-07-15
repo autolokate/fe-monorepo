@@ -1,6 +1,6 @@
-import { SAVE_STATS, STORIES_COPY } from "./constants";
-import { StoriesCarousel } from "./StoriesCarousel";
-import styles from "./index.module.css";
+import { SAVE_STATS, STORIES_COPY } from './constants';
+import { StoriesCarousel } from './StoriesCarousel';
+import styles from './index.module.css';
 
 export function RealSaveStoriesSection() {
   return (

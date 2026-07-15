@@ -7,7 +7,11 @@ import type { L1PrivacyPolicyScreenProps } from '@/features/shared-auth/types';
 import './legal-reader.css';
 
 /** L1 · Privacy Policy — Figma 60:156 */
-export function L1PrivacyPolicyScreen({ onBack, onContinue, showBack = true }: L1PrivacyPolicyScreenProps) {
+export function L1PrivacyPolicyScreen({
+  onBack,
+  onContinue,
+  showBack = true,
+}: L1PrivacyPolicyScreenProps) {
   return (
     <AlScreenBg variant="protected" className="ob-step-chrome-screen ob-legal-reader">
       <div className="ob-step-chrome__frame ob-legal-reader__frame">

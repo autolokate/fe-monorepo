@@ -54,7 +54,12 @@ export function AdminCommandPalette({ open, onOpenChange }: AdminCommandPaletteP
   }
 
   return (
-    <div className="admin-command-palette" role="dialog" aria-label="Command palette" aria-modal="true">
+    <div
+      className="admin-command-palette"
+      role="dialog"
+      aria-label="Command palette"
+      aria-modal="true"
+    >
       <button
         type="button"
         className="admin-command-palette__backdrop"

@@ -127,7 +127,10 @@
   letter-spacing: 0;
   font-weight: var(--al-font-weight-medium);
   font-size: var(--al-text-label-size);
-  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 86%, transparent));
+  color: var(
+    --al-admin-label-color,
+    color-mix(in srgb, var(--al-color-on-surface) 86%, transparent)
+  );
 }
 
 /* ── Tables (Google: sentence-case headers, tinted head row) ────── */
@@ -137,7 +140,10 @@
   letter-spacing: 0;
   font-size: var(--al-text-label-size);
   font-weight: var(--al-font-weight-medium);
-  color: var(--al-admin-label-color, color-mix(in srgb, var(--al-color-on-surface) 82%, transparent));
+  color: var(
+    --al-admin-label-color,
+    color-mix(in srgb, var(--al-color-on-surface) 82%, transparent)
+  );
   background: color-mix(in srgb, var(--al-color-on-surface) 5%, var(--al-color-surface));
   border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
 }

@@ -15,10 +15,7 @@ import { clearQrCodeFromStorage } from '@/storage/index';
 import { resetAttachAttemptCache } from '@/services/qr/qr-attach-service';
 import { clearResolvedQrCache } from '@/services/qr/qr-cache';
 import { resetRiderServiceState } from '@/services/rider/rider-service';
-import {
-  resetParkServiceState,
-  resetScannerEmergencyServiceState,
-} from '@/services/scanner/index';
+import { resetParkServiceState, resetScannerEmergencyServiceState } from '@/services/scanner/index';
 import { clearVehicleLookupCache } from '@/services/vehicle/vehicle-cache';
 
 /**

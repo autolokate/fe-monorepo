@@ -124,7 +124,6 @@ function useOnlineState() {
   return isOnline;
 }
 
-
 function LegacyRiderSetupRedirect() {
   return <Navigate to={emergencyJourneyPaths.riderPrompt} replace />;
 }
@@ -249,33 +248,33 @@ function R0Route() {
   return (
     <>
       <E01RiderPromptScreen
-      viewState={viewState}
-      description={getRiderPromptDescription(entitledSlots)}
-      errorMessage={apiErrorMessage}
-      onBack={() => {
-        void navigate(getEmergencyFlowBackPath(selectedFlow, session));
-      }}
-      onContinue={() => {
-        if (viewState === 'error' && apiErrorMessage) {
-          patchEmergency({ riderPromptLoadFailed: false });
-          setApiErrorMessage(null);
-          setLoadAttempt((attempt) => attempt + 1);
-          return;
-        }
-        if (viewState === 'offline' || viewState === 'loading') {
-          return;
-        }
-        patchEmergency({
-          riderSkipped: false,
-          rider: emergency.rider ?? { mobile: '', name: '', relation: 'spouse' },
-        });
-        void navigate(emergencyJourneyPaths.riderMobile);
-      }}
-      footerSecondaryLabel="Skip for now"
-      onFooterSecondary={() => {
-        setSkipConfirmOpen(true);
-      }}
-    />
+        viewState={viewState}
+        description={getRiderPromptDescription(entitledSlots)}
+        errorMessage={apiErrorMessage}
+        onBack={() => {
+          void navigate(getEmergencyFlowBackPath(selectedFlow, session));
+        }}
+        onContinue={() => {
+          if (viewState === 'error' && apiErrorMessage) {
+            patchEmergency({ riderPromptLoadFailed: false });
+            setApiErrorMessage(null);
+            setLoadAttempt((attempt) => attempt + 1);
+            return;
+          }
+          if (viewState === 'offline' || viewState === 'loading') {
+            return;
+          }
+          patchEmergency({
+            riderSkipped: false,
+            rider: emergency.rider ?? { mobile: '', name: '', relation: 'spouse' },
+          });
+          void navigate(emergencyJourneyPaths.riderMobile);
+        }}
+        footerSecondaryLabel="Skip for now"
+        onFooterSecondary={() => {
+          setSkipConfirmOpen(true);
+        }}
+      />
       <AlPermissionSheet
         open={skipConfirmOpen}
         title={RIDER_SKIP_CONFIRM_TITLE}
@@ -925,11 +924,7 @@ function E3Route() {
         setFormState('submitting');
         void createContact(name.trim(), relation).then((result) => {
           if (!result.ok) {
-            reportEmergencyApiError(
-              emergencyContactLogger,
-              'contact_create_failed',
-              result.error,
-            );
+            reportEmergencyApiError(emergencyContactLogger, 'contact_create_failed', result.error);
             setFormState('error');
             return;
           }

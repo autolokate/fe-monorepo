@@ -9,12 +9,12 @@
 
 ## Summary
 
-| Component | Status | Action |
-|-----------|--------|--------|
-| AlPlanCard | Fixed | Full rewrite for Figma AlPlanCardW |
-| AlVehicleRcCard | Added | New core component for R05 RC card |
-| AlField | Fixed | Value typography line-height |
-| AlChip | Fixed | Icon-only mode for verified chip |
+| Component       | Status | Action                             |
+| --------------- | ------ | ---------------------------------- |
+| AlPlanCard      | Fixed  | Full rewrite for Figma AlPlanCardW |
+| AlVehicleRcCard | Added  | New core component for R05 RC card |
+| AlField         | Fixed  | Value typography line-height       |
+| AlChip          | Fixed  | Icon-only mode for verified chip   |
 
 Preview compositions updated to consume fixed core APIs only — no preview CSS patches.
 
@@ -118,25 +118,25 @@ Value used `--al-comp-button-line-height` (20px) instead of Figma `style_LEJAR2`
 
 ## Composition updates (data only)
 
-| File | Change |
-|------|--------|
-| `PlanCardComposition.tsx` | Secure tier Figma data + selected state |
+| File                         | Change                                  |
+| ---------------------------- | --------------------------------------- |
+| `PlanCardComposition.tsx`    | Secure tier Figma data + selected state |
 | `VehicleInfoComposition.tsx` | Uses `AlVehicleRcCard` + R05 field data |
-| `metadata.ts` | Updated Figma references |
+| `metadata.ts`                | Updated Figma references                |
 
 ---
 
 ## Visual QA checklist
 
-| Test | AlPlanCard | Vehicle RC |
-|------|------------|--------------|
-| Overflow | Pass | Pass |
-| Wrapping | Pass | Pass |
-| Clipping | Pass | Pass |
-| Icon alignment | Pass | Pass |
-| Touch targets | Pass (card button) | N/A (display) |
-| Theme switching | Pass | Pass |
-| 320–414px | Pass | Pass |
+| Test            | AlPlanCard         | Vehicle RC    |
+| --------------- | ------------------ | ------------- |
+| Overflow        | Pass               | Pass          |
+| Wrapping        | Pass               | Pass          |
+| Clipping        | Pass               | Pass          |
+| Icon alignment  | Pass               | Pass          |
+| Touch targets   | Pass (card button) | N/A (display) |
+| Theme switching | Pass               | Pass          |
+| 320–414px       | Pass               | Pass          |
 
 ---
 

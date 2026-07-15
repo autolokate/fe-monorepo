@@ -1,9 +1,9 @@
-import { Check } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { AlTextField } from "@autolokate/ui";
-import { cn } from "@/lib/utils";
-import type { StepProps } from "../../types";
-import styles from "./index.module.css";
+import { Check } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { AlTextField } from '@autolokate/ui';
+import { cn } from '@/lib/utils';
+import type { StepProps } from '../../types';
+import styles from './index.module.css';
 
 export function ContactsStep({ state, update, goTo }: StepProps) {
   const canFinish = state.contact1.trim().length > 0;
@@ -18,7 +18,7 @@ export function ContactsStep({ state, update, goTo }: StepProps) {
           <span className={styles.activated}>Activated · Valid 1 year</span>
         </div>
 
-        <h1 className={cn(styles.title, "font-display")}>Now add your people.</h1>
+        <h1 className={cn(styles.title, 'font-display')}>Now add your people.</h1>
         <p className={styles.sub}>They&apos;re alerted automatically if a crash is detected.</p>
 
         <div className={styles.fields}>
@@ -61,7 +61,7 @@ export function ContactsStep({ state, update, goTo }: StepProps) {
           variant="primary"
           className={styles.action}
           disabled={!canFinish}
-          onClick={() => goTo("active")}
+          onClick={() => goTo('active')}
         >
           Finish setup
         </AlButton>

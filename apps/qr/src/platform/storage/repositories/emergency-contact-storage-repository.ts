@@ -68,13 +68,9 @@ export const emergencyContactStorageRepository = {
     const next: StoredEmergencyContactState = {
       contacts: patch.contacts ?? current.contacts,
       verificationToken:
-        patch.verificationToken !== undefined
-          ? patch.verificationToken
-          : current.verificationToken,
+        patch.verificationToken !== undefined ? patch.verificationToken : current.verificationToken,
       verificationPhone:
-        patch.verificationPhone !== undefined
-          ? patch.verificationPhone
-          : current.verificationPhone,
+        patch.verificationPhone !== undefined ? patch.verificationPhone : current.verificationPhone,
       loadedAt: patch.loadedAt ?? current.loadedAt,
       revision: current.revision + 1,
     };

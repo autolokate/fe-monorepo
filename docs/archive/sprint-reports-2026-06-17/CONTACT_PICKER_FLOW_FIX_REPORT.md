@@ -29,10 +29,10 @@ navigate(emergencyJourneyPaths.contactName); // skipped E1 + E2
 
 Additional bugs:
 
-| Location | Issue |
-|----------|-------|
-| `E1Route` onContinue | `fromPicker: false` wiped picker metadata and name |
-| `E3Route` onBack | `fromPicker` branch → `contactsEmpty` instead of OTP |
+| Location             | Issue                                                          |
+| -------------------- | -------------------------------------------------------------- |
+| `E1Route` onContinue | `fromPicker: false` wiped picker metadata and name             |
+| `E3Route` onBack     | `fromPicker` branch → `contactsEmpty` instead of OTP           |
 | `E3Route` onContinue | `verified: draft.otpVerified ?? draft.fromPicker` bypassed OTP |
 
 ---
@@ -61,41 +61,41 @@ Picker populates **draft state only**. Each step advance requires an explicit fo
 
 ### E0 — after picker success
 
-| Before | After |
-|--------|-------|
-| `otpVerified: true` | `otpVerified: false` |
-| `navigate(contactName)` | `navigate(contactMobile)` |
-| Cancel on supported API | Stay on E0 (unchanged) |
-| Unsupported API | Manual entry fallback (unchanged) |
+| Before                  | After                             |
+| ----------------------- | --------------------------------- |
+| `otpVerified: true`     | `otpVerified: false`              |
+| `navigate(contactName)` | `navigate(contactMobile)`         |
+| Cancel on supported API | Stay on E0 (unchanged)            |
+| Unsupported API         | Manual entry fallback (unchanged) |
 
 ### E1 — onContinue
 
-| Before | After |
-|--------|-------|
+| Before                       | After                                       |
+| ---------------------------- | ------------------------------------------- |
 | Spread + `fromPicker: false` | Spread only; preserves `name`, `fromPicker` |
-| | Sets `otpVerified: false` |
+|                              | Sets `otpVerified: false`                   |
 
 ### E3 — onBack
 
-| Before | After |
-|--------|-------|
+| Before                   | After                 |
+| ------------------------ | --------------------- |
 | Picker → `contactsEmpty` | Always → `contactOtp` |
 
 ### E3 — onContinue
 
-| Before | After |
-|--------|-------|
+| Before                                | After                            |
+| ------------------------------------- | -------------------------------- |
 | `verified: otpVerified ?? fromPicker` | `verified: Boolean(otpVerified)` |
 
 ---
 
 ## Flow coverage
 
-| Flow | Add from contacts | Status |
-|------|-------------------|--------|
-| Emergency E0 | ✅ Only surface | Fixed |
-| Auth | N/A | — |
-| Family / rider | Manual entry only | — |
+| Flow           | Add from contacts   | Status                |
+| -------------- | ------------------- | --------------------- |
+| Emergency E0   | ✅ Only surface     | Fixed                 |
+| Auth           | N/A                 | —                     |
+| Family / rider | Manual entry only   | —                     |
 | E5 Add another | Manual mobile entry | Unchanged (by design) |
 
 ---

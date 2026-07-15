@@ -109,8 +109,7 @@
   flex-direction: column;
   flex-shrink: 0;
   gap: 10px;
-  padding-block: var(--al-space-sm)
-    calc(var(--al-space-lg) + env(safe-area-inset-bottom, 0px));
+  padding-block: var(--al-space-sm) calc(var(--al-space-lg) + env(safe-area-inset-bottom, 0px));
   background-color: transparent;
 }
 

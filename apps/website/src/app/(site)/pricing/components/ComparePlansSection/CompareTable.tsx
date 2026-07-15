@@ -1,29 +1,26 @@
-"use client";
+'use client';
 
-import { type CSSProperties, useMemo, useState } from "react";
-import { Check, ChevronDown, Star } from "lucide-react";
-import { useSafetyPlans } from "@/hooks/plans";
-import { cn } from "@/lib/utils";
-import { COMPARE_COPY, buildCompareData } from "./constants";
-import styles from "./index.module.css";
+import { type CSSProperties, useMemo, useState } from 'react';
+import { Check, ChevronDown, Star } from 'lucide-react';
+import { useSafetyPlans } from '@/hooks/plans';
+import { cn } from '@/lib/utils';
+import { COMPARE_COPY, buildCompareData } from './constants';
+import styles from './index.module.css';
 
 export function CompareTable() {
   const [expanded, setExpanded] = useState(false);
   const { data, isLoading, isError } = useSafetyPlans();
-  const { columns, groups } = useMemo(
-    () => buildCompareData(data ?? []),
-    [data],
-  );
+  const { columns, groups } = useMemo(() => buildCompareData(data ?? []), [data]);
 
   if (columns.length === 0) {
     return (
       <div className={styles.stateShell} role="status" aria-live="polite">
         <p className={styles.stateText}>
           {isLoading
-            ? "Loading plans…"
+            ? 'Loading plans…'
             : isError
               ? "We couldn't load plans right now. Please try again shortly."
-              : "No plans available right now."}
+              : 'No plans available right now.'}
         </p>
       </div>
     );
@@ -34,7 +31,7 @@ export function CompareTable() {
       <div className={styles.scroll}>
         <div
           className={cn(styles.table, !expanded && styles.collapsed)}
-          style={{ "--plan-count": columns.length } as CSSProperties}
+          style={{ '--plan-count': columns.length } as CSSProperties}
         >
           {/* Header */}
           <div className={styles.headRow}>
@@ -55,19 +52,14 @@ export function CompareTable() {
                   </span>
                 ) : null}
                 <span className={styles.planName}>{plan.name}</span>
-                {plan.price ? (
-                  <span className={styles.planPrice}>{plan.price}</span>
-                ) : null}
+                {plan.price ? <span className={styles.planPrice}>{plan.price}</span> : null}
               </div>
             ))}
           </div>
 
           {/* Groups — one per tier that introduces features */}
           {groups.map((group, groupIndex) => (
-            <div
-              key={group.id}
-              className={cn(styles.group, groupIndex > 0 && styles.groupExtra)}
-            >
+            <div key={group.id} className={cn(styles.group, groupIndex > 0 && styles.groupExtra)}>
               <div className={styles.groupTitle}>{group.title}</div>
 
               {group.rows.map((row) => (
@@ -81,10 +73,7 @@ export function CompareTable() {
                   {row.cells.map((included, i) => (
                     <div
                       key={columns[i].id}
-                      className={cn(
-                        styles.cell,
-                        columns[i].popular && styles.cellPopular,
-                      )}
+                      className={cn(styles.cell, columns[i].popular && styles.cellPopular)}
                     >
                       {included ? (
                         <span className={styles.yes}>

@@ -41,9 +41,7 @@ export function EmergencyContactRow({ contact }: EmergencyContactRowProps) {
       name={contact.name}
       subtitle={`${relationLabel} · ${formatMobileIntl(contact.mobile)}`}
       verified={verified}
-      avatar={
-        <AlAvatar size="md" initials={getInitials(contact.name)} aria-hidden />
-      }
+      avatar={<AlAvatar size="md" initials={getInitials(contact.name)} aria-hidden />}
       verifiedIcon={<AlIcon name="circle-check" size={20} aria-hidden />}
     />
   );

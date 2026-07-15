@@ -164,14 +164,20 @@ async function createOrderForParams(
       return createOrderForParams(params, retryAttempt + 1);
     }
 
-    checkoutLogger.warn('order_create_failed', { error, body: formatCreateOrderBodyForLog(createBody) });
+    checkoutLogger.warn('order_create_failed', {
+      error,
+      body: formatCreateOrderBodyForLog(createBody),
+    });
     return { ok: false, error: mapCheckoutApiError(error) };
   }
 }
 
 /** Create backend order — invoked only from runCheckoutPayment (Pay securely), not on R08 mount. */
 export async function prepareCheckout(params: CheckoutParams): Promise<PrepareCheckoutResult> {
-  checkoutLogger.info('prepare_checkout_start', { planId: params.planId, riderCount: params.riderCount });
+  checkoutLogger.info('prepare_checkout_start', {
+    planId: params.planId,
+    riderCount: params.riderCount,
+  });
   const inflight = getInflightPrepare();
   if (inflight) {
     return (await inflight) as PrepareCheckoutResult;
@@ -196,7 +202,12 @@ type InitiateOrderPaymentSuccess = {
 
 type InitiateOrderPaymentResult =
   | InitiateOrderPaymentSuccess
-  | { ok: false; error: CheckoutError; paymentStatus?: PurchasePaymentStatus; needsNewOrder?: boolean };
+  | {
+      ok: false;
+      error: CheckoutError;
+      paymentStatus?: PurchasePaymentStatus;
+      needsNewOrder?: boolean;
+    };
 
 /** Drop stale order + payment refs so retry creates a fresh POST /v1/orders. */
 export function resetCheckoutForRetry(): void {
@@ -216,12 +227,19 @@ async function handlePayConflict(
 
     if (paymentStatus === 'success') {
       checkoutLogger.info('payment_conflict_already_paid', { orderId });
-      return { ok: false, error: { code: 'unavailable', message: 'Payment already completed.' }, paymentStatus: 'success' };
+      return {
+        ok: false,
+        error: { code: 'unavailable', message: 'Payment already completed.' },
+        paymentStatus: 'success',
+      };
     }
 
     const current = readCheckoutState();
     if (paymentStatus === 'processing' && current.paymentRef && current.providerOrderId) {
-      checkoutLogger.info('payment_conflict_resume_existing', { orderId, paymentRef: current.paymentRef });
+      checkoutLogger.info('payment_conflict_resume_existing', {
+        orderId,
+        paymentRef: current.paymentRef,
+      });
       return {
         ok: true,
         paymentRef: current.paymentRef,
@@ -234,7 +252,10 @@ async function handlePayConflict(
       checkoutLogger.info('payment_conflict_failed_order', { orderId });
       return {
         ok: false,
-        error: { code: 'payment_failed', message: 'Previous payment attempt failed. Starting a new one.' },
+        error: {
+          code: 'payment_failed',
+          message: 'Previous payment attempt failed. Starting a new one.',
+        },
         paymentStatus: 'failed',
         needsNewOrder: true,
       };
@@ -271,7 +292,11 @@ async function initiateOrderPayment(orderId: string): Promise<InitiateOrderPayme
 
   try {
     const payBody = {};
-    checkoutLogger.info('payment_open_request', { orderId, body: payBody, idempotencyKey: payIdempotencyKey });
+    checkoutLogger.info('payment_open_request', {
+      orderId,
+      body: payBody,
+      idempotencyKey: payIdempotencyKey,
+    });
     const payment = await payOrderApi(client, orderId, payBody, payIdempotencyKey);
     updateCheckoutState({
       paymentRef: payment.paymentRef,
@@ -464,7 +489,11 @@ export async function pollCheckoutPayment(orderId: string): Promise<PaymentFlowR
     const { outcome } = await getOrderPaymentApi(client, orderId);
     const paymentStatus = mapPaymentOutcomeToStatus(outcome);
 
-    if (paymentStatus === 'success' || paymentStatus === 'failed' || paymentStatus === 'unconfirmed') {
+    if (
+      paymentStatus === 'success' ||
+      paymentStatus === 'failed' ||
+      paymentStatus === 'unconfirmed'
+    ) {
       return { ok: true, paymentStatus };
     }
 

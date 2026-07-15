@@ -278,7 +278,9 @@ export function saveCheckout(checkout: Omit<StoredCheckout, 'updatedAt'>): Store
   return payload;
 }
 
-export function patchCheckout(patch: Partial<Omit<StoredCheckout, 'updatedAt'>>): StoredCheckout | null {
+export function patchCheckout(
+  patch: Partial<Omit<StoredCheckout, 'updatedAt'>>,
+): StoredCheckout | null {
   const current = getCheckout();
   const next: StoredCheckout = {
     orderId: patch.orderId ?? current?.orderId ?? null,
@@ -303,7 +305,9 @@ export function clearCheckout(): void {
   removeKey(PURCHASE_STORAGE_KEYS.order);
 }
 
-export function saveAttachResult(result: Omit<StoredAttachResult, 'attachedAt'>): StoredAttachResult {
+export function saveAttachResult(
+  result: Omit<StoredAttachResult, 'attachedAt'>,
+): StoredAttachResult {
   const payload: StoredAttachResult = {
     ...result,
     attachedAt: new Date().toISOString(),

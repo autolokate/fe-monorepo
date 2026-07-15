@@ -32,19 +32,19 @@ BrowserRouter
 
 ## Implementation
 
-| Item | Detail |
-|------|--------|
-| Component | `AutolokateRootProvider` |
-| Path | `apps/qr/src/platform/AutolokateRootProvider.tsx` |
-| Props | Same as `JourneyProviderProps` (`initialPhase`, `children`) |
+| Item          | Detail                                                         |
+| ------------- | -------------------------------------------------------------- |
+| Component     | `AutolokateRootProvider`                                       |
+| Path          | `apps/qr/src/platform/AutolokateRootProvider.tsx`              |
+| Props         | Same as `JourneyProviderProps` (`initialPhase`, `children`)    |
 | Nesting order | Journey outer, PWA inner (per UNIFIED_PWA_PROVIDER_PLAN.md P0) |
 
 ---
 
 ## Consumer API — unchanged
 
-| Hook | Provider | Behavior |
-|------|----------|----------|
+| Hook           | Provider          | Behavior              |
+| -------------- | ----------------- | --------------------- |
 | `useJourney()` | `JourneyProvider` | Same API, same throws |
 | `usePwaScan()` | `PwaScanProvider` | Same API, same throws |
 
@@ -54,9 +54,9 @@ Both hooks now resolve on **all routes** because both providers are always mount
 
 ## Session — unchanged
 
-| Key | Hydration |
-|-----|-----------|
-| `al-journey-v1` | On `JourneyProvider` mount (app boot) |
+| Key              | Hydration                             |
+| ---------------- | ------------------------------------- |
+| `al-journey-v1`  | On `JourneyProvider` mount (app boot) |
 | `al-pwa-scan-v1` | On `PwaScanProvider` mount (app boot) |
 
 Both sessions hydrate at app start regardless of initial URL. No schema or key changes.
@@ -79,14 +79,14 @@ Both sessions hydrate at app start regardless of initial URL. No schema or key c
 
 ## Verification
 
-| Check | Result |
-|-------|--------|
-| Build passes | ✅ |
-| `useJourney()` on `/journey` | ✅ |
-| `usePwaScan()` on `/pwa/scan/*` | ✅ |
-| No nested double `PwaScanProvider` | ✅ |
-| JourneyProvider internals untouched | ✅ |
-| PwaScanProvider internals untouched | ✅ |
+| Check                               | Result |
+| ----------------------------------- | ------ |
+| Build passes                        | ✅     |
+| `useJourney()` on `/journey`        | ✅     |
+| `usePwaScan()` on `/pwa/scan/*`     | ✅     |
+| No nested double `PwaScanProvider`  | ✅     |
+| JourneyProvider internals untouched | ✅     |
+| PwaScanProvider internals untouched | ✅     |
 
 ---
 

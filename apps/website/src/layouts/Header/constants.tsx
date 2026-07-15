@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { SVGProps } from 'react';
 import {
   Home,
   LayoutGrid,
@@ -8,8 +8,8 @@ import {
   ShieldCheck,
   Smartphone,
   Tag,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface LogoProps {
   /** Tailwind sizing applied to BOTH theme variants — e.g. `h-8 w-auto sm:h-9`. */
@@ -17,19 +17,19 @@ interface LogoProps {
   /** Hint Next/Image to load immediately (use for above-the-fold logos). */
   priority?: boolean;
   /** `on-dark` — white mark for dark backgrounds (e.g. home hero). `auto` — dark mark for light UI. */
-  tone?: "auto" | "on-dark";
+  tone?: 'auto' | 'on-dark';
 }
 
 /** White mark for dark backgrounds (hero, dark footer). */
-const LOGO_ON_DARK_BG = "/brand/al-logo-dark.svg";
+const LOGO_ON_DARK_BG = '/brand/al-logo-dark.svg';
 /** Dark mark for light backgrounds (default header, cards). */
-const LOGO_ON_LIGHT_BG = "/brand/al-logo-light.svg";
+const LOGO_ON_LIGHT_BG = '/brand/al-logo-light.svg';
 
 /**
  * Brand mark — theme-aware SVGs from `@autolokate/brand` (synced to `/public/brand`).
  */
-export function Logo({ className, priority = false, tone = "auto" }: LogoProps) {
-  if (tone === "on-dark") {
+export function Logo({ className, priority = false, tone = 'auto' }: LogoProps) {
+  if (tone === 'on-dark') {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- static brand SVG; next/image does not optimize SVG (served as-is), so it yields no LCP/bandwidth benefit
       <img
@@ -38,8 +38,8 @@ export function Logo({ className, priority = false, tone = "auto" }: LogoProps) 
         width={140}
         height={133}
         draggable={false}
-        fetchPriority={priority ? "high" : undefined}
-        className={cn("h-8 w-auto sm:h-9", className)}
+        fetchPriority={priority ? 'high' : undefined}
+        className={cn('h-8 w-auto sm:h-9', className)}
       />
     );
   }
@@ -52,8 +52,8 @@ export function Logo({ className, priority = false, tone = "auto" }: LogoProps) 
       width={140}
       height={133}
       draggable={false}
-      fetchPriority={priority ? "high" : undefined}
-      className={cn("h-8 w-auto sm:h-9", className)}
+      fetchPriority={priority ? 'high' : undefined}
+      className={cn('h-8 w-auto sm:h-9', className)}
     />
   );
 }
@@ -131,26 +131,26 @@ export interface HeaderNavItem {
  * Rendered as the desktop top nav and the mobile bottom nav.
  */
 export const primaryNavItems: HeaderNavItem[] = [
-  { label: "Home", href: "/", icon: Home },
-  { label: "How It Works", href: "/how-it-works", icon: ScanLine, shortLabel: "How" },
-  { label: "Features", href: "/features", icon: LayoutGrid },
-  { label: "Products", href: "/products", icon: Package },
-  { label: "Emergency & Safety", href: "/safety", icon: ShieldCheck, shortLabel: "Safety" },
-  { label: "Pricing", href: "/pricing", icon: Tag },
+  { label: 'Home', href: '/', icon: Home },
+  { label: 'How It Works', href: '/how-it-works', icon: ScanLine, shortLabel: 'How' },
+  { label: 'Features', href: '/features', icon: LayoutGrid },
+  { label: 'Products', href: '/products', icon: Package },
+  { label: 'Emergency & Safety', href: '/safety', icon: ShieldCheck, shortLabel: 'Safety' },
+  { label: 'Pricing', href: '/pricing', icon: Tag },
 ];
 
 /** Conversion CTA — consumer app download hub. */
-export const downloadAppCta: Required<Pick<HeaderNavItem, "label" | "href" | "icon">> = {
-  label: "Download App",
-  href: "/app",
+export const downloadAppCta: Required<Pick<HeaderNavItem, 'label' | 'href' | 'icon'>> = {
+  label: 'Download App',
+  href: '/app',
   icon: Smartphone,
 };
 
 /** Secondary links surfaced only inside the mobile menu drawer + footer. */
 export const secondaryNavItems: HeaderNavItem[] = [
-  { label: "About Us", href: "/about-us" },
-  { label: "Media", href: "/media" },
-  { label: "Contact", href: "/contact-us" },
+  { label: 'About Us', href: '/about-us' },
+  { label: 'Media', href: '/media' },
+  { label: 'Contact', href: '/contact-us' },
 ];
 
 /** Back-compat alias — the header renders `primaryNavItems` directly. */
@@ -158,13 +158,13 @@ export const defaultHeaderNavItems = primaryNavItems;
 
 /** Primary auth CTA shown on the right of the header. */
 export const headerLoginCta = {
-  label: "Login",
-  href: "/auth/login",
+  label: 'Login',
+  href: '/auth/login',
 };
 
 /** Whether a nav item matches the current route (exact for "/", prefix otherwise). */
 export function isNavItemActive(pathname: string | null, href: string): boolean {
   if (!pathname) return false;
-  if (href === "/") return pathname === "/";
+  if (href === '/') return pathname === '/';
   return pathname === href || pathname.startsWith(`${href}/`);
 }

@@ -105,10 +105,7 @@ export async function verifyOtp(client: ApiClient, body: VerifyOtpBody): Promise
 }
 
 /** POST /v1/auth/refresh */
-export async function refreshToken(
-  client: ApiClient,
-  body: RefreshTokenBody,
-): Promise<TokenPair> {
+export async function refreshToken(client: ApiClient, body: RefreshTokenBody): Promise<TokenPair> {
   const response = await client.post<unknown>(endpoints.auth.refresh, body, {
     skipAuth: true,
     skipAuthRetry: true,

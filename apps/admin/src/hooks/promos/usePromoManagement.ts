@@ -1,10 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
-import {
-  filterPromosByStatus,
-  type PromoStatusFilter,
-} from '@/features/promos/promo-filters';
+import { filterPromosByStatus, type PromoStatusFilter } from '@/features/promos/promo-filters';
 import { promosQueryKeys } from '@/hooks/promos/promo-query-keys';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';

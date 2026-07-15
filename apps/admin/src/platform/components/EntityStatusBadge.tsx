@@ -17,9 +17,7 @@ function EntityStatusBadge({ label, modifier }: EntityStatusBadgeProps) {
 }
 
 export function QrCodeStatusBadge({ status }: { status: QrCodeStatus }) {
-  return (
-    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--qr-${status}`} />
-  );
+  return <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--qr-${status}`} />;
 }
 
 export function BatchStatusBadge({ status }: { status: QrBatchStatus }) {

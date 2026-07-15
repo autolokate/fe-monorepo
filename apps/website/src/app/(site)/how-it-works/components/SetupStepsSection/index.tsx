@@ -1,6 +1,6 @@
-import { Fragment } from "react";
-import { SETUP_STEPS, SETUP_STEPS_COPY } from "./constants";
-import styles from "./index.module.css";
+import { Fragment } from 'react';
+import { SETUP_STEPS, SETUP_STEPS_COPY } from './constants';
+import styles from './index.module.css';
 
 export function SetupStepsSection() {
   return (

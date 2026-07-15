@@ -10,14 +10,14 @@
 
 File: `apps/qr/vite.config.ts`
 
-| Setting | Value |
-|---------|-------|
-| `registerType` | `prompt` — user confirms updates |
-| `injectRegister` | `auto` |
-| `manifest` | `false` — static `manifest.webmanifest` in `public/` |
-| `skipWaiting` | `false` — safe rollout |
-| `clientsClaim` | `true` |
-| `cleanupOutdatedCaches` | `true` |
+| Setting                 | Value                                                |
+| ----------------------- | ---------------------------------------------------- |
+| `registerType`          | `prompt` — user confirms updates                     |
+| `injectRegister`        | `auto`                                               |
+| `manifest`              | `false` — static `manifest.webmanifest` in `public/` |
+| `skipWaiting`           | `false` — safe rollout                               |
+| `clientsClaim`          | `true`                                               |
+| `cleanupOutdatedCaches` | `true`                                               |
 
 ---
 
@@ -37,12 +37,12 @@ Generated files:
 
 ## Runtime Caching
 
-| Strategy | Targets | Cache name | TTL |
-|----------|---------|------------|-----|
-| Navigation fallback | SPA routes → `/index.html` | precache | versioned |
-| NetworkFirst | HTML documents | `al-html-shell` | 24h |
-| StaleWhileRevalidate | JS / CSS | `al-static-assets` | 30d |
-| CacheFirst | Images | `al-images` | 14d |
+| Strategy             | Targets                    | Cache name         | TTL       |
+| -------------------- | -------------------------- | ------------------ | --------- |
+| Navigation fallback  | SPA routes → `/index.html` | precache           | versioned |
+| NetworkFirst         | HTML documents             | `al-html-shell`    | 24h       |
+| StaleWhileRevalidate | JS / CSS                   | `al-static-assets` | 30d       |
+| CacheFirst           | Images                     | `al-images`        | 14d       |
 
 Denylist: `/api/*`
 
@@ -50,13 +50,13 @@ Denylist: `/api/*`
 
 ## Versioning & Updates
 
-| Mechanism | Implementation |
-|-----------|----------------|
-| Cache busting | Workbox content hashes on precache |
-| New deploy | New `sw.js` revision |
-| User prompt | `usePwaUpdate()` + `PwaUpdatePrompt` |
-| Apply update | `updateServiceWorker(true)` → `skipWaiting` + reload |
-| Dismiss update | Session flag `al-pwa-update-dismissed-at` |
+| Mechanism      | Implementation                                       |
+| -------------- | ---------------------------------------------------- |
+| Cache busting  | Workbox content hashes on precache                   |
+| New deploy     | New `sw.js` revision                                 |
+| User prompt    | `usePwaUpdate()` + `PwaUpdatePrompt`                 |
+| Apply update   | `updateServiceWorker(true)` → `skipWaiting` + reload |
+| Dismiss update | Session flag `al-pwa-update-dismissed-at`            |
 
 Client hook: `src/pwa/use-pwa-update.ts` (`virtual:pwa-register/react`)
 
@@ -72,11 +72,11 @@ Client hook: `src/pwa/use-pwa-update.ts` (`virtual:pwa-register/react`)
 
 ## Offline Shell
 
-| Layer | Behavior |
-|-------|----------|
-| `public/offline.html` | Static offline page with Try again |
-| `PwaAppShell` | Blocks cold offline load when no SW controller |
-| Cached shell | After first visit, app runs offline with banner |
+| Layer                 | Behavior                                        |
+| --------------------- | ----------------------------------------------- |
+| `public/offline.html` | Static offline page with Try again              |
+| `PwaAppShell`         | Blocks cold offline load when no SW controller  |
+| Cached shell          | After first visit, app runs offline with banner |
 
 ---
 

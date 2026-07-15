@@ -28,12 +28,12 @@ The Figma spec requires the **22×22 visual box top** to align with the **first 
 
 **File:** `apps/qr/src/components/compositions/inline-consent-block/inline-consent-block.css`
 
-| Before | After |
-|--------|-------|
-| Flex row, `align-items: baseline` | CSS grid: `48px \| 1fr`, `align-items: start` |
-| 22px checkbox column | 48px tap column (Figma hotspot) |
-| `translateY(0.2em)` offset | `top: -13px` on 48×48 control (centers 22px box on line 1) |
-| Absolute center in 22px slot | Slot height = 22px (one line); control positioned from first line |
+| Before                            | After                                                             |
+| --------------------------------- | ----------------------------------------------------------------- |
+| Flex row, `align-items: baseline` | CSS grid: `48px \| 1fr`, `align-items: start`                     |
+| 22px checkbox column              | 48px tap column (Figma hotspot)                                   |
+| `translateY(0.2em)` offset        | `top: -13px` on 48×48 control (centers 22px box on line 1)        |
+| Absolute center in 22px slot      | Slot height = 22px (one line); control positioned from first line |
 
 Math: `(48 - 22) / 2 = 13px` — offset places the green 22×22 box flush with the first line while preserving the 48×48 touch target.
 
@@ -43,14 +43,14 @@ No changes to `InlineConsentBlock.tsx`, routes, or auth screens.
 
 ## Verification matrix
 
-| Viewport | Dark | Light | Clipping | Wrap stable |
-|----------|:----:|:-----:|:--------:|:-----------:|
-| 320 | ✅ | ✅ | ✅ `overflow: visible` on consent row | ✅ grid `start` |
-| 360 | ✅ | ✅ | ✅ | ✅ |
-| 375 | ✅ | ✅ | ✅ | ✅ |
-| 390 | ✅ | ✅ | ✅ | ✅ |
-| 393 | ✅ | ✅ | ✅ | ✅ |
-| 414 | ✅ | ✅ | ✅ | ✅ |
+| Viewport | Dark | Light |               Clipping                |   Wrap stable   |
+| -------- | :--: | :---: | :-----------------------------------: | :-------------: |
+| 320      |  ✅  |  ✅   | ✅ `overflow: visible` on consent row | ✅ grid `start` |
+| 360      |  ✅  |  ✅   |                  ✅                   |       ✅        |
+| 375      |  ✅  |  ✅   |                  ✅                   |       ✅        |
+| 390      |  ✅  |  ✅   |                  ✅                   |       ✅        |
+| 393      |  ✅  |  ✅   |                  ✅                   |       ✅        |
+| 414      |  ✅  |  ✅   |                  ✅                   |       ✅        |
 
 **Screens:** A1 Mobile (owner), PWA verify mobile (bystander variant — same component).
 

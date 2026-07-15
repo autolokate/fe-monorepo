@@ -1,1 +1,1 @@
-export { useSafetyPlans } from "./useSafetyPlans";
+export { useSafetyPlans } from './useSafetyPlans';

@@ -1,6 +1,6 @@
-import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
-import { MyOrders, myOrdersMetadata } from "./";
+import { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
+import { MyOrders, myOrdersMetadata } from './';
 
 export const metadata = myOrdersMetadata;
 

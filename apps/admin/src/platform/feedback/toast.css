@@ -37,13 +37,25 @@
 }
 
 .admin-toast--info {
-  border-color: color-mix(in srgb, var(--al-signal-blue, #1a73e8) 35%, var(--al-color-border-subtle));
+  border-color: color-mix(
+    in srgb,
+    var(--al-signal-blue, #1a73e8) 35%,
+    var(--al-color-border-subtle)
+  );
   background: color-mix(in srgb, var(--al-signal-blue, #1a73e8) 8%, var(--al-color-surface));
 }
 
 [data-theme='dark'] .admin-toast--info {
-  border-color: color-mix(in srgb, var(--al-signal-blue-bright, #8ab4f8) 35%, var(--al-color-border-subtle));
-  background: color-mix(in srgb, var(--al-signal-blue-bright, #8ab4f8) 10%, var(--al-color-surface));
+  border-color: color-mix(
+    in srgb,
+    var(--al-signal-blue-bright, #8ab4f8) 35%,
+    var(--al-color-border-subtle)
+  );
+  background: color-mix(
+    in srgb,
+    var(--al-signal-blue-bright, #8ab4f8) 10%,
+    var(--al-color-surface)
+  );
 }
 
 .admin-toast__icon {

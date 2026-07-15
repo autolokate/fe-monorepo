@@ -3,7 +3,10 @@ import type { NavigateFunction } from 'react-router-dom';
 import type { PwaScanSession } from '@/features/post-activation-pwa/context/pwa-scan-types';
 import type { QrResolution } from '@autolokate/api-client';
 
-import { resetPurchaseCheckoutSession, selectActivationFlow } from '@/journey/navigation/select-activation-flow';
+import {
+  resetPurchaseCheckoutSession,
+  selectActivationFlow,
+} from '@/journey/navigation/select-activation-flow';
 import type { ActivationFlowId, JourneyPhase, JourneySession } from '@/journey/types';
 import { dispatchQrPayload, type QrDispatchDeps } from '@/platform/qr/dispatch-qr-payload';
 import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
@@ -102,7 +105,11 @@ async function beginPartnerActivationJourney(
     partnerKind,
   });
 
-  const previewResult = await loadPartnerActivationPreviewAtEntry(code, partnerKind, entitlementCode);
+  const previewResult = await loadPartnerActivationPreviewAtEntry(
+    code,
+    partnerKind,
+    entitlementCode,
+  );
   const riderCount: number = previewResult.ok ? previewResult.preview.riderCount : 0;
   const flowId = resolvePartnerFlowId(partnerKind);
   const variant = resolvePartnerVariantFromRiderCount(riderCount);

@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { HERO_PRIMARY_CTA, HERO_SLIDES } from "./constants";
-import { VideoPanel } from "./VideoPanel";
-import styles from "./index.module.css";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { HERO_PRIMARY_CTA, HERO_SLIDES } from './constants';
+import { VideoPanel } from './VideoPanel';
+import styles from './index.module.css';
 
 const AUTO_ROTATE_MS = 5000;
 
@@ -28,8 +28,8 @@ export function HeroCarousel() {
   useEffect(() => {
     if (paused || playing || count <= 1) return;
     const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
 
     const id = window.setInterval(() => {
@@ -91,7 +91,7 @@ export function HeroCarousel() {
             key={s.id}
             type="button"
             onClick={() => select(index)}
-            className={`${styles.dot} ${index === active ? styles.dotActive : ""}`}
+            className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show slide ${index + 1}`}
             aria-current={index === active}
           />

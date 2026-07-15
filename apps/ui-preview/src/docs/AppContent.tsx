@@ -98,7 +98,9 @@ export function AppContent({ page }: { page: DocPageId }) {
       <TokenGrid
         title="Radius"
         entries={Object.entries(radius)}
-        preview={(token) => <div className="ds-radius-box" style={{ borderRadius: `var(${token})` }} />}
+        preview={(token) => (
+          <div className="ds-radius-box" style={{ borderRadius: `var(${token})` }} />
+        )}
       />
     );
   }
@@ -107,7 +109,11 @@ export function AppContent({ page }: { page: DocPageId }) {
       <TokenGrid
         title="Motion"
         entries={Object.entries(motion)}
-        preview={(token) => <div className="ds-motion-chip" style={getMotionPreviewStyle(token)}>motion</div>}
+        preview={(token) => (
+          <div className="ds-motion-chip" style={getMotionPreviewStyle(token)}>
+            motion
+          </div>
+        )}
       />
     );
   }

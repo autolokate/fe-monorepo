@@ -38,12 +38,18 @@ export function R05AccountCreationScreen({
           label="Full name"
           value={interactive ? nameValue : undefined}
           defaultValue={interactive ? undefined : ''}
-          onChange={onNameChange ? (event) => {
-            onNameChange(event.target.value);
-          } : undefined}
+          onChange={
+            onNameChange
+              ? (event) => {
+                  onNameChange(event.target.value);
+                }
+              : undefined
+          }
           placeholder="Your name"
           variant={isError ? 'error' : isSuccess ? 'success' : 'default'}
-          errorText={isError ? 'Enter your name exactly as on the registration certificate.' : undefined}
+          errorText={
+            isError ? 'Enter your name exactly as on the registration certificate.' : undefined
+          }
           helperText={isSuccess ? 'Account details saved.' : undefined}
           disabled={loading}
           autoComplete="name"

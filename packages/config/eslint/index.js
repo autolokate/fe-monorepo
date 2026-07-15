@@ -5,13 +5,7 @@ import tseslint from 'typescript-eslint';
 /** @type {import('eslint').Linter.Config[]} */
 export const sharedConfig = tseslint.config(
   {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.turbo/**',
-      '**/coverage/**',
-      '**/.next/**',
-    ],
+    ignores: ['**/node_modules/**', '**/dist/**', '**/.turbo/**', '**/coverage/**', '**/.next/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

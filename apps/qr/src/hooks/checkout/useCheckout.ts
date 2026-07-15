@@ -48,16 +48,19 @@ export function useCheckout() {
     [syncRevision],
   );
 
-  const pollPayment = useCallback(async (orderId: string) => {
-    setIsPending(true);
-    try {
-      const result = await pollCheckoutPayment(orderId);
-      syncRevision(result);
-      return result;
-    } finally {
-      setIsPending(false);
-    }
-  }, [syncRevision]);
+  const pollPayment = useCallback(
+    async (orderId: string) => {
+      setIsPending(true);
+      try {
+        const result = await pollCheckoutPayment(orderId);
+        syncRevision(result);
+        return result;
+      } finally {
+        setIsPending(false);
+      }
+    },
+    [syncRevision],
+  );
 
   return {
     prepareCheckout: prepare,

@@ -14,9 +14,7 @@
   "orderIdConsistency": {
     "created": "d1a5924c-cc89-41da-b7c4-ffd2e918a81d",
     "payUrlOrderId": "d1a5924c-cc89-41da-b7c4-ffd2e918a81d",
-    "pollOrderIds": [
-      "d1a5924c-cc89-41da-b7c4-ffd2e918a81d"
-    ],
+    "pollOrderIds": ["d1a5924c-cc89-41da-b7c4-ffd2e918a81d"],
     "allMatch": true,
     "duplicateCreateOrders": 1,
     "duplicatePayCalls": 1

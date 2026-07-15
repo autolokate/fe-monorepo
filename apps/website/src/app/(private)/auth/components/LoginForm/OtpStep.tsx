@@ -1,19 +1,15 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { type FormEvent, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { Loader2, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRequestOtp, useVerifyOtp } from "@/hooks/auth";
-import { BrandWordmark } from "../BrandWordmark";
-import { OtpField } from "../OtpField";
-import {
-  OTP_LENGTH,
-  RESEND_COOLDOWN_SECONDS,
-  formatPhoneDisplay,
-} from "../constants";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { Loader2, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useRequestOtp, useVerifyOtp } from '@/hooks/auth';
+import { BrandWordmark } from '../BrandWordmark';
+import { OtpField } from '../OtpField';
+import { OTP_LENGTH, RESEND_COOLDOWN_SECONDS, formatPhoneDisplay } from '../constants';
 
 interface OtpStepProps {
   phone: string;
@@ -24,20 +20,20 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
   const router = useRouter();
   const otpInputRef = useRef<HTMLInputElement>(null);
 
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_SECONDS);
 
   const verify = useVerifyOtp({
     onSuccess: () => {
-      toast.success("Logged in successfully.");
-      router.push(safeNext || "/");
+      toast.success('Logged in successfully.');
+      router.push(safeNext || '/');
     },
   });
 
   const resend = useRequestOtp({
-    successToast: "OTP resent.",
+    successToast: 'OTP resent.',
     onSuccess: () => {
-      setOtp("");
+      setOtp('');
       setCooldown(RESEND_COOLDOWN_SECONDS);
       otpInputRef.current?.focus();
     },
@@ -65,10 +61,10 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
   }
 
   function handleChangePhone() {
-    setOtp("");
+    setOtp('');
     const q = new URLSearchParams();
-    if (safeNext) q.set("next", safeNext);
-    router.replace(q.toString() ? `/auth/login?${q.toString()}` : "/auth/login");
+    if (safeNext) q.set('next', safeNext);
+    router.replace(q.toString() ? `/auth/login?${q.toString()}` : '/auth/login');
   }
 
   return (
@@ -84,7 +80,7 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
           Verify OTP
         </h1>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-          Enter the {OTP_LENGTH}-digit code sent to{" "}
+          Enter the {OTP_LENGTH}-digit code sent to{' '}
           <span className="font-semibold text-foreground">{formatPhoneDisplay(phone)}</span>.
         </p>
       </div>
@@ -132,10 +128,10 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
           disabled={resend.isLoading || cooldown > 0}
         >
           {resend.isLoading
-            ? "Resending…"
+            ? 'Resending…'
             : cooldown > 0
               ? `Resend in ${cooldown}s`
-              : "Resend code"}
+              : 'Resend code'}
         </button>
         <span aria-hidden className="h-3 w-px bg-border/70" />
         <button

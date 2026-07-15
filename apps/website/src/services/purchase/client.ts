@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
 import axios, {
   AxiosHeaders,
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
-} from "axios";
-import { endpoints } from "@/lib/api/endpoints";
-import { toApiError } from "@/lib/api/error";
+} from 'axios';
+import { endpoints } from '@/lib/api/endpoints';
+import { toApiError } from '@/lib/api/error';
 import {
   clearPurchaseSession,
   getPurchaseSession,
   getPurchaseToken,
   isAccessTokenLive,
   setPurchaseSession,
-} from "./session";
+} from './session';
 
 /**
  * Temporary override — the purchase backend (plans, cart, orders, auth) lives on
@@ -21,7 +21,7 @@ import {
  * shared staging base URL. Remove once these routes are served from
  * `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL`.
  */
-export const PURCHASE_API_BASE_URL = "https://malisa-noninclusive-davin.ngrok-free.dev";
+export const PURCHASE_API_BASE_URL = 'https://malisa-noninclusive-davin.ngrok-free.dev';
 
 /**
  * Dedicated axios instance for the purchase flow. It's intentionally isolated
@@ -32,10 +32,10 @@ export const PURCHASE_API_BASE_URL = "https://malisa-noninclusive-davin.ngrok-fr
 const client = axios.create({
   baseURL: PURCHASE_API_BASE_URL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     // ngrok's free tier serves an HTML interstitial without this header, which
     // would break JSON parsing.
-    "ngrok-skip-browser-warning": "true",
+    'ngrok-skip-browser-warning': 'true',
   },
   timeout: 30_000,
 });
@@ -43,8 +43,8 @@ const client = axios.create({
 client.interceptors.request.use((config) => {
   const headers = AxiosHeaders.from(config.headers ?? {});
   const token = getPurchaseToken();
-  if (token) headers.set("Authorization", `Bearer ${token}`);
-  headers.set("ngrok-skip-browser-warning", "true");
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  headers.set('ngrok-skip-browser-warning', 'true');
   config.headers = headers;
   return config;
 });
@@ -80,8 +80,8 @@ async function doRefresh(): Promise<string | null> {
       { refreshToken: current.refreshToken },
       {
         headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true",
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
         },
         timeout: 30_000,
       },
@@ -90,7 +90,7 @@ async function doRefresh(): Promise<string | null> {
     const body = res.data ?? {};
     const data: RefreshResult = body.data ?? body;
     const accessToken = data.accessToken ?? data.access_token;
-    if (!accessToken) throw new Error("No access token in refresh response");
+    if (!accessToken) throw new Error('No access token in refresh response');
 
     setPurchaseSession({
       accessToken,
@@ -139,7 +139,7 @@ client.interceptors.response.use(
       const token = await refreshPurchaseSession();
       if (token) {
         const headers = AxiosHeaders.from(config.headers ?? {});
-        headers.set("Authorization", `Bearer ${token}`);
+        headers.set('Authorization', `Bearer ${token}`);
         config.headers = headers;
         return client.request(config);
       }
@@ -162,13 +162,13 @@ export const PurchaseApi = {
 
 /** Fresh idempotency key for order create / pay (backend dedupes retries on it). */
 export function newIdempotencyKey(): string {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
   }
   // Fallback for older runtimes.
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }

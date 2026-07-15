@@ -8,12 +8,8 @@
  */
 /* Compat SW per https://firebase.google.com/docs/cloud-messaging/js/receive
  * (modular SW requires bundling; keep CDN version pinned to the npm `firebase` major). */
-importScripts(
-  'https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js',
-);
-importScripts(
-  'https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js',
-);
+importScripts('https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.16.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
   apiKey: 'AIzaSyBc722Z077xkcOrpL5PdnlSAnc4w9PqLRo',

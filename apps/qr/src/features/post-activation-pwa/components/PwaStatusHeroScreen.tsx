@@ -27,12 +27,7 @@ export function PwaStatusHeroScreen({
   onBack,
 }: PwaStatusHeroScreenProps) {
   return (
-    <PwaScanShell
-      variant={variant}
-      showBack={showBack}
-      onBack={onBack}
-      footer={footer}
-    >
+    <PwaScanShell variant={variant} showBack={showBack} onBack={onBack} footer={footer}>
       <PwaFade className="pwa-status-hero-screen">
         <PwaHeroReveal className="pwa-status-hero-screen__visual">{visual}</PwaHeroReveal>
         <PwaRevealItem index={1}>

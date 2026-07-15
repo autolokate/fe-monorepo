@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { requestOtp } from "@/services/auth";
-import type { RequestOtpPayload, RequestOtpResponse } from "@/services/auth/types";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
+import { useMemo } from 'react';
+import { requestOtp } from '@/services/auth';
+import type { RequestOtpPayload, RequestOtpResponse } from '@/services/auth/types';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /**
  * `POST /v1/auth/login/otp` — requests an OTP for the supplied phone.

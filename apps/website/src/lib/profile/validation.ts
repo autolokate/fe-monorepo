@@ -4,7 +4,7 @@
  * limits applied here keep us inside the server-side guards.
  */
 
-export const VEHICLE_CATEGORIES = ["car", "bike", "scooter"] as const;
+export const VEHICLE_CATEGORIES = ['car', 'bike', 'scooter'] as const;
 export type VehicleCategory = (typeof VEHICLE_CATEGORIES)[number];
 
 export type ProfileFormFields = {
@@ -27,7 +27,7 @@ const IN_MOBILE_LOOSE = /^\+91\d{10}$/;
 
 function parseCommaList(raw: string): string[] {
   return raw
-    .split(",")
+    .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
 }
@@ -43,23 +43,23 @@ const MAX_LIST_ITEMS = 12;
 const MAX_BUDGET = 9_999_999_999;
 
 function validateBudgetField(
-  key: "budget_min" | "budget_max",
+  key: 'budget_min' | 'budget_max',
   raw: string,
   errors: ProfileValidationErrors,
 ): number | null {
   const t = raw.trim();
   if (!t) return null;
   if (!/^\d+$/.test(t)) {
-    errors[key] = "Use a whole number in rupees (no decimals).";
+    errors[key] = 'Use a whole number in rupees (no decimals).';
     return null;
   }
   const n = Number(t);
   if (n < 0) {
-    errors[key] = "Budget cannot be negative.";
+    errors[key] = 'Budget cannot be negative.';
     return null;
   }
   if (n > MAX_BUDGET) {
-    errors[key] = `Must be at most ₹${MAX_BUDGET.toLocaleString("en-IN")}.`;
+    errors[key] = `Must be at most ₹${MAX_BUDGET.toLocaleString('en-IN')}.`;
     return null;
   }
   return n;
@@ -85,15 +85,14 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
   if (name.length > MAX_NAME) {
     errors.full_name = `Use at most ${MAX_NAME} characters.`;
   } else if (name.length === 1) {
-    errors.full_name = "Enter at least 2 characters or leave blank.";
+    errors.full_name = 'Enter at least 2 characters or leave blank.';
   }
 
   const phone = fields.phone.trim();
   if (phone) {
-    const compact = phone.replace(/\s/g, "");
+    const compact = phone.replace(/\s/g, '');
     if (!IN_MOBILE.test(compact) && !IN_MOBILE_LOOSE.test(compact)) {
-      errors.phone =
-        "Use a valid Indian number: +91 followed by 10 digits (e.g. +919876543210).";
+      errors.phone = 'Use a valid Indian number: +91 followed by 10 digits (e.g. +919876543210).';
     }
   }
 
@@ -102,18 +101,18 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
     errors.city_id = `Use at most ${MAX_CITY_ID} characters.`;
   }
   if (city && /[\r\n\t]/.test(fields.city_id)) {
-    errors.city_id = "Remove line breaks from this field.";
+    errors.city_id = 'Remove line breaks from this field.';
   }
 
   const cat = fields.preferred_vehicle_category.trim().toLowerCase();
   if (cat && !VEHICLE_CATEGORIES.includes(cat as VehicleCategory)) {
-    errors.preferred_vehicle_category = "Choose car, bike, or scooter (or clear the field).";
+    errors.preferred_vehicle_category = 'Choose car, bike, or scooter (or clear the field).';
   }
 
-  const minN = validateBudgetField("budget_min", fields.budget_min, errors);
-  const maxN = validateBudgetField("budget_max", fields.budget_max, errors);
+  const minN = validateBudgetField('budget_min', fields.budget_min, errors);
+  const maxN = validateBudgetField('budget_max', fields.budget_max, errors);
   if (minN != null && maxN != null && minN > maxN) {
-    errors.budget_max = "Budget max must be greater than or equal to budget min.";
+    errors.budget_max = 'Budget max must be greater than or equal to budget min.';
   }
 
   const fuels = parseCommaList(fields.preferred_fuel_types);
@@ -127,7 +126,7 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
       }
       if (!LIST_TOKEN.test(f)) {
         errors.preferred_fuel_types =
-          "Use short names like petrol, diesel, cng, electric — letters, numbers, hyphen only.";
+          'Use short names like petrol, diesel, cng, electric — letters, numbers, hyphen only.';
         break;
       }
     }
@@ -144,7 +143,7 @@ export function validateProfileForm(fields: ProfileFormFields): ValidateProfileR
       }
       if (!LIST_TOKEN.test(b)) {
         errors.preferred_body_types =
-          "Use short names like suv, hatchback, sedan — letters, numbers, hyphen only.";
+          'Use short names like suv, hatchback, sedan — letters, numbers, hyphen only.';
         break;
       }
     }

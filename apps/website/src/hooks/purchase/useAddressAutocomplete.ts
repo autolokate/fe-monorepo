@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ADDRESS_MIN_QUERY,
   resolveAddress,
   suggestAddresses,
   type AddressSuggestion,
   type ResolvedAddress,
-} from "@/services/purchase";
+} from '@/services/purchase';
 
 /** How long the buyer has to pause typing before we hit the vendor. */
 const DEBOUNCE_MS = 300;

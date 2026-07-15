@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   grantAccountConsent,
   grantConsent,
   type ConsentItem,
   type ConsentPurpose,
-} from "@/services/purchase";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
+} from '@/services/purchase';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 interface GrantConsentVariables {
   purpose: ConsentPurpose;
@@ -19,8 +19,9 @@ export function useGrantConsent(
   options?: UseApiMutationOptions<ConsentItem, GrantConsentVariables>,
 ) {
   const fn = useMemo(
-    () => ({ purpose, noticeVersion }: GrantConsentVariables) =>
-      grantConsent(purpose, noticeVersion),
+    () =>
+      ({ purpose, noticeVersion }: GrantConsentVariables) =>
+        grantConsent(purpose, noticeVersion),
     [],
   );
   return useApiMutation(fn, options);

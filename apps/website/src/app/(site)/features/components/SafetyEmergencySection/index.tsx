@@ -1,12 +1,7 @@
-import { Check, ShieldCheck } from "lucide-react";
-import { PhoneCarousel } from "../PhoneCarousel";
-import {
-  PHONE_SHOTS,
-  SAFETY_ASIDE,
-  SAFETY_CHECKLIST,
-  SAFETY_EMERGENCY_COPY,
-} from "./constants";
-import styles from "./index.module.css";
+import { Check, ShieldCheck } from 'lucide-react';
+import { PhoneCarousel } from '../PhoneCarousel';
+import { PHONE_SHOTS, SAFETY_ASIDE, SAFETY_CHECKLIST, SAFETY_EMERGENCY_COPY } from './constants';
+import styles from './index.module.css';
 
 export function SafetyEmergencySection() {
   return (

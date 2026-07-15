@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
-import type { WhyHighlight } from "./types";
-import styles from "./index.module.css";
+import { cn } from '@/lib/utils';
+import type { WhyHighlight } from './types';
+import styles from './index.module.css';
 
 interface HighlightCardProps {
   highlight: WhyHighlight;

@@ -1,12 +1,7 @@
-import Image from "next/image";
-import {
-  QR_FEATURES,
-  QR_SECTION_BACKGROUND,
-  QR_SECTION_COPY,
-  QR_SECTION_IMAGE,
-} from "./constants";
-import { QrCta } from "./QrCta";
-import styles from "./index.module.css";
+import Image from 'next/image';
+import { QR_FEATURES, QR_SECTION_BACKGROUND, QR_SECTION_COPY, QR_SECTION_IMAGE } from './constants';
+import { QrCta } from './QrCta';
+import styles from './index.module.css';
 
 export function QrSection() {
   return (

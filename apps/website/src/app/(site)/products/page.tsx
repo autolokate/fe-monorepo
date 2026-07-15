@@ -4,7 +4,7 @@ import {
   HeroBanner,
   WhyAutolokateSection,
   productsMetadata,
-} from "./";
+} from './';
 
 export const metadata = productsMetadata;
 

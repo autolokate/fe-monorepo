@@ -77,9 +77,7 @@ function resolveFlowKind(preview: ActivationPreviewDto): ActivationFlowKind {
 }
 
 /** Map backend preview into the existing welcome entitlement card shape. */
-export function mapPreviewToLandingEntitlement(
-  preview: ActivationPreviewDto,
-): LandingEntitlement {
+export function mapPreviewToLandingEntitlement(preview: ActivationPreviewDto): LandingEntitlement {
   const resolvedFlow = resolveFlowKind(preview);
   const planId = mapApiTierToPurchasePlanId(preview.planTier);
   const riderCount = clampRiderCount(preview.riderCount);

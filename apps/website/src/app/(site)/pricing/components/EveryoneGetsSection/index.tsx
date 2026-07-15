@@ -1,5 +1,5 @@
-import { EVERYONE_GETS_COPY, EVERYONE_GETS_ICONS } from "./constants";
-import styles from "./index.module.css";
+import { EVERYONE_GETS_COPY, EVERYONE_GETS_ICONS } from './constants';
+import styles from './index.module.css';
 
 export function EveryoneGetsSection() {
   return (

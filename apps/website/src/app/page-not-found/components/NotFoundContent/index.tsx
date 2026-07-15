@@ -1,17 +1,8 @@
-import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Compass,
-  Headphones,
-  ShieldCheck,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  NOT_FOUND_COPY,
-  NOT_FOUND_QUICK_LINKS,
-} from "./constants";
-import styles from "./index.module.css";
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight, Compass, Headphones, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { NOT_FOUND_COPY, NOT_FOUND_QUICK_LINKS } from './constants';
+import styles from './index.module.css';
 
 export function NotFoundContent() {
   return (
@@ -38,7 +29,7 @@ export function NotFoundContent() {
               <ShieldCheck className="h-4 w-4" />
             </span>
             <p className={styles.statusCopy}>
-              <span className={styles.statusTitle}>{NOT_FOUND_COPY.statusTitle}</span>{" "}
+              <span className={styles.statusTitle}>{NOT_FOUND_COPY.statusTitle}</span>{' '}
               {NOT_FOUND_COPY.statusBody}
             </p>
           </div>

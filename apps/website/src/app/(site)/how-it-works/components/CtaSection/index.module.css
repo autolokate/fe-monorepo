@@ -30,7 +30,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/new-design/howItWorksCTAMobile.png");
+  background-image: url('/images/new-design/howItWorksCTAMobile.png');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -169,7 +169,7 @@ button.ctaSecondary:hover:not(:disabled) {
 
 @media (min-width: 768px) {
   .bgImage {
-    background-image: url("/images/new-design/howItWorksCTA.png");
+    background-image: url('/images/new-design/howItWorksCTA.png');
     background-position: right center;
   }
 

@@ -41,10 +41,7 @@ export function mapQrAttachApiError(error: unknown): QrAttachError {
     return { code: 'offline', message };
   }
 
-  if (
-    apiCode === 'vehicle_already_subscribed' ||
-    apiCode === 'vehicle_already_linked'
-  ) {
+  if (apiCode === 'vehicle_already_subscribed' || apiCode === 'vehicle_already_linked') {
     return { code: 'vehicle_already_subscribed', message };
   }
 

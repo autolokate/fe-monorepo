@@ -46,10 +46,7 @@ import { resolveJourneyResumePath } from '../resume/journey-resume-path';
 import { stripOnboardingPrefix } from '../routing/journey-url-routing';
 import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { useJourney } from '../JourneyContext';
-import {
-  applyMobileSendError,
-  applyOtpVerifyError,
-} from './auth-route-helpers';
+import { applyMobileSendError, applyOtpVerifyError } from './auth-route-helpers';
 import { shouldRequireSignupConsent } from '../auth/signup-consent-policy';
 
 function AuthSegmentBootstrap({ children }: { children: ReactNode }) {
@@ -102,14 +99,7 @@ function MobileRoute() {
     void navigate(getPostAuthActivationPath(flow, journeyId ?? undefined, session), {
       replace: true,
     });
-  }, [
-    bootstrapDone,
-    journeyId,
-    navigate,
-    selectedFlow,
-    session,
-    setSelectedFlow,
-  ]);
+  }, [bootstrapDone, journeyId, navigate, selectedFlow, session, setSelectedFlow]);
 
   useEffect(() => {
     if (bootstrapRef.current) {
@@ -274,7 +264,12 @@ function MobileRoute() {
       { entryPoint: 'auth-mobile' },
     ).then((result) => {
       if (!result.ok) {
-        reportUserError(qrLogger, 'auth_mobile_qr_entry_failed', result.error, result.error.message);
+        reportUserError(
+          qrLogger,
+          'auth_mobile_qr_entry_failed',
+          result.error,
+          result.error.message,
+        );
         setEntryMode('form');
         return;
       }
@@ -628,7 +623,10 @@ function VehicleOwnerRoute({ onAuthCompleted }: AuthRoutesProps) {
       return;
     }
     // Existing / returning users skip name — never park them on profile via back navigation.
-    if (auth.isNewUser === false || (hasAuthTokens() && auth.isNewUser !== true && auth.ownerName)) {
+    if (
+      auth.isNewUser === false ||
+      (hasAuthTokens() && auth.isNewUser !== true && auth.ownerName)
+    ) {
       void onAuthCompleted?.();
     }
   }, [

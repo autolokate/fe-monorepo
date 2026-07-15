@@ -17,7 +17,11 @@ import {
   withTimeout,
   SCANNER_REQUEST_TIMEOUT_MS,
 } from './scanner-network';
-import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors';
+import {
+  isScannerTransientError,
+  mapScannerApiError,
+  type ScannerApiError,
+} from './scanner-api-errors';
 import { scannerLogger } from './scanner-logger';
 
 export type ScanUploadKind = 'park' | 'emergency';

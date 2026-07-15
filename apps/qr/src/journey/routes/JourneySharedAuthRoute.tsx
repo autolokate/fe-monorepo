@@ -51,9 +51,7 @@ export function JourneySharedAuthRoute() {
     const resolved = qrStorageRepository.readResolved();
     const journeyState = readPurchaseJourneyState(undefined, journeyId);
     const attachedPatch =
-      journeyState.skipsVehicleSteps && resolved
-        ? ensureAttachedPurchaseContext(resolved)
-        : {};
+      journeyState.skipsVehicleSteps && resolved ? ensureAttachedPurchaseContext(resolved) : {};
 
     updateSession({
       ...resetPurchaseCheckoutSession(),

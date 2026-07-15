@@ -1,5 +1,5 @@
-import type { CrashToCareStep } from "./types";
-import { StepCard } from "./StepCard";
+import type { CrashToCareStep } from './types';
+import { StepCard } from './StepCard';
 
 interface MobileTimelineProps {
   steps: CrashToCareStep[];
@@ -8,10 +8,7 @@ interface MobileTimelineProps {
 export function MobileTimeline({ steps }: MobileTimelineProps) {
   return (
     <ol className="relative list-none space-y-4 pl-1">
-      <span
-        aria-hidden
-        className="absolute bottom-3 left-[1.375rem] top-3 w-px bg-black/20"
-      />
+      <span aria-hidden className="absolute bottom-3 left-[1.375rem] top-3 w-px bg-black/20" />
 
       {steps.map((step) => (
         <li key={step.id} className="relative pl-10">

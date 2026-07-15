@@ -1,14 +1,9 @@
-import { BUILT_FOR_INDIA_CARDS, BUILT_FOR_INDIA_COPY } from "./constants";
-import styles from "./index.module.css";
+import { BUILT_FOR_INDIA_CARDS, BUILT_FOR_INDIA_COPY } from './constants';
+import styles from './index.module.css';
 
 export function BuiltForIndiaSection() {
-  const {
-    eyebrow,
-    headlineLine1,
-    headlineLine2,
-    subheadingLine1,
-    subheadingLine2,
-  } = BUILT_FOR_INDIA_COPY;
+  const { eyebrow, headlineLine1, headlineLine2, subheadingLine1, subheadingLine2 } =
+    BUILT_FOR_INDIA_COPY;
 
   return (
     <section
@@ -55,9 +50,7 @@ export function BuiltForIndiaSection() {
                     <Icon className="h-5 w-5 stroke-[1.75]" />
                   </span>
                   <div className="min-w-0">
-                    <h3 className="text-[15px] font-bold leading-snug text-foreground">
-                      {title}
-                    </h3>
+                    <h3 className="text-[15px] font-bold leading-snug text-foreground">{title}</h3>
                     <p className="mt-0.5 text-[13px] leading-relaxed text-muted-foreground">
                       {body}
                     </p>

@@ -39,7 +39,9 @@ export function useCatalogMutations() {
       await invalidatePlans();
       // A new version can put a tier back on the shelf — SKU pickers read from the plan list.
       await invalidateSkus();
-      showSuccessToast(`Minted ${formatPlanRef(plan)} — features copied forward from the outgoing version.`);
+      showSuccessToast(
+        `Minted ${formatPlanRef(plan)} — features copied forward from the outgoing version.`,
+      );
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'catalog:create-plan-version', toast: true });

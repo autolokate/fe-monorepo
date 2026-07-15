@@ -14,8 +14,7 @@ import { buildQrEntryPath } from '../routing/journey-url-routing';
 export function LegacyVehicleLookupRedirect() {
   const { session } = useJourney();
   const journeyId = useActiveJourneyId();
-  const registration =
-    session.vehicle?.plate?.trim() || getVehicle()?.registration.trim() || '';
+  const registration = session.vehicle?.plate?.trim() || getVehicle()?.registration.trim() || '';
 
   if (!journeyId) {
     return <Navigate to={buildQrEntryPath('')} replace />;
@@ -34,8 +33,7 @@ export function LegacyVehicleLookupRedirect() {
 export function LegacyVehicleConfirmationRedirect() {
   const { session } = useJourney();
   const journeyId = useActiveJourneyId();
-  const registration =
-    session.vehicle?.plate?.trim() || getVehicle()?.registration.trim() || '';
+  const registration = session.vehicle?.plate?.trim() || getVehicle()?.registration.trim() || '';
 
   if (!journeyId) {
     return <Navigate to={buildQrEntryPath('')} replace />;

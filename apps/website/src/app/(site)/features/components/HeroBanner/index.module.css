@@ -19,7 +19,7 @@
 .bgImage {
   position: absolute;
   inset: 0;
-  background-image: url("/images/new-design/featurePageBannerMobile.png");
+  background-image: url('/images/new-design/featurePageBannerMobile.png');
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;
@@ -50,7 +50,7 @@
 
 @media (min-width: 1024px) {
   .bgImage {
-    background-image: url("/images/new-design/featurePageBannerWeb.png");
+    background-image: url('/images/new-design/featurePageBannerWeb.png');
     background-position: right center;
   }
 
@@ -180,4 +180,3 @@
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-

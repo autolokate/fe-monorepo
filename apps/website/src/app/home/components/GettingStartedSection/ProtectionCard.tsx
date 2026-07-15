@@ -1,7 +1,7 @@
-import type { CSSProperties } from "react";
-import { MapPin, ShieldCheck, UserRound } from "lucide-react";
-import type { ProtectionCard as ProtectionCardType } from "./types";
-import styles from "./index.module.css";
+import type { CSSProperties } from 'react';
+import { MapPin, ShieldCheck, UserRound } from 'lucide-react';
+import type { ProtectionCard as ProtectionCardType } from './types';
+import styles from './index.module.css';
 
 const RING_RADIUS = 52;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
@@ -11,15 +11,7 @@ interface ProtectionCardProps {
   card: ProtectionCardType;
 }
 
-function CardHeading({
-  step,
-  title,
-  body,
-}: {
-  step: string;
-  title: string;
-  body: string;
-}) {
+function CardHeading({ step, title, body }: { step: string; title: string; body: string }) {
   return (
     <div>
       <span className={`${styles.amber} font-mono text-xs font-bold tracking-wider`}>{step}</span>
@@ -30,14 +22,14 @@ function CardHeading({
 }
 
 export function ProtectionCard({ card }: ProtectionCardProps) {
-  const isImage = card.kind === "image";
+  const isImage = card.kind === 'image';
 
   const imageVars =
-    card.kind === "image"
+    card.kind === 'image'
       ? ({
-          "--bg-dark": `url(${card.image.dark})`,
-          "--bg-light": `url(${card.image.light})`,
-          ...(card.imagePosition ? { "--bg-pos": card.imagePosition } : {}),
+          '--bg-dark': `url(${card.image.dark})`,
+          '--bg-light': `url(${card.image.light})`,
+          ...(card.imagePosition ? { '--bg-pos': card.imagePosition } : {}),
         } as CSSProperties)
       : undefined;
 
@@ -53,7 +45,7 @@ export function ProtectionCard({ card }: ProtectionCardProps) {
       <div className="relative z-10 flex h-full flex-col">
         <CardHeading step={card.step} title={card.title} body={card.body} />
 
-        {card.kind === "countdown" ? (
+        {card.kind === 'countdown' ? (
           <div className="flex flex-1 items-center justify-center">
             <div className="relative flex h-32 w-32 items-center justify-center">
               <span className={styles.countdownPulse} aria-hidden />
@@ -89,7 +81,7 @@ export function ProtectionCard({ card }: ProtectionCardProps) {
           </div>
         ) : null}
 
-        {card.kind === "notify" ? (
+        {card.kind === 'notify' ? (
           <div className="mt-auto">
             <div className={`${styles.alertPanel} rounded-xl p-3`}>
               <div className="flex items-start gap-2.5">
@@ -107,7 +99,9 @@ export function ProtectionCard({ card }: ProtectionCardProps) {
                 </div>
               </div>
               <div className="mt-2.5 flex items-center gap-2.5">
-                <span className={`${styles.amber} flex h-7 w-7 shrink-0 items-center justify-center`}>
+                <span
+                  className={`${styles.amber} flex h-7 w-7 shrink-0 items-center justify-center`}
+                >
                   <MapPin className="h-4 w-4" strokeWidth={1.9} aria-hidden />
                 </span>
                 <p className="text-[11px] leading-snug text-muted-foreground">

@@ -14,7 +14,7 @@ const BASE_URL = process.env.VISUAL_TRUTH_BASE_URL ?? 'http://127.0.0.1:5199';
 
 /** Figma anchors at 393px width (Consumer App file FtHCUnE0HH586PtG5yJyG0) */
 const FIGMA_ANCHORS = {
-  'r07': {
+  r07: {
     node: '186:25',
     backX: 16,
     titleGap: 8,
@@ -82,11 +82,17 @@ async function measurePage(page, theme) {
 
     return {
       back: rect('.ob-shell__back, .ob-auth-shell__back, .pwa-scan-shell__back, [class*="back"]'),
-      primaryButton: rect('.al-button--primary, .ob-shell__footer .al-button, .pwa-scan-shell__footer .al-button'),
+      primaryButton: rect(
+        '.al-button--primary, .ob-shell__footer .al-button, .pwa-scan-shell__footer .al-button',
+      ),
       checkbox: rect('.al-checkbox, input[type="checkbox"]'),
-      addRiderRow: rect('.ob-add-contact-row, .ob-contact-card-list button, .ob-add-contact-row button'),
+      addRiderRow: rect(
+        '.ob-add-contact-row, .ob-contact-card-list button, .ob-add-contact-row button',
+      ),
       locationChip: rect('.pwa-emergency-screen__location-chip'),
-      frameWidth: document.querySelector('[data-dev-frame]')?.getBoundingClientRect().width ?? window.innerWidth,
+      frameWidth:
+        document.querySelector('[data-dev-frame]')?.getBoundingClientRect().width ??
+        window.innerWidth,
     };
   });
 }
@@ -122,19 +128,35 @@ async function main() {
 
       if (measured.back && anchor?.backX !== undefined) {
         const delta = Math.abs(measured.back.x - anchor.backX);
-        if (delta > 2) drift.push({ field: 'backX', measured: measured.back.x, figma: anchor.backX, delta });
+        if (delta > 2)
+          drift.push({ field: 'backX', measured: measured.back.x, figma: anchor.backX, delta });
       }
       if (measured.primaryButton && anchor?.ctaHeight) {
         const delta = Math.abs(measured.primaryButton.height - anchor.ctaHeight);
-        if (delta > 2) drift.push({ field: 'ctaHeight', measured: measured.primaryButton.height, figma: anchor.ctaHeight, delta });
+        if (delta > 2)
+          drift.push({
+            field: 'ctaHeight',
+            measured: measured.primaryButton.height,
+            figma: anchor.ctaHeight,
+            delta,
+          });
       }
       if (target.key === 'e10-default' && theme === 'light') {
         if (!measured.addRiderRow) {
-          drift.push({ field: 'addRiderRow', measured: null, figma: 'visible', delta: null, severity: 'P0' });
+          drift.push({
+            field: 'addRiderRow',
+            measured: null,
+            figma: 'visible',
+            delta: null,
+            severity: 'P0',
+          });
         }
       }
       if (target.key === 'pwa-sos' && theme === 'light' && measured.locationChip) {
-        if (measured.locationChip.backgroundColor.includes('26, 26, 26') || measured.locationChip.backgroundColor.includes('rgb(26, 26, 26)')) {
+        if (
+          measured.locationChip.backgroundColor.includes('26, 26, 26') ||
+          measured.locationChip.backgroundColor.includes('rgb(26, 26, 26)')
+        ) {
           drift.push({
             field: 'locationChipBackground',
             measured: measured.locationChip.backgroundColor,

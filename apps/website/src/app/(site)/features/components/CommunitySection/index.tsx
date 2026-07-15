@@ -1,12 +1,12 @@
-import { Check, Users } from "lucide-react";
-import { PhoneCarousel } from "../PhoneCarousel";
+import { Check, Users } from 'lucide-react';
+import { PhoneCarousel } from '../PhoneCarousel';
 import {
   COMMUNITY_ASIDE,
   COMMUNITY_CHECKLIST,
   COMMUNITY_COPY,
   COMMUNITY_PHONE_SHOTS,
-} from "./constants";
-import styles from "./index.module.css";
+} from './constants';
+import styles from './index.module.css';
 
 export function CommunitySection() {
   return (

@@ -1,12 +1,8 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import {
-  verifyPurchaseOtp,
-  type VerifyOtpPayload,
-  type VerifyOtpResult,
-} from "@/services/otp";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
+import { useMemo } from 'react';
+import { verifyPurchaseOtp, type VerifyOtpPayload, type VerifyOtpResult } from '@/services/otp';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /**
  * `POST /v1/auth/otp/verify` — verifies the OTP for the purchase verify-number

@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { PURCHASE_ROUTE } from "@/app/(purchase)/purchase/constants";
-import { writePurchaseIntent } from "@/app/(purchase)/purchase/storage";
-import { useSafetyPlans } from "@/hooks/plans";
-import { toSafetyPlan } from "./constants";
-import { PlanCard } from "./PlanCard";
-import styles from "./index.module.css";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PURCHASE_ROUTE } from '@/app/(purchase)/purchase/constants';
+import { writePurchaseIntent } from '@/app/(purchase)/purchase/storage';
+import { useSafetyPlans } from '@/hooks/plans';
+import { toSafetyPlan } from './constants';
+import { PlanCard } from './PlanCard';
+import styles from './index.module.css';
 
 const AUTO_ROTATE_MS = 3800;
 
-type SlotPosition = "left" | "center" | "right";
+type SlotPosition = 'left' | 'center' | 'right';
 
 export function PlanCarousel() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export function PlanCarousel() {
   // the purchase flow can preselect the plan and send them back on "back".
   const choosePlan = useCallback(
     (planId: string) => {
-      writePurchaseIntent({ plan: planId, from: pathname ?? "/" });
+      writePurchaseIntent({ plan: planId, from: pathname ?? '/' });
       router.push(PURCHASE_ROUTE);
     },
     [router, pathname],
@@ -50,8 +50,8 @@ export function PlanCarousel() {
   useEffect(() => {
     if (paused || count <= 1) return;
     const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) return;
 
     const id = window.setInterval(() => {
@@ -65,10 +65,10 @@ export function PlanCarousel() {
       <div className={styles.stateShell} role="status" aria-live="polite">
         <p className={styles.stateText}>
           {isLoading
-            ? "Loading plans…"
+            ? 'Loading plans…'
             : isError
               ? "We couldn't load plans right now. Please try again shortly."
-              : "No plans available right now."}
+              : 'No plans available right now.'}
         </p>
       </div>
     );
@@ -97,8 +97,7 @@ export function PlanCarousel() {
           if (offset > count / 2) offset -= count;
           if (offset < -count / 2) offset += count;
 
-          const position: SlotPosition =
-            offset === 0 ? "center" : offset < 0 ? "left" : "right";
+          const position: SlotPosition = offset === 0 ? 'center' : offset < 0 ? 'left' : 'right';
           const isCenter = offset === 0;
 
           return (
@@ -116,11 +115,7 @@ export function PlanCarousel() {
                   onClick={() => setActive(index)}
                 />
               ) : null}
-              <PlanCard
-                plan={plan}
-                focused={isCenter}
-                onChoose={() => choosePlan(plan.id)}
-              />
+              <PlanCard plan={plan} focused={isCenter} onChoose={() => choosePlan(plan.id)} />
             </div>
           );
         })}
@@ -141,7 +136,7 @@ export function PlanCarousel() {
             key={plan.id}
             type="button"
             onClick={() => setActive(index)}
-            className={`${styles.dot} ${index === active ? styles.dotActive : ""}`}
+            className={`${styles.dot} ${index === active ? styles.dotActive : ''}`}
             aria-label={`Show ${plan.tierLabel} plan`}
             aria-current={index === active}
           />

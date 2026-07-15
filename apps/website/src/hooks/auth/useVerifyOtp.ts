@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { CONSENT_VERSION } from "@/lib/auth/constants";
-import { writeAuthTokens } from "@/lib/auth/storage";
-import { verifyOtp } from "@/services/auth";
-import type { VerifyOtpResponse } from "@/services/auth/types";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
+import { useCallback } from 'react';
+import { CONSENT_VERSION } from '@/lib/auth/constants';
+import { writeAuthTokens } from '@/lib/auth/storage';
+import { verifyOtp } from '@/services/auth';
+import type { VerifyOtpResponse } from '@/services/auth/types';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 export interface VerifyOtpInput {
   phone: string;
@@ -18,9 +18,7 @@ export interface VerifyOtpInput {
  * `POST /v1/auth/verify-otp` — exchanges an OTP for tokens, then persists them
  * to localStorage + cookies. On success the user is fully authenticated.
  */
-export function useVerifyOtp(
-  options?: UseApiMutationOptions<VerifyOtpResponse, VerifyOtpInput>,
-) {
+export function useVerifyOtp(options?: UseApiMutationOptions<VerifyOtpResponse, VerifyOtpInput>) {
   const fn = useCallback(
     (input: VerifyOtpInput) =>
       verifyOtp({

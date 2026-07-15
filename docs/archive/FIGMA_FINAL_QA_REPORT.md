@@ -12,16 +12,16 @@ Re-scanned dark/light prototype frames and component library. Prior parity repor
 
 ### Theme tokens (Figma LD pairs)
 
-| Token | Light | Dark |
-|-------|-------|------|
-| background | `#FFFFFF` | `#0A0A0C` |
-| surface | `#FFFFFF` | `#1A1A1A` |
-| surfaceVariant | `#F5F5F5` | `#4A4A4A` |
-| onSurface | `#0A0A0A` | `#FFFFFF` |
-| onSurfaceMuted | `#8A8A8A` | `#8A8A8A` |
-| outline | `#C4C4C4` | `#4A4A4A` |
+| Token                      | Light     | Dark      |
+| -------------------------- | --------- | --------- |
+| background                 | `#FFFFFF` | `#0A0A0C` |
+| surface                    | `#FFFFFF` | `#1A1A1A` |
+| surfaceVariant             | `#F5F5F5` | `#4A4A4A` |
+| onSurface                  | `#0A0A0A` | `#FFFFFF` |
+| onSurfaceMuted             | `#8A8A8A` | `#8A8A8A` |
+| outline                    | `#C4C4C4` | `#4A4A4A` |
 | pill surface (chip/status) | `#F5F5F5` | `#4A4A4A` |
-| pill on-surface | `#0A0A0A` | `#FFFFFF` |
+| pill on-surface            | `#0A0A0A` | `#FFFFFF` |
 
 ### Typography (component library)
 
@@ -34,22 +34,22 @@ Re-scanned dark/light prototype frames and component library. Prior parity repor
 
 ## Phase 2 — Components Audited & Fixed
 
-| Component | Key mismatches fixed |
-|-----------|-------------------|
-| **AlButton** | Inter 16/600/20px; secondary 1.5px `#4A4A4A` border; disabled `#4A4A4A` + muted text; spinner 20×20 @ 2.5px stroke @ 0.8s |
-| **AlTextField** | 2px border uses `onSurface` (black L / white D); prefix 19px medium; value 20px medium; Inter |
-| **AlInput** | 62px height, 16px radius, 16px padding, 1px outline border, muted labels |
-| **AlOtpInput** | 60px cells, 10px gap, 12px radius, focus 2px `onSurface` border, 22px digits |
-| **AlToggle** | 46×28 track, 22px knob; off track uses `surface-variant` (theme-aware) |
-| **AlCheckbox** | 22×22 box, 8px radius, 1.5px off border, green on + 1.8px white checkmark |
-| **AlChip** | **Theme-aware pill:** L `#F5F5F5`/`#0A0A0A`, D `#4A4A4A`/`#FFFFFF` (was hardcoded dark-only) |
-| **AlStatusPill** | Same theme-aware pill tokens (was light-only hardcoded) |
-| **AlBottomNav** | 353×64, padding `0 10px`, active pill `9×18×9×16` + 12px radius, icon-only inactive, `aria-label` on inactive |
-| **AlAvatar** | 46×46, `surface-variant` bg (theme-aware) |
-| **AlQuickAction** | 110px, 16×0 padding, 10px gap, 24px icon, surface + outline |
-| **AlField** | 2px gap, muted label, 16/600/24 value Inter |
-| **AlStepProgress** | Complete = `onSurface`, incomplete = `pill-surface` (theme-aware; was white/gray hardcoded) |
-| **AlStatusBar** | Inherits updated tokens (display-only) |
+| Component          | Key mismatches fixed                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **AlButton**       | Inter 16/600/20px; secondary 1.5px `#4A4A4A` border; disabled `#4A4A4A` + muted text; spinner 20×20 @ 2.5px stroke @ 0.8s |
+| **AlTextField**    | 2px border uses `onSurface` (black L / white D); prefix 19px medium; value 20px medium; Inter                             |
+| **AlInput**        | 62px height, 16px radius, 16px padding, 1px outline border, muted labels                                                  |
+| **AlOtpInput**     | 60px cells, 10px gap, 12px radius, focus 2px `onSurface` border, 22px digits                                              |
+| **AlToggle**       | 46×28 track, 22px knob; off track uses `surface-variant` (theme-aware)                                                    |
+| **AlCheckbox**     | 22×22 box, 8px radius, 1.5px off border, green on + 1.8px white checkmark                                                 |
+| **AlChip**         | **Theme-aware pill:** L `#F5F5F5`/`#0A0A0A`, D `#4A4A4A`/`#FFFFFF` (was hardcoded dark-only)                              |
+| **AlStatusPill**   | Same theme-aware pill tokens (was light-only hardcoded)                                                                   |
+| **AlBottomNav**    | 353×64, padding `0 10px`, active pill `9×18×9×16` + 12px radius, icon-only inactive, `aria-label` on inactive             |
+| **AlAvatar**       | 46×46, `surface-variant` bg (theme-aware)                                                                                 |
+| **AlQuickAction**  | 110px, 16×0 padding, 10px gap, 24px icon, surface + outline                                                               |
+| **AlField**        | 2px gap, muted label, 16/600/24 value Inter                                                                               |
+| **AlStepProgress** | Complete = `onSurface`, incomplete = `pill-surface` (theme-aware; was white/gray hardcoded)                               |
+| **AlStatusBar**    | Inherits updated tokens (display-only)                                                                                    |
 
 ---
 
@@ -61,14 +61,14 @@ All component pages support: `default`, `hover`, `pressed`, `focus`, `selected`,
 
 ### Figma-matched states in code
 
-| Component | States implemented |
-|-----------|-------------------|
-| AlButton | default, hover, pressed, focus, disabled, loading |
+| Component                          | States implemented                                |
+| ---------------------------------- | ------------------------------------------------- |
+| AlButton                           | default, hover, pressed, focus, disabled, loading |
 | AlTextField / AlInput / AlOtpInput | default, focus, disabled, error, success, loading |
-| AlToggle | on, off, focus, disabled, loading |
-| AlCheckbox | on, off, focus, disabled |
-| AlChip | default, hover, pressed, focus, selected |
-| AlBottomNav | active tab (label+icon), inactive (icon-only) |
+| AlToggle                           | on, off, focus, disabled, loading                 |
+| AlCheckbox                         | on, off, focus, disabled                          |
+| AlChip                             | default, hover, pressed, focus, selected          |
+| AlBottomNav                        | active tab (label+icon), inactive (icon-only)     |
 
 ### Loading spinners
 
@@ -121,33 +121,33 @@ Each of 21 component pages includes:
 
 ## Phase 7 — Screenshot Validation Checklist
 
-| Component | Figma vs Code | Status |
-|-----------|---------------|--------|
-| AlButton Primary (D) | white fill, black text, 58h, r16 | ✅ tokens + CSS |
-| AlButton Secondary (D) | 1.5px #4A4A4A, white text | ✅ |
-| AlButton Loading | 20px spinner, 2.5px stroke | ✅ |
-| AlChip (L) | #F5F5F5 bg, #0A0A0A text | ✅ fixed |
-| AlChip (D) | #4A4A4A bg, white text | ✅ fixed |
-| AlStatusPill (L/D) | pill-surface tokens | ✅ fixed |
-| AlTextField (L) | 2px black border, white fill | ✅ |
-| AlTextField (D) | 2px white border, #1A1A1A fill | ✅ |
-| AlBottomNav active | pill + label + icon | ✅ |
-| AlStepProgress (L) | black complete, #F5F5F5 incomplete | ✅ fixed |
-| AlStepProgress (D) | white complete, #4A4A4A incomplete | ✅ fixed |
+| Component              | Figma vs Code                      | Status          |
+| ---------------------- | ---------------------------------- | --------------- |
+| AlButton Primary (D)   | white fill, black text, 58h, r16   | ✅ tokens + CSS |
+| AlButton Secondary (D) | 1.5px #4A4A4A, white text          | ✅              |
+| AlButton Loading       | 20px spinner, 2.5px stroke         | ✅              |
+| AlChip (L)             | #F5F5F5 bg, #0A0A0A text           | ✅ fixed        |
+| AlChip (D)             | #4A4A4A bg, white text             | ✅ fixed        |
+| AlStatusPill (L/D)     | pill-surface tokens                | ✅ fixed        |
+| AlTextField (L)        | 2px black border, white fill       | ✅              |
+| AlTextField (D)        | 2px white border, #1A1A1A fill     | ✅              |
+| AlBottomNav active     | pill + label + icon                | ✅              |
+| AlStepProgress (L)     | black complete, #F5F5F5 incomplete | ✅ fixed        |
+| AlStepProgress (D)     | white complete, #4A4A4A incomplete | ✅ fixed        |
 
 ---
 
 ## Phase 8 — Final QA
 
-| Check | Result |
-|-------|--------|
-| TypeScript build | ✅ 11/11 |
-| ESLint | ✅ 11/11 |
-| Font Awesome removed | ✅ SVG icons only |
-| Theme flash on load | ✅ inline script |
-| Mixed theme in showcase | ✅ removed local toggle |
-| `aria-label` on icon-only nav tabs | ✅ |
-| Dead CSS in showcase | ✅ cleaned |
+| Check                              | Result                  |
+| ---------------------------------- | ----------------------- |
+| TypeScript build                   | ✅ 11/11                |
+| ESLint                             | ✅ 11/11                |
+| Font Awesome removed               | ✅ SVG icons only       |
+| Theme flash on load                | ✅ inline script        |
+| Mixed theme in showcase            | ✅ removed local toggle |
+| `aria-label` on icon-only nav tabs | ✅                      |
+| Dead CSS in showcase               | ✅ cleaned              |
 
 ---
 

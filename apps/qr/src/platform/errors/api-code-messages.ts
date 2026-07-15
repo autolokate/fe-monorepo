@@ -1,6 +1,7 @@
 /** User-facing copy for known backend error codes. */
 export const API_CODE_MESSAGES: Readonly<Record<string, string>> = {
-  missing_qr_code: 'Your purchase QR code is missing. Scan your Autolokate sticker or open your purchase link again.',
+  missing_qr_code:
+    'Your purchase QR code is missing. Scan your Autolokate sticker or open your purchase link again.',
   already_attached: 'This code is no longer available to attach.',
   not_provisioned: 'This QR code is not ready for activation yet.',
   channel_journey_mismatch: 'This QR code cannot be used for this flow.',

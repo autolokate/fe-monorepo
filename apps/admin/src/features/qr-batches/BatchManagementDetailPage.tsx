@@ -22,13 +22,8 @@ import {
 import { useQrBatchById } from '@/hooks/qr-batches/useQrBatchById';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
-import {
-  AdminDetailField,
-  AdminDetailGrid,
-} from '@/platform/components/AdminDetailField';
-import {
-  useCanRunQrLifecycleMutations,
-} from '@/platform/rbac/module-write-permissions';
+import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
+import { useCanRunQrLifecycleMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import {
   canRunBatchLifecycleAction,
@@ -91,10 +86,12 @@ export function BatchManagementDetailPage() {
   const [replaceResult, setReplaceResult] = useState<ReplacedDto | null>(null);
   const [retireResult, setRetireResult] = useState<RetiredDto | null>(null);
 
-  const { batch: fetchedBatch, isLoading, userErrorMessage, refresh } = useQrBatchById(
-    batchId,
-    locationState?.batch ?? null,
-  );
+  const {
+    batch: fetchedBatch,
+    isLoading,
+    userErrorMessage,
+    refresh,
+  } = useQrBatchById(batchId, locationState?.batch ?? null);
   const batch = batchOverride ?? fetchedBatch;
 
   const { generateMutation, provisionMutation, replaceMutation, retireMutation, mapMutationError } =
@@ -140,10 +137,7 @@ export function BatchManagementDetailPage() {
     }
   }, [batchOverride?.id, fetchedBatch]);
 
-  const lifecycleActions = useMemo(
-    () => (batch ? getBatchLifecycleActions(batch) : []),
-    [batch],
-  );
+  const lifecycleActions = useMemo(() => (batch ? getBatchLifecycleActions(batch) : []), [batch]);
 
   if (isLoading && !batch) {
     return (
@@ -281,7 +275,9 @@ export function BatchManagementDetailPage() {
           <div className="qr-batch-detail-toolbar__row">
             <div className="qr-batch-detail-toolbar__copy">
               <h3 className="qr-batch-detail-toolbar__title">Batch lifecycle</h3>
-              <p className="qr-batch-detail-toolbar__hint">{describeBatchLifecycleStatus(batch.status)}</p>
+              <p className="qr-batch-detail-toolbar__hint">
+                {describeBatchLifecycleStatus(batch.status)}
+              </p>
             </div>
             <div className="qr-batch-detail-toolbar__controls">
               {canWrite ? (
@@ -321,7 +317,9 @@ export function BatchManagementDetailPage() {
           <div className="qr-batch-detail-toolbar__row qr-batch-detail-toolbar__row--qr">
             <div className="qr-batch-detail-toolbar__copy">
               <h3 className="qr-batch-detail-toolbar__title">QR code actions</h3>
-              <p className="qr-batch-detail-toolbar__hint">Replace or retire a code in this batch</p>
+              <p className="qr-batch-detail-toolbar__hint">
+                Replace or retire a code in this batch
+              </p>
             </div>
             {canWrite ? (
               <div className="qr-batch-detail-toolbar__qr-form">

@@ -42,7 +42,7 @@
 }
 
 .searchSpinner::after {
-  content: "";
+  content: '';
   width: 1.05rem;
   height: 1.05rem;
   border-radius: 999px;
@@ -179,7 +179,9 @@
   border-radius: 1.1rem;
   background: var(--card);
   cursor: pointer;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .addrCard:hover {
@@ -287,7 +289,10 @@
   font-weight: 600;
   color: var(--foreground, #111);
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
 }
 
 .iconBtn:hover {
@@ -316,7 +321,9 @@
   font-weight: 600;
   color: var(--foreground, #111);
   cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
 }
 
 .addNew:hover {

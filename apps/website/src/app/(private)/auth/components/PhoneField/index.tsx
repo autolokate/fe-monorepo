@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from 'lucide-react';
 
 interface PhoneFieldProps {
   id: string;
@@ -55,7 +55,7 @@ export function PhoneField({
           disabled={disabled}
           value={value}
           onChange={(e) =>
-            onChange(e.target.value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 10))
+            onChange(e.target.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 10))
           }
           className="h-full w-full flex-1 rounded-none border-0 bg-transparent px-4 text-base text-foreground placeholder:text-muted-foreground shadow-none outline-none disabled:cursor-not-allowed disabled:opacity-60"
         />

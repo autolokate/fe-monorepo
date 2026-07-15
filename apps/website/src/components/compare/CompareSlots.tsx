@@ -1,46 +1,35 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { Car, Loader2, Plus, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { cn, formatINR } from "@/lib/utils";
-import type { CatalogueModel, CatalogueVariant } from "@/lib/catalogue/types";
-import { COMPARE_MAX_SLOTS } from "@/components/compare/constants";
+import Image from 'next/image';
+import { Car, Loader2, Plus, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { cn, formatINR } from '@/lib/utils';
+import type { CatalogueModel, CatalogueVariant } from '@/lib/catalogue/types';
+import { COMPARE_MAX_SLOTS } from '@/components/compare/constants';
 import {
   compareTrayPrice,
   compareTraySubtitle,
   compareTrayThumb,
   compareTrayTitleLine,
-} from "@/lib/catalogue/compare-tray-display";
+} from '@/lib/catalogue/compare-tray-display';
 
 function isEvVariant(v: CatalogueVariant | undefined): boolean {
   if (!v) return false;
-  const raw = String(v.fuel_type ?? "").trim().toLowerCase();
+  const raw = String(v.fuel_type ?? '')
+    .trim()
+    .toLowerCase();
   if (!raw) return false;
-  return (
-    raw.includes("electric") ||
-    raw.includes("ev") ||
-    raw === "ev" ||
-    raw.includes("battery")
-  );
+  return raw.includes('electric') || raw.includes('ev') || raw === 'ev' || raw.includes('battery');
 }
 
 /** Top-left slot index — solid foreground when active, soft neutral when empty. */
-function SlotIndexBadge({
-  index,
-  mode,
-}: {
-  index: number;
-  mode: "active" | "muted";
-}) {
+function SlotIndexBadge({ index, mode }: { index: number; mode: 'active' | 'muted' }) {
   const n = index + 1;
   return (
     <span
       className={cn(
-        "absolute left-3 top-3 z-[1] flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold tabular-nums",
-        mode === "active"
-          ? "bg-primary text-primary-foreground"
-          : "bg-muted text-muted-foreground",
+        'absolute left-3 top-3 z-[1] flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold tabular-nums',
+        mode === 'active' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
       )}
       aria-hidden
     >
@@ -128,9 +117,9 @@ function FilledSlotCard({
         type="button"
         onClick={onRemove}
         className={cn(
-          "absolute right-2 top-2 z-[2] inline-flex h-7 w-7 items-center justify-center rounded-full",
-          "border border-border/80 bg-background/95 text-muted-foreground shadow-sm backdrop-blur-sm",
-          "transition hover:bg-muted hover:text-foreground",
+          'absolute right-2 top-2 z-[2] inline-flex h-7 w-7 items-center justify-center rounded-full',
+          'border border-border/80 bg-background/95 text-muted-foreground shadow-sm backdrop-blur-sm',
+          'transition hover:bg-muted hover:text-foreground',
         )}
         aria-label="Remove from compare"
       >
@@ -159,15 +148,19 @@ function FilledSlotCard({
         <div className="flex min-w-0 flex-1 flex-col justify-between gap-1.5 px-3 pb-3 pt-9 sm:gap-2 sm:px-3 sm:pb-3 sm:pt-2.5 sm:pr-10">
           <div className="space-y-0.5">
             <p className="font-display text-sm font-bold leading-tight text-foreground">
-              {titleLine || "—"}
+              {titleLine || '—'}
             </p>
-            <p className="text-[11px] leading-snug text-muted-foreground line-clamp-2">{subtitle}</p>
+            <p className="text-[11px] leading-snug text-muted-foreground line-clamp-2">
+              {subtitle}
+            </p>
           </div>
 
           <div className="space-y-0">
             {price != null ? (
               <>
-                <p className="text-base font-bold tracking-tight text-foreground">{formatINR(price)}</p>
+                <p className="text-base font-bold tracking-tight text-foreground">
+                  {formatINR(price)}
+                </p>
                 <p className="text-[10px] text-muted-foreground">Ex-showroom</p>
               </>
             ) : (
@@ -196,21 +189,15 @@ function FilledSlotCard({
   );
 }
 
-function EmptySlotCard({
-  slotIndex,
-  onClick,
-}: {
-  slotIndex: number;
-  onClick: () => void;
-}) {
+function EmptySlotCard({ slotIndex, onClick }: { slotIndex: number; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "group relative flex min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card/50 px-4 py-6 text-center transition",
-        "hover:border-foreground/30 hover:bg-card",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        'group relative flex min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-card/50 px-4 py-6 text-center transition',
+        'hover:border-foreground/30 hover:bg-card',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
       )}
     >
       <SlotIndexBadge index={slotIndex} mode="muted" />

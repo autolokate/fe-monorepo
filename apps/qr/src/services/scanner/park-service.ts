@@ -19,15 +19,17 @@ import {
   withTimeout,
   SCANNER_REQUEST_TIMEOUT_MS,
 } from './scanner-network';
-import { isScannerTransientError, mapScannerApiError, type ScannerApiError } from './scanner-api-errors';
+import {
+  isScannerTransientError,
+  mapScannerApiError,
+  type ScannerApiError,
+} from './scanner-api-errors';
 import { stopParkStatusPoll } from './scanner-poll-manager';
 import { scannerLogger } from './scanner-logger';
 
 export type ParkOtpRequestResult = { ok: true } | { ok: false; error: ScannerApiError };
 
-export type ParkOtpVerifyResult =
-  | { ok: true }
-  | { ok: false; error: ScannerApiError };
+export type ParkOtpVerifyResult = { ok: true } | { ok: false; error: ScannerApiError };
 
 export type ParkVehicleLookupResult =
   | { ok: true; plate: string; fields: ReturnType<typeof mapBystanderRcToLookupResult>['fields'] }
@@ -170,7 +172,11 @@ export async function lookupParkReporterVehicle(plate: string): Promise<ParkVehi
     return {
       ok: false,
       status: 'error',
-      error: { code: 'unavailable', message: 'Park session expired. Verify again.', apiMessage: null },
+      error: {
+        code: 'unavailable',
+        message: 'Park session expired. Verify again.',
+        apiMessage: null,
+      },
     };
   }
 
@@ -245,7 +251,11 @@ export async function submitParkReport(input: ParkSubmitInput): Promise<ParkSubm
   if (!qrCode || !token) {
     return {
       ok: false,
-      error: { code: 'unavailable', message: 'Park session expired. Verify again.', apiMessage: null },
+      error: {
+        code: 'unavailable',
+        message: 'Park session expired. Verify again.',
+        apiMessage: null,
+      },
     };
   }
 
@@ -259,7 +269,9 @@ export async function submitParkReport(input: ParkSubmitInput): Promise<ParkSubm
       bystanderSessionToken: token,
       name: input.name.trim(),
       photoIds: input.photoIds,
-      ...(input.reporterPlate ? { reporterPlate: compactPlate(normalizePlate(input.reporterPlate)) } : {}),
+      ...(input.reporterPlate
+        ? { reporterPlate: compactPlate(normalizePlate(input.reporterPlate)) }
+        : {}),
       ...(input.geoLat !== undefined ? { geoLat: input.geoLat } : {}),
       ...(input.geoLng !== undefined ? { geoLng: input.geoLng } : {}),
     };

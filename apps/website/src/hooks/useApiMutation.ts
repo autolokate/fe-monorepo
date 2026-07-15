@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useCallback, useRef, useState } from "react";
-import { toast } from "sonner";
-import { ApiError, extractApiErrorMessage } from "@/lib/api/error";
+import { useCallback, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { ApiError, extractApiErrorMessage } from '@/lib/api/error';
 
 export interface UseApiMutationOptions<TData, TVariables> {
   /** Runs after a successful call. Receives the resolved data + the variables you passed in. */
@@ -28,7 +28,7 @@ export interface UseApiMutationResult<TData, TVariables> {
   isIdle: boolean;
 }
 
-type Status = "idle" | "loading" | "success" | "error";
+type Status = 'idle' | 'loading' | 'success' | 'error';
 
 /**
  * Tiny mutation hook — wraps an async function with `{ loading, error, data }` state,
@@ -42,7 +42,7 @@ export function useApiMutation<TData, TVariables = void>(
   mutationFn: (variables: TVariables) => Promise<TData>,
   options: UseApiMutationOptions<TData, TVariables> = {},
 ): UseApiMutationResult<TData, TVariables> {
-  const [status, setStatus] = useState<Status>("idle");
+  const [status, setStatus] = useState<Status>('idle');
   const [data, setData] = useState<TData | undefined>(undefined);
   const [error, setError] = useState<ApiError | null>(null);
 
@@ -51,37 +51,34 @@ export function useApiMutation<TData, TVariables = void>(
   optionsRef.current = options;
 
   const reset = useCallback(() => {
-    setStatus("idle");
+    setStatus('idle');
     setData(undefined);
     setError(null);
   }, []);
 
   const mutateAsync = useCallback(
     async (variables: TVariables): Promise<TData> => {
-      setStatus("loading");
+      setStatus('loading');
       setError(null);
       try {
         const result = await mutationFn(variables);
         setData(result);
-        setStatus("success");
+        setStatus('success');
 
         const { onSuccess, successToast } = optionsRef.current;
         if (successToast) {
-          toast.success(typeof successToast === "string" ? successToast : "Done");
+          toast.success(typeof successToast === 'string' ? successToast : 'Done');
         }
         await onSuccess?.(result, variables);
         return result;
       } catch (raw) {
-        const apiErr =
-          raw instanceof ApiError
-            ? raw
-            : new ApiError(extractApiErrorMessage(raw), 0);
+        const apiErr = raw instanceof ApiError ? raw : new ApiError(extractApiErrorMessage(raw), 0);
         setError(apiErr);
-        setStatus("error");
+        setStatus('error');
 
         const { onError, errorToast = true } = optionsRef.current;
         if (errorToast) {
-          toast.error(typeof errorToast === "string" ? errorToast : apiErr.message);
+          toast.error(typeof errorToast === 'string' ? errorToast : apiErr.message);
         }
         await onError?.(apiErr, variables);
         throw apiErr;
@@ -107,9 +104,9 @@ export function useApiMutation<TData, TVariables = void>(
     reset,
     data,
     error,
-    isLoading: status === "loading",
-    isError: status === "error",
-    isSuccess: status === "success",
-    isIdle: status === "idle",
+    isLoading: status === 'loading',
+    isError: status === 'error',
+    isSuccess: status === 'success',
+    isIdle: status === 'idle',
   };
 }

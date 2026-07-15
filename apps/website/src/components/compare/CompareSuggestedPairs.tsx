@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { GitCompare, Zap } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { comparePathWithModelSegments } from "@/lib/catalogue/compare-url";
-import { formatINR, cn } from "@/lib/utils";
-import type { VehicleCategory } from "@/lib/preferences";
-import { useCompareSuggestedPairs } from "@/hooks/catalogue/useCompareSuggestedPairs";
+import { GitCompare, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { comparePathWithModelSegments } from '@/lib/catalogue/compare-url';
+import { formatINR, cn } from '@/lib/utils';
+import type { VehicleCategory } from '@/lib/preferences';
+import { useCompareSuggestedPairs } from '@/hooks/catalogue/useCompareSuggestedPairs';
 
 type Props = {
   vehicleCategory: VehicleCategory;
@@ -25,7 +25,7 @@ export function CompareSuggestedPairs({ vehicleCategory, className }: Props) {
     return (
       <div
         className={cn(
-          "mb-8 rounded-2xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-foreground/[0.03] sm:p-5",
+          'mb-8 rounded-2xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-foreground/[0.03] sm:p-5',
           className,
         )}
       >
@@ -41,7 +41,7 @@ export function CompareSuggestedPairs({ vehicleCategory, className }: Props) {
   return (
     <div
       className={cn(
-        "mb-8 rounded-2xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-foreground/[0.03] sm:p-5",
+        'mb-8 rounded-2xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-foreground/[0.03] sm:p-5',
         className,
       )}
     >
@@ -64,7 +64,11 @@ export function CompareSuggestedPairs({ vehicleCategory, className }: Props) {
       </div>
 
       <div className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex w-max snap-x snap-mandatory gap-3 sm:gap-4" role="list" aria-label="Suggested comparison pairs">
+        <div
+          className="flex w-max snap-x snap-mandatory gap-3 sm:gap-4"
+          role="list"
+          aria-label="Suggested comparison pairs"
+        >
           {pairs.map(([a, b]) => {
             const href = comparePathWithModelSegments(
               [
@@ -111,26 +115,26 @@ export function CompareSuggestedPairs({ vehicleCategory, className }: Props) {
   );
 }
 
-function SuggestedHalf({ entry }: { entry: { brandLabel: string; modelLabel: string; image: string | null; price: number | null } }) {
+function SuggestedHalf({
+  entry,
+}: {
+  entry: { brandLabel: string; modelLabel: string; image: string | null; price: number | null };
+}) {
   return (
     <div className="p-3">
       <div className="relative mx-auto aspect-[5/3] w-full overflow-hidden rounded-lg border border-border/60 bg-muted/60">
         {entry.image ? (
-          <Image
-            src={entry.image}
-            alt=""
-            fill
-            className="object-cover"
-            sizes="120px"
-          />
+          <Image src={entry.image} alt="" fill className="object-cover" sizes="120px" />
         ) : (
-          <div className="flex h-full items-center justify-center text-[10px] text-muted-foreground">—</div>
+          <div className="flex h-full items-center justify-center text-[10px] text-muted-foreground">
+            —
+          </div>
         )}
       </div>
       <p className="mt-2 line-clamp-1 text-[11px] font-bold text-foreground">{entry.brandLabel}</p>
       <p className="line-clamp-1 text-[11px] text-muted-foreground">{entry.modelLabel}</p>
       <p className="mt-0.5 text-[11px] font-bold text-foreground">
-        {entry.price != null ? formatINR(entry.price) : "—"}
+        {entry.price != null ? formatINR(entry.price) : '—'}
       </p>
     </div>
   );

@@ -47,10 +47,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
   // Only a tier with an effective plan can be priced, so only those may go on a shelf.
   const effectivePlans = useMemo(() => getEffectivePlans(plans), [plans]);
   const selectableTiers = useMemo(() => getTiersWithEffectivePlan(plans), [plans]);
-  const tierByPlanId = useMemo(
-    () => new Map(plans.map((plan) => [plan.id, plan.tier])),
-    [plans],
-  );
+  const tierByPlanId = useMemo(() => new Map(plans.map((plan) => [plan.id, plan.tier])), [plans]);
 
   const schema = useMemo(() => makeCreateSkuSchema(tierByPlanId), [tierByPlanId]);
 
@@ -212,7 +209,9 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               <AlSelect
                 label="Default plan"
                 placeholder={
-                  offeredTiers.length === 0 ? 'Put a tier on the shelf first' : 'Select default plan'
+                  offeredTiers.length === 0
+                    ? 'Put a tier on the shelf first'
+                    : 'Select default plan'
                 }
                 options={defaultPlanOptions}
                 value={field.value}
@@ -254,9 +253,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
                 max={10}
                 value={field.value}
                 onChange={(event) => {
-                  field.onChange(
-                    event.target.value === '' ? 0 : event.target.valueAsNumber,
-                  );
+                  field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
                 }}
                 onBlur={field.onBlur}
                 errorText={fieldState.error?.message}

@@ -86,12 +86,7 @@ export type EmergencyAcceptedDto = {
   alertId: string;
 };
 
-export type AlertStatus =
-  | 'RECEIVED'
-  | 'DISPATCHED'
-  | 'RESOLVED'
-  | 'CANCELLED'
-  | 'CONTACTS_ONLY';
+export type AlertStatus = 'RECEIVED' | 'DISPATCHED' | 'RESOLVED' | 'CANCELLED' | 'CONTACTS_ONLY';
 
 export type EmergencyDispatchPath = 'FULL' | 'CONTACTS_ONLY';
 
@@ -143,11 +138,10 @@ export async function lookupParkVehicle(
   body: ParkVehicleLookupBody,
   options?: { signal?: AbortSignal },
 ): Promise<BystanderRcRecordDto> {
-  const response = await client.post<unknown>(
-    endpoints.scanner.parkVehicleLookup(code),
-    body,
-    { ...publicOpts, ...options },
-  );
+  const response = await client.post<unknown>(endpoints.scanner.parkVehicleLookup(code), body, {
+    ...publicOpts,
+    ...options,
+  });
   return unwrapEnvelope(response) as BystanderRcRecordDto;
 }
 
@@ -158,11 +152,10 @@ export async function requestParkMediaUpload(
   body: RequestParkUploadBody,
   options?: { signal?: AbortSignal },
 ): Promise<RequestScanUploadResponseDto> {
-  const response = await client.post<unknown>(
-    endpoints.scanner.parkMedia(code),
-    body,
-    { ...publicOpts, ...options },
-  );
+  const response = await client.post<unknown>(endpoints.scanner.parkMedia(code), body, {
+    ...publicOpts,
+    ...options,
+  });
   return unwrapEnvelope(response) as RequestScanUploadResponseDto;
 }
 
@@ -218,11 +211,10 @@ export async function requestEmergencyMediaUpload(
   body: RequestScanUploadBody,
   options?: { signal?: AbortSignal },
 ): Promise<RequestScanUploadResponseDto> {
-  const response = await client.post<unknown>(
-    endpoints.scanner.emergencyMedia(code),
-    body,
-    { ...publicOpts, ...options },
-  );
+  const response = await client.post<unknown>(endpoints.scanner.emergencyMedia(code), body, {
+    ...publicOpts,
+    ...options,
+  });
   return unwrapEnvelope(response) as RequestScanUploadResponseDto;
 }
 

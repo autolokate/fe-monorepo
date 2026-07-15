@@ -10,10 +10,7 @@ import {
 } from 'firebase/messaging';
 
 import { deviceLogger } from './device-logger';
-import {
-  readFirebaseVapidKey,
-  readFirebaseWebConfig,
-} from './firebase-config';
+import { readFirebaseVapidKey, readFirebaseWebConfig } from './firebase-config';
 import { refreshDeviceRegistration, unregisterDevice } from './device-service';
 
 // onRegistered may never fire (blocked permission, service-worker failure, offline); bound the
@@ -60,8 +57,7 @@ function subscribeFidEvents(msg: Messaging): void {
     if (!installationId) {
       return;
     }
-    const isRotation =
-      cachedInstallationId !== null && installationId !== cachedInstallationId;
+    const isRotation = cachedInstallationId !== null && installationId !== cachedInstallationId;
     cachedInstallationId = installationId;
     const resolve = resolveFirstFid;
     if (resolve) {
@@ -97,10 +93,7 @@ function subscribeFidEvents(msg: Messaging): void {
  * Deduped across concurrent callers; `register` is invoked once per in-flight cycle, after the
  * `onRegistered` subscription is established.
  */
-function startRegistration(
-  msg: Messaging,
-  vapidKey: string,
-): Promise<string | null> {
+function startRegistration(msg: Messaging, vapidKey: string): Promise<string | null> {
   if (pendingFirstFid) {
     return pendingFirstFid;
   }

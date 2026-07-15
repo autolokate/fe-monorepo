@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { ensureRazorpayScript } from "@/lib/booking/razorpay";
+import { ensureRazorpayScript } from '@/lib/booking/razorpay';
 
 export interface RazorpayCheckoutOptions {
   /** `razorpayKeyId` from the pay response. */
@@ -14,9 +14,9 @@ export interface RazorpayCheckoutOptions {
 }
 
 export type RazorpayResult =
-  | { status: "paid" }
-  | { status: "dismissed" }
-  | { status: "unavailable" };
+  | { status: 'paid' }
+  | { status: 'dismissed' }
+  | { status: 'unavailable' };
 
 /**
  * Opens the Razorpay checkout modal for a provider order. Resolves `paid` when
@@ -27,11 +27,11 @@ export type RazorpayResult =
 export async function openRazorpayCheckout(
   options: RazorpayCheckoutOptions,
 ): Promise<RazorpayResult> {
-  if (!options.keyId || !options.orderId) return { status: "unavailable" };
+  if (!options.keyId || !options.orderId) return { status: 'unavailable' };
 
   const ready = await ensureRazorpayScript();
-  if (!ready || typeof window === "undefined" || !window.Razorpay) {
-    return { status: "unavailable" };
+  if (!ready || typeof window === 'undefined' || !window.Razorpay) {
+    return { status: 'unavailable' };
   }
 
   return new Promise<RazorpayResult>((resolve) => {
@@ -46,16 +46,16 @@ export async function openRazorpayCheckout(
       key: options.keyId,
       order_id: options.orderId,
       amount: options.amountPaise,
-      currency: "INR",
-      name: options.name ?? "Autolokate",
+      currency: 'INR',
+      name: options.name ?? 'Autolokate',
       description: options.description,
       prefill: options.prefill,
-      theme: { color: "#0f172a" },
-      handler: () => finish({ status: "paid" }),
-      modal: { ondismiss: () => finish({ status: "dismissed" }) },
+      theme: { color: '#0f172a' },
+      handler: () => finish({ status: 'paid' }),
+      modal: { ondismiss: () => finish({ status: 'dismissed' }) },
     });
     // Card declines / wrong OTP fire `payment.failed` instead of `handler`.
-    rzp.on("payment.failed", () => finish({ status: "dismissed" }));
+    rzp.on('payment.failed', () => finish({ status: 'dismissed' }));
     rzp.open();
   });
 }

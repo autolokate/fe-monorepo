@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { readArray, readObject, unbox } from "@/lib/catalogue/normalize";
-import { ApiService } from "@/services/api.service";
+import { endpoints } from '@/lib/api/endpoints';
+import { readArray, readObject, unbox } from '@/lib/catalogue/normalize';
+import { ApiService } from '@/services/api.service';
 
 /** Default catalogue SKU the marketing site sells. */
-export const DEFAULT_PLANS_SKU = "SKU-B2C-RETAIL";
+export const DEFAULT_PLANS_SKU = 'SKU-B2C-RETAIL';
 
 /**
  * Temporary override — plans currently live on a separate backend, so this
  * one call bypasses the shared staging base URL. Remove once `/v1/plans` is
  * served from `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL`.
  */
-const PLANS_API_BASE_URL = "https://malisa-noninclusive-davin.ngrok-free.dev";
+const PLANS_API_BASE_URL = 'https://malisa-noninclusive-davin.ngrok-free.dev';
 
-export type PlanTier = "SECURE" | "SHIELD" | "SHIELD_PLUS";
-export type PlanPeriod = "YEARLY" | "MONTHLY";
+export type PlanTier = 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
+export type PlanPeriod = 'YEARLY' | 'MONTHLY';
 
 export interface PlanRiderOption {
   riderCount: number;
@@ -40,12 +40,12 @@ export interface Plan {
 }
 
 function numeric(value: unknown, fallback = 0): number {
-  const n = typeof value === "number" ? value : Number(value);
+  const n = typeof value === 'number' ? value : Number(value);
   return Number.isFinite(n) ? n : fallback;
 }
 
 function stringOrNull(value: unknown): string | null {
-  return typeof value === "string" && value.trim() ? value.trim() : null;
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
 function normalizeRiderOption(raw: unknown): PlanRiderOption {
@@ -61,12 +61,12 @@ function normalizeRiderOption(raw: unknown): PlanRiderOption {
 function normalizePlan(raw: unknown): Plan {
   const row = readObject(raw);
   return {
-    id: String(row.id ?? ""),
-    tier: String(row.tier ?? "").trim(),
+    id: String(row.id ?? ''),
+    tier: String(row.tier ?? '').trim(),
     version: numeric(row.version, 1),
-    name: String(row.name ?? "").trim(),
+    name: String(row.name ?? '').trim(),
     pricePaise: numeric(row.pricePaise),
-    period: String(row.period ?? "YEARLY").trim(),
+    period: String(row.period ?? 'YEARLY').trim(),
     riderEligible: Boolean(row.riderEligible),
     features: Array.isArray(row.features)
       ? (row.features as unknown[]).map((f) => String(f)).filter(Boolean)
@@ -102,7 +102,7 @@ export function getPlans(sku: string = DEFAULT_PLANS_SKU): Promise<Plan[]> {
         baseURL: PLANS_API_BASE_URL,
         // ngrok's free tier serves an HTML interstitial to browsers unless this
         // header is present; without it we'd parse the warning page instead of JSON.
-        headers: { "ngrok-skip-browser-warning": "true" },
+        headers: { 'ngrok-skip-browser-warning': 'true' },
       });
       const rows = readArray<unknown>(unbox(res.data));
       return rows.map(normalizePlan);

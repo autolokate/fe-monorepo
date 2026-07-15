@@ -60,10 +60,7 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
 
     // A SKU may already point at a plan that has since been retired — keep it visible rather than
     // silently blanking the field, so the admin sees what they are replacing.
-    if (
-      sku?.defaultPlanId &&
-      !options.some((option) => option.value === sku.defaultPlanId)
-    ) {
+    if (sku?.defaultPlanId && !options.some((option) => option.value === sku.defaultPlanId)) {
       const current = plans.find((plan) => plan.id === sku.defaultPlanId);
       if (current) {
         options.unshift({
@@ -145,7 +142,13 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
       footer={
         canWrite ? (
           <div className="admin-modal-actions">
-            <AlButton type="submit" form="edit-sku-form" size="sm" loading={isBusy} disabled={isBusy}>
+            <AlButton
+              type="submit"
+              form="edit-sku-form"
+              size="sm"
+              loading={isBusy}
+              disabled={isBusy}
+            >
               Save SKU
             </AlButton>
             <AlButton

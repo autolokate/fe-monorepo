@@ -1,1 +1,1 @@
-export * from "./otp-api";
+export * from './otp-api';

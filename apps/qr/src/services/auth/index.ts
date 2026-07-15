@@ -1,4 +1,11 @@
-export { sendOtp, verifyOtp, logout, type SendOtpInput, type VerifyOtpInput, type VerifyOtpResult } from './auth-service';
+export {
+  sendOtp,
+  verifyOtp,
+  logout,
+  type SendOtpInput,
+  type VerifyOtpInput,
+  type VerifyOtpResult,
+} from './auth-service';
 export {
   ensureValidAuthSession,
   hasAuthTokens,

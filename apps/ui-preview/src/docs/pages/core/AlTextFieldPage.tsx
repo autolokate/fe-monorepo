@@ -1,14 +1,10 @@
 import { AlTextField } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderTextFieldState(state: ShowcaseState) {
   const disabled = state === 'disabled';
-  const fieldState =
-    state === 'active' ? 'error' : state === 'loading' ? 'success' : 'default';
+  const fieldState = state === 'active' ? 'error' : state === 'loading' ? 'success' : 'default';
 
   return (
     <AlTextField
@@ -70,8 +66,18 @@ export function AlTextFieldPage() {
 />`}
       props={[
         { name: 'label', type: 'string', description: 'Field label.' },
-        { name: 'state', type: 'AlTextFieldState', defaultValue: 'default', description: 'Visual state.' },
-        { name: 'prefix', type: 'ReactNode', defaultValue: '+91', description: 'Leading prefix slot.' },
+        {
+          name: 'state',
+          type: 'AlTextFieldState',
+          defaultValue: 'default',
+          description: 'Visual state.',
+        },
+        {
+          name: 'prefix',
+          type: 'ReactNode',
+          defaultValue: '+91',
+          description: 'Leading prefix slot.',
+        },
         { name: 'helperText', type: 'string', description: 'Hint below control.' },
         { name: 'errorText', type: 'string', description: 'Inline error message.' },
         { name: 'loading', type: 'boolean', defaultValue: 'false', description: 'Shows spinner.' },

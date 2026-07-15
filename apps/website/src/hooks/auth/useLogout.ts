@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useCallback } from "react";
-import { clearAuthTokens } from "@/lib/auth/storage";
-import { clearVehiclePreference } from "@/lib/preferences";
-import { logoutUser } from "@/services/auth";
-import { useApiMutation, type UseApiMutationOptions } from "@/hooks/useApiMutation";
+import { useCallback } from 'react';
+import { clearAuthTokens } from '@/lib/auth/storage';
+import { clearVehiclePreference } from '@/lib/preferences';
+import { logoutUser } from '@/services/auth';
+import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /**
  * `POST /v1/auth/logout` — best-effort server revoke, always clears local
@@ -24,7 +24,7 @@ export function useLogout(options?: UseApiMutationOptions<void, void>) {
   }, []);
 
   return useApiMutation<void, void>(fn, {
-    successToast: "Signed out",
+    successToast: 'Signed out',
     ...options,
   });
 }

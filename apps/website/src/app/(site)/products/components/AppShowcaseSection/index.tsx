@@ -1,9 +1,9 @@
-import type { CSSProperties } from "react";
-import { Check } from "lucide-react";
-import { AppDemoVideo } from "./AppDemoVideo";
-import { APP_SHOWCASE_COPY, APP_SHOWCASE_ITEMS } from "./constants";
-import { StoreBadges } from "./StoreBadges";
-import styles from "./index.module.css";
+import type { CSSProperties } from 'react';
+import { Check } from 'lucide-react';
+import { AppDemoVideo } from './AppDemoVideo';
+import { APP_SHOWCASE_COPY, APP_SHOWCASE_ITEMS } from './constants';
+import { StoreBadges } from './StoreBadges';
+import styles from './index.module.css';
 
 export function AppShowcaseSection() {
   return (
@@ -18,17 +18,11 @@ export function AppShowcaseSection() {
 
       <div className={styles.rows}>
         {APP_SHOWCASE_ITEMS.map((app, index) => {
-          const { id, name, tagline, accent, Icon, features, videoSrc, poster, stores } =
-            app;
-          const rowClass =
-            index % 2 === 0 ? `${styles.row} ${styles.reversed}` : styles.row;
+          const { id, name, tagline, accent, Icon, features, videoSrc, poster, stores } = app;
+          const rowClass = index % 2 === 0 ? `${styles.row} ${styles.reversed}` : styles.row;
 
           return (
-            <div
-              key={id}
-              className={rowClass}
-              style={{ "--accent": accent } as CSSProperties}
-            >
+            <div key={id} className={rowClass} style={{ '--accent': accent } as CSSProperties}>
               <div className={styles.copy}>
                 <div className={styles.appHeader}>
                   <span className={styles.appIcon} aria-hidden>

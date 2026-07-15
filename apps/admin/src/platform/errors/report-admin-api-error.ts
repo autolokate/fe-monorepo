@@ -13,7 +13,10 @@ export type ReportAdminApiErrorOptions = {
 };
 
 /** Log structured admin API failures and optionally surface a toast. */
-export function reportAdminApiError(error: unknown, options: ReportAdminApiErrorOptions): AdminApiError {
+export function reportAdminApiError(
+  error: unknown,
+  options: ReportAdminApiErrorOptions,
+): AdminApiError {
   const mapped = mapAdminApiError(error);
   logger.error('Admin API failure', {
     context: options.context ?? 'unknown',

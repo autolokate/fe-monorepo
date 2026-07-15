@@ -2,4 +2,4 @@
 export const SESSION_FEE = 400;
 
 /** Used as the post-payment redirect target from `useBookSession`. */
-export const BOOK_SESSION_ROUTE = "/book-session";
+export const BOOK_SESSION_ROUTE = '/book-session';

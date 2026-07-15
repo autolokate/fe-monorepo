@@ -7,7 +7,7 @@ import {
   PricingPlansSection,
   StarterAvailabilitySection,
   pricingMetadata,
-} from "./";
+} from './';
 
 export const metadata = pricingMetadata;
 

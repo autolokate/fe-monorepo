@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { ArrowRight, Check, Lightbulb, Loader2 } from "lucide-react";
-import { AlButton } from "@autolokate/ui/button";
-import { cn } from "@/lib/utils";
-import { useOrderTracking } from "@/hooks/purchase";
-import type { FulfillmentStatus, OrderFulfillment } from "@/services/purchase";
-import { TRACKING_STEPS } from "../../constants";
-import type { StepProps } from "../../types";
-import { StepShell } from "../StepShell";
-import styles from "./index.module.css";
+import { ArrowRight, Check, Lightbulb, Loader2 } from 'lucide-react';
+import { AlButton } from '@autolokate/ui/button';
+import { cn } from '@/lib/utils';
+import { useOrderTracking } from '@/hooks/purchase';
+import type { FulfillmentStatus, OrderFulfillment } from '@/services/purchase';
+import { TRACKING_STEPS } from '../../constants';
+import type { StepProps } from '../../types';
+import { StepShell } from '../StepShell';
+import styles from './index.module.css';
 
-type RowState = "done" | "active" | "pending";
+type RowState = 'done' | 'active' | 'pending';
 interface TimelineRow {
   title: string;
   desc: string;
@@ -21,11 +21,11 @@ interface TimelineRow {
 
 /** Fulfillment FSM order — used to mark stages done / active / pending. */
 const STAGE_ORDER: FulfillmentStatus[] = [
-  "PAID",
-  "ALLOCATED",
-  "SHIPPED",
-  "IN_TRANSIT",
-  "DELIVERED",
+  'PAID',
+  'ALLOCATED',
+  'SHIPPED',
+  'IN_TRANSIT',
+  'DELIVERED',
 ];
 
 /** ISO timestamp → "14 Jul 2026, 1:17 PM" (buyer's locale, best effort). */
@@ -33,12 +33,12 @@ function formatEventTime(iso?: string | null): string | undefined {
   if (!iso) return undefined;
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return undefined;
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
+  return date.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
   });
 }
 
@@ -52,38 +52,45 @@ function buildTimeline(fulfillment: OrderFulfillment): TimelineRow[] {
     byStatus.set(event.status, { rawStatus: event.rawStatus, occurredAt: event.occurredAt });
   }
 
-  const shippedEvent = byStatus.get("SHIPPED");
+  const shippedEvent = byStatus.get('SHIPPED');
   const shipDesc =
     shippedEvent?.rawStatus ??
-    (awbNo ? `AWB ${awbNo}${courier ? ` · ${courier}` : ""}` : "Leaving our facility soon");
+    (awbNo ? `AWB ${awbNo}${courier ? ` · ${courier}` : ''}` : 'Leaving our facility soon');
 
   const labels: { title: string; desc: string; status: FulfillmentStatus }[] = [
-    { title: "Order confirmed", desc: "Payment received · GST invoice emailed", status: "PAID" },
-    { title: "QR code allocated", desc: "Your unique vehicle QR is reserved and printed", status: "ALLOCATED" },
-    { title: "Shipped", desc: shipDesc, status: "SHIPPED" },
-    { title: "In transit", desc: "With the courier — on its way to you", status: "IN_TRANSIT" },
-    { title: "Delivered → ready to activate", desc: "QR becomes scannable · activate in the app", status: "DELIVERED" },
+    { title: 'Order confirmed', desc: 'Payment received · GST invoice emailed', status: 'PAID' },
+    {
+      title: 'QR code allocated',
+      desc: 'Your unique vehicle QR is reserved and printed',
+      status: 'ALLOCATED',
+    },
+    { title: 'Shipped', desc: shipDesc, status: 'SHIPPED' },
+    { title: 'In transit', desc: 'With the courier — on its way to you', status: 'IN_TRANSIT' },
+    {
+      title: 'Delivered → ready to activate',
+      desc: 'QR becomes scannable · activate in the app',
+      status: 'DELIVERED',
+    },
   ];
 
   return labels.map((row, index) => {
     const occurredAt =
       byStatus.get(row.status)?.occurredAt ??
-      (row.status === "ALLOCATED" ? fulfillment.allocatedAt : undefined) ??
-      (row.status === "SHIPPED" ? fulfillment.shippedAt : undefined) ??
-      (row.status === "DELIVERED" ? fulfillment.deliveredAt : undefined);
+      (row.status === 'ALLOCATED' ? fulfillment.allocatedAt : undefined) ??
+      (row.status === 'SHIPPED' ? fulfillment.shippedAt : undefined) ??
+      (row.status === 'DELIVERED' ? fulfillment.deliveredAt : undefined);
 
     return {
       title: row.title,
       desc: row.desc,
-      state:
-        index < currentIndex ? "done" : index === currentIndex ? "active" : "pending",
+      state: index < currentIndex ? 'done' : index === currentIndex ? 'active' : 'pending',
       time: formatEventTime(occurredAt),
     };
   });
 }
 
 export function TrackingStep({ state, goTo }: StepProps) {
-  const shipCity = state.city.trim() || "your city";
+  const shipCity = state.city.trim() || 'your city';
   const { data: order, isLoading } = useOrderTracking(state.orderId);
 
   const fulfillment = order?.fulfillment ?? null;
@@ -91,27 +98,25 @@ export function TrackingStep({ state, goTo }: StepProps) {
     ? buildTimeline(fulfillment ?? {})
     : (TRACKING_STEPS as unknown as TimelineRow[]);
 
-  const orderRef = state.orderId
-    ? `#${state.orderId.slice(0, 8).toUpperCase()}`
-    : "#AL-48291";
+  const orderRef = state.orderId ? `#${state.orderId.slice(0, 8).toUpperCase()}` : '#AL-48291';
 
   return (
     <StepShell
       title="Your kit is on its way"
       backLabel="Order confirmation"
-      onBack={() => goTo("success")}
+      onBack={() => goTo('success')}
     >
       <p className={styles.meta}>
         Order <b className={styles.mono}>{orderRef}</b>
         {fulfillment?.awbNo ? (
           <>
-            {" "}
+            {' '}
             · AWB <b className={styles.mono}>{fulfillment.awbNo}</b>
           </>
         ) : null}
         {fulfillment?.trackingUrl ? (
           <>
-            {" · "}
+            {' · '}
             <a
               className={styles.trackLink}
               href={fulfillment.trackingUrl}
@@ -124,8 +129,7 @@ export function TrackingStep({ state, goTo }: StepProps) {
         ) : null}
       </p>
       <p className={styles.ship}>
-        Shipping to {state.name || "you"}, {state.addr || "your address"}, {shipCity}{" "}
-        {state.pin}
+        Shipping to {state.name || 'you'}, {state.addr || 'your address'}, {shipCity} {state.pin}
       </p>
 
       {isLoading && !order ? (
@@ -145,21 +149,21 @@ export function TrackingStep({ state, goTo }: StepProps) {
                   <span
                     className={cn(
                       styles.dot,
-                      step.state === "done" && styles.dotDone,
-                      step.state === "active" && styles.dotActive,
+                      step.state === 'done' && styles.dotDone,
+                      step.state === 'active' && styles.dotActive,
                     )}
                   >
-                    {step.state === "done" ? (
+                    {step.state === 'done' ? (
                       <Check className="h-3 w-3 stroke-[3]" aria-hidden />
-                    ) : step.state === "active" ? (
-                      "●"
+                    ) : step.state === 'active' ? (
+                      '●'
                     ) : (
-                      ""
+                      ''
                     )}
                   </span>
                   {!isLast ? (
                     <span
-                      className={cn(styles.line, step.state === "done" && styles.lineDone)}
+                      className={cn(styles.line, step.state === 'done' && styles.lineDone)}
                       aria-hidden
                     />
                   ) : null}
@@ -168,7 +172,7 @@ export function TrackingStep({ state, goTo }: StepProps) {
                   <p
                     className={cn(
                       styles.rowTitle,
-                      step.state === "pending" && styles.rowTitleMuted,
+                      step.state === 'pending' && styles.rowTitleMuted,
                     )}
                   >
                     {step.title}
@@ -195,7 +199,7 @@ export function TrackingStep({ state, goTo }: StepProps) {
         className={styles.action}
         icon={<ArrowRight className="h-4 w-4" aria-hidden />}
         iconPosition="end"
-        onClick={() => goTo("scan")}
+        onClick={() => goTo('scan')}
       >
         Delivered? Scan the QR to activate
       </AlButton>

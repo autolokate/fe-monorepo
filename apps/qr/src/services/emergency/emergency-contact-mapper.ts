@@ -20,8 +20,7 @@ export function mapApiRelationToId(relation: string | null): RelationshipId {
 
 export function mapApiRelationToLabel(relationId: RelationshipId): string {
   return (
-    CONTACT_RELATIONSHIP_OPTIONS.find((option) => option.id === relationId)?.label ??
-    relationId
+    CONTACT_RELATIONSHIP_OPTIONS.find((option) => option.id === relationId)?.label ?? relationId
   );
 }
 

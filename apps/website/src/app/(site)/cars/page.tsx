@@ -1,5 +1,5 @@
-import { BrandsDirectoryPage } from "@/components/catalogue/BrandsDirectoryPage";
-import { carsMetadata } from "./config/metadata";
+import { BrandsDirectoryPage } from '@/components/catalogue/BrandsDirectoryPage';
+import { carsMetadata } from './config/metadata';
 
 export const metadata = carsMetadata;
 

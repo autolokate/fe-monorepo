@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { CatalogueModel } from "@/lib/catalogue/types";
-import { fromApiVehicleCategory, type VehicleCategory } from "@/lib/preferences";
-import { getCatalogueModelsPage } from "@/services/catalogue";
+import type { CatalogueModel } from '@/lib/catalogue/types';
+import { fromApiVehicleCategory, type VehicleCategory } from '@/lib/preferences';
+import { getCatalogueModelsPage } from '@/services/catalogue';
 
-import { primaryModelKey } from "@/components/catalogue/BrandModelsPage/model-utils";
+import { primaryModelKey } from '@/components/catalogue/BrandModelsPage/model-utils';
 
 function modelMatchesExplorerCategory(model: CatalogueModel, vt: VehicleCategory): boolean {
   const raw =
-    typeof model.vehicle_category === "string"
+    typeof model.vehicle_category === 'string'
       ? model.vehicle_category
-      : typeof (model as Record<string, unknown>).vehicle_category === "string"
+      : typeof (model as Record<string, unknown>).vehicle_category === 'string'
         ? String((model as Record<string, unknown>).vehicle_category)
         : null;
   const mapped = fromApiVehicleCategory(raw);

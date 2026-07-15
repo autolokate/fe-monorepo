@@ -4,10 +4,10 @@ import {
   CRASH_TO_CARE_ROW_TWO,
   CRASH_TO_CARE_STEPS,
   HOW_IT_WORKS_SECTION_ID,
-} from "./constants";
-import { FlowRow } from "./FlowRow";
-import { MobileTimeline } from "./MobileTimeline";
-import { TabletGrid } from "./TabletGrid";
+} from './constants';
+import { FlowRow } from './FlowRow';
+import { MobileTimeline } from './MobileTimeline';
+import { TabletGrid } from './TabletGrid';
 
 export function HowItWorksSection() {
   return (

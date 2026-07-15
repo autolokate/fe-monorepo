@@ -1,4 +1,4 @@
-import axios, { type AxiosError } from "axios";
+import axios, { type AxiosError } from 'axios';
 
 /**
  * Normalised API error thrown by the client.
@@ -10,7 +10,7 @@ export class ApiError extends Error {
 
   constructor(message: string, status: number, data?: unknown) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
     this.status = status;
     this.data = data;
   }
@@ -25,7 +25,7 @@ type BackendErrorShape = {
 
 /** Best-effort extraction of a user-readable message from a backend payload. */
 function pickMessage(payload: unknown, fallback: string): string {
-  if (!payload || typeof payload !== "object") return fallback;
+  if (!payload || typeof payload !== 'object') return fallback;
   const p = payload as BackendErrorShape;
   if (p.message?.trim()) return p.message;
   if (p.error?.trim()) return p.error;
@@ -38,7 +38,10 @@ function pickMessage(payload: unknown, fallback: string): string {
  * Convert any thrown value into an `ApiError`.
  * Use this in catch blocks before surfacing to UI/toast.
  */
-export function toApiError(err: unknown, fallback = "Something went wrong. Please try again."): ApiError {
+export function toApiError(
+  err: unknown,
+  fallback = 'Something went wrong. Please try again.',
+): ApiError {
   if (err instanceof ApiError) return err;
 
   if (axios.isAxiosError(err)) {
@@ -53,6 +56,6 @@ export function toApiError(err: unknown, fallback = "Something went wrong. Pleas
 }
 
 /** Plain-text message extraction, safe to drop into toasts. */
-export function extractApiErrorMessage(err: unknown, fallback = "Something went wrong."): string {
+export function extractApiErrorMessage(err: unknown, fallback = 'Something went wrong.'): string {
   return toApiError(err, fallback).message;
 }

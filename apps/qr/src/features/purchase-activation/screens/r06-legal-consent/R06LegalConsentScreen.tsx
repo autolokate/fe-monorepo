@@ -40,16 +40,15 @@ export function R06LegalConsentScreen({
           variant="empty"
           icon={<AlIcon name="shield-check" size={48} aria-hidden />}
           heading="Legal documents unavailable"
-          message="We couldn&apos;t load terms and privacy policy. Pull to refresh or try again."
+          message="We couldn't load terms and privacy policy. Pull to refresh or try again."
         />
       ) : (
         <AlStack gap="lg">
           <div className="ob-legal-copy">
             <AlText>
-              By continuing, you agree to Autolokate&apos;s{' '}
-              <a href="#terms">Terms of Service</a> and{' '}
-              <a href="#privacy">Privacy Policy</a>, including how we use your vehicle and contact
-              information for crash detection and emergency response.
+              By continuing, you agree to Autolokate&apos;s <a href="#terms">Terms of Service</a>{' '}
+              and <a href="#privacy">Privacy Policy</a>, including how we use your vehicle and
+              contact information for crash detection and emergency response.
             </AlText>
             <AlText tone="muted">
               You can withdraw consent or update preferences anytime from account settings.

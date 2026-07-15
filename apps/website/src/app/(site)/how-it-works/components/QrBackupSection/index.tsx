@@ -1,13 +1,8 @@
-import { Fragment } from "react";
-import Image from "next/image";
-import { ArrowRight, ShieldCheck } from "lucide-react";
-import {
-  QR_BACKUP_COPY,
-  QR_BACKUP_IMAGE,
-  QR_FEATURES,
-  QR_FLOW_STEPS,
-} from "./constants";
-import styles from "./index.module.css";
+import { Fragment } from 'react';
+import Image from 'next/image';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
+import { QR_BACKUP_COPY, QR_BACKUP_IMAGE, QR_FEATURES, QR_FLOW_STEPS } from './constants';
+import styles from './index.module.css';
 
 export function QrBackupSection() {
   return (

@@ -43,7 +43,9 @@ export function mapOrderToSummary(order: OrderDto, params: CheckoutParams): Orde
   );
 }
 
-export function mapPaymentOutcomeToStatus(outcome: PaymentOutcome): PurchasePaymentStatus | 'timeout' {
+export function mapPaymentOutcomeToStatus(
+  outcome: PaymentOutcome,
+): PurchasePaymentStatus | 'timeout' {
   switch (outcome) {
     case PAYMENT_OUTCOME.PAID:
       return 'success';

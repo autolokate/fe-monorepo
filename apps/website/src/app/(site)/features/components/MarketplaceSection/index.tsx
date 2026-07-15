@@ -1,12 +1,12 @@
-import { BadgeCheck, Check } from "lucide-react";
-import { PhoneCarousel } from "../PhoneCarousel";
+import { BadgeCheck, Check } from 'lucide-react';
+import { PhoneCarousel } from '../PhoneCarousel';
 import {
   MARKETPLACE_ASIDE,
   MARKETPLACE_CHECKLIST,
   MARKETPLACE_COPY,
   MARKETPLACE_PHONE_SHOTS,
-} from "./constants";
-import styles from "./index.module.css";
+} from './constants';
+import styles from './index.module.css';
 
 export function MarketplaceSection() {
   return (

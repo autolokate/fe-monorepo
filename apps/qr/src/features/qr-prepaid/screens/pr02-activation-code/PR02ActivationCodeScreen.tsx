@@ -1,9 +1,6 @@
 import { AlInput, AlText } from '@autolokate/ui';
 
-import {
-  FormFieldStack,
-  InlineStatusBanner,
-} from '@/components/compositions/index';
+import { FormFieldStack, InlineStatusBanner } from '@/components/compositions/index';
 import { FlowStepShell } from '@/components/flow-step-shell/index';
 import type { PrepaidScreenState } from '../../types';
 import { demoActivationCode } from '../../data/activation-data';
