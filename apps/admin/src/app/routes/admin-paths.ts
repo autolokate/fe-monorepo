@@ -8,6 +8,7 @@ export const adminPaths = {
   promos: '/promos',
   orders: '/orders',
   subscriptions: '/subscriptions',
+  shipments: '/shipments',
   auditEvents: '/audit-events',
   finance: '/finance',
   ownershipTransfers: '/ownership-transfers',
@@ -70,6 +71,12 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.subscriptions,
     label: 'Subscriptions',
     description: 'Customer subscriptions',
+    nav: true,
+  },
+  {
+    path: adminPaths.shipments,
+    label: 'Shipments',
+    description: 'Retail shipment tracking and delivery status',
     nav: true,
   },
   {

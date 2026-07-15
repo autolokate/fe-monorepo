@@ -54,6 +54,12 @@ const SubscriptionsPage = lazy(() =>
   })),
 );
 
+const ShipmentsPage = lazy(() =>
+  import('@/features/shipments/ShipmentsPage').then((module) => ({
+    default: module.ShipmentsPage,
+  })),
+);
+
 const AuditEventsPage = lazy(() =>
   import('@/features/audit/AuditEventsPage').then((module) => ({
     default: module.AuditEventsPage,
@@ -108,6 +114,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.promos} element={<PromoManagementPage />} />
             <Route path={adminPaths.orders} element={<OrdersPage />} />
             <Route path={adminPaths.subscriptions} element={<SubscriptionsPage />} />
+            <Route path={adminPaths.shipments} element={<ShipmentsPage />} />
             <Route path={adminPaths.auditEvents} element={<AuditEventsPage />} />
             <Route path={adminPaths.finance} element={<FinanceOperationsPage />} />
             <Route path={adminPaths.ownershipTransfers} element={<OwnershipTransfersPage />} />

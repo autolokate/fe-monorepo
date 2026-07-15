@@ -1,5 +1,6 @@
 import type {
   AdminOrderStatus,
+  AdminShipmentStatus,
   AdminSubscriptionStatus,
   AuditAction,
   QrBatchStatus,
@@ -44,6 +45,12 @@ export function SubscriptionStatusBadge({ status }: { status: AdminSubscriptionS
       label={status}
       modifier={`admin-entity-status-badge--subscription-${status}`}
     />
+  );
+}
+
+export function ShipmentStatusBadge({ status }: { status: AdminShipmentStatus }) {
+  return (
+    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--shipment-${status}`} />
   );
 }
 

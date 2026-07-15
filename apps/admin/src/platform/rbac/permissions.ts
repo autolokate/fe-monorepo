@@ -31,6 +31,7 @@ export type AdminPermission =
   | 'catalog:write'
   | 'orders:view'
   | 'subscriptions:view'
+  | 'shipments:view'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -60,6 +61,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'catalog:write',
     'orders:view',
     'subscriptions:view',
+    'shipments:view',
     'audit:read',
     'audit:view',
     'settlements:write',
@@ -88,6 +90,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'promo:view',
     'orders:view',
     'subscriptions:view',
+    'shipments:view',
     'audit:read',
     'audit:view',
     'partners:read',
@@ -98,6 +101,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'inventory:read',
     'orders:view',
     'subscriptions:view',
+    'shipments:view',
     'audit:read',
     'audit:view',
     'partners:read',
@@ -113,6 +117,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'catalog:read',
     'orders:view',
     'subscriptions:view',
+    'shipments:view',
   ],
   PARTNER_MANAGER: [
     'dashboard:view',
@@ -122,6 +127,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'partners:write',
     'orders:view',
     'subscriptions:view',
+    'shipments:view',
     'audit:read',
     'audit:view',
   ],
@@ -135,6 +141,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'catalog:read',
     'orders:view',
     'subscriptions:view',
+    'shipments:view',
     'audit:read',
     'audit:view',
     'partners:read',

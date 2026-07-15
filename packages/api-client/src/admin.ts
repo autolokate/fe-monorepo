@@ -959,6 +959,120 @@ export async function getAdminSubscription(
   return unwrapEnvelope(response) as AdminSubscriptionDetail;
 }
 
+/** OpenAPI `AdminShipmentSummary.status` / `AdminShipmentDetail.status` — the logistics (fulfilment) FSM. */
+export type AdminShipmentStatus =
+  | 'PAID'
+  | 'ALLOCATED'
+  | 'SHIPPED'
+  | 'IN_TRANSIT'
+  | 'DELIVERED'
+  | 'RETURNED'
+  | 'CANCELLED'
+  | 'LOST';
+
+/** OpenAPI `AdminShipmentSummary` — one row in the admin shipments list (no PII; pincode masked). */
+export type AdminShipmentSummary = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  status: AdminShipmentStatus;
+  courier: string | null;
+  awbNo: string | null;
+  trackingUrl: string | null;
+  maskedPincode: string;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  createdAt: string;
+};
+
+/** OpenAPI `AdminShipmentEventDto` — one checkpoint on the tracking timeline. */
+export type AdminShipmentEvent = {
+  status: AdminShipmentStatus;
+  rawStatus: string | null;
+  location: string | null;
+  activity: string | null;
+  occurredAt: string;
+};
+
+/** OpenAPI `AdminShipmentDetail` — a single shipment with its per-state timestamps and tracking timeline (no PII). */
+export type AdminShipmentDetail = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  status: AdminShipmentStatus;
+  courier: string | null;
+  awbNo: string | null;
+  trackingUrl: string | null;
+  maskedPincode: string;
+  allocatedAt: string | null;
+  shippedAt: string | null;
+  inTransitAt: string | null;
+  deliveredAt: string | null;
+  returnedAt: string | null;
+  cancelledAt: string | null;
+  lostAt: string | null;
+  events: AdminShipmentEvent[];
+};
+
+/** Query for `GET /admin/v1/shipments` — keyset-paginated; every field optional. */
+export type ListAdminShipmentsQuery = {
+  status?: AdminShipmentStatus;
+  courier?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated shipments response with envelope pagination meta. */
+export type AdminShipmentsPageResult = {
+  items: AdminShipmentSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** GET /admin/v1/shipments — includes pagination meta from the envelope. */
+export async function listAdminShipmentsPage(
+  client: ApiClient,
+  query: ListAdminShipmentsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminShipmentsPageResult> {
+  const path = `${endpoints.admin.adminShipments}${buildQuery({
+    status: query.status,
+    courier: query.courier,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminShipmentSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/shipments/{orderId} */
+export async function getAdminShipment(
+  client: ApiClient,
+  orderId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminShipmentDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminShipment(orderId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminShipmentDetail;
+}
+
 /** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */
 export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
 

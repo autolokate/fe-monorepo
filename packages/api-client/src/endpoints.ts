@@ -93,6 +93,8 @@ export const endpoints = {
     adminOrder: (id: string) => `/admin/v1/orders/${encodeURIComponent(id)}`,
     adminSubscriptions: '/admin/v1/subscriptions',
     adminSubscription: (id: string) => `/admin/v1/subscriptions/${encodeURIComponent(id)}`,
+    adminShipments: '/admin/v1/shipments',
+    adminShipment: (orderId: string) => `/admin/v1/shipments/${encodeURIComponent(orderId)}`,
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',
