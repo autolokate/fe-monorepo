@@ -11,6 +11,7 @@ export const adminPaths = {
   shipments: '/shipments',
   payments: '/payments',
   support: '/support',
+  incidents: '/incidents',
   auditEvents: '/audit-events',
   finance: '/finance',
   ownershipTransfers: '/ownership-transfers',
@@ -91,6 +92,12 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.support,
     label: 'Support Tickets',
     description: 'Support tickets and status triage',
+    nav: true,
+  },
+  {
+    path: adminPaths.incidents,
+    label: 'Incidents',
+    description: 'Break-glass emergency-incident PII view (every read audited)',
     nav: true,
   },
   {

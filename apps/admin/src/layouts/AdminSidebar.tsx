@@ -10,6 +10,7 @@ import {
   ScanLineIcon,
   ShieldCheckIcon,
   StoreIcon,
+  TriangleAlertIcon,
 } from '@autolokate/icons';
 import { AlText } from '@autolokate/ui';
 import { NavLink } from 'react-router-dom';
@@ -29,6 +30,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/shipments': MapPinIcon,
   '/payments': CreditCardIcon,
   '/support': BellIcon,
+  '/incidents': TriangleAlertIcon,
   '/audit-events': ActivityIcon,
   '/finance': CreditCardIcon,
   '/ownership-transfers': CircleUserIcon,

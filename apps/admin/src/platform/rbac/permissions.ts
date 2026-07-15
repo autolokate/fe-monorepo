@@ -36,6 +36,8 @@ export type AdminPermission =
   | 'payments:view'
   | 'support:view'
   | 'support:write'
+  // Break-glass emergency-incident PII read. SUPER_ADMIN only — narrow by design; every read is server-audited.
+  | 'incidents:view'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -72,6 +74,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     // The support-ticket console (read + status triage) — SUPPORT/OPS/SUPER_ADMIN.
     'support:view',
     'support:write',
+    // Break-glass incident PII read — SUPER_ADMIN only (14-roles §14.6 · security.md § Break-glass).
+    'incidents:view',
     'audit:read',
     'audit:view',
     'settlements:write',

@@ -1319,6 +1319,177 @@ export async function updateAdminSupportTicketStatus(
   return unwrapEnvelope(response) as AdminSupportTicket;
 }
 
+/** OpenAPI `AdminIncidentSummary.status` / `AdminIncidentDetail.status` — derived from `resolved_at` (the incident carries no status enum). */
+export type AdminIncidentStatus = 'OPEN' | 'RESOLVED';
+
+/** OpenAPI `AdminIncidentSummary.source` — how the incident was first reported. */
+export type AdminIncidentSource = 'BYSTANDER' | 'TELEMATICS' | 'CONVERGED';
+
+/** OpenAPI `AdminIncidentAlert.status` — the corroborating SOS alert's lifecycle. */
+export type AdminIncidentAlertStatus =
+  | 'RECEIVED'
+  | 'DISPATCHED'
+  | 'RESOLVED'
+  | 'CANCELLED'
+  | 'CONTACTS_ONLY';
+
+/** OpenAPI `AdminIncidentAlert.severity` — graded best-effort by the validator (never gates dispatch). */
+export type AdminEmergencySeverity = 'CRITICAL' | 'MAJOR' | 'MINOR' | 'UNKNOWN';
+
+/** OpenAPI `AdminIncidentAlert.dispatchPath` — full ambulance vs contacts-only. */
+export type AdminDispatchPath = 'FULL' | 'CONTACTS_ONLY';
+
+/** OpenAPI `AdminIncidentTimelineStep.step` — a Control-Center dispatch-tracker step. */
+export type AdminDispatchStep =
+  | 'ALERT_RECEIVED'
+  | 'SEVERITY'
+  | 'AMBULANCE_DISPATCHED'
+  | 'CONTACTS_CALLED'
+  | 'WHATSAPP'
+  | 'ROADSIDE'
+  | 'MONITORING'
+  | 'UPDATES'
+  | 'RESOLVED'
+  | 'INSURANCE';
+
+/** OpenAPI `AdminIncidentTimelineStep.state` — a dispatch step's progress. */
+export type AdminDispatchStepState = 'PENDING' | 'ACTIVE' | 'DONE';
+
+/** OpenAPI `AdminIncidentMedia.slot` — a scene / park photo slot. */
+export type AdminScanMediaSlot = 'BLOCKING' | 'BLOCKED' | 'FRONT' | 'REAR' | 'LEFT' | 'RIGHT';
+
+/** OpenAPI `AdminIncidentSummary` — one row in the break-glass incident list. */
+export type AdminIncidentSummary = {
+  incidentId: string;
+  qrCodeId: string | null;
+  vehicleId: string | null;
+  source: AdminIncidentSource;
+  status: AdminIncidentStatus;
+  openedAt: string;
+  suspectedFalseAlarm: boolean;
+};
+
+/** OpenAPI `AdminIncidentAlert` — one corroborating SOS report on an incident. */
+export type AdminIncidentAlert = {
+  alertId: string;
+  status: AdminIncidentAlertStatus;
+  severity: AdminEmergencySeverity | null;
+  dispatchPath: AdminDispatchPath;
+  scanEventId: string | null;
+  qrCodeId: string | null;
+  createdAt: string;
+};
+
+/** OpenAPI `AdminIncidentTimelineStep` — one Control-Center dispatch-tracker step. */
+export type AdminIncidentTimelineStep = {
+  alertId: string;
+  step: AdminDispatchStep;
+  state: AdminDispatchStepState;
+  detail: Record<string, unknown> | null;
+  at: string;
+};
+
+/** OpenAPI `AdminIncidentMedia` — one scene-photo ref (may carry plates/faces — PII). */
+export type AdminIncidentMedia = {
+  alertId: string;
+  mediaAssetId: string;
+  slot: AdminScanMediaSlot;
+  contentPii: boolean;
+  createdAt: string;
+};
+
+/**
+ * OpenAPI `AdminIncidentDetail` — the full break-glass PII view of an incident: its core, the corroborating
+ * alerts, the dispatch-tracker timeline, and the scene-media refs. Every fetch is audited (`INCIDENT_PII_ACCESS`).
+ */
+export type AdminIncidentDetail = {
+  incidentId: string;
+  qrCodeId: string | null;
+  vehicleId: string | null;
+  source: AdminIncidentSource;
+  status: AdminIncidentStatus;
+  coverageSnapshot: Record<string, unknown> | null;
+  openedAt: string;
+  windowExpiresAt: string;
+  lastProgressAt: string;
+  dispatchOrchestrator: string;
+  suspectedFalseAlarm: boolean;
+  resolvedAt: string | null;
+  alerts: AdminIncidentAlert[];
+  timeline: AdminIncidentTimelineStep[];
+  media: AdminIncidentMedia[];
+};
+
+/** Query for `GET /admin/v1/incidents` — keyset-paginated; every field optional. */
+export type ListAdminIncidentsQuery = {
+  status?: AdminIncidentStatus;
+  source?: AdminIncidentSource;
+  qrCodeId?: string;
+  vehicleId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated incidents response with envelope pagination meta. */
+export type AdminIncidentsPageResult = {
+  items: AdminIncidentSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/**
+ * GET /admin/v1/incidents — the account-wide break-glass incident list (SUPER_ADMIN · step_up).
+ * Includes pagination meta from the envelope. Every call is audited server-side as `INCIDENT_PII_ACCESS`.
+ */
+export async function listAdminIncidentsPage(
+  client: ApiClient,
+  query: ListAdminIncidentsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminIncidentsPageResult> {
+  const path = `${endpoints.admin.adminIncidents}${buildQuery({
+    status: query.status,
+    source: query.source,
+    qrCodeId: query.qrCodeId,
+    vehicleId: query.vehicleId,
+    from: query.from,
+    to: query.to,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminIncidentSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/incidents/{incidentId} — the full break-glass PII view (audited `INCIDENT_PII_ACCESS`). */
+export async function getAdminIncident(
+  client: ApiClient,
+  incidentId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminIncidentDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminIncident(incidentId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminIncidentDetail;
+}
+
 /** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */
 export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
 

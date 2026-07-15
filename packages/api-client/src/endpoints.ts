@@ -101,6 +101,8 @@ export const endpoints = {
     adminSupportTickets: '/admin/v1/support/tickets',
     adminSupportTicket: (ticketId: string) =>
       `/admin/v1/support/tickets/${encodeURIComponent(ticketId)}`,
+    adminIncidents: '/admin/v1/incidents',
+    adminIncident: (incidentId: string) => `/admin/v1/incidents/${encodeURIComponent(incidentId)}`,
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',

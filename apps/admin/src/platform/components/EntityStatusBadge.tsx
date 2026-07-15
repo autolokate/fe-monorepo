@@ -1,4 +1,5 @@
 import type {
+  AdminIncidentStatus,
   AdminOrderStatus,
   AdminPaymentOutcome,
   AdminShipmentStatus,
@@ -65,6 +66,12 @@ export function PaymentOutcomeBadge({ outcome }: { outcome: AdminPaymentOutcome 
 export function SupportTicketStatusBadge({ status }: { status: AdminSupportTicketStatus }) {
   return (
     <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--support-${status}`} />
+  );
+}
+
+export function IncidentStatusBadge({ status }: { status: AdminIncidentStatus }) {
+  return (
+    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--incident-${status}`} />
   );
 }
 

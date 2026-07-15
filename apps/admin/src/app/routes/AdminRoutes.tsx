@@ -72,6 +72,12 @@ const SupportTicketsPage = lazy(() =>
   })),
 );
 
+const IncidentsPage = lazy(() =>
+  import('@/features/incidents/IncidentsPage').then((module) => ({
+    default: module.IncidentsPage,
+  })),
+);
+
 const AuditEventsPage = lazy(() =>
   import('@/features/audit/AuditEventsPage').then((module) => ({
     default: module.AuditEventsPage,
@@ -129,6 +135,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.shipments} element={<ShipmentsPage />} />
             <Route path={adminPaths.payments} element={<PaymentsPage />} />
             <Route path={adminPaths.support} element={<SupportTicketsPage />} />
+            <Route path={adminPaths.incidents} element={<IncidentsPage />} />
             <Route path={adminPaths.auditEvents} element={<AuditEventsPage />} />
             <Route path={adminPaths.finance} element={<FinanceOperationsPage />} />
             <Route path={adminPaths.ownershipTransfers} element={<OwnershipTransfersPage />} />

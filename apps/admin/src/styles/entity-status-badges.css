@@ -284,6 +284,18 @@
   color: #94a3b8;
 }
 
+/* —— Incidents (AdminIncidentSummary.status — derived OPEN/RESOLVED break-glass lifecycle) —— */
+
+.admin-entity-status-badge--incident-OPEN {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--incident-RESOLVED {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
 /* —— Shipments (AdminShipmentSummary.status — the fulfilment FSM) —— */
 
 .admin-entity-status-badge--shipment-PAID {
