@@ -322,6 +322,46 @@
   color: var(--al-signal-red-bright);
 }
 
+/* —— Payments (AdminPaymentSummary.outcome — the coarse payment outcome) —— */
+
+.admin-entity-status-badge--payment-PAID {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
+.admin-entity-status-badge--payment-PENDING {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--payment-UNCONFIRMED {
+  background: color-mix(in srgb, var(--al-signal-blue) 12%, var(--al-color-surface));
+  color: var(--al-signal-blue);
+}
+
+.admin-entity-status-badge--payment-FAILED {
+  background: color-mix(in srgb, var(--al-signal-red) 12%, var(--al-color-surface));
+  color: var(--al-signal-red);
+}
+
+.admin-entity-status-badge--payment-REFUNDED {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--payment-UNCONFIRMED {
+  color: var(--al-signal-blue-bright);
+  background: color-mix(in srgb, var(--al-signal-blue-bright) 16%, var(--al-color-surface));
+}
+
+[data-theme='dark'] .admin-entity-status-badge--payment-FAILED {
+  color: var(--al-signal-red-bright);
+}
+
+[data-theme='dark'] .admin-entity-status-badge--payment-REFUNDED {
+  color: #94a3b8;
+}
+
 /* —— Audit events (AuditEventDto.action) —— */
 
 .admin-entity-status-badge--audit {

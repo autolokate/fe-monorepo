@@ -1,5 +1,6 @@
 import type {
   AdminOrderStatus,
+  AdminPaymentOutcome,
   AdminShipmentStatus,
   AdminSubscriptionStatus,
   AuditAction,
@@ -51,6 +52,12 @@ export function SubscriptionStatusBadge({ status }: { status: AdminSubscriptionS
 export function ShipmentStatusBadge({ status }: { status: AdminShipmentStatus }) {
   return (
     <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--shipment-${status}`} />
+  );
+}
+
+export function PaymentOutcomeBadge({ outcome }: { outcome: AdminPaymentOutcome }) {
+  return (
+    <EntityStatusBadge label={outcome} modifier={`admin-entity-status-badge--payment-${outcome}`} />
   );
 }
 

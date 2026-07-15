@@ -26,6 +26,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/orders': ReceiptTextIcon,
   '/subscriptions': ShieldCheckIcon,
   '/shipments': MapPinIcon,
+  '/payments': CreditCardIcon,
   '/audit-events': ActivityIcon,
   '/finance': CreditCardIcon,
   '/ownership-transfers': CircleUserIcon,

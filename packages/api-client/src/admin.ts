@@ -1073,6 +1073,109 @@ export async function getAdminShipment(
   return unwrapEnvelope(response) as AdminShipmentDetail;
 }
 
+/** OpenAPI `AdminPaymentSummary.mode` / `AdminPaymentDetail.mode` — the payment channel. */
+export type AdminPaymentMode = 'ONLINE' | 'CASH';
+
+/** OpenAPI `AdminPaymentSummary.state` / `AdminPaymentDetail.state` — the fine-grained payment FSM state. */
+export type AdminPaymentState =
+  | 'CREATED'
+  | 'REQUIRES_ACTION'
+  | 'AUTHORIZED'
+  | 'CAPTURED'
+  | 'PARTIALLY_CAPTURED'
+  | 'FAILED'
+  | 'EXPIRED'
+  | 'VOIDED'
+  | 'REFUND_PENDING'
+  | 'REFUNDED'
+  | 'REFUND_FAILED'
+  | 'CHARGEBACK'
+  | 'CB_WON'
+  | 'CB_LOST';
+
+/** OpenAPI `AdminPaymentSummary` — one row in the admin payments list (money-inclusive, no PII). */
+export type AdminPaymentSummary = {
+  paymentId: string;
+  orderId: string | null;
+  orderNumber: string | null;
+  ref: string;
+  providerRef: string | null;
+  mode: AdminPaymentMode;
+  state: AdminPaymentState;
+  outcome: AdminPaymentOutcome;
+  amountPaise: number;
+  createdAt: string;
+};
+
+/** OpenAPI `AdminPaymentDetail` — a single payment with its captured amount and FSM sequence (no PII). */
+export type AdminPaymentDetail = AdminPaymentSummary & {
+  capturedPaise: number | null;
+  stateSeq: number;
+};
+
+/** Query for `GET /admin/v1/payments` — keyset-paginated; every field optional. */
+export type ListAdminPaymentsQuery = {
+  outcome?: AdminPaymentOutcome;
+  mode?: AdminPaymentMode;
+  state?: AdminPaymentState;
+  orderId?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated payments response with envelope pagination meta. */
+export type AdminPaymentsPageResult = {
+  items: AdminPaymentSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** GET /admin/v1/payments — includes pagination meta from the envelope. */
+export async function listAdminPaymentsPage(
+  client: ApiClient,
+  query: ListAdminPaymentsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPaymentsPageResult> {
+  const path = `${endpoints.admin.adminPayments}${buildQuery({
+    outcome: query.outcome,
+    mode: query.mode,
+    state: query.state,
+    orderId: query.orderId,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminPaymentSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/payments/{paymentId} */
+export async function getAdminPayment(
+  client: ApiClient,
+  paymentId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPaymentDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminPayment(paymentId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminPaymentDetail;
+}
+
 /** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */
 export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
 
