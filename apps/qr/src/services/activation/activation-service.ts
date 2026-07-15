@@ -6,7 +6,11 @@ import {
 
 import type { LandingEntitlement } from '@/features/b2b-shared/types-landing';
 import type { QrB2b2cPayload, QrPrepaidPayload } from '@/platform/qr/qr-dispatch-contract';
-import type { PartnerActivationKind } from '@/platform/activation/activation-channel';
+import type {
+  ActivationKind,
+  PartnerActivationKind,
+} from '@/platform/activation/activation-channel';
+import { isPartnerActivationKind } from '@/platform/activation/activation-channel';
 import { getQrApiClient, getQrBootstrapClient } from '@/platform/api/qr-api-client';
 import { activationStorageRepository } from '@/platform/storage/repositories/activation-storage-repository';
 
@@ -35,10 +39,10 @@ import {
 import {
   createActivationIdempotencyKey,
   mapPreviewToLandingEntitlement,
+  resolveActivationKindFromFlow,
   resolveActivationPreviewCode,
   resolveB2bEntitlementCodeFromQrCode,
   resolveEntitlementCodeFromPayload,
-  resolvePartnerKindFromFlow,
   type ActivationFlowKind,
 } from './activation-mapper';
 import { activationLogger } from './activation-logger';
@@ -65,8 +69,14 @@ function delay(ms: number): Promise<void> {
   });
 }
 
-function activationFlowFromKind(kind: PartnerActivationKind): ActivationFlowKind {
-  return kind === 'b2b' ? 'prepaid' : 'b2b2c';
+function activationFlowFromKind(kind: ActivationKind): ActivationFlowKind {
+  if (kind === 'b2b') {
+    return 'prepaid';
+  }
+  if (kind === 'b2c') {
+    return 'purchase';
+  }
+  return 'b2b2c';
 }
 
 function persistPreviewSnapshot(
@@ -90,10 +100,22 @@ export function seedPartnerActivationContext(params: {
   entitlementCode: string | null;
   partnerKind: PartnerActivationKind;
 }): void {
+  seedActivationContext({
+    qrCode: params.qrCode,
+    entitlementCode: params.entitlementCode,
+    activationKind: params.partnerKind,
+  });
+}
+
+export function seedActivationContext(params: {
+  qrCode: string;
+  entitlementCode?: string | null;
+  activationKind: ActivationKind;
+}): void {
   const qrCode = params.qrCode.trim();
   const entitlementCode = params.entitlementCode?.trim() ?? null;
   const previewCode = resolveActivationPreviewCode({
-    partnerKind: params.partnerKind,
+    activationKind: params.activationKind,
     qrCode,
     entitlementCode,
   });
@@ -101,7 +123,7 @@ export function seedPartnerActivationContext(params: {
   activationStorageRepository.write({
     qrCode,
     entitlementCode,
-    partnerKind: params.partnerKind,
+    activationKind: params.activationKind,
     previewCode,
     preview: null,
     previewLoadedAt: null,
@@ -175,7 +197,7 @@ async function fetchPreviewWithRetry(
 
       persistPreviewSnapshot(trimmed, preview, entitlement);
       activationStorageRepository.write({
-        partnerKind: resolvePartnerKindFromFlow(flow),
+        activationKind: resolveActivationKindFromFlow(flow),
       });
 
       activationLogger.info('preview_loaded', {
@@ -245,7 +267,7 @@ export async function loadPartnerActivationPreviewAtEntry(
       ? (entitlementCode?.trim() ?? resolveB2bEntitlementCodeFromQrCode(qrCode) ?? null)
       : null;
   const previewCode = resolveActivationPreviewCode({
-    partnerKind,
+    activationKind: partnerKind,
     qrCode,
     entitlementCode: resolvedEntitlement,
   });
@@ -260,6 +282,18 @@ export async function loadPartnerActivationPreviewAtEntry(
   return loadActivationPreview(previewCode, activationFlowFromKind(partnerKind));
 }
 
+/** Load B2C activation preview immediately after resolve — same source of truth as partner welcome. */
+export async function loadPurchaseActivationPreviewAtEntry(
+  qrCode: string,
+): Promise<LoadActivationPreviewResult> {
+  seedActivationContext({
+    qrCode,
+    entitlementCode: null,
+    activationKind: 'b2c',
+  });
+  return loadActivationPreview(qrCode.trim(), 'purchase');
+}
+
 export function readStoredActivationPreviewCode(): string | null {
   const stored = activationStorageRepository.read();
   if (!stored) {
@@ -269,7 +303,7 @@ export function readStoredActivationPreviewCode(): string | null {
   if (previewCode) {
     return previewCode;
   }
-  if (stored.partnerKind === 'b2b') {
+  if (stored.activationKind === 'b2b') {
     const entitlementCode = stored.entitlementCode?.trim();
     return entitlementCode || null;
   }
@@ -296,7 +330,7 @@ function buildRedeemBody(
 async function redeemCurrentActivation(): Promise<RedeemActivationResult> {
   const stored = activationStorageRepository.read();
   const qrCode = (stored?.qrCode.trim() || peekActivationQrCode()?.trim()) ?? null;
-  const partnerKind = stored?.partnerKind ?? 'b2b2c';
+  const activationKind = stored?.activationKind ?? 'b2b2c';
   const entitlementCode = stored?.entitlementCode?.trim() ?? peekActivationCode()?.trim() ?? null;
 
   if (!qrCode) {
@@ -306,6 +340,14 @@ async function redeemCurrentActivation(): Promise<RedeemActivationResult> {
     };
   }
 
+  if (!isPartnerActivationKind(activationKind)) {
+    return {
+      ok: false,
+      error: { code: 'invalid', message: 'B2C activation does not redeem via partner redeem.' },
+    };
+  }
+
+  const partnerKind = activationKind;
   const body = buildRedeemBody(partnerKind, qrCode, entitlementCode);
   if (!body) {
     return {

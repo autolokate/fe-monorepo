@@ -17,12 +17,11 @@ import {
   formatQrPublicVehicleSummary,
   isQrVehicleProtected,
 } from '@/features/post-activation-pwa/utils/pwa-vehicle-utils';
-import { formatApiTierLabel } from '@/services/plan/plan-mapper';
 
 /** Map backend journey to existing activation flow ids — no new flow types. */
 export function mapQrJourneyToActivationFlow(journey: QrJourney): ActivationFlowId | null {
   switch (journey) {
-    case 'CONSUMER_SELF_PAY':
+    case 'CONSUMER_PREPAID':
       return 'purchase';
     case 'PREPAID_REDEEM':
       return 'prepaid';
@@ -41,7 +40,6 @@ function buildActivatedPayload(code: string, resolution: QrResolution): QrActiva
     return null;
   }
 
-  const tier = resolution.offeredSku?.offeredTiers[0];
   const modelSummary = formatQrPublicVehicleSummary(vehicle);
   return {
     type: 'activated',
@@ -49,7 +47,6 @@ function buildActivatedPayload(code: string, resolution: QrResolution): QrActiva
     plate: vehicle.plate,
     protected: isQrVehicleProtected(vehicle.protection),
     ...(modelSummary ? { modelSummary } : {}),
-    ...(tier ? { planLabel: formatApiTierLabel(tier).replace(' Plus', '+') } : {}),
   };
 }
 
@@ -57,19 +54,18 @@ function buildPurchasePayload(code: string): QrPurchasePayload {
   return { type: 'purchase', token: code };
 }
 
-function buildPrepaidPayload(code: string, resolution: QrResolution): QrPrepaidPayload {
+function buildPrepaidPayload(code: string): QrPrepaidPayload {
   return {
     type: 'prepaid',
-    voucherId: resolution.offeredSku?.skuCode ?? code,
+    voucherId: code,
   };
 }
 
-function buildB2b2cPayload(code: string, resolution: QrResolution): QrB2b2cPayload {
-  const riderDefault = resolution.offeredSku?.riderDefault ?? 0;
+function buildB2b2cPayload(code: string): QrB2b2cPayload {
   return {
     type: 'b2b2c',
-    partnerId: resolution.offeredSku?.skuCode ?? code,
-    variant: riderDefault > 0 ? 'plan-rider' : 'plan-only',
+    partnerId: code,
+    variant: 'plan-only',
   };
 }
 
@@ -101,12 +97,12 @@ export function mapResolutionToPayload(code: string, resolution: QrResolution): 
   }
 
   switch (resolution.journey) {
-    case 'CONSUMER_SELF_PAY':
+    case 'CONSUMER_PREPAID':
       return buildPurchasePayload(code);
     case 'PREPAID_REDEEM':
-      return buildPrepaidPayload(code, resolution);
+      return buildPrepaidPayload(code);
     case 'PARTNER_ATTACH':
-      return buildB2b2cPayload(code, resolution);
+      return buildB2b2cPayload(code);
     case 'NONE':
       return null;
     default:

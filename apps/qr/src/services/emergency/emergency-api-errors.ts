@@ -29,12 +29,17 @@ export function isSubscriptionResolveError(
   return error.code === 'missing';
 }
 
-/** User-visible copy only when the backend returned a message body. */
+/** Prefer raw API body text; fall back to the mapped user-facing message. */
 export function readEmergencyApiUserMessage(error: EmergencyDomainError): string | null {
   if (isSubscriptionResolveError(error)) {
     return null;
   }
-  return error.apiMessage;
+  const fromApi = error.apiMessage?.trim();
+  if (fromApi) {
+    return fromApi;
+  }
+  const mapped = error.message.trim();
+  return mapped.length > 0 ? mapped : null;
 }
 
 function readErrorCode(error: unknown): string | null {
@@ -109,7 +114,11 @@ export function mapEmergencyApiError(error: unknown): EmergencyApiError {
     return { code: 'already_exists', message, apiMessage };
   }
 
-  if (normalized.code === 'validation' || normalized.status === 400) {
+  if (
+    apiCode === 'own_phone_not_allowed' ||
+    normalized.code === 'validation' ||
+    normalized.status === 400
+  ) {
     return { code: 'validation', message, apiMessage };
   }
 

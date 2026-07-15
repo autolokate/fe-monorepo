@@ -36,14 +36,11 @@ export function E01RiderPromptScreen({
 }: E01RiderPromptScreenProps) {
   const isLoading = viewState === 'loading';
   const isOffline = viewState === 'offline';
-  const apiError = errorMessage?.trim() ?? '';
-  const showApiError = viewState === 'error' && apiError.length > 0;
+  const isError = viewState === 'error';
+  // Non-input screen: API errors use snackbar only — never also replace description.
+  void errorMessage;
 
-  const resolvedDescription = showApiError
-    ? apiError
-    : isOffline
-      ? getRiderPromptOfflineDescription()
-      : description;
+  const resolvedDescription = isOffline ? getRiderPromptOfflineDescription() : description;
 
   return (
     <FlowStepShell
@@ -51,7 +48,7 @@ export function E01RiderPromptScreen({
       step={1}
       title="Add your rider’s details?"
       description={resolvedDescription}
-      footerLabel={showApiError ? 'Try again' : 'Add rider details'}
+      footerLabel={isError ? 'Try again' : 'Add rider details'}
       footerLoading={isLoading}
       footerDisabled={isOffline || isLoading}
       hideProgress

@@ -14,6 +14,10 @@ export type R08bPromoAppliedScreenProps = {
   onContinue?: () => void;
   onBack?: () => void;
   showBack?: boolean;
+  /** Cart/checkout API message — shown above the Pay CTA. */
+  errorMessage?: string | null;
+  footerLabel?: string;
+  footerLoading?: boolean;
 };
 
 /** R08b · Order summary · promo applied — Figma 333:37 */
@@ -25,6 +29,9 @@ export function R08bPromoAppliedScreen({
   onContinue,
   onBack,
   showBack = true,
+  errorMessage = null,
+  footerLabel,
+  footerLoading = false,
 }: R08bPromoAppliedScreenProps) {
   const summary = buildOrderSummary({
     planId: selectedPlanId,
@@ -32,6 +39,7 @@ export function R08bPromoAppliedScreen({
     promoApplied: true,
     promoCode,
   });
+  const resolvedError = errorMessage?.trim() || null;
 
   return (
     <AuthStepShell
@@ -40,10 +48,13 @@ export function R08bPromoAppliedScreen({
       shellClassName="ob-auth-shell--purchase"
       title="Review & pay"
       description="Check your order, then pay securely"
-      footerLabel={summary.payCtaLabel}
+      footerLabel={footerLabel ?? summary.payCtaLabel}
+      footerLoading={footerLoading}
       showBack={showBack}
       onBack={onBack}
       onContinue={onContinue}
+      ctaHelper={resolvedError ?? undefined}
+      ctaHelperTone={resolvedError ? 'warning' : 'muted'}
       contentGap="mobile"
     >
       <div className="ob-purchase-phase-b-stack">

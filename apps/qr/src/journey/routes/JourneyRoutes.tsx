@@ -1,11 +1,15 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
+import { PurchaseWelcomeScreen } from '../../features/qr-purchase/screens/purchase-welcome/index';
+import { hasAuthTokens } from '@/services/auth/ensure-valid-auth-session';
+import { getPostAuthActivationPath } from '../activation-routing';
+import { journeyPaths } from '../constants';
 import { AuthEntryLegacyRedirect } from '../guards/AuthEntryLegacyRedirect';
-import { PreserveSearchRedirect } from '../guards/PreserveSearchRedirect';
 import {
-  LegacyVehicleConfirmationRedirect,
-  LegacyVehicleLookupRedirect,
-} from '../guards/LegacyVehicleRouteRedirects';
+  RequireAuthCompleted,
+  RequireSelectedFlow,
+  RequireSelectedFlowMatch,
+} from '../guards/JourneyRouteGuards';
 import {
   LEGACY_FLAT_PURCHASE_REDIRECTS,
   LEGACY_JOURNEY_AUTH_REDIRECTS,
@@ -14,25 +18,26 @@ import {
   LegacyFlatToScopedRedirect,
   QrEntryRoute,
 } from '../guards/LegacyJourneyRedirectRoutes';
+import {
+  LegacyVehicleConfirmationRedirect,
+  LegacyVehicleLookupRedirect,
+} from '../guards/LegacyVehicleRouteRedirects';
+import { PreserveSearchRedirect } from '../guards/PreserveSearchRedirect';
 import { PurchaseIndexRedirect } from '../guards/PurchaseIndexRedirect';
 import {
   LEGACY_PURCHASE_FLAT_SEGMENTS,
   PURCHASE_ROUTE_PATTERNS,
   PURCHASE_ROUTE_SEGMENTS,
 } from '../purchase/purchase-routing';
-import {
-  RequireAuthCompleted,
-  RequireSelectedFlow,
-  RequireSelectedFlowMatch,
-} from '../guards/JourneyRouteGuards';
-import { JourneyCompletedScreen } from '../screens/JourneyCompletedScreen';
-import { journeyPaths } from '../constants';
 import { JourneyScopeProvider } from '../routing/JourneyScopeProvider';
+import { useActiveJourneyId } from '../routing/use-active-journey-id';
+import { JourneyCompletedScreen } from '../screens/JourneyCompletedScreen';
+import { useJourney } from '../JourneyContext';
 import { B2b2cRoutes } from './B2b2cRoutes';
 import { EmergencyRoutes } from './EmergencyRoutes';
+import { JourneySharedAuthRoute } from './JourneySharedAuthRoute';
 import { PrepaidRoutes } from './PrepaidRoutes';
 import { PurchaseRoutes } from './PurchaseRoutes';
-import { JourneySharedAuthRoute } from './JourneySharedAuthRoute';
 
 function PurchaseActivationRoute() {
   return (
@@ -41,6 +46,27 @@ function PurchaseActivationRoute() {
         <PurchaseRoutes />
       </RequireSelectedFlowMatch>
     </RequireAuthCompleted>
+  );
+}
+
+function PurchaseWelcomeRoute() {
+  const journeyId = useActiveJourneyId();
+  const { session, selectedFlow } = useJourney();
+
+  // Logged-in users skip preview welcome and resume at plans (or attach resume).
+  if (hasAuthTokens()) {
+    return (
+      <Navigate
+        to={getPostAuthActivationPath(selectedFlow ?? 'purchase', journeyId ?? undefined, session)}
+        replace
+      />
+    );
+  }
+
+  return (
+    <RequireSelectedFlowMatch flow="purchase">
+      <PurchaseWelcomeScreen />
+    </RequireSelectedFlowMatch>
   );
 }
 
@@ -60,6 +86,7 @@ function OnboardingJourneyRoutes() {
       <Route path="auth" element={<JourneySharedAuthRoute />} />
       <Route path="otp" element={<JourneySharedAuthRoute />} />
       <Route path="profile" element={<JourneySharedAuthRoute />} />
+      <Route path={PURCHASE_ROUTE_SEGMENTS.welcome} element={<PurchaseWelcomeRoute />} />
       <Route path="vehicle" element={<PurchaseActivationRoute />} />
       <Route path="vehicle/:registrationNumber/lookup" element={<PurchaseActivationRoute />} />
       <Route

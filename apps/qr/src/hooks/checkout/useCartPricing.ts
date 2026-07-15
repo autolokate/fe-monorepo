@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { buildCheckoutParamsKey, type CheckoutParams } from '@/services/checkout/checkout-mapper';
 import { getCheckoutRevision } from '@/services/checkout/checkout-cache';
@@ -7,48 +7,65 @@ import { clearPlansCache } from '@/services/plan/plan-cache';
 import { loadPlans } from '@/services/plan/plan-service';
 import { reportUserError } from '@/platform/feedback/index';
 import { checkoutLogger } from '@/services/checkout/checkout-logger';
+import { useRouteLoadWithRetry } from '@/hooks/purchase/useRouteLoadWithRetry';
 
 export function useCartPricing(params: CheckoutParams): {
   cartReady: boolean;
+  cartLoading: boolean;
   cartRevision: number;
+  /** Sticky until the next successful cart price — kept visible during Try again. */
+  cartError: string | null;
+  retryCart: () => void;
 } {
   const paramsKey = buildCheckoutParamsKey(params);
-  const [cartRevision, setCartRevision] = useState(getCheckoutRevision());
-  const [cartReady, setCartReady] = useState(false);
+  const [cartError, setCartError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setCartReady(false);
+  const loadCart = useCallback(
+    async ({ force }: { force: boolean }) => {
+      let result = await priceCheckoutCart(params, { force });
 
-    void (async () => {
-      let result = await priceCheckoutCart(params);
-
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- cancelled is flipped true by the effect cleanup during the await; TS narrows it to false and can't model the async race.
-      if (!cancelled && !result.ok && result.error.code === 'catalog_stale') {
+      if (!result.ok && result.error.code === 'catalog_stale') {
         clearPlansCache();
-        await loadPlans();
+        await loadPlans({ force: true });
         result = await priceCheckoutCart(params, { force: true });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- cancelled is flipped true by the effect cleanup during the await; TS narrows it to false and can't model the async race.
-      if (cancelled) {
-        return;
+      if (!result.ok) {
+        reportUserError(
+          checkoutLogger,
+          'price_cart_failed',
+          result.error,
+          result.error.message,
+          { toast: false },
+        );
+        return { ok: false as const, message: result.error.message };
       }
 
-      setCartRevision(getCheckoutRevision());
-      if (result.ok) {
-        setCartReady(true);
-        return;
-      }
+      return { ok: true as const };
+    },
+    [params, params.planId, params.promoApplied, params.promoCode, params.riderCount],
+  );
 
-      reportUserError(checkoutLogger, 'price_cart_failed', result.error, result.error.message);
-      setCartReady(true);
-    })();
+  const { loadState, retry } = useRouteLoadWithRetry({
+    reloadKey: paramsKey,
+    load: loadCart,
+  });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [paramsKey, params.planId, params.riderCount, params.promoApplied, params.promoCode]);
+  useEffect(() => {
+    if (loadState.status === 'error') {
+      setCartError(loadState.message);
+      return;
+    }
+    if (loadState.status === 'ready') {
+      setCartError(null);
+    }
+  }, [loadState]);
 
-  return { cartReady, cartRevision };
+  return {
+    cartReady: loadState.status === 'ready',
+    cartLoading: loadState.status === 'loading',
+    cartRevision: getCheckoutRevision(),
+    cartError,
+    retryCart: retry,
+  };
 }

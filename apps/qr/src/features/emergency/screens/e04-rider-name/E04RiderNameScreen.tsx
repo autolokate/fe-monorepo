@@ -28,16 +28,18 @@ export function E04RiderNameScreen({
   relation,
   onRelationChange,
   formState = 'default',
-  errorMessage: _errorMessage = null,
+  errorMessage = null,
   onContinue,
   onBack,
   showBack = true,
 }: E04RiderNameScreenProps) {
   const interactive = onNameChange !== undefined;
   const isSubmitting = formState === 'submitting';
+  const isError = formState === 'error';
   const hasName = nameValue.trim().length > 0;
   const isInvalid = interactive && (!hasName || !relation);
-  const showDisabledHelper = isInvalid && !isSubmitting;
+  const showDisabledHelper = isInvalid && !isSubmitting && !isError;
+  const fieldError = isError ? errorMessage?.trim() || null : null;
 
   return (
     <FlowStepShell
@@ -68,8 +70,16 @@ export function E04RiderNameScreen({
                 }
               : undefined
           }
+          state={fieldError ? 'error' : 'default'}
           disabled={!interactive || isSubmitting}
+          aria-invalid={fieldError ? true : undefined}
+          aria-describedby={fieldError ? 'e04-name-error' : undefined}
         />
+        {fieldError ? (
+          <p id="e04-name-error" className="ob-field-validation-error" role="alert">
+            {fieldError}
+          </p>
+        ) : null}
         <RelationshipSelector
           variant="contact"
           value={relation}

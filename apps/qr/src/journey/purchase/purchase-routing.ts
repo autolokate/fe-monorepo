@@ -8,6 +8,7 @@ import {
 
 /** Canonical URL segments for the purchase journey (relative to onboarding base). */
 export const PURCHASE_ROUTE_SEGMENTS = {
+  welcome: 'welcome',
   vehicleDetails: 'vehicle',
   vehicleLookupFailed: 'vehicle-lookup-failed',
   choosePlan: 'plans',
@@ -64,6 +65,7 @@ export { decodeRegistrationFromPath as decodeRegistrationFromPath };
 export function purchaseJourneyPathsFor(journeyId: string) {
   const paths = buildPurchasePaths(journeyId);
   return {
+    welcome: paths.welcome,
     vehicleDetails: paths.vehicleDetails,
     vehicleLookupFailed: paths.vehicleLookupFailed,
     choosePlan: paths.choosePlan,
@@ -132,8 +134,9 @@ export type PurchaseJourneyPath = ReturnType<typeof purchaseJourneyPathsFor>[key
 export function purchaseStepPathSequence(journeyId: string) {
   const paths = purchaseJourneyPathsFor(journeyId);
   return [
-    paths.vehicleDetails,
+    paths.welcome,
     paths.choosePlan,
+    paths.vehicleDetails,
     paths.riderCover,
     paths.orderSummary,
     paths.processingPayment,
@@ -158,7 +161,7 @@ export function getNextPurchasePath(journeyId: string, currentPath: string): str
   const relative = stripOnboardingPrefix(currentPath);
   const normalized = relative.replace(/\/+$/, '');
   if (parsePurchaseVehicleConfirmationPath(currentPath)) {
-    return purchaseJourneyPathsFor(journeyId).choosePlan;
+    return null;
   }
   if (parsePurchaseVehicleLookupPath(currentPath)) {
     return null;

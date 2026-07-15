@@ -6,12 +6,10 @@ import {
   purchasePlansCatalog,
 } from '@/services/plan/index';
 
-/** Live plan catalog — populated by plan-service from GET /v1/plans. */
+/** Live plan catalog — populated by plan-service from GET /v1/activation/plans. */
 export const PURCHASE_PLANS: readonly PurchasePlanDefinition[] = purchasePlansCatalog;
 
 export { DEFAULT_PURCHASE_PLAN_ID };
-
-export const VALID_PROMO_CODE = 'FRIEND50';
 
 export function getPurchasePlan(planId: PurchasePlanId): PurchasePlanDefinition {
   return getPurchasePlanById(planId);

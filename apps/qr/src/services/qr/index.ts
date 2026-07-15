@@ -5,7 +5,9 @@ export {
   getStoredPurchaseQrResolve,
   clearResolvedQrCache,
   peekResolvedQr,
+  commitResolvedQr,
   type ResolveQrCodeResult,
+  type ResolveQrCodeOptions,
 } from './qr-service';
 export {
   attachPurchaseQr,
@@ -30,6 +32,8 @@ export {
   enterJourneyFromQrSearchParams,
   type QrJourneyEntryDeps,
   type QrJourneyEntryPoint,
+  type QrJourneyEntryOptions,
+  type QrJourneyEntryOutcome,
   type QrJourneyEntryResult,
 } from './qr-journey-entry';
 export {

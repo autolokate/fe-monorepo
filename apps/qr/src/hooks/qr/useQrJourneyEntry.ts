@@ -4,7 +4,7 @@ import {
   enterJourneyFromQrCode,
   enterJourneyFromQrSearchParams,
   type QrJourneyEntryDeps,
-  type QrJourneyEntryPoint,
+  type QrJourneyEntryOptions,
   type QrJourneyEntryResult,
 } from '@/services/qr/qr-journey-entry';
 
@@ -15,7 +15,7 @@ export function useQrJourneyEntry() {
     async (
       code: string,
       deps: QrJourneyEntryDeps,
-      options?: { entryPoint?: QrJourneyEntryPoint },
+      options?: QrJourneyEntryOptions,
     ): Promise<QrJourneyEntryResult> => {
       setIsPending(true);
       try {
@@ -31,7 +31,7 @@ export function useQrJourneyEntry() {
     async (
       searchParams: URLSearchParams,
       deps: QrJourneyEntryDeps,
-      options?: { entryPoint?: QrJourneyEntryPoint },
+      options?: QrJourneyEntryOptions,
     ) => {
       setIsPending(true);
       try {

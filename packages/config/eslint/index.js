@@ -22,6 +22,7 @@ export const baseConfig = tseslint.config(
       '**/.turbo/**',
       '**/coverage/**',
       '**/.next/**',
+      '**/.vercel/**',
       '**/next-env.d.ts', // Next-generated, never hand-edited
     ],
   },

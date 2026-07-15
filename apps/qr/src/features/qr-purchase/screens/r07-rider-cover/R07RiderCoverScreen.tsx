@@ -36,9 +36,12 @@ export function R07RiderCoverScreen({
       progressConfig={null}
       shellClassName="ob-auth-shell--purchase ob-auth-shell--rider-screen"
       title="Add rider cover?"
-      description="Cover whoever rides with you. Same ₹1L cover, bundled at a discount"
+      description="Cover whoever rides with you. Add rider protection at a bundled price."
       footerLabel={getRiderCtaLabel(selectedRiderCount)}
       footerCtaKey={String(selectedRiderCount)}
+      footerSecondaryLabel={onSkip ? "Skip, I'll ride solo" : undefined}
+      onFooterSecondary={onSkip}
+      footerSecondaryAboveCta={Boolean(onSkip)}
       showBack={showBack}
       onBack={onBack}
       onContinue={onContinue}
@@ -50,9 +53,6 @@ export function R07RiderCoverScreen({
           selectedCount={selectedRiderCount}
           onSelect={onSelectRiderCount}
         />
-        <button type="button" className="ob-purchase-skip-link" onClick={onSkip}>
-          Skip, I&apos;ll ride solo
-        </button>
       </div>
     </AuthStepShell>
   );

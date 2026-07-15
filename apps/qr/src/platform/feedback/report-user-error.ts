@@ -31,6 +31,10 @@ const API_DOMAIN_CODES = new Set([
   'catalog_stale',
   'cart_stale',
   'payment_cancelled',
+  // Checkout mapper collapses HTTP/API failures (e.g. order_in_progress) into these.
+  'unavailable',
+  'unknown',
+  'order_in_progress',
 ]);
 
 function readErrorCode(error: unknown): string | null {
@@ -100,4 +104,17 @@ export function reportUserError(
   }
 
   return message;
+}
+
+/**
+ * Input/form screens: log only — caller renders the message under the field.
+ * Never show a snackbar for the same error.
+ */
+export function reportFieldError(
+  logger: Logger,
+  event: string,
+  error: unknown,
+  fallback?: string,
+): string {
+  return reportUserError(logger, event, error, fallback, { toast: false });
 }

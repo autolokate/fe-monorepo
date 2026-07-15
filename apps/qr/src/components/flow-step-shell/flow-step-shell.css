@@ -66,10 +66,6 @@
   cursor: pointer;
 }
 
-.ob-shell__footer--secondary-first {
-  gap: 18px;
-}
-
 .ob-shell--capture .ob-step-chrome__header {
   gap: 24px;
 }

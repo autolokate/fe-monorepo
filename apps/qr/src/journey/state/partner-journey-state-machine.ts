@@ -30,7 +30,7 @@ export function resolveQrJourneyTarget(resolution: QrResolution): PartnerJourney
   }
 
   switch (resolution.journey) {
-    case 'CONSUMER_SELF_PAY':
+    case 'CONSUMER_PREPAID':
       return PARTNER_JOURNEY_TARGET.PURCHASE;
     case 'PARTNER_ATTACH':
       return PARTNER_JOURNEY_TARGET.PARTNER_B2B2C;

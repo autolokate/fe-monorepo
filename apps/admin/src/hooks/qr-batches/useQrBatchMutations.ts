@@ -1,4 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { BatchSummaryDto } from '@autolokate/api-client';
+import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
 import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
 import { qrBatchCodesQueryKeys } from '@/hooks/qr-batches/qr-batch-codes-query-keys';
@@ -7,6 +8,7 @@ import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { showSuccessToast } from '@/platform/feedback/toast';
 import {
   createBatch,
+  distributeBatch,
   fulfilPartnerReorderById,
   generateBatchCodes,
   provisionBatch,
@@ -14,6 +16,40 @@ import {
   retireCode,
   runAutoDetachSweep,
 } from '@/services/qr-batches/qr-batch-service';
+
+/**
+ * Write the mutation response into detail + inventory list caches so the UI
+ * reflects the new status immediately (before background refetch).
+ */
+function applyBatchSummaryToCaches(
+  queryClient: QueryClient,
+  batch: BatchSummaryDto,
+  options: { appendIfMissing?: boolean } = {},
+) {
+  queryClient.setQueryData(inventoryQueryKeys.byId(batch.id), batch);
+
+  queryClient.setQueriesData({ queryKey: inventoryQueryKeys.all }, (current: unknown) => {
+    if (!current) {
+      return current;
+    }
+
+    // Detail queries under the same inventory prefix store a single batch.
+    if (!Array.isArray(current)) {
+      const detail = current as BatchSummaryDto;
+      return detail.id === batch.id ? batch : detail;
+    }
+
+    const list = current as BatchSummaryDto[];
+    const index = list.findIndex((entry) => entry.id === batch.id);
+    if (index === -1) {
+      return options.appendIfMissing ? [batch, ...list] : list;
+    }
+
+    const next = list.slice();
+    next[index] = batch;
+    return next;
+  });
+}
 
 export function useQrBatchMutations() {
   const queryClient = useQueryClient();
@@ -30,6 +66,12 @@ export function useQrBatchMutations() {
     await queryClient.invalidateQueries({ queryKey: qrBatchCodesQueryKeys.all });
   };
 
+  const syncBatchLifecycle = async (batch: BatchSummaryDto) => {
+    applyBatchSummaryToCaches(queryClient, batch);
+    await invalidateInventory();
+    await invalidateBatchCodes(batch.id);
+  };
+
   const createBatchMutation = useMutation({
     mutationFn: ({
       body,
@@ -40,6 +82,7 @@ export function useQrBatchMutations() {
     }) => createBatch(body, signal),
     retry: 0,
     onSuccess: async (batch) => {
+      applyBatchSummaryToCaches(queryClient, batch, { appendIfMissing: true });
       await invalidateInventory();
       showSuccessToast(`Batch ${batch.batchCode} created.`);
     },
@@ -53,8 +96,7 @@ export function useQrBatchMutations() {
       generateBatchCodes(batchId, signal),
     retry: 0,
     onSuccess: async (batch) => {
-      await invalidateInventory();
-      await invalidateBatchCodes(batch.id);
+      await syncBatchLifecycle(batch);
       showSuccessToast(`Codes generated for ${batch.batchCode}.`);
     },
     onError: (error) => {
@@ -67,8 +109,7 @@ export function useQrBatchMutations() {
       provisionBatch(batchId, signal),
     retry: 0,
     onSuccess: async (batch) => {
-      await invalidateInventory();
-      await invalidateBatchCodes(batch.id);
+      await syncBatchLifecycle(batch);
       showSuccessToast(`Batch ${batch.batchCode} provisioned.`);
     },
     onError: (error) => {
@@ -76,10 +117,24 @@ export function useQrBatchMutations() {
     },
   });
 
+  const distributeMutation = useMutation({
+    mutationFn: ({ batchId, signal }: { batchId: string; signal?: AbortSignal }) =>
+      distributeBatch(batchId, signal),
+    retry: 0,
+    onSuccess: async (batch) => {
+      await syncBatchLifecycle(batch);
+      showSuccessToast(`Batch ${batch.batchCode} released to distribution.`);
+    },
+    onError: (error) => {
+      reportAdminApiError(error, { context: 'qr-batches:distribute', toast: true });
+    },
+  });
+
   const sweepMutation = useMutation({
     mutationFn: (signal?: AbortSignal) => runAutoDetachSweep(signal),
     retry: 0,
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
+      await invalidateInventory();
       showSuccessToast(
         `Sweep complete — ${result.detached.toLocaleString()} detached, ${result.skippedPaid.toLocaleString()} skipped (paid).`,
       );
@@ -95,6 +150,7 @@ export function useQrBatchMutations() {
     retry: 0,
     onSuccess: async (result) => {
       await invalidateBatchCodes();
+      await invalidateInventory();
       showSuccessToast(`Replaced ${result.oldCode} with ${result.newCode}.`);
     },
     onError: (error) => {
@@ -108,6 +164,7 @@ export function useQrBatchMutations() {
     retry: 0,
     onSuccess: async (result) => {
       await invalidateBatchCodes();
+      await invalidateInventory();
       showSuccessToast(`Retired QR code ${result.code}.`);
     },
     onError: (error) => {
@@ -132,6 +189,7 @@ export function useQrBatchMutations() {
     createBatchMutation,
     generateMutation,
     provisionMutation,
+    distributeMutation,
     sweepMutation,
     replaceMutation,
     retireMutation,

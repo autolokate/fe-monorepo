@@ -2,18 +2,23 @@ import type { JourneySession } from '../../journey/types';
 
 import type { LandingEntitlement } from './types-landing';
 
-/** Seeds purchase + vehicle session so emergency limits resolve from landing entitlement. */
+/** Seeds purchase (+ vehicle when preview includes a plate) from landing entitlement. */
 export function applyLandingEntitlementToSession(
   entitlement: LandingEntitlement,
 ): Partial<JourneySession> {
+  const plate = entitlement.vehiclePlate.trim();
   return {
     purchase: {
       selectedPlanId: entitlement.planId,
       riderCount: entitlement.riderCount,
     },
-    vehicle: {
-      plate: entitlement.vehiclePlate,
-      confirmed: true,
-    },
+    ...(plate
+      ? {
+          vehicle: {
+            plate,
+            confirmed: true,
+          },
+        }
+      : {}),
   };
 }

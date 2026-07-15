@@ -94,8 +94,14 @@ export function BatchManagementDetailPage() {
   } = useQrBatchById(batchId, locationState?.batch ?? null);
   const batch = batchOverride ?? fetchedBatch;
 
-  const { generateMutation, provisionMutation, replaceMutation, retireMutation, mapMutationError } =
-    useQrBatchMutations();
+  const {
+    generateMutation,
+    provisionMutation,
+    distributeMutation,
+    replaceMutation,
+    retireMutation,
+    mapMutationError,
+  } = useQrBatchMutations();
 
   const qrForm = useForm<QrCodeActionFormValues>({
     resolver: zodResolver(qrCodeActionSchema),
@@ -110,11 +116,13 @@ export function BatchManagementDetailPage() {
 
   const generateMutationRef = useRef(generateMutation);
   const provisionMutationRef = useRef(provisionMutation);
+  const distributeMutationRef = useRef(distributeMutation);
   const replaceMutationRef = useRef(replaceMutation);
   const retireMutationRef = useRef(retireMutation);
 
   generateMutationRef.current = generateMutation;
   provisionMutationRef.current = provisionMutation;
+  distributeMutationRef.current = distributeMutation;
   replaceMutationRef.current = replaceMutation;
   retireMutationRef.current = retireMutation;
 
@@ -127,15 +135,25 @@ export function BatchManagementDetailPage() {
     qrForm.reset({ code: '' });
     generateMutationRef.current.reset();
     provisionMutationRef.current.reset();
+    distributeMutationRef.current.reset();
     replaceMutationRef.current.reset();
     retireMutationRef.current.reset();
   }, [batchId, qrForm]);
 
   useEffect(() => {
-    if (fetchedBatch && batchOverride?.id === fetchedBatch.id) {
+    // Drop the local override only once the fetched cache/network batch is at
+    // least as fresh as the mutation response (same lifecycle status + counts).
+    if (
+      fetchedBatch &&
+      batchOverride &&
+      batchOverride.id === fetchedBatch.id &&
+      batchOverride.status === fetchedBatch.status &&
+      batchOverride.generatedCount === fetchedBatch.generatedCount &&
+      batchOverride.provisionedCount === fetchedBatch.provisionedCount
+    ) {
       setBatchOverride(null);
     }
-  }, [batchOverride?.id, fetchedBatch]);
+  }, [batchOverride, fetchedBatch]);
 
   const lifecycleActions = useMemo(() => (batch ? getBatchLifecycleActions(batch) : []), [batch]);
 
@@ -166,12 +184,15 @@ export function BatchManagementDetailPage() {
     );
   }
 
-  const lifecyclePending = generateMutation.isPending || provisionMutation.isPending;
+  const lifecyclePending =
+    generateMutation.isPending || provisionMutation.isPending || distributeMutation.isPending;
   const lifecycleError = generateMutation.isError
     ? mapMutationError(generateMutation.error).userMessage
     : provisionMutation.isError
       ? mapMutationError(provisionMutation.error).userMessage
-      : null;
+      : distributeMutation.isError
+        ? mapMutationError(distributeMutation.error).userMessage
+        : null;
 
   const qrPending = replaceMutation.isPending || retireMutation.isPending;
   const qrError = replaceMutation.isError
@@ -193,7 +214,12 @@ export function BatchManagementDetailPage() {
       const updated =
         actionId === 'generate'
           ? await generateMutation.mutateAsync({ batchId: batch.id, signal: controller.signal })
-          : await provisionMutation.mutateAsync({ batchId: batch.id, signal: controller.signal });
+          : actionId === 'provision'
+            ? await provisionMutation.mutateAsync({ batchId: batch.id, signal: controller.signal })
+            : await distributeMutation.mutateAsync({
+                batchId: batch.id,
+                signal: controller.signal,
+              });
       setBatchOverride(updated);
       setPendingLifecycle(null);
     } catch {
@@ -287,7 +313,7 @@ export function BatchManagementDetailPage() {
                       <AlButton
                         key={action.id}
                         size="sm"
-                        variant={action.id === 'provision' ? 'primary' : 'secondary'}
+                        variant={action.id === 'generate' ? 'secondary' : 'primary'}
                         loading={lifecyclePending}
                         disabled={lifecyclePending}
                         onClick={() => {

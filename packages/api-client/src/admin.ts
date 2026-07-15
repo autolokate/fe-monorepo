@@ -736,6 +736,20 @@ export async function provisionQrBatch(
   return unwrapEnvelope(response) as BatchSummaryDto;
 }
 
+/** POST /admin/v1/qr-batches/{id}/distribute — PROVISIONED → IN_DISTRIBUTION */
+export async function distributeQrBatch(
+  client: ApiClient,
+  batchId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<BatchSummaryDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.distributeQrBatch(batchId),
+    undefined,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as BatchSummaryDto;
+}
+
 /** POST /admin/v1/qr-auto-detach-sweep */
 export async function qrAutoDetachSweep(
   client: ApiClient,

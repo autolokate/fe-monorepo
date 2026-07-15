@@ -13,6 +13,7 @@ export type R10PaymentSuccessScreenProps = {
   onDownloadInvoice?: () => void;
   invoiceDownloading?: boolean;
   onContinue?: () => void;
+  continueLoading?: boolean;
 };
 
 /** R10 · Payment success — Figma 193:25 */
@@ -22,6 +23,7 @@ export function R10PaymentSuccessScreen({
   onDownloadInvoice,
   invoiceDownloading = false,
   onContinue,
+  continueLoading = false,
 }: R10PaymentSuccessScreenProps) {
   return (
     <PurchaseStatusShell
@@ -37,7 +39,10 @@ export function R10PaymentSuccessScreen({
           : undefined
       }
       onSecondaryFooter={onDownloadInvoice}
-      celebration={<ConfettiLottie className="ob-purchase-success-hero__confetti" />}
+      secondaryFooterAboveCta={Boolean(onDownloadInvoice)}
+      celebration={
+        <ConfettiLottie className="ob-purchase-success-hero__confetti" />
+      }
       visual={
         <div className="ob-purchase-success-hero">
           <AlIcon
@@ -49,6 +54,7 @@ export function R10PaymentSuccessScreen({
         </div>
       }
       footerLabel="Continue"
+      footerLoading={continueLoading}
       onContinue={onContinue}
     />
   );

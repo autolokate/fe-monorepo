@@ -3,7 +3,6 @@ import type {
   OrderStatus,
   QrChannel,
   QrJourney,
-  QrOfferedSku,
   QrPublicVehicle,
   QrResolution,
   QrStatus,
@@ -31,7 +30,6 @@ export type StoredQrResolve = {
   qrStatus: QrStatus;
   channel: QrChannel;
   journey: QrJourney;
-  offeredSku: QrOfferedSku | null;
   vehicle: QrPublicVehicle | null;
   resolvedAt: string;
 };
@@ -217,7 +215,6 @@ export function saveResolvedQr(code: string, resolution: QrResolution): StoredQr
     qrStatus: resolution.qrStatus,
     channel: resolution.channel,
     journey: resolution.journey,
-    offeredSku: resolution.offeredSku,
     vehicle: resolution.vehicle,
     resolvedAt: new Date().toISOString(),
   };

@@ -8,6 +8,7 @@ import type {
 } from '@autolokate/api-client';
 import {
   createQrBatch,
+  distributeQrBatch,
   fulfilPartnerReorder,
   generateQrBatchCodes,
   provisionQrBatch,
@@ -37,6 +38,13 @@ export async function provisionBatch(
   signal?: AbortSignal,
 ): Promise<BatchSummaryDto> {
   return provisionQrBatch(getAdminApiClient(), batchId, { signal });
+}
+
+export async function distributeBatch(
+  batchId: string,
+  signal?: AbortSignal,
+): Promise<BatchSummaryDto> {
+  return distributeQrBatch(getAdminApiClient(), batchId, { signal });
 }
 
 export async function runAutoDetachSweep(signal?: AbortSignal): Promise<QrAutoDetachResultDto> {

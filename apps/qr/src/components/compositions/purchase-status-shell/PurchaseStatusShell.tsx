@@ -22,10 +22,12 @@ export type PurchaseStatusShellProps = {
   footerLabel?: string;
   /** R09b — centered Body link, no primary CTA (Figma 579:1699). */
   footerVariant?: PurchaseStatusFooterVariant;
-  /** R04b — secondary action above primary CTA (Figma hotspot 658:2079). */
+  /** Secondary text link with the primary CTA (R04b Enter manually, R10 invoice). */
   secondaryFooterLabel?: string;
   onSecondaryFooter?: () => void;
   secondaryFooterClassName?: string;
+  /** When true, render the secondary link above the primary CTA (same as skip on R06/R07). */
+  secondaryFooterAboveCta?: boolean;
   footerLoading?: boolean;
   footerDisabled?: boolean;
   hideFooter?: boolean;
@@ -50,6 +52,7 @@ export function PurchaseStatusShell({
   secondaryFooterLabel,
   onSecondaryFooter,
   secondaryFooterClassName,
+  secondaryFooterAboveCta = false,
   footerLoading = false,
   footerDisabled = false,
   hideFooter = false,
@@ -57,6 +60,17 @@ export function PurchaseStatusShell({
   celebration,
   shellClassName,
 }: PurchaseStatusShellProps) {
+  const secondaryFooter =
+    secondaryFooterLabel && onSecondaryFooter ? (
+      <button
+        type="button"
+        className={`ob-purchase-status-shell__secondary-link${secondaryFooterClassName ? ` ${secondaryFooterClassName}` : ''}`}
+        onClick={onSecondaryFooter}
+      >
+        {secondaryFooterLabel}
+      </button>
+    ) : null;
+
   return (
     <AlScreenBg
       variant="protected"
@@ -92,15 +106,7 @@ export function PurchaseStatusShell({
 
         {hideFooter ? null : (
           <footer className="ob-step-chrome__footer ob-purchase-status-shell__footer">
-            {secondaryFooterLabel && onSecondaryFooter ? (
-              <button
-                type="button"
-                className={`ob-purchase-status-shell__secondary-link${secondaryFooterClassName ? ` ${secondaryFooterClassName}` : ''}`}
-                onClick={onSecondaryFooter}
-              >
-                {secondaryFooterLabel}
-              </button>
-            ) : null}
+            {secondaryFooterAboveCta ? secondaryFooter : null}
             {footerVariant === 'text-link' ? (
               <button
                 type="button"
@@ -121,6 +127,7 @@ export function PurchaseStatusShell({
                 {footerLabel}
               </AlButton>
             )}
+            {secondaryFooterAboveCta ? null : secondaryFooter}
           </footer>
         )}
       </div>

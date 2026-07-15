@@ -15,22 +15,10 @@ export type QrStatus =
   | 'REPLACED_LOST'
   | 'RETIRED';
 
-export type QrChannel =
-  | 'B2C_RETAIL_ONLINE'
-  | 'B2C_RETAIL_OFFLINE'
-  | 'PARTNER_DISTRIBUTED'
-  | 'B2B2C_AUTHORISED'
-  | 'B2B_FLEET';
+/** Sales channel from GET /v1/qr/{code}/resolve (OpenAPI QrResolutionDto). */
+export type QrChannel = 'B2C' | 'B2B2C' | 'B2B';
 
-export type QrJourney = 'CONSUMER_SELF_PAY' | 'PARTNER_ATTACH' | 'PREPAID_REDEEM' | 'NONE';
-
-export type QrOfferedSku = {
-  skuCode: string;
-  offeredTiers: string[];
-  listPricePaise: number;
-  riderDefault: number;
-  prepaid: boolean;
-};
+export type QrJourney = 'CONSUMER_PREPAID' | 'PARTNER_ATTACH' | 'PREPAID_REDEEM' | 'NONE';
 
 export type QrPublicVehicle = {
   plate: string;
@@ -44,7 +32,6 @@ export type QrResolution = {
   qrStatus: QrStatus;
   channel: QrChannel;
   journey: QrJourney;
-  offeredSku: QrOfferedSku | null;
   vehicle: QrPublicVehicle | null;
 };
 

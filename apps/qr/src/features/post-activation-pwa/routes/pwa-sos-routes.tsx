@@ -443,6 +443,21 @@ export function PwaSosLocationUnavailableRoute() {
       visual={<AlIncidentStatusHero scene="location-unavailable" />}
       footer={
         <div className="pwa-scan-footer-stack">
+          <AlButton
+            variant="primary"
+            onClick={() => {
+              void navigate(pwaScanPaths.sosAllowLocation);
+            }}
+          >
+            Turn on location
+          </AlButton>
+          <PwaPermissionRecoveryActions
+            kind="location"
+            blocked
+            onRetry={() => {
+              void handleRetryLocation();
+            }}
+          />
           <button
             type="button"
             className="pwa-scan-footer-stack__link"
@@ -453,21 +468,6 @@ export function PwaSosLocationUnavailableRoute() {
           >
             Alert contacts only
           </button>
-          <PwaPermissionRecoveryActions
-            kind="location"
-            blocked
-            onRetry={() => {
-              void handleRetryLocation();
-            }}
-          />
-          <AlButton
-            variant="primary"
-            onClick={() => {
-              void navigate(pwaScanPaths.sosAllowLocation);
-            }}
-          >
-            Turn on location
-          </AlButton>
         </div>
       }
     />

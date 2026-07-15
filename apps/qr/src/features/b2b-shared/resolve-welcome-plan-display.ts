@@ -1,39 +1,23 @@
-import type { PurchasePlanId, PurchaseRiderCount } from '../qr-purchase/types-checkout';
-import { getPurchasePlanById } from '@/services/plan/plan-service';
-import {
-  B2B_INCLUDES_LABEL,
-  B2B_RIDER_ROW_LABEL,
-  B2B_SECURE_FEATURES,
-  B2B_SHIELD_FEATURES,
-} from './b2b-welcome-copy';
+import type { LandingEntitlement } from './types-landing';
+import { formatWelcomeRiderRowLabel } from './b2b-welcome-copy';
 
 export type WelcomePlanDisplay = {
   planName: string;
   priceDisplay?: string;
-  includesLabel: string;
+  includesLabel?: string;
   features: readonly string[];
   riderRowLabel?: string;
 };
 
-function fallbackFeatures(planId: PurchasePlanId): readonly string[] {
-  return planId === 'shield' || planId === 'shield-plus'
-    ? B2B_SHIELD_FEATURES
-    : B2B_SECURE_FEATURES;
-}
-
-export function resolveWelcomePlanDisplay(
-  planId: PurchasePlanId,
-  priceDisplay: string | undefined,
-  riderCount: PurchaseRiderCount,
-): WelcomePlanDisplay {
-  const plan = getPurchasePlanById(planId);
-  const showRider = riderCount > 0;
-
+/**
+ * Welcome card copy from GET /v1/activation/preview.
+ * Never invents features or includes labels when the API omitted them.
+ */
+export function resolveWelcomePlanDisplay(entitlement: LandingEntitlement): WelcomePlanDisplay {
   return {
-    planName: plan.name,
-    priceDisplay: priceDisplay || undefined,
-    includesLabel: plan.includesLabel ?? B2B_INCLUDES_LABEL,
-    features: plan.features.length > 0 ? plan.features : fallbackFeatures(planId),
-    riderRowLabel: showRider ? B2B_RIDER_ROW_LABEL : undefined,
+    planName: entitlement.planName.trim(),
+    priceDisplay: entitlement.priceDisplay || undefined,
+    features: entitlement.features,
+    riderRowLabel: formatWelcomeRiderRowLabel(entitlement.riderCount),
   };
 }

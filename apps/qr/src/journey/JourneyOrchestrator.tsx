@@ -9,7 +9,7 @@ import { ScanRoutes } from '../features/post-activation-pwa/routes/ScanRoutes';
 import { PwaAppShell } from '../pwa/index';
 import { JourneyRoutes } from './routes/JourneyRoutes';
 import { JourneyRouteTracker } from './resume/JourneyRouteTracker';
-import { PreserveSearchRedirect } from './guards/PreserveSearchRedirect';
+import { LegacyPwaScanRedirect } from './guards/LegacyPwaScanRedirect';
 import { ROUTE_NAMESPACE } from './routing/journey-url-routing';
 
 import './journey.css';
@@ -27,10 +27,7 @@ export function JourneyOrchestrator() {
             <PwaAppShell>
               <Routes>
                 <Route path={`${ROUTE_NAMESPACE.scan}/:qrCode/*`} element={<ScanRoutes />} />
-                <Route
-                  path="/pwa/scan/*"
-                  element={<PreserveSearchRedirect to={ROUTE_NAMESPACE.scan} />}
-                />
+                <Route path="/pwa/scan/*" element={<LegacyPwaScanRedirect />} />
                 <Route path="*" element={<JourneyRoutes />} />
               </Routes>
             </PwaAppShell>

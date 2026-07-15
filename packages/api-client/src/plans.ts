@@ -18,13 +18,15 @@ export type PlanOptionDto = {
   /** Plan-version id — pass to POST /v1/cart as planId. */
   id: string;
   tier: ApiPlanTier;
-  version: string;
+  version: number;
   name: string;
   pricePaise: number;
   period: PlanPeriod;
   riderEligible: boolean;
-  /** Emergency-contact allowance for the tier (SAFE 1, else 3) — server-driven; render "add up to N". */
-  emergencyCount: number;
+  /** Included / entitled rider slots for this tier. */
+  riderCount?: number;
+  /** Max emergency contacts for this tier. */
+  emergencyCount?: number;
   features: string[];
   badge: string | null;
   includesLabel: string | null;
@@ -35,6 +37,8 @@ export type ListPlansParams = {
   tier?: ApiPlanTier;
   /** Purchase QR sticker code — scopes plan catalog to the scanned QR. */
   code?: string;
+  /** Optional SKU shelf filter (OpenAPI `sku` query). */
+  sku?: string;
 };
 
 /** GET /v1/plans — list currently-effective plans (one per tier). */
@@ -49,6 +53,10 @@ export async function listPlans(
   const code = params?.code?.trim();
   if (code) {
     search.set('code', code);
+  }
+  const sku = params?.sku?.trim();
+  if (sku) {
+    search.set('sku', sku);
   }
   const query = search.toString() ? `?${search.toString()}` : '';
   const response = await client.get<unknown>(`${endpoints.plans.list}${query}`);

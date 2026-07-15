@@ -45,8 +45,6 @@ export type FlowStepShellProps = {
   onContinue?: () => void;
   footerSecondaryLabel?: string;
   onFooterSecondary?: () => void;
-  /** Figma E0/R0 — secondary link above primary CTA (373:37). */
-  footerSecondaryFirst?: boolean;
   children: ReactNode;
 };
 
@@ -93,7 +91,6 @@ export function FlowStepShell({
   onContinue,
   footerSecondaryLabel,
   onFooterSecondary,
-  footerSecondaryFirst = false,
   children,
 }: FlowStepShellProps) {
   const { stepTotal, progressLabel, shellClassName } = phaseConfig[phase];
@@ -175,9 +172,7 @@ export function FlowStepShell({
         </div>
 
         {hideFooter ? null : (
-          <footer
-            className={`ob-step-chrome__footer ob-shell__footer${footerSecondaryFirst ? ' ob-shell__footer--secondary-first' : ''}`}
-          >
+          <footer className="ob-step-chrome__footer ob-shell__footer">
             {footerHelperText ? (
               <p
                 className={`ob-shell__footer-helper ob-shell__footer-helper--${footerHelperTone}`}
@@ -185,15 +180,6 @@ export function FlowStepShell({
               >
                 {footerHelperText}
               </p>
-            ) : null}
-            {footerSecondaryFirst && footerSecondaryLabel && onFooterSecondary ? (
-              <button
-                type="button"
-                className="ob-shell__footer-secondary-link"
-                onClick={onFooterSecondary}
-              >
-                {footerSecondaryLabel}
-              </button>
             ) : null}
             <AlButton
               variant="primary"
@@ -204,7 +190,7 @@ export function FlowStepShell({
             >
               {footerLabel}
             </AlButton>
-            {!footerSecondaryFirst && footerSecondaryLabel && onFooterSecondary ? (
+            {footerSecondaryLabel && onFooterSecondary ? (
               <button
                 type="button"
                 className="ob-shell__footer-secondary-link"

@@ -43,22 +43,29 @@ function messageFromNormalizedCode(code: string): string | null {
   }
 }
 
+/** Prefer the endpoint's human-readable message; only map codes when the body is empty/technical. */
 function pickReadableMessage(message: string, code?: string | null): string {
   const trimmed = message.trim();
   if (!trimmed) {
-    return DEFAULT_FALLBACK;
-  }
-
-  const fromCode = messageForApiCode(code);
-  if (fromCode) {
-    return fromCode;
+    return messageForApiCode(code) ?? DEFAULT_FALLBACK;
   }
 
   if (isTechnicalErrorCode(trimmed)) {
-    return messageForApiCode(trimmed) ?? 'Something went wrong while processing your request.';
+    return (
+      messageForApiCode(trimmed) ??
+      messageForApiCode(code) ??
+      'Something went wrong while processing your request.'
+    );
   }
 
   return trimmed;
+}
+
+function resolveFromDomain(domain: DomainError): string | null {
+  if (domain.message?.trim()) {
+    return pickReadableMessage(domain.message, domain.code);
+  }
+  return messageForApiCode(domain.code);
 }
 
 /** Resolve a user-facing message from any thrown value or mapped domain error. */
@@ -72,26 +79,24 @@ export function resolveUserFacingMessage(
 
   const domain = readDomainError(error);
   if (domain) {
-    const fromCode = messageForApiCode(domain.code);
-    if (fromCode) {
-      return fromCode;
-    }
-    if (domain.message?.trim()) {
-      return pickReadableMessage(domain.message, domain.code);
+    const resolved = resolveFromDomain(domain);
+    if (resolved) {
+      return resolved;
     }
   }
 
   if (error instanceof ApiError) {
-    const fromCode = messageForApiCode(error.code);
-    if (fromCode) {
-      return fromCode;
-    }
-    if (error.message.trim()) {
-      return pickReadableMessage(error.message, error.code);
+    const resolved = resolveFromDomain({ code: error.code ?? undefined, message: error.message });
+    if (resolved) {
+      return resolved;
     }
   }
 
   const normalized = normalizeApiError(error);
+  if (normalized.message.trim() && !isTechnicalErrorCode(normalized.message)) {
+    return pickReadableMessage(normalized.message, null);
+  }
+
   const fromNormalizedCode = messageFromNormalizedCode(normalized.code);
   if (fromNormalizedCode) {
     return fromNormalizedCode;

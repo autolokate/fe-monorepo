@@ -4,8 +4,11 @@ import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
 import { resolvePurchaseQrCode } from '@/platform/qr/resolve-purchase-qr-code';
 import { saveQrCode } from '@/storage/index';
 
-import { buildAuthPaths } from '../routing/journey-url-routing';
-import { buildB2b2cPaths, buildPrepaidPaths } from '../routing/journey-url-routing';
+import {
+  buildB2b2cPaths,
+  buildPrepaidPaths,
+  buildPurchasePaths,
+} from '../routing/journey-url-routing';
 import type { ActivationFlowId, JourneyPhase, JourneySession } from '../types';
 
 export type SelectActivationFlowDeps = {
@@ -46,9 +49,9 @@ export function selectActivationFlow(
 
   if (flow === 'purchase') {
     updateSession?.(resetPurchaseCheckoutSession());
-    setPhase('shared-auth');
+    setPhase('flow-select');
     if (journeyId) {
-      void navigate(buildAuthPaths(journeyId).mobile);
+      void navigate(buildPurchasePaths(journeyId).welcome);
     }
     return;
   }

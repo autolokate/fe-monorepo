@@ -3,10 +3,7 @@ import type { NavigateFunction } from 'react-router-dom';
 import type { PwaScanSession } from '@/features/post-activation-pwa/context/pwa-scan-types';
 import type { QrResolution } from '@autolokate/api-client';
 
-import {
-  resetPurchaseCheckoutSession,
-  selectActivationFlow,
-} from '@/journey/navigation/select-activation-flow';
+import { resetPurchaseCheckoutSession } from '@/journey/navigation/select-activation-flow';
 import type { ActivationFlowId, JourneyPhase, JourneySession } from '@/journey/types';
 import { dispatchQrPayload, type QrDispatchDeps } from '@/platform/qr/dispatch-qr-payload';
 import { extractQrCodeParam } from '@/platform/qr/parse-qr-url';
@@ -27,15 +24,33 @@ import {
 import { saveQrCode } from '@/storage/index';
 
 import { mapResolutionToPayload } from './qr-mapper';
-import { resolveQrCode } from './qr-service';
+import { commitResolvedQr, resolveQrCode } from './qr-service';
 import { seedAttachedPurchaseFromResolve } from './seed-attached-purchase-from-resolve';
 import {
   loadPartnerActivationPreviewAtEntry,
+  loadPurchaseActivationPreviewAtEntry,
   seedPartnerActivationContext,
 } from '@/services/activation/activation-service';
 import { resolveB2bEntitlementCodeFromQrCode } from '@/services/activation/activation-mapper';
+import { buildPurchasePaths } from '@/journey/routing/journey-url-routing';
+import { applyLandingEntitlementToSession } from '@/features/b2b-shared/apply-landing-entitlement';
 
 export type QrJourneyEntryPoint = 'auth-mobile' | 'scanner';
+
+export type QrJourneyEntryOptions = {
+  entryPoint?: QrJourneyEntryPoint;
+  /**
+   * Signed-in `/q` re-entry: still call resolve, but do not wipe session.
+   * Only ACTIVATED starts a new journey; other statuses leave routing to the caller.
+   */
+  preserveSession?: boolean;
+  /**
+   * Always hit GET /resolve (skip session/memory peek). Used for `/q/:code` deep links.
+   */
+  forceNetwork?: boolean;
+};
+
+export type QrJourneyEntryOutcome = 'activated' | 'purchase' | 'partner' | 'unchanged';
 
 export type QrJourneyEntryDeps = {
   setSelectedFlow: (flow: ActivationFlowId) => void;
@@ -48,7 +63,13 @@ export type QrJourneyEntryDeps = {
 };
 
 export type QrJourneyEntryResult =
-  | { ok: true; qrCode: string; purchaseSkipsVehicle: boolean; staysOnAuthScreen: boolean }
+  | {
+      ok: true;
+      qrCode: string;
+      purchaseSkipsVehicle: boolean;
+      staysOnAuthScreen: boolean;
+      outcome: QrJourneyEntryOutcome;
+    }
   | { ok: false; error: QrDispatchError };
 
 function dispatchDeps(deps: QrJourneyEntryDeps): QrDispatchDeps {
@@ -65,24 +86,35 @@ function shouldSkipFromResolution(resolution: QrResolution): boolean {
   return isAttachedQrLifecycleStatus(resolution.qrStatus);
 }
 
-function beginPurchaseJourney(
+async function beginPurchaseJourney(
   code: string,
   deps: QrJourneyEntryDeps,
-  entryPoint: QrJourneyEntryPoint,
   resolution: QrResolution,
-): void {
+): Promise<void> {
   if (shouldSkipFromResolution(resolution)) {
     seedAttachedPurchaseFromResolve(code, resolution);
   }
 
-  if (entryPoint === 'auth-mobile') {
-    deps.setSelectedFlow('purchase');
-    deps.setPhase('shared-auth');
-    deps.updateSession?.(resetPurchaseCheckoutSession());
-    return;
-  }
+  const previewResult = await loadPurchaseActivationPreviewAtEntry(code);
+  const entitlementPatch = previewResult.ok
+    ? {
+        purchase: {
+          ...resetPurchaseCheckoutSession().purchase,
+          entitlement: previewResult.entitlement,
+          selectedPlanId: previewResult.entitlement.planId,
+          riderCount: previewResult.entitlement.riderCount,
+        },
+        ...applyLandingEntitlementToSession(previewResult.entitlement),
+      }
+    : resetPurchaseCheckoutSession();
 
-  selectActivationFlow('purchase', deps);
+  deps.setSelectedFlow('purchase');
+  deps.updateSession?.(entitlementPatch);
+
+  // Preview welcome is required before login (same pattern as B2B/B2B2C).
+  // Signed-in users are bounced from welcome → plans by PurchaseWelcomeRoute.
+  deps.setPhase('flow-select');
+  void deps.navigate(buildPurchasePaths(code).welcome);
 }
 
 async function beginPartnerActivationJourney(
@@ -95,10 +127,7 @@ async function beginPartnerActivationJourney(
     return;
   }
 
-  const entitlementCode =
-    partnerKind === 'b2b'
-      ? resolveB2bEntitlementCodeFromQrCode(code, resolution.offeredSku?.skuCode)
-      : null;
+  const entitlementCode = partnerKind === 'b2b' ? resolveB2bEntitlementCodeFromQrCode(code) : null;
   seedPartnerActivationContext({
     qrCode: code,
     entitlementCode,
@@ -145,7 +174,7 @@ async function beginPartnerActivationJourney(
 export async function enterJourneyFromQrCode(
   code: string,
   deps: QrJourneyEntryDeps,
-  options?: { entryPoint?: QrJourneyEntryPoint },
+  options?: QrJourneyEntryOptions,
 ): Promise<QrJourneyEntryResult> {
   const trimmed = code.trim();
   if (!trimmed) {
@@ -155,11 +184,20 @@ export async function enterJourneyFromQrCode(
     };
   }
 
-  const entryPoint = options?.entryPoint ?? 'auth-mobile';
-  deps.resetForNewQrEntry?.();
-  saveQrCode(trimmed);
+  const preserveSession = options?.preserveSession === true;
 
-  const result = await resolveQrCode(trimmed);
+  if (!preserveSession) {
+    deps.resetForNewQrEntry?.();
+    saveQrCode(trimmed);
+  }
+
+  // Signed-in `/q` re-entry: resolve without overwriting the active purchase QR
+  // until ACTIVATED commits a new journey. forceNetwork only when the caller asks
+  // (deep link) — auth re-entry must reuse cache or it will loop forever.
+  const result = await resolveQrCode(trimmed, {
+    commit: !preserveSession,
+    forceNetwork: options?.forceNetwork === true,
+  });
   if (!result.ok) {
     return { ok: false, error: result.error };
   }
@@ -170,8 +208,18 @@ export async function enterJourneyFromQrCode(
   if (journeyTarget === PARTNER_JOURNEY_TARGET.POST_ACTIVATION) {
     const payload = mapResolutionToPayload(trimmed, resolution);
     if (payload?.type === 'activated') {
+      if (preserveSession) {
+        deps.resetForNewQrEntry?.();
+        commitResolvedQr(trimmed, resolution);
+      }
       dispatchQrPayload(payload, dispatchDeps(deps));
-      return { ok: true, qrCode: trimmed, purchaseSkipsVehicle: false, staysOnAuthScreen: false };
+      return {
+        ok: true,
+        qrCode: trimmed,
+        purchaseSkipsVehicle: false,
+        staysOnAuthScreen: false,
+        outcome: 'activated',
+      };
     }
   }
 
@@ -182,6 +230,17 @@ export async function enterJourneyFromQrCode(
         code: 'invalid',
         message: 'This QR code is already activated but vehicle details are unavailable.',
       },
+    };
+  }
+
+  // Signed-in `/q` re-scan of a non-activated code: keep current journey UI.
+  if (preserveSession) {
+    return {
+      ok: true,
+      qrCode: trimmed,
+      purchaseSkipsVehicle: isAttachedQrLifecycleStatus(resolution.qrStatus),
+      staysOnAuthScreen: false,
+      outcome: 'unchanged',
     };
   }
 
@@ -199,12 +258,13 @@ export async function enterJourneyFromQrCode(
       };
     }
 
-    beginPurchaseJourney(trimmed, deps, entryPoint, resolution);
+    await beginPurchaseJourney(trimmed, deps, resolution);
     return {
       ok: true,
       qrCode: trimmed,
       purchaseSkipsVehicle: isAttachedQrLifecycleStatus(resolution.qrStatus),
-      staysOnAuthScreen: entryPoint === 'auth-mobile',
+      staysOnAuthScreen: false,
+      outcome: 'purchase',
     };
   }
 
@@ -213,7 +273,13 @@ export async function enterJourneyFromQrCode(
     journeyTarget === PARTNER_JOURNEY_TARGET.PARTNER_B2B
   ) {
     await beginPartnerActivationJourney(trimmed, resolution, deps);
-    return { ok: true, qrCode: trimmed, purchaseSkipsVehicle: false, staysOnAuthScreen: false };
+    return {
+      ok: true,
+      qrCode: trimmed,
+      purchaseSkipsVehicle: false,
+      staysOnAuthScreen: false,
+      outcome: 'partner',
+    };
   }
 
   return {
@@ -229,7 +295,7 @@ export async function enterJourneyFromQrCode(
 export async function enterJourneyFromQrSearchParams(
   searchParams: URLSearchParams,
   deps: QrJourneyEntryDeps,
-  options?: { entryPoint?: QrJourneyEntryPoint },
+  options?: QrJourneyEntryOptions,
 ): Promise<QrJourneyEntryResult | { ok: false; error: QrDispatchError }> {
   const code = extractQrCodeParam(searchParams);
   if (!code) {

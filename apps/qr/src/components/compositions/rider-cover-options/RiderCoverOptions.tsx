@@ -33,7 +33,7 @@ export function mapRiderOptionsToView(
   }));
 }
 
-/** Figma R07 layout — option cards driven by GET /v1/plans riderOptions. */
+/** Figma R07 layout — option cards driven by GET /v1/activation/plans riderOptions. */
 export function RiderCoverOptions({ options, selectedCount, onSelect }: RiderCoverOptionsProps) {
   return (
     <div className="ob-rider-cover-options" role="radiogroup" aria-label="Rider cover options">
@@ -69,7 +69,7 @@ export function RiderCoverOptions({ options, selectedCount, onSelect }: RiderCov
                 <span className="ob-rider-cover-option__title">{option.label}</span>
                 <span className="ob-rider-cover-option__discount">{option.discountLabel}</span>
               </div>
-              <span className="ob-rider-cover-option__subtitle">₹1L cover for each rider</span>
+              <span className="ob-rider-cover-option__subtitle">Cover for each rider</span>
             </div>
             <div className="ob-rider-cover-option__price-col">
               <span className="ob-rider-cover-option__price">{option.priceLabel}</span>

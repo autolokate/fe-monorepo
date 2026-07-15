@@ -1,4 +1,7 @@
-import { shouldEnterRiderPrompt } from '../features/emergency/emergency-limits';
+import {
+  shouldEnterEmergencyContacts,
+  shouldEnterRiderPrompt,
+} from '../features/emergency/emergency-limits';
 
 import { buildAuthPaths } from './auth/auth-routing';
 import { journeyPaths } from './constants';
@@ -38,9 +41,9 @@ export function activationEntryByFlow(
   const b2b2c = buildB2b2cPaths(journeyId);
   return {
     purchase: {
-      stepId: 'purchase.vehicle-number',
-      path: purchase.vehicleDetails,
-      label: 'Vehicle number · Purchase activation entry',
+      stepId: 'purchase.welcome',
+      path: purchase.welcome,
+      label: 'Purchase welcome · Activation preview',
     },
     prepaid: {
       stepId: 'prepaid.welcome',
@@ -97,7 +100,7 @@ export function getPostAuthActivationPath(
   const resolvedSession = typeof journeyIdOrSession === 'object' ? journeyIdOrSession : session;
 
   if (!flow) {
-    return purchaseJourneyPathsFor(journeyId).vehicleDetails;
+    return purchaseJourneyPathsFor(journeyId).choosePlan;
   }
 
   if (flow === 'purchase') {
@@ -111,16 +114,32 @@ export function getActivationEntry(flow: ActivationFlowId, journeyId: string): A
   return activationEntryByFlow(journeyId)[flow];
 }
 
-export function getPurchasePostPaymentEmergencyPath(journeyId?: string): string {
+/** @deprecated Prefer getEmergencyHandoffPath — post-pay must still honor rider entitlement. */
+export function getPurchasePostPaymentEmergencyPath(
+  journeyId?: string,
+  session?: Pick<JourneySession, 'purchase' | 'emergency'>,
+  selectedFlow?: ActivationFlowId | null,
+): string {
+  if (session) {
+    return getEmergencyHandoffPath(session, selectedFlow, journeyId);
+  }
   const id =
     journeyId?.trim() ||
     (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null) ||
     '_';
-  return buildEmergencyPaths(id).contactsEmpty;
+  return buildEmergencyPaths(id).riderPrompt;
 }
 
+/**
+ * Post-pay / post-attach destination:
+ * 1) Rider screens when entitled and not skipped
+ * 2) Emergency contacts when selected plan emergencyCount > 0 (min 1 required in UI)
+ * 3) Completed otherwise
+ *
+ * Skipping riders must NOT skip emergency contacts.
+ */
 export function getEmergencyHandoffPath(
-  session?: Pick<JourneySession, 'purchase'>,
+  session?: Pick<JourneySession, 'purchase' | 'emergency'>,
   selectedFlow?: ActivationFlowId | null,
   journeyId?: string,
 ): string {
@@ -129,12 +148,20 @@ export function getEmergencyHandoffPath(
     (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null);
   const paths = id ? buildEmergencyPaths(id) : null;
   const context = resolveEmergencyFoundationContext(session ?? {}, selectedFlow);
+  const riderSkipped = Boolean(session?.emergency?.riderSkipped);
 
-  if (!shouldEnterRiderPrompt(context.planId, context.riderCount, context.flowKind)) {
+  if (
+    !riderSkipped &&
+    shouldEnterRiderPrompt(context.planId, context.riderCount, context.flowKind)
+  ) {
+    return paths?.riderPrompt ?? `${journeyPaths.emergency}/rider-prompt`;
+  }
+
+  if (shouldEnterEmergencyContacts(context.planId)) {
     return paths?.contactsEmpty ?? `${journeyPaths.emergency}/contacts-empty`;
   }
 
-  return paths?.riderPrompt ?? `${journeyPaths.emergency}/rider-prompt`;
+  return getCompletedPath();
 }
 
 export function getAuthFlowBackPath(flow: ActivationFlowId | null, journeyId?: string): string {
@@ -148,6 +175,10 @@ export function getAuthFlowBackPath(flow: ActivationFlowId | null, journeyId?: s
 
   if (flow === 'b2b2c') {
     return buildB2b2cPaths(id).welcome;
+  }
+
+  if (flow === 'purchase') {
+    return purchaseJourneyPathsFor(id).welcome;
   }
 
   return buildQrEntryPath(id);
@@ -178,9 +209,6 @@ export function getEmergencyFlowBackPath(
   }
 
   if (flow === 'b2b2c') {
-    // resolvedSession, not `session`: every caller passes the session as the SECOND arg
-    // (journeyIdOrSession), so `session` (the 3rd arg) is undefined and riderCount was always 0 —
-    // the back-path never reached welcomePlanRider even with riders. resolvedSession normalizes both.
     const riderCount = resolvedSession?.purchase?.riderCount ?? 0;
     const b2b2c = buildB2b2cPaths(journeyId);
     return riderCount > 0 ? b2b2c.welcomePlanRider : b2b2c.welcome;

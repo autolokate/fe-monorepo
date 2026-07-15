@@ -10,7 +10,6 @@ export {
   getActivationEntryPath,
   getCompletedPath,
   getEmergencyHandoffPath,
-  getPurchasePostPaymentEmergencyPath,
 } from './activation-routing';
 export {
   getNextPurchasePath,
@@ -19,6 +18,7 @@ export {
   purchaseVehicleConfirmationPath,
   purchaseVehicleLookupPath,
 } from './purchase/purchase-routing';
+export { purchaseJourneyPaths } from './purchase/purchase-paths-runtime';
 export { resolvePurchaseEntryPath } from './state/purchase-journey-state-machine';
 export type {
   ActivationFlowId,
