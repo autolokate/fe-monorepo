@@ -66,9 +66,9 @@ type PendingQrAction = 'replace' | 'retire';
 
 function resolveListContext(pathname: string): { listPath: string; listLabel: string } {
   if (pathname.startsWith(adminPaths.inventory)) {
-    return { listPath: adminPaths.inventory, listLabel: 'QR Inventory' };
+    return { listPath: adminPaths.inventory, listLabel: 'Stock' };
   }
-  return { listPath: adminPaths.qrBatches, listLabel: 'QR Batch Management' };
+  return { listPath: adminPaths.qrBatches, listLabel: 'Batches' };
 }
 
 export function BatchManagementDetailPage() {

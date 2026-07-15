@@ -53,7 +53,7 @@ export function ShipmentsPage() {
     <RequirePermission permission="shipments:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Shipments"
+          title="Deliveries"
           description={pageDescription}
           actions={
             <AlPageHeaderAction

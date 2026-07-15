@@ -82,7 +82,7 @@ export function PromoManagementPage() {
     <RequirePermission permission="promo:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Promo Management"
+          title="Promos"
           description={pageDescription}
           actions={
             <>

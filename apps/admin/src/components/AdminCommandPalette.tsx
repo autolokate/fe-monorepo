@@ -2,26 +2,7 @@ import { Command } from 'cmdk';
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { adminPaths, adminRoutes } from '@/app/routes/admin-paths';
-
-const COMMAND_GROUPS = [
-  {
-    heading: 'Overview',
-    paths: [adminPaths.dashboard],
-  },
-  {
-    heading: 'Operations',
-    paths: [adminPaths.inventory, adminPaths.qrBatches, adminPaths.catalog, adminPaths.promos],
-  },
-  {
-    heading: 'Compliance',
-    paths: [adminPaths.auditEvents],
-  },
-  {
-    heading: 'Finance',
-    paths: [adminPaths.finance, adminPaths.ownershipTransfers],
-  },
-] as const;
+import { adminNavSections } from '@/app/routes/admin-paths';
 
 export type AdminCommandPaletteProps = {
   open: boolean;
@@ -31,7 +12,6 @@ export type AdminCommandPaletteProps = {
 /** cmdk command palette with Autolokate admin styling. */
 export function AdminCommandPalette({ open, onOpenChange }: AdminCommandPaletteProps) {
   const navigate = useNavigate();
-  const routesByPath = new Map(adminRoutes.map((route) => [route.path, route]));
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Move focus into the palette input when it opens (dialog focus management),
@@ -85,30 +65,24 @@ export function AdminCommandPalette({ open, onOpenChange }: AdminCommandPaletteP
         />
         <Command.List className="admin-command-palette__list">
           <Command.Empty className="admin-command-palette__empty">No results found.</Command.Empty>
-          {COMMAND_GROUPS.map((group) => (
-            <Command.Group key={group.heading} heading={group.heading}>
-              {group.paths.map((path) => {
-                const route = routesByPath.get(path);
-                if (!route) {
-                  return null;
-                }
-                return (
-                  <Command.Item
-                    key={route.path}
-                    value={`${route.label} ${route.description ?? ''}`}
-                    className="admin-command-palette__item al-admin-focus-ring"
-                    onSelect={() => {
-                      void navigate(route.path);
-                      onOpenChange(false);
-                    }}
-                  >
-                    <span className="admin-command-palette__item-label">{route.label}</span>
-                    {route.description ? (
-                      <span className="admin-command-palette__item-desc">{route.description}</span>
-                    ) : null}
-                  </Command.Item>
-                );
-              })}
+          {adminNavSections().map((section) => (
+            <Command.Group key={section.id} heading={section.label}>
+              {section.items.map((route) => (
+                <Command.Item
+                  key={route.path}
+                  value={`${route.label} ${route.description ?? ''}`}
+                  className="admin-command-palette__item al-admin-focus-ring"
+                  onSelect={() => {
+                    void navigate(route.path);
+                    onOpenChange(false);
+                  }}
+                >
+                  <span className="admin-command-palette__item-label">{route.label}</span>
+                  {route.description ? (
+                    <span className="admin-command-palette__item-desc">{route.description}</span>
+                  ) : null}
+                </Command.Item>
+              ))}
             </Command.Group>
           ))}
         </Command.List>

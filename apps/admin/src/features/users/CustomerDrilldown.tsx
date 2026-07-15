@@ -48,7 +48,7 @@ function AccountSubscriptionsSection({ accountId }: { accountId: string }) {
   return (
     <AlStack gap="xs">
       <AlText variant="caption" tone="muted">
-        Subscriptions
+        Coverage
       </AlText>
       {userErrorMessage && subscriptions.length === 0 ? (
         <AlErrorState message={userErrorMessage} onRetry={refresh} />

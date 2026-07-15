@@ -31,7 +31,7 @@ export function SubscriptionsPage() {
 
   const pageDescription = useMemo(() => {
     if (isLoading) {
-      return 'Browse customer subscriptions and their lifecycle status.';
+      return 'Active protection per vehicle.';
     }
     return buildPageSummary([`${subscriptions.length.toLocaleString()} subscriptions loaded`]);
   }, [isLoading, subscriptions.length]);
@@ -53,7 +53,7 @@ export function SubscriptionsPage() {
     <RequirePermission permission="subscriptions:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Subscriptions"
+          title="Coverage"
           description={pageDescription}
           actions={
             <AlPageHeaderAction

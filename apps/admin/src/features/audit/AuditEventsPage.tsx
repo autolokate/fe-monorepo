@@ -104,7 +104,7 @@ export function AuditEventsPage() {
     <RequirePermission permission="audit:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Audit Events"
+          title="Activity Log"
           description={pageDescription}
           actions={
             <AlPageHeaderAction

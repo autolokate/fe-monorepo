@@ -80,8 +80,8 @@ export function UsersPage() {
     <RequirePermission permission="users:read">
       <AlStack gap="md">
         <AlPageHeader
-          title="Users & Roles"
-          description="Find an account by its verified phone number and grant or revoke the ADMIN role. Every change is written to the audit log."
+          title="Customers"
+          description="Find a customer by their verified phone number to see their orders and coverage — and manage account access. Every change is written to the audit log."
         />
 
         <section className="admin-user-lookup" aria-label="Find an account">

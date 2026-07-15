@@ -61,7 +61,7 @@ export function SupportTicketsPage() {
     <RequirePermission permission="support:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Support Tickets"
+          title="Tickets"
           description={pageDescription}
           actions={
             <AlPageHeaderAction

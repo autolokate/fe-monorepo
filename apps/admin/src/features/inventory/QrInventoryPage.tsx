@@ -111,7 +111,7 @@ export function QrInventoryPage() {
     <RequirePermission permission="inventory:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="QR Inventory"
+          title="Stock"
           description={pageDescription}
           actions={
             <>

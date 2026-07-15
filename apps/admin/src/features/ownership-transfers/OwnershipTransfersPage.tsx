@@ -23,7 +23,7 @@ export function OwnershipTransfersPage() {
     <RequirePermission permission="inventory:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Ownership Transfers"
+          title="Ownership"
           description="Initiate and approve vehicle ownership transfers."
           actions={
             canWrite ? (
