@@ -23,6 +23,8 @@ export type PlanOptionDto = {
   pricePaise: number;
   period: PlanPeriod;
   riderEligible: boolean;
+  /** Emergency-contact allowance for the tier (SAFE 1, else 3) — server-driven; render "add up to N". */
+  emergencyCount: number;
   features: string[];
   badge: string | null;
   includesLabel: string | null;
