@@ -371,6 +371,84 @@ export type QrBatchCodesPageResult = {
   correlationId: string | null;
 };
 
+/** OpenAPI `AdminOrderSummary.status` / `AdminOrderDetail.status` — the order lifecycle. */
+export type AdminOrderStatus = 'DRAFT' | 'PENDING_PAYMENT' | 'PAID' | 'FAILED' | 'CANCELLED';
+
+/** OpenAPI `AdminOrderSummary.orderKind` — how the order was raised. */
+export type AdminOrderKind = 'SCAN_SELF_PAY' | 'RETAIL_SHIP' | 'UPGRADE' | 'RENEWAL';
+
+/** OpenAPI `AdminOrderDetail.paymentOutcome` — the settled result of the order's payment. */
+export type AdminPaymentOutcome = 'PAID' | 'FAILED' | 'UNCONFIRMED' | 'PENDING' | 'REFUNDED';
+
+/** Fulfillment projection carried by both the order summary and detail (null when nothing ships). */
+export type AdminOrderFulfillment = {
+  status: string;
+  courier: string | null;
+  awbNo: string | null;
+  trackingUrl: string | null;
+  deliveredAt: string | null;
+};
+
+/** OpenAPI `AdminOrderSummary` — one row in the admin orders list. */
+export type AdminOrderSummary = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  orderKind: AdminOrderKind;
+  status: AdminOrderStatus;
+  planName: string;
+  planVersion: number;
+  riderCount: number;
+  totalPaise: number;
+  createdAt: string;
+  fulfillment: AdminOrderFulfillment | null;
+};
+
+/** OpenAPI `AdminOrderDetail` — a single order with its money breakdown and partner attribution. */
+export type AdminOrderDetail = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  orderKind: AdminOrderKind;
+  qrCodeId: string | null;
+  planId: string;
+  planName: string;
+  planVersion: number;
+  riderCount: number;
+  subtotalPaise: number;
+  gstPaise: number;
+  discountPaise: number;
+  totalPaise: number;
+  promoCodeId: string | null;
+  status: AdminOrderStatus;
+  paymentOutcome: AdminPaymentOutcome | null;
+  partnerOrgId: string | null;
+  partnerStaffId: string | null;
+  partnerLocationId: string | null;
+  attachEventId: string | null;
+  createdAt: string;
+  fulfillment: AdminOrderFulfillment | null;
+};
+
+/** Query for `GET /admin/v1/orders` — every field optional. */
+export type ListAdminOrdersQuery = {
+  status?: AdminOrderStatus;
+  kind?: AdminOrderKind;
+  accountId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated orders response with envelope pagination meta. */
+export type AdminOrdersPageResult = {
+  items: AdminOrderSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
 function buildQuery(params: Record<string, string | number | undefined>): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
@@ -759,6 +837,52 @@ export async function queryAuditEventsPage(
     requestId: meta?.requestId ?? null,
     correlationId: meta?.correlationId ?? null,
   };
+}
+
+/** GET /admin/v1/orders — includes pagination meta from the envelope. */
+export async function listAdminOrdersPage(
+  client: ApiClient,
+  query: ListAdminOrdersQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminOrdersPageResult> {
+  const path = `${endpoints.admin.adminOrders}${buildQuery({
+    status: query.status,
+    kind: query.kind,
+    accountId: query.accountId,
+    from: query.from,
+    to: query.to,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminOrderSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/orders/{orderId} */
+export async function getAdminOrder(
+  client: ApiClient,
+  orderId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminOrderDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminOrder(orderId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminOrderDetail;
 }
 
 /** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */

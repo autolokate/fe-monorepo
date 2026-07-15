@@ -89,6 +89,8 @@ export const endpoints = {
       `/admin/v1/ownership-transfers/${encodeURIComponent(id)}/approve`,
     fulfilPartnerReorder: (id: string) =>
       `/admin/v1/partner-reorders/${encodeURIComponent(id)}/fulfil`,
+    adminOrders: '/admin/v1/orders',
+    adminOrder: (id: string) => `/admin/v1/orders/${encodeURIComponent(id)}`,
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',

@@ -192,6 +192,42 @@
   color: var(--al-signal-red-bright);
 }
 
+/* —— Orders (AdminOrderSummary.status) —— */
+
+.admin-entity-status-badge--order-DRAFT {
+  background: var(--al-color-surface-elevated);
+  color: var(--al-color-text-muted);
+  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+}
+
+.admin-entity-status-badge--order-PENDING_PAYMENT {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--order-PAID {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
+.admin-entity-status-badge--order-FAILED {
+  background: color-mix(in srgb, var(--al-signal-red) 12%, var(--al-color-surface));
+  color: var(--al-signal-red);
+}
+
+.admin-entity-status-badge--order-CANCELLED {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--order-FAILED {
+  color: var(--al-signal-red-bright);
+}
+
+[data-theme='dark'] .admin-entity-status-badge--order-CANCELLED {
+  color: #94a3b8;
+}
+
 /* —— Audit events (AuditEventDto.action) —— */
 
 .admin-entity-status-badge--audit {

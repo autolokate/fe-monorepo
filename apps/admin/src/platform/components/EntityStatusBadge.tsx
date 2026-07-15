@@ -1,4 +1,9 @@
-import type { AuditAction, QrBatchStatus, QrCodeStatus } from '@autolokate/api-client';
+import type {
+  AdminOrderStatus,
+  AuditAction,
+  QrBatchStatus,
+  QrCodeStatus,
+} from '@autolokate/api-client';
 
 import '../../styles/entity-status-badges.css';
 
@@ -23,6 +28,12 @@ export function QrCodeStatusBadge({ status }: { status: QrCodeStatus }) {
 export function BatchStatusBadge({ status }: { status: QrBatchStatus }) {
   return (
     <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--batch-${status}`} />
+  );
+}
+
+export function OrderStatusBadge({ status }: { status: AdminOrderStatus }) {
+  return (
+    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--order-${status}`} />
   );
 }
 

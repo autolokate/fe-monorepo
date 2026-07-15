@@ -6,6 +6,7 @@ export const adminPaths = {
   qrBatches: '/qr-batches',
   catalog: '/catalog',
   promos: '/promos',
+  orders: '/orders',
   auditEvents: '/audit-events',
   finance: '/finance',
   ownershipTransfers: '/ownership-transfers',
@@ -56,6 +57,12 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.promos,
     label: 'Promo Management',
     description: 'Create and manage promotional campaigns',
+    nav: true,
+  },
+  {
+    path: adminPaths.orders,
+    label: 'Orders',
+    description: 'Customer orders',
     nav: true,
   },
   {

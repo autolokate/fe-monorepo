@@ -21,6 +21,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/qr-batches': ReceiptTextIcon,
   '/catalog': StoreIcon,
   '/promos': CreditCardIcon,
+  '/orders': ReceiptTextIcon,
   '/audit-events': ActivityIcon,
   '/finance': CreditCardIcon,
   '/ownership-transfers': CircleUserIcon,

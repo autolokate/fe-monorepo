@@ -29,6 +29,7 @@ export type AdminPermission =
   | 'promo:write'
   | 'catalog:read'
   | 'catalog:write'
+  | 'orders:view'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -56,6 +57,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     // Catalog writes move money: a price, a shelf, a default plan. SUPER_ADMIN only.
     'catalog:read',
     'catalog:write',
+    'orders:view',
     'audit:read',
     'audit:view',
     'settlements:write',
@@ -82,6 +84,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'catalog:read',
     'promos:read',
     'promo:view',
+    'orders:view',
     'audit:read',
     'audit:view',
     'partners:read',
@@ -90,6 +93,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'dashboard:view',
     'inventory:view',
     'inventory:read',
+    'orders:view',
     'audit:read',
     'audit:view',
     'partners:read',
@@ -103,6 +107,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'promos:read',
     'promo:view',
     'catalog:read',
+    'orders:view',
   ],
   PARTNER_MANAGER: [
     'dashboard:view',
@@ -110,6 +115,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'inventory:read',
     'partners:read',
     'partners:write',
+    'orders:view',
     'audit:read',
     'audit:view',
   ],
@@ -121,6 +127,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'promos:read',
     'promo:view',
     'catalog:read',
+    'orders:view',
     'audit:read',
     'audit:view',
     'partners:read',
