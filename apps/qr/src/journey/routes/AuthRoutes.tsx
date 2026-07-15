@@ -82,8 +82,13 @@ function MobileRoute() {
   const { enterFromSearchParams } = useQrJourneyEntry();
   const qrResolvedRef = useRef<string | null>(null);
   const bootstrapRef = useRef(false);
+  const selectedFlowRef = useRef(selectedFlow);
+  const sessionRef = useRef(session);
   const [bootstrapDone, setBootstrapDone] = useState(false);
   const [entryMode, setEntryMode] = useState<MobileEntryMode>('loading');
+
+  selectedFlowRef.current = selectedFlow;
+  sessionRef.current = session;
 
   const qrCode = extractQrCodeParam(searchParams);
   const authContinue = isAuthMobileContinueEntry(searchParams);
@@ -236,18 +241,22 @@ function MobileRoute() {
       return;
     }
 
+    // Read flow/session via refs so resolve updates do not re-fire GET /resolve.
+    const currentFlow = selectedFlowRef.current;
+    const currentSession = sessionRef.current;
+
     if (hasAuthTokens()) {
-      if (!selectedFlow) {
+      if (!currentFlow) {
         setSelectedFlow('purchase');
       }
       void navigate(
-        getPostAuthActivationPath(selectedFlow ?? 'purchase', journeyId ?? qrCode, session),
+        getPostAuthActivationPath(currentFlow ?? 'purchase', journeyId ?? qrCode, currentSession),
         { replace: true },
       );
       return;
     }
 
-    if (selectedFlow === 'purchase' && resolvePurchaseQrCode() === qrCode) {
+    if (currentFlow === 'purchase' && resolvePurchaseQrCode() === qrCode) {
       setEntryMode('form');
       return;
     }
@@ -282,9 +291,6 @@ function MobileRoute() {
         setEntryMode('form');
       }
     });
-    // Intentionally omit session/selectedFlow — those change during resolve and must
-    // not re-fire entry (would force-loop GET /resolve).
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- see above
   }, [
     bootstrapDone,
     enterFromSearchParams,
