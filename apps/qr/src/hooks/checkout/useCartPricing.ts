@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { buildCheckoutParamsKey, type CheckoutParams } from '@/services/checkout/checkout-mapper';
 import { getCheckoutRevision } from '@/services/checkout/checkout-cache';
@@ -11,11 +11,14 @@ import { useRouteLoadWithRetry } from '@/hooks/purchase/useRouteLoadWithRetry';
 
 export function useCartPricing(params: CheckoutParams): {
   cartReady: boolean;
+  cartLoading: boolean;
   cartRevision: number;
+  /** Sticky until the next successful cart price — kept visible during Try again. */
   cartError: string | null;
   retryCart: () => void;
 } {
   const paramsKey = buildCheckoutParamsKey(params);
+  const [cartError, setCartError] = useState<string | null>(null);
 
   const loadCart = useCallback(
     async ({ force }: { force: boolean }) => {
@@ -48,10 +51,21 @@ export function useCartPricing(params: CheckoutParams): {
     load: loadCart,
   });
 
+  useEffect(() => {
+    if (loadState.status === 'error') {
+      setCartError(loadState.message);
+      return;
+    }
+    if (loadState.status === 'ready') {
+      setCartError(null);
+    }
+  }, [loadState]);
+
   return {
     cartReady: loadState.status === 'ready',
+    cartLoading: loadState.status === 'loading',
     cartRevision: getCheckoutRevision(),
-    cartError: loadState.status === 'error' ? loadState.message : null,
+    cartError,
     retryCart: retry,
   };
 }

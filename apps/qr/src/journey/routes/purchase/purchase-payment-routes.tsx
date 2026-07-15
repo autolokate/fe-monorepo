@@ -93,7 +93,14 @@ export function ProcessingPaymentRoute() {
         resetProcessingPaymentAttempt();
         if (result.phase === 'prepare' || result.error.code === 'payment_cancelled') {
           if (result.error.code !== 'payment_cancelled') {
-            reportUserError(checkoutLogger, 'purchase_checkout_prepare_failed', result.error, result.error.message);
+            // Always snackbar order/cart prepare failures (mapped CheckoutError is not an ApiError).
+            reportUserError(
+              checkoutLogger,
+              'purchase_checkout_prepare_failed',
+              result.error,
+              result.error.message,
+              { toast: true },
+            );
           }
           patchPurchase({ paymentStatus: 'idle', checkoutReady: false });
           if (result.error.code === 'promo_invalid') {

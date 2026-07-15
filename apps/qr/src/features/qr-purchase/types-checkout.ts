@@ -60,6 +60,13 @@ export type PurchasePlanDefinition = {
   includesLabel?: string | null;
   features: readonly string[];
   riderEligible: boolean;
+  /**
+   * Included / entitled rider slots from activation plans (`riderCount`).
+   * Purchase addon selection may still raise entitlement via session.purchase.riderCount.
+   */
+  riderCount?: number;
+  /** Max emergency contacts from activation plans (`emergencyCount`). */
+  emergencyCount?: number;
   riderOptions: readonly PurchaseRiderOption[];
   addon?: { label: string };
   /** Figma Secure card is 366px vs 340px for others. */

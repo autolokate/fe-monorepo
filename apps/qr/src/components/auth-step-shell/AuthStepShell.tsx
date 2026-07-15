@@ -30,7 +30,9 @@ export type AuthStepShellProps = {
   showBack?: boolean;
   onBack?: () => void;
   onContinue?: () => void;
+  /** Helper or API error text shown directly above the primary CTA. */
   ctaHelper?: string;
+  ctaHelperTone?: 'muted' | 'warning';
   variant?: AuthStepShellVariant;
   /** Purchase R03/R05 — Figma layout_3RUR9G spacing without affecting auth screens. */
   shellClassName?: string;
@@ -125,6 +127,7 @@ export function AuthStepShell({
   onBack,
   onContinue,
   ctaHelper,
+  ctaHelperTone = 'muted',
   variant = 'default',
   shellClassName,
   contentGap = 'mobile',
@@ -214,9 +217,12 @@ export function AuthStepShell({
         {hideFooter ? null : (
           <footer className="ob-step-chrome__footer ob-auth-shell__footer">
             {ctaHelper ? (
-              <AlText variant="caption" tone="muted" className="ob-step-chrome__cta-helper ob-auth-shell__cta-helper">
+              <p
+                className={`ob-shell__footer-helper ob-shell__footer-helper--${ctaHelperTone} ob-auth-shell__cta-helper`}
+                role={ctaHelperTone === 'warning' ? 'alert' : undefined}
+              >
                 {ctaHelper}
-              </AlText>
+              </p>
             ) : null}
             {footerSecondaryAboveCta ? footerSecondary : null}
             <AlButton

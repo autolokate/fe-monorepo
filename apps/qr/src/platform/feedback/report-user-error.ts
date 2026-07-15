@@ -31,6 +31,10 @@ const API_DOMAIN_CODES = new Set([
   'catalog_stale',
   'cart_stale',
   'payment_cancelled',
+  // Checkout mapper collapses HTTP/API failures (e.g. order_in_progress) into these.
+  'unavailable',
+  'unknown',
+  'order_in_progress',
 ]);
 
 function readErrorCode(error: unknown): string | null {

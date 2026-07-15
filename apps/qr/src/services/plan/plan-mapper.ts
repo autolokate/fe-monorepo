@@ -65,6 +65,13 @@ export function isIncludedActivationPlan(
   return typeof plan.payablePaise === 'number' && plan.payablePaise <= 0;
 }
 
+function normalizePlanCount(value: unknown): number | undefined {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return undefined;
+  }
+  return Math.max(0, Math.floor(value));
+}
+
 function mapFundedPlanToDefinition(funded: FundedPlanDto): PurchasePlanDefinition {
   const id = mapApiTierToPurchasePlanId(funded.tier);
   const included = funded.payablePaise <= 0;
@@ -81,6 +88,8 @@ function mapFundedPlanToDefinition(funded: FundedPlanDto): PurchasePlanDefinitio
     includesLabel: funded.includesLabel ?? null,
     features: funded.features,
     riderEligible: funded.riderEligible,
+    riderCount: normalizePlanCount(funded.riderCount),
+    emergencyCount: normalizePlanCount(funded.emergencyCount),
     riderOptions: [],
     tall: id === 'secure',
   };
@@ -126,6 +135,8 @@ function mapUpgradeOptionToDefinition(option: UpgradeOptionDto): PurchasePlanDef
     includesLabel: option.includesLabel ?? null,
     features: option.features,
     riderEligible: option.riderEligible,
+    riderCount: normalizePlanCount(option.riderCount),
+    emergencyCount: normalizePlanCount(option.emergencyCount),
     riderOptions,
     tall: id === 'secure',
   };

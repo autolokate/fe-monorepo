@@ -9,6 +9,7 @@ import { getQrApiClient } from '@/platform/api/qr-api-client';
 import { getPlanVersionId } from '@/services/plan/plan-mapper';
 import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
 import {
+  clearCartPricingCache,
   getCheckoutRevision,
   peekCartId,
   readCheckoutState,
@@ -18,7 +19,11 @@ import {
   buildCheckoutParamsKey,
   type CheckoutParams,
 } from '@/services/checkout/checkout-mapper';
-import { mapCheckoutApiError, type CheckoutError } from '@/services/checkout/checkout-errors';
+import {
+  isRefreshableCartError,
+  mapCheckoutApiError,
+  type CheckoutError,
+} from '@/services/checkout/checkout-errors';
 import { resolveOrderQrCode } from '@/services/checkout/resolve-order-qr-code';
 import { getVehicle } from '@/storage/index';
 import { compactPlate, normalizePlate } from '@/services/vehicle/vehicle-plate';
@@ -134,6 +139,10 @@ async function patchExistingCartBase(
     return { ok: true, revision: getCheckoutRevision() };
   } catch (error) {
     cartLogger.warn('cart_patch_failed', { error, cartId });
+    if (isRefreshableCartError(error)) {
+      clearCartPricingCache();
+      return createCartForParams(params, { force: true });
+    }
     return { ok: false, error: mapCheckoutApiError(error) };
   }
 }
@@ -322,6 +331,17 @@ export async function patchCheckoutCartPromo(
     return { ok: true, revision: getCheckoutRevision() };
   } catch (error) {
     cartLogger.warn('cart_promo_patch_failed', { error, cartId });
+    if (isRefreshableCartError(error)) {
+      clearCartPricingCache();
+      return createCartForParams(
+        {
+          ...params,
+          promoApplied: Boolean(promoCode),
+          promoCode,
+        },
+        { force: true },
+      );
+    }
     return { ok: false, error: mapCheckoutApiError(error) };
   }
 }

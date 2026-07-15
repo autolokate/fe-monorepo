@@ -1,4 +1,7 @@
-import { shouldEnterRiderPrompt } from '../features/emergency/emergency-limits';
+import {
+  shouldEnterEmergencyContacts,
+  shouldEnterRiderPrompt,
+} from '../features/emergency/emergency-limits';
 
 import { buildAuthPaths } from './auth/auth-routing';
 import { journeyPaths } from './constants';
@@ -107,7 +110,7 @@ export function getActivationEntry(flow: ActivationFlowId, journeyId: string): A
 /** @deprecated Prefer getEmergencyHandoffPath — post-pay must still honor rider entitlement. */
 export function getPurchasePostPaymentEmergencyPath(
   journeyId?: string,
-  session?: Pick<JourneySession, 'purchase'>,
+  session?: Pick<JourneySession, 'purchase' | 'emergency'>,
   selectedFlow?: ActivationFlowId | null,
 ): string {
   if (session) {
@@ -120,8 +123,16 @@ export function getPurchasePostPaymentEmergencyPath(
   return buildEmergencyPaths(id).riderPrompt;
 }
 
+/**
+ * Post-pay / post-attach destination:
+ * 1) Rider screens when entitled and not skipped
+ * 2) Emergency contacts when selected plan emergencyCount > 0 (min 1 required in UI)
+ * 3) Completed otherwise
+ *
+ * Skipping riders must NOT skip emergency contacts.
+ */
 export function getEmergencyHandoffPath(
-  session?: Pick<JourneySession, 'purchase'>,
+  session?: Pick<JourneySession, 'purchase' | 'emergency'>,
   selectedFlow?: ActivationFlowId | null,
   journeyId?: string,
 ): string {
@@ -130,12 +141,20 @@ export function getEmergencyHandoffPath(
     (typeof window !== 'undefined' ? parseJourneyIdFromPathname(window.location.pathname) : null);
   const paths = id ? buildEmergencyPaths(id) : null;
   const context = resolveEmergencyFoundationContext(session ?? {}, selectedFlow);
+  const riderSkipped = Boolean(session?.emergency?.riderSkipped);
 
-  if (!shouldEnterRiderPrompt(context.planId, context.riderCount, context.flowKind)) {
+  if (
+    !riderSkipped &&
+    shouldEnterRiderPrompt(context.planId, context.riderCount, context.flowKind)
+  ) {
+    return paths?.riderPrompt ?? `${journeyPaths.emergency}/rider-prompt`;
+  }
+
+  if (shouldEnterEmergencyContacts(context.planId)) {
     return paths?.contactsEmpty ?? `${journeyPaths.emergency}/contacts-empty`;
   }
 
-  return paths?.riderPrompt ?? `${journeyPaths.emergency}/rider-prompt`;
+  return getCompletedPath();
 }
 
 export function getAuthFlowBackPath(flow: ActivationFlowId | null, journeyId?: string): string {

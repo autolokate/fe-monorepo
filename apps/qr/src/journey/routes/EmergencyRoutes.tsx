@@ -21,9 +21,11 @@ import {
 import {
   canAddEmergencyContact,
   canAddRider,
+  getContactsEmptyDescription,
   getContactsSummaryRiderContext,
   getEntitledRiderSlots,
   getRiderPromptDescription,
+  shouldEnterEmergencyContacts,
   shouldEnterRiderPrompt,
 } from '../../features/emergency/emergency-limits';
 import {
@@ -235,19 +237,24 @@ function R0Route() {
     riderCount,
   ]);
 
-  if (!shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
-    return <Navigate to={emergencyJourneyPaths.contactsEmpty} replace />;
-  }
-
-  if (emergency.riderSkipped) {
-    return <Navigate to={getCompletedPath()} replace />;
+  if (!shouldEnterRiderPrompt(planId, riderCount, flowKind) || emergency.riderSkipped) {
+    return (
+      <Navigate to={getEmergencyHandoffPath({ purchase, emergency }, selectedFlow)} replace />
+    );
   }
 
   const finishWithoutRider = () => {
     setSkipConfirmOpen(false);
+    const nextEmergency = { ...emergency, riderSkipped: true, rider: undefined };
     patchEmergency({ riderSkipped: true, rider: undefined });
-    setPhase('completed');
-    void navigate(getCompletedPath(), { replace: true });
+    const nextPath = getEmergencyHandoffPath(
+      { purchase, emergency: nextEmergency },
+      selectedFlow,
+    );
+    if (nextPath === getCompletedPath()) {
+      setPhase('completed');
+    }
+    void navigate(nextPath, { replace: true });
   };
 
   return (
@@ -308,6 +315,7 @@ function R1Route() {
   const [mobileState, setMobileState] = useState<'default' | 'error' | 'offline'>(
     isOnline ? 'default' : 'offline',
   );
+  const [apiErrorMessage, setApiErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -323,10 +331,12 @@ function R1Route() {
     <E02RiderMobileScreen
       mobileState={mobileState}
       mobileValue={mobile}
+      errorMessage={apiErrorMessage}
       onMobileChange={(value) => {
         setMobile(clampMobileInput(value));
         if (mobileState === 'error') {
           setMobileState('default');
+          setApiErrorMessage(null);
         }
       }}
       onBack={() => {
@@ -341,6 +351,7 @@ function R1Route() {
           return;
         }
         if (!isValidMobile(mobile)) {
+          setApiErrorMessage(null);
           setMobileState('error');
           return;
         }
@@ -349,10 +360,17 @@ function R1Route() {
         void requestOtp(normalized).then((result) => {
           setIsSubmitting(false);
           if (!result.ok) {
-            reportEmergencyApiError(riderLogger, 'rider_otp_request_failed', result.error, { toast: false });
+            const apiMessage = reportEmergencyApiError(
+              riderLogger,
+              'rider_otp_request_failed',
+              result.error,
+              { toast: false },
+            );
+            setApiErrorMessage(apiMessage);
             setMobileState('error');
             return;
           }
+          setApiErrorMessage(null);
           patchEmergency({
             rider: {
               mobile: normalized,
@@ -590,7 +608,7 @@ function R4Route() {
         void navigate(emergencyJourneyPaths.riderMobile);
       }}
       onContinue={() => {
-        if (contacts.length > 0) {
+        if (contacts.length > 0 || !shouldEnterEmergencyContacts(planId)) {
           setPhase('completed');
           void navigate(getCompletedPath(), { replace: true });
           return;
@@ -662,12 +680,13 @@ function E0Route() {
     })();
   }, [applyPickedContact, goToManualEntry]);
 
-  if (emergency.riderSkipped) {
+  if (!shouldEnterEmergencyContacts(planId)) {
     return <Navigate to={getCompletedPath()} replace />;
   }
 
   return (
     <E05ContactsEmptyScreen
+      description={getContactsEmptyDescription(planId)}
       showAddFromContacts={showAddFromContacts}
       onBack={() => {
         const contactCount = emergency.contacts?.length ?? 0;
@@ -675,16 +694,12 @@ function E0Route() {
           void navigate(getEmergencyFlowBackPath(selectedFlow, session));
           return;
         }
-        if (emergency.riderSkipped) {
-          void navigate(getCompletedPath(), { replace: true });
-          return;
-        }
         const riders = emergency.riders ?? (emergency.rider ? [emergency.rider] : []);
         if (riders.length > 0) {
           void navigate(emergencyJourneyPaths.ridersSummary, { replace: true });
           return;
         }
-        if (shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
+        if (!emergency.riderSkipped && shouldEnterRiderPrompt(planId, riderCount, flowKind)) {
           void navigate(emergencyJourneyPaths.riderPrompt);
           return;
         }
@@ -705,6 +720,7 @@ function E1Route() {
   const [mobileState, setMobileState] = useState<'default' | 'error' | 'offline'>(
     isOnline ? 'default' : 'offline',
   );
+  const [apiErrorMessage, setApiErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -721,10 +737,12 @@ function E1Route() {
       mobileState={mobileState}
       mobileValue={mobile}
       footerLoading={isSubmitting}
+      errorMessage={apiErrorMessage}
       onMobileChange={(value) => {
         setMobile(clampMobileInput(value));
         if (mobileState === 'error') {
           setMobileState('default');
+          setApiErrorMessage(null);
         }
       }}
       onBack={() => {
@@ -743,6 +761,7 @@ function E1Route() {
           return;
         }
         if (!isValidMobile(mobile)) {
+          setApiErrorMessage(null);
           setMobileState('error');
           return;
         }
@@ -751,15 +770,17 @@ function E1Route() {
         void requestOtp(normalized).then((result) => {
           setIsSubmitting(false);
           if (!result.ok) {
-            reportEmergencyApiError(
+            const apiMessage = reportEmergencyApiError(
               emergencyContactLogger,
               'contact_otp_request_failed',
               result.error,
               { toast: false },
             );
+            setApiErrorMessage(apiMessage);
             setMobileState('error');
             return;
           }
+          setApiErrorMessage(null);
           patchEmergency({
             contactDraft: {
               ...emergency.contactDraft,
@@ -1044,14 +1065,8 @@ function E5Route() {
 
 function EmergencyWildcardRedirect() {
   const { session, selectedFlow } = useJourney();
-  const emergency = session.emergency ?? {};
 
-  if (emergency.riderSkipped) {
-    return <Navigate to={getCompletedPath()} replace />;
-  }
-
-  // Same rule as post-attach / skip handoff — never skip rider screens after payment.
-  // SAFE (0 rider slots) → contacts; entitled riders → rider-prompt.
+  // Rider skip still routes to contacts when plan emergencyCount > 0.
   return <Navigate to={getEmergencyHandoffPath(session, selectedFlow)} replace />;
 }
 

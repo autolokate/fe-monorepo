@@ -11,13 +11,18 @@ export type E02RiderMobileScreenProps = EmergencyScreenNavigationProps & {
   mobileState?: EmergencyMobileState;
   mobileValue?: string;
   onMobileChange?: (mobile: string) => void;
+  /** API error message — prefer over the local validation copy. */
+  errorMessage?: string | null;
 };
+
+const LOCAL_MOBILE_VALIDATION_ERROR = 'Enter a valid 10-digit mobile number.';
 
 /** R1 · Rider mobile — Figma 789:2064 */
 export function E02RiderMobileScreen({
   mobileState = 'default',
   mobileValue,
   onMobileChange,
+  errorMessage = null,
   onContinue,
   onBack,
   showBack = true,
@@ -27,6 +32,9 @@ export function E02RiderMobileScreen({
   const interactive = mobileValue !== undefined && onMobileChange !== undefined;
   const resolvedMobile = interactive ? mobileValue : '';
   const hasMobile = resolvedMobile.replace(/\D/g, '').length > 0;
+  const fieldError = isError
+    ? errorMessage?.trim() || LOCAL_MOBILE_VALIDATION_ERROR
+    : null;
 
   return (
     <FlowStepShell
@@ -63,9 +71,9 @@ export function E02RiderMobileScreen({
           autoComplete="tel"
           maxLength={MOBILE_INPUT_DISPLAY_MAX}
         />
-        {isError ? (
+        {fieldError ? (
           <p id="e02-mobile-error" className="ob-field-validation-error" role="alert">
-            Enter a valid 10-digit mobile number.
+            {fieldError}
           </p>
         ) : null}
         {isOffline ? (

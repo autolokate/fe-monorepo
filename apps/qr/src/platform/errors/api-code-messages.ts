@@ -17,6 +17,9 @@ export const API_CODE_MESSAGES: Readonly<Record<string, string>> = {
   payment_failed: 'Payment failed. Please try again.',
   otp_expired: 'This OTP has expired. Request a new one.',
   otp_invalid: 'Incorrect OTP. Please try again.',
+  own_phone_not_allowed: "You can't add your own number here.",
+  order_in_progress:
+    'A payment for this code is already in progress - finish or cancel it first.',
 };
 
 const TECHNICAL_CODE_PATTERN = /^[A-Z][A-Z0-9_]*$/;

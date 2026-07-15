@@ -23,6 +23,10 @@ export type PlanOptionDto = {
   pricePaise: number;
   period: PlanPeriod;
   riderEligible: boolean;
+  /** Included / entitled rider slots for this tier. */
+  riderCount?: number;
+  /** Max emergency contacts for this tier. */
+  emergencyCount?: number;
   features: string[];
   badge: string | null;
   includesLabel: string | null;

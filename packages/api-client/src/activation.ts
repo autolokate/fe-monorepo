@@ -54,7 +54,10 @@ export type FundedPlanDto = {
   pricePaise: number;
   fundedBy: FundedPlanBy;
   payablePaise: number;
+  /** Included / entitled rider slots for this funded plan. */
   riderCount: number;
+  /** Max emergency contacts for this funded plan. */
+  emergencyCount?: number;
   riderEligible: boolean;
   features: string[];
   badge?: string | null;
@@ -77,6 +80,10 @@ export type UpgradeOptionDto = {
   payablePaise: number;
   period: PlanPeriod;
   version: number;
+  /** Included rider slots on this upgrade tier (addon quotes are in riderOptions). */
+  riderCount?: number;
+  /** Max emergency contacts for this upgrade tier. */
+  emergencyCount?: number;
   riderEligible: boolean;
   riderOptions: UpgradeRiderQuoteDto[];
   features: string[];

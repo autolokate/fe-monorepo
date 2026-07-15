@@ -345,7 +345,8 @@ export function OrderSummaryRoute() {
     promoApplied: false,
     promoCode: null,
   });
-  const { cartReady, cartRevision, cartError, retryCart } = useCartPricing(checkoutParams);
+  const { cartReady, cartLoading, cartRevision, cartError, retryCart } =
+    useCartPricing(checkoutParams);
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
   const [promoApplying, setPromoApplying] = useState(false);
 
@@ -353,19 +354,8 @@ export function OrderSummaryRoute() {
     redirectIfPaymentSucceeded(navigate, purchase);
   }, [navigate, purchase]);
 
-  if (!plansReady || !cartReady) {
-    if (cartError) {
-      return (
-        <PurchaseRouteError
-          message={cartError}
-          onRetry={retryCart}
-          showBack
-          onBack={() => {
-            void navigate(purchaseJourneyPaths.vehicleDetails);
-          }}
-        />
-      );
-    }
+  // Initial load only — cart errors stay on Review & pay above the Pay CTA.
+  if (!plansReady || (!cartReady && !cartError)) {
     return <PurchaseRouteLoader label="Loading order" />;
   }
 
@@ -377,6 +367,9 @@ export function OrderSummaryRoute() {
       promoCode={promoInput}
       onPromoCodeChange={setPromoInput}
       isApplyingPromo={promoApplying}
+      errorMessage={cartError}
+      footerLabel={cartError ? 'Try again' : undefined}
+      footerLoading={Boolean(cartError) && cartLoading}
       onApplyPromo={() => {
         if (purchase?.paymentStatus === 'success') {
           redirectIfPaymentSucceeded(navigate, purchase);
@@ -397,6 +390,10 @@ export function OrderSummaryRoute() {
         void navigate(purchaseJourneyPaths.vehicleDetails);
       }}
       onContinue={() => {
+        if (cartError) {
+          retryCart();
+          return;
+        }
         startPayment(patchPurchase, navigate, purchase, {
           planId,
           riderCount,
@@ -416,7 +413,8 @@ export function OrderSummaryInvalidPromoRoute() {
     promoApplied: false,
     promoCode: null,
   });
-  const { cartReady, cartRevision, cartError, retryCart } = useCartPricing(checkoutParams);
+  const { cartReady, cartLoading, cartRevision, cartError, retryCart } =
+    useCartPricing(checkoutParams);
   const [promoInput, setPromoInput] = useState(purchase?.promoCode ?? '');
   const [promoApplying, setPromoApplying] = useState(false);
 
@@ -429,19 +427,7 @@ export function OrderSummaryInvalidPromoRoute() {
     }
   }, [navigate, purchase, session.purchase?.promoCode, session.purchase?.promoInvalid]);
 
-  if (!cartReady) {
-    if (cartError) {
-      return (
-        <PurchaseRouteError
-          message={cartError}
-          onRetry={retryCart}
-          showBack
-          onBack={() => {
-            void navigate(purchaseJourneyPaths.orderSummary);
-          }}
-        />
-      );
-    }
+  if (!cartReady && !cartError) {
     return <PurchaseRouteLoader label="Loading order" />;
   }
 
@@ -452,6 +438,9 @@ export function OrderSummaryInvalidPromoRoute() {
       riderCount={riderCount}
       promoCode={promoInput}
       isApplyingPromo={promoApplying}
+      errorMessage={cartError}
+      footerLabel={cartError ? 'Try again' : undefined}
+      footerLoading={Boolean(cartError) && cartLoading}
       onPromoCodeChange={(code) => {
         setPromoInput(code);
         if (purchase?.promoInvalid) {
@@ -470,6 +459,10 @@ export function OrderSummaryInvalidPromoRoute() {
         void navigate(purchaseJourneyPaths.orderSummary);
       }}
       onContinue={() => {
+        if (cartError) {
+          retryCart();
+          return;
+        }
         startPayment(patchPurchase, navigate, purchase, {
           planId,
           riderCount,
@@ -486,7 +479,8 @@ export function OrderSummaryPromoAppliedRoute() {
   const { session, planId, riderCount, purchase, patchPurchase } = usePurchaseCheckout();
   const promoCode = purchase?.promoCode ?? '';
   const checkoutParams = buildCheckoutParams(planId, riderCount, purchase);
-  const { cartReady, cartRevision, cartError, retryCart } = useCartPricing(checkoutParams);
+  const { cartReady, cartLoading, cartRevision, cartError, retryCart } =
+    useCartPricing(checkoutParams);
 
   useEffect(() => {
     if (redirectIfPaymentSucceeded(navigate, purchase)) {
@@ -497,19 +491,7 @@ export function OrderSummaryPromoAppliedRoute() {
     }
   }, [navigate, purchase, session.purchase?.promoApplied, session.purchase?.promoCode, session.purchase?.promoInvalid]);
 
-  if (!cartReady) {
-    if (cartError) {
-      return (
-        <PurchaseRouteError
-          message={cartError}
-          onRetry={retryCart}
-          showBack
-          onBack={() => {
-            void navigate(purchaseJourneyPaths.orderSummary);
-          }}
-        />
-      );
-    }
+  if (!cartReady && !cartError) {
     return <PurchaseRouteLoader label="Loading order" />;
   }
 
@@ -519,6 +501,9 @@ export function OrderSummaryPromoAppliedRoute() {
       selectedPlanId={planId}
       riderCount={riderCount}
       promoCode={promoCode}
+      errorMessage={cartError}
+      footerLabel={cartError ? 'Try again' : undefined}
+      footerLoading={Boolean(cartError) && cartLoading}
       onRemovePromo={() => {
         if (purchase?.paymentStatus === 'success') {
           redirectIfPaymentSucceeded(navigate, purchase);
@@ -536,6 +521,10 @@ export function OrderSummaryPromoAppliedRoute() {
         void navigate(purchaseJourneyPaths.orderSummary);
       }}
       onContinue={() => {
+        if (cartError) {
+          retryCart();
+          return;
+        }
         startPayment(patchPurchase, navigate, purchase, {
           planId,
           riderCount,

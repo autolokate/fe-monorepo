@@ -8,6 +8,7 @@ export type CheckoutErrorCode =
   | 'cart_stale'
   | 'catalog_stale'
   | 'unavailable'
+  | 'order_in_progress'
   | 'payment_failed'
   | 'payment_cancelled'
   | 'unknown';
@@ -21,7 +22,10 @@ const REFRESHABLE_CART_CODES = new Set(['cart_expired', 'cart_stale']);
 const CATALOG_STALE_CODES = new Set(['plan_version_superseded', 'tier_not_offered']);
 
 export function isRefreshableCartError(error: unknown): boolean {
-  return error instanceof ApiError && Boolean(error.code && REFRESHABLE_CART_CODES.has(error.code));
+  if (!(error instanceof ApiError) || !error.code) {
+    return false;
+  }
+  return REFRESHABLE_CART_CODES.has(error.code) || error.code === 'not_found';
 }
 
 export function isCatalogStaleError(error: unknown): boolean {
@@ -41,10 +45,22 @@ export function mapCheckoutApiError(error: unknown): CheckoutError {
     };
   }
 
-  if (error instanceof ApiError && error.code && REFRESHABLE_CART_CODES.has(error.code)) {
+  if (error instanceof ApiError && error.code === 'order_in_progress') {
+    return {
+      code: 'order_in_progress',
+      message: resolveUserFacingMessage(error),
+    };
+  }
+
+  if (
+    error instanceof ApiError &&
+    error.code &&
+    (REFRESHABLE_CART_CODES.has(error.code) || error.code === 'not_found')
+  ) {
     return {
       code: 'cart_stale',
-      message: 'Your cart expired. Review your order and try again.',
+      // Prefer endpoint copy ("No such cart.") over a generic stale-cart string.
+      message: resolveUserFacingMessage(error),
     };
   }
 

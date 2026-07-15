@@ -16,6 +16,10 @@ export type R08cInvalidPromoScreenProps = {
   onContinue?: () => void;
   onBack?: () => void;
   showBack?: boolean;
+  /** Cart/checkout API message — shown above the Pay CTA. */
+  errorMessage?: string | null;
+  footerLabel?: string;
+  footerLoading?: boolean;
 };
 
 /** R08c · Order summary · promo invalid — Figma 579:1748 */
@@ -29,12 +33,16 @@ export function R08cInvalidPromoScreen({
   onContinue,
   onBack,
   showBack = true,
+  errorMessage = null,
+  footerLabel,
+  footerLoading = false,
 }: R08cInvalidPromoScreenProps) {
   const summary = buildOrderSummary({
     planId: selectedPlanId,
     riderCount,
     promoApplied: false,
   });
+  const resolvedError = errorMessage?.trim() || null;
 
   return (
     <AuthStepShell
@@ -43,10 +51,13 @@ export function R08cInvalidPromoScreen({
       shellClassName="ob-auth-shell--purchase"
       title="Review & pay"
       description="Check your order, then pay securely"
-      footerLabel={summary.payCtaLabel}
+      footerLabel={footerLabel ?? summary.payCtaLabel}
+      footerLoading={footerLoading}
       showBack={showBack}
       onBack={onBack}
       onContinue={onContinue}
+      ctaHelper={resolvedError ?? undefined}
+      ctaHelperTone={resolvedError ? 'warning' : 'muted'}
       contentGap="mobile"
     >
       <div className="ob-purchase-phase-b-stack">
