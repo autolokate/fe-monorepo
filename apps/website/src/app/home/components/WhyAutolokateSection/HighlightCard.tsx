@@ -1,33 +1,33 @@
-import { cn } from '@/lib/utils';
 import type { WhyHighlight } from './types';
 import styles from './index.module.css';
 
 interface HighlightCardProps {
   highlight: WhyHighlight;
-  className?: string;
 }
 
-export function HighlightCard({ highlight, className }: HighlightCardProps) {
-  const { title, body, Icon } = highlight;
+const TONE_CLASS: Record<NonNullable<WhyHighlight['iconTone']>, string> = {
+  default: '',
+  brand: styles.iconBadgeBrand,
+  amber: styles.iconBadgeAmber,
+};
+
+export function HighlightCard({ highlight }: HighlightCardProps) {
+  const { title, body, Icon, layout, iconTone = 'default' } = highlight;
+  const isWide = layout === 'wide';
 
   return (
-    <article
-      className={cn(
-        `${styles.featureCard} flex h-full items-start gap-4 rounded-2xl px-5 py-5 sm:px-6 sm:py-6`,
-        className,
-      )}
-    >
+    <article className={`${styles.card} ${isWide ? styles.cardWide : styles.cardStacked}`}>
       <span
-        className={`${styles.iconBadge} flex h-11 w-11 shrink-0 items-center justify-center rounded-xl`}
-        aria-hidden
+        className={`${styles.iconBadge} ${isWide ? styles.iconBadgeWide : styles.iconBadgeStacked} ${TONE_CLASS[iconTone]}`}
+        aria-hidden="true"
       >
-        <Icon className="h-5 w-5 stroke-[1.75]" />
+        <Icon className="h-9 w-9" strokeWidth={2} />
       </span>
-      <div className="min-w-0">
-        <h3 className="font-display text-[15px] font-bold leading-snug text-foreground sm:text-base">
-          {title}
-        </h3>
-        <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">{body}</p>
+      <div
+        className={`${styles.cardText} ${isWide ? styles.cardTextWide : styles.cardTextStacked}`}
+      >
+        <h3 className={styles.cardTitle}>{title}</h3>
+        <p className={styles.cardBody}>{body}</p>
       </div>
     </article>
   );

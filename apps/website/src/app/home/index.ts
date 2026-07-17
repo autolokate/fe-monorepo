@@ -6,7 +6,7 @@ export { SafetyPacksSection } from './components/SafetyPacksSection';
 export { WhyAutolokateSection } from './components/WhyAutolokateSection';
 export { TestimonialsSection } from './components/TestimonialsSection';
 export { FromOwnerSection } from './components/FromOwnerSection';
-export { BuiltForIndiaSection } from './components/BuiltForIndiaSection';
+export { ClosingCtaSection } from './components/ClosingCtaSection';
 export { HomeContent } from './components/HomeContent';
 export { homeMetadata } from './config/metadata';
 export { homeNavigation } from './config/navigation';

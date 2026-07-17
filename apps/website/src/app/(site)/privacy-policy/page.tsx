@@ -1,4 +1,4 @@
-import { HeroBanner, PolicyContent, privacyMetadata } from './';
+import { HelpSection, HeroBanner, PolicyContent, privacyMetadata } from './';
 
 export const metadata = privacyMetadata;
 
@@ -7,6 +7,7 @@ export default function PrivacyPolicyPage() {
     <main className="relative">
       <HeroBanner />
       <PolicyContent />
+      <HelpSection />
     </main>
   );
 }

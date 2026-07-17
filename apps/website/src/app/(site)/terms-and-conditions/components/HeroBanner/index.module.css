@@ -1,0 +1,91 @@
+/* Terms hero — centred dark band with eyebrow, display headline, date and subhead.
+   Matches Figma "11 · Terms & conditions · D" → Hero (#920:25). */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #0a0a0c;
+  color: #fff;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(31, 162, 74, 0.12) 0%,
+    rgba(31, 162, 74, 0) 60%
+  );
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.125rem; /* 18px */
+  max-width: 60rem;
+  padding: 5rem 1.25rem 4.5rem;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 6rem 2rem 5.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    max-width: 47.5rem; /* 760px subhead width */
+    padding: 7rem 2.5rem 6rem; /* Figma 112px 120px 96px */
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* 8px */
+  font-size: 0.75rem;
+  line-height: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #39c46b;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #39c46b;
+}
+
+.headline {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.5rem, 5.6vw, 3.625rem);
+  font-weight: 700;
+  line-height: 1.103;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.lastUpdated {
+  font-size: 0.96875rem; /* 15.5px */
+  line-height: 1.548; /* 24/15.5 */
+  color: #9aa0a8;
+}
+
+.description {
+  max-width: 47.5rem;
+  font-size: 1.1875rem; /* 19px */
+  line-height: 1.474; /* 28/19 */
+  color: #c9cdd3;
+  text-wrap: balance;
+}

@@ -1,9 +1,10 @@
 import {
+  ClosingCtaSection,
   FaqGrid,
+  Founder,
   HeroBanner,
-  HowItWorksSection,
+  ImportantToKnow,
   Philosophy,
-  WhatAutolokateOffersSection,
   aboutMetadata,
 } from './';
 
@@ -13,10 +14,11 @@ export default function AboutPage() {
   return (
     <main className="relative">
       <HeroBanner />
-      <HowItWorksSection />
-      <WhatAutolokateOffersSection />
       <Philosophy />
+      <ImportantToKnow />
+      <Founder />
       <FaqGrid />
+      <ClosingCtaSection />
     </main>
   );
 }

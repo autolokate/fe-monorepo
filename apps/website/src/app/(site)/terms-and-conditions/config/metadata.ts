@@ -3,6 +3,6 @@ import type { Metadata } from 'next';
 export const termsConditionsMetadata: Metadata = {
   title: 'Terms & Conditions — Autolokate',
   description:
-    'The General Terms & Conditions that govern your use of the Autolokate Platform — covering eligibility, prohibited conduct, QR-sticker usage, liability, and governing law.',
+    'The rules for using Autolokate: our app, the Smart QR storefront, and related services. Please read them carefully.',
   alternates: { canonical: '/terms-and-conditions' },
 };

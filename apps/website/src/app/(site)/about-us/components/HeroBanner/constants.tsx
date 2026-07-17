@@ -1,44 +1,15 @@
-import { Ambulance, BrainCircuit, Headset, MapPin, Shield, ShieldCheck, Users } from 'lucide-react';
-import type { AboutHeroCopy, AboutHeroFeature, AboutHeroStat } from './types';
+import type { HeroCopy } from './types';
 
-export const ABOUT_HERO_BANNER_IMAGE = '/images/about/about_banner.png';
-
-export const ABOUT_HERO_COPY: AboutHeroCopy = {
+export const HERO_COPY: HeroCopy = {
   eyebrow: 'About Autolokate',
-  headline: 'Building a Safer India.',
+  headline: 'Building a safer India.',
   headlineAccent: 'Together.',
-  subheading:
-    'Autolokate is an AI-powered road safety platform that connects technology, people, and infrastructure to ensure faster help in every emergency.',
-  primaryCta: { label: 'Explore features', href: '#what-autolokate-offers' },
-  secondaryCta: { label: 'Contact us', href: '/contact-us' },
+  description:
+    'Autolokate is an app-first vehicle safety platform. Your phone detects a serious crash on its own, then gets an ambulance moving and alerts your family, automatically, all at once.',
+  callout: [
+    { text: '600+', accent: true },
+    { text: ' partner locations · ' },
+    { text: '30,000+', accent: true },
+    { text: ' ambulances · a network built for India' },
+  ],
 };
-
-export const ABOUT_HERO_FEATURES: AboutHeroFeature[] = [
-  {
-    title: 'AI Crash Detection',
-    body: 'Detects. Alerts. Responds.',
-    Icon: BrainCircuit,
-  },
-  {
-    title: 'Human War Room',
-    body: 'Real people. Real action.',
-    Icon: Headset,
-  },
-  {
-    title: 'Trusted Network',
-    body: 'Ambulance, police, RSA, hospitals.',
-    Icon: Users,
-  },
-  {
-    title: 'End-to-End Care',
-    body: 'From alert to resolution.',
-    Icon: ShieldCheck,
-  },
-];
-
-export const ABOUT_HERO_STATS: AboutHeroStat[] = [
-  { value: '24/7', label: 'War Room Support', Icon: Headset },
-  { value: '10,000+', label: 'Partner Ambulances', Icon: Ambulance },
-  { value: '1M+', label: 'Protected Vehicles', Icon: Shield },
-  { value: '500+', label: 'Cities Covered', Icon: MapPin },
-];

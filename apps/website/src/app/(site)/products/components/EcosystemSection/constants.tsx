@@ -1,39 +1,33 @@
-import { Briefcase, LayoutGrid, UserRound, type LucideIcon } from 'lucide-react';
+import { Car, MapPin, Wrench } from 'lucide-react';
+import type { EcosystemAudience, EcosystemCopy } from './types';
 
-export const ECOSYSTEM_COPY = {
-  heading: 'Stronger together. Better outcomes.',
-  footnote: 'One ecosystem that creates value for every stakeholder.',
-} as const;
+export const ECOSYSTEM_COPY: EcosystemCopy = {
+  eyebrow: 'One network',
+  heading: 'Stronger',
+  headingAccent: 'together.',
+  subheading: 'More drivers bring partners more business. More partners make the app more useful.',
+  footnote:
+    'Own a vehicle? The app is free to download, and every app plan ships with a Smart QR sticker.',
+  link: { label: 'Get protected', href: '/#safety-packs' },
+};
 
-export interface EcosystemNode {
-  id: string;
-  title: string;
-  description: string;
-  /** Brand accent colour for the node's icon badge. */
-  accent: string;
-  Icon: LucideIcon;
-}
-
-export const ECOSYSTEM_NODES: EcosystemNode[] = [
+export const ECOSYSTEM_AUDIENCES: EcosystemAudience[] = [
+  {
+    id: 'service-partners',
+    title: 'Service partners',
+    description: 'Autolokate drivers find you, book you and pay you in one place.',
+    Icon: Wrench,
+  },
   {
     id: 'drivers',
     title: 'Drivers',
-    description: 'Safer journeys, smarter choices, everything at your fingertips.',
-    accent: '#22c55e',
-    Icon: UserRound,
+    description: 'Crash help on the road, plus garages and parking that recognise your QR.',
+    Icon: Car,
   },
   {
-    id: 'service-partners',
-    title: 'Service Partners',
-    description: 'More efficiency, happier customers, greater growth.',
-    accent: '#3b82f6',
-    Icon: Briefcase,
-  },
-  {
-    id: 'on-ground-partners',
-    title: 'On-ground Partners',
-    description: 'Digitized operations, real-time data, higher transparency.',
-    accent: '#f59e0b',
-    Icon: LayoutGrid,
+    id: 'parking-fuel-partners',
+    title: 'Parking & fuel partners',
+    description: 'Scan a sticker at the gate, settle digitally, no cash disputes.',
+    Icon: MapPin,
   },
 ];

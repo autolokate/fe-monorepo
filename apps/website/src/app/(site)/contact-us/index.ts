@@ -1,5 +1,5 @@
 export { HeroBanner } from './components/HeroBanner';
-export { FormSection } from './components/FormSection';
-export { SupportSection } from './components/SupportSection';
+export { ContactSection } from './components/ContactSection';
+export { ClosingCtaSection } from './components/ClosingCtaSection';
 export { contactMetadata } from './config/metadata';
 export { contactNavigation } from './config/navigation';

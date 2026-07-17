@@ -1,92 +1,312 @@
-/* PricingPlansSection — reuses the home SafetyPacks PlanCarousel (3D coverflow).
-   The side cards use 3D transforms that overflow horizontally, so the section
-   clips overflow just like the home section does. */
+/* PricingPlansSection — white band with three tier cards. The middle "Shield"
+   card is the dark, most-popular hero card. Matches Figma "Plans". */
 
 .section {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background-color: var(--background);
+  z-index: 1;
+  background-color: #ffffff;
+  color: #0a0a0c;
 }
 
-.container {
+.inner {
   margin-inline: auto;
-  max-width: 80rem;
-  padding: 3rem 1.25rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  max-width: 75rem;
+  padding: 4rem 1.25rem;
 }
 
 @media (min-width: 640px) {
-  .container {
-    padding: 3.5rem 2rem 4rem;
+  .inner {
+    padding: 5rem 2rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .container {
-    padding: 4.5rem 2.5rem 5rem;
+  .inner {
+    padding: 6rem 2.5rem;
   }
 }
 
 /* ---------- Header ---------- */
 .header {
-  margin-inline: auto;
-  max-width: 44rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
   text-align: center;
 }
 
 .eyebrow {
-  display: inline-block;
-  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--al-signal-green);
+  color: #14803a;
 }
 
-.title {
-  margin-top: 0.6rem;
-  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #1fa24a;
+}
+
+.headline {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.2vw, 2.75rem);
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
-  color: var(--foreground);
+  line-height: 1.18;
+  letter-spacing: -0.012em;
   text-wrap: balance;
 }
 
-.subtitle {
-  margin: 0.9rem auto 0;
-  max-width: 34rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--muted-foreground);
+.headlineAccent {
+  color: #1fa24a;
 }
 
-/* ---------- Footnotes ---------- */
-.footnotes {
-  margin: 2rem 0 0;
+.subheading {
+  max-width: 40rem;
+  font-size: 1.1875rem;
+  line-height: 1.47;
+  color: #4a4f57;
+}
+
+/* ---------- Card grid ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 24rem;
+  margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (min-width: 960px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: none;
+    align-items: center;
+  }
+}
+
+/* ---------- Card ---------- */
+.card {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 2rem;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+  background-color: #ffffff;
+  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
+}
+
+.cardPopular {
+  border-color: transparent;
+  background-color: #0a0a0c;
+  color: #ffffff;
+}
+
+@media (min-width: 960px) {
+  .cardPopular {
+    padding-top: 2.875rem;
+    /* Lift the hero card so it reads as the primary choice. */
+    transform: translateY(-0.5rem);
+  }
+}
+
+/* ---------- Most-popular badge ---------- */
+.badge {
+  position: absolute;
+  top: -0.875rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: 999px;
+  background-color: #e7f6ec;
+  color: #14803a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badgeDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background-color: #1fa24a;
+}
+
+/* ---------- Card head ---------- */
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.iconBadge {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem 1.5rem;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background-color: #e7f6ec;
+  color: #1fa24a;
 }
 
-.footnote {
+.cardPopular .iconBadge {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.cardName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #0a0a0c;
+}
+
+.cardPopular .cardName {
+  color: #ffffff;
+}
+
+/* ---------- Price ---------- */
+.priceRow {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--muted-foreground);
+  align-items: flex-end;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
 }
 
-.footnoteIcon {
+.price {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.cardPopular .price {
+  color: #ffffff;
+}
+
+.unit {
+  padding-bottom: 0.3125rem;
+  font-size: 0.84375rem;
+  line-height: 1.4;
+  color: #6b7079;
+}
+
+.cardPopular .unit {
+  color: #9aa0a8;
+}
+
+.note {
+  font-size: 0.78125rem;
+  line-height: 1.4;
+  color: #6b7079;
+}
+
+.cardPopular .note {
+  color: #9aa0a8;
+}
+
+.description {
+  margin-top: 0.25rem;
+  font-size: 0.96875rem;
+  line-height: 1.55;
+  color: #4a4f57;
+}
+
+.cardPopular .description {
+  color: #c9cdd3;
+}
+
+/* ---------- CTA button ---------- */
+.card :global(button) {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+button.ctaSecondary {
+  border-color: #0a0a0c;
+  border-width: 1.5px;
+  background-color: #ffffff;
+  color: #0a0a0c;
+  font-weight: 600;
+}
+
+button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  background-color: #0a0a0c;
+  color: #ffffff;
+  opacity: 1;
+}
+
+button.ctaPrimary {
+  border-color: transparent;
+  background-color: #ffffff;
+  color: #0a0a0c;
+  font-weight: 600;
+}
+
+button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background-color: rgba(255, 255, 255, 0.9);
+  opacity: 1;
+}
+
+/* ---------- Details link ---------- */
+.detailsLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--al-signal-green);
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #0a0a0c;
+  transition: color 0.2s ease;
+}
+
+.detailsText {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.detailsLink:hover {
+  color: #1fa24a;
+}
+
+.cardPopular .detailsLink {
+  color: #ffffff;
+}
+
+.cardPopular .detailsLink:hover {
+  color: #39c46b;
+}
+
+/* ---------- Footnote ---------- */
+.footnote {
+  font-size: 0.84375rem;
+  line-height: 1.5;
+  color: #6b7079;
+  text-align: center;
 }

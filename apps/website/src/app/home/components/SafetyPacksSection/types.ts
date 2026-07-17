@@ -19,13 +19,23 @@ export interface SafetyPlan {
   popular?: boolean;
   popularBadge?: string;
   ctaLabel: string;
+  /** One-line plan summary shown on the home plan grid (matches Figma). */
+  summary?: string;
   features: PlanFeature[];
 }
 
 export interface SafetyPacksSectionCopy {
   eyebrow: string;
   headline: string;
+  headlineAccent?: string;
   subheading: string;
   headerPill: string;
   footnotes: string[];
+  /** Single-line footnote shown under the plan grid (home). */
+  footnote?: string;
+  /** Secondary CTA linking to the full pricing/compare page (home). */
+  compareCta?: {
+    label: string;
+    href: string;
+  };
 }

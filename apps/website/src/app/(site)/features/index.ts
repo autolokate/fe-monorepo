@@ -1,10 +1,5 @@
-export { CommunitySection } from './components/CommunitySection';
-export { CtaSection } from './components/CtaSection';
-export { DailyUtilitySection } from './components/DailyUtilitySection';
-export { DriverScoreSection } from './components/DriverScoreSection';
 export { HeroBanner } from './components/HeroBanner';
-export { MultiVehicleSection } from './components/MultiVehicleSection';
-export { MarketplaceSection } from './components/MarketplaceSection';
-export { SafetyEmergencySection } from './components/SafetyEmergencySection';
+export { ToolkitSection } from './components/ToolkitSection';
+export { ClosingCtaSection } from './components/ClosingCtaSection';
 export { featuresMetadata } from './config/metadata';
 export { featuresNavigation } from './config/navigation';

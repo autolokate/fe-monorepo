@@ -1,17 +1,27 @@
-import type { ComponentType } from 'react';
-import type { LucideProps } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
+export type FeatureLayout = 'stacked' | 'wide';
+
+export type IconTone = 'default' | 'brand' | 'amber';
 
 export interface WhyHighlight {
   id: string;
   title: string;
   body: string;
-  Icon: ComponentType<LucideProps>;
+  Icon: LucideIcon;
+  layout: FeatureLayout;
+  /** Icon color per Figma: default (ink), brand (green) or amber. */
+  iconTone?: IconTone;
 }
 
 export interface WhyAutolokateSectionCopy {
   eyebrow: string;
-  headlinePrefix: string;
-  headlineEmphasis: string;
+  headline: string;
+  headlineAccent: string;
   headlineSuffix: string;
-  description: string;
+  subheadline: string;
+  cta: {
+    label: string;
+    href: string;
+  };
 }

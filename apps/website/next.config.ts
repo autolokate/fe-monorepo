@@ -32,6 +32,21 @@ const nextConfig: NextConfig = {
         destination: '/how-it-works',
         permanent: true,
       },
+      {
+        source: '/safety',
+        destination: '/emergency-safety',
+        permanent: true,
+      },
+      {
+        source: '/refund-policy',
+        destination: '/refund-and-cancellation',
+        permanent: true,
+      },
+      {
+        source: '/shipping-policy',
+        destination: '/shipping-and-delivery',
+        permanent: true,
+      },
     ]);
   },
   images: {

@@ -1,182 +1,144 @@
-/* Features hero — dark full-bleed banner: copy + store badges beside a
-   fanned trio of app screens. Reuses the home-page hero background plate. */
+/* Features hero — centred dark band with eyebrow, display headline, body, note
+   and dual CTA. Matches the redesign Figma "04 · Features · D" → Hero. */
 
 .hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background-color: #050505;
+  background-color: #0a0a0c;
   color: #fff;
 }
 
-.bg {
+/* Radial green glow behind the headline. */
+.glow {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-}
-
-.bgImage {
-  position: absolute;
-  inset: 0;
-  background-image: url('/images/new-design/featurePageBannerMobile.png');
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-}
-
-.bgScrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  /* Mobile: darken the top where the copy sits, keep the phones below clear. */
-  background-image: linear-gradient(
-    180deg,
-    rgba(5, 5, 5, 0.92) 0%,
-    rgba(5, 5, 5, 0.72) 26%,
-    rgba(5, 5, 5, 0.3) 46%,
-    rgba(5, 5, 5, 0.08) 62%,
-    rgba(5, 5, 5, 0) 100%
+  background: radial-gradient(
+    58% 60% at 50% 40%,
+    rgba(31, 162, 74, 0.16) 0%,
+    rgba(31, 162, 74, 0.04) 48%,
+    rgba(31, 162, 74, 0) 72%
   );
-}
-
-.fadeBottom {
-  position: absolute;
-  inset: auto 0 0 0;
-  z-index: 2;
-  height: 7rem;
-  background: linear-gradient(to top, rgba(5, 5, 5, 0.96) 0%, transparent 100%);
-}
-
-@media (min-width: 1024px) {
-  .bgImage {
-    background-image: url('/images/new-design/featurePageBannerWeb.png');
-    background-position: right center;
-  }
-
-  .bgScrim {
-    /* Desktop: darken the left where the copy sits, keep the phones on the right clear. */
-    background-image: linear-gradient(
-      90deg,
-      rgba(5, 5, 5, 0.94) 0%,
-      rgba(5, 5, 5, 0.8) 34%,
-      rgba(5, 5, 5, 0.4) 62%,
-      rgba(5, 5, 5, 0.06) 100%
-    );
-  }
 }
 
 .inner {
   position: relative;
-  z-index: 10;
+  z-index: 1;
   margin-inline: auto;
   display: flex;
-  align-items: flex-start;
-  max-width: 80rem;
-  min-height: 40rem;
-  padding: 4rem 1.25rem 2.5rem;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 54rem;
+  padding: 4.5rem 1.25rem 4rem;
 }
 
 @media (min-width: 640px) {
   .inner {
-    min-height: 44rem;
-    padding: 5rem 2rem 3rem;
+    padding: 5.5rem 2rem 5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .inner {
-    align-items: center;
-    min-height: min(84vh, 46rem);
-    padding: 6.5rem 2.5rem 4rem;
+    padding: 6rem 2.5rem; /* Figma 96px 120px */
   }
 }
 
-/* ---------- Copy ---------- */
-.copy {
-  max-width: 34rem;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.0625rem; /* 17px */
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #39c46b;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #39c46b;
 }
 
 .headline {
-  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2.2rem, 5.2vw, 3.5rem);
+  margin-top: 1.75rem; /* Figma 28px gap */
+  max-width: 50rem; /* 800px */
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.5rem, 5.4vw, 3.625rem); /* up to 58px */
   font-weight: 700;
-  line-height: 1.04;
-  letter-spacing: -0.035em;
+  line-height: 1.103; /* 64/58 */
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 .headlineAccent {
-  display: block;
-  color: var(--al-signal-green);
+  color: #39c46b;
 }
 
 .description {
-  margin-top: 1.35rem;
-  max-width: 34rem;
-  font-size: 1rem;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.74);
+  margin-top: 1.75rem; /* Figma 28px gap */
+  margin-inline: auto;
+  max-width: 45rem; /* 720px */
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.588; /* 27/17 */
+  color: #c9cdd3;
+}
+
+.note {
+  margin-top: 1.75rem; /* Figma 28px gap */
+  font-size: 0.84375rem; /* 13.5px */
+  line-height: 1.48; /* 20/13.5 */
+  color: #9aa0a8;
+}
+
+/* ---------- CTAs ---------- */
+.ctas {
+  margin-top: 1.75rem; /* Figma 28px gap */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.875rem; /* 14px */
+  width: 100%;
+  max-width: 22rem;
 }
 
 @media (min-width: 640px) {
-  .description {
-    font-size: 1.05rem;
+  .ctas {
+    flex-direction: row;
+    justify-content: center;
+    width: auto;
+    max-width: none;
   }
 }
 
-/* ---------- Store badges ---------- */
-.badges {
-  margin-top: 2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background-color: rgba(10, 12, 11, 0.72);
-  padding: 0.6rem 1.1rem;
+button.ctaSecondary {
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.06);
   color: #fff;
-  text-decoration: none;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
+  font-weight: 600;
 }
 
-.badge:hover {
-  border-color: rgba(255, 255, 255, 0.55);
-  background-color: rgba(20, 24, 22, 0.9);
-  transform: translateY(-1px);
+button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  background-color: rgba(255, 255, 255, 0.12);
+  opacity: 1;
 }
 
-.badgeIcon {
-  width: 1.6rem;
-  height: 1.6rem;
-  flex-shrink: 0;
+button.ctaPrimary {
+  border-color: transparent;
+  background-color: #fff;
+  color: #0a0a0c;
+  font-weight: 600;
+  box-shadow: 0 14px 34px -14px rgba(255, 255, 255, 0.45);
 }
 
-.badgeText {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.badgeText small {
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.badgeText strong {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background-color: rgba(255, 255, 255, 0.9);
+  opacity: 1;
 }

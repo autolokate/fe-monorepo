@@ -1,11 +1,10 @@
 import {
+  BillingFaqSection,
+  ClosingCtaSection,
   ComparePlansSection,
-  CtaSection,
-  EveryoneGetsSection,
-  FaqSection,
   HeroBanner,
   PricingPlansSection,
-  StarterAvailabilitySection,
+  SafeStarterSection,
   pricingMetadata,
 } from './';
 
@@ -16,11 +15,10 @@ export default function PricingPage() {
     <main className="relative">
       <HeroBanner />
       <PricingPlansSection />
-      <EveryoneGetsSection />
       <ComparePlansSection />
-      <StarterAvailabilitySection />
-      <FaqSection />
-      <CtaSection />
+      <SafeStarterSection />
+      <BillingFaqSection />
+      <ClosingCtaSection />
     </main>
   );
 }

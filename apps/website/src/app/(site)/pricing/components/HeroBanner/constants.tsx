@@ -1,12 +1,9 @@
-export const HERO_BG_WEB = '/images/new-design/pricingHeroWeb.png';
-export const HERO_BG_MOBILE = '/images/new-design/pricingHeroMobile.png';
+import type { HeroCopy } from './types';
 
-export const HERO_COPY = {
+export const HERO_COPY: HeroCopy = {
   eyebrow: 'Pricing',
-  headline: 'Protect every journey.',
-  headlineLine2Prefix: 'At the ',
-  headlineAccent: 'right price.',
-  description: 'Simple plans. Powerful protection. Everything your vehicle needs, in one drive.',
-  trust: 'Trusted by thousands of drivers across India',
-  cta: { label: 'Buy on qr.autolokate.com', href: 'https://qr.autolokate.com' },
-} as const;
+  headline: 'One payment.',
+  headlineAccent: 'A full year of cover.',
+  description:
+    'Every plan covers one vehicle for a year, Smart QR sticker included. No monthly billing, no surprise renewals. GST included. No hidden charges.',
+};

@@ -1,8 +1,8 @@
 import {
   AppShowcaseSection,
+  ClosingCtaSection,
   EcosystemSection,
   HeroBanner,
-  WhyAutolokateSection,
   productsMetadata,
 } from './';
 
@@ -13,8 +13,8 @@ export default function ProductsPage() {
     <main className="relative">
       <HeroBanner />
       <AppShowcaseSection />
-      <WhyAutolokateSection />
       <EcosystemSection />
+      <ClosingCtaSection />
     </main>
   );
 }

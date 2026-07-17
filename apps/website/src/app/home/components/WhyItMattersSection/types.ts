@@ -1,24 +1,16 @@
-export interface WhyItMattersStat {
-  value: string;
-  label: string;
-}
-
-export interface WhyItMattersHalf {
-  lead: string;
-  emphasis: string;
-  body: string;
-}
-
-export interface WhyItMattersCrash {
-  headline: string;
-  brand: string;
-  body: string;
-}
-
 export interface WhyItMattersCopy {
   eyebrow: string;
-  stat: WhyItMattersStat;
-  half: WhyItMattersHalf;
-  crash: WhyItMattersCrash;
-  footer: string;
+  headline: string;
+  headlineAccent: string;
+  stat: {
+    value: string;
+    label: string;
+    source: string;
+  };
+  body: string;
+  callout: string;
+  map: {
+    heading: string;
+    pill: string;
+  };
 }

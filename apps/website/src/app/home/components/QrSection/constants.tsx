@@ -1,39 +1,33 @@
-import { Bell, CircleParking, FileText, History } from 'lucide-react';
+import { MapPin, PhoneCall } from 'lucide-react';
 import type { QrFeature, QrSectionCopy } from './types';
 
-export const QR_SECTION_IMAGE = '/images/home/autolokate_qr_sticker_transparent.png';
-
-export const QR_SECTION_BACKGROUND = '/images/home/home_qr_banner.png';
+export const QR_STICKER_IMAGE = '/images/new-design/home/qr-sticker.png';
 
 export const QR_SECTION_COPY: QrSectionCopy = {
-  eyebrow: 'Smart Vehicle QR',
-  headlineLine1: 'One QR.',
-  headlineLine2Prefix: 'Your vehicle stays ',
-  headlineEmphasis: 'connected.',
-  subheading:
-    'Your Autolokate QR helps others reach you when parked, alert your emergency contacts, and access important vehicle records when needed.',
-  primaryCta: { label: 'How QR Works', href: '/how-it-works' },
+  eyebrow: 'The backup layer · Smart QR',
+  headline: 'When your phone can’t, your',
+  headlineAccent: 'vehicle still speaks.',
+  body: 'The sticker is free with every plan, one per vehicle, car or bike, delivered by courier. It works when your phone can’t answer, or when a stranger is first on the scene. Any camera can scan it, no app, no login, and emergency scanning never expires.',
+  chip: {
+    title: 'Control Center responds',
+    subtitle: 'Help is on the way',
+  },
+  primaryCta: { label: 'See how the Smart QR works', href: '/how-it-works' },
 };
 
 export const QR_FEATURES: QrFeature[] = [
   {
+    id: 'emergency-help',
+    title: 'Emergency help',
+    body: 'A stranger scans and taps once to call. Our 24/7 Control Center responds, gets help moving and alerts your family with your location.',
+    Icon: PhoneCall,
+    tone: 'emergency',
+  },
+  {
+    id: 'park-me',
     title: 'Park Me',
-    body: 'Let someone contact you when your vehicle is parked or blocking the way.',
-    Icon: CircleParking,
-  },
-  {
-    title: 'Emergency Help',
-    body: 'A bystander can scan and alert your emergency contacts with location details.',
-    Icon: Bell,
-  },
-  {
-    title: 'Service History',
-    body: 'Keep service records and important vehicle updates linked to your QR.',
-    Icon: History,
-  },
-  {
-    title: 'Vehicle Identity',
-    body: 'Connect your vehicle details, ownership records, and documents in one place.',
-    Icon: FileText,
+    body: 'Blocked in? A verified request triggers an AI call to you. Your number is never shown.',
+    Icon: MapPin,
+    tone: 'brand',
   },
 ];
