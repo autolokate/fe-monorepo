@@ -4,8 +4,7 @@ import { usePathname } from 'next/navigation';
 import { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { Footer } from '@/layouts/Footer';
-import { Header, PremiumHeader } from '@/layouts/Header';
-import { MobileBottomNav } from '@/layouts/MobileBottomNav';
+import { Header } from '@/layouts/Header';
 
 /**
  * Conditional site chrome. Routes under `/auth/**` are full-bleed flows
@@ -23,11 +22,10 @@ export function Chrome({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="relative flex min-h-screen min-w-0 flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
-      {isHome ? <PremiumHeader overDarkHero /> : <Header />}
+    <div className="relative flex min-h-screen min-w-0 flex-col">
+      <Header />
       <main className={cn('relative min-w-0 flex-1', !isHome && 'pt-14 sm:pt-16')}>{children}</main>
       <Footer />
-      <MobileBottomNav />
     </div>
   );
 }

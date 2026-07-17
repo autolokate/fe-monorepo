@@ -1,175 +1,136 @@
-/* HeroBanner — dark full-bleed hero aligned to the home redesign mock. */
+/* HeroBanner — dark hero with green radial glow, copy + phone scene.
+   Matches the redesign reference (Figma "01 · Home · D" → Hero). */
 
 .hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background-color: #050505;
+  background-color: #0a0a0c;
   color: #fff;
 }
 
-.bg {
+/* Radial green glow anchored to the right, behind the phone. */
+.glow {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-}
-
-/* Mobile uses a tall portrait plate; desktop swaps to the wide plate below. */
-.bgImage {
-  position: absolute;
-  inset: 0;
-  background-image: url('/images/new-design/newDesignHeroBgMobile.png');
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
-}
-
-/* Vertical scrim darkens the top so the stacked mobile copy stays legible. */
-.bgScrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background-image: linear-gradient(
-    180deg,
-    rgba(5, 5, 5, 0.9) 0%,
-    rgba(5, 5, 5, 0.55) 30%,
-    rgba(5, 5, 5, 0.25) 56%,
-    rgba(5, 5, 5, 0.45) 100%
+  background: radial-gradient(
+    52% 56% at 78% 42%,
+    rgba(31, 162, 74, 0.15) 0%,
+    rgba(31, 162, 74, 0.04) 48%,
+    rgba(31, 162, 74, 0) 72%
   );
-}
-
-.fadeBottom {
-  position: absolute;
-  inset: auto 0 0 0;
-  z-index: 2;
-  height: 8rem;
-  background: linear-gradient(to top, rgba(5, 5, 5, 0.95) 0%, transparent 100%);
-}
-
-@media (min-width: 1024px) {
-  .bgImage {
-    background-image: url('/images/new-design/newDesignHeroBg.png');
-    background-position: center center;
-  }
-
-  /* Darken the left edge so the copy stays legible over the car/city plate. */
-  .bgScrim {
-    background-image: linear-gradient(
-      90deg,
-      rgba(5, 5, 5, 0.96) 0%,
-      rgba(5, 5, 5, 0.82) 32%,
-      rgba(5, 5, 5, 0.3) 60%,
-      rgba(5, 5, 5, 0.55) 100%
-    );
-  }
 }
 
 .inner {
   position: relative;
-  z-index: 10;
+  z-index: 1;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 1.5rem;
-  max-width: 80rem;
-  padding: 4.25rem 1.25rem 2.5rem;
+  align-items: center;
+  gap: 2.5rem;
+  max-width: 75rem;
+  padding: 7rem 1.25rem 3.5rem;
 }
 
 @media (min-width: 640px) {
   .inner {
-    gap: 2rem;
-    padding: 5rem 2rem 3rem;
+    padding: 8rem 2rem 4rem;
   }
 }
 
 @media (min-width: 1024px) {
   .inner {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-template-columns: minmax(0, 660px) minmax(0, 1fr);
     align-items: center;
     gap: 3rem;
-    min-height: min(88vh, 48rem);
-    padding: 7.5rem 2.5rem 4rem;
+    padding: 8.5rem 2.5rem 6rem;
   }
 }
 
-/* ---------- Copy column ----------
-   Mobile: `display: contents` flattens this wrapper so the text, phone and
-   CTAs can be reordered (text → phone → CTAs). Desktop: a real left column. */
+/* ---------- Copy column ---------- */
 .copy {
-  display: contents;
+  order: 1;
+  width: 100%;
+  max-width: 40rem;
+  text-align: center;
 }
 
 @media (min-width: 1024px) {
   .copy {
-    display: block;
-    max-width: 34rem;
-  }
-}
-
-.copyText {
-  order: 1;
-  max-width: 34rem;
-}
-
-@media (min-width: 1024px) {
-  .copyText {
     order: 0;
     max-width: none;
+    text-align: left;
   }
 }
 
-.badge {
+.eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--al-signal-green) 32%, transparent);
-  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
-  padding: 0.4rem 0.85rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--al-signal-green);
+  color: #39c46b;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #39c46b;
 }
 
 .headline {
-  margin-top: 1.25rem;
-  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin-top: 1.5rem;
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.5rem, 5.2vw, 3.625rem);
   font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 .headlineAccent {
-  font-style: italic;
-  color: var(--al-signal-green);
+  color: #39c46b;
 }
 
 .subheading {
-  margin-top: 1.25rem;
-  max-width: 30rem;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.74);
+  margin-top: 1.5rem;
+  margin-inline: auto;
+  max-width: 34rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .subheading {
-    font-size: 1.05rem;
+    margin-inline: 0;
+    font-size: 1.1875rem;
+    line-height: 1.55;
   }
 }
 
+.microcopy {
+  margin-top: 1rem;
+  font-size: 0.84375rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- CTAs ---------- */
 .ctas {
-  order: 3;
+  margin-top: 1.75rem;
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  justify-content: center;
   gap: 0.875rem;
 }
 
@@ -177,13 +138,9 @@
   width: 100%;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 640px) {
   .ctas {
-    order: 0;
     flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: 2rem;
   }
 
   .ctas button {
@@ -191,60 +148,122 @@
   }
 }
 
-/* Design-system AlButton themed for the always-dark hero.
-   The `button.` prefix keeps these overrides ahead of `.al-button--*` rules. */
+@media (min-width: 1024px) {
+  .ctas {
+    justify-content: flex-start;
+  }
+}
+
 button.ctaPrimary {
   border-color: transparent;
-  background-color: var(--al-brand-white);
-  color: var(--al-brand-black);
-  font-weight: 700;
-  box-shadow: 0 12px 30px -12px color-mix(in srgb, var(--al-brand-white) 50%, transparent);
+  background-color: #fff;
+  color: #0a0a0c;
+  font-weight: 600;
 }
 
 button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
-  background-color: color-mix(in srgb, var(--al-brand-white) 88%, #000);
+  background-color: rgba(255, 255, 255, 0.9);
   opacity: 1;
 }
 
 button.ctaSecondary {
-  border-color: color-mix(in srgb, var(--al-brand-white) 28%, transparent);
-  background-color: color-mix(in srgb, var(--al-brand-white) 6%, transparent);
-  color: var(--al-brand-white);
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #fff;
 }
 
 button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
-  border-color: var(--al-brand-white);
-  background-color: color-mix(in srgb, var(--al-brand-white) 12%, transparent);
-  color: var(--al-brand-white);
+  border-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
   opacity: 1;
 }
 
-/* ---------- App mockup column ---------- */
+/* ---------- Stats ---------- */
+.stats {
+  margin-top: 2.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
 
-.mockup {
+@media (min-width: 1024px) {
+  .stats {
+    justify-content: flex-start;
+    gap: 2.25rem;
+  }
+}
+
+.statGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .statGroup {
+    gap: 2.25rem;
+  }
+}
+
+.statDivider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  text-align: left;
+}
+
+.statValue {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.statLabel {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ---------- Phone scene ---------- */
+.scene {
   order: 2;
   display: flex;
   justify-content: center;
 }
 
 @media (min-width: 1024px) {
-  .mockup {
+  .scene {
     order: 0;
     justify-content: flex-end;
   }
 }
 
-.mockupStack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  animation: heroMockupIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+.phone {
+  width: auto;
+  height: 34rem;
+  max-width: 100%;
+  animation: heroPhoneIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes heroMockupIn {
+@media (min-width: 640px) {
+  .phone {
+    height: 40rem;
+  }
+}
+
+@keyframes heroPhoneIn {
   0% {
     opacity: 0;
-    transform: translateY(-60px) scale(0.97);
+    transform: translateY(24px) scale(0.98);
   }
   100% {
     opacity: 1;
@@ -252,475 +271,8 @@ button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
   }
 }
 
-/* iPhone-style titanium frame */
-.device {
-  position: relative;
-  width: 284px;
-  border-radius: 52px;
-  padding: 11px;
-  background: linear-gradient(155deg, #4a4a4d 0%, #1b1b1d 22%, #313134 55%, #121214 100%);
-  box-shadow:
-    0 44px 90px -34px rgba(0, 0, 0, 0.9),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  transform-origin: top center;
-}
-
-/* Shrink the phone on mobile so the whole device is visible without scrolling.
-   The negative margin reclaims the space the transform leaves behind. */
-@media (max-width: 1023.98px) {
-  .device {
-    transform: scale(0.82);
-    margin-bottom: -114px;
-  }
-}
-
-/* Side buttons */
-.device::before {
-  content: '';
-  position: absolute;
-  left: -2px;
-  top: 118px;
-  width: 3px;
-  height: 90px;
-  border-radius: 3px 0 0 3px;
-  background: linear-gradient(180deg, #2a2a2c, #161618);
-}
-
-.device::after {
-  content: '';
-  position: absolute;
-  right: -2px;
-  top: 150px;
-  width: 3px;
-  height: 64px;
-  border-radius: 0 3px 3px 0;
-  background: linear-gradient(180deg, #2a2a2c, #161618);
-}
-
-.deviceScreen {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 612px;
-  overflow: hidden;
-  border-radius: 42px;
-  background: #0c0b09;
-  transition: background 0.5s ease;
-}
-
-.deviceScreen[data-mode='impact'],
-.deviceScreen[data-mode='count'] {
-  background: #160806;
-}
-
-.deviceScreen[data-mode='safe'] {
-  background: #08140d;
-}
-
-.dynamicIsland {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 5;
-  width: 88px;
-  height: 26px;
-  border-radius: 999px;
-  background: #000;
-}
-
-.statusBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px 0;
-  color: #fff;
-}
-
-.statusTime {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.statusIcons {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.signal {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 11px;
-}
-
-.signal i {
-  width: 3px;
-  border-radius: 1px;
-  background: #fff;
-}
-
-.signal i:nth-child(1) {
-  height: 4px;
-}
-.signal i:nth-child(2) {
-  height: 6px;
-}
-.signal i:nth-child(3) {
-  height: 8px;
-}
-.signal i:nth-child(4) {
-  height: 11px;
-}
-
-.battery {
-  position: relative;
-  width: 22px;
-  height: 11px;
-  padding: 1.5px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 3px;
-}
-
-.battery::after {
-  content: '';
-  position: absolute;
-  right: -3px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2px;
-  height: 4px;
-  border-radius: 0 1px 1px 0;
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.batteryFill {
-  display: block;
-  width: 80%;
-  height: 100%;
-  border-radius: 1px;
-  background: #fff;
-}
-
-/* App chrome header */
-.appHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 22px 6px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.logoMark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
-  font-size: 14px;
-  font-weight: 800;
-  color: #fff;
-}
-
-.wordmark {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: #fff;
-}
-
-.profile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 1px solid rgba(93, 190, 138, 0.4);
-  background: rgba(93, 190, 138, 0.08);
-  color: #5dbe8a;
-}
-
-.stateWrap {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 20px 18px;
-  text-align: center;
-}
-
-/* ----- Drive mode (monitor) ----- */
-.driveMode {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: #5dbe8a;
-}
-
-.liveDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #5dbe8a;
-  animation: alkLive 1.8s infinite;
-}
-
-.radar {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.radarRing {
-  position: absolute;
-  width: 140px;
-  height: 140px;
-  border: 2px solid rgba(93, 190, 138, 0.5);
-  border-radius: 50%;
-  animation: alkRadar 2.4s ease-out infinite;
-}
-
-.radarCore {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(93, 190, 138, 0.16);
-  border: 1px solid rgba(93, 190, 138, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 15px;
-  color: #5dbe8a;
-}
-
-.stateTitle {
-  font-weight: 600;
-  font-size: 15px;
-  color: #f4efe6;
-}
-
-.stateSub {
-  margin-top: 4px;
-  font-size: 12.5px;
-  color: #7e7768;
-}
-
-/* ----- Impact ----- */
-.impactCircle {
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
-  background: #f0633e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: 700;
-  color: #fff;
-  animation: alkDanger 1s infinite;
-}
-
-.impactTitle {
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: -0.02em;
-  color: #fff;
-}
-
-.dangerSub {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #e9a593;
-}
-
-/* ----- Countdown ----- */
-.countLabel {
-  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: #f0633e;
-}
-
-.countCircle {
-  width: 126px;
-  height: 126px;
-  border-radius: 50%;
-  border: 5px solid #f0633e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: alkDanger 1s infinite;
-}
-
-.countCircle span {
-  font-size: 58px;
-  font-weight: 700;
-  color: #fff;
-}
-
-.countSub {
-  max-width: 170px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #e9a593;
-}
-
-.cancelBtn {
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 11px;
-  padding: 11px 22px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-}
-
-/* ----- Safe (help on the way) ----- */
-.safeCircle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
-  background: #4ed07f;
-  color: #06140c;
-  box-shadow: 0 0 0 9px rgba(78, 208, 127, 0.12);
-}
-
-.safeTitle {
-  font-weight: 700;
-  font-size: 26px;
-  letter-spacing: -0.02em;
-  color: #fff;
-}
-
-.dispatchList {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-  text-align: left;
-}
-
-.dispatchItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(78, 208, 127, 0.18);
-  background: rgba(78, 208, 127, 0.06);
-  padding: 11px 14px;
-}
-
-.dispatchDot {
-  width: 7px;
-  height: 7px;
-  flex: 0 0 auto;
-  border-radius: 50%;
-  background: #4ed07f;
-}
-
-.dispatchIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  color: #4ed07f;
-}
-
-.dispatchText {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.dispatchTitle {
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-}
-
-.dispatchSub {
-  margin-top: 1px;
-  font-size: 12.5px;
-  color: #4ed07f;
-}
-
-.footerNote {
-  margin-top: 2px;
-  max-width: 220px;
-  font-size: 12.5px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-@keyframes alkLive {
-  0%,
-  100% {
-    opacity: 1;
-    box-shadow: 0 0 0 0 rgba(93, 190, 138, 0.5);
-  }
-  50% {
-    opacity: 0.6;
-    box-shadow: 0 0 0 6px rgba(93, 190, 138, 0);
-  }
-}
-
-@keyframes alkDanger {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(240, 99, 62, 0.55);
-  }
-  50% {
-    box-shadow: 0 0 0 12px rgba(240, 99, 62, 0);
-  }
-}
-
-@keyframes alkRadar {
-  0% {
-    transform: scale(0.6);
-    opacity: 0.9;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .mockupStack,
-  .liveDot,
-  .radarRing,
-  .impactCircle,
-  .countCircle {
+  .phone {
     animation: none;
   }
-}
-
-/* Thumbnail tile inside the Trending Models card (legacy hero sidebar). */
-.thumb {
-  position: relative;
-  height: 3.5rem;
-  width: 5rem;
-  flex-shrink: 0;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.08);
 }

@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 
 export const howQrWorksMetadata: Metadata = {
-  title: 'How QR Works — Autolokate',
+  title: 'How It Works — Autolokate',
   description:
-    'Learn how Autolokate QR keeps your vehicle reachable while your number stays private. Buy official QR stickers for bikes, scooters, and cars.',
+    'See how Autolokate protects you: automatic crash detection on your phone, a 24/7 Control Center that dispatches an ambulance and alerts your family, and a Smart QR backup for when your phone can’t answer.',
   alternates: { canonical: '/how-it-works' },
   openGraph: {
-    title: 'How Autolokate QR Works',
+    title: 'How Autolokate Works',
     description:
-      'One scan. Two ways to help — parking contact and emergency support without showing your personal number.',
+      'Detection is automatic. So is help. Crash detection, a 24/7 Control Center and a Smart QR backup on every vehicle.',
     url: '/how-it-works',
     type: 'website',
   },

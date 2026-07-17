@@ -1,4 +1,4 @@
-import { HeroBanner, TermsContent, termsConditionsMetadata } from './';
+import { HelpSection, HeroBanner, TermsContent, termsConditionsMetadata } from './';
 
 export const metadata = termsConditionsMetadata;
 
@@ -7,6 +7,7 @@ export default function TermsAndConditionsPage() {
     <main className="relative">
       <HeroBanner />
       <TermsContent />
+      <HelpSection />
     </main>
   );
 }

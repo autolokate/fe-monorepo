@@ -1,89 +1,155 @@
-import { Briefcase, QrCode, UserRound, type LucideIcon } from 'lucide-react';
+import {
+  Activity,
+  Banknote,
+  ClipboardList,
+  Gauge,
+  History,
+  LineChart,
+  Car,
+  Repeat,
+  ScanLine,
+  SlidersHorizontal,
+  Zap,
+} from 'lucide-react';
+import type { AppTile, SectionHeaderCopy } from './types';
 
-export const APP_SHOWCASE_COPY = {
-  eyebrow: 'The apps',
-  heading: 'One platform. Three purpose-built apps.',
-  description:
-    "Whether you drive, run a workshop, or manage a forecourt — there's an Autolokate app built for the way you work.",
-} as const;
-
+const WHATSAPP_URL = 'https://wa.me/919062524516';
 const ANDROID_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.mycompany.indiandriveguide';
-const IOS_STORE_URL = 'https://apps.apple.com/in/app/idg-autolokate/id6733244175';
 
-export interface AppStoreLinks {
-  ios: string;
-  android: string;
-}
+export const FLAGSHIP_PHONE_IMAGE = '/images/new-design/products/flagship-phone.png';
 
-export interface AppShowcaseItem {
-  id: string;
-  name: string;
-  tagline: string;
-  /** Brand accent colour for the icon badge, checkmarks and highlights. */
-  accent: string;
-  Icon: LucideIcon;
-  features: string[];
-  /** Demo video shown in place of screenshots. Drop files in `public/videos/`. */
-  videoSrc: string;
-  /** Poster frame shown before the demo video plays. */
-  poster: string;
-  stores: AppStoreLinks;
-}
+export const APP_ICONS = {
+  autolokate: '/images/new-design/products/app-icon-autolokate.svg',
+  partner: '/images/new-design/products/app-icon-partner.svg',
+  qrPartner: '/images/new-design/products/app-icon-qr-partner.svg',
+} as const;
 
-export const APP_SHOWCASE_ITEMS: AppShowcaseItem[] = [
+export const SECTION_HEADER: SectionHeaderCopy = {
+  eyebrow: 'The apps',
+  heading: 'Built for the way',
+  headingAccent: 'you work.',
+  subheading:
+    'Whether you drive, run a workshop or manage parking and pumps, one of these is yours.',
+};
+
+export const FLAGSHIP_APP: AppTile = {
+  id: 'autolokate',
+  name: 'Autolokate',
+  audience: 'For drivers and vehicle owners.',
+  iconSrc: APP_ICONS.autolokate,
+  capabilities: [
+    {
+      id: 'crash-detection',
+      label: 'Crash detection',
+      detail: 'automatic, with family alerts',
+      Icon: Activity,
+    },
+    {
+      id: 'everyday-tools',
+      label: 'Everyday tools',
+      detail: 'FASTag, challans and renewals',
+      Icon: Zap,
+    },
+    {
+      id: 'driver-score',
+      label: 'Driver score',
+      detail: 'trip scores, leaderboards and tips',
+      Icon: Gauge,
+    },
+    {
+      id: 'multi-vehicle',
+      label: 'Multi-vehicle',
+      detail: 'every car and bike, one account',
+      Icon: Car,
+    },
+    {
+      id: 'smart-qr',
+      label: 'Smart QR',
+      detail: 'Park Me and bystander help',
+      Icon: ScanLine,
+    },
+  ],
+  cta: { label: 'Get the app', href: ANDROID_STORE_URL },
+};
+
+export const PARTNER_APPS: AppTile[] = [
   {
-    id: 'consumer-app',
-    name: 'Consumer App',
-    tagline: 'All-in-one app for every driver.',
-    accent: '#22c55e',
-    Icon: UserRound,
-    features: [
-      'Safety & emergency tools with live location sharing',
-      'Daily utilities — fuel, FASTag, insurance, challans & more',
-      'AI-powered driver score & vehicle insights',
-      'Multi-vehicle management & service history',
-      'Community, reviews & trusted recommendations',
-      'Track bookings, expenses and service reminders',
+    id: 'autolokate-partner',
+    name: 'Autolokate Partner',
+    audience: 'For garages, service centres and workshops.',
+    iconSrc: APP_ICONS.partner,
+    capabilities: [
+      {
+        id: 'jobs',
+        label: 'Jobs',
+        detail: 'customers, bookings and job cards',
+        Icon: ClipboardList,
+      },
+      {
+        id: 'records',
+        label: 'Records',
+        detail: 'digital service history and messaging',
+        Icon: History,
+      },
+      {
+        id: 'inventory',
+        label: 'Inventory',
+        detail: 'parts, modifications and stock',
+        Icon: SlidersHorizontal,
+      },
+      {
+        id: 'payments',
+        label: 'Payments',
+        detail: 'invoices and settlement tracking',
+        Icon: Banknote,
+      },
+      {
+        id: 'reports',
+        label: 'Reports',
+        detail: 'business analytics that update live',
+        Icon: LineChart,
+      },
     ],
-    videoSrc: '/videos/consumer-app-demo.mp4',
-    poster: '/images/new-design/newDesignHeroBg.png',
-    stores: { ios: IOS_STORE_URL, android: ANDROID_STORE_URL },
+    cta: { label: 'Become a partner', href: WHATSAPP_URL },
   },
   {
-    id: 'partner-app',
-    name: 'Partner App',
-    tagline: 'Built for garages, service centers & workshops.',
-    accent: '#3b82f6',
-    Icon: Briefcase,
-    features: [
-      'Manage jobs, customers and bookings in one place',
-      'Digital service history and customer communication',
-      'Parts, modifications & inventory management',
-      'Payments, invoices and settlement tracking',
-      'Business reports and analytics',
-      'Track, grow, retain and delight your customers',
+    id: 'autolokate-qr-partner',
+    name: 'Autolokate QR Partner',
+    audience: 'For parking agencies and petrol pumps.',
+    iconSrc: APP_ICONS.qrPartner,
+    capabilities: [
+      {
+        id: 'setup',
+        label: 'Setup',
+        detail: 'add locations and QR codes',
+        Icon: SlidersHorizontal,
+      },
+      {
+        id: 'scan-verify',
+        label: 'Scan & verify',
+        detail: 'gate checks and payments',
+        Icon: ScanLine,
+      },
+      {
+        id: 'parking-flows',
+        label: 'Parking flows',
+        detail: 'entry, exit and billing',
+        Icon: Repeat,
+      },
+      {
+        id: 'payments',
+        label: 'Payments',
+        detail: 'collections and settlement',
+        Icon: Banknote,
+      },
+      {
+        id: 'reports',
+        label: 'Reports',
+        detail: 'real-time reconciliation',
+        Icon: LineChart,
+      },
     ],
-    videoSrc: '/videos/partner-app-demo.mp4',
-    poster: '/images/new-design/productPageHeroWeb.png',
-    stores: { ios: IOS_STORE_URL, android: ANDROID_STORE_URL },
-  },
-  {
-    id: 'qr-partner-app',
-    name: 'QR Partner App',
-    tagline: 'For parking agencies & petrol pumps.',
-    accent: '#f59e0b',
-    Icon: QrCode,
-    features: [
-      'Quick QR onboarding for locations & operators',
-      'Scan, verify and collect payments seamlessly',
-      'Parking agency workflows — entry, exit & billing',
-      'Petrol pump operations with secure transactions',
-      'Real-time reports, settlements & reconciliation',
-      'Built for speed, accuracy and on-ground reliability',
-    ],
-    videoSrc: '/videos/qr-partner-app-demo.mp4',
-    poster: '/images/new-design/pricingQRRedirection.png',
-    stores: { ios: IOS_STORE_URL, android: ANDROID_STORE_URL },
+    cta: { label: 'Become a partner', href: WHATSAPP_URL },
   },
 ];

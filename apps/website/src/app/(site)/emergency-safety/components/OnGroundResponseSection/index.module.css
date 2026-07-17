@@ -1,0 +1,226 @@
+/* OnGroundResponseSection — white section, single-dispatch response chain.
+   Faithful copy of Figma "On-ground response" (#553:2153).
+
+   Desktop (>=960px): the exact fork layout — 256px source, 72px fork bracket
+   (Figma SVG), 432px branch column (760px total), stops 106px tall on a 40px gap.
+   Below that: the source stacks above the three stops as a vertical tree. */
+
+.section {
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff;
+  color: #0a0a0c;
+}
+
+.inner {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem; /* 48px */
+  max-width: 75rem;
+  padding: 4rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 6rem 7.5rem; /* Figma 96px 120px */
+  }
+}
+
+/* ---------- Section header ---------- */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem; /* 14px */
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.0625rem; /* 17px */
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #14803a;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  background: #1fa24a;
+}
+
+.headline {
+  max-width: 52.5rem; /* 840px */
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.6vw, 2.75rem); /* up to 44px */
+  line-height: 1.18; /* 52/44 */
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+.headlineAccent {
+  color: #1fa24a;
+}
+
+.subheading {
+  max-width: 40rem;
+  font-size: 1.1875rem; /* 19px */
+  line-height: 1.47; /* 28/19 */
+  color: #4a4f57;
+}
+
+/* ---------- Shared node + copy ---------- */
+.node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 999px;
+  border: 1px solid #c4c4c4;
+  background: #ffffff;
+  color: #1fa24a;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem; /* 6px */
+  padding-top: 0.5rem;
+}
+
+.itemTitle {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.4; /* 28/20 */
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.itemBody {
+  font-size: 0.96875rem; /* 15.5px */
+  line-height: 1.548; /* 24/15.5 */
+  color: #4a4f57;
+}
+
+/* ---------- Chain: mobile-first vertical tree ---------- */
+.chain {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+.fork {
+  display: none;
+}
+
+.branches {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.source,
+.branch {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding-bottom: 2.25rem;
+}
+
+.branch:last-child {
+  padding-bottom: 0;
+}
+
+/* Vertical trunk running down the node column, linking source → each stop. */
+.source::before,
+.branch:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 44px;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-1px);
+  background: #c4c4c4;
+}
+
+/* ---------- Desktop fork (exact Figma geometry) ---------- */
+@media (min-width: 960px) {
+  .chain {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    width: auto;
+    max-width: none;
+  }
+
+  /* Disable the mobile vertical trunk. */
+  .source::before,
+  .branch:not(:last-child)::before {
+    content: none;
+  }
+
+  /* Source — 256px, copy left / node right, node centred then nudged to the
+     middle stop's node (y=168) to meet the bracket's full-width middle arm. */
+  .source {
+    flex: 0 0 256px;
+    width: 256px;
+    height: 398px;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 24px;
+    padding-bottom: 0;
+    transform: translateY(-31px);
+  }
+
+  .source .copy {
+    flex: 1;
+    padding-top: 0;
+  }
+
+  /* Fork bracket SVG — 72×398, sits flush between source and branch column. */
+  .fork {
+    display: block;
+    flex: 0 0 72px;
+    width: 72px;
+    height: 398px;
+  }
+
+  /* Branch column — 432px, three 106px stops on a 40px gap (398px total). */
+  .branches {
+    flex: 0 0 432px;
+    width: 432px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .branch {
+    min-height: 106px;
+    gap: 24px;
+    align-items: flex-start;
+    padding-bottom: 0;
+  }
+
+  .branch .copy {
+    padding-top: 0;
+  }
+}

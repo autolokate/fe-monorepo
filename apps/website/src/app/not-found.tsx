@@ -1,7 +1,12 @@
-import { NotFoundContent, notFoundMetadata } from '@/app/page-not-found';
+import { NotFoundContent, notFoundMetadata } from './(site)/404';
+import { Chrome } from '@/layouts';
 
 export const metadata = notFoundMetadata;
 
 export default function NotFoundPage() {
-  return <NotFoundContent />;
+  return (
+    <Chrome>
+      <NotFoundContent />
+    </Chrome>
+  );
 }

@@ -1,0 +1,474 @@
+/* Contact section — light cushion band with a single white card holding the
+   message form and direct channels. Matches Figma "09 · Contact · D" → Contact form. */
+
+.section {
+  background-color: #f4f6f9;
+  padding: 3rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding: 4rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding: 6rem 2.5rem;
+  }
+}
+
+.card {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 50rem;
+  padding: 1.75rem;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 2.75rem;
+    gap: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: 4rem;
+  }
+}
+
+/* ---------- Form ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .form {
+    gap: 1.75rem;
+  }
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.formTitle {
+  margin: 0;
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4.2vw, 2.375rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.96875rem;
+  line-height: 1.5;
+  color: #6b7079;
+}
+
+.statusDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #1fa24a;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.label {
+  font-size: 0.96875rem;
+  font-weight: 500;
+  color: #4a4f57;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .row {
+    flex-direction: row;
+  }
+}
+
+.input,
+.phoneInput,
+.textarea {
+  width: 100%;
+  border: 1px solid #c4c4c4;
+  border-radius: 14px;
+  background: #f4f6f9;
+  font-size: 0.9375rem;
+  color: #0a0a0c;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.input {
+  height: 54px;
+  padding: 0 18px;
+}
+
+.textarea {
+  min-height: 120px;
+  padding: 16px 18px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.input::placeholder,
+.textarea::placeholder,
+.phoneField::placeholder {
+  color: #6b7079;
+}
+
+.input:focus,
+.textarea:focus,
+.phoneInput:focus-within {
+  border-color: #1fa24a;
+  box-shadow: 0 0 0 3px rgba(31, 162, 74, 0.12);
+}
+
+/* ---------- Phone (prefix + divider + field) ---------- */
+.phoneInput {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 54px;
+  padding: 0 18px;
+}
+
+.phonePrefix {
+  font-size: 0.9375rem;
+  color: #4a4f57;
+}
+
+.phoneDivider {
+  width: 1px;
+  height: 20px;
+  background: #eceff3;
+}
+
+.phoneField {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  color: #0a0a0c;
+  outline: none;
+}
+
+/* ---------- Consent ---------- */
+.consent {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+}
+
+.checkboxInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid #c4c4c4;
+  border-radius: 5px;
+  background: #f4f6f9;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.checkboxIcon {
+  width: 12px;
+  height: 12px;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.checkboxInput:checked + .checkbox {
+  background: #1fa24a;
+  border-color: #1fa24a;
+}
+
+.checkboxInput:checked + .checkbox .checkboxIcon {
+  opacity: 1;
+}
+
+.checkboxInput:focus-visible + .checkbox {
+  box-shadow: 0 0 0 3px rgba(31, 162, 74, 0.18);
+}
+
+.consentText {
+  font-size: 0.96875rem;
+  color: #4a4f57;
+}
+
+.consentLink {
+  color: #4a4f57;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.consentLink:hover {
+  color: #1fa24a;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #dc2626;
+}
+
+/* ---------- Submit ---------- */
+.ctaRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+button.submit {
+  border-color: transparent;
+  background-color: #0a0a0c;
+  color: #ffffff;
+  font-weight: 600;
+  padding-inline: 1.75rem;
+}
+
+button.submit:hover:not(:disabled):not(.is-loading) {
+  background-color: #26262b;
+  opacity: 1;
+}
+
+@media (max-width: 479px) {
+  .ctaRow {
+    justify-content: stretch;
+  }
+
+  button.submit {
+    width: 100%;
+  }
+}
+
+/* ---------- Success ---------- */
+.success {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 14px;
+  border: 1px solid rgba(31, 162, 74, 0.25);
+  background: #e7f6ec;
+  padding: 1.1rem 1.15rem;
+  color: #14803a;
+}
+
+.successTitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.successAction {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1fa24a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.successAction:hover {
+  color: #14803a;
+}
+
+/* ---------- Channels ---------- */
+.channels {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #14803a;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #1fa24a;
+}
+
+.channelGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .channelGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.channel {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  height: 100%;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: #f4f6f9;
+  transition:
+    background-color 0.15s,
+    transform 0.15s;
+}
+
+.channel:hover {
+  background: #eef1f5;
+}
+
+.channelChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #e7f6ec;
+  color: #1fa24a;
+}
+
+.channelIcon {
+  width: 22px;
+  height: 22px;
+}
+
+.channelText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.channelLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.channelValue {
+  font-size: 0.96875rem;
+  color: #4a4f57;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.channelArrow {
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: #6b7079;
+  transition: transform 0.15s;
+}
+
+.channel:hover .channelArrow {
+  transform: translate(2px, -2px);
+  color: #1fa24a;
+}
+
+/* ---------- Follow ---------- */
+.follow {
+  margin: 0;
+  font-size: 0.78125rem;
+  line-height: 1.5;
+  color: #4a4f57;
+  text-align: center;
+}
+
+.followLabel {
+  color: #4a4f57;
+}
+
+.followSep {
+  color: #4a4f57;
+}
+
+.followLink {
+  color: #4a4f57;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.followLink:hover {
+  color: #1fa24a;
+}

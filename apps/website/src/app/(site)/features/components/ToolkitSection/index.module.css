@@ -1,0 +1,221 @@
+/* ToolkitSection — "Everything the app does" bento grid.
+   Matches Figma "04 · Features · D" → "Everything the app does".
+
+   Row 1: wide "Daily utility" tile (792px, two capability columns) + a
+   narrower "Multi-vehicle" tile (384px). Row 2: three equal tiles. Row 3: two
+   equal tiles. Tiles are white cards with a green head icon, an H3 title, a
+   card-body subtitle and a list of icon + label · detail capability rows. */
+
+.section {
+  position: relative;
+  z-index: 1;
+  background-color: #f4f6f9;
+  color: #0a0a0c;
+}
+
+.inner {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem; /* 48px */
+  max-width: 75rem; /* 1200px content */
+  padding: 4rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 6rem 2.5rem; /* Figma 96px 120px */
+  }
+}
+
+/* ---------- Section header ---------- */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem; /* 14px */
+  max-width: 52.5rem; /* 840px */
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem; /* 10px */
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.0625rem; /* 17px */
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #14803a;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  background: #1fa24a;
+}
+
+.headline {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.6vw, 2.75rem); /* up to 44px */
+  line-height: 1.18; /* 52/44 */
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+.headlineAccent {
+  color: #1fa24a;
+}
+
+.subheading {
+  max-width: 40rem;
+  font-size: 1.1875rem; /* 19px */
+  line-height: 1.47; /* 28/19 */
+  color: #4a4f57;
+}
+
+/* ---------- Bento ---------- */
+.bento {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+  width: 100%;
+}
+
+.row {
+  display: grid;
+  gap: 1.5rem; /* 24px */
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .rowThree,
+  .rowTwo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .rowWide {
+    /* Figma exact widths: 792px + 24px gap + 384px = 1200px. */
+    grid-template-columns: minmax(0, 792fr) minmax(0, 384fr);
+  }
+
+  .rowThree {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rowTwo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Tile ---------- */
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 16px */
+  height: 100%;
+  padding: 2rem; /* 32px */
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* 8px */
+}
+
+.headRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+}
+
+.headIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  /* colour is set per icon inline to match the Figma per-icon palette */
+}
+
+.tileTitle {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.4; /* 28/20 */
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.tileSubtitle {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5; /* 21/14 */
+  color: #6b7079;
+}
+
+/* ---------- Capabilities ---------- */
+.capabilities {
+  margin: 0;
+  padding: 0.5rem 0 0; /* Figma 8px 0 0 */
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* 12px */
+}
+
+@media (min-width: 768px) {
+  .capabilitiesTwoCol {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
+    column-gap: 2rem; /* 32px */
+    row-gap: 0.75rem; /* 12px */
+  }
+}
+
+.capability {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem; /* 12px */
+}
+
+.capIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 21px; /* Figma icon slot 18x21, centres the 18px icon on the text line */
+  /* colour is set per icon inline to match the Figma per-icon palette */
+}
+
+.capText {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5; /* 21/14 */
+}
+
+.capLabel {
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.capDetail {
+  font-weight: 400;
+  color: #4a4f57;
+}

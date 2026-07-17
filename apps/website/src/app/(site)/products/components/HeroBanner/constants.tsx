@@ -1,39 +1,9 @@
-import { Network, Settings2, TrendingUp, type LucideIcon } from 'lucide-react';
+import type { HeroCopy } from './types';
 
-export const HERO_BG_WEB = '/images/new-design/productPageHeroWeb.png';
-export const HERO_BG_MOBILE = '/images/new-design/productPageHeroMobile.png';
-
-export const HERO_COPY = {
-  headline: 'Grow with the',
-  headlineAccent: 'Autolokate network.',
+export const HERO_COPY: HeroCopy = {
+  eyebrow: 'The Autolokate ecosystem',
+  headline: 'One platform.',
+  headlineAccent: 'Three purpose-built apps.',
   description:
-    'Help garages, workshops, modification shops, parking agencies, and petrol pumps run smarter operations and deliver better customer experiences.',
-} as const;
-
-export interface HeroHighlight {
-  id: string;
-  title: string;
-  description: string;
-  Icon: LucideIcon;
-}
-
-export const HERO_HIGHLIGHTS: HeroHighlight[] = [
-  {
-    id: 'trusted-network',
-    title: 'Trusted Network',
-    description: 'Join thousands of partners across India',
-    Icon: Network,
-  },
-  {
-    id: 'smarter-operations',
-    title: 'Smarter Operations',
-    description: 'Digital tools that simplify your daily work',
-    Icon: Settings2,
-  },
-  {
-    id: 'grow-business',
-    title: 'Grow Your Business',
-    description: 'More customers, better ratings, higher revenue',
-    Icon: TrendingUp,
-  },
-];
+    'One for drivers, one for garages and workshops, one for parking agencies and petrol pumps. All sharing one account, one network.',
+};

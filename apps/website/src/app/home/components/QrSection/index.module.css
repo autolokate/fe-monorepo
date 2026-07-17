@@ -1,98 +1,211 @@
-/* QrSection — shares the home design language: green accent, token surfaces,
-   and the same hover lift + green ring used by the Getting Started cards. */
+/* QrSection — white "Backup Layer · Smart QR" section. */
 
-.accent {
-  color: var(--al-signal-green);
+.section {
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff;
+  color: #0a0a0c;
 }
 
-.iconBadge {
-  color: var(--al-signal-green);
-  border: 1px solid color-mix(in srgb, var(--al-signal-green) 42%, transparent);
-  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
+.inner {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 75rem;
+  padding: 4rem 1.25rem;
 }
 
-.featureCard {
-  border: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  transition:
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
-}
-
-.featureCard:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--al-signal-green) 50%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--al-signal-green) 30%, transparent),
-    0 16px 34px -22px color-mix(in srgb, var(--al-signal-green) 42%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .featureCard {
-    transition: none;
-  }
-  .featureCard:hover {
-    transform: none;
+@media (min-width: 640px) {
+  .inner {
+    padding: 5rem 2rem;
   }
 }
 
-/* ---- QR "scanning" line ----
-   A thin green line sweeps up/down over the QR square of the plate, echoing the
-   "Scan in Case of Emergency" idea. The scan area is clipped to the QR region
-   so the line only travels across the code itself. */
-.scanArea {
+@media (min-width: 1024px) {
+  .inner {
+    display: grid;
+    grid-template-columns: 470px minmax(0, 1fr);
+    align-items: start;
+    gap: 5rem;
+    padding: 6rem 2.5rem;
+  }
+}
+
+/* ---------- QR scene ---------- */
+.scene {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  margin-inline: auto;
+  aspect-ratio: 470 / 430;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #eaf3ed 0%, #f4f8f6 73%);
+}
+
+/* Sticker sized/positioned so the visible card matches Figma (card bbox ≈ 91.5,25 → 359.5,361.5
+   within the 470×430 scene). The PNG has transparent padding, so the wrapper is larger than the card. */
+.stickerWrap {
   position: absolute;
-  left: 29%;
-  right: 19%;
-  top: 23%;
-  bottom: 33%;
-  overflow: hidden;
-  pointer-events: none;
+  left: 13.8%;
+  top: 1.5%;
+  width: 68.5%;
+  filter: drop-shadow(0 20px 40px rgba(8, 15, 26, 0.12));
 }
 
-.scanLine {
+.sticker {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Masked call chip positioned per Figma: x 214, y 351 within the 470×430 scene. */
+.chip {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 2%;
-  height: 4px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 14px 1px rgba(255, 255, 255, 0.45);
-  /* Hidden by default; revealed on hover (or always on touch, see below). */
-  opacity: 0;
+  left: 45.53%;
+  top: 80%;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px -4px rgba(15, 18, 28, 0.14);
 }
 
-@keyframes qrScan {
-  0% {
-    top: 2%;
-  }
-  100% {
-    top: 98%;
+.chipIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #1fa24a;
+  color: #ffffff;
+}
+
+.chipText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.chipTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 18px;
+  color: #0a0a0c;
+}
+
+.chipSubtitle {
+  font-size: 0.71875rem;
+  line-height: 16px;
+  color: #6b7079;
+}
+
+/* ---------- Copy ---------- */
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #14803a;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #1fa24a;
+}
+
+.headline {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.875rem, 3.4vw, 2.375rem);
+  font-weight: 700;
+  line-height: 1.263;
+  letter-spacing: -0.012em;
+}
+
+.headlineAccent {
+  color: #1fa24a;
+}
+
+.body {
+  max-width: 38rem;
+  font-size: 1.0625rem;
+  line-height: 1.588;
+  color: #4a4f57;
+}
+
+/* ---------- Feature rows ---------- */
+.features {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 480px) {
+  .features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.625rem;
   }
 }
 
-/* Pointer devices: only scan while hovering the QR plate. */
-@media (hover: hover) {
-  .qrFrame:hover .scanLine {
-    opacity: 0.9;
-    animation: qrScan 2.4s ease-in-out infinite alternate;
-  }
+.feature {
+  display: flex;
+  gap: 0.75rem;
 }
 
-/* Touch devices have no hover, so keep the scan running continuously. */
-@media (hover: none) {
-  .scanLine {
-    opacity: 0.9;
-    animation: qrScan 2.4s ease-in-out infinite alternate;
-  }
+.featureIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .scanLine {
-    animation: none !important;
-    opacity: 0;
-  }
+.featureIconEmergency {
+  background: rgba(229, 52, 42, 0.1);
+  color: #e5342a;
+}
+
+.featureIconBrand {
+  background: rgba(31, 162, 74, 0.1);
+  color: #1fa24a;
+}
+
+.featureText {
+  min-width: 0;
+}
+
+.featureTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0a0a0c;
+}
+
+.featureBody {
+  margin-top: 3px;
+  font-size: 0.9375rem;
+  line-height: 1.467;
+  color: #4a4f57;
+}
+
+/* ---------- CTA ---------- */
+.ctaRow {
+  display: flex;
+  justify-content: center;
 }

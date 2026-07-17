@@ -1,301 +1,353 @@
-/* AppShowcaseSection — three alternating app bands (Consumer, Partner, QR
-   Partner). Each band pairs a copy column (icon, features, store badges) with
-   a demo video in place of static screenshots. `--accent` is set per row. */
+/* Products "Three apps" section — light band with the flagship consumer tile
+   and the two partner tiles. Matches Figma "06 · Products · D" → Three apps. */
 
 .section {
-  background-color: var(--background);
+  position: relative;
+  background-color: #f4f6f9;
+  color: #0a0a0c;
 }
 
-/* ---------- Intro ---------- */
-.intro {
+.inner {
   margin-inline: auto;
-  max-width: 80rem;
-  padding: 3.5rem 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem; /* 48px */
+  max-width: 75rem;
+  padding: 4rem 1.25rem;
 }
 
 @media (min-width: 640px) {
-  .intro {
-    padding: 4rem 2rem 0;
+  .inner {
+    padding: 5rem 2rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .intro {
-    padding: 4.5rem 2.5rem 0;
-    max-width: 44rem;
-    text-align: center;
+  .inner {
+    /* Figma content is 1200px wide on a 120px gutter (1440 frame). */
+    max-width: 80rem; /* 1280px incl. 2×40px padding → 1200px content */
+    padding: 6rem 2.5rem;
   }
+}
+
+/* ---------- Section header ---------- */
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem; /* 14px */
+  text-align: center;
 }
 
 .eyebrow {
-  display: inline-block;
-  font-family: ui-monospace, 'Space Mono', SFMono-Regular, monospace;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
   font-size: 0.75rem;
+  line-height: 1.0625rem;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--al-signal-green);
+  color: #14803a;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  background: #1fa24a;
 }
 
 .heading {
-  margin: 0.75rem 0 0;
-  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  max-width: 52.5rem;
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.6vw, 2.75rem); /* up to 44px */
+  line-height: 1.18;
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  color: var(--foreground);
+  letter-spacing: -0.012em;
   text-wrap: balance;
 }
 
-.description {
-  margin: 0.75rem 0 0;
-  font-size: 0.98rem;
-  line-height: 1.6;
-  color: var(--muted-foreground);
+.headingAccent {
+  color: #1fa24a;
 }
 
-/* ---------- Rows ---------- */
-.rows {
-  margin-inline: auto;
-  max-width: 80rem;
-  padding: 2.5rem 1.25rem 3.5rem;
+.subheading {
+  max-width: 40rem;
+  font-size: 1.1875rem;
+  line-height: 1.47;
+  color: #4a4f57;
+}
+
+/* ---------- Showcase stack ---------- */
+.showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+  width: 100%;
+}
+
+.tile {
+  border-radius: 18px;
+  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
+}
+
+/* ---------- Flagship tile (dark) ---------- */
+.flagship {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  padding: 2rem;
+  background-color: #0a0a0c;
+  color: #fff;
+  overflow: hidden;
 }
 
 @media (min-width: 640px) {
-  .rows {
-    padding: 3rem 2rem 4rem;
-    gap: 2.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .rows {
-    padding: 3.5rem 2.5rem 4.5rem;
-    gap: 3rem;
-  }
-}
-
-.row {
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
-  border-radius: 1.5rem;
-  border: 1px solid var(--border);
-  background-color: var(--card);
-  padding: 1.75rem;
-}
-
-@media (min-width: 1024px) {
-  .row {
-    flex-direction: row;
-    align-items: center;
-    gap: 3rem;
+  .flagship {
     padding: 2.5rem;
   }
+}
 
-  .reversed {
-    flex-direction: row-reverse;
+@media (min-width: 1024px) {
+  .flagship {
+    flex-direction: row;
+    align-items: center;
+    gap: 2.5rem; /* 40px */
+    padding: 3rem; /* 48px */
   }
 }
 
-/* ---------- Copy column ---------- */
-.copy {
-  flex: 1;
-  min-width: 0;
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* keep the CTA hugging its content, not full-width */
+  gap: 1.75rem; /* 28px */
 }
 
-.appHeader {
+@media (min-width: 1024px) {
+  .identity {
+    flex: 0 0 22.5rem; /* 360px */
+    width: 22.5rem;
+  }
+}
+
+.tileHead {
   display: flex;
-  align-items: flex-start;
-  gap: 0.85rem;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .appIcon {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  height: 2.75rem;
-  width: 2.75rem;
-  border-radius: 0.9rem;
-  background-color: color-mix(in srgb, var(--accent) 16%, var(--background));
-  color: var(--accent);
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.nameGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
 }
 
 .appName {
-  margin: 0;
-  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  font-size: 1.3rem;
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 3.4vw, 2.375rem); /* up to 38px */
+  line-height: 1.16;
   font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--foreground);
+  letter-spacing: -0.012em;
+  color: #fff;
 }
 
-.appTagline {
-  margin: 0.15rem 0 0;
-  font-size: 0.92rem;
-  line-height: 1.45;
-  color: var(--muted-foreground);
+.appAudience {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: #c9cdd3;
 }
 
-/* ---------- Features ---------- */
-.features {
-  margin: 1.5rem 0 0;
+.appNameDark {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.375rem);
+  line-height: 1.16;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.appAudienceDark {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: #6b7079;
+}
+
+/* ---------- Capability list (shared) ---------- */
+.capabilities {
+  margin: 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* 12px */
 }
 
-@media (min-width: 480px) {
-  .features {
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 1.5rem;
+@media (min-width: 1024px) {
+  .flagship .capabilities {
+    flex: 1;
   }
 }
 
-.feature {
+.capability {
   display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
-  font-size: 0.88rem;
-  line-height: 1.45;
-  color: var(--foreground);
-}
-
-.featureCheck {
-  display: inline-flex;
-  flex-shrink: 0;
   align-items: center;
-  justify-content: center;
-  height: 1.15rem;
-  width: 1.15rem;
-  margin-top: 0.05rem;
-  border-radius: 9999px;
-  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
-  color: var(--accent);
-}
-
-/* ---------- Store badges ---------- */
-.badges {
-  margin-top: 1.75rem;
-  display: flex;
-  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.badge {
+.capabilityIcon {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  height: 3rem;
-  padding-inline: 0.9rem;
-  border-radius: 0.75rem;
-  background-color: #050608;
+  justify-content: center;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.capabilityText {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.capabilityLabel {
+  font-weight: 600;
+}
+
+/* Dark flagship tone */
+.flagship .capabilityIcon {
+  color: #ffffff;
+}
+
+.flagship .capabilityLabel {
   color: #fff;
-  text-decoration: none;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
 }
 
-.badge:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 26px -16px rgba(0, 0, 0, 0.5);
+.flagship .capabilityDetail {
+  color: #c9cdd3;
 }
 
-.badgeIcon {
-  height: 1.5rem;
-  width: 1.5rem;
-  flex-shrink: 0;
+/* Light partner tone */
+.partnerTile .capabilityIcon {
+  color: #0a0a0c;
 }
 
-.badgeText {
+.partnerTile .capabilityLabel {
+  color: #0a0a0c;
+}
+
+.partnerTile .capabilityDetail {
+  color: #4a4f57;
+}
+
+/* ---------- Flagship device ---------- */
+.device {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.phone {
+  width: auto;
+  height: 20rem;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) {
+  .phone {
+    height: 25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop: fixed 314×400 device (the top of the phone, pre-clipped in Figma),
+     inset by the card padding and vertically centred — matching the design. */
+  .device {
+    flex: 0 0 19.625rem; /* 314px */
+    align-items: flex-start;
+  }
+
+  .phone {
+    width: 19.625rem; /* 314px */
+    height: 25rem; /* 400px */
+    object-fit: contain;
+  }
+}
+
+/* ---------- Partner pair (light tiles) ---------- */
+.partnerPair {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .partnerPair {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.partnerTile {
   display: flex;
   flex-direction: column;
-  line-height: 1.05;
+  gap: 1.5rem;
+  padding: 2rem;
+  background-color: #fff;
 }
 
-.badgeText small {
-  font-size: 0.6rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  opacity: 0.85;
+@media (min-width: 640px) {
+  .partnerTile {
+    padding: 2.5rem;
+  }
 }
 
-.badgeText strong {
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-/* ---------- Media / video ---------- */
-.media {
-  flex: 1;
-  min-width: 0;
-  width: 100%;
-}
-
-.videoFrame {
-  position: relative;
-  overflow: hidden;
-  border-radius: 1.25rem;
-  border: 1px solid var(--border);
-  background-color: #050608;
-  aspect-ratio: 16 / 10;
-  box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.4);
-}
-
-.video {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  width: 100%;
-  object-fit: cover;
-}
-
-.playButton {
-  position: absolute;
-  inset: 0;
+.partnerCtaRow {
   display: flex;
-  align-items: center;
   justify-content: center;
-  border: 0;
-  background: radial-gradient(
-    120% 120% at 50% 50%,
-    rgba(5, 6, 8, 0.35) 0%,
-    rgba(5, 6, 8, 0.55) 100%
-  );
-  cursor: pointer;
-  transition: background 0.2s ease;
+  margin-top: auto;
 }
 
-.playButton:hover {
-  background: radial-gradient(
-    120% 120% at 50% 50%,
-    rgba(5, 6, 8, 0.25) 0%,
-    rgba(5, 6, 8, 0.45) 100%
-  );
+/* ---------- CTA buttons ---------- */
+/* Match Figma WebButton/Primary: 16×28 padding, 14px radius, 16px label. */
+button.ctaLight,
+button.ctaDark {
+  min-height: 0;
+  padding: 1rem 1.75rem; /* 16px 28px */
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem; /* 16px */
+  line-height: 1.5; /* 24px → 56px tall */
 }
 
-.playIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 4rem;
-  width: 4rem;
-  border-radius: 9999px;
-  background-color: var(--accent);
-  color: #05210f;
-  box-shadow: 0 18px 40px -14px color-mix(in srgb, var(--accent) 60%, transparent);
-  transition: transform 0.2s ease;
-  padding-left: 0.2rem;
+button.ctaLight {
+  border-color: transparent;
+  background-color: #fff;
+  color: #0a0a0c;
+  font-weight: 600;
 }
 
-.playButton:hover .playIcon {
-  transform: scale(1.06);
+button.ctaLight:hover:not(:disabled):not(.is-loading) {
+  background-color: rgba(255, 255, 255, 0.9);
+  opacity: 1;
+}
+
+button.ctaDark {
+  border-color: transparent;
+  background-color: #0a0a0c;
+  color: #fff;
+  font-weight: 600;
+}
+
+button.ctaDark:hover:not(:disabled):not(.is-loading) {
+  background-color: rgba(10, 10, 12, 0.88);
+  opacity: 1;
 }

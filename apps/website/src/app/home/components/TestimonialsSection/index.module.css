@@ -1,143 +1,221 @@
-/* TestimonialsSection — "What our owners say."
-   Shares the home design language: green accent, token surfaces, and the same
-   hover lift + green ring used by the Getting Started / QR cards. A faint
-   car-silhouette line-art plate sits behind the whole block. */
+/* TestimonialsSection — light-gray "Owners" testimonial carousel. */
 
-.accent {
-  color: var(--al-signal-green);
-}
-
-/* Faint car line-art plate. The asset is a light plate that matches the
-   section background, so it simply reads as a subtle watermark. */
-.bgPlate {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: url('/images/home/testimonialBgImage.png');
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  opacity: 0.85;
-}
-
-/* ---------- Carousel ---------- */
-.carousel {
+.section {
   position: relative;
+  z-index: 1;
+  background-color: #f4f6f9;
+  color: #0a0a0c;
 }
 
-/* Hide the scrollbar on the horizontal track. The track keeps a little top/
-   bottom padding so a card's hover lift + green ring is never clipped by the
-   horizontal scroll container. */
-.track {
-  scrollbar-width: none;
-}
-
-.track::-webkit-scrollbar {
-  display: none;
-}
-
-/* ---------- Testimonial card ---------- */
-.card {
-  border: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  transition:
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--al-signal-green) 50%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--al-signal-green) 30%, transparent),
-    0 16px 36px -22px color-mix(in srgb, var(--al-signal-green) 42%, transparent);
-}
-
-.avatar {
+.inner {
+  margin-inline: auto;
   display: flex;
-  height: 2.75rem;
-  width: 2.75rem;
-  flex-shrink: 0;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--al-signal-green);
-  border: 1px solid color-mix(in srgb, var(--al-signal-green) 38%, transparent);
-  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
-}
-
-.starActive {
-  color: var(--al-signal-green);
-  fill: var(--al-signal-green);
-}
-
-.starMuted {
-  color: color-mix(in srgb, var(--foreground) 22%, transparent);
-  fill: color-mix(in srgb, var(--foreground) 12%, transparent);
-}
-
-/* ---------- Dots ---------- */
-.dot {
-  height: 0.5rem;
-  width: 0.5rem;
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--foreground) 22%, transparent);
-  transition:
-    width 0.3s ease,
-    background-color 0.3s ease;
-}
-
-.dotActive {
-  width: 1.5rem;
-  background: var(--al-signal-green);
-}
-
-/* ---------- Stats bar ---------- */
-.statsBar {
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--card) 88%, transparent);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 12px 40px -28px rgba(15, 23, 42, 0.28);
-}
-
-/* Vertical hairline between the three columns on every breakpoint. */
-.stat:not(:first-child) {
-  border-left: 1px solid var(--border);
-}
-
-.statIcon {
-  display: flex;
-  height: 2.25rem;
-  width: 2.25rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  color: var(--al-signal-green);
-  border: 1px solid color-mix(in srgb, var(--al-signal-green) 42%, transparent);
-  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
+  gap: 3rem;
+  max-width: 75rem;
+  padding: 4rem 1.25rem;
 }
 
 @media (min-width: 640px) {
-  .statIcon {
-    height: 2.75rem;
-    width: 2.75rem;
-    border-radius: 0.875rem;
+  .inner {
+    padding: 5rem 2rem;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .card,
-  .dot {
-    transition: none;
+@media (min-width: 1024px) {
+  .inner {
+    padding: 6rem 2.5rem;
   }
-  .card:hover {
-    transform: none;
-  }
+}
+
+/* ---------- Header ---------- */
+.header {
+  max-width: 52.5rem;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #14803a;
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #1fa24a;
+}
+
+.headline {
+  margin-top: 0.875rem;
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.182;
+  letter-spacing: -0.012em;
+}
+
+.headlineAccent {
+  color: #1fa24a;
+}
+
+/* ---------- Carousel ---------- */
+/* Full-bleed peek carousel: the active card is centered while neighbors bleed off both edges. */
+.carousel {
+  width: 100vw;
+  align-self: stretch;
+  margin-inline: calc(50% - 50vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.viewport {
+  width: 100%;
+  overflow: hidden;
+  padding-block: 0 3rem;
+}
+
+.track {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.slide {
+  flex: 0 0 auto;
+  width: min(784px, 86vw);
+  display: flex;
+}
+
+/* ---------- Card ---------- */
+.card {
+  display: flex;
+  width: 100%;
+  min-height: 298px;
+  flex-direction: column;
+  gap: 20px;
+  padding: 40px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  transition:
+    box-shadow 0.45s ease,
+    opacity 0.45s ease;
+}
+
+.cardFeatured {
+  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
+}
+
+.cardPeek {
+  box-shadow: none;
+}
+
+.quoteGlyph {
+  width: 13.52px;
+  height: 10.33px;
+  color: #0a0a0c;
+}
+
+.quote {
+  max-width: 624px;
+  color: #4a4f57;
+}
+
+.quoteFeatured {
+  font-size: 1.1875rem;
+  line-height: 1.474;
+}
+
+.quotePeek {
+  font-size: 0.96875rem;
+  line-height: 1.548;
+}
+
+.attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0a0a0c;
+}
+
+.role {
+  font-size: 0.78125rem;
+  line-height: 1.44;
+  color: #6b7079;
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  color: #0a0a0c;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.arrow:hover:not(:disabled) {
+  border-color: #0a0a0c;
+  background: #f4f6f9;
+}
+
+.arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: #c9cdd3;
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+
+.dotActive {
+  width: 22px;
+  background: #0a0a0c;
 }

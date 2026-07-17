@@ -1,64 +1,22 @@
-import type { LucideIcon } from 'lucide-react';
-import {
-  AlertTriangle,
-  BookOpen,
-  FileCheck2,
-  FileText,
-  Gavel,
-  Lock,
-  Mail,
-  QrCode,
-  RefreshCw,
-  Scale,
-  ShieldAlert,
-  Users,
-} from 'lucide-react';
-
-export interface TermsParagraph {
-  /** Optional sub-heading rendered above the body. */
-  heading?: string;
-  /** Single paragraph of body text. */
-  body?: string;
-  /** Optional bullet list rendered after the body. */
-  bullets?: string[];
-  /** Optional label/value rows for contact-style sections. */
-  rows?: { label: string; value: string }[];
-}
-
-export interface TermsSection {
-  /** Numeric prefix shown in the eyebrow and ToC ("1", "8.1" etc). */
-  number: string;
-  /** Stable slug used for the in-page anchor. */
-  id: string;
-  /** Section title (without the numeric prefix). */
-  title: string;
-  /** Lucide icon shown in the eyebrow tile. */
-  icon: LucideIcon;
-  /** One-line description rendered under the title. */
-  intro?: string;
-  /** Ordered list of sub-blocks. */
-  blocks: TermsParagraph[];
-}
+import type { TermsSection } from './types';
 
 export const TC_LAST_UPDATED = 'May 25, 2026';
-export const TC_EFFECTIVE_DATE = 'May 25, 2026';
 
 /**
- * Source of truth for the body of the General Terms & Conditions page.
- * Mirrors the 13-section layout shown on autolokate.com/general-terms-
- * and-conditions, adapted to our Indian operating entity.
+ * Source of truth for the body of the Terms & Conditions page. Each entry maps
+ * 1:1 to a numbered section in the rendered document and feeds the sticky
+ * table of contents.
  */
 export const TC_SECTIONS: TermsSection[] = [
   {
     number: '1',
     id: 'introduction',
     title: 'Introduction',
-    icon: BookOpen,
     intro:
-      'These General Terms and Conditions (\u201cTerms\u201d) govern your use of the Autolokate web application, mobile apps, QR sticker storefront, and any related services (collectively, the \u201cPlatform\u201d).',
+      'These General Terms and Conditions ("Terms") govern your use of the Autolokate web application, mobile apps, QR sticker storefront, and any related services (collectively, the "Platform").',
     blocks: [
       {
-        body: 'The Platform is operated by Autolokate Software Private Limited (\u201cAutolokate\u201d, \u201cwe\u201d, \u201cour\u201d, or \u201cus\u201d). By using the Platform, you agree to be bound by these Terms.',
+        body: 'The Platform is operated by Autolokate Software Private Limited ("Autolokate", "we", "our", or "us"). By using the Platform, you agree to be bound by these Terms.',
       },
       {
         body: 'These General Terms & Conditions work alongside our Privacy Policy. If there is any conflict, the more specific document governs the relevant subject matter.',
@@ -69,7 +27,6 @@ export const TC_SECTIONS: TermsSection[] = [
     number: '2',
     id: 'eligibility',
     title: 'Eligibility',
-    icon: Users,
     intro:
       'You must be at least 18 years old and able to enter into a legally binding contract under Indian law to use the Platform.',
     blocks: [
@@ -85,15 +42,14 @@ export const TC_SECTIONS: TermsSection[] = [
   {
     number: '3',
     id: 'account-registration',
-    title: 'Account Registration',
-    icon: Lock,
+    title: 'Account registration',
     intro:
       'Some features require you to register for an account using your mobile number and a one-time password (OTP).',
     blocks: [
       {
         bullets: [
           'You are responsible for maintaining the confidentiality of your account credentials and OTPs.',
-          'You agree to notify Autolokate immediately at contact@autolokate.com of any unauthorised access or security breach.',
+          'You agree to notify Autolokate immediately at support@autolokate.com of any unauthorised access or security breach.',
           'We may suspend or terminate accounts that show signs of fraud, abuse, or material breach of these Terms.',
           'You may delete your account at any time from the profile page; some data may be retained as described in our Privacy Policy.',
         ],
@@ -103,10 +59,9 @@ export const TC_SECTIONS: TermsSection[] = [
   {
     number: '4',
     id: 'user-content',
-    title: 'User Content',
-    icon: FileText,
+    title: 'User content',
     intro:
-      'You retain ownership of any content you submit to the Platform (\u201cUser Content\u201d) \u2014 such as reviews, preferences, messages, and uploaded media.',
+      'You retain ownership of any content you submit to the Platform ("User Content"): such as reviews, preferences, messages, and uploaded media.',
     blocks: [
       {
         body: 'By submitting User Content, you grant Autolokate a worldwide, non-exclusive, royalty-free licence to host, store, reproduce, modify, adapt, publish, and distribute the User Content solely for the purpose of operating, promoting, and improving the Platform.',
@@ -118,9 +73,8 @@ export const TC_SECTIONS: TermsSection[] = [
   },
   {
     number: '5',
-    id: 'prohibited',
-    title: 'Prohibited Conduct',
-    icon: ShieldAlert,
+    id: 'prohibited-conduct',
+    title: 'Prohibited conduct',
     intro: 'You agree not to:',
     blocks: [
       {
@@ -140,15 +94,14 @@ export const TC_SECTIONS: TermsSection[] = [
   },
   {
     number: '6',
-    id: 'intellectual-property',
-    title: 'Intellectual Property Rights',
-    icon: Scale,
+    id: 'intellectual-property-rights',
+    title: 'Intellectual property rights',
     intro:
-      'The Platform and all of its content, features, and functionality \u2014 including text, images, design, software, vehicle data, and editorial content \u2014 are owned by Autolokate or its licensors and protected by Indian and international copyright, trademark, and other intellectual-property laws.',
+      'The Platform and all of its content, features, and functionality, including text, images, design, software, vehicle data, and editorial content, are owned by Autolokate or its licensors and protected by Indian and international copyright, trademark, and other intellectual-property laws.',
     blocks: [
       {
         bullets: [
-          '\u201cAutolokate\u201d, the Autolokate logo, and related marks are trademarks of Autolokate Software Private Limited.',
+          '"Autolokate", the Autolokate logo, and related marks are trademarks of Autolokate Software Private Limited.',
           'Third-party brand names and vehicle marks shown on the Platform are the property of their respective owners.',
           'You are granted a limited, non-transferable, revocable licence to access and use the Platform for personal, non-commercial purposes only.',
         ],
@@ -158,15 +111,14 @@ export const TC_SECTIONS: TermsSection[] = [
   {
     number: '7',
     id: 'qr-code-usage',
-    title: 'QR Code Usage',
-    icon: QrCode,
+    title: 'QR code usage',
     intro:
       'QR code stickers sold through the Platform are intended for personal use by the registered vehicle owner.',
     blocks: [
       {
         bullets: [
           'Each QR sticker is linked to a single user account and should not be transferred, sold, or shared with unauthorised parties.',
-          'Scanning an Autolokate QR opens a private, in-app message channel \u2014 the vehicle owner\u2019s phone number is never exposed to the scanner.',
+          'Scanning an Autolokate QR opens a private, in-app message channel: the vehicle owner’s phone number is never exposed to the scanner.',
           'We reserve the right to deactivate any QR sticker associated with misuse, fraud, or violation of these Terms.',
         ],
       },
@@ -174,9 +126,8 @@ export const TC_SECTIONS: TermsSection[] = [
   },
   {
     number: '8',
-    id: 'third-party',
-    title: 'Third-Party Links and Services',
-    icon: Users,
+    id: 'third-party-links-and-services',
+    title: 'Third-party links and services',
     intro:
       'The Platform may contain links to third-party websites, apps, or services that are not owned or controlled by Autolokate.',
     blocks: [
@@ -187,17 +138,16 @@ export const TC_SECTIONS: TermsSection[] = [
   },
   {
     number: '9',
-    id: 'liability',
-    title: 'Limitation of Liability',
-    icon: AlertTriangle,
+    id: 'limitation-of-liability',
+    title: 'Limitation of liability',
     intro:
       'To the maximum extent permitted by applicable law, in no event shall Autolokate, its affiliates, directors, employees, agents, licensors, or service providers be liable for damages of any kind under any legal theory.',
     blocks: [
       {
-        body: 'This includes any direct, indirect, special, incidental, consequential, or punitive damages arising out of or in connection with your use, or inability to use, the Platform \u2014 including without limitation any loss of profits, revenue, data, or goodwill.',
+        body: 'This includes any direct, indirect, special, incidental, consequential, or punitive damages arising out of or in connection with your use, or inability to use, the Platform, including without limitation any loss of profits, revenue, data, or goodwill.',
       },
       {
-        body: 'Our aggregate liability for any claim arising from these Terms or the Platform is limited to the greater of (a) the amount you paid to Autolokate in the twelve (12) months preceding the claim, or (b) INR 5,000.',
+        body: 'Our aggregate liability for any claim arising from these Terms or the Platform is limited to the greater of (a) the amount you paid to Autolokate in the twelve (12) months preceding the claim, or (b) ₹5,000.',
       },
     ],
   },
@@ -205,9 +155,8 @@ export const TC_SECTIONS: TermsSection[] = [
     number: '10',
     id: 'indemnification',
     title: 'Indemnification',
-    icon: FileCheck2,
     intro:
-      'You agree to indemnify, defend, and hold harmless Autolokate, its affiliates, directors, officers, employees, agents, licensors, and service providers from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys\u2019 fees) arising out of:',
+      'You agree to indemnify, defend, and hold harmless Autolokate, its affiliates, directors, officers, employees, agents, licensors, and service providers from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys’ fees) arising out of:',
     blocks: [
       {
         bullets: [
@@ -223,9 +172,8 @@ export const TC_SECTIONS: TermsSection[] = [
     number: '11',
     id: 'modifications',
     title: 'Modifications',
-    icon: RefreshCw,
     intro:
-      'We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 7 days\u2019 notice prior to any new terms taking effect.',
+      'We reserve the right to modify or replace these Terms at any time. If a revision is material, we will provide at least 7 days’ notice prior to any new terms taking effect.',
     blocks: [
       {
         body: 'What constitutes a material change will be determined at our sole discretion. By continuing to access or use our Platform after those revisions become effective, you agree to be bound by the revised Terms.',
@@ -235,31 +183,29 @@ export const TC_SECTIONS: TermsSection[] = [
   {
     number: '12',
     id: 'governing-law',
-    title: 'Governing Law',
-    icon: Gavel,
+    title: 'Governing law',
     intro:
       'These Terms shall be governed and construed in accordance with the laws of India, without regard to its conflict-of-law provisions.',
     blocks: [
       {
-        body: 'Any legal action or proceeding arising under these Terms will be brought exclusively in the courts located in New Delhi, India \u2014 and you hereby consent to the personal jurisdiction and venue of such courts.',
+        body: 'Any legal action or proceeding arising under these Terms will be brought exclusively in the courts located in New Delhi, India, and you hereby consent to the personal jurisdiction and venue of such courts.',
       },
     ],
   },
   {
     number: '13',
-    id: 'contact',
-    title: 'Contact Information',
-    icon: Mail,
+    id: 'contact-information',
+    title: 'Contact information',
     intro: 'If you have any questions about these Terms, please contact us at:',
     blocks: [
       {
         rows: [
-          { label: 'Email', value: 'contact@autolokate.com' },
-          { label: 'Support', value: 'contact@autolokate.com' },
+          { label: 'Email', value: 'support@autolokate.com' },
+          { label: 'Support', value: 'support@autolokate.com' },
         ],
       },
       {
-        heading: 'Mailing Address',
+        heading: 'Mailing address',
         body: 'Autolokate Software Private Limited\nE 90 Chanakya Place Delhi, India',
       },
     ],
@@ -267,8 +213,8 @@ export const TC_SECTIONS: TermsSection[] = [
 ];
 
 /** Auto-generated table-of-contents entries (top-level sections only). */
-export const TC_TOC = TC_SECTIONS.map((s) => ({
-  number: s.number,
-  id: s.id,
-  title: s.title,
+export const TC_TOC = TC_SECTIONS.map((section) => ({
+  number: section.number,
+  id: section.id,
+  title: section.title,
 }));
