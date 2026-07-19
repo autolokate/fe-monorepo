@@ -14,6 +14,7 @@ interface AddressRowProps {
 export function AddressRow({ address, onSetDefault, onEdit, onDelete }: AddressRowProps) {
   const lineA = [address.line1, address.line2].filter(Boolean).join(', ');
   const lineB = [`${address.city}, ${address.state}`, address.pincode].filter(Boolean).join(' ');
+  const phoneLine = `+91 ${address.phone.slice(0, 5)} ${address.phone.slice(5)}`;
 
   return (
     <div className={cn(styles.card, address.isDefault && styles.cardDefault)}>
@@ -58,7 +59,7 @@ export function AddressRow({ address, onSetDefault, onEdit, onDelete }: AddressR
 
         {lineA ? <span className={styles.line}>{lineA}</span> : null}
         {lineB ? <span className={styles.line}>{lineB}</span> : null}
-        <span className={styles.line}>+91 {address.phoneMasked}</span>
+        <span className={styles.line}>{phoneLine}</span>
       </div>
     </div>
   );

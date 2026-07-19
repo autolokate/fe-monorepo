@@ -23,6 +23,13 @@
   background: var(--destructive, #dc2626);
 }
 
+/* Payment still settling past the poll cap: amber, not a failure. */
+.badgeWaiting {
+  background: var(--warn-soft);
+  border: 1px solid color-mix(in srgb, var(--warn-soft-foreground) 30%, var(--border));
+  color: var(--warn-soft-foreground);
+}
+
 .title {
   margin: 0 0 0.6rem;
   font-size: clamp(1.9rem, 5vw, 2.35rem);

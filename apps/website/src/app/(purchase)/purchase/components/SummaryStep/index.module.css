@@ -136,6 +136,23 @@
   color: var(--muted-foreground);
 }
 
+/* ---------- Cancelled-payment notice ---------- */
+.noticeCard {
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--warn-soft-foreground) 30%, var(--border));
+  border-radius: 1.1rem;
+  background: var(--warn-soft);
+}
+
+.noticeText {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--warn-soft-foreground);
+}
+
 /* ---------- Cart error ---------- */
 .errorCard {
   display: flex;
@@ -145,9 +162,9 @@
   gap: 0.75rem;
   margin-bottom: 1rem;
   padding: 1rem 1.25rem;
-  border: 1px solid color-mix(in srgb, var(--destructive, #dc2626) 40%, var(--border));
+  border: 1px solid color-mix(in srgb, var(--warn-soft-foreground) 30%, var(--border));
   border-radius: 1.1rem;
-  background: color-mix(in srgb, var(--destructive, #dc2626) 8%, transparent);
+  background: var(--warn-soft);
 }
 
 .errorText {
@@ -156,7 +173,7 @@
   min-width: 12rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--foreground);
+  color: var(--warn-soft-foreground);
 }
 
 .retry {

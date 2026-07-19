@@ -54,9 +54,19 @@ interface Enveloped<T> {
 }
 
 /**
- * A saved delivery address (`GET /v1/addresses`). Contact details come back
- * MASKED — `phoneMasked` is the last four digits, `emailMasked` a partial —
- * so they're safe to render but can't be re-submitted verbatim on an edit.
+ * A saved delivery address (`GET /v1/addresses`). Contact details come back in
+ * FULL. The address book is scope-from-principal: every read filters on the
+ * caller's account and anything else is `not_found`, so the only principal who
+ * can ever see these fields is the account that wrote them, reading back its
+ * own delivery contact. It sits next to the name and street lines this same
+ * object already returns in the clear, which are strictly more identifying than
+ * the mobile beside them, so masking two of eight fields bought no real
+ * confidentiality while making the address uneditable.
+ *
+ * `phone` / `email` deliberately match the `CreateAddressPayload` field names,
+ * so a saved address round-trips straight back into the edit form as a prefill.
+ * At rest nothing changed: the whole blob stays envelope-encrypted in the
+ * identity vault, is never logged, and is purged by the erasure cascade.
  */
 export interface SavedAddress {
   /** Send this as `addressId` on `POST /v1/orders`. */
@@ -64,10 +74,10 @@ export interface SavedAddress {
   /** The buyer's own label ("Home", "Office"), or null. */
   label: string | null;
   name: string;
-  /** Last 4 digits only, e.g. "••••3210". */
-  phoneMasked: string;
-  /** Partially masked, e.g. "p••••@example.com", or null. */
-  emailMasked: string | null;
+  /** Full 10-digit delivery mobile, e.g. "9876543210". */
+  phone: string;
+  /** Full delivery email, or null when the buyer never set one. */
+  email: string | null;
   line1: string;
   line2: string | null;
   city: string;

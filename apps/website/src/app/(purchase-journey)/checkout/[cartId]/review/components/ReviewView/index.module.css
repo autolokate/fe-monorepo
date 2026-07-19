@@ -88,7 +88,7 @@
   max-width: 100%;
 }
 
-/* ── Notices (offline / payment failed) ─────────────────────────────── */
+/* ── Notices (offline / cancelled / payment failed) ─────────────────── */
 .notice {
   display: flex;
   align-items: center;
@@ -101,6 +101,12 @@
 .noticeFailed {
   background: #fef3dd;
   border-color: #9a6106;
+}
+
+/* Nothing went wrong here, so this stays neutral rather than amber. */
+.noticeCancelled {
+  background: #eef1f5;
+  border-color: #c4c9d2;
 }
 
 .noticeOffline {

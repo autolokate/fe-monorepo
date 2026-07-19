@@ -61,8 +61,6 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   const [view, setView] = useState<View>('loading');
   const [formMode, setFormMode] = useState<FormMode>('create');
   const [editingId, setEditingId] = useState<string | null>(null);
-  // The saved address being edited — kept to source masked contact hints.
-  const [editingAddress, setEditingAddress] = useState<SavedAddress | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedAddress | null>(null);
   const decidedRef = useRef(false);
@@ -102,7 +100,6 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   const startCreate = () => {
     setFormMode('create');
     setEditingId(null);
-    setEditingAddress(null);
     setQuery('');
     reset();
     setOpen(false);
@@ -114,20 +111,20 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
     setView('form');
   };
 
-  // Open the form prefilled from a saved address. Contact fields come back
-  // masked, so they start empty (optional on edit) with the mask as a hint.
+  // Open the form prefilled from a saved address. Contact now comes back in
+  // full, so phone / email seed like every other field instead of starting
+  // blank behind a mask hint.
   const startEdit = (a: SavedAddress) => {
     setFormMode('edit');
     setEditingId(a.id);
-    setEditingAddress(a);
     setQuery('');
     reset();
     setOpen(false);
     setActiveIndex(-1);
     update({
       name: a.name,
-      orderMobile: '',
-      email: '',
+      orderMobile: a.phone,
+      email: a.email ?? '',
       addr: a.line1,
       line2: a.line2 ?? '',
       city: a.city,
@@ -141,7 +138,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   };
 
   // Copy a chosen saved address into the shared state the summary / order flow
-  // already reads from (line1…pincode). Contact stays as-is (masked upstream).
+  // already reads from (line1…pincode). Contact stays as-is: the order is
+  // created from `addressId`, so the saved phone / email never round-trip here.
   const applyAddressToState = (a: SavedAddress) => {
     update({
       name: a.name,
@@ -186,7 +184,9 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
   const pinLocked = lockResolved && pinFromLookup;
   const mobileRe = /^[6-9]\d{9}$/;
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  // On edit, contact fields are optional (the saved ones are kept unless typed).
+  // On edit the contact fields arrive prefilled, so blank now means the buyer
+  // cleared them by hand. Stay lenient there: the submit omits an empty field,
+  // which leaves the stored value untouched.
   const mobileValid = isEditing
     ? state.orderMobile === '' || mobileRe.test(state.orderMobile)
     : mobileRe.test(state.orderMobile);
@@ -423,8 +423,8 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
                     {a.city}, {a.state} {a.pincode}
                   </p>
                   <p className={styles.addrContact}>
-                    {a.phoneMasked}
-                    {a.emailMasked ? ` · ${a.emailMasked}` : ''}
+                    {a.phone}
+                    {a.email ? ` · ${a.email}` : ''}
                   </p>
                 </div>
                 <div className={styles.addrActions}>
@@ -519,7 +519,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           id="ship-mobile"
           label="Mobile number"
           prefix=""
-          placeholder={editingAddress ? `Keep ${editingAddress.phoneMasked}` : '9876543210'}
+          placeholder="9876543210"
           inputMode="numeric"
           value={state.orderMobile}
           state={mobileTouched && !mobileValid ? 'error' : 'default'}
@@ -543,9 +543,7 @@ export function AddressStep({ state, update, goTo, isAuthenticated }: StepProps)
           label="Email"
           prefix=""
           type="email"
-          placeholder={
-            editingAddress?.emailMasked ? `Keep ${editingAddress.emailMasked}` : 'aarav@example.com'
-          }
+          placeholder="aarav@example.com"
           value={state.email}
           state={emailTouched && !emailValid ? 'error' : 'default'}
           errorText={emailTouched && !emailValid ? 'Enter a valid email address' : undefined}

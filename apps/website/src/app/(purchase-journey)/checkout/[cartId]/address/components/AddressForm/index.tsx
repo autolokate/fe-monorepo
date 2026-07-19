@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { ArrowRight, Check, MapPin, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAddressAutocomplete } from '@/hooks/purchase';
@@ -8,9 +8,9 @@ import type { SavedAddress } from '../../../../../shared/services/checkout-api';
 import styles from './index.module.css';
 
 export interface AddressFormValues {
-  /** 10 digits; may be '' when editing (keep the masked number on file). */
+  /** 10 digits; may be '' when editing (leaves the number on file untouched). */
   mobile: string;
-  /** May be '' when editing (keep the masked email on file). */
+  /** May be '' when editing (leaves the email on file untouched). */
   email: string;
   line1: string;
   line2: string;
@@ -42,8 +42,8 @@ function buildInitial(
 ): AddressFormValues {
   if (mode === 'edit' && initial) {
     return {
-      mobile: '',
-      email: '',
+      mobile: initial.phone,
+      email: initial.email ?? '',
       line1: initial.line1,
       line2: initial.line2 ?? '',
       pincode: initial.pincode,
@@ -135,17 +135,6 @@ export function AddressForm({
     onSubmit(values);
   };
 
-  const mobilePlaceholder = useMemo(
-    () => (mode === 'edit' && initial ? `Keep ${initial.phoneMasked}` : '98765 43210'),
-    [mode, initial],
-  );
-
-  const emailPlaceholder = useMemo(
-    () =>
-      mode === 'edit' && initial?.emailMasked ? `Keep ${initial.emailMasked}` : 'aarav@example.com',
-    [mode, initial],
-  );
-
   return (
     <div className={styles.form}>
       {/* Autocomplete search + suggestions */}
@@ -199,7 +188,7 @@ export function AddressForm({
             type="tel"
             inputMode="numeric"
             value={values.mobile}
-            placeholder={mobilePlaceholder}
+            placeholder="98765 43210"
             onChange={(e) => {
               set('mobile', e.target.value.replace(/\D/g, '').slice(0, 10));
             }}
@@ -213,7 +202,7 @@ export function AddressForm({
           type="email"
           autoComplete="email"
           value={values.email}
-          placeholder={emailPlaceholder}
+          placeholder="aarav@example.com"
           onChange={(e) => {
             set('email', e.target.value);
           }}
