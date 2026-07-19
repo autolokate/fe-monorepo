@@ -1,0 +1,260 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 460px;
+  max-width: 100%;
+}
+
+/* ── Autocomplete search + suggestions ──────────────────────────────── */
+.searchPopup {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+}
+
+.searchIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: #8a8a8a;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #0a0a0c;
+}
+
+.searchInput::placeholder {
+  color: #8a8a8a;
+}
+
+.divider {
+  height: 1px;
+  background: #eceff3;
+}
+
+.suggestions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  background: #f4f6f9;
+}
+
+.suggestionIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: #8a8a8a;
+}
+
+.suggestionText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.suggestionPrimary {
+  font-size: 15px;
+  font-weight: 500;
+  color: #0a0a0c;
+}
+
+.suggestionSecondary {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #8a8a8a;
+}
+
+/* ── Fields ─────────────────────────────────────────────────────────── */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.input,
+.inputBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 16px;
+  background: #ffffff;
+  border: 1.5px solid #c4c4c4;
+  border-radius: 14px;
+  font-size: 16px;
+  color: #0a0a0c;
+}
+
+.input {
+  width: 100%;
+  outline: none;
+}
+
+.input::placeholder {
+  color: #8a8a8a;
+}
+
+.input:focus,
+.inputBox:focus-within {
+  border-color: #0a0a0c;
+}
+
+.inputError,
+.inputError:focus,
+.inputError:focus-within {
+  border-color: #d92d20;
+}
+
+.prefix {
+  font-size: 16px;
+  font-weight: 500;
+  color: #0a0a0c;
+}
+
+.prefixDivider {
+  width: 1px;
+  height: 24px;
+  background: #c4c4c4;
+}
+
+.bareInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #0a0a0c;
+}
+
+.bareInput::placeholder {
+  color: #8a8a8a;
+}
+
+.fieldError {
+  font-size: 13px;
+  line-height: 18px;
+  color: #d92d20;
+}
+
+.pcsRow {
+  display: flex;
+  gap: 12px;
+}
+
+.pcsRow > .fieldGroup {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Default checkbox ───────────────────────────────────────────────── */
+.defaultCheck {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+  cursor: pointer;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border: 1.5px solid #c4c4c4;
+  border-radius: 6px;
+}
+
+.checkboxOn {
+  background: #1fa24a;
+  border-color: #1fa24a;
+}
+
+.checkboxIcon {
+  width: 13px;
+  height: 13px;
+  color: #ffffff;
+  stroke-width: 3;
+}
+
+/* ── CTA ────────────────────────────────────────────────────────────── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 56px;
+  margin-top: 8px;
+  padding: 16px 28px;
+  background: #0a0a0c;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.cta:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ctaIcon {
+  width: 18px;
+  height: 18px;
+}

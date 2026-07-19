@@ -1,0 +1,330 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 120px 80px;
+}
+
+.errorBody {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 120px;
+}
+
+/* ── Back link (aligned to the left of the centered 600px column) ────── */
+.backLink {
+  position: absolute;
+  top: 16px;
+  left: calc(50% - 300px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #6b7079;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: #0a0a0c;
+}
+
+.backIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Heading ────────────────────────────────────────────────────────── */
+.hd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 52px;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.subhead {
+  max-width: 600px;
+  margin: 0;
+  font-size: 19px;
+  line-height: 28px;
+  color: #6b7079;
+}
+
+/* ── Order block ────────────────────────────────────────────────────── */
+.order {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 600px;
+  max-width: 100%;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 17px;
+  letter-spacing: 0.06em;
+  color: #6b7079;
+}
+
+/* Plan row */
+.planRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1.5px solid #eceff3;
+  border-radius: 18px;
+}
+
+.planLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #e7f6ec;
+}
+
+.tileIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.planText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.planName {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+  color: #0a0a0c;
+}
+
+.change {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7079;
+  text-decoration: underline;
+}
+
+.change:hover {
+  color: #0a0a0c;
+}
+
+.planSub {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  flex: none;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+  color: #0a0a0c;
+}
+
+.per {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+/* Add rider cover */
+.addonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.addonLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.addonTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.addonOptional {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+/* Total */
+.totalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 28px;
+}
+
+.totalLabel {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+  color: #0a0a0c;
+}
+
+.totalRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.totalPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.totalPrice {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.gst {
+  font-size: 12.5px;
+  line-height: 18px;
+  color: #6b7079;
+}
+
+/* ── Note + CTA ─────────────────────────────────────────────────────── */
+.note {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+  text-align: center;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 320px;
+  max-width: 100%;
+  height: 56px;
+  padding: 16px 28px;
+  background: #0a0a0c;
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.cta:hover {
+  opacity: 0.9;
+}
+
+.ctaIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .body {
+    padding: 48px 40px 64px;
+  }
+
+  .errorBody {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 680px) {
+  .backLink {
+    left: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .body {
+    padding: 56px 20px 48px;
+    gap: 28px;
+  }
+
+  .backLink {
+    left: 20px;
+  }
+
+  .errorBody {
+    padding: 0 20px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .subhead {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

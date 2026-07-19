@@ -1,0 +1,394 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 120px 80px;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 600px;
+  max-width: 100%;
+  padding-top: 8px;
+}
+
+/* ── Back link (failed only) ────────────────────────────────────────── */
+.backLink {
+  position: absolute;
+  top: 16px;
+  left: calc(50% - 300px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #6b7079;
+  cursor: pointer;
+}
+
+.backLink:hover {
+  color: #0a0a0c;
+}
+
+.backIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Shared text blocks ─────────────────────────────────────────────── */
+.centerText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0a0a0c;
+}
+
+.confirmTitle {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0a0a0c;
+}
+
+.sub {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+/* ── Confirming ─────────────────────────────────────────────────────── */
+.confirming {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding-top: 80px;
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  color: #1fa24a;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Success / failed head marks ────────────────────────────────────── */
+.head,
+.failed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+}
+
+.markSuccess,
+.markFail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 40px;
+}
+
+.markSuccess {
+  background: #1fa24a;
+}
+
+.markFail {
+  background: #9a6106;
+}
+
+.markIcon {
+  width: 38px;
+  height: 38px;
+  color: #ffffff;
+}
+
+/* ── Confirmation card ──────────────────────────────────────────────── */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+}
+
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.cardRowLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.planName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #0a0a0c;
+}
+
+.planSub {
+  font-size: 14px;
+  line-height: 20px;
+  color: #6b7079;
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0a0a0c;
+  white-space: nowrap;
+}
+
+.divider {
+  height: 1px;
+  background: #eceff3;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.metaLabel {
+  font-size: 14px;
+  color: #6b7079;
+}
+
+.metaValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0a0a0c;
+  word-break: break-all;
+  text-align: right;
+}
+
+.ship {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shipIcon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #6b7079;
+}
+
+.shipText {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.shipTitle {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #0a0a0c;
+}
+
+.shipSub {
+  font-size: 13.5px;
+  color: #6b7079;
+}
+
+/* ── Download invoice ───────────────────────────────────────────────── */
+.invoiceLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 0;
+  background: transparent;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0a0a0c;
+  cursor: pointer;
+}
+
+.invoiceLink:disabled {
+  color: #9aa0a8;
+  cursor: default;
+}
+
+.invoiceIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── What's next ────────────────────────────────────────────────────── */
+.whatsNext {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.whatsNextLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7079;
+}
+
+.nextStep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nextIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  background: #e8e8e8;
+  border-radius: 9px;
+}
+
+.nextIconGlyph {
+  width: 20px;
+  height: 20px;
+  color: #6b7079;
+}
+
+.nextText {
+  font-size: 15px;
+  line-height: 22px;
+  color: #6b7079;
+}
+
+/* ── CTAs ───────────────────────────────────────────────────────────── */
+.ctaRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.primaryCta,
+.secondaryCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 56px;
+  padding: 16px 28px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.primaryCta {
+  background: #0a0a0c;
+  border: none;
+  color: #ffffff;
+}
+
+.primaryCta:hover {
+  opacity: 0.9;
+}
+
+.secondaryCta {
+  background: #ffffff;
+  border: 1.5px solid #0a0a0c;
+  color: #0a0a0c;
+  text-decoration: none;
+}
+
+.secondaryCta:hover {
+  background: #f4f6f9;
+}
+
+.ctaIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .body {
+    padding: 48px 40px 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .backLink {
+    left: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .body {
+    padding: 56px 20px 48px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .ctaRow {
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .primaryCta,
+  .secondaryCta {
+    width: 100%;
+  }
+}

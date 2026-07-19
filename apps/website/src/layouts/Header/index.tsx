@@ -7,8 +7,10 @@ import { ArrowRight, Menu } from 'lucide-react';
 import { AlIconButton } from '@autolokate/ui/icon-button';
 import { cn } from '@/lib/utils';
 import { useIsAuthenticated, useLogout } from '@/hooks/auth';
+import { isPurchaseAuthenticated } from '@/app/(purchase-journey)/shared/services/auth-api';
 import { AvatarMenu } from './AvatarMenu';
 import { avatarMenuItems } from './AvatarMenu/constants';
+import { PurchaseAccountMenu } from './PurchaseAccountMenu';
 import {
   CloseIcon,
   NavBrand,
@@ -61,6 +63,15 @@ export function Header({ className }: HeaderProps) {
       router.push('/');
     },
   });
+
+  // A visitor who verified during checkout has a purchase-journey session even
+  // without a full site account. Surface the account chip (and hide "Log in")
+  // for them too. Re-checked on route change so logout/login reflects promptly.
+  const [purchaseAuthed, setPurchaseAuthed] = useState(false);
+  useEffect(() => {
+    setPurchaseAuthed(isPurchaseAuthenticated());
+  }, [pathname]);
+  const showPurchaseChip = !authed && purchaseAuthed;
 
   useEffect(() => {
     setOpen(false);
@@ -127,6 +138,12 @@ export function Header({ className }: HeaderProps) {
         <div className="flex shrink-0 items-center gap-5">
           {authed ? (
             <AvatarMenu />
+          ) : showPurchaseChip ? (
+            <PurchaseAccountMenu
+              onSignOut={() => {
+                setPurchaseAuthed(false);
+              }}
+            />
           ) : (
             <Link
               href={headerLoginCta.href}
@@ -152,7 +169,15 @@ export function Header({ className }: HeaderProps) {
         </Link>
 
         <div className="flex items-center gap-1.5">
-          {authed ? <AvatarMenu /> : null}
+          {authed ? (
+            <AvatarMenu />
+          ) : showPurchaseChip ? (
+            <PurchaseAccountMenu
+              onSignOut={() => {
+                setPurchaseAuthed(false);
+              }}
+            />
+          ) : null}
           <AlIconButton
             icon={open ? <CloseIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             label={open ? 'Close menu' : 'Open menu'}
@@ -187,7 +212,7 @@ export function Header({ className }: HeaderProps) {
             }}
           />
 
-          {!authed ? (
+          {!authed && !purchaseAuthed ? (
             <Link
               href={headerLoginCta.href}
               onClick={() => {

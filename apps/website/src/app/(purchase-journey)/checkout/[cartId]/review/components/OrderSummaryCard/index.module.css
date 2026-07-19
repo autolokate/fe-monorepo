@@ -1,0 +1,105 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+  color: #0a0a0c;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.lineLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lineName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #0a0a0c;
+}
+
+.lineSub {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.amount {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #0a0a0c;
+  white-space: nowrap;
+}
+
+.amountAccent {
+  color: #1fa24a;
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.note {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.divider {
+  height: 1px;
+  background: #eceff3;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.totalLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.totalLabel {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+  color: #0a0a0c;
+}
+
+.totalSub {
+  font-size: 13.5px;
+  color: #6b7079;
+}
+
+.totalAmount {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #0a0a0c;
+  white-space: nowrap;
+}

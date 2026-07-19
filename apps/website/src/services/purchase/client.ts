@@ -117,9 +117,13 @@ async function doRefresh(): Promise<string | null> {
  * Ensure we hold a usable access token, minting a new one from the refresh
  * token when the current one is missing or (near) expired. Returns the token,
  * or `null` when the buyer needs to log in again. Safe to call concurrently.
+ *
+ * Pass `force: true` to always trade the refresh token for a brand-new access
+ * token, even when the current one still looks live — used before retrying a
+ * payment so the order call never rides on a stale/expiring token.
  */
-export async function refreshPurchaseSession(): Promise<string | null> {
-  if (isAccessTokenLive()) return getPurchaseToken();
+export async function refreshPurchaseSession(force = false): Promise<string | null> {
+  if (!force && isAccessTokenLive()) return getPurchaseToken();
   refreshInFlight = refreshInFlight ?? doRefresh();
   try {
     return await refreshInFlight;
@@ -152,6 +156,21 @@ client.interceptors.response.use(
     return Promise.reject(toApiError(error));
   },
 );
+
+/**
+ * POST /v1/auth/logout — revoke the buyer's session server-side. The bearer is
+ * attached by the request interceptor, so this must run *before* the local
+ * session is cleared. Best-effort: it never throws, so logout always completes
+ * locally even if the network call fails or the token is already gone.
+ */
+export async function logoutPurchase(): Promise<void> {
+  if (!getPurchaseToken()) return;
+  try {
+    await client.post(endpoints.auth.logout, {});
+  } catch {
+    // Ignore — the caller clears the local session regardless.
+  }
+}
 
 export const PurchaseApi = {
   get: <T = unknown>(endpoint: string, config: AxiosRequestConfig = {}) =>

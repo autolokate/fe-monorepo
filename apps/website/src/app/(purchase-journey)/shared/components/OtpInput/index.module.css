@@ -1,0 +1,33 @@
+.row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.box {
+  flex: 1;
+  min-width: 0;
+  height: 60px;
+  padding: 0;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0a0a0c;
+  background: #ffffff;
+  border: 1.5px solid #c4c4c4;
+  border-radius: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.box:focus {
+  border: 2px solid #0a0a0c;
+}
+
+.error {
+  border-color: #9a6106;
+}
+
+.error:focus {
+  border: 2px solid #9a6106;
+}

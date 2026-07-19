@@ -1,0 +1,82 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 10, 15, 0.45);
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 420px;
+  max-width: 100%;
+  padding: 28px 28px 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  color: #0a0a0c;
+}
+
+.summary {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.btns {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.cancel,
+.delete {
+  flex: 1;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.cancel {
+  background: #ffffff;
+  border: 1.5px solid #c4c4c4;
+  color: #0a0a0c;
+}
+
+.cancel:hover:not(:disabled) {
+  border-color: #0a0a0c;
+}
+
+.delete {
+  background: #0a0a0c;
+  border: none;
+  color: #ffffff;
+}
+
+.delete:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.cancel:disabled,
+.delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

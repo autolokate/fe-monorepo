@@ -1,0 +1,129 @@
+.option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1.5px solid #eceff3;
+  border-radius: 18px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.option:hover {
+  border-color: #d5dae1;
+}
+
+.selected {
+  background: #e7f6ec;
+  border: 2px solid #1fa24a;
+}
+
+.selected:hover {
+  border-color: #1fa24a;
+}
+
+/* ── Radio ──────────────────────────────────────────────────────────── */
+.radio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 1.75px solid #c4c4c4;
+  border-radius: 10px;
+}
+
+.radioOn {
+  background: #1fa24a;
+  border-color: #1fa24a;
+}
+
+.radioCheck {
+  width: 13px;
+  height: 13px;
+  color: #ffffff;
+  stroke-width: 3;
+}
+
+/* ── Middle (title + subtitle) ──────────────────────────────────────── */
+.mid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.relationIcon {
+  width: 18px;
+  height: 18px;
+  color: #6b7079;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 26px;
+  color: #0a0a0c;
+}
+
+.sub {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+/* ── Right (price + savings) ────────────────────────────────────────── */
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  flex: none;
+}
+
+.addPrice {
+  font-size: 17px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.saveRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wasPrice {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.save {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7079;
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 16px;
+  }
+
+  .addPrice {
+    font-size: 16px;
+  }
+}
