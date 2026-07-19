@@ -14,8 +14,8 @@ import type { OrderSummary } from '@/services/purchase';
 import { formatRupees } from '../../../shared/plans';
 import styles from './index.module.css';
 
-/** The four visual states of an order card (Figma "WebOrderCard"). */
-type CardState = 'shipping' | 'delivered' | 'active' | 'failed';
+/** The visual states of an order card (Figma "WebOrderCard"). */
+type CardState = 'shipping' | 'delivered' | 'active' | 'unpaid' | 'failed' | 'cancelled';
 
 interface OrderCardProps {
   order: OrderSummary;
@@ -27,14 +27,22 @@ interface OrderCardProps {
   onGetHelp: () => void;
 }
 
-/** Derive the display state from the order + shipment status (best-effort). */
+/**
+ * Derive the display state from the order + shipment status. Money state leads:
+ * an order that has not been paid for cannot be shipping, so `PENDING_PAYMENT`
+ * and `DRAFT` resolve before any fulfillment is consulted. `CANCELLED` is kept
+ * apart from `FAILED` because a cancelled order is terminal (re-checking out an
+ * edited cart supersedes the prior unpaid order), so it must not offer a retry.
+ */
 function deriveState(order: OrderSummary): CardState {
-  if (order.status === 'FAILED' || order.status === 'CANCELLED') return 'failed';
+  if (order.status === 'CANCELLED') return 'cancelled';
+  if (order.status === 'FAILED') return 'failed';
+  if (order.status === 'PENDING_PAYMENT' || order.status === 'DRAFT') return 'unpaid';
   const f = order.fulfillment?.status;
   if (f === 'DELIVERED') return 'delivered';
   if (order.orderKind === 'SCAN_SELF_PAY') return 'active';
   if (f === 'ALLOCATED' || f === 'SHIPPED' || f === 'IN_TRANSIT' || f === 'PAID') return 'shipping';
-  return order.status === 'PAID' ? 'active' : 'shipping';
+  return 'active';
 }
 
 const STATUS_TITLE: Record<string, string> = {
@@ -42,6 +50,30 @@ const STATUS_TITLE: Record<string, string> = {
   ALLOCATED: 'Packed',
   SHIPPED: 'Shipped',
   IN_TRANSIT: 'Out for delivery',
+};
+
+/**
+ * Titles for every state that is not `shipping` (which reads the courier status above).
+ * `unpaid` must never imply the order is on its way: since D23 a dismissed sheet or a refused
+ * card leaves the order alive and retryable, so these rows are now common rather than rare.
+ */
+const STATE_TITLE: Record<CardState, string> = {
+  shipping: 'On its way',
+  delivered: 'Delivered',
+  active: 'Protection active',
+  unpaid: 'Payment not completed',
+  failed: 'Payment not completed',
+  cancelled: 'Order cancelled',
+};
+
+/** One calm line saying what is true and what the buyer can do about it. */
+const STATE_SUBLINE: Record<CardState, string> = {
+  shipping: '',
+  delivered: '',
+  active: '',
+  unpaid: 'Nothing has been charged. Your order is saved, so you can pay whenever you are ready.',
+  failed: 'Nothing has been charged for this order.',
+  cancelled: 'This order was replaced by a newer one.',
 };
 
 /** ISO → "18 Jul 2026". */
@@ -61,26 +93,14 @@ export function OrderCard({
   onGetHelp,
 }: OrderCardProps) {
   const state = deriveState(order);
-  const orderRef = order.orderId.slice(0, 8).toUpperCase();
   const dateLine = formatDate(order.createdAt);
 
   const title =
     state === 'shipping'
       ? (STATUS_TITLE[order.fulfillment?.status ?? 'PAID'] ?? 'On its way')
-      : state === 'delivered'
-        ? 'Delivered'
-        : state === 'active'
-          ? 'Active'
-          : 'Payment failed';
+      : STATE_TITLE[state];
 
-  const subline =
-    state === 'shipping'
-      ? 'On its way'
-      : state === 'delivered'
-        ? 'Ready to activate'
-        : state === 'active'
-          ? 'Your cover is on'
-          : 'You haven’t been charged';
+  const subline = STATE_SUBLINE[state];
 
   const showHint = state === 'shipping' || state === 'delivered';
   const showUpgrade = state === 'shipping' || state === 'delivered';
@@ -140,7 +160,7 @@ export function OrderCard({
         </div>
 
         <div className={styles.meta}>
-          <span className={styles.metaRef}>Order {orderRef}</span>
+          <span className={styles.metaRef}>Order {order.orderNumber}</span>
           {dateLine ? (
             <span className={styles.metaDate}>
               {state === 'failed' ? 'Tried' : 'Placed'} {dateLine}

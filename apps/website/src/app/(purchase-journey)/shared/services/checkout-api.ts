@@ -70,9 +70,14 @@ export function payJourneyOrder(orderId: string): Promise<PaymentRef> {
   return payOrder(orderId, { setupMandate: true, mandateConsent: true });
 }
 
-/** `GET /v1/orders/:id/payment` — the authoritative payment outcome (webhook-driven). */
+/**
+ * `GET /v1/orders/:id/payment` — the authoritative payment outcome
+ * (webhook-driven). The read also carries the buyer-facing order number and the
+ * gateway's transaction ref; callers that need those take the whole
+ * `getOrderPayment` response instead of this outcome-only narrowing.
+ */
 export function getJourneyPaymentOutcome(orderId: string): Promise<PaymentOutcome> {
-  return getOrderPayment(orderId);
+  return getOrderPayment(orderId).then((payment) => payment.outcome);
 }
 
 /** The 10-digit login number from the live purchase session, for form prefill. */

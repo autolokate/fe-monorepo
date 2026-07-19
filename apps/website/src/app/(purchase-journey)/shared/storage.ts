@@ -20,6 +20,13 @@ export interface JourneyState {
   addressId?: string;
   /** Order created on the review step — used to poll the payment outcome. */
   orderId?: string;
+  /**
+   * Fingerprint of the purchase `orderId` was created from (plan, riders,
+   * address, promo, total). The review step resumes an unpaid order only while
+   * this still matches the purchase on screen: the backend charges the ORDER's
+   * pinned total, so a resumed sheet must never outlive a re-price.
+   */
+  orderFingerprint?: string;
   /** Razorpay payment reference from the pay call — shown as the txn id on success. */
   paymentRef?: string;
   /** Path the buyer arrived from, so we can send them back on exit. */

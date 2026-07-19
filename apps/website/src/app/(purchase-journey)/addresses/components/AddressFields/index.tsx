@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ArrowRight, Check, MapPin, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAddressAutocomplete } from '@/hooks/purchase';
@@ -9,7 +9,7 @@ import styles from './index.module.css';
 
 export interface AddressFormValues {
   name: string;
-  /** 10 digits; may be '' when editing (keep the number on file). */
+  /** 10 digits; may be '' when editing (leaves the number on file untouched). */
   mobile: string;
   line1: string;
   line2: string;
@@ -42,7 +42,7 @@ function buildInitial(
   if (mode === 'edit' && initial) {
     return {
       name: initial.name,
-      mobile: '',
+      mobile: initial.phone,
       line1: initial.line1,
       line2: initial.line2 ?? '',
       pincode: initial.pincode,
@@ -132,11 +132,6 @@ export function AddressFields({
     onSubmit(values);
   };
 
-  const mobilePlaceholder = useMemo(
-    () => (mode === 'edit' && initial ? `Keep ${initial.phoneMasked}` : '98765 43210'),
-    [mode, initial],
-  );
-
   return (
     <div className={styles.wrap}>
       <div className={styles.form}>
@@ -207,7 +202,7 @@ export function AddressFields({
               type="tel"
               inputMode="numeric"
               value={values.mobile}
-              placeholder={mobilePlaceholder}
+              placeholder="98765 43210"
               onChange={(e) => {
                 set('mobile', e.target.value.replace(/\D/g, '').slice(0, 10));
               }}

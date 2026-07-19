@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowRight, Check, Download, Loader2, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, Check, Clock, Download, Loader2, X } from 'lucide-react';
 import { AlButton } from '@autolokate/ui/button';
 import { cn } from '@/lib/utils';
 import { useDownloadInvoice, useOrderPayment } from '@/hooks/purchase';
@@ -8,13 +9,14 @@ import type { StepProps } from '../../types';
 import styles from './index.module.css';
 
 export function SuccessStep({ state, plan, goTo }: StepProps) {
+  const router = useRouter();
   const firstName = state.name.trim().split(' ')[0] || 'driver';
   // `setupMandate` sent to the pay API is `state.autoRenew`.
   const renewNote = state.autoRenew
     ? 'Auto-renewal is enabled, so your current price is locked in for next year.'
     : 'Auto-renewal is disabled, so your current price is not locked in for next year.';
 
-  const { outcome, isSettled } = useOrderPayment(state.orderId);
+  const { outcome, isSettled, timedOut } = useOrderPayment(state.orderId);
   const { mutateAsync: downloadInvoice, isLoading: downloadingInvoice } = useDownloadInvoice({
     errorToast: true,
     successToast: 'Opening your invoice',
@@ -30,7 +32,11 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
   // With no order id (e.g. a direct visit) we optimistically show the confirmed
   // state; otherwise we reflect the polled payment outcome.
   const failed = outcome === 'FAILED' || outcome === 'REFUNDED';
-  const confirming = Boolean(state.orderId) && !isSettled && !failed;
+  const unsettled = Boolean(state.orderId) && !isSettled && !failed;
+  const confirming = unsettled && !timedOut;
+  // Polling hit its cap. The payment is still settling on the backend, so say
+  // that plainly instead of holding the buyer on a spinner that never ends.
+  const stillSettling = unsettled && timedOut;
   const orderRef = state.orderId ? `#${state.orderId}` : '#AL-48291';
 
   if (failed) {
@@ -41,8 +47,8 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
         </span>
         <h1 className={cn(styles.title, 'font-display')}>Payment didn&apos;t go through</h1>
         <p className={styles.lead}>
-          Order <b className={styles.mono}>{orderRef}</b> couldn&apos;t be paid. No money was taken
-          — you can try again.
+          Order <b className={styles.mono}>{orderRef}</b> couldn&apos;t be paid. No money was taken,
+          so you can try again.
         </p>
         <AlButton
           size="lg"
@@ -66,9 +72,36 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
         </span>
         <h1 className={cn(styles.title, 'font-display')}>Confirming your payment…</h1>
         <p className={styles.lead}>
-          Hang tight — we&apos;re confirming order <b className={styles.mono}>{orderRef}</b> with
+          Hang tight, we&apos;re confirming order <b className={styles.mono}>{orderRef}</b> with
           your bank. This usually takes a few seconds.
         </p>
+      </div>
+    );
+  }
+
+  if (stillSettling) {
+    return (
+      <div className={styles.wrap}>
+        <span className={cn(styles.badge, styles.badgeWaiting)} aria-hidden>
+          <Clock className="h-8 w-8" />
+        </span>
+        <h1 className={cn(styles.title, 'font-display')}>Still confirming your payment</h1>
+        <p className={styles.lead}>
+          Your bank hasn&apos;t confirmed order <b className={styles.mono}>{orderRef}</b> yet. This
+          can take a few more minutes. You don&apos;t need to wait here or pay again: we&apos;ll
+          message you on WhatsApp the moment it clears, and the order will show up under My orders.
+          If anything looks wrong, quote this order number to support.
+        </p>
+        <AlButton
+          size="lg"
+          radius="lg"
+          variant="primary"
+          onClick={() => {
+            router.push('/my-orders');
+          }}
+        >
+          View my orders
+        </AlButton>
       </div>
     );
   }
@@ -100,7 +133,7 @@ export function SuccessStep({ state, plan, goTo }: StepProps) {
           </li>
           <li>
             <span className={styles.num}>3.</span> When the kit arrives, scan the QR &amp; enter
-            your plate — done
+            your plate. Done.
           </li>
           {state.orderId ? (
             <li>

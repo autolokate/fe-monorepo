@@ -70,6 +70,23 @@ export interface PaymentRef {
 
 export type PaymentOutcome = 'PENDING' | 'UNCONFIRMED' | 'PAID' | 'FAILED' | 'REFUNDED';
 
+/**
+ * `GET /v1/orders/:id/payment` in full. The backend returns `orderNumber` on
+ * EVERY outcome, failures included, because that is exactly when a buyer rings
+ * support. Note the two references are not interchangeable: `transactionRef` is
+ * the gateway's (`pay_XXXX`, what a bank recognises), while `paymentRef` on
+ * {@link PaymentRef} is ours.
+ */
+export interface PaymentOutcomeResult {
+  outcome: PaymentOutcome;
+  /** The buyer-facing order number, e.g. `ALK-2627-000123`. */
+  orderNumber: string;
+  /** What was charged, GST-inclusive paise. */
+  totalPaise: number;
+  /** The gateway's transaction number. Absent until the gateway reports the attempt. */
+  transactionRef?: string | null;
+}
+
 export type OrderKind = 'SCAN_SELF_PAY' | 'RETAIL_SHIP' | 'UPGRADE' | 'RENEWAL';
 
 export type FulfillmentStatus =
@@ -107,6 +124,10 @@ export interface OrderTracking {
   orderKind: OrderKind;
   status: OrderStatus;
   totalPaise: number;
+  /** Rider covers pinned on the order at checkout (0–2). */
+  riderCount?: number;
+  /** GST-inclusive rider cover pinned at checkout, already inside `totalPaise`. */
+  riderCoverPaise?: number;
   paymentOutcome?: PaymentOutcome;
   fulfillment?: OrderFulfillment | null;
 }
@@ -114,11 +135,17 @@ export interface OrderTracking {
 /** A row in the buyer's order history (`GET /v1/orders`). */
 export interface OrderSummary {
   orderId: string;
+  /** The buyer-facing `ALK-2627-000123` — what support asks for, never the uuid. */
+  orderNumber: string;
   orderKind: OrderKind;
   status: OrderStatus;
   totalPaise: number;
   createdAt: string;
   planName: string;
+  /** Rider covers pinned on the order at checkout (0–2). */
+  riderCount?: number;
+  /** GST-inclusive rider cover pinned at checkout, already inside `totalPaise`. */
+  riderCoverPaise?: number;
   fulfillment?: OrderFulfillment | null;
 }
 

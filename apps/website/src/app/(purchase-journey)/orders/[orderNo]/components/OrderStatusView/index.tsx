@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  Clock,
   Download,
   Loader2,
   MessageSquare,
@@ -39,15 +40,20 @@ export function OrderStatusView({ orderNo }: OrderStatusViewProps) {
   const router = useRouter();
 
   // Webhook-driven outcome: null/PENDING/UNCONFIRMED → confirming; PAID → success;
-  // FAILED/REFUNDED → failed. Polls every 3s and stops once terminal.
-  const { outcome, isSettled } = useOrderPayment(orderNo);
+  // FAILED/REFUNDED → failed. Polls every 3s and stops once terminal or capped.
+  const { outcome, orderNumber, transactionRef, isSettled, timedOut } = useOrderPayment(orderNo);
   const failed = outcome === 'FAILED' || outcome === 'REFUNDED';
   const success = outcome === 'PAID' && isSettled;
-  const phase: 'confirming' | 'success' | 'failed' = failed
+  // Polling hit its cap without an answer. The payment is still settling on the
+  // backend, so say that plainly instead of spinning forever.
+  const settling = !failed && !success && timedOut;
+  const phase: 'confirming' | 'settling' | 'success' | 'failed' = failed
     ? 'failed'
     : success
       ? 'success'
-      : 'confirming';
+      : settling
+        ? 'settling'
+        : 'confirming';
 
   // The order slice chosen during this journey (best-effort card details).
   const snapshot = useMemo(() => readJourneyState(), []);
@@ -78,11 +84,17 @@ export function OrderStatusView({ orderNo }: OrderStatusViewProps) {
   }, [success]);
 
   const plan = plans.find((p) => p.id === snapshot.planId);
-  const riderCount = snapshot.riderCount ?? 0;
+  // Riders are PINNED on the order, so the server read wins over the local
+  // journey snapshot (which is absent entirely on a fresh device or a re-visit).
+  const riderCount = tracking?.riderCount ?? snapshot.riderCount ?? 0;
+  const riderCoverPaise = tracking?.riderCoverPaise ?? 0;
   const address = addresses.find((a) => a.id === snapshot.addressId) ?? null;
   const amountPaise = tracking?.totalPaise;
 
-  const orderRef = orderNo.slice(0, 8).toUpperCase();
+  // The buyer-facing order number from the payment read. It lands on the first
+  // poll and is present on every outcome; until then we show nothing rather
+  // than a slice of the UUID, which support cannot look anything up by.
+  const orderRef = orderNumber;
   const planLine = `${plan?.name ?? 'Autolokate plan'}${
     riderCount > 0 ? ` + ${String(riderCount)} rider${riderCount > 1 ? 's' : ''}` : ''
   }`;
@@ -126,6 +138,46 @@ export function OrderStatusView({ orderNo }: OrderStatusViewProps) {
             </div>
           ) : null}
 
+          {phase === 'settling' ? (
+            <div className={styles.failed}>
+              <span className={styles.markWaiting}>
+                <Clock className={styles.markIcon} aria-hidden />
+              </span>
+              <div className={styles.centerText}>
+                <h1 className={styles.title}>Still confirming your payment</h1>
+                <p className={styles.sub}>
+                  We haven’t had confirmation for {orderRef ? `order ${orderRef}` : 'this order'}{' '}
+                  yet. This can take a few more minutes. You don’t need to wait here or pay again:
+                  we’ll message you the moment it clears, and the order will show up under your
+                  orders.
+                </p>
+                {transactionRef ? (
+                  <p className={styles.sub}>Transaction ID {transactionRef}</p>
+                ) : null}
+              </div>
+              <div className={styles.ctaRow}>
+                <a
+                  className={styles.secondaryCta}
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Get help
+                </a>
+                <button
+                  type="button"
+                  className={styles.primaryCta}
+                  onClick={() => {
+                    router.push(JOURNEY_ROUTES.orders);
+                  }}
+                >
+                  View your orders
+                  <ArrowRight className={styles.ctaIcon} aria-hidden />
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           {phase === 'success' ? (
             <>
               <div className={styles.head}>
@@ -152,15 +204,31 @@ export function OrderStatusView({ orderNo }: OrderStatusViewProps) {
                   ) : null}
                 </div>
 
+                {riderCount > 0 && riderCoverPaise > 0 ? (
+                  <div className={styles.meta}>
+                    <span className={styles.metaLabel}>Rider cover × {riderCount} (included)</span>
+                    <span className={styles.metaValue}>{formatRupees(riderCoverPaise)}</span>
+                  </div>
+                ) : null}
+
                 <div className={styles.divider} />
 
-                <div className={styles.meta}>
-                  <span className={styles.metaLabel}>Order ID</span>
-                  <span className={styles.metaValue}>{orderRef}</span>
-                </div>
-                {snapshot.paymentRef ? (
+                {orderRef ? (
+                  <div className={styles.meta}>
+                    <span className={styles.metaLabel}>Order number</span>
+                    <span className={styles.metaValue}>{orderRef}</span>
+                  </div>
+                ) : null}
+                {/* The gateway's ref is the one a bank recognises, so it leads. Ours is
+                    the fallback: still useful to support, but not a bank reference. */}
+                {transactionRef ? (
                   <div className={styles.meta}>
                     <span className={styles.metaLabel}>Transaction ID</span>
+                    <span className={styles.metaValue}>{transactionRef}</span>
+                  </div>
+                ) : snapshot.paymentRef ? (
+                  <div className={styles.meta}>
+                    <span className={styles.metaLabel}>Payment reference</span>
                     <span className={styles.metaValue}>{snapshot.paymentRef}</span>
                   </div>
                 ) : null}
@@ -235,8 +303,22 @@ export function OrderStatusView({ orderNo }: OrderStatusViewProps) {
                 <X className={styles.markIcon} aria-hidden />
               </span>
               <div className={styles.centerText}>
-                <h1 className={styles.title}>Payment failed</h1>
-                <p className={styles.sub}>You haven’t been charged. Please try again.</p>
+                <h1 className={styles.title}>
+                  {outcome === 'REFUNDED' ? 'Payment refunded' : 'Payment didn’t go through'}
+                </h1>
+                <p className={styles.sub}>
+                  {outcome === 'REFUNDED'
+                    ? 'This payment was refunded. It can take a few days to show on your statement.'
+                    : 'This payment wasn’t completed. You can try again.'}
+                </p>
+                {/* A failure is exactly when a buyer rings support or their bank, so both
+                    references belong here, not only on the success card. */}
+                {orderRef ? (
+                  <p className={styles.sub}>
+                    Order {orderRef}
+                    {transactionRef ? ` · Transaction ID ${transactionRef}` : ''}
+                  </p>
+                ) : null}
               </div>
               <div className={styles.ctaRow}>
                 <a

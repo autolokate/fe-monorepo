@@ -14,10 +14,11 @@ interface AddressCardProps {
 }
 
 export function AddressCard({ address, selected, onSelect, onEdit, onDelete }: AddressCardProps) {
-  const { name, label, isDefault, line1, line2, city, state, pincode, phoneMasked } = address;
+  const { name, label, isDefault, line1, line2, city, state, pincode, phone } = address;
 
   const streetLine = line2 ? `${line1}, ${line2}` : line1;
   const cityLine = `${city}, ${state} ${pincode}`;
+  const phoneLine = `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`;
 
   return (
     <div
@@ -70,7 +71,7 @@ export function AddressCard({ address, selected, onSelect, onEdit, onDelete }: A
 
         <span className={styles.line}>{streetLine}</span>
         <span className={styles.line}>{cityLine}</span>
-        <span className={styles.phone}>+91 {phoneMasked}</span>
+        <span className={styles.phone}>{phoneLine}</span>
       </div>
     </div>
   );

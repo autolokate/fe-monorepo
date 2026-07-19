@@ -10,7 +10,7 @@ import type {
   OrderSummary,
   OrderTracking,
   PayOrderPayload,
-  PaymentOutcome,
+  PaymentOutcomeResult,
   PaymentRef,
 } from './types';
 
@@ -55,14 +55,19 @@ export async function payOrder(orderId: string, payload: PayOrderPayload): Promi
   return ref;
 }
 
-/** GET /v1/orders/:id/payment — poll for the payment outcome (bearer). */
-export async function getOrderPayment(orderId: string): Promise<PaymentOutcome> {
-  const res = await PurchaseApi.get<Enveloped<{ outcome: PaymentOutcome }>>(
+/**
+ * GET /v1/orders/:id/payment — poll for the payment outcome (bearer). Carries
+ * the buyer-facing `orderNumber` on every outcome (failures included) and the
+ * gateway's `transactionRef` once the attempt is reported, so a buyer on the
+ * phone to support always has a reference we can look up.
+ */
+export async function getOrderPayment(orderId: string): Promise<PaymentOutcomeResult> {
+  const res = await PurchaseApi.get<Enveloped<PaymentOutcomeResult>>(
     endpoints.orders.payment(orderId),
   );
-  const outcome = res.data.data?.outcome;
-  if (!outcome) throw new ApiError('Invalid payment outcome response', 0, res.data);
-  return outcome;
+  const payment = res.data.data;
+  if (!payment?.outcome) throw new ApiError('Invalid payment outcome response', 0, res.data);
+  return payment;
 }
 
 /** GET /v1/orders/:id — order status + shipping fulfillment (bearer). */
