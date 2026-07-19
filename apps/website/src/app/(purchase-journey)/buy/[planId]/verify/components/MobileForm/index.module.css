@@ -1,0 +1,171 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 40px;
+  width: 440px;
+  max-width: 100%;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 16px;
+  background: #ffffff;
+  border: 1.5px solid #c4c4c4;
+  border-radius: 14px;
+  transition: border-color 0.15s ease;
+}
+
+.field:focus-within {
+  border-color: #0a0a0c;
+}
+
+.fieldError {
+  border-color: #9a6106;
+}
+
+.fieldError:focus-within {
+  border-color: #9a6106;
+}
+
+.prefix {
+  font-size: 16px;
+  font-weight: 500;
+  color: #0a0a0c;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: #c4c4c4;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #0a0a0c;
+}
+
+.input::placeholder {
+  color: #8a8a8a;
+}
+
+.helper {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.helperError {
+  color: #9a6106;
+}
+
+/* ── Consent ────────────────────────────────────────────────────────── */
+.consent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  background: #ffffff;
+  border: 1.5px solid #c4c4c4;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.checkboxOn {
+  background: #0a0a0c;
+  border-color: #0a0a0c;
+}
+
+.checkIcon {
+  width: 13px;
+  height: 13px;
+  color: #ffffff;
+  stroke-width: 3;
+}
+
+.consentText {
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+.link {
+  color: #0a0a0c;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link:hover {
+  opacity: 0.8;
+}
+
+/* ── CTA ────────────────────────────────────────────────────────────── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 56px;
+  padding: 16px 28px;
+  background: #0a0a0c;
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.cta:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.cta:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ctaIcon {
+  width: 16px;
+  height: 16px;
+}

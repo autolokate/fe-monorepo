@@ -1,0 +1,147 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 64px 24px 80px;
+}
+
+/* ── Heading ────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 52px;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.sub {
+  margin: 0;
+  font-size: 19px;
+  line-height: 28px;
+  color: #6b7079;
+}
+
+/* ── List ───────────────────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.stateWrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 8px;
+}
+
+/* ── Empty state ────────────────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+  text-align: center;
+}
+
+.emptyIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  background: #e8e8e8;
+  color: #6b7079;
+}
+
+.emptyGlyph {
+  width: 34px;
+  height: 34px;
+}
+
+.emptyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0a0a0c;
+}
+
+.emptySub {
+  margin: 0;
+  font-size: 15px;
+  color: #6b7079;
+}
+
+.browseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 16px 28px;
+  border: 0;
+  border-radius: 14px;
+  background: #0a0a0c;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.browseBtn:hover {
+  background: #23232a;
+}
+
+.browseIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .body {
+    padding: 40px 16px 64px;
+    gap: 28px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .sub {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

@@ -1,0 +1,288 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 96px 24px 24px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 656px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 24px 64px 0px rgba(0, 0, 0, 0.28);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 26px 28px 22px;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a0a0c;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7079;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  color: #6b7079;
+  flex-shrink: 0;
+}
+
+.close:hover {
+  background: #f1f3f6;
+  color: #0a0a0c;
+}
+
+.closeIcon {
+  width: 22px;
+  height: 22px;
+}
+
+/* ── Body ───────────────────────────────────────────────────────────── */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 0 28px 8px;
+}
+
+.banner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: #e8e8e8;
+  border-radius: 18px;
+}
+
+.bannerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #0a0a0c;
+  flex-shrink: 0;
+}
+
+.bannerGlyph {
+  width: 22px;
+  height: 22px;
+}
+
+.bannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bannerTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.bannerSub {
+  font-size: 14px;
+  color: #6b7079;
+}
+
+/* ── Timeline card ──────────────────────────────────────────────────── */
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+}
+
+.step {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.seg {
+  width: 2px;
+  flex: 1 0 auto;
+  min-height: 6px;
+}
+
+.segGreen {
+  background: #1fa24a;
+}
+
+.segGrey {
+  background: #c4c4c4;
+}
+
+.segNone {
+  background: transparent;
+}
+
+.dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.dotOn {
+  background: #1fa24a;
+  color: #ffffff;
+}
+
+.dotOff {
+  background: #ffffff;
+  border: 2px solid #c4c4c4;
+}
+
+.dotIcon {
+  width: 12px;
+  height: 12px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 13px 0;
+}
+
+.rowTitle {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.rowTitleMuted {
+  color: #6b7079;
+}
+
+.rowDesc {
+  margin: 0;
+  font-size: 13.5px;
+  color: #6b7079;
+}
+
+/* ── Loading skeleton ───────────────────────────────────────────────── */
+.skelStep {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 0;
+}
+
+.skelText {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Error ──────────────────────────────────────────────────────────── */
+.errorBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 36px 0;
+}
+
+.errorText {
+  margin: 0;
+  font-size: 15px;
+  color: #6b7079;
+}
+
+.retry {
+  padding: 10px 20px;
+  border: 1px solid #d8dce2;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.retry:hover {
+  background: #f1f3f6;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────── */
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 22px;
+}
+
+.help {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #6b7079;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.help:hover {
+  color: #0a0a0c;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .overlay {
+    padding: 72px 12px 12px;
+  }
+}

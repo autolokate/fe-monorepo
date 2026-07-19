@@ -4,7 +4,12 @@ export * from './orders-api';
 export * from './consent-api';
 export * from './profile-api';
 export * from './address-api';
-export { PURCHASE_API_BASE_URL, newIdempotencyKey, refreshPurchaseSession } from './client';
+export {
+  PURCHASE_API_BASE_URL,
+  logoutPurchase,
+  newIdempotencyKey,
+  refreshPurchaseSession,
+} from './client';
 export {
   getPurchaseSession,
   getPurchaseToken,

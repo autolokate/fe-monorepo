@@ -166,12 +166,12 @@ export const primaryNavItems: HeaderNavItem[] = [
 ];
 
 /**
- * Primary conversion CTA in the top nav. Points at the home "Safety packs"
- * section anchor (matches the redesign's other "Get protected" CTAs).
+ * Primary conversion CTA in the top nav. Kicks off the purchase journey at the
+ * plan-selection page (`/buy`).
  */
 export const getProtectedCta: Required<Pick<HeaderNavItem, 'label' | 'href'>> = {
   label: 'Get protected',
-  href: '/#safety-packs',
+  href: '/buy',
 };
 
 /** Consumer app download hub — surfaced in the mobile drawer / footer. */

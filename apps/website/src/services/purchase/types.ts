@@ -15,7 +15,12 @@ export interface UpdateCartPayload {
   cartId: string;
   planId: string;
   riderCount: number;
-  promoCode?: string;
+  /**
+   * A non-empty string applies/re-applies that promo; `null` explicitly clears
+   * an applied promo (sent to the backend as `promoCode: null`); `undefined`
+   * leaves the cart's current promo untouched.
+   */
+  promoCode?: string | null;
   /** Optional vehicle registration to attach to the cart. */
   registration?: string;
 }

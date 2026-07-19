@@ -1,0 +1,110 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 64px 24px 80px;
+}
+
+/* ── Heading ────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  line-height: 52px;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.sub {
+  margin: 0;
+  font-size: 19px;
+  line-height: 28px;
+  color: #6b7079;
+}
+
+/* ── List ───────────────────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.stateWrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 8px;
+}
+
+.empty {
+  margin: 0;
+  padding: 24px 0;
+  text-align: center;
+  font-size: 15.5px;
+  color: #6b7079;
+}
+
+/* ── Add new ────────────────────────────────────────────────────────── */
+.addNew {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px 0;
+  border: 0;
+  border-radius: 18px;
+  background: #0a0a0c;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.addNew:hover {
+  background: #23232a;
+}
+
+.addNewIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .body {
+    padding: 40px 16px 64px;
+    gap: 28px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .sub {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

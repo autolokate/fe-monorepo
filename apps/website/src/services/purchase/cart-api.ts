@@ -36,7 +36,13 @@ export async function updateCart(payload: UpdateCartPayload): Promise<Cart> {
     planId: payload.planId,
     riderCount: payload.riderCount,
   };
-  if (payload.promoCode?.trim()) body.promoCode = payload.promoCode.trim();
+  // `null` explicitly clears an applied promo; a non-empty string applies one;
+  // `undefined` leaves the existing promo untouched.
+  if (payload.promoCode === null) {
+    body.promoCode = null;
+  } else if (payload.promoCode?.trim()) {
+    body.promoCode = payload.promoCode.trim();
+  }
   if (payload.registration?.trim()) body.registration = payload.registration.trim();
 
   const res = await PurchaseApi.patch<Enveloped<Cart>>(endpoints.cart.update(payload.cartId), body);

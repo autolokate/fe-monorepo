@@ -1,0 +1,118 @@
+/* ── Modal shell ────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 72px 24px 24px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 516px;
+  max-height: calc(100vh - 96px);
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 24px 64px 0px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+/* ── Page fallback shell ────────────────────────────────────────────── */
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.pageBody {
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px 80px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 516px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 20px;
+  box-shadow: 0px 12px 32px -8px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px 28px 4px;
+  flex-shrink: 0;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a0a0c;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #8a8a8a;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  color: #6b7079;
+  flex-shrink: 0;
+}
+
+.close:hover {
+  background: #f1f3f6;
+  color: #0a0a0c;
+}
+
+.closeIcon {
+  width: 22px;
+  height: 22px;
+}
+
+/* ── Edit loading skeleton ──────────────────────────────────────────── */
+.formSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 28px;
+}
+
+.skelField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
