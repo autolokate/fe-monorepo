@@ -33,6 +33,7 @@ export type AdminPermission =
   | 'orders:refund'
   | 'subscriptions:view'
   | 'shipments:view'
+  | 'shipments:update'
   | 'payments:view'
   | 'support:view'
   | 'support:write'
@@ -70,6 +71,8 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'orders:refund',
     'subscriptions:view',
     'shipments:view',
+    // Manual shipment milestone mark (POST /admin/v1/shipments/{orderId}/status) — OPS/FINANCE per the contract.
+    'shipments:update',
     'payments:view',
     // The support-ticket console (read + status triage) — SUPPORT/OPS/SUPER_ADMIN.
     'support:view',
@@ -105,6 +108,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'orders:view',
     'subscriptions:view',
     'shipments:view',
+    'shipments:update',
     'payments:view',
     'support:view',
     'support:write',
@@ -141,6 +145,7 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'orders:refund',
     'subscriptions:view',
     'shipments:view',
+    'shipments:update',
     'payments:view',
   ],
   PARTNER_MANAGER: [

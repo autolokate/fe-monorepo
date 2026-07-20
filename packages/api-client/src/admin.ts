@@ -329,6 +329,10 @@ export type BatchCodeDto = {
   createdAt: string;
   activatedAt: string | null;
   retiredAt: string | null;
+  /** The retail order this code is allocated to fulfil; null when unallocated or partner-channel. */
+  retailOrderId: string | null;
+  /** The buyer-facing `ALK-…` number of that order; set with retailOrderId. */
+  retailOrderNumber: string | null;
 };
 
 export type ListQrBatchCodesQuery = {
@@ -1113,6 +1117,27 @@ export async function getAdminShipment(
   const response = await client.get<unknown>(endpoints.admin.adminShipment(orderId), {
     ...(options.signal ? { signal: options.signal } : {}),
   });
+  return unwrapEnvelope(response) as AdminShipmentDetail;
+}
+
+/** The statuses an admin may manually mark — the courier-checkpoint targets (never PAID/ALLOCATED). */
+export type ManualShipmentStatus = Exclude<AdminShipmentStatus, 'PAID' | 'ALLOCATED'>;
+
+/**
+ * POST /admin/v1/shipments/{orderId}/status — manually mark the next milestone (rank-guarded, forward only;
+ * a non-advance is `shipment_state_invalid` 409). Returns the refreshed detail.
+ */
+export async function updateAdminShipmentStatus(
+  client: ApiClient,
+  orderId: string,
+  body: { status: ManualShipmentStatus },
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminShipmentDetail> {
+  const response = await client.post<unknown>(
+    endpoints.admin.updateAdminShipmentStatus(orderId),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
   return unwrapEnvelope(response) as AdminShipmentDetail;
 }
 
