@@ -1027,6 +1027,8 @@ export type AdminShipmentSummary = {
   awbNo: string | null;
   trackingUrl: string | null;
   maskedPincode: string;
+  /** The claimed sticker's opaque code (`ALK-…`); null until allocated. */
+  allocatedQrCode: string | null;
   shippedAt: string | null;
   deliveredAt: string | null;
   createdAt: string;
@@ -1051,6 +1053,8 @@ export type AdminShipmentDetail = {
   awbNo: string | null;
   trackingUrl: string | null;
   maskedPincode: string;
+  /** The claimed sticker's opaque code (`ALK-…`); null until allocated. */
+  allocatedQrCode: string | null;
   allocatedAt: string | null;
   shippedAt: string | null;
   inTransitAt: string | null;

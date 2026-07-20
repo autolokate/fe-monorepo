@@ -1,5 +1,5 @@
 import type { AdminShipmentSummary } from '@autolokate/api-client';
-import { AlButton, type ColumnDef } from '@autolokate/ui';
+import { AlButton, AlText, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { forwardStatuses } from '@/features/shipments/MarkShipmentStatusDialog';
@@ -30,6 +30,18 @@ export function useShipmentsColumns({
         accessorKey: 'status',
         header: 'Status',
         cell: ({ row }) => <ShipmentStatusBadge status={row.original.status} />,
+      },
+      {
+        accessorKey: 'allocatedQrCode',
+        header: 'QR code',
+        cell: ({ row }) =>
+          row.original.allocatedQrCode ? (
+            <AlText as="span" variant="mono">
+              {row.original.allocatedQrCode}
+            </AlText>
+          ) : (
+            '—'
+          ),
       },
       {
         accessorKey: 'courier',
