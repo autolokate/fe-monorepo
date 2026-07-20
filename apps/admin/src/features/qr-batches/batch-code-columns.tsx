@@ -30,6 +30,21 @@ export function useBatchCodeColumns(): ColumnDef<BatchCodeDto>[] {
         cell: ({ row }) => <QrCodeStatusBadge status={row.original.status} />,
       },
       {
+        accessorKey: 'retailOrderNumber',
+        header: 'Allocated to',
+        cell: ({ row }) => {
+          const { retailOrderId, retailOrderNumber } = row.original;
+          if (!retailOrderId) {
+            return '—';
+          }
+          return (
+            <AlText as="span" variant="mono" title={`Order ${retailOrderId}`}>
+              {retailOrderNumber ?? `${retailOrderId.slice(0, 8)}…`}
+            </AlText>
+          );
+        },
+      },
+      {
         accessorKey: 'createdAt',
         header: 'Created',
         cell: ({ row }) => formatDateTime(row.original.createdAt),

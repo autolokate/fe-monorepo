@@ -29,3 +29,8 @@ export function useCanRefundOrders(): boolean {
 export function useCanWriteSupportTickets(): boolean {
   return useAdminAnyPermission(['support:write']);
 }
+
+/** POST /admin/v1/shipments/{orderId}/status — the manual shipment milestone mark (OPS/FINANCE). */
+export function useCanUpdateShipments(): boolean {
+  return useAdminAnyPermission(['shipments:update']);
+}

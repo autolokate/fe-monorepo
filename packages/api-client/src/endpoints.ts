@@ -97,6 +97,8 @@ export const endpoints = {
     adminSubscription: (id: string) => `/admin/v1/subscriptions/${encodeURIComponent(id)}`,
     adminShipments: '/admin/v1/shipments',
     adminShipment: (orderId: string) => `/admin/v1/shipments/${encodeURIComponent(orderId)}`,
+    updateAdminShipmentStatus: (orderId: string) =>
+      `/admin/v1/shipments/${encodeURIComponent(orderId)}/status`,
     adminPayments: '/admin/v1/payments',
     adminPayment: (paymentId: string) => `/admin/v1/payments/${encodeURIComponent(paymentId)}`,
     adminSupportTickets: '/admin/v1/support/tickets',

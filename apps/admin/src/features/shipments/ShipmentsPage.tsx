@@ -1,3 +1,4 @@
+import type { AdminShipmentSummary } from '@autolokate/api-client';
 import {
   AlDataTable,
   AlErrorState,
@@ -5,8 +6,9 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
+import { MarkShipmentStatusDialog } from '@/features/shipments/MarkShipmentStatusDialog';
 import { SHIPMENTS_STATUS_FILTERS } from '@/features/shipments/shipments-filters';
 import { useShipmentsColumns } from '@/features/shipments/shipments-columns';
 import { useShipments } from '@/hooks/shipments/useShipments';
@@ -14,6 +16,7 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { buildPageSummary } from '@/platform/components/build-page-summary';
+import { useCanUpdateShipments } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function ShipmentsPage() {
@@ -27,7 +30,10 @@ export function ShipmentsPage() {
     refresh,
   } = useShipments();
 
-  const columns = useShipmentsColumns();
+  const canUpdate = useCanUpdateShipments();
+  const [markTarget, setMarkTarget] = useState<AdminShipmentSummary | null>(null);
+
+  const columns = useShipmentsColumns({ canUpdate, onUpdateStatus: setMarkTarget });
 
   const pageDescription = useMemo(() => {
     if (isLoading) {
@@ -92,6 +98,15 @@ export function ShipmentsPage() {
             getRowId={(row) => row.orderId}
           />
         </AdminDataBlock>
+
+        <MarkShipmentStatusDialog
+          shipment={markTarget}
+          onOpenChange={(nextOpen) => {
+            if (!nextOpen) {
+              setMarkTarget(null);
+            }
+          }}
+        />
       </AlStack>
     </RequirePermission>
   );
