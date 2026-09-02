@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlHeading, AlOtpInput, AlStack, AlText } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 import './al-otp-input-page.css';
 
@@ -57,11 +54,7 @@ const OTP_STATE_MATRIX = [
   },
 ] as const;
 
-function OtpMatrixItem({
-  item,
-}: {
-  item: (typeof OTP_STATE_MATRIX)[number];
-}) {
+function OtpMatrixItem({ item }: { item: (typeof OTP_STATE_MATRIX)[number] }) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -144,18 +137,36 @@ export function AlOtpInputPage() {
         whenNotToUse="Non-numeric secrets or passwords."
         overview={
           <p>
-            Figma-aligned OTP cells: empty/focused use 1–2px outline; filled, success, and error
-            use 2px semantic borders. Error state uses <code>--al-color-warning</code> (amber), not
+            Figma-aligned OTP cells: empty/focused use 1–2px outline; filled, success, and error use
+            2px semantic borders. Error state uses <code>--al-color-warning</code> (amber), not
             danger red.
           </p>
         }
         variants={
-          <AlOtpInput label="6-digit OTP" length={6} value="123456" onChange={() => undefined} state="filled" />
+          <AlOtpInput
+            label="6-digit OTP"
+            length={6}
+            value="123456"
+            onChange={() => undefined}
+            state="filled"
+          />
         }
         sizes={
           <div className="preview-row">
-            <AlOtpInput label="4-digit" length={4} value="1234" onChange={() => undefined} state="filled" />
-            <AlOtpInput label="6-digit" length={6} value="123456" onChange={() => undefined} state="filled" />
+            <AlOtpInput
+              label="4-digit"
+              length={4}
+              value="1234"
+              onChange={() => undefined}
+              state="filled"
+            />
+            <AlOtpInput
+              label="6-digit"
+              length={6}
+              value="123456"
+              onChange={() => undefined}
+              state="filled"
+            />
           </div>
         }
         renderStatePreview={renderOtpState}

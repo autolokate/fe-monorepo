@@ -1,0 +1,135 @@
+/* Toolkit — editorial feature storytelling, no bento cards. */
+
+.section {
+  padding-block: var(--mkt-space-section);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vw, 4rem);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 40rem;
+}
+
+.headlineAccent {
+  color: var(--mkt-green);
+}
+
+.subheading {
+  max-width: 34rem;
+}
+
+.stories {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--mkt-divider);
+}
+
+.story {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: clamp(2rem, 5vw, 3rem) 0;
+  border-bottom: 1px solid var(--mkt-divider);
+}
+
+.storyLead {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .storyLead {
+    grid-template-columns: 5rem 1fr;
+  }
+}
+
+.storyIndex {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--mkt-ink-muted);
+}
+
+.storyHead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 36rem;
+}
+
+.storyTitle {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-2xl);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--mkt-ink-primary);
+}
+
+.storySubtitle {
+  font-size: var(--mkt-text-base);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
+}
+
+.capabilities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin: 0;
+  padding: 0 0 0 clamp(4rem, 8vw, 5rem);
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .capabilitiesTwoCol {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    row-gap: 0.875rem;
+  }
+}
+
+.capability {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.capLabel {
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+  color: var(--mkt-ink-primary);
+}
+
+.capDetail {
+  font-size: var(--mkt-text-sm);
+  line-height: 1.55;
+  color: var(--mkt-ink-secondary);
+}
+
+@media (max-width: 639px) {
+  .capabilities {
+    padding-left: 0;
+  }
+
+  .storyLead {
+    grid-template-columns: 1fr;
+  }
+
+  .storyIndex {
+    font-size: 1.5rem;
+  }
+}

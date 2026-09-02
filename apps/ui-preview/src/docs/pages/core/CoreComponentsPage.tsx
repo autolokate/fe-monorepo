@@ -1,23 +1,23 @@
-import type { CoreComponentPageId } from '../../types.js';
+import type { CoreComponentPageId } from '../../types';
 
-import { AlAvatarPage } from './AlAvatarPage.js';
-import { AlBottomNavPage } from './AlBottomNavPage.js';
-import { AlButtonPage } from './AlButtonPage.js';
-import { AlCheckboxPage } from './AlCheckboxPage.js';
-import { AlChipPage } from './AlChipPage.js';
-import { AlFieldPage } from './AlFieldPage.js';
-import { AlInputPage } from './AlInputPage.js';
-import { AlOtpInputPage } from './AlOtpInputPage.js';
-import { AlPlanCardPage } from './AlPlanCardPage.js';
-import { AlPlateInputPage } from './AlPlateInputPage.js';
-import { AlQuickActionPage } from './AlQuickActionPage.js';
-import { AlStatusPillPage } from './AlStatusPillPage.js';
-import { AlStepProgressPage } from './AlStepProgressPage.js';
-import { AlTextFieldPage } from './AlTextFieldPage.js';
-import { AlTogglePage } from './AlTogglePage.js';
-import { AlVehicleRcCardPage } from './AlVehicleRcCardPage.js';
-import { LayoutComponentPage } from './LayoutComponentPage.js';
-import { StatusBarPage } from './StatusBarPage.js';
+import { AlAvatarPage } from './AlAvatarPage';
+import { AlBottomNavPage } from './AlBottomNavPage';
+import { AlButtonPage } from './AlButtonPage';
+import { AlCheckboxPage } from './AlCheckboxPage';
+import { AlChipPage } from './AlChipPage';
+import { AlFieldPage } from './AlFieldPage';
+import { AlInputPage } from './AlInputPage';
+import { AlOtpInputPage } from './AlOtpInputPage';
+import { AlPlanCardPage } from './AlPlanCardPage';
+import { AlPlateInputPage } from './AlPlateInputPage';
+import { AlQuickActionPage } from './AlQuickActionPage';
+import { AlStatusPillPage } from './AlStatusPillPage';
+import { AlStepProgressPage } from './AlStepProgressPage';
+import { AlTextFieldPage } from './AlTextFieldPage';
+import { AlTogglePage } from './AlTogglePage';
+import { AlVehicleRcCardPage } from './AlVehicleRcCardPage';
+import { LayoutComponentPage } from './LayoutComponentPage';
+import { StatusBarPage } from './StatusBarPage';
 
 const layoutPages = new Set<CoreComponentPageId>([
   'core-text',

@@ -1,0 +1,73 @@
+/* Mechanics FAQ — editorial Q&A on black foundation. */
+
+.section {
+  background: var(--mkt-surface);
+  color: var(--mkt-ink-dark);
+  padding-block: var(--mkt-space-section);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  max-width: 42rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.headlineAccent {
+  color: var(--mkt-green);
+}
+
+.list {
+  width: 100%;
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--mkt-divider);
+}
+
+.item:last-child {
+  border-bottom: 1px solid var(--mkt-divider);
+}
+
+.question {
+  font-size: var(--mkt-text-base);
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--mkt-ink-primary);
+}
+
+.answer {
+  margin: 0;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.65;
+  color: var(--mkt-ink-secondary);
+}
+
+.note {
+  font-size: var(--mkt-text-sm);
+  line-height: 1.6;
+  color: var(--mkt-ink-muted);
+}
+
+.noteLink {
+  font-weight: 600;
+  color: var(--mkt-ink-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--mkt-duration) var(--mkt-ease-out);
+}
+
+.noteLink:hover {
+  color: var(--mkt-accent);
+}

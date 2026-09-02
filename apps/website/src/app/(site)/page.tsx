@@ -1,4 +1,4 @@
-import { HomeContent, homeMetadata } from "@/app/home";
+import { HomeContent, homeMetadata } from '@/app/home';
 
 export const metadata = homeMetadata;
 

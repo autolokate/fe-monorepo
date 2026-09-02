@@ -1,12 +1,13 @@
-import type { ApiClient } from './client.js';
-import { ApiError } from './client.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope } from './envelope.js';
+import type { ApiClient } from './client';
+import { ApiError } from './client';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope } from './envelope';
 
 export type OtpChannel = 'sms' | 'whatsapp';
 
 export type RequestOtpBody = {
   phone: string;
+  channel?: OtpChannel;
 };
 
 export type RequestOtpResult = {
@@ -84,7 +85,6 @@ export type SessionRoles = {
   availableRoles: string[];
   staffId?: string;
   locationId?: string;
-  operatorId?: string;
   accessToken?: string;
   expiresAt?: string;
 };
@@ -105,10 +105,7 @@ export async function verifyOtp(client: ApiClient, body: VerifyOtpBody): Promise
 }
 
 /** POST /v1/auth/refresh */
-export async function refreshToken(
-  client: ApiClient,
-  body: RefreshTokenBody,
-): Promise<TokenPair> {
+export async function refreshToken(client: ApiClient, body: RefreshTokenBody): Promise<TokenPair> {
   const response = await client.post<unknown>(endpoints.auth.refresh, body, {
     skipAuth: true,
     skipAuthRetry: true,

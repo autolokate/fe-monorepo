@@ -4,7 +4,7 @@ import {
   adminQrCodeSchema,
   adminTransferIdSchema,
   adminUuidSchema,
-} from '@/platform/validation/admin-openapi-schemas.js';
+} from '@/platform/validation/admin-openapi-schemas';
 
 export const initiateTransferSchema = z.object({
   code: adminQrCodeSchema,

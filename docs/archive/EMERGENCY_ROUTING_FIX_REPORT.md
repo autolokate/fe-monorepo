@@ -11,7 +11,7 @@
 
 `EmergencyRoutes.tsx` child routes now use **relative** paths under parent `/journey/emergency/*`, matching the working `PurchaseRoutes` pattern. `emergencyJourneyPaths` full URLs and all `navigate()` calls are unchanged.
 
-**Build:** `pnpm --filter @autolokate/onboarding build` — ✅ pass  
+**Build:** `pnpm --filter @autolokate/qr build` — ✅ pass  
 **Runtime:** All four plans verified in browser @ `http://127.0.0.1:5173`
 
 ---
@@ -39,7 +39,10 @@ Child routes in `EmergencyRoutes.tsx` (broken — absolute paths):
   <Route path="/journey/emergency/contact-otp" element={<E2Route />} />
   <Route path="/journey/emergency/contact-name" element={<E3Route />} />
   <Route path="/journey/emergency/contacts-summary" element={<E5Route />} />
-  <Route path="/journey/emergency/*" element={<Navigate to={emergencyJourneyPaths.riderPrompt} replace />} />
+  <Route
+    path="/journey/emergency/*"
+    element={<Navigate to={emergencyJourneyPaths.riderPrompt} replace />}
+  />
 </Routes>
 ```
 
@@ -82,26 +85,26 @@ Child routes in `EmergencyRoutes.tsx` (broken — absolute paths):
 Seeded journey: `AUTH_COMPLETED`, `selectedFlow: purchase`, `paymentStatus: success`.  
 Flow: R10 → Continue (runtime click).
 
-| Plan | R10 destination URL | Matched child path | Rendered screen | Heading |
-|------|---------------------|--------------------|-----------------|---------|
-| **Safe** | `/journey/emergency/contacts-empty` | `contacts-empty` | `E05ContactsEmptyScreen` (E0) | Who should we call? |
-| **Secure** | `/journey/emergency/rider-prompt` | `rider-prompt` | `E01RiderPromptScreen` (R0) | Add your rider’s details? |
-| **Shield** | `/journey/emergency/rider-prompt` | `rider-prompt` | `E01RiderPromptScreen` (R0) | Add your rider’s details? |
-| **Shield+** | `/journey/emergency/rider-prompt` | `rider-prompt` | `E01RiderPromptScreen` (R0) | Add your rider’s details? |
+| Plan        | R10 destination URL                 | Matched child path | Rendered screen               | Heading                   |
+| ----------- | ----------------------------------- | ------------------ | ----------------------------- | ------------------------- |
+| **Safe**    | `/journey/emergency/contacts-empty` | `contacts-empty`   | `E05ContactsEmptyScreen` (E0) | Who should we call?       |
+| **Secure**  | `/journey/emergency/rider-prompt`   | `rider-prompt`     | `E01RiderPromptScreen` (R0)   | Add your rider’s details? |
+| **Shield**  | `/journey/emergency/rider-prompt`   | `rider-prompt`     | `E01RiderPromptScreen` (R0)   | Add your rider’s details? |
+| **Shield+** | `/journey/emergency/rider-prompt`   | `rider-prompt`     | `E01RiderPromptScreen` (R0)   | Add your rider’s details? |
 
-Safe E0 body copy: *"Add 1 person we'll alert if you're in a crash."* — plan-aware via `getContactsEmptyDescription('safe')`.
+Safe E0 body copy: _"Add 1 person we'll alert if you're in a crash."_ — plan-aware via `getContactsEmptyDescription('safe')`.
 
 ---
 
 ## Rendered component verification
 
-| Check | Before fix | After fix |
-|-------|------------|-----------|
-| `journey-frame` empty | ✅ Always blank | ❌ Contains screen UI |
-| Accessibility nodes | 0 | 5–7+ per screen |
-| Blank screen | ✅ | ❌ Fixed |
-| Redirect loop | None | None |
-| Unknown path `/journey/emergency/unknown-path` | Blank | Redirects once to `rider-prompt`, renders R0 |
+| Check                                          | Before fix      | After fix                                    |
+| ---------------------------------------------- | --------------- | -------------------------------------------- |
+| `journey-frame` empty                          | ✅ Always blank | ❌ Contains screen UI                        |
+| Accessibility nodes                            | 0               | 5–7+ per screen                              |
+| Blank screen                                   | ✅              | ❌ Fixed                                     |
+| Redirect loop                                  | None            | None                                         |
+| Unknown path `/journey/emergency/unknown-path` | Blank           | Redirects once to `rider-prompt`, renders R0 |
 
 ---
 
@@ -109,12 +112,12 @@ Safe E0 body copy: *"Add 1 person we'll alert if you're in a crash."* — plan-a
 
 After each plan's R10 → Emergency handoff:
 
-| Field | Preserved |
-|-------|-----------|
-| `session.purchase.selectedPlanId` | ✅ |
-| `session.purchase.riderCount` | ✅ |
-| `session.purchase.paymentStatus` | ✅ `'success'` |
-| `session.purchase.paidAmountInr` | ✅ |
+| Field                             | Preserved      |
+| --------------------------------- | -------------- |
+| `session.purchase.selectedPlanId` | ✅             |
+| `session.purchase.riderCount`     | ✅             |
+| `session.purchase.paymentStatus`  | ✅ `'success'` |
+| `session.purchase.paidAmountInr`  | ✅             |
 
 No `patchPurchase`, `clearJourney`, or session wipe on handoff.
 
@@ -123,7 +126,7 @@ No `patchPurchase`, `clearJourney`, or session wipe on handoff.
 ## Build verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build
+pnpm --filter @autolokate/qr build
 ```
 
 ```
@@ -135,9 +138,9 @@ pnpm --filter @autolokate/onboarding build
 
 ## Files changed
 
-| File | Change |
-|------|--------|
-| `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx` | Relative child `path` props; `path="*"` fallback |
+| File                                             | Change                                           |
+| ------------------------------------------------ | ------------------------------------------------ |
+| `apps/qr/src/journey/routes/EmergencyRoutes.tsx` | Relative child `path` props; `path="*"` fallback |
 
 ---
 
@@ -148,4 +151,4 @@ pnpm --filter @autolokate/onboarding build
 
 ---
 
-*Routing fix applied and runtime-verified. Emergency screens render after R10 Continue for all plans.*
+_Routing fix applied and runtime-verified. Emergency screens render after R10 Continue for all plans._

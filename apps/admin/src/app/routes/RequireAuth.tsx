@@ -1,8 +1,8 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths.js';
-import { AdminPageLoader } from '@/platform/components/AdminPageLoader.js';
-import { useAdminAuth } from '@/providers/AdminAuthProvider.js';
+import { adminPaths } from '@/app/routes/admin-paths';
+import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
+import { useAdminAuth } from '@/providers/AdminAuthProvider';
 
 export function RequireAuth() {
   const { isAuthenticated, isBootstrapping } = useAdminAuth();

@@ -1,17 +1,26 @@
-import type { ComponentType } from "react";
-import type { LucideProps } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
+
+export type QrFeatureTone = 'emergency' | 'brand';
 
 export interface QrFeature {
+  id: string;
   title: string;
   body: string;
-  Icon: ComponentType<LucideProps>;
+  Icon: LucideIcon;
+  tone: QrFeatureTone;
 }
 
 export interface QrSectionCopy {
   eyebrow: string;
-  headlineLine1: string;
-  headlineLine2Prefix: string;
-  headlineEmphasis: string;
-  subheading: string;
-  primaryCta: { label: string; href: string };
+  headline: string;
+  headlineAccent: string;
+  body: string;
+  chip: {
+    title: string;
+    subtitle: string;
+  };
+  primaryCta: {
+    label: string;
+    href: string;
+  };
 }

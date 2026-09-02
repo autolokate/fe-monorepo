@@ -9,13 +9,13 @@
 
 Command: `cd apps/onboarding && pnpm run build`
 
-| Asset | Size | Gzip |
-|-------|-----:|-----:|
-| `index-*.js` | 1,107.56 KB | 282.19 KB |
-| `index-*.css` | 166.63 KB | 23.14 KB |
-| `sos-emergency-alarm-*.wav` | 3,528.04 KB | — |
-| `al-logo-figma-dark-*.png` | 9.01 KB | — |
-| `workbox-window.prod.es5-*.js` | 5.75 KB | 2.36 KB |
+| Asset                          |        Size |      Gzip |
+| ------------------------------ | ----------: | --------: |
+| `index-*.js`                   | 1,107.56 KB | 282.19 KB |
+| `index-*.css`                  |   166.63 KB |  23.14 KB |
+| `sos-emergency-alarm-*.wav`    | 3,528.04 KB |         — |
+| `al-logo-figma-dark-*.png`     |     9.01 KB |         — |
+| `workbox-window.prod.es5-*.js` |     5.75 KB |   2.36 KB |
 
 **Rollup warning:** Main chunk > 500 KB after minification.
 
@@ -33,12 +33,12 @@ PWA precache: 26 entries (~1,343 KB).
 
 ## Rerender Risk (Static Review)
 
-| Hot path | Mitigation |
-|----------|------------|
-| Journey context | `useMemo` on context value object |
+| Hot path               | Mitigation                              |
+| ---------------------- | --------------------------------------- |
+| Journey context        | `useMemo` on context value object       |
 | Emergency route guards | Early returns before heavy screen mount |
-| PWA SOS hold | Dedicated `use-hold-progress` hooks |
-| Plan carousel | Local state + controlled slides |
+| PWA SOS hold           | Dedicated `use-hold-progress` hooks     |
+| Plan carousel          | Local state + controlled slides         |
 
 No profiler run in this pass — code review only.
 
@@ -60,21 +60,21 @@ Monorepo uses **pnpm workspaces** with shared `packages/*`. No duplicate React/R
 
 ## Images & Icons
 
-| Category | Finding |
-|----------|---------|
-| Bundled raster | 1 logo PNG |
-| Icons | SVG via `@autolokate/icons` — tree-shaken by named imports |
-| Visual truth PNGs | 61 files in `docs/` — not in bundle |
+| Category          | Finding                                                    |
+| ----------------- | ---------------------------------------------------------- |
+| Bundled raster    | 1 logo PNG                                                 |
+| Icons             | SVG via `@autolokate/icons` — tree-shaken by named imports |
+| Visual truth PNGs | 61 files in `docs/` — not in bundle                        |
 
 ---
 
 ## Animations
 
-| Animation | Cost |
-|-----------|------|
-| Lottie confetti | JS library weight |
-| SOS hold progress | CSS/RAF — lightweight |
-| Relation grid transitions | CSS only (420ms) |
+| Animation                 | Cost                  |
+| ------------------------- | --------------------- |
+| Lottie confetti           | JS library weight     |
+| SOS hold progress         | CSS/RAF — lightweight |
+| Relation grid transitions | CSS only (420ms)      |
 
 ---
 

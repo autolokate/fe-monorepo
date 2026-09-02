@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { AlHeading, AlStack, AlText } from '@autolokate/ui';
 
-import type { CompositionMeta } from '../compositions/metadata.js';
+import type { CompositionMeta } from '../compositions/metadata';
 
 import '../components/core-showcase.css';
 

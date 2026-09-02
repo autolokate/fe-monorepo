@@ -24,11 +24,11 @@ Web app for **Autolokate**, an automotive discovery and marketplace experience. 
    cp .env.example .env.local
    ```
 
-   | Variable | Purpose |
-   |----------|---------|
-   | `NEXT_PUBLIC_SITE_URL` | Public site origin (canonical URLs, metadata). Example: `http://localhost:3000` |
-   | `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL` | Backend API base URL (defaults to staging in code if unset) |
-   | `NEXT_PUBLIC_RAZORPAY_KEY_ID` | *(Optional)* Razorpay publishable key for **book session** / payment flows |
+   | Variable                              | Purpose                                                                         |
+   | ------------------------------------- | ------------------------------------------------------------------------------- |
+   | `NEXT_PUBLIC_SITE_URL`                | Public site origin (canonical URLs, metadata). Example: `http://localhost:3000` |
+   | `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL` | Backend API base URL (defaults to staging in code if unset)                     |
+   | `NEXT_PUBLIC_RAZORPAY_KEY_ID`         | _(Optional)_ Razorpay publishable key for **book session** / payment flows      |
 
 3. **Development server** (uses [Turbopack](https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack))
 
@@ -53,19 +53,19 @@ Web app for **Autolokate**, an automotive discovery and marketplace experience. 
 
 ## Tech stack
 
-| Area | Choice |
-|------|--------|
-| Framework | [Next.js 15](https://nextjs.org/) (App Router) |
-| UI library | [React 19](https://react.dev/) |
-| Language | [TypeScript](https://www.typescriptlang.org/) |
-| Styling | [Tailwind CSS v4](https://tailwindcss.com/) (`@tailwindcss/postcss`) |
-| Components | [Radix UI](https://www.radix-ui.com/) primitives (accordion, dialog, tabs, etc.) |
-| Icons | [Lucide React](https://lucide.dev/) |
-| HTTP client | [Axios](https://axios-http.com/) (via shared API service) |
-| Utilities | `clsx`, `tailwind-merge`, `class-variance-authority`; **date-fns**; **js-cookie** |
-| Toasts | [Sonner](https://sonner.emilkowal.ski/) |
-| Calendar / dates in UI | **react-day-picker** |
-| Tooling | ESLint 9 + `eslint-config-next` |
+| Area                   | Choice                                                                            |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| Framework              | [Next.js 15](https://nextjs.org/) (App Router)                                    |
+| UI library             | [React 19](https://react.dev/)                                                    |
+| Language               | [TypeScript](https://www.typescriptlang.org/)                                     |
+| Styling                | [Tailwind CSS v4](https://tailwindcss.com/) (`@tailwindcss/postcss`)              |
+| Components             | [Radix UI](https://www.radix-ui.com/) primitives (accordion, dialog, tabs, etc.)  |
+| Icons                  | [Lucide React](https://lucide.dev/)                                               |
+| HTTP client            | [Axios](https://axios-http.com/) (via shared API service)                         |
+| Utilities              | `clsx`, `tailwind-merge`, `class-variance-authority`; **date-fns**; **js-cookie** |
+| Toasts                 | [Sonner](https://sonner.emilkowal.ski/)                                           |
+| Calendar / dates in UI | **react-day-picker**                                                              |
+| Tooling                | ESLint 9 + `eslint-config-next`                                                   |
 
 Architecturally, pages live under `src/app`, shared UI under `src/components`, API modules under `src/services`, and domain helpers under `src/lib` and `src/hooks`.
 

@@ -16,16 +16,17 @@
 
 ## App-layer motion (`PwaMotion.tsx`)
 
-| Export | Trigger | Properties | Duration |
-|--------|---------|------------|----------|
-| `PwaFade` | Screen mount | opacity, y ±6px | 260ms |
-| `PwaCardEnter` | Card mount | opacity, y 8px | 340ms + 80ms delay |
-| `PwaHeroReveal` | Status hero | opacity, scale 0.96→1 | 380ms |
-| `PwaCtaReveal` | Footer mount | opacity, y 10px | 280ms + 120ms delay |
-| `PwaRevealItem` | Staggered sections | opacity, y 6px | 260ms + index×60ms |
-| `PwaSpringPress` | Tap targets | scale 0.98 | spring 420/28 |
+| Export           | Trigger            | Properties            | Duration            |
+| ---------------- | ------------------ | --------------------- | ------------------- |
+| `PwaFade`        | Screen mount       | opacity, y ±6px       | 260ms               |
+| `PwaCardEnter`   | Card mount         | opacity, y 8px        | 340ms + 80ms delay  |
+| `PwaHeroReveal`  | Status hero        | opacity, scale 0.96→1 | 380ms               |
+| `PwaCtaReveal`   | Footer mount       | opacity, y 10px       | 280ms + 120ms delay |
+| `PwaRevealItem`  | Staggered sections | opacity, y 6px        | 260ms + index×60ms  |
+| `PwaSpringPress` | Tap targets        | scale 0.98            | spring 420/28       |
 
 **Wired in:**
+
 - `PwaScanShell` — footer `PwaCtaReveal`
 - `PwaStatusHeroScreen` — fade + hero + staggered title/description
 - `PwaEmergencyScreen` — fade + stagger (intro, hold, chips)
@@ -36,23 +37,23 @@
 
 ### `AlSosHoldButton`
 
-| State | Animation |
-|-------|-----------|
-| Idle | Aura pulse 2.4s |
-| Holding | Aura 2.2s (synced to hold), disc scale 0.98, ring opacity 0.9, arc brightens |
-| Complete | Disc glow expand, arc white flash, aura complete keyframe, haptic `[12,40,12]` |
-| Press | `:active` scale 0.96 |
-| Reduced motion | Static disc, no aura/arc transition |
+| State          | Animation                                                                      |
+| -------------- | ------------------------------------------------------------------------------ |
+| Idle           | Aura pulse 2.4s                                                                |
+| Holding        | Aura 2.2s (synced to hold), disc scale 0.98, ring opacity 0.9, arc brightens   |
+| Complete       | Disc glow expand, arc white flash, aura complete keyframe, haptic `[12,40,12]` |
+| Press          | `:active` scale 0.96                                                           |
+| Reduced motion | Static disc, no aura/arc transition                                            |
 
 ### `AlDispatchTimeline`
 
-| Element | Animation |
-|---------|-----------|
-| Step row | Enter fade+translateY, stagger 60ms via `--step-index` |
-| Connector complete | `scaleY` fill 360ms |
-| Complete glyph | Scale pop 0.88→1 |
-| Active halo | Existing 1.8s pulse (unchanged) |
-| Label | Color transition 240ms |
+| Element            | Animation                                              |
+| ------------------ | ------------------------------------------------------ |
+| Step row           | Enter fade+translateY, stagger 60ms via `--step-index` |
+| Connector complete | `scaleY` fill 360ms                                    |
+| Complete glyph     | Scale pop 0.88→1                                       |
+| Active halo        | Existing 1.8s pulse (unchanged)                        |
+| Label              | Color transition 240ms                                 |
 
 ### `AlStatusTracker`
 
@@ -79,17 +80,17 @@
 
 ## Screen-specific motion map
 
-| Flow | Screens | Motion |
-|------|---------|--------|
-| Park Me confirm | 08, 08b | Card entrance |
-| Park Me photos | 09 | Photo fill flash |
-| Park Me review | 09b | Review tile stagger |
-| Park Me status | 10–13 | Tracker + timeline stagger |
-| SOS idle/hold | 14, 14b | Hold interaction suite |
-| SOS scene | 15, 15b | Grid stagger on 15b |
-| SOS sending | 17 | Aura pulse |
-| SOS heroes | 16, 18, 22 | Hero reveal + CTA reveal |
-| SOS timeline | 19–21, 23 | Tracker + timeline animations |
+| Flow            | Screens    | Motion                        |
+| --------------- | ---------- | ----------------------------- |
+| Park Me confirm | 08, 08b    | Card entrance                 |
+| Park Me photos  | 09         | Photo fill flash              |
+| Park Me review  | 09b        | Review tile stagger           |
+| Park Me status  | 10–13      | Tracker + timeline stagger    |
+| SOS idle/hold   | 14, 14b    | Hold interaction suite        |
+| SOS scene       | 15, 15b    | Grid stagger on 15b           |
+| SOS sending     | 17         | Aura pulse                    |
+| SOS heroes      | 16, 18, 22 | Hero reveal + CTA reveal      |
+| SOS timeline    | 19–21, 23  | Tracker + timeline animations |
 
 ---
 
@@ -104,23 +105,23 @@
 
 ## QA
 
-| Check | Result |
-|-------|--------|
-| No layout jumps on enter | ✅ |
-| No animation glitches @320 | ✅ Sampled |
-| Reduced motion respected | ✅ CSS + framer defaults |
-| Performance | CSS transforms/opacity only in UI package |
+| Check                      | Result                                    |
+| -------------------------- | ----------------------------------------- |
+| No layout jumps on enter   | ✅                                        |
+| No animation glitches @320 | ✅ Sampled                                |
+| Reduced motion respected   | ✅ CSS + framer defaults                  |
+| Performance                | CSS transforms/opacity only in UI package |
 
 ---
 
 ## Files changed
 
 ```
-apps/onboarding/.../PwaMotion.tsx
-apps/onboarding/.../PwaScanShell.tsx
-apps/onboarding/.../PwaStatusHeroScreen.tsx
-apps/onboarding/.../PwaEmergencyScreen.tsx
-apps/onboarding/.../pwa-scan.css
+apps/qr/.../PwaMotion.tsx
+apps/qr/.../PwaScanShell.tsx
+apps/qr/.../PwaStatusHeroScreen.tsx
+apps/qr/.../PwaEmergencyScreen.tsx
+apps/qr/.../pwa-scan.css
 packages/ui/.../SosHoldButton/*
 packages/ui/.../DispatchTimeline/*
 packages/ui/.../StatusTracker/StatusTracker.css

@@ -1,4 +1,4 @@
-import type { DocNavGroup } from './Sidebar.types.js';
+import type { DocNavGroup } from './Sidebar.types';
 
 export const DOCS_VERSION = 'v4.0.0-rc2';
 
@@ -99,9 +99,7 @@ export const navigationGroups: DocNavGroup[] = [
   {
     id: 'admin',
     label: 'Admin Platform',
-    items: [
-      { id: 'admin-data-table', label: 'Admin components', icon: 'store' },
-    ],
+    items: [{ id: 'admin-data-table', label: 'Admin components', icon: 'store' }],
   },
   {
     id: 'composition-validation',

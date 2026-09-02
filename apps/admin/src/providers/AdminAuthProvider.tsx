@@ -1,4 +1,11 @@
-import { getOrSwitchSession, getProfile, requestOtp, verifyOtp, type Profile, type SessionRoles } from '@autolokate/api-client';
+import {
+  getOrSwitchSession,
+  getProfile,
+  requestOtp,
+  verifyOtp,
+  type Profile,
+  type SessionRoles,
+} from '@autolokate/api-client';
 import { createSessionTokenStorage } from '@autolokate/auth';
 import {
   createContext,
@@ -10,9 +17,13 @@ import {
   type ReactNode,
 } from 'react';
 
-import { normalizeAdminRole, type AdminRole } from '@/platform/rbac/permissions.js';
-import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries.js';
-import { getAdminApiClient, getAdminBootstrapClient, tokenManager } from '@/platform/api/admin-api-client.js';
+import { normalizeAdminRole, type AdminRole } from '@/platform/rbac/permissions';
+import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries';
+import {
+  getAdminApiClient,
+  getAdminBootstrapClient,
+  tokenManager,
+} from '@/platform/api/admin-api-client';
 
 export type AdminAuthState = {
   isAuthenticated: boolean;
@@ -31,7 +42,23 @@ const ADMIN_TOKEN_KEY = 'al-admin-auth-tokens-v1';
 
 async function loadAuthenticatedSession(): Promise<{ profile: Profile; session: SessionRoles }> {
   const client = getAdminApiClient();
-  const [profile, session] = await Promise.all([getProfile(client), getOrSwitchSession(client)]);
+  const profile = await getProfile(client);
+  // Prefer the ADMIN role when granted. Login may mint CONSUMER as the default outside
+  // elevation environments; the admin console must switch onto the admin plane.
+  let session = await getOrSwitchSession(client);
+  if (session.role !== 'ADMIN' && session.availableRoles.includes('ADMIN')) {
+    session = await getOrSwitchSession(client, { role: 'ADMIN' });
+    if (session.accessToken && session.expiresAt) {
+      const current = tokenManager.read();
+      if (current) {
+        tokenManager.save({
+          ...current,
+          accessToken: session.accessToken,
+          expiresAt: session.expiresAt,
+        });
+      }
+    }
+  }
   return { profile, session };
 }
 
@@ -117,7 +144,16 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       verifyOtp: verifyAdminOtp,
       signOut,
     }),
-    [adminRole, isAuthenticated, isBootstrapping, profile, requestAdminOtp, session, signOut, verifyAdminOtp],
+    [
+      adminRole,
+      isAuthenticated,
+      isBootstrapping,
+      profile,
+      requestAdminOtp,
+      session,
+      signOut,
+      verifyAdminOtp,
+    ],
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

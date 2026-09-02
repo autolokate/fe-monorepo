@@ -21,23 +21,23 @@ Applies to **Purchase**, **Prepaid**, **B2B2C** (shared R0 route).
 
 ## Copy
 
-| Field | Text |
-|-------|------|
-| Title | Continue without adding a rider? |
-| Body | You can always add riders later from your vehicle profile. Adding a rider allows another trusted person to receive emergency alerts and access plan benefits. |
-| Primary | Add Rider |
-| Secondary | Continue Without Rider |
+| Field     | Text                                                                                                                                                          |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Title     | Continue without adding a rider?                                                                                                                              |
+| Body      | You can always add riders later from your vehicle profile. Adding a rider allows another trusted person to receive emergency alerts and access plan benefits. |
+| Primary   | Add Rider                                                                                                                                                     |
+| Secondary | Continue Without Rider                                                                                                                                        |
 
 ---
 
 ## Implementation
 
-| File | Change |
-|------|--------|
-| `EmergencyRoutes.tsx` R0 | `AlPermissionSheet` on skip; `finishWithoutRider()` sets skip + completed |
-| `EmergencyRoutes.tsx` R0 | `riderSkipped` guard → redirect to `getCompletedPath()` |
-| `EmergencyRoutes.tsx` E0 | `riderSkipped` guard → redirect to completed |
-| `EmergencyRoutes.tsx` wildcard | `riderSkipped` → completed (not contacts-empty) |
+| File                           | Change                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| `EmergencyRoutes.tsx` R0       | `AlPermissionSheet` on skip; `finishWithoutRider()` sets skip + completed |
+| `EmergencyRoutes.tsx` R0       | `riderSkipped` guard → redirect to `getCompletedPath()`                   |
+| `EmergencyRoutes.tsx` E0       | `riderSkipped` guard → redirect to completed                              |
+| `EmergencyRoutes.tsx` wildcard | `riderSkipped` → completed (not contacts-empty)                           |
 
 ### Skip flow
 

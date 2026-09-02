@@ -1,4 +1,4 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
 import './CircleCheckIconGlyph.css';
 
@@ -24,12 +24,7 @@ export function CircleCheckIconGlyph({ size = 18, className }: CircleCheckIconGl
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M9 12L11 14L15 10"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M9 12L11 14L15 10" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

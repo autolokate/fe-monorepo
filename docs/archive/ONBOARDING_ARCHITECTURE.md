@@ -2,7 +2,7 @@
 
 **Phase:** 3 — Architecture only  
 **Status:** Awaiting approval before screen / route / UI implementation  
-**App:** `@autolokate/onboarding` (renamed from `apps/pwa`)  
+**App:** `@autolokate/qr` (renamed from `apps/pwa`)  
 **Figma:** [Autolokate · Consumer App](https://www.figma.com/design/FtHCUnE0HH586PtG5yJyG0/Autolokate-%C2%B7-Consumer-App?node-id=5-2)
 
 ---
@@ -17,22 +17,22 @@ The onboarding application is a production React app scaffold with **feature-fir
 
 ## Product areas
 
-| # | Product area | Feature module | Flow ID |
-|---|--------------|----------------|---------|
-| 1 | Consumer · QR Activation + Purchase | `features/qr-purchase` | `purchase` |
-| 2 | Consumer · QR Activation — B2B | `features/qr-b2b` | `b2b` |
-| 3 | Consumer · QR Activation — B2B (Pre-Paid) | `features/qr-prepaid` | `prepaid` |
-| 4 | Consumer · QR Activation — B2B2C | `features/qr-b2b2c` | `b2b2c` |
-| 5 | Consumer · Emergency + Rider | `features/emergency` | `emergency` |
-| 6 | Shared · Auth + Legal | `features/shared-auth`, `features/shared-legal` | `auth`, `legal` |
+| #   | Product area                              | Feature module                                  | Flow ID         |
+| --- | ----------------------------------------- | ----------------------------------------------- | --------------- |
+| 1   | Consumer · QR Activation + Purchase       | `features/qr-purchase`                          | `purchase`      |
+| 2   | Consumer · QR Activation — B2B            | `features/qr-b2b`                               | `b2b`           |
+| 3   | Consumer · QR Activation — B2B (Pre-Paid) | `features/qr-prepaid`                           | `prepaid`       |
+| 4   | Consumer · QR Activation — B2B2C          | `features/qr-b2b2c`                             | `b2b2c`         |
+| 5   | Consumer · Emergency + Rider              | `features/emergency`                            | `emergency`     |
+| 6   | Shared · Auth + Legal                     | `features/shared-auth`, `features/shared-legal` | `auth`, `legal` |
 
 ---
 
 ## Folder structure
 
 ```
-apps/onboarding/
-├── package.json                 # @autolokate/onboarding
+apps/qr/
+├── package.json                 # @autolokate/qr
 ├── tsconfig.json
 └── src/
     ├── index.ts                 # Public architecture exports
@@ -110,13 +110,13 @@ All QR activation flows embed the same five steps from `flow/registry/shared-ste
 Vehicle → Mobile → OTP → Account → Legal
 ```
 
-| Step ID | Screen | Guard |
-|---------|--------|-------|
-| `shared.vehicle` | VehicleConfirm | `guard.qr-valid` |
-| `shared.mobile` | MobileCapture | `guard.vehicle-confirmed` |
-| `shared.otp` | OtpVerify | `guard.vehicle-confirmed` |
-| `shared.account` | AccountSetup | `guard.otp-verified` |
-| `shared.legal` | LegalConsent | `guard.authenticated` |
+| Step ID          | Screen         | Guard                     |
+| ---------------- | -------------- | ------------------------- |
+| `shared.vehicle` | VehicleConfirm | `guard.qr-valid`          |
+| `shared.mobile`  | MobileCapture  | `guard.vehicle-confirmed` |
+| `shared.otp`     | OtpVerify      | `guard.vehicle-confirmed` |
+| `shared.account` | AccountSetup   | `guard.otp-verified`      |
+| `shared.legal`   | LegalConsent   | `guard.authenticated`     |
 
 Flows **reference** these IDs — they are never redefined per feature.
 
@@ -165,35 +165,35 @@ Vehicle → Mobile → OTP → Account → Legal   (shared)
 
 #### Standalone segments
 
-- **Auth** (`auth`): Mobile → OTP → Account  
-- **Legal** (`legal`): Legal only  
+- **Auth** (`auth`): Mobile → OTP → Account
+- **Legal** (`legal`): Legal only
 
 ### Flow engine contract
 
 `flow/engine/types.ts` defines the `FlowEngine` interface:
 
-| Method | Purpose |
-|--------|---------|
-| `getFlow()` | Active flow definition |
-| `getContext()` | Runtime step + session state |
-| `evaluateGuards()` | Pre-step guard checks |
+| Method                                | Purpose                               |
+| ------------------------------------- | ------------------------------------- |
+| `getFlow()`                           | Active flow definition                |
+| `getContext()`                        | Runtime step + session state          |
+| `evaluateGuards()`                    | Pre-step guard checks                 |
 | `resolveNext()` / `resolvePrevious()` | Navigation with shared-step awareness |
-| `recordTransition()` | Analytics hook |
+| `recordTransition()`                  | Analytics hook                        |
 
 **Implementation deferred** to Phase 4 after architecture approval.
 
 ### Guards
 
-| Guard ID | Redirect step |
-|----------|---------------|
-| `guard.qr-valid` | — (entry) |
-| `guard.vehicle-confirmed` | `shared.vehicle` |
-| `guard.otp-verified` | `shared.otp` |
-| `guard.authenticated` | `shared.mobile` |
-| `guard.legal-accepted` | `shared.legal` |
-| `guard.org-verified` | `b2b.org-verify` |
-| `guard.voucher-valid` | `prepaid.voucher-redeem` |
-| `guard.partner-session` | `b2b2c.partner-bridge` |
+| Guard ID                  | Redirect step            |
+| ------------------------- | ------------------------ |
+| `guard.qr-valid`          | — (entry)                |
+| `guard.vehicle-confirmed` | `shared.vehicle`         |
+| `guard.otp-verified`      | `shared.otp`             |
+| `guard.authenticated`     | `shared.mobile`          |
+| `guard.legal-accepted`    | `shared.legal`           |
+| `guard.org-verified`      | `b2b.org-verify`         |
+| `guard.voucher-valid`     | `prepaid.voucher-redeem` |
+| `guard.partner-session`   | `b2b2c.partner-bridge`   |
 
 ---
 
@@ -203,25 +203,25 @@ Vehicle → Mobile → OTP → Account → Legal   (shared)
 
 ### URL design
 
-| Path | Purpose |
-|------|---------|
-| `/` | Entry redirect |
-| `/activate/:token` | QR deep-link — resolves flow type |
-| `/flow/purchase` | Purchase flow shell |
-| `/flow/b2b` | B2B flow shell |
-| `/flow/prepaid` | Pre-paid flow shell |
-| `/flow/b2b2c` | B2B2C flow shell |
-| `/flow/emergency` | Emergency flow shell |
-| `/shared/auth` | Standalone auth segment |
-| `/shared/legal` | Standalone legal segment |
+| Path                         | Purpose                            |
+| ---------------------------- | ---------------------------------- |
+| `/`                          | Entry redirect                     |
+| `/activate/:token`           | QR deep-link — resolves flow type  |
+| `/flow/purchase`             | Purchase flow shell                |
+| `/flow/b2b`                  | B2B flow shell                     |
+| `/flow/prepaid`              | Pre-paid flow shell                |
+| `/flow/b2b2c`                | B2B2C flow shell                   |
+| `/flow/emergency`            | Emergency flow shell               |
+| `/shared/auth`               | Standalone auth segment            |
+| `/shared/legal`              | Standalone legal segment           |
 | `/flow/:flowId/step/:stepId` | Optional step deep-link (Phase 4+) |
 
 ### Routing strategy (planned)
 
-1. QR token hits `/activate/:token` → API resolves flow type → redirect to `/flow/{id}`  
-2. `FlowShell` layout wraps active flow; `FlowEngineProvider` drives step content  
-3. Shared steps render from `screens/shared/` regardless of parent flow  
-4. Browser back/forward delegated to flow engine, not ad-hoc history  
+1. QR token hits `/activate/:token` → API resolves flow type → redirect to `/flow/{id}`
+2. `FlowShell` layout wraps active flow; `FlowEngineProvider` drives step content
+3. Shared steps render from `screens/shared/` regardless of parent flow
+4. Browser back/forward delegated to flow engine, not ad-hoc history
 
 **Dependencies added in Phase 4:** `react-router-dom`, `@tanstack/react-query`
 
@@ -229,13 +229,13 @@ Vehicle → Mobile → OTP → Account → Legal   (shared)
 
 ## Layout architecture
 
-| Layout | Slots | Usage |
-|--------|-------|-------|
-| `AppShell` | status-bar, content | Root |
-| `FlowShell` | header, progress, content, footer | Active QR flow |
-| `AuthShell` | header, content, footer | Standalone auth |
-| `LegalShell` | header, content, footer | Standalone legal |
-| `StepScreen` | content, footer | Step viewport inside FlowShell |
+| Layout       | Slots                             | Usage                          |
+| ------------ | --------------------------------- | ------------------------------ |
+| `AppShell`   | status-bar, content               | Root                           |
+| `FlowShell`  | header, progress, content, footer | Active QR flow                 |
+| `AuthShell`  | header, content, footer           | Standalone auth                |
+| `LegalShell` | header, content, footer           | Standalone legal               |
+| `StepScreen` | content, footer                   | Step viewport inside FlowShell |
 
 All layouts compose **only** `@autolokate/ui` primitives (`AlContainer`, `AlStack`, `AlStepProgress`, `AlButton`, etc.).
 
@@ -243,13 +243,13 @@ All layouts compose **only** `@autolokate/ui` primitives (`AlContainer`, `AlStac
 
 ## Provider architecture
 
-| Provider | Package | Phase |
-|----------|---------|-------|
-| ThemeProvider | `@autolokate/design-system` | Bootstrap |
-| AuthProvider | `@autolokate/auth` | Auth |
-| FlowEngineProvider | local | Bootstrap |
-| QueryClientProvider | `@tanstack/react-query` | Data |
-| RouterProvider | react-router-dom | Bootstrap |
+| Provider            | Package                     | Phase     |
+| ------------------- | --------------------------- | --------- |
+| ThemeProvider       | `@autolokate/design-system` | Bootstrap |
+| AuthProvider        | `@autolokate/auth`          | Auth      |
+| FlowEngineProvider  | local                       | Bootstrap |
+| QueryClientProvider | `@tanstack/react-query`     | Data      |
+| RouterProvider      | react-router-dom            | Bootstrap |
 
 Bootstrap sequence (`app/bootstrap.ts`):
 
@@ -265,55 +265,55 @@ load-theme → init-auth → resolve-qr-entry → select-flow → mount-shell
 
 ### Shared (`screens/shared/`)
 
-| Screen ID | Figma | Used by |
-|-----------|-------|---------|
-| VehicleConfirm | R05 Confirm vehicle | All QR flows |
-| MobileCapture | INPUTS · Mobile | All flows |
-| OtpVerify | INPUTS · OTP | All flows |
-| AccountSetup | — | All flows |
-| LegalConsent | — | All flows + shared-legal |
+| Screen ID      | Figma               | Used by                  |
+| -------------- | ------------------- | ------------------------ |
+| VehicleConfirm | R05 Confirm vehicle | All QR flows             |
+| MobileCapture  | INPUTS · Mobile     | All flows                |
+| OtpVerify      | INPUTS · OTP        | All flows                |
+| AccountSetup   | —                   | All flows                |
+| LegalConsent   | —                   | All flows + shared-legal |
 
 ### Purchase (`screens/purchase/`)
 
-| Screen ID | Figma |
-|-----------|-------|
-| QrScan | QR entry |
-| PlanSelect | R06 Choose plan |
-| Payment | Checkout |
-| PurchaseConfirmation | Success |
+| Screen ID            | Figma           |
+| -------------------- | --------------- |
+| QrScan               | QR entry        |
+| PlanSelect           | R06 Choose plan |
+| Payment              | Checkout        |
+| PurchaseConfirmation | Success         |
 
 ### B2B (`screens/b2b/`)
 
-| Screen ID | Description |
-|-----------|-------------|
-| OrgVerify | Organization verification |
-| FleetAssign | Fleet vehicle assignment |
-| B2bConfirmation | Activation complete |
+| Screen ID       | Description               |
+| --------------- | ------------------------- |
+| OrgVerify       | Organization verification |
+| FleetAssign     | Fleet vehicle assignment  |
+| B2bConfirmation | Activation complete       |
 
 ### Pre-Paid (`screens/prepaid/`)
 
-| Screen ID | Description |
-|-----------|-------------|
-| VoucherRedeem | Voucher entry |
-| BalanceCheck | Balance summary |
+| Screen ID           | Description         |
+| ------------------- | ------------------- |
+| VoucherRedeem       | Voucher entry       |
+| BalanceCheck        | Balance summary     |
 | PrepaidConfirmation | Activation complete |
 
 ### B2B2C (`screens/b2b2c/`)
 
-| Screen ID | Description |
-|-----------|-------------|
-| PartnerBridge | Partner session handoff |
-| OfferSelect | Partner offer selection |
-| B2b2cConfirmation | Activation complete |
+| Screen ID         | Description             |
+| ----------------- | ----------------------- |
+| PartnerBridge     | Partner session handoff |
+| OfferSelect       | Partner offer selection |
+| B2b2cConfirmation | Activation complete     |
 
 ### Emergency (`screens/emergency/`)
 
-| Screen ID | Description |
-|-----------|-------------|
-| RiderSetup | Rider profile |
-| EmergencyContactCapture | Contact list |
-| EmergencyPlanAddon | Rider / emergency add-on |
-| EmergencyConfirmation | Setup complete |
+| Screen ID               | Description              |
+| ----------------------- | ------------------------ |
+| RiderSetup              | Rider profile            |
+| EmergencyContactCapture | Contact list             |
+| EmergencyPlanAddon      | Rider / emergency add-on |
+| EmergencyConfirmation   | Setup complete           |
 
 ---
 
@@ -321,17 +321,17 @@ load-theme → init-auth → resolve-qr-entry → select-flow → mount-shell
 
 Cross-flow UI groupings identified in `components/compositions/inventory.ts`. **Not implemented** — documented for Phase 4+ and potential `@autolokate/ui` promotion.
 
-| Composition | DS components | Flows | Promote to core? |
-|-------------|---------------|-------|------------------|
-| **VehicleSummary** | AlVehicleRcCard, AlField, AlChip, AlButton | All QR | Yes |
-| **PlanSummary** | AlPlanCard, AlStack, AlText, AlButton | purchase, b2b2c, emergency | Yes |
-| **PaymentSummary** | AlField, AlDivider, AlText, AlButton | purchase | No |
-| **EmergencyContactSummary** | AlAvatar, AlField, AlQuickAction, AlStack | emergency | Yes |
-| **LegalConsentBlock** | AlCheckbox, AlText, AlButton | All | Yes |
-| OwnerContactCard | AlAvatar, AlField, AlStack | Most QR | No |
-| FormFieldStack | AlTextField, AlPlateInput, AlInput, AlOtpInput | All | No |
-| FlowProgressHeader | AlIconButton, AlStepProgress, AlHeading | All flows | No |
-| ActivationSuccess | AlIcon, AlHeading, AlText, AlButton | All flows | No |
+| Composition                 | DS components                                  | Flows                      | Promote to core? |
+| --------------------------- | ---------------------------------------------- | -------------------------- | ---------------- |
+| **VehicleSummary**          | AlVehicleRcCard, AlField, AlChip, AlButton     | All QR                     | Yes              |
+| **PlanSummary**             | AlPlanCard, AlStack, AlText, AlButton          | purchase, b2b2c, emergency | Yes              |
+| **PaymentSummary**          | AlField, AlDivider, AlText, AlButton           | purchase                   | No               |
+| **EmergencyContactSummary** | AlAvatar, AlField, AlQuickAction, AlStack      | emergency                  | Yes              |
+| **LegalConsentBlock**       | AlCheckbox, AlText, AlButton                   | All                        | Yes              |
+| OwnerContactCard            | AlAvatar, AlField, AlStack                     | Most QR                    | No               |
+| FormFieldStack              | AlTextField, AlPlateInput, AlInput, AlOtpInput | All                        | No               |
+| FlowProgressHeader          | AlIconButton, AlStepProgress, AlHeading        | All flows                  | No               |
+| ActivationSuccess           | AlIcon, AlHeading, AlText, AlButton            | All flows                  | No               |
 
 Existing ui-preview compositions (`FormSectionComposition`, `VehicleInfoComposition`, `PlanCardComposition`, `ContactCardComposition`) validate DS parity — onboarding compositions will mirror these patterns without duplicating primitives.
 
@@ -341,14 +341,14 @@ Existing ui-preview compositions (`FormSectionComposition`, `VehicleInfoComposit
 
 Compositions flagged `promoteToCore: true` should graduate to `@autolokate/ui` once used in 2+ flows with stable APIs:
 
-| Candidate | Rationale |
-|-----------|-----------|
-| **AlVehicleSummary** | Wraps AlVehicleRcCard + confirm pattern — 5 flows |
-| **AlPlanSummary** | Selected plan recap — 3 flows |
-| **AlEmergencyContactSummary** | Contact list pattern — emergency + future flows |
-| **AlLegalConsentBlock** | Standard legal checkbox + links — all flows |
+| Candidate                     | Rationale                                         |
+| ----------------------------- | ------------------------------------------------- |
+| **AlVehicleSummary**          | Wraps AlVehicleRcCard + confirm pattern — 5 flows |
+| **AlPlanSummary**             | Selected plan recap — 3 flows                     |
+| **AlEmergencyContactSummary** | Contact list pattern — emergency + future flows   |
+| **AlLegalConsentBlock**       | Standard legal checkbox + links — all flows       |
 
-**Rule:** Implement first in `apps/onboarding/src/components/compositions/`. Promote to `@autolokate/ui` only after API stabilizes across flows.
+**Rule:** Implement first in `apps/qr/src/components/compositions/`. Promote to `@autolokate/ui` only after API stabilizes across flows.
 
 ---
 
@@ -356,7 +356,7 @@ Compositions flagged `promoteToCore: true` should graduate to `@autolokate/ui` o
 
 ```mermaid
 graph TD
-  subgraph app ["apps/onboarding"]
+  subgraph app ["apps/qr"]
     APP[app/bootstrap]
     FLOW[flow/engine + registry]
     FEAT[features/*]
@@ -422,38 +422,38 @@ React and router **intentionally omitted** until UI phase approval.
 
 ### What existed
 
-| Before | State |
-|--------|-------|
-| `apps/pwa/` | Empty placeholder (`.gitkeep` only) |
+| Before          | State                                  |
+| --------------- | -------------------------------------- |
+| `apps/pwa/`     | Empty placeholder (`.gitkeep` only)    |
 | `apps/qr-flow/` | Empty placeholder — **not merged yet** |
 
 ### What was done (Phase 3)
 
-| Action | Detail |
-|--------|--------|
-| Rename | `apps/pwa` → `apps/onboarding` |
-| Package | `@autolokate/onboarding` with typecheck build |
-| Scaffold | Full feature-first folder tree |
-| Flow registry | 7 flows + shared step catalog |
-| Inventories | Screens, compositions, providers, layouts, routes |
-| PWA naming | Removed — no service worker, no manifest in this phase |
+| Action        | Detail                                                 |
+| ------------- | ------------------------------------------------------ |
+| Rename        | `apps/pwa` → `apps/qr`                                 |
+| Package       | `@autolokate/qr` with typecheck build                  |
+| Scaffold      | Full feature-first folder tree                         |
+| Flow registry | 7 flows + shared step catalog                          |
+| Inventories   | Screens, compositions, providers, layouts, routes      |
+| PWA naming    | Removed — no service worker, no manifest in this phase |
 
 ### Recommended next steps (after approval)
 
-| Phase | Work |
-|-------|------|
-| **4a Bootstrap** | Add Vite + React 19, `index.html`, theme import, provider tree |
-| **4b Router** | Install react-router-dom, wire `routeCatalog` |
-| **4c Flow engine** | Implement `FlowEngine` with context + guard evaluation |
-| **4d Shared screens** | Build `screens/shared/*` first (Vehicle → Legal) |
-| **4e Flow screens** | Purchase → B2B → Pre-paid → B2B2C → Emergency |
-| **4f Compositions** | Extract reusable blocks; promote stable ones to `@autolokate/ui` |
-| **Cleanup** | Remove `apps/qr-flow` placeholder (consolidated into onboarding) |
+| Phase                 | Work                                                             |
+| --------------------- | ---------------------------------------------------------------- |
+| **4a Bootstrap**      | Add Vite + React 19, `index.html`, theme import, provider tree   |
+| **4b Router**         | Install react-router-dom, wire `routeCatalog`                    |
+| **4c Flow engine**    | Implement `FlowEngine` with context + guard evaluation           |
+| **4d Shared screens** | Build `screens/shared/*` first (Vehicle → Legal)                 |
+| **4e Flow screens**   | Purchase → B2B → Pre-paid → B2B2C → Emergency                    |
+| **4f Compositions**   | Extract reusable blocks; promote stable ones to `@autolokate/ui` |
+| **Cleanup**           | Remove `apps/qr-flow` placeholder (consolidated into onboarding) |
 
 ### Naming migration checklist
 
-- [x] Directory: `apps/pwa` → `apps/onboarding`
-- [x] Package: `@autolokate/onboarding`
+- [x] Directory: `apps/pwa` → `apps/qr`
+- [x] Package: `@autolokate/qr`
 - [ ] CI/deploy configs — update when deployment pipeline is defined
 - [ ] Environment variables — `VITE_API_BASE_URL` etc. in Phase 4
 - [ ] Remove `apps/qr-flow` — pending approval
@@ -462,21 +462,21 @@ React and router **intentionally omitted** until UI phase approval.
 
 ## Design system usage rules
 
-1. **Import components only from `@autolokate/ui`** — never create local `Button`, `Input`, `Chip`  
-2. **Import icons only from `@autolokate/icons`**  
-3. **Import theme from `@autolokate/design-system/theme.css`**  
-4. **Import brand marks from `@autolokate/brand`**  
-5. **Compositions** live in `components/compositions/` until promoted  
-6. **Screen files** compose DS components + compositions — no raw HTML form controls  
-7. **Reference ui-preview** (`apps/ui-preview`) for component states and Figma parity  
+1. **Import components only from `@autolokate/ui`** — never create local `Button`, `Input`, `Chip`
+2. **Import icons only from `@autolokate/icons`**
+3. **Import theme from `@autolokate/design-system/theme.css`**
+4. **Import brand marks from `@autolokate/brand`**
+5. **Compositions** live in `components/compositions/` until promoted
+6. **Screen files** compose DS components + compositions — no raw HTML form controls
+7. **Reference ui-preview** (`apps/ui-preview`) for component states and Figma parity
 
 ---
 
 ## Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding build    # TypeScript architecture compile
-pnpm --filter @autolokate/onboarding lint     # ESLint pass
+pnpm --filter @autolokate/qr build    # TypeScript architecture compile
+pnpm --filter @autolokate/qr lint     # ESLint pass
 ```
 
 ---
@@ -485,11 +485,11 @@ pnpm --filter @autolokate/onboarding lint     # ESLint pass
 
 **Do not proceed** with the following until this document is approved:
 
-- Screen components  
-- Route wiring (react-router)  
-- Layout rendering  
-- Mock / placeholder UI  
-- Flow engine runtime implementation  
-- API integration hooks  
+- Screen components
+- Route wiring (react-router)
+- Layout rendering
+- Mock / placeholder UI
+- Flow engine runtime implementation
+- API integration hooks
 
 **Awaiting approval.**

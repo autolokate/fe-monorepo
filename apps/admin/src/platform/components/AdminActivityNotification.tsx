@@ -1,16 +1,16 @@
 import type { AuditEventDto } from '@autolokate/api-client';
-import { AlIconButton, AlStatusBadge, AlText } from '@autolokate/ui';
+import { AlIconButton, AlText } from '@autolokate/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths.js';
-import { useRecentAuditEvents } from '@/hooks/audit/useRecentAuditEvents.js';
+import { adminPaths } from '@/app/routes/admin-paths';
+import { useRecentAuditEvents } from '@/hooks/audit/useRecentAuditEvents';
 import {
-  actionTone,
   formatActivityDetail,
   formatRelativeTime,
-} from '@/platform/components/activity-feed-utils.js';
-import { useAdminPermission } from '@/platform/rbac/useAdminPermission.js';
+} from '@/platform/components/activity-feed-utils';
+import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 function BellIcon() {
   return (
@@ -21,7 +21,12 @@ function BellIcon() {
         strokeWidth="1.4"
         strokeLinejoin="round"
       />
-      <path d="M7.5 14a1.5 1.5 0 0 0 3 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path
+        d="M7.5 14a1.5 1.5 0 0 0 3 0"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -49,7 +54,7 @@ function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: b
     <ul className="admin-activity-panel__list">
       {events.map((event) => (
         <li key={event.id} className="admin-activity-panel__item">
-          <AlStatusBadge label={event.action} status={actionTone(event.action)} />
+          <AuditActionBadge action={event.action} />
           <span className="admin-activity-panel__detail">
             {formatActivityDetail(event.targetType, event.targetId)}
           </span>

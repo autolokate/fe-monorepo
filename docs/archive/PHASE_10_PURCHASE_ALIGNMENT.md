@@ -1,6 +1,6 @@
 # Phase 10 — Purchase Flow Alignment
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Date:** 2026-06-17  
 **Scope:** Orchestration integration only — reuse existing P01–P06 screens, no redesign, no new UI components, no design-system changes  
 **Baseline:** [PHASE_9_JOURNEY_ORCHESTRATOR.md](./PHASE_9_JOURNEY_ORCHESTRATOR.md)
@@ -28,17 +28,17 @@ purchase.qr-scan (bootstrap redirect)
 
 ## 1. Route map
 
-| Path | Step ID | Screen | Guard chain |
-|------|---------|--------|-------------|
-| `/journey/purchase` | — | Redirect | → `/journey/purchase/qr-scan` |
-| `/journey/purchase/qr-scan` | `purchase.qr-scan` | Redirect | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` → P01 |
-| `/journey/purchase/p01-plan-selection` | `purchase.plan-select` | P01 | same |
-| `/journey/purchase/p02-plan-details` | `purchase.plan-details` | P02 | same |
-| `/journey/purchase/p03-rider-selection` | `purchase.rider-select` | P03 | same |
-| `/journey/purchase/p04-checkout-summary` | `purchase.checkout-summary` | P04 | same |
-| `/journey/purchase/p05-payment-processing` | `purchase.payment-processing` | P05 | same |
-| `/journey/purchase/p06-payment-success` | `purchase.payment-success` | P06 | same |
-| `/journey/purchase/*` (unknown) | — | Redirect | → `/journey/purchase/qr-scan` |
+| Path                                       | Step ID                       | Screen   | Guard chain                                                           |
+| ------------------------------------------ | ----------------------------- | -------- | --------------------------------------------------------------------- |
+| `/journey/purchase`                        | —                             | Redirect | → `/journey/purchase/qr-scan`                                         |
+| `/journey/purchase/qr-scan`                | `purchase.qr-scan`            | Redirect | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` → P01 |
+| `/journey/purchase/p01-plan-selection`     | `purchase.plan-select`        | P01      | same                                                                  |
+| `/journey/purchase/p02-plan-details`       | `purchase.plan-details`       | P02      | same                                                                  |
+| `/journey/purchase/p03-rider-selection`    | `purchase.rider-select`       | P03      | same                                                                  |
+| `/journey/purchase/p04-checkout-summary`   | `purchase.checkout-summary`   | P04      | same                                                                  |
+| `/journey/purchase/p05-payment-processing` | `purchase.payment-processing` | P05      | same                                                                  |
+| `/journey/purchase/p06-payment-success`    | `purchase.payment-success`    | P06      | same                                                                  |
+| `/journey/purchase/*` (unknown)            | —                             | Redirect | → `/journey/purchase/qr-scan`                                         |
 
 ### Auth handoff (unchanged entry)
 
@@ -73,11 +73,11 @@ flowchart TD
 
 ### Back navigation rules
 
-| Step | Back target | Notes |
-|------|-------------|-------|
-| P01 | `/journey/auth/r06-legal-consent` | Re-enters auth segment at last step |
-| P02–P06 | Previous purchase step | Deterministic path map — no `navigate(-1)` |
-| P05 | P04 | Timer cancelled on unmount if user backs out during processing |
+| Step    | Back target                       | Notes                                                          |
+| ------- | --------------------------------- | -------------------------------------------------------------- |
+| P01     | `/journey/auth/r06-legal-consent` | Re-enters auth segment at last step                            |
+| P02–P06 | Previous purchase step            | Deterministic path map — no `navigate(-1)`                     |
+| P05     | P04                               | Timer cancelled on unmount if user backs out during processing |
 
 ### P05 auto-advance
 
@@ -87,14 +87,14 @@ Payment processing auto-navigates to P06 after **1.8s** (orchestration-only simu
 
 ## 3. Refresh recovery
 
-| Scenario | URL after refresh | Recovery behavior |
-|----------|-------------------|-------------------|
-| Mid-purchase (e.g. P03) | `/journey/purchase/p03-rider-selection` | **Stays on P03** if `selectedFlow=purchase` + `authStatus=AUTH_COMPLETED` |
-| Purchase URL, auth incomplete | Any `/journey/purchase/*` | Redirect → `/journey/auth/r01-vehicle-number` |
-| Purchase URL, no flow selected | Any `/journey/purchase/*` | Redirect → `/journey` |
-| Purchase URL, wrong flow (e.g. prepaid) | Any `/journey/purchase/*` | Redirect → `/journey/prepaid/entry` |
-| Home refresh | `/journey` | Home; `selectedFlow` restored from `localStorage` if present |
-| P05 refresh during timer | `/journey/purchase/p05-payment-processing` | Timer restarts → auto-advances to P06 again |
+| Scenario                                | URL after refresh                          | Recovery behavior                                                         |
+| --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------- |
+| Mid-purchase (e.g. P03)                 | `/journey/purchase/p03-rider-selection`    | **Stays on P03** if `selectedFlow=purchase` + `authStatus=AUTH_COMPLETED` |
+| Purchase URL, auth incomplete           | Any `/journey/purchase/*`                  | Redirect → `/journey/auth/r01-vehicle-number`                             |
+| Purchase URL, no flow selected          | Any `/journey/purchase/*`                  | Redirect → `/journey`                                                     |
+| Purchase URL, wrong flow (e.g. prepaid) | Any `/journey/purchase/*`                  | Redirect → `/journey/prepaid/entry`                                       |
+| Home refresh                            | `/journey`                                 | Home; `selectedFlow` restored from `localStorage` if present              |
+| P05 refresh during timer                | `/journey/purchase/p05-payment-processing` | Timer restarts → auto-advances to P06 again                               |
 
 **Source of truth:** URL path for step position; `sessionStorage` (`al-journey-v1`) for auth + flow; `localStorage` (`al-selected-flow`) for flow persistence across sessions.
 
@@ -104,42 +104,42 @@ Payment processing auto-navigates to P06 after **1.8s** (orchestration-only simu
 
 ## 4. Persistence audit
 
-| Key | Storage | Field | Purchase impact |
-|-----|---------|-------|-----------------|
-| `al-selected-flow` | `localStorage` | `purchase` | Survives browser close; required for purchase route access |
-| `al-journey-v1` | `sessionStorage` | `authStatus: AUTH_COMPLETED` | Required for activation segment; cleared on tab close |
-| `al-journey-v1` | `sessionStorage` | `selectedFlow` | Mirrors localStorage on save |
-| `al-onboarding-theme` | `localStorage` | `light` \| `dark` | Applies to purchase screens via DS tokens |
+| Key                | Storage          | Field                        | Purchase impact                                            |
+| ------------------ | ---------------- | ---------------------------- | ---------------------------------------------------------- |
+| `al-selected-flow` | `localStorage`   | `purchase`                   | Survives browser close; required for purchase route access |
+| `al-journey-v1`    | `sessionStorage` | `authStatus: AUTH_COMPLETED` | Required for activation segment; cleared on tab close      |
+| `al-journey-v1`    | `sessionStorage` | `selectedFlow`               | Mirrors localStorage on save                               |
+| `al-qr-theme`      | `localStorage`   | `light` \| `dark`            | Applies to purchase screens via DS tokens                  |
 
 ### Write points
 
-| Event | Persistence action |
-|-------|-------------------|
-| Home flow select | `setSelectedFlow('purchase')` → both storages |
-| R06 complete | `completeAuth()` → `authStatus = AUTH_COMPLETED` |
-| P06 → Emergency | `setPhase('emergency')` — in-memory only |
-| Start over (completed) | `clearJourney()` — clears both storages |
+| Event                  | Persistence action                               |
+| ---------------------- | ------------------------------------------------ |
+| Home flow select       | `setSelectedFlow('purchase')` → both storages    |
+| R06 complete           | `completeAuth()` → `authStatus = AUTH_COMPLETED` |
+| P06 → Emergency        | `setPhase('emergency')` — in-memory only         |
+| Start over (completed) | `clearJourney()` — clears both storages          |
 
 ---
 
 ## 5. Route protection audit
 
-| Guard | Applies to | Condition | Redirect |
-|-------|------------|-----------|----------|
-| `RequireAuthCompleted` | All `/journey/purchase/*` | `authStatus !== AUTH_COMPLETED` | `/journey/auth/r01-vehicle-number` |
-| `RequireAuthCompleted` | All `/journey/purchase/*` | `selectedFlow == null` | `/journey` |
-| `RequireSelectedFlowMatch('purchase')` | All `/journey/purchase/*` | `selectedFlow !== 'purchase'` | `getActivationEntryPath(selectedFlow)` or `/journey` |
-| `RequireSelectedFlow` | Auth segment | No flow | `/journey` |
+| Guard                                  | Applies to                | Condition                       | Redirect                                             |
+| -------------------------------------- | ------------------------- | ------------------------------- | ---------------------------------------------------- |
+| `RequireAuthCompleted`                 | All `/journey/purchase/*` | `authStatus !== AUTH_COMPLETED` | `/journey/auth/r01-vehicle-number`                   |
+| `RequireAuthCompleted`                 | All `/journey/purchase/*` | `selectedFlow == null`          | `/journey`                                           |
+| `RequireSelectedFlowMatch('purchase')` | All `/journey/purchase/*` | `selectedFlow !== 'purchase'`   | `getActivationEntryPath(selectedFlow)` or `/journey` |
+| `RequireSelectedFlow`                  | Auth segment              | No flow                         | `/journey`                                           |
 
 ### Direct route access matrix
 
-| Direct URL | `selectedFlow` | `authStatus` | Result |
-|------------|----------------|--------------|--------|
-| `/journey/purchase/p04-checkout-summary` | `purchase` | completed | **P04 renders** |
-| `/journey/purchase/p04-checkout-summary` | `purchase` | pending | Auth R01 |
-| `/journey/purchase/p04-checkout-summary` | `prepaid` | completed | `/journey/prepaid/entry` |
-| `/journey/purchase/p04-checkout-summary` | null | any | `/journey` |
-| `/journey/purchase/unknown-step` | `purchase` | completed | `/journey/purchase/qr-scan` |
+| Direct URL                               | `selectedFlow` | `authStatus` | Result                      |
+| ---------------------------------------- | -------------- | ------------ | --------------------------- |
+| `/journey/purchase/p04-checkout-summary` | `purchase`     | completed    | **P04 renders**             |
+| `/journey/purchase/p04-checkout-summary` | `purchase`     | pending      | Auth R01                    |
+| `/journey/purchase/p04-checkout-summary` | `prepaid`      | completed    | `/journey/prepaid/entry`    |
+| `/journey/purchase/p04-checkout-summary` | null           | any          | `/journey`                  |
+| `/journey/purchase/unknown-step`         | `purchase`     | completed    | `/journey/purchase/qr-scan` |
 
 ---
 
@@ -147,21 +147,21 @@ Payment processing auto-navigates to P06 after **1.8s** (orchestration-only simu
 
 ### New orchestration files
 
-| File | Role |
-|------|------|
-| `journey/purchase/purchase-routing.ts` | Path constants + step sequence helpers |
-| `journey/routes/PurchaseRoutes.tsx` | Route table + per-step navigation handlers |
-| `journey/guards/JourneyRouteGuards.tsx` | Added `RequireSelectedFlowMatch` |
+| File                                    | Role                                       |
+| --------------------------------------- | ------------------------------------------ |
+| `journey/purchase/purchase-routing.ts`  | Path constants + step sequence helpers     |
+| `journey/routes/PurchaseRoutes.tsx`     | Route table + per-step navigation handlers |
+| `journey/guards/JourneyRouteGuards.tsx` | Added `RequireSelectedFlowMatch`           |
 
 ### Modified files
 
-| File | Change |
-|------|--------|
-| `journey/routes/JourneyRoutes.tsx` | Purchase segment → `PurchaseRoutes` (not placeholder) |
+| File                                   | Change                                                          |
+| -------------------------------------- | --------------------------------------------------------------- |
+| `journey/routes/JourneyRoutes.tsx`     | Purchase segment → `PurchaseRoutes` (not placeholder)           |
 | `features/qr-purchase/screens/p01–p06` | Optional `onContinue` / `onBack` / `showBack` → `FlowStepShell` |
-| `features/qr-purchase/types.ts` | `PurchaseScreenNavigationProps` |
-| `flow/registry/config/flows.config.ts` | Insert `purchase.qr-scan` before P01 steps |
-| `router/routes.schema.ts` | Journey purchase P01–P06 paths |
+| `features/qr-purchase/types.ts`        | `PurchaseScreenNavigationProps`                                 |
+| `flow/registry/config/flows.config.ts` | Insert `purchase.qr-scan` before P01 steps                      |
+| `router/routes.schema.ts`              | Journey purchase P01–P06 paths                                  |
 
 ### Screen changes (orchestration-only)
 
@@ -173,47 +173,47 @@ Each P01–P06 screen accepts optional navigation props and passes them to `Flow
 
 Purchase screens render inside `.journey-frame` (`min(100%, 24.5625rem)`) with existing `FlowStepShell` + `AlScreenBg` layout. No responsive changes were made in Phase 10.
 
-| Viewport | Expected behavior |
-|----------|-------------------|
+| Viewport  | Expected behavior                                                      |
+| --------- | ---------------------------------------------------------------------- |
 | **320px** | Single-column shell; plan carousel scrolls horizontally; footer pinned |
-| **360px** | Same; step progress readable |
-| **375px** | Same; primary reference width |
-| **390px** | Same |
-| **414px** | Same; max-width cap at 393px logical frame |
+| **360px** | Same; step progress readable                                           |
+| **375px** | Same; primary reference width                                          |
+| **390px** | Same                                                                   |
+| **414px** | Same; max-width cap at 393px logical frame                             |
 
-**Verify manually:** Run `pnpm --filter @autolokate/onboarding dev`, complete auth → purchase path, resize devtools at each width.
+**Verify manually:** Run `pnpm --filter @autolokate/qr dev`, complete auth → purchase path, resize devtools at each width.
 
 ---
 
 ## 8. Theme QA
 
-| Theme | Mechanism | Purchase impact |
-|-------|-----------|-----------------|
+| Theme     | Mechanism                                      | Purchase impact                             |
+| --------- | ---------------------------------------------- | ------------------------------------------- |
 | **Light** | `data-theme="light"` + `setThemeMode('light')` | DS surface/on-surface tokens on all P01–P06 |
-| **Dark** | `data-theme="dark"` + `setThemeMode('dark')` | Same components, dark token set |
+| **Dark**  | `data-theme="dark"` + `setThemeMode('dark')`   | Same components, dark token set             |
 
-Theme is set on Home before purchase entry and persists via `al-onboarding-theme`. Purchase segment inherits without additional wiring.
+Theme is set on Home before purchase entry and persists via `al-qr-theme`. Purchase segment inherits without additional wiring.
 
 ---
 
 ## 9. Remaining placeholders
 
-| Segment | Status | Route |
-|---------|--------|-------|
-| **purchase.qr-scan** | Redirect bootstrap only — no QrScan screen | `/journey/purchase/qr-scan` → P01 |
-| **prepaid activation** | Placeholder | `/journey/prepaid/entry` |
-| **b2b2c activation** | Placeholder | `/journey/b2b2c/partner-bridge` |
-| **emergency suffix** | Placeholder | `/journey/emergency/rider-setup` |
-| **completed** | Implemented | `/journey/completed` |
+| Segment                | Status                                     | Route                             |
+| ---------------------- | ------------------------------------------ | --------------------------------- |
+| **purchase.qr-scan**   | Redirect bootstrap only — no QrScan screen | `/journey/purchase/qr-scan` → P01 |
+| **prepaid activation** | Placeholder                                | `/journey/prepaid/entry`          |
+| **b2b2c activation**   | Placeholder                                | `/journey/b2b2c/partner-bridge`   |
+| **emergency suffix**   | Placeholder                                | `/journey/emergency/rider-setup`  |
+| **completed**          | Implemented                                | `/journey/completed`              |
 
 ---
 
 ## 10. Verification
 
 ```bash
-pnpm --filter @autolokate/onboarding lint
-pnpm --filter @autolokate/onboarding build
-pnpm --filter @autolokate/onboarding dev
+pnpm --filter @autolokate/qr lint
+pnpm --filter @autolokate/qr build
+pnpm --filter @autolokate/qr dev
 ```
 
 ### Smoke path
@@ -231,12 +231,12 @@ pnpm --filter @autolokate/onboarding dev
 
 ## 11. Alignment impact
 
-| Dimension | Phase 9 | Phase 10 |
-|-----------|---------|----------|
-| Purchase journey wiring | Placeholder | **P01–P06 live** |
-| Purchase order vs target | Config + placeholder | **Config + runtime aligned** |
-| Post-activation handoff | Simulated from placeholder | **P06 → Emergency automatic** |
-| `purchase.qr-scan` | Entry URL only | **Bootstrap redirect (screen deferred)** |
+| Dimension                | Phase 9                    | Phase 10                                 |
+| ------------------------ | -------------------------- | ---------------------------------------- |
+| Purchase journey wiring  | Placeholder                | **P01–P06 live**                         |
+| Purchase order vs target | Config + placeholder       | **Config + runtime aligned**             |
+| Post-activation handoff  | Simulated from placeholder | **P06 → Emergency automatic**            |
+| `purchase.qr-scan`       | Entry URL only             | **Bootstrap redirect (screen deferred)** |
 
 **Overall journey alignment (purchase dimension): 85 → 95 / 100**
 
@@ -244,10 +244,10 @@ pnpm --filter @autolokate/onboarding dev
 
 ## Related documents
 
-| Document | Relationship |
-|----------|--------------|
-| [PHASE_9_JOURNEY_ORCHESTRATOR.md](./PHASE_9_JOURNEY_ORCHESTRATOR.md) | Orchestrator baseline |
-| [FLOW_ALIGNMENT_REPORT.md](./FLOW_ALIGNMENT_REPORT.md) | Architecture target |
+| Document                                                             | Relationship             |
+| -------------------------------------------------------------------- | ------------------------ |
+| [PHASE_9_JOURNEY_ORCHESTRATOR.md](./PHASE_9_JOURNEY_ORCHESTRATOR.md) | Orchestrator baseline    |
+| [FLOW_ALIGNMENT_REPORT.md](./FLOW_ALIGNMENT_REPORT.md)               | Architecture target      |
 | [PURCHASE_FLOW_IMPLEMENTATION.md](./PURCHASE_FLOW_IMPLEMENTATION.md) | P01–P06 screen inventory |
 
 ---

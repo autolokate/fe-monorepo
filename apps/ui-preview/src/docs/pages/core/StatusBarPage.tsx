@@ -1,9 +1,6 @@
 import { AlStatusBar } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderStatusBarState(state: ShowcaseState) {
   const time = state === 'loading' ? '18:05' : '9:41';

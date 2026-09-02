@@ -1,13 +1,9 @@
 import { AlStatusPill } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderStatusPillState(state: ShowcaseState) {
-  const variant =
-    state === 'active' ? 'attention' : state === 'loading' ? 'alert' : 'protected';
+  const variant = state === 'active' ? 'attention' : state === 'loading' ? 'alert' : 'protected';
 
   return <AlStatusPill label={state === 'loading' ? 'Syncing…' : 'Protected'} variant={variant} />;
 }

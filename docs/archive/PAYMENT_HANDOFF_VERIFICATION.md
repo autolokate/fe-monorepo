@@ -12,45 +12,50 @@
 ## Fix
 
 ### New routing function
+
 ```typescript
 getPurchasePostPaymentEmergencyPath() → /journey/emergency/contacts-empty
 ```
+
 Used **only** from R10 Continue — all plans (Safe, Secure, Shield, Shield+) land on contacts-empty.
 
 ### R10 Continue handler
+
 - `setPhase('emergency')`
 - `updateSession({ emergency: { ...session.emergency, riderSkipped: true } })`
 - `navigate(getPurchasePostPaymentEmergencyPath(), { replace: true })`
 
 ### E0 back (contacts-empty)
+
 - When `riderSkipped`: back → `getEmergencyFlowBackPath` (R10 payment success for purchase flow)
 - **Fixed:** was incorrectly navigating to rider-prompt
 
 ### Emergency wildcard
+
 - Purchase + `paymentStatus === 'success'` → contacts-empty
 - Otherwise → rider-prompt (prepaid/B2B2C unchanged)
 
 ## Determinism matrix
 
-| Scenario | Expected destination | Status |
-|----------|---------------------|--------|
-| R10 Continue · Safe | contacts-empty | ✅ |
-| R10 Continue · Secure | contacts-empty | ✅ |
-| R10 Continue · Shield | contacts-empty | ✅ |
-| R10 Continue · Shield+ | contacts-empty | ✅ |
-| Refresh on `/journey/emergency/contacts-empty` after pay | Stays on E0 | ✅ |
-| Browser back from E0 after purchase | R10 payment success | ✅ |
-| Unknown emergency URL after purchase success | contacts-empty (wildcard) | ✅ |
-| Prepaid/B2B2C post-auth handoff | Still uses `getEmergencyHandoffPath` (rider logic preserved) | ✅ |
+| Scenario                                                 | Expected destination                                         | Status |
+| -------------------------------------------------------- | ------------------------------------------------------------ | ------ |
+| R10 Continue · Safe                                      | contacts-empty                                               | ✅     |
+| R10 Continue · Secure                                    | contacts-empty                                               | ✅     |
+| R10 Continue · Shield                                    | contacts-empty                                               | ✅     |
+| R10 Continue · Shield+                                   | contacts-empty                                               | ✅     |
+| Refresh on `/journey/emergency/contacts-empty` after pay | Stays on E0                                                  | ✅     |
+| Browser back from E0 after purchase                      | R10 payment success                                          | ✅     |
+| Unknown emergency URL after purchase success             | contacts-empty (wildcard)                                    | ✅     |
+| Prepaid/B2B2C post-auth handoff                          | Still uses `getEmergencyHandoffPath` (rider logic preserved) | ✅     |
 
 ## Files changed
 
-| File | Change |
-|------|--------|
-| `journey/activation-routing.ts` | `getPurchasePostPaymentEmergencyPath()` |
-| `journey/routes/PurchaseRoutes.tsx` | R10 Continue + R10b back |
-| `journey/routes/EmergencyRoutes.tsx` | E0 back fix, wildcard redirect |
-| `journey/index.ts` | Export new helper |
+| File                                 | Change                                  |
+| ------------------------------------ | --------------------------------------- |
+| `journey/activation-routing.ts`      | `getPurchasePostPaymentEmergencyPath()` |
+| `journey/routes/PurchaseRoutes.tsx`  | R10 Continue + R10b back                |
+| `journey/routes/EmergencyRoutes.tsx` | E0 back fix, wildcard redirect          |
+| `journey/index.ts`                   | Export new helper                       |
 
 ## R10b back (related)
 

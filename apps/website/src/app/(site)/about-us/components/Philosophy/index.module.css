@@ -1,0 +1,121 @@
+/* Philosophy — editorial numbered beliefs on charcoal */
+
+.section {
+  background: var(--mkt-surface-muted);
+  color: var(--mkt-ink-dark);
+  color: var(--mkt-ink-primary);
+  border-block: 1px solid var(--mkt-border-subtle);
+}
+
+.inner {
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+  padding: var(--mkt-space-section) var(--mkt-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+.header {
+  max-width: 36rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mkt-ink-muted);
+}
+
+.eyebrowLine {
+  width: 1.5rem;
+  height: 1px;
+  background: var(--mkt-accent);
+  flex-shrink: 0;
+}
+
+.headline {
+  margin-top: 1rem;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-3xl);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.headlineAccent {
+  color: var(--mkt-accent);
+}
+
+.subheading {
+  margin-top: 1rem;
+  font-size: var(--mkt-text-lg);
+  line-height: 1.65;
+  color: var(--mkt-ink-secondary);
+}
+
+.beliefs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.belief {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding-block: clamp(1.75rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--mkt-divider);
+}
+
+.belief:last-child {
+  border-bottom: 1px solid var(--mkt-divider);
+}
+
+.beliefIndex {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--mkt-ink-faint);
+  padding-top: 0.25rem;
+}
+
+.beliefContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.beliefTitle {
+  margin: 0;
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.beliefBody {
+  margin: 0;
+  font-size: var(--mkt-text-base);
+  line-height: 1.65;
+  color: var(--mkt-ink-secondary);
+  max-width: 38rem;
+}
+
+@media (min-width: 768px) {
+  .belief {
+    grid-template-columns: 4rem 1fr;
+  }
+
+  .beliefIndex {
+    font-size: var(--mkt-text-base);
+  }
+}

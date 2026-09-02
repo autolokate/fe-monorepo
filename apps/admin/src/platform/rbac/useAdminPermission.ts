@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 
-import { useAdminAuth } from '@/providers/AdminAuthProvider.js';
+import { useAdminAuth } from '@/providers/AdminAuthProvider';
 import {
   roleHasPermission,
   resolvePermissions,
   type AdminPermission,
   type AdminRole,
-} from '@/platform/rbac/permissions.js';
+} from '@/platform/rbac/permissions';
 
 export function useAdminPermission(permission: AdminPermission): boolean {
   const { adminRole } = useAdminAuth();

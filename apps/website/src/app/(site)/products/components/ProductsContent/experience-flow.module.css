@@ -1,0 +1,123 @@
+.section {
+  padding: var(--mkt-space-section) var(--mkt-gutter);
+  background: var(--mkt-warm-white);
+  color: var(--mkt-ink-dark);
+}
+
+.inner {
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
+    gap: clamp(4rem, 8vw, 6rem);
+  }
+
+  .header {
+    position: sticky;
+    top: 6rem;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 22rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mkt-ink-muted);
+}
+
+.eyebrowLine {
+  width: 1.25rem;
+  height: 1px;
+  background: var(--mkt-steel);
+}
+
+.headline {
+  margin: 0;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 1.25rem;
+  padding-bottom: 1.75rem;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0.35rem;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--mkt-ink-dark);
+  flex-shrink: 0;
+}
+
+.line {
+  flex: 1;
+  width: 1px;
+  min-height: 2rem;
+  margin-top: 0.5rem;
+  background: var(--mkt-divider-strong);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--mkt-divider);
+}
+
+.step:last-child .copy {
+  border-bottom: none;
+}
+
+.label {
+  margin: 0;
+  font-size: var(--mkt-text-lg);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.detail {
+  margin: 0;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.55;
+  color: var(--mkt-ink-secondary);
+}

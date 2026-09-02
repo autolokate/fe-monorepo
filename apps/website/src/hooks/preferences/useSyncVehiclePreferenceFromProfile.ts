@@ -1,12 +1,9 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { hasAuthTokens, subscribeAuthChange } from "@/lib/auth/storage";
-import {
-  applyApiVehicleCategoryToStorage,
-  clearVehiclePreference,
-} from "@/lib/preferences";
-import { fetchCurrentUser } from "@/services/auth";
+import { useEffect, useRef } from 'react';
+import { hasAuthTokens, subscribeAuthChange } from '@/lib/auth/storage';
+import { applyApiVehicleCategoryToStorage, clearVehiclePreference } from '@/lib/preferences';
+import { fetchCurrentUser } from '@/services/auth';
 
 /**
  * Side-effect hook that keeps `localStorage.autolokate_vehicle_preference` in
@@ -48,7 +45,7 @@ export function useSyncVehiclePreferenceFromProfile(): void {
         try {
           const user = await fetchCurrentUser();
           if (cancelled) return;
-          applyApiVehicleCategoryToStorage(user?.preferred_vehicle_category);
+          applyApiVehicleCategoryToStorage(user.preferred_vehicle_category);
         } catch {
           // Best-effort sync — failures are swallowed so a hiccup on
           // /v1/auth/me never bubbles up as a user-visible error. The next

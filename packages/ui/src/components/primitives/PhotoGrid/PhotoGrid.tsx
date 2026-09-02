@@ -1,11 +1,11 @@
 import type { CSSProperties } from 'react';
 
-import { cn } from '../../../utils/cn.js';
-import { RetakeIcon } from '../../icons/RetakeIcon.js';
-import { AlScenePhotoCard } from '../ScenePhotoCard/ScenePhotoCard.js';
+import { cn } from '../../../utils/cn';
+import { RetakeIcon } from '../../icons/RetakeIcon';
+import { AlScenePhotoCard } from '../ScenePhotoCard/ScenePhotoCard';
 
-import type { AlPhotoGridProps } from './PhotoGrid.types.js';
-import type { AlPhotoGridReviewPhoto } from './PhotoGrid.types.js';
+import type { AlPhotoGridProps } from './PhotoGrid.types';
+import type { AlPhotoGridReviewPhoto } from './PhotoGrid.types';
 import './PhotoGrid.css';
 
 function ReviewPhotoTile({ photo, index = 0 }: { photo: AlPhotoGridReviewPhoto; index?: number }) {

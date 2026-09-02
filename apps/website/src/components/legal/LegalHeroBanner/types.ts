@@ -1,6 +1,6 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 
-export const LEGAL_HERO_BACKGROUND = "/images/legal/static_page_babber_bg.png";
+export const LEGAL_HERO_BACKGROUND = '/images/legal/static_page_babber_bg.png';
 
 export interface LegalHeroMetaItem {
   label: string;

@@ -1,0 +1,20 @@
+.ob-purchase-gateway-note {
+  font-size: 12px;
+  line-height: 15px;
+  color: var(--al-color-on-surface-muted);
+}
+
+.ob-purchase-phase-b-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.ob-purchase-phase-b-stack > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}

@@ -5,7 +5,7 @@ export {
   createAuthenticatedApiClient,
   type ApiClientConfig,
   type ApiRequestOptions,
-} from './client.js';
+} from './client';
 export {
   getOrSwitchSession,
   getProfile,
@@ -22,14 +22,15 @@ export {
   type SessionRoles,
   type TokenPair,
   type VerifyOtpBody,
-} from './auth.js';
-export { grantConsent, listConsents, type ConsentItem, type ConsentPurpose } from './consent.js';
+} from './auth';
+export { grantConsent, listConsents, type ConsentItem, type ConsentPurpose } from './consent';
 export {
   registerDeviceToken,
+  unregisterDeviceToken,
   type DevicePlatform,
   type DeviceRegistered,
   type RegisterDeviceBody,
-} from './devices.js';
+} from './devices';
 export {
   attachQr,
   resolveQr,
@@ -38,43 +39,68 @@ export {
   type ConsumerAttachResult,
   type QrChannel,
   type QrJourney,
-  type QrOfferedSku,
   type QrPublicVehicle,
   type QrResolution,
   type QrStatus,
-} from './qr.js';
-export { getLegalDocuments, type LegalDocuments } from './legal.js';
-export { lookupVehicle, listVehicles, getVehicleById, type RcRecordDto, type VehicleDetailDto, type VehicleSummaryDto } from './vehicles.js';
-export { listPlans, type ApiPlanTier, type PlanOptionDto, type PlanPeriod, type RiderOptionDto } from './plans.js';
+} from './qr';
+export { getLegalDocuments, type LegalDocuments } from './legal';
+export {
+  lookupVehicle,
+  listVehicles,
+  getVehicleById,
+  type RcRecordDto,
+  type VehicleDetailDto,
+  type VehicleSummaryDto,
+} from './vehicles';
+export {
+  listPlans,
+  type ApiPlanTier,
+  type ListPlansParams,
+  type PlanOptionDto,
+  type PlanPeriod,
+  type RiderOptionDto,
+} from './plans';
 export {
   createOrder,
   payOrder,
   getOrderPayment,
+  getOrderInvoice,
   type CreateOrderBody,
   type OrderDto,
+  type OrderInvoiceDto,
   type OrderStatus,
   type PayOrderBody,
   type PayOrderMode,
   type PaymentOutcome,
   type PaymentOutcomeDto,
   type PaymentRefDto,
-} from './orders.js';
+} from './orders';
 export {
-  validatePromo,
-  type PromoPreviewDto,
-  type ValidatePromoBody,
-} from './promos.js';
+  createCart,
+  updateCart,
+  getCart,
+  type CartDto,
+  type CreateCartBody,
+  type PatchCartBody,
+} from './cart';
+export { validatePromo, type PromoPreviewDto, type ValidatePromoBody } from './promos';
 export {
   previewActivation,
+  listActivationPlans,
   redeemActivation,
+  type ActivationPlansDto,
   type ActivationPreviewDto,
   type ActivationPreviewChannel,
   type ActivationPreviewPartner,
   type ActivationRedeemedDto,
+  type FundedPlanBy,
+  type FundedPlanDto,
   type RedeemActivationBody,
   type RedeemActivationB2b2cBody,
   type RedeemActivationB2bBody,
-} from './activation.js';
+  type UpgradeOptionDto,
+  type UpgradeRiderQuoteDto,
+} from './activation';
 export {
   listEmergencyContacts,
   requestEmergencyContactOtp,
@@ -88,7 +114,7 @@ export {
   type RequestEmergencyContactOtpBody,
   type VerifyEmergencyContactOtpBody,
   type CreateEmergencyContactBody,
-} from './emergency-contacts.js';
+} from './emergency-contacts';
 export {
   listSubscriptionRiders,
   requestRiderOtp,
@@ -102,7 +128,7 @@ export {
   type RequestRiderOtpBody,
   type VerifyRiderOtpBody,
   type CreateRiderBody,
-} from './riders.js';
+} from './riders';
 export {
   requestParkOtp,
   verifyParkOtp,
@@ -138,18 +164,63 @@ export {
   type EmergencyDispatchPath,
   type AlertStatusDto,
   type CancelAlertResponseDto,
-} from './scanner.js';
-export { normalizeApiError, type NormalizedApiError, type NormalizedErrorCode } from './errors.js';
-export { wireTokenRefresh } from './interceptors.js';
-export { unwrapEnvelope, readEnvelopeMeta, type ApiEnvelope, type ApiErrorEnvelope } from './envelope.js';
-export { endpoints, type EndpointGroup } from './endpoints.js';
+} from './scanner';
+export { normalizeApiError, type NormalizedApiError, type NormalizedErrorCode } from './errors';
+export { wireTokenRefresh } from './interceptors';
+export {
+  unwrapEnvelope,
+  readEnvelopeMeta,
+  type ApiEnvelope,
+  type ApiErrorEnvelope,
+} from './envelope';
+export { endpoints, type EndpointGroup } from './endpoints';
 export {
   createAdminPromo,
   createQrBatch,
+  findAdminUserByPhone,
   generateQrBatchCodes,
+  getAdminOrder,
+  refundAdminOrder,
+  getAdminSubscription,
+  getAdminShipment,
+  updateAdminShipmentStatus,
+  getAdminPayment,
+  grantUserRole,
+  revokeUserRole,
+  listAdminOrdersPage,
+  listAdminShipmentsPage,
+  listAdminPaymentsPage,
+  listAdminSupportTicketsPage,
+  getAdminSupportTicket,
+  updateAdminSupportTicketStatus,
+  listAdminIncidentsPage,
+  getAdminIncident,
+  listAdminSubscriptions,
   listAdminPromos,
   listQrInventory,
+  listQrBatchCodes,
+  listQrBatchCodesPage,
+  exportQrBatchCodesCsv,
+  listSkus,
+  createSku,
+  updateSku,
+  listAdminPlans,
+  createPlanVersion,
+  updatePlan,
+  getPlanFeatures,
+  updatePlanFeatures,
+  type SkuSummaryDto,
+  type ListSkusQuery,
+  type CreateSkuBody,
+  type UpdateSkuBody,
+  type AdminPlanDto,
+  type ListAdminPlansQuery,
+  type CreatePlanBody,
+  type UpdatePlanBody,
+  type PlanFeaturesDto,
+  type UpdatePlanFeaturesBody,
   provisionQrBatch,
+  distributeQrBatch,
   qrAutoDetachSweep,
   queryAuditEvents,
   queryAuditEventsPage,
@@ -168,20 +239,76 @@ export {
   type TransferCompletedDto,
   type SettlementBatchResultDto,
   type ReorderFulfilResultDto,
+  type AdminUserDto,
+  type AdminUserRoleDto,
+  type GrantableUserRole,
+  type AdminOrderSummary,
+  type AdminOrderDetail,
+  type AdminOrderFulfillment,
+  type RefundOrderResult,
+  type AdminOrderStatus,
+  type AdminOrderKind,
+  type AdminPaymentOutcome,
+  type ListAdminOrdersQuery,
+  type AdminOrdersPageResult,
+  type AdminSubscriptionSummary,
+  type AdminSubscriptionDetail,
+  type AdminSubscriptionStatus,
+  type AdminSubscriptionActivatedVia,
+  type ListAdminSubscriptionsQuery,
+  type AdminShipmentSummary,
+  type AdminShipmentDetail,
+  type AdminShipmentEvent,
+  type AdminShipmentStatus,
+  type ManualShipmentStatus,
+  type ListAdminShipmentsQuery,
+  type AdminShipmentsPageResult,
+  type AdminPaymentSummary,
+  type AdminPaymentDetail,
+  type AdminPaymentMode,
+  type AdminPaymentState,
+  type ListAdminPaymentsQuery,
+  type AdminPaymentsPageResult,
+  type AdminSupportTicketSummary,
+  type AdminSupportTicket,
+  type AdminSupportTicketStatus,
+  type AdminSupportTicketType,
+  type ListAdminSupportTicketsQuery,
+  type AdminSupportTicketsPageResult,
+  type UpdateSupportTicketStatusBody,
+  type AdminIncidentStatus,
+  type AdminIncidentSource,
+  type AdminIncidentAlertStatus,
+  type AdminEmergencySeverity,
+  type AdminDispatchPath,
+  type AdminDispatchStep,
+  type AdminDispatchStepState,
+  type AdminScanMediaSlot,
+  type AdminIncidentSummary,
+  type AdminIncidentAlert,
+  type AdminIncidentTimelineStep,
+  type AdminIncidentMedia,
+  type AdminIncidentDetail,
+  type ListAdminIncidentsQuery,
+  type AdminIncidentsPageResult,
   type AdminPromoDto,
   type AuditAction,
   type AuditEventDto,
   type AuditEventsPageResult,
+  type BatchCodeDto,
   type BatchSummaryDto,
   type CreateBatchBody,
   type CreatePromoBody,
+  type ListQrBatchCodesQuery,
   type ListQrInventoryQuery,
   type PaginationDto,
   type QrAutoDetachResultDto,
   type QrBatchChannel,
+  type QrBatchCodesPageResult,
   type QrBatchStatus,
+  type QrCodeStatus,
   type QueryAuditEventsParams,
   type ReplacedDto,
   type RetiredDto,
-} from './admin.js';
+} from './admin';
 export type { Plan, User, Vehicle } from '@autolokate/types';

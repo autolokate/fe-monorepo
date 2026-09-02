@@ -104,7 +104,7 @@ stateDiagram-v2
 
 ## Path constants
 
-Defined in `apps/onboarding/src/features/post-activation-pwa/constants/pwa-scan-paths.ts`
+Defined in `apps/qr/src/features/post-activation-pwa/constants/pwa-scan-paths.ts`
 
 ---
 

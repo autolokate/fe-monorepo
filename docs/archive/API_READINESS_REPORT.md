@@ -8,27 +8,28 @@
 
 ## Summary Table
 
-| Service | File / Function | Status | Work Needed |
-|---------|----------------|--------|-------------|
-| Mobile validation | `auth-flow.validation.ts :: isValidMobile()` | COUPLED | Replace hardcoded `=== '9999999999'` with format check; no UI change |
-| OTP verification | `auth-flow.validation.ts` + 3 route files | COUPLED | Extract async `verifyOtp(mobile, otp)` service; refactor 3 `handleVerify` to async |
-| Vahan vehicle lookup | `vahan-demo.ts :: fetchVahanDetails()` | **SWAPPABLE** | Replace function body with `fetch()` to real Vahan API |
-| Plan data | `purchase-plans.ts :: PURCHASE_PLANS` constant | COUPLED | Add async `fetchPlans()` + loading/error states on R06 |
-| Payment initiation + outcome | `purchase-payment-demo.ts` + `PurchaseRoutes.tsx R09Route` | COUPLED | Extract payment service; wire gateway callback instead of timeout |
-| Emergency submission | No function — session-only writes | COUPLED | Add new `submitEmergencyContacts()` service + async step after E5 |
-| PWA vehicle lookup | `vahan-demo.ts :: fetchVahanDetails()` | **SWAPPABLE** | Same as Vahan above |
-| Prepaid entitlement | `fetch-landing-entitlement.ts :: fetchLandingEntitlement()` | **SWAPPABLE** | Replace `loader()` inside with real `fetch()` |
-| B2B2C entitlement | Same `fetchLandingEntitlement()` pattern | **SWAPPABLE** | Same |
+| Service                      | File / Function                                             | Status        | Work Needed                                                                        |
+| ---------------------------- | ----------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------- |
+| Mobile validation            | `auth-flow.validation.ts :: isValidMobile()`                | COUPLED       | Replace hardcoded `=== '9999999999'` with format check; no UI change               |
+| OTP verification             | `auth-flow.validation.ts` + 3 route files                   | COUPLED       | Extract async `verifyOtp(mobile, otp)` service; refactor 3 `handleVerify` to async |
+| Vahan vehicle lookup         | `vahan-demo.ts :: fetchVahanDetails()`                      | **SWAPPABLE** | Replace function body with `fetch()` to real Vahan API                             |
+| Plan data                    | `purchase-plans.ts :: PURCHASE_PLANS` constant              | COUPLED       | Add async `fetchPlans()` + loading/error states on R06                             |
+| Payment initiation + outcome | `purchase-payment-demo.ts` + `PurchaseRoutes.tsx R09Route`  | COUPLED       | Extract payment service; wire gateway callback instead of timeout                  |
+| Emergency submission         | No function — session-only writes                           | COUPLED       | Add new `submitEmergencyContacts()` service + async step after E5                  |
+| PWA vehicle lookup           | `vahan-demo.ts :: fetchVahanDetails()`                      | **SWAPPABLE** | Same as Vahan above                                                                |
+| Prepaid entitlement          | `fetch-landing-entitlement.ts :: fetchLandingEntitlement()` | **SWAPPABLE** | Replace `loader()` inside with real `fetch()`                                      |
+| B2B2C entitlement            | Same `fetchLandingEntitlement()` pattern                    | **SWAPPABLE** | Same                                                                               |
 
 ---
 
 ## 1. Mobile Validation
 
-**File:** `apps/onboarding/src/features/shared-auth/auth-flow/auth-flow.validation.ts`
+**File:** `apps/qr/src/features/shared-auth/auth-flow/auth-flow.validation.ts`
 
 **Current behavior:** `isValidMobile(value)` returns `normalizeMobile(value) === '9999999999'`. Only one phone number is "valid" in the entire demo.
 
 **API integration path:**
+
 1. Replace `isValidMobile()` with standard 10-digit Indian mobile format check: `/^[6-9]\d{9}$/`
 2. No UI change needed — the validation is called inside the route's `onMobileSubmit` handler
 
@@ -39,6 +40,7 @@
 ## 2. OTP Verification
 
 **Files:**
+
 - `auth-flow.validation.ts :: isValidOtp()` — hardcoded `value === '123456'`
 - `journey/routes/AuthRoutes.tsx :: handleVerify()` — calls `isValidOtp` directly
 - `journey/routes/EmergencyRoutes.tsx :: verifyOtp()` — inline mock
@@ -47,6 +49,7 @@
 **Current behavior:** Synchronous string compare. No network call.
 
 **API integration path:**
+
 1. Create `verifyOtp(mobile: string, otp: string): Promise<OtpVerifyResult>` in a new auth service file
 2. Refactor all three `handleVerify` callers to `async/await` this service
 3. Add error states for network failures (already have `otpState = 'network-error'` UI state — just needs wiring)
@@ -59,11 +62,12 @@
 
 ## 3. Vahan Vehicle Lookup (Purchase + PWA)
 
-**File:** `apps/onboarding/src/features/qr-purchase/data/vahan-demo.ts :: fetchVahanDetails(plate: string)`
+**File:** `apps/qr/src/features/qr-purchase/data/vahan-demo.ts :: fetchVahanDetails(plate: string)`
 
 **Current behavior:** Waits 3 seconds (simulated), then returns `demoVehicleFields` for `MH 12 AB 3456`, error for `MH 12 AB 0000`, not-found for any other input.
 
 **API integration path:**
+
 ```typescript
 // Replace the function body:
 export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult> {
@@ -77,6 +81,7 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 **Status: SWAPPABLE** — callers use `await fetchVahanDetails(plate)`. Replace function body only.
 
 **Callers:**
+
 - `PurchaseRoutes.tsx :: R04Route` (purchase flow)
 - `pwa-park-me-routes.tsx :: PwaParkMeLookingUpRoute` (PWA Park Me)
 
@@ -84,11 +89,12 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 
 ## 4. Plan Data
 
-**File:** `apps/onboarding/src/features/qr-purchase/data/purchase-plans.ts`
+**File:** `apps/qr/src/features/qr-purchase/data/purchase-plans.ts`
 
 **Current behavior:** `PURCHASE_PLANS` is a static in-file constant array. `getPurchasePlan(id)` is a synchronous lookup. R06 (`ChoosePlanScreen`) imports and renders this directly.
 
 **API integration path requires UI changes:**
+
 1. Create `usePlanData()` hook returning `{ plans, loading, error }`
 2. Add loading skeleton to R06 (`PartnerActivationCardSkeleton` pattern already exists for prepaid — reuse)
 3. Add error state to R06
@@ -101,12 +107,14 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 ## 5. Payment Processing
 
 **Files:**
-- `apps/onboarding/src/features/qr-purchase/data/purchase-payment-demo.ts :: getDemoPaymentOutcome(planId)` — maps plan to outcome
+
+- `apps/qr/src/features/qr-purchase/data/purchase-payment-demo.ts :: getDemoPaymentOutcome(planId)` — maps plan to outcome
 - `journey/routes/PurchaseRoutes.tsx :: R09Route` — inline `useEffect` with `setTimeout` driving the outcome
 
 **Current behavior:** `setTimeout(PAYMENT_PROCESSING_MS)` fires, then calls `getDemoPaymentOutcome(planId)` to determine success/failed/unconfirmed/confirming. Routes accordingly.
 
 **API integration path:**
+
 1. Extract payment initiation into a `startPayment(planId, amount)` async function
 2. Replace the `setTimeout` in R09Route with `await startPayment(...)` + gateway webhook/callback
 3. Map gateway result codes to existing `paymentStatus` states (success/failed/unconfirmed/confirming)
@@ -125,6 +133,7 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 **No submission function exists.**
 
 **API integration path:**
+
 1. Create `submitEmergencySetup(session: JourneySession): Promise<EmergencySetupResult>` in a new service file
 2. Add an intermediate "submitting" step between E5 and `/journey/completed`
 3. E5Route's `onContinue` becomes: show loading → call service → on success navigate to completed → on failure show retry
@@ -135,11 +144,12 @@ export async function fetchVahanDetails(plate: string): Promise<VahanFetchResult
 
 ## 7. Prepaid + B2B2C Entitlement
 
-**File:** `apps/onboarding/src/features/b2b-shared/fetch-landing-entitlement.ts :: fetchLandingEntitlement(loader, options)`
+**File:** `apps/qr/src/features/b2b-shared/fetch-landing-entitlement.ts :: fetchLandingEntitlement(loader, options)`
 
 **Current behavior:** Wraps any `loader()` with a fake 2-second delay. Supports `?demo=error` query override. `useWelcomeLanding()` hook calls it with `getDemoPrepaidLandingEntitlement` (static object).
 
 **API integration path:**
+
 ```typescript
 // Replace loader call in fetchLandingEntitlement:
 const loader = async () => {
@@ -166,28 +176,30 @@ const loader = async () => {
 
 When ready to wire real APIs, these endpoints are required:
 
-| API | Method | Consumer | Priority |
-|-----|--------|----------|----------|
-| `/api/auth/send-otp?mobile=…` | POST | A1 Mobile submit | P0 |
-| `/api/auth/verify-otp` | POST | A2 OTP submit, E1–E3 OTP, PWA verify | P0 |
-| `/api/vahan/lookup?plate=…` | GET | R04 fetching, PWA Park Me lookup | P0 |
-| `/api/plans?vehicleType=…` | GET | R06 plan selection | P0 |
-| `/api/payment/initiate` | POST | R09 payment processing | P0 |
-| `/api/payment/status/:id` | GET | R09b / R10c status check | P0 |
-| `/api/emergency/submit` | POST | E5 contacts summary continue | P0 |
-| `/api/entitlement/:partnerId` | GET | Prepaid/B2B2C welcome | P0 |
-| `/api/pwa/park-me/submit` | POST | PWA Park Me status resolved | P1 |
-| `/api/pwa/sos/send` | POST | SOS sending | P1 |
+| API                           | Method | Consumer                             | Priority |
+| ----------------------------- | ------ | ------------------------------------ | -------- |
+| `/api/auth/send-otp?mobile=…` | POST   | A1 Mobile submit                     | P0       |
+| `/api/auth/verify-otp`        | POST   | A2 OTP submit, E1–E3 OTP, PWA verify | P0       |
+| `/api/vahan/lookup?plate=…`   | GET    | R04 fetching, PWA Park Me lookup     | P0       |
+| `/api/plans?vehicleType=…`    | GET    | R06 plan selection                   | P0       |
+| `/api/payment/initiate`       | POST   | R09 payment processing               | P0       |
+| `/api/payment/status/:id`     | GET    | R09b / R10c status check             | P0       |
+| `/api/emergency/submit`       | POST   | E5 contacts summary continue         | P0       |
+| `/api/entitlement/:partnerId` | GET    | Prepaid/B2B2C welcome                | P0       |
+| `/api/pwa/park-me/submit`     | POST   | PWA Park Me status resolved          | P1       |
+| `/api/pwa/sos/send`           | POST   | SOS sending                          | P1       |
 
 ---
 
 ## 10. Verdict
 
 **3 services SWAPPABLE (no UI work):**
+
 - Vahan lookup (purchase + PWA Park Me)
 - Prepaid/B2B2C entitlement
 
 **6 services COUPLED (require structural changes before API integration):**
+
 - Mobile validation (trivial — one-line replace, no UI)
 - OTP verification (extract shared service, 3-file refactor)
 - Plan data (add loading/error states to R06)

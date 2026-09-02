@@ -2,14 +2,10 @@ import { useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { AlBrandMark } from '@autolokate/brand';
 import { AlIcon } from '@autolokate/icons';
-import {
-  AlIconButton,
-  AlInput,
-  AlText,
-} from '@autolokate/ui';
+import { AlIconButton, AlInput, AlText } from '@autolokate/ui';
 
-import { DOCS_VERSION, navigationGroups } from './navigation.config.js';
-import type { DocPageId } from './Sidebar.types.js';
+import { DOCS_VERSION, navigationGroups } from './navigation.config';
+import type { DocPageId } from './Sidebar.types';
 import './Sidebar.css';
 
 type SidebarProps = {
@@ -27,9 +23,7 @@ function focusNextLink(step: number, container: HTMLElement | null) {
   if (!container) {
     return;
   }
-  const links = Array.from(
-    container.querySelectorAll<HTMLButtonElement>('[data-doc-link="true"]'),
-  );
+  const links = Array.from(container.querySelectorAll<HTMLButtonElement>('[data-doc-link="true"]'));
   if (links.length === 0) {
     return;
   }
@@ -54,7 +48,9 @@ export function DocsSidebar({
   const navRef = useRef<HTMLElement | null>(null);
 
   return (
-    <aside className={`ds-docs-sidebar${mobileOpen ? ' is-open' : ''}${collapsed ? ' is-collapsed' : ''}`}>
+    <aside
+      className={`ds-docs-sidebar${mobileOpen ? ' is-open' : ''}${collapsed ? ' is-collapsed' : ''}`}
+    >
       <div className="ds-docs-sidebar__panel">
         <div className="ds-docs-sidebar__brand">
           <AlBrandMark size={28} aria-label="Autolokate" />
@@ -90,6 +86,7 @@ export function DocsSidebar({
           />
         </div>
 
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- nav landmark hosts a roving arrow-key focus manager for its interactive [data-doc-link] buttons; the handler only moves focus, it does not make the nav itself an interactive control */}
         <nav
           ref={navRef}
           className="ds-docs-sidebar__groups"
@@ -103,15 +100,13 @@ export function DocsSidebar({
               focusNextLink(-1, navRef.current);
             } else if (event.key === 'Home') {
               event.preventDefault();
-              const first = navRef.current?.querySelector<HTMLButtonElement>(
-                '[data-doc-link="true"]',
-              );
+              const first =
+                navRef.current?.querySelector<HTMLButtonElement>('[data-doc-link="true"]');
               first?.focus();
             } else if (event.key === 'End') {
               event.preventDefault();
-              const links = navRef.current?.querySelectorAll<HTMLButtonElement>(
-                '[data-doc-link="true"]',
-              );
+              const links =
+                navRef.current?.querySelectorAll<HTMLButtonElement>('[data-doc-link="true"]');
               links?.[links.length - 1]?.focus();
             }
           }}

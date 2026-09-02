@@ -18,6 +18,11 @@ out/
 coverage/
 .nyc_output/
 
+# Playwright — generated reports + run artifacts (match under any app in the monorepo)
+playwright-report/
+test-results/
+playwright/.cache/
+
 # Environment variables
 .env
 .env.*
@@ -68,3 +73,11 @@ Desktop.ini
 tmp/
 *.pem
 .vercel
+
+# Terraform — local provider cache + state + tfvars (lock file IS committed)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log

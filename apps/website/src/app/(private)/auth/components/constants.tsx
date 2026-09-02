@@ -1,8 +1,8 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties } from 'react';
 
 export const AUTH_BG = {
-  dark: "/images/login_bg_dark.png",
-  light: "/images/login_bg_light.png",
+  dark: '/images/login_bg_dark.png',
+  light: '/images/login_bg_light.png',
 };
 
 /** Resend cooldown applied after a successful OTP send. */
@@ -20,11 +20,11 @@ export const PHONE_DIGITS = 10;
  * set the variable per-element so the active theme renders the correct display.
  */
 export const INLINE_FLEX_THEME_VAR = {
-  "--theme-dark-display": "inline-flex",
+  '--theme-dark-display': 'inline-flex',
 } as CSSProperties;
 
 export const FLEX_THEME_VAR = {
-  "--theme-dark-display": "flex",
+  '--theme-dark-display': 'flex',
 } as CSSProperties;
 
 /** Human-readable phone — "+918888888888" → "+91 88888 88888". Falls back to input as-is. */
@@ -39,7 +39,7 @@ export function formatPhoneDisplay(phone: string): string {
 
 /** Sanitize a free-form phone field down to digits with leading zeros stripped. */
 export function normalizePhoneDigits(value: string): string {
-  return value.replace(/\D/g, "").replace(/^0+/, "").slice(0, PHONE_DIGITS);
+  return value.replace(/\D/g, '').replace(/^0+/, '').slice(0, PHONE_DIGITS);
 }
 
 export function toE164(digits: string): string {
@@ -48,6 +48,6 @@ export function toE164(digits: string): string {
 
 /** Validate `safeNext` URLs from query string — must be a same-origin path. */
 export function pickSafeNext(raw: string | null | undefined): string {
-  const v = (raw ?? "").trim();
-  return v.startsWith("/") && !v.startsWith("//") ? v : "";
+  const v = (raw ?? '').trim();
+  return v.startsWith('/') && !v.startsWith('//') ? v : '';
 }

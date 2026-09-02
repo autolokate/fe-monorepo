@@ -1,15 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
-import {
-  filterPromosByStatus,
-  type PromoStatusFilter,
-} from '@/features/promos/promo-filters.js';
-import { promosQueryKeys } from '@/hooks/promos/promo-query-keys.js';
-import { mapAdminApiError } from '@/platform/errors/admin-api-errors.js';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error.js';
-import { fetchAdminPromos } from '@/services/promos/admin-promos-service.js';
-import { computePromoMetrics } from '@/services/promos/promo-metrics.js';
+import { filterPromosByStatus, type PromoStatusFilter } from '@/features/promos/promo-filters';
+import { promosQueryKeys } from '@/hooks/promos/promo-query-keys';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
+import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
+import { computePromoMetrics } from '@/services/promos/promo-metrics';
 
 export function usePromoManagement(initialStatusFilter: PromoStatusFilter = 'ALL') {
   const [statusFilter, setStatusFilter] = useState<PromoStatusFilter>(initialStatusFilter);

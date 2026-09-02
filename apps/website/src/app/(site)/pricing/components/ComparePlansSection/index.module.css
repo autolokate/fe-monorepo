@@ -1,0 +1,223 @@
+/* Compare matrix — light premium table */
+
+.section {
+  background: var(--mkt-surface-muted);
+  padding-block: var(--mkt-space-section);
+  border-block: 1px solid var(--mkt-border-subtle);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vw, 4rem);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 36rem;
+}
+
+.headlineAccent {
+  color: var(--mkt-green);
+}
+
+.subheading {
+  max-width: 34rem;
+}
+
+.matrixCard {
+  width: 100%;
+  border: 1px solid var(--mkt-border);
+  border-radius: var(--mkt-radius-lg);
+  background: var(--mkt-surface);
+  box-shadow: var(--mkt-shadow-sm);
+  overflow: hidden;
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .matrixCard {
+    display: block;
+  }
+}
+
+.scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  --plan-col: 13.75rem;
+  --pad-left: 2rem;
+  --pad-right: 1rem;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 60rem;
+  padding: 0.5rem 0 1rem;
+}
+
+.columnHighlight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(var(--pad-right) + var(--plan-col));
+  width: var(--plan-col);
+  background: color-mix(in srgb, var(--mkt-green) 8%, transparent);
+  pointer-events: none;
+}
+
+.headRow,
+.row,
+.ctaRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(3, var(--plan-col));
+  align-items: center;
+}
+
+.headRow {
+  padding: 1rem var(--pad-right) 1rem var(--pad-left);
+}
+
+.headBlank {
+  min-height: 0.625rem;
+}
+
+.headPlan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.popularPill {
+  display: inline-flex;
+  margin-bottom: 0.25rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mkt-yellow-deep);
+}
+
+.planName {
+  font-size: var(--mkt-text-lg);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--mkt-ink-dark);
+}
+
+.planPrice {
+  font-size: var(--mkt-text-xs);
+  color: var(--mkt-ink-dark-muted);
+}
+
+.groupTitle {
+  padding: 1.75rem var(--pad-left) 0.6875rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mkt-green-deep);
+}
+
+.row {
+  padding: 1rem var(--pad-right) 1rem var(--pad-left);
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  padding-right: 1rem;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.5;
+  color: var(--mkt-ink-dark-secondary);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.yes {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mkt-green);
+}
+
+.no {
+  font-size: var(--mkt-text-base);
+  font-weight: 500;
+  color: var(--mkt-ink-dark-muted);
+}
+
+.divider {
+  display: block;
+  height: 1px;
+  background: var(--mkt-border-subtle);
+}
+
+.ctaRow {
+  padding: 1.5rem var(--pad-right) 1.5rem var(--pad-left);
+}
+
+.ctaCell {
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--pad-right);
+}
+
+.ctaCell :global(button) {
+  width: 100%;
+  border-radius: var(--mkt-radius-sm);
+}
+
+button.ctaSecondary {
+  border: 1px solid var(--mkt-border);
+  background-color: transparent;
+  color: var(--mkt-ink-dark);
+  font-weight: 600;
+}
+
+button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  border-color: var(--mkt-ink-dark);
+  background-color: var(--mkt-surface-muted);
+  opacity: 1;
+}
+
+button.ctaPrimary {
+  border: none;
+  background-color: var(--mkt-green);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background-color: var(--mkt-green-deep);
+  opacity: 1;
+}
+
+.handoff {
+  font-size: var(--mkt-text-sm);
+  line-height: 1.6;
+  color: var(--mkt-ink-dark-muted);
+}
+
+.handoffLink {
+  font-weight: 600;
+  color: var(--mkt-green-deep);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--mkt-duration) var(--mkt-ease-out);
+}
+
+.handoffLink:hover {
+  color: var(--mkt-green);
+}

@@ -22,21 +22,21 @@ Result: perceived **flicker**, **opacity flashing**, and **double renders** on t
 
 **One fade per screen.** Component-level motion only where it doesn't overlap.
 
-| Layer | Before | After |
-|-------|--------|-------|
-| Screen enter | opacity + y translate | **opacity only** (220ms) |
-| Footer CTA | delayed opacity fade | **static** (no animation) |
-| Stagger items | opacity + y | **y only** (no opacity) |
-| Hero | opacity + scale | **scale only** |
-| Vehicle card CSS | opacity enter | **removed** |
-| Status tracker CSS | opacity enter | **removed** |
-| Review photos CSS | opacity + scale | **removed** |
-| Timeline steps CSS | opacity enter | **removed** |
-| Timeline complete glyph | opacity + scale | **scale only** |
-| Timeline connector | scaleY fill | **kept** |
-| Timeline active halo | pulse | **kept** |
-| SOS hold aura | pulse | **kept** |
-| Incident hero halo | opacity breathe | **kept** |
+| Layer                   | Before                | After                     |
+| ----------------------- | --------------------- | ------------------------- |
+| Screen enter            | opacity + y translate | **opacity only** (220ms)  |
+| Footer CTA              | delayed opacity fade  | **static** (no animation) |
+| Stagger items           | opacity + y           | **y only** (no opacity)   |
+| Hero                    | opacity + scale       | **scale only**            |
+| Vehicle card CSS        | opacity enter         | **removed**               |
+| Status tracker CSS      | opacity enter         | **removed**               |
+| Review photos CSS       | opacity + scale       | **removed**               |
+| Timeline steps CSS      | opacity enter         | **removed**               |
+| Timeline complete glyph | opacity + scale       | **scale only**            |
+| Timeline connector      | scaleY fill           | **kept**                  |
+| Timeline active halo    | pulse                 | **kept**                  |
+| SOS hold aura           | pulse                 | **kept**                  |
+| Incident hero halo      | opacity breathe       | **kept**                  |
 
 ---
 
@@ -63,7 +63,7 @@ All respect `prefers-reduced-motion`.
 
 ## Files
 
-- `apps/onboarding/.../PwaMotion.tsx`
+- `apps/qr/.../PwaMotion.tsx`
 - `packages/ui/.../DispatchTimeline.css`
 - `packages/ui/.../VehicleConfirmationCard.css`
 - `packages/ui/.../StatusTracker.css`
@@ -74,9 +74,9 @@ All respect `prefers-reduced-motion`.
 
 ## Verification
 
-| Screen | Flicker on enter | Layout jump |
-|--------|------------------|-------------|
-| 11 Calling owner | None ✅ | None ✅ |
-| 20 Help dispatched | None ✅ | None ✅ |
-| 09b Review | None ✅ | None ✅ |
-| 16 Hero | None ✅ | None ✅ |
+| Screen             | Flicker on enter | Layout jump |
+| ------------------ | ---------------- | ----------- |
+| 11 Calling owner   | None ✅          | None ✅     |
+| 20 Help dispatched | None ✅          | None ✅     |
+| 09b Review         | None ✅          | None ✅     |
+| 16 Hero            | None ✅          | None ✅     |

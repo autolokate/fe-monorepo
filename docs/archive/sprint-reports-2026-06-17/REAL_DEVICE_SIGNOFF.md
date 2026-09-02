@@ -1,7 +1,7 @@
 # Real Device Sign-Off
 
 **Date:** 2026-06-17  
-**Build:** `@autolokate/onboarding` — Vite 6 + vite-plugin-pwa 1.3.0  
+**Build:** `@autolokate/qr` — Vite 6 + vite-plugin-pwa 1.3.0  
 **Method:** Build verification + static audit (physical device lab not run in this pass)
 
 ---
@@ -16,16 +16,16 @@ The **PWA install layer is implemented and production-build verified**. All P0 b
 
 ## Phase Completion
 
-| Phase | Deliverable | Status |
-|-------|-------------|--------|
-| 1 — Manifest | `public/manifest.webmanifest` | ✅ |
-| 2 — Icons | 192, 512, maskable, apple-touch, favicon | ✅ |
-| 3 — Meta | `index.html` PWA + iOS tags | ✅ |
-| 4 — Service Worker | vite-plugin-pwa, Workbox precache + runtime | ✅ |
-| 5 — Install Prompt | `beforeinstallprompt` + banner on `/journey` | ✅ |
-| 6 — Offline | `offline.html` + `PwaAppShell` + banner | ✅ |
-| 7 — Permission Recovery | Settings / Retry / Continue without | ✅ |
-| 8 — Verification | Build + dist audit | ✅ |
+| Phase                   | Deliverable                                  | Status |
+| ----------------------- | -------------------------------------------- | ------ |
+| 1 — Manifest            | `public/manifest.webmanifest`                | ✅     |
+| 2 — Icons               | 192, 512, maskable, apple-touch, favicon     | ✅     |
+| 3 — Meta                | `index.html` PWA + iOS tags                  | ✅     |
+| 4 — Service Worker      | vite-plugin-pwa, Workbox precache + runtime  | ✅     |
+| 5 — Install Prompt      | `beforeinstallprompt` + banner on `/journey` | ✅     |
+| 6 — Offline             | `offline.html` + `PwaAppShell` + banner      | ✅     |
+| 7 — Permission Recovery | Settings / Retry / Continue without          | ✅     |
+| 8 — Verification        | Build + dist audit                           | ✅     |
 
 ---
 
@@ -43,19 +43,19 @@ The **PWA install layer is implemented and production-build verified**. All P0 b
 
 ## Constraint Audit
 
-| Area | Touched? |
-|------|----------|
-| Flow dispatcher | ❌ No |
-| Root / Journey / PwaScan providers | ❌ No |
-| Session schema / keys | ❌ No |
-| Routing tree | ❌ No |
-| Business rules | ❌ No |
-| Figma screen layouts | ❌ No |
+| Area                               | Touched? |
+| ---------------------------------- | -------- |
+| Flow dispatcher                    | ❌ No    |
+| Root / Journey / PwaScan providers | ❌ No    |
+| Session schema / keys              | ❌ No    |
+| Routing tree                       | ❌ No    |
+| Business rules                     | ❌ No    |
+| Figma screen layouts               | ❌ No    |
 
 **Added only:**
 
-- `apps/onboarding/public/*`
-- `apps/onboarding/src/pwa/*`
+- `apps/qr/public/*`
+- `apps/qr/src/pwa/*`
 - `PwaAppShell` wrapper in `JourneyOrchestrator`
 - `PwaInstallBanner` on flow entry
 - Permission recovery actions on Park Me / SOS permission surfaces
@@ -67,17 +67,17 @@ The **PWA install layer is implemented and production-build verified**. All P0 b
 
 Execute on **HTTPS production/staging** after deploy:
 
-| Test | Android Chrome | Samsung | iPhone Safari | iPhone Chrome |
-|------|----------------|---------|---------------|---------------|
-| Install / A2HS | ☐ | ☐ | ☐ (Share menu) | ☐ |
-| Standalone launch | ☐ | ☐ | ☐ | ☐ |
-| Icon on home screen | ☐ | ☐ | ☐ | ☐ |
-| Reopen from launcher | ☐ | ☐ | ☐ | ☐ |
-| Kill app → reopen | ☐ | ☐ | ☐ | ☐ |
-| Offline (cached) | ☐ | ☐ | ☐ | ☐ |
-| SW update prompt | ☐ | ☐ | ☐ | ☐ |
-| SOS geo deny → recovery | ☐ | ☐ | ☐ | ☐ |
-| Park Me camera deny → recovery | ☐ | ☐ | ☐ | ☐ |
+| Test                           | Android Chrome | Samsung | iPhone Safari  | iPhone Chrome |
+| ------------------------------ | -------------- | ------- | -------------- | ------------- |
+| Install / A2HS                 | ☐              | ☐       | ☐ (Share menu) | ☐             |
+| Standalone launch              | ☐              | ☐       | ☐              | ☐             |
+| Icon on home screen            | ☐              | ☐       | ☐              | ☐             |
+| Reopen from launcher           | ☐              | ☐       | ☐              | ☐             |
+| Kill app → reopen              | ☐              | ☐       | ☐              | ☐             |
+| Offline (cached)               | ☐              | ☐       | ☐              | ☐             |
+| SW update prompt               | ☐              | ☐       | ☐              | ☐             |
+| SOS geo deny → recovery        | ☐              | ☐       | ☐              | ☐             |
+| Park Me camera deny → recovery | ☐              | ☐       | ☐              | ☐             |
 
 Mark ☐ → ✅ during QA pass.
 
@@ -85,12 +85,12 @@ Mark ☐ → ✅ during QA pass.
 
 ## Known Platform Limits
 
-| Item | Note |
-|------|------|
-| iOS install prompt | No programmatic prompt; A2HS is manual |
-| Open Settings deep link | Best-effort; may show instructions only |
-| First visit offline | Requires prior online visit to cache shell |
-| Real device lab | Not executed in this implementation pass |
+| Item                    | Note                                       |
+| ----------------------- | ------------------------------------------ |
+| iOS install prompt      | No programmatic prompt; A2HS is manual     |
+| Open Settings deep link | Best-effort; may show instructions only    |
+| First visit offline     | Requires prior online visit to cache shell |
+| Real device lab         | Not executed in this implementation pass   |
 
 ---
 
@@ -106,9 +106,9 @@ Mark ☐ → ✅ during QA pass.
 
 ## Sign-Off
 
-| Layer | Result |
-|-------|--------|
-| Installable PWA (code + build) | **READY** |
-| Physical device QA | **Pending manual pass** |
+| Layer                          | Result                  |
+| ------------------------------ | ----------------------- |
+| Installable PWA (code + build) | **READY**               |
+| Physical device QA             | **Pending manual pass** |
 
 **Overall: INSTALLABLE PWA READY**

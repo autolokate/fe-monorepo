@@ -16,35 +16,35 @@ Define how to achieve **one route tree** for Autolokate PWA while preserving all
 
 ### Summary
 
-| Tree | Prefix | Routes | Provider | Guard layer |
-|------|--------|--------|----------|-------------|
-| Journey | `/journey/*` | ~32 | JourneyProvider | `JourneyRouteGuards` |
-| PWA | `/pwa/scan/*` | 30 | PwaScanProvider | Inline + `PwaPhotoRouteGuard` |
-| Root | `/` | → `/journey` | JourneyProvider | — |
+| Tree    | Prefix        | Routes       | Provider        | Guard layer                   |
+| ------- | ------------- | ------------ | --------------- | ----------------------------- |
+| Journey | `/journey/*`  | ~32          | JourneyProvider | `JourneyRouteGuards`          |
+| PWA     | `/pwa/scan/*` | 30           | PwaScanProvider | Inline + `PwaPhotoRouteGuard` |
+| Root    | `/`           | → `/journey` | JourneyProvider | —                             |
 
 **Total:** ~62 active routes + redirects.
 
 ### Journey routes (frozen)
 
-| Segment | Paths | Guard |
-|---------|-------|-------|
-| Entry | `/journey`, `/journey/home`, `/journey/flow-hub` | None |
-| Auth | `/journey/auth/mobile`, `/otp`, `/vehicle-owner`, `/legal/*` | None (completion handler in wrapper) |
-| Purchase | `/journey/purchase/r03-vehicle` … `r10c-payment-unconfirmed` | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` |
-| Prepaid | `/journey/prepaid/welcome` | None |
-| B2B2C | `/journey/b2b2c/welcome`, `/welcome/plan-rider` | None |
-| Emergency | `/journey/emergency/rider-prompt` … `contacts-summary` | `RequireAuthCompleted` + `RequireSelectedFlow` |
-| Completed | `/journey/completed` | None |
+| Segment   | Paths                                                        | Guard                                                           |
+| --------- | ------------------------------------------------------------ | --------------------------------------------------------------- |
+| Entry     | `/journey`, `/journey/home`, `/journey/flow-hub`             | None                                                            |
+| Auth      | `/journey/auth/mobile`, `/otp`, `/vehicle-owner`, `/legal/*` | None (completion handler in wrapper)                            |
+| Purchase  | `/journey/purchase/r03-vehicle` … `r10c-payment-unconfirmed` | `RequireAuthCompleted` + `RequireSelectedFlowMatch('purchase')` |
+| Prepaid   | `/journey/prepaid/welcome`                                   | None                                                            |
+| B2B2C     | `/journey/b2b2c/welcome`, `/welcome/plan-rider`              | None                                                            |
+| Emergency | `/journey/emergency/rider-prompt` … `contacts-summary`       | `RequireAuthCompleted` + `RequireSelectedFlow`                  |
+| Completed | `/journey/completed`                                         | None                                                            |
 
 ### PWA routes (frozen)
 
-| Segment | Paths | Guard |
-|---------|-------|-------|
-| Bootstrap | `/pwa/scan/loading` | None |
-| Hub | `/pwa/scan/vehicle` | None |
-| Verify | `/pwa/scan/verify/mobile`, `/otp`, `/name` | None |
-| Park Me | `/pwa/scan/park-me/*` (11 routes) | Inline navigation guards |
-| SOS | `/pwa/scan/sos/*` (14 routes) | Inline + photo guard |
+| Segment   | Paths                                      | Guard                    |
+| --------- | ------------------------------------------ | ------------------------ |
+| Bootstrap | `/pwa/scan/loading`                        | None                     |
+| Hub       | `/pwa/scan/vehicle`                        | None                     |
+| Verify    | `/pwa/scan/verify/mobile`, `/otp`, `/name` | None                     |
+| Park Me   | `/pwa/scan/park-me/*` (11 routes)          | Inline navigation guards |
+| SOS       | `/pwa/scan/sos/*` (14 routes)              | Inline + photo guard     |
 
 ---
 
@@ -72,42 +72,42 @@ BrowserRouter
 
 New production-oriented paths alias to existing route components.
 
-| New path (alias) | Resolves to | Component |
-|------------------|-------------|-----------|
-| `/scan/loading` | `/pwa/scan/loading` | `PwaLoadingRoute` |
-| `/scan/vehicle` | `/pwa/scan/vehicle` | `PwaVehicleFoundRoute` |
-| `/scan/verify/mobile` | `/pwa/scan/verify/mobile` | `PwaVerifyMobileRoute` |
-| `/activate` | `/journey` | `FlowEntryScreen` (dev) or QR dispatch (prod) |
-| `/activate/auth/mobile` | `/journey/auth/mobile` | `A1MobileScreen` via AuthRoutes |
-| `/activate/purchase/r03-vehicle` | `/journey/purchase/r03-vehicle` | PurchaseRoutes |
+| New path (alias)                 | Resolves to                     | Component                                     |
+| -------------------------------- | ------------------------------- | --------------------------------------------- |
+| `/scan/loading`                  | `/pwa/scan/loading`             | `PwaLoadingRoute`                             |
+| `/scan/vehicle`                  | `/pwa/scan/vehicle`             | `PwaVehicleFoundRoute`                        |
+| `/scan/verify/mobile`            | `/pwa/scan/verify/mobile`       | `PwaVerifyMobileRoute`                        |
+| `/activate`                      | `/journey`                      | `FlowEntryScreen` (dev) or QR dispatch (prod) |
+| `/activate/auth/mobile`          | `/journey/auth/mobile`          | `A1MobileScreen` via AuthRoutes               |
+| `/activate/purchase/r03-vehicle` | `/journey/purchase/r03-vehicle` | PurchaseRoutes                                |
 
 **Rule:** Old paths remain permanently during R2. Redirects are **optional** and must not be one-way until telemetry confirms migration.
 
 ### Phase R3 — QR entry route (future)
 
-| Path | Handler |
-|------|---------|
+| Path          | Handler                                            |
+| ------------- | -------------------------------------------------- |
 | `/scan/:qrId` | Decode payload → dispatch to existing first screen |
 
 Dispatch targets (unchanged logic):
 
-| Payload type | First screen |
-|--------------|--------------|
-| `purchase` | `/journey/auth/mobile` (or alias) |
-| `prepaid` | `/journey/prepaid/welcome` |
-| `b2b2c` | `/journey/b2b2c/welcome` |
-| `activated` | `/pwa/scan/loading` |
+| Payload type | First screen                      |
+| ------------ | --------------------------------- |
+| `purchase`   | `/journey/auth/mobile` (or alias) |
+| `prepaid`    | `/journey/prepaid/welcome`        |
+| `b2b2c`      | `/journey/b2b2c/welcome`          |
+| `activated`  | `/pwa/scan/loading`               |
 
 See [QR_ENTRY_STRATEGY.md](./QR_ENTRY_STRATEGY.md).
 
 ### Phase R4 — Owner post-activation routes (future, new screens)
 
-| Path | Purpose |
-|------|---------|
-| `/dashboard` | Owner home after activation |
+| Path         | Purpose                            |
+| ------------ | ---------------------------------- |
+| `/dashboard` | Owner home after activation        |
 | `/emergency` | Owner emergency contact management |
-| `/vehicle` | Vehicle + plan profile |
-| `/profile` | Account settings |
+| `/vehicle`   | Vehicle + plan profile             |
+| `/profile`   | Account settings                   |
 
 **Note:** These are **new** routes, not renames of existing journey/PWA paths. No breaking change to current flows.
 
@@ -115,17 +115,17 @@ See [QR_ENTRY_STRATEGY.md](./QR_ENTRY_STRATEGY.md).
 
 ## Route ownership after unification
 
-| Domain | Route owner file (future) | Path namespace |
-|--------|---------------------------|----------------|
-| Platform root | `platform/routes/AutolokateRoutes.tsx` | `/` |
-| Activation entry | `journey/routes/JourneyRoutes.tsx` | `/journey/*`, `/activate/*` |
-| Auth | `journey/routes/AuthRoutes.tsx` | `/journey/auth/*`, `/activate/auth/*` |
-| Purchase | `journey/routes/PurchaseRoutes.tsx` | `/journey/purchase/*` |
-| Prepaid | `journey/routes/PrepaidRoutes.tsx` | `/journey/prepaid/*` |
-| B2B2C | `journey/routes/B2b2cRoutes.tsx` | `/journey/b2b2c/*` |
-| Emergency setup | `journey/routes/EmergencyRoutes.tsx` | `/journey/emergency/*` |
-| Scanner | `post-activation-pwa/routes/PwaScanRoutes.tsx` | `/pwa/scan/*`, `/scan/*` |
-| QR dispatch | `platform/routes/QrDispatchRoute.tsx` (future) | `/scan/:qrId` |
+| Domain           | Route owner file (future)                      | Path namespace                        |
+| ---------------- | ---------------------------------------------- | ------------------------------------- |
+| Platform root    | `platform/routes/AutolokateRoutes.tsx`         | `/`                                   |
+| Activation entry | `journey/routes/JourneyRoutes.tsx`             | `/journey/*`, `/activate/*`           |
+| Auth             | `journey/routes/AuthRoutes.tsx`                | `/journey/auth/*`, `/activate/auth/*` |
+| Purchase         | `journey/routes/PurchaseRoutes.tsx`            | `/journey/purchase/*`                 |
+| Prepaid          | `journey/routes/PrepaidRoutes.tsx`             | `/journey/prepaid/*`                  |
+| B2B2C            | `journey/routes/B2b2cRoutes.tsx`               | `/journey/b2b2c/*`                    |
+| Emergency setup  | `journey/routes/EmergencyRoutes.tsx`           | `/journey/emergency/*`                |
+| Scanner          | `post-activation-pwa/routes/PwaScanRoutes.tsx` | `/pwa/scan/*`, `/scan/*`              |
+| QR dispatch      | `platform/routes/QrDispatchRoute.tsx` (future) | `/scan/:qrId`                         |
 
 **Principle:** Feature folders keep route **components**; platform layer owns **mount tree**.
 
@@ -135,15 +135,15 @@ See [QR_ENTRY_STRATEGY.md](./QR_ENTRY_STRATEGY.md).
 
 ### Current constants (must remain valid)
 
-| File | Export |
-|------|--------|
-| `journey/constants.ts` | `journeyPaths` |
-| `journey/auth/auth-routing.ts` | `authJourneyPaths` |
-| `journey/purchase/purchase-routing.ts` | `purchaseJourneyPaths` |
-| `journey/prepaid/prepaid-routing.ts` | `prepaidJourneyPaths` |
-| `journey/b2b2c/b2b2c-routing.ts` | `b2b2cJourneyPaths` |
-| `journey/emergency/emergency-routing.ts` | `emergencyJourneyPaths` |
-| `post-activation-pwa/constants/pwa-scan-paths.ts` | `pwaScanPaths` |
+| File                                              | Export                  |
+| ------------------------------------------------- | ----------------------- |
+| `journey/constants.ts`                            | `journeyPaths`          |
+| `journey/auth/auth-routing.ts`                    | `authJourneyPaths`      |
+| `journey/purchase/purchase-routing.ts`            | `purchaseJourneyPaths`  |
+| `journey/prepaid/prepaid-routing.ts`              | `prepaidJourneyPaths`   |
+| `journey/b2b2c/b2b2c-routing.ts`                  | `b2b2cJourneyPaths`     |
+| `journey/emergency/emergency-routing.ts`          | `emergencyJourneyPaths` |
+| `post-activation-pwa/constants/pwa-scan-paths.ts` | `pwaScanPaths`          |
 
 ### Future unified constants (additive)
 
@@ -174,25 +174,25 @@ export const autolokatePaths = {
 
 ### Journey guards — unchanged scope
 
-| Guard | Applies to | Must NOT apply to |
-|-------|------------|-------------------|
-| `RequireAuthCompleted` | `/journey/purchase/*`, `/journey/emergency/*` | `/pwa/scan/*` |
-| `RequireSelectedFlow` | `/journey/emergency/*` | `/pwa/scan/*` |
-| `RequireSelectedFlowMatch('purchase')` | `/journey/purchase/*` | All other |
+| Guard                                  | Applies to                                    | Must NOT apply to |
+| -------------------------------------- | --------------------------------------------- | ----------------- |
+| `RequireAuthCompleted`                 | `/journey/purchase/*`, `/journey/emergency/*` | `/pwa/scan/*`     |
+| `RequireSelectedFlow`                  | `/journey/emergency/*`                        | `/pwa/scan/*`     |
+| `RequireSelectedFlowMatch('purchase')` | `/journey/purchase/*`                         | All other         |
 
 **Risk if unified tree wraps PWA under journey guards:** Bystander scan blocked at auth gate. **Mitigation:** Guard wrappers stay on activation route segments only.
 
 ### PWA guards — unchanged scope
 
-| Guard | Applies to |
-|-------|------------|
-| `PwaPhotoRouteGuard` | Photo capture routes |
+| Guard                       | Applies to               |
+| --------------------------- | ------------------------ |
+| `PwaPhotoRouteGuard`        | Photo capture routes     |
 | Inline `Navigate` redirects | Park Me / SOS flow order |
 
 ### Future QR guard (additive)
 
-| Guard | Applies to |
-|-------|------------|
+| Guard                   | Applies to         |
+| ----------------------- | ------------------ |
 | `RequireValidQrPayload` | `/scan/:qrId` only |
 
 ---
@@ -201,15 +201,15 @@ export const autolokatePaths = {
 
 These redirects are load-bearing — must not change behavior:
 
-| From | To | Reason |
-|------|-----|--------|
-| `/` | `/journey` | App entry |
-| `/journey/purchase` | `/journey/purchase/r03-vehicle` | Purchase entry |
-| `/journey/emergency` | `/journey/emergency/rider-prompt` | Emergency index |
-| `/journey/auth/splash` | `/journey/auth/mobile` | Deprecated splash |
-| `/pwa/scan/` | `/pwa/scan/loading` | PWA bootstrap |
-| `/pwa/scan/*` (unknown) | `/pwa/scan/loading` | PWA fallback |
-| `/journey/*` (unknown) | `/journey` | Journey fallback |
+| From                    | To                                | Reason            |
+| ----------------------- | --------------------------------- | ----------------- |
+| `/`                     | `/journey`                        | App entry         |
+| `/journey/purchase`     | `/journey/purchase/r03-vehicle`   | Purchase entry    |
+| `/journey/emergency`    | `/journey/emergency/rider-prompt` | Emergency index   |
+| `/journey/auth/splash`  | `/journey/auth/mobile`            | Deprecated splash |
+| `/pwa/scan/`            | `/pwa/scan/loading`               | PWA bootstrap     |
+| `/pwa/scan/*` (unknown) | `/pwa/scan/loading`               | PWA fallback      |
+| `/journey/*` (unknown)  | `/journey`                        | Journey fallback  |
 
 ---
 
@@ -235,7 +235,7 @@ R0 → R1 → R2 → R3 → R4 → E0 → E1 → E2 → E3 → E5 → Completed
 
 ### PWA Park Me
 
-vehicle-number → looking-up → confirm → permissions → photos → review → status/*
+vehicle-number → looking-up → confirm → permissions → photos → review → status/\*
 
 ### PWA SOS
 
@@ -249,16 +249,16 @@ sos → holding → allow-location → scene-photos → sending → help-receive
 
 ### Current
 
-| From | To | Session effect |
-|------|-----|----------------|
+| From              | To                  | Session effect                                             |
+| ----------------- | ------------------- | ---------------------------------------------------------- |
 | `/journey` card 4 | `/pwa/scan/loading` | JourneyProvider unmounts; PWA mounts; both keys in storage |
-| PWA SOS resolved | `/pwa/scan/vehicle` | Scanner only |
-| Journey completed | `/journey` (home) | `clearJourney()` |
+| PWA SOS resolved  | `/pwa/scan/vehicle` | Scanner only                                               |
+| Journey completed | `/journey` (home)   | `clearJourney()`                                           |
 
 ### After R1 (single mount)
 
-| From | To | Session effect |
-|------|-----|----------------|
+| From      | To            | Session effect                                  |
+| --------- | ------------- | ----------------------------------------------- |
 | Same URLs | Same behavior | Both providers mounted; no unmount on cross-nav |
 
 **Improvement:** Activation session stays in React context when entering PWA (still isolated by slice).
@@ -267,25 +267,25 @@ sos → holding → allow-location → scene-photos → sending → help-receive
 
 ## Dev / QA impact
 
-| Surface | Impact |
-|---------|--------|
-| `ScreenDevApp.tsx` | Dev screen registry uses journey paths — unchanged in R0–R2 |
-| Visual capture scripts | Path-based URLs — aliases require duplicate captures or redirect following |
-| `router/routes.schema.ts` | Catalog update for aliases (metadata only) |
-| FlowHub QA | `/journey/flow-hub` — keep as dev-only |
+| Surface                   | Impact                                                                     |
+| ------------------------- | -------------------------------------------------------------------------- |
+| `ScreenDevApp.tsx`        | Dev screen registry uses journey paths — unchanged in R0–R2                |
+| Visual capture scripts    | Path-based URLs — aliases require duplicate captures or redirect following |
+| `router/routes.schema.ts` | Catalog update for aliases (metadata only)                                 |
+| FlowHub QA                | `/journey/flow-hub` — keep as dev-only                                     |
 
 ---
 
 ## Migration phases summary
 
-| Phase | URL change | Provider change | Risk |
-|-------|------------|-----------------|------|
-| R0 | None | None | 🟢 |
-| R1 | None | Single mount | 🟢 |
-| R2 | Additive aliases | None | 🟢 |
-| R3 | `/scan/:qrId` additive | QR dispatch | 🟡 |
-| R4 | New owner routes | New screens | 🟡 |
-| R5 | Deprecate old URLs (optional) | Redirects | 🔴 |
+| Phase | URL change                    | Provider change | Risk |
+| ----- | ----------------------------- | --------------- | ---- |
+| R0    | None                          | None            | 🟢   |
+| R1    | None                          | Single mount    | 🟢   |
+| R2    | Additive aliases              | None            | 🟢   |
+| R3    | `/scan/:qrId` additive        | QR dispatch     | 🟡   |
+| R4    | New owner routes              | New screens     | 🟡   |
+| R5    | Deprecate old URLs (optional) | Redirects       | 🔴   |
 
 **Do not execute R5** until full regression + external link audit.
 
@@ -293,12 +293,12 @@ sos → holding → allow-location → scene-photos → sending → help-receive
 
 ## Route conflict resolution
 
-| Conflict | Resolution |
-|----------|------------|
-| `/scan/:qrId` vs `/scan/loading` | Static routes before param route: `/scan/loading` registered before `/scan/:qrId` |
+| Conflict                                              | Resolution                                                                                                      |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `/scan/:qrId` vs `/scan/loading`                      | Static routes before param route: `/scan/loading` registered before `/scan/:qrId`                               |
 | `/emergency` (future owner) vs `/journey/emergency/*` | Different namespaces: `/emergency` (owner app) vs `/journey/emergency/*` (activation suffix) — document clearly |
-| Auth path duplication | Shared route elements; mode from route prefix or context |
-| Wildcard fallbacks | Per-subtree wildcards preserved |
+| Auth path duplication                                 | Shared route elements; mode from route prefix or context                                                        |
+| Wildcard fallbacks                                    | Per-subtree wildcards preserved                                                                                 |
 
 ---
 
@@ -319,14 +319,14 @@ sos → holding → allow-location → scene-photos → sending → help-receive
 
 ## Verdict for route plan
 
-| Phase | Verdict |
-|-------|---------|
-| R0 — no change | ✅ SAFE |
-| R1 — single mount, same URLs | ✅ SAFE TO MERGE |
-| R2 — parallel aliases | ✅ SAFE TO MERGE |
-| R3 — QR dispatch route | ✅ SAFE TO MERGE (additive) |
-| R4 — new owner routes | ✅ SAFE TO MERGE (additive) |
-| R5 — remove legacy URLs | ❌ NOT SAFE TO MERGE without extended parallel period |
-| Big-bang URL rename (no aliases) | ❌ NOT SAFE TO MERGE |
+| Phase                            | Verdict                                               |
+| -------------------------------- | ----------------------------------------------------- |
+| R0 — no change                   | ✅ SAFE                                               |
+| R1 — single mount, same URLs     | ✅ SAFE TO MERGE                                      |
+| R2 — parallel aliases            | ✅ SAFE TO MERGE                                      |
+| R3 — QR dispatch route           | ✅ SAFE TO MERGE (additive)                           |
+| R4 — new owner routes            | ✅ SAFE TO MERGE (additive)                           |
+| R5 — remove legacy URLs          | ❌ NOT SAFE TO MERGE without extended parallel period |
+| Big-bang URL rename (no aliases) | ❌ NOT SAFE TO MERGE                                  |
 
 **Recommended:** R1 → R2 → R3 in sequence. Keep `/journey` and `/pwa/scan/*` permanently for dev/QA even after production QR entry.

@@ -1,31 +1,48 @@
-import { HeroBanner } from "../HeroBanner";
-import { WhyItMattersSection } from "../WhyItMattersSection";
-import { GettingStartedSection } from "../GettingStartedSection";
-import { QrSection } from "../QrSection";
-import { SafetyPacksSection } from "../SafetyPacksSection";
-import { WhyAutolokateSection } from "../WhyAutolokateSection";
-import { TestimonialsSection } from "../TestimonialsSection";
-import { FromOwnerSection } from "../FromOwnerSection";
-import { BuiltForIndiaSection } from "../BuiltForIndiaSection";
-import { HomeAmbient } from "../HomeAmbient";
+import { HomeReveal } from '../HomeReveal';
+import { HomeHero } from '../Hero';
+import { ClosingCtaSection } from '../ClosingCtaSection';
+import {
+  ControlCenterSection,
+  DetectionSection,
+  ProblemSection,
+  ProtectionMomentSection,
+  ResponseNetworkSection,
+  SmartQrMomentSection,
+  TrustMomentSection,
+} from '../story';
 
 /**
- * Top-level home page composition. Each section is self-contained and rendered
- * in order for a clean first-time visitor experience.
+ * Homepage — safety story → Smart QR → everyday utility → protection.
  */
 export function HomeContent() {
   return (
     <main className="relative">
-      <HomeAmbient />
-      <HeroBanner />
-      <WhyItMattersSection />
-      <GettingStartedSection />
-      <QrSection />
-      <WhyAutolokateSection />
-      <SafetyPacksSection />
-      <TestimonialsSection />
-      <FromOwnerSection />
-      <BuiltForIndiaSection />
+      <HomeHero />
+
+      <HomeReveal>
+        <ProblemSection />
+      </HomeReveal>
+      <HomeReveal delay={40}>
+        <DetectionSection />
+      </HomeReveal>
+      <HomeReveal delay={60}>
+        <ResponseNetworkSection />
+      </HomeReveal>
+      <HomeReveal delay={40}>
+        <ControlCenterSection />
+      </HomeReveal>
+      <HomeReveal delay={60}>
+        <SmartQrMomentSection />
+      </HomeReveal>
+
+      <HomeReveal delay={40}>
+        <ProtectionMomentSection />
+      </HomeReveal>
+      <HomeReveal delay={60}>
+        <TrustMomentSection />
+      </HomeReveal>
+
+      <ClosingCtaSection />
     </main>
   );
 }

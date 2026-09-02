@@ -1,6 +1,6 @@
 import { AlIconButton } from '@autolokate/ui';
 
-import { useTheme } from '@/providers/ThemeProvider.js';
+import { useTheme } from '@/providers/ThemeProvider';
 
 import './theme-toggle-button.css';
 

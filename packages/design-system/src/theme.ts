@@ -3,10 +3,10 @@ import {
   semanticDark,
   semanticLight,
   type SemanticColorToken,
-} from './tokens/colors.js';
-import { motion } from './tokens/motion.js';
-import { spacing } from './tokens/spacing.js';
-import { typography } from './tokens/typography.js';
+} from './tokens/colors';
+import { motion } from './tokens/motion';
+import { spacing } from './tokens/spacing';
+import { typography } from './tokens/typography';
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -55,7 +55,10 @@ export type CssVariableName = keyof typeof cssVariables;
 const THEME_ATTRIBUTE = 'data-theme';
 
 /** Apply a theme mode to the document root. */
-export function setThemeMode(mode: ThemeMode, element: HTMLElement = document.documentElement): void {
+export function setThemeMode(
+  mode: ThemeMode,
+  element: HTMLElement = document.documentElement,
+): void {
   element.setAttribute(THEME_ATTRIBUTE, mode);
 }
 
@@ -111,10 +114,7 @@ ${darkSystemDeclarations}
 }
 
 /** Apply design tokens as inline CSS variables on a DOM element. */
-export function applyTheme(
-  element: HTMLElement,
-  mode: ThemeMode = 'light',
-): void {
+export function applyTheme(element: HTMLElement, mode: ThemeMode = 'light'): void {
   const variables = getCssVariables(mode);
   for (const [name, value] of Object.entries(variables)) {
     element.style.setProperty(name, value);

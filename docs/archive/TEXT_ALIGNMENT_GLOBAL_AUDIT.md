@@ -8,25 +8,25 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|------:|
-| Active screens audited | **65** |
+| Metric                      |            Value |
+| --------------------------- | ---------------: |
+| Active screens audited      |           **65** |
 | Text alignment issues found | **5** (systemic) |
-| Per-screen patches | **0** |
-| Shared fixes | **6 files** |
+| Per-screen patches          |            **0** |
+| Shared fixes                |      **6 files** |
 
 ---
 
 ## Figma Baseline (all step flows)
 
-| Element | X | Width | Typography |
-|---------|--:|------:|------------|
-| Content column | **16px** | **361px** (393−32) | — |
-| Headline | 16px | 361px | 28/36/700, letter-spacing 0 |
-| Subtitle / body | 16px | 361px | 16/24/400 |
-| CTA | 16px | 361×58 | 16/600 centered in button |
-| Section gap | — | — | **20px** vertical |
-| Title ↔ subtitle | — | — | **8px** |
+| Element          |        X |              Width | Typography                  |
+| ---------------- | -------: | -----------------: | --------------------------- |
+| Content column   | **16px** | **361px** (393−32) | —                           |
+| Headline         |     16px |              361px | 28/36/700, letter-spacing 0 |
+| Subtitle / body  |     16px |              361px | 16/24/400                   |
+| CTA              |     16px |             361×58 | 16/600 centered in button   |
+| Section gap      |        — |                  — | **20px** vertical           |
+| Title ↔ subtitle |        — |                  — | **8px**                     |
 
 PWA status screens use the same **16px** content gutter (`849:321` title @ x:16).
 
@@ -94,16 +94,16 @@ PWA status screens use the same **16px** content gutter (`849:321` title @ x:16)
 
 ## Consumer Verification
 
-| Shell | Screens | Heading X | Body X | CTA X | Status |
-|-------|---------|----------:|-------:|------:|:------:|
-| AuthStepShell | A1, A2, A3 | 16 | 16 | 16 | ✅ |
-| FlowStepShell | R03–R10c, E0–E5, R0–R4 | 16 | 16 | 16 | ✅ |
-| WelcomeActivationShell | Prepaid, B2B2C | 16 | 16 | 16 | ✅ |
-| PwaScanShell | 29 PWA routes | 16 | 16 | 16 | ✅ |
-| PurchaseStatusShell | R04, R09, R10… | center* | center* | 16 | ✅ |
-| Legal reader | L1, L2 | 16 | 16 | — | ✅ |
-| Flow Entry | `/journey` | 16 | 16 | 16 | ✅ |
-| Completed | `/journey/completed` | center* | center* | 16 | ✅ |
+| Shell                  | Screens                | Heading X |   Body X | CTA X | Status |
+| ---------------------- | ---------------------- | --------: | -------: | ----: | :----: |
+| AuthStepShell          | A1, A2, A3             |        16 |       16 |    16 |   ✅   |
+| FlowStepShell          | R03–R10c, E0–E5, R0–R4 |        16 |       16 |    16 |   ✅   |
+| WelcomeActivationShell | Prepaid, B2B2C         |        16 |       16 |    16 |   ✅   |
+| PwaScanShell           | 29 PWA routes          |        16 |       16 |    16 |   ✅   |
+| PurchaseStatusShell    | R04, R09, R10…         |  center\* | center\* |    16 |   ✅   |
+| Legal reader           | L1, L2                 |        16 |       16 |     — |   ✅   |
+| Flow Entry             | `/journey`             |        16 |       16 |    16 |   ✅   |
+| Completed              | `/journey/completed`   |  center\* | center\* |    16 |   ✅   |
 
 \*Intentionally centered per Figma status/completion frames — not step-column layouts.
 
@@ -111,24 +111,24 @@ PWA status screens use the same **16px** content gutter (`849:321` title @ x:16)
 
 ## Files Changed
 
-- `apps/onboarding/src/components/step-shell-chrome/touch-target-layout.css`
-- `apps/onboarding/src/components/step-shell-chrome/step-shell-chrome.css`
-- `apps/onboarding/src/components/compositions/welcome-activation/welcome-activation-shell.css`
-- `apps/onboarding/src/components/flow-step-shell/flow-step-shell.css`
-- `apps/onboarding/src/journey/screens/flow-entry-screen.css`
-- `apps/onboarding/src/features/post-activation-pwa/components/pwa-scan-shell.css`
+- `apps/qr/src/components/step-shell-chrome/touch-target-layout.css`
+- `apps/qr/src/components/step-shell-chrome/step-shell-chrome.css`
+- `apps/qr/src/components/compositions/welcome-activation/welcome-activation-shell.css`
+- `apps/qr/src/components/flow-step-shell/flow-step-shell.css`
+- `apps/qr/src/journey/screens/flow-entry-screen.css`
+- `apps/qr/src/features/post-activation-pwa/components/pwa-scan-shell.css`
 
 ---
 
 ## Before / After
 
-| Issue | Before | After |
-|-------|--------|-------|
-| Prepaid welcome body X | ~28px | 16px |
-| Purchase subtitle | forced lowercase | sentence case (Figma) |
-| Headline tracking | −0.01em | 0 |
-| Section vertical gap | mixed 16/20 | 20px token |
-| Title/subtitle gap | mixed | 8px token |
+| Issue                  | Before           | After                 |
+| ---------------------- | ---------------- | --------------------- |
+| Prepaid welcome body X | ~28px            | 16px                  |
+| Purchase subtitle      | forced lowercase | sentence case (Figma) |
+| Headline tracking      | −0.01em          | 0                     |
+| Section vertical gap   | mixed 16/20      | 20px token            |
+| Title/subtitle gap     | mixed            | 8px token             |
 
 ---
 

@@ -1,4 +1,4 @@
-import type { StoredTokenPair, TokenStorage } from './types.js';
+import type { StoredTokenPair, TokenStorage } from './types';
 
 /** Shared storage key — do not change without a migration plan. */
 export const TOKEN_STORAGE_KEY = 'al-auth-tokens-v1';
@@ -36,10 +36,8 @@ function removeSessionStorage(key: string): void {
   }
 }
 
-/** Browser sessionStorage-backed token storage (onboarding PWA default). */
-export function createSessionTokenStorage(
-  key: string = TOKEN_STORAGE_KEY,
-): TokenStorage {
+/** Browser sessionStorage-backed token storage (QR PWA default). */
+export function createSessionTokenStorage(key: string = TOKEN_STORAGE_KEY): TokenStorage {
   return {
     read(): StoredTokenPair | null {
       const raw = readSessionStorage(key);

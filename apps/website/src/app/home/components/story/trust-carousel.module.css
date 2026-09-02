@@ -1,0 +1,212 @@
+/* Trust testimonial carousel — editorial quote cards */
+
+.carousel {
+  width: 100vw;
+  align-self: center;
+  margin-inline: calc(50% - 50vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.viewport {
+  width: 100%;
+  overflow: hidden;
+  padding-block: 0.75rem 1.25rem;
+}
+
+.track {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+@media (min-width: 768px) {
+  .track {
+    gap: 1.25rem;
+  }
+}
+
+.slide {
+  flex: 0 0 auto;
+  width: min(40rem, 88vw);
+  display: flex;
+}
+
+.card {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  min-height: 15rem;
+  padding: clamp(1.75rem, 4vw, 2.5rem);
+  border-radius: 1.125rem;
+  background: var(--mkt-surface);
+  border: 1px solid var(--mkt-divider-strong);
+  text-align: center;
+  transition:
+    box-shadow 0.45s ease,
+    opacity 0.45s ease,
+    transform 0.45s ease,
+    border-color 0.45s ease;
+}
+
+.cardFeatured {
+  border-color: color-mix(in srgb, var(--mkt-ink-dark) 18%, var(--mkt-divider-strong));
+  box-shadow:
+    0 28px 64px -32px color-mix(in srgb, var(--mkt-ink-dark) 22%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--mkt-surface) 80%, transparent);
+  transform: scale(1);
+}
+
+.cardPeek {
+  opacity: 0.55;
+  transform: scale(0.97);
+  box-shadow: none;
+}
+
+.quoteGlyph {
+  width: 1.75rem;
+  height: 1.35rem;
+  color: color-mix(in srgb, var(--mkt-green) 72%, var(--mkt-ink-muted));
+}
+
+.cardPeek .quoteGlyph {
+  color: var(--mkt-ink-faint);
+}
+
+.quoteBlock {
+  margin: 0;
+  max-width: 34rem;
+}
+
+.quote {
+  margin: 0;
+  color: var(--mkt-ink-secondary);
+  text-wrap: balance;
+}
+
+.quoteFeatured {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.125rem, 2.4vw, 1.375rem);
+  font-weight: 550;
+  line-height: 1.55;
+  letter-spacing: -0.015em;
+  color: var(--mkt-ink-dark);
+}
+
+.quotePeek {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.attribution {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mkt-green) 10%, var(--mkt-stone));
+  border: 1px solid color-mix(in srgb, var(--mkt-green) 22%, var(--mkt-divider-strong));
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--mkt-green-deep);
+}
+
+.cardFeatured .avatar {
+  background: color-mix(in srgb, var(--mkt-green) 14%, var(--mkt-surface));
+}
+
+.byline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  text-align: left;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+  color: var(--mkt-ink-dark);
+}
+
+.role {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--mkt-ink-muted);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding-inline: var(--mkt-gutter);
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background: var(--mkt-surface);
+  border: 1px solid var(--mkt-divider-strong);
+  color: var(--mkt-ink-dark);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.arrow:hover {
+  border-color: var(--mkt-ink-dark);
+  background: color-mix(in srgb, var(--mkt-ink-dark) 4%, var(--mkt-surface));
+  transform: translateY(-1px);
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mkt-ink-dark) 20%, transparent);
+  cursor: pointer;
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+
+.dotActive {
+  width: 1.375rem;
+  background: var(--mkt-ink-dark);
+}

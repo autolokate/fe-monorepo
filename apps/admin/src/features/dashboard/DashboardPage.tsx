@@ -1,79 +1,130 @@
-import type { BatchSummaryDto } from '@autolokate/api-client';
-import { CreditCardIcon, ScanLineIcon } from '@autolokate/icons';
+import type { ReactNode } from 'react';
 import {
-  AlDataTable,
-  AlErrorState,
-  AlGrid,
-  AlMetricCard,
-  AlPageHeader,
-  AlPageHeaderAction,
-  AlSearchInput,
-  AlStack,
-  AlStatCard,
-} from '@autolokate/ui';
-import { useMemo, useState } from 'react';
+  CreditCardIcon,
+  ReceiptTextIcon,
+  ScanLineIcon,
+  ShieldCheckIcon,
+  StoreIcon,
+  UserIcon,
+  UsersIcon,
+} from '@autolokate/icons';
+import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
 import { useNavigate } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths.js';
-import { dashboardBatchColumns } from '@/features/dashboard/dashboard-batch-columns.js';
-import {
-  INVENTORY_STATE_FILTERS,
-  type InventoryStateFilter as InventoryFilterValue,
-} from '@/features/inventory/inventory-filters.js';
-import { useDashboard } from '@/hooks/dashboard/useDashboard.js';
-import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
-import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
-import { MetricSkeleton } from '@/platform/components/MetricSkeleton.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
+import { adminPaths } from '@/app/routes/admin-paths';
+import { useDashboard } from '@/hooks/dashboard/useDashboard';
+import { MetricSkeleton } from '@/platform/components/MetricSkeleton';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './dashboard.css';
 
-const DASHBOARD_TABLE_PROPS = {
-  enableColumnVisibility: false,
-  enableRowSelection: false,
-  enableDensitySwitch: false,
-  enableCsvExport: false,
-  enableCopyCell: false,
-  enableGlobalSearch: false,
-  stickyHeader: true,
-  stickyToolbar: false,
-} as const;
+import {
+  toneForActivePromos,
+  toneForCatalogSkus,
+  toneWhenIssue,
+  toneWhenPendingWork,
+  toneWhenPositive,
+  type DashboardTone,
+} from '@/features/dashboard/dashboard-tones';
 
-function matchesSearch(batch: BatchSummaryDto, query: string): boolean {
-  const normalized = query.trim().toLowerCase();
-  if (!normalized) {
-    return true;
-  }
+type DashboardTileStat = {
+  label: string;
+  value: string;
+  tone?: DashboardTone;
+};
+
+type DashboardPageCardProps = {
+  title: string;
+  description: string;
+  primaryValue: string;
+  primaryLabel: string;
+  primaryTone?: DashboardTone;
+  stats?: DashboardTileStat[];
+  icon: ReactNode;
+  onClick: () => void;
+};
+
+function toneClass(prefix: string, tone: DashboardTone = 'neutral'): string {
+  return tone === 'neutral' ? '' : `${prefix}--${tone}`;
+}
+
+function DashboardPageCard({
+  title,
+  description,
+  primaryValue,
+  primaryLabel,
+  primaryTone = 'neutral',
+  stats,
+  icon,
+  onClick,
+}: DashboardPageCardProps) {
   return (
-    batch.batchCode.toLowerCase().includes(normalized) ||
-    batch.channel.toLowerCase().includes(normalized) ||
-    batch.status.toLowerCase().includes(normalized)
+    <button type="button" className="dashboard-page-card" onClick={onClick}>
+      <div className="dashboard-page-card__head">
+        <div className="dashboard-page-card__icon">{icon}</div>
+        <div className="dashboard-page-card__titles">
+          <span className="dashboard-page-card__title">{title}</span>
+          <span className="dashboard-page-card__description">{description}</span>
+        </div>
+      </div>
+
+      <div
+        className={`dashboard-page-card__hero ${toneClass('dashboard-page-card__hero', primaryTone)}`}
+      >
+        <span className="dashboard-page-card__hero-value">{primaryValue}</span>
+        <span className="dashboard-page-card__hero-label">{primaryLabel}</span>
+      </div>
+
+      {stats && stats.length > 0 ? (
+        <div className="dashboard-page-card__tiles">
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className={`dashboard-page-card__tile ${toneClass('dashboard-page-card__tile', stat.tone)}`}
+            >
+              <span className="dashboard-page-card__tile-value">{stat.value}</span>
+              <span className="dashboard-page-card__tile-label">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <span className="dashboard-page-card__cta">Open module</span>
+    </button>
+  );
+}
+
+type DashboardLinkCardProps = {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  onClick: () => void;
+};
+
+function DashboardLinkCard({ title, description, icon, onClick }: DashboardLinkCardProps) {
+  return (
+    <button
+      type="button"
+      className="dashboard-page-card dashboard-page-card--link"
+      onClick={onClick}
+    >
+      <div className="dashboard-page-card__head">
+        <div className="dashboard-page-card__icon">{icon}</div>
+        <div className="dashboard-page-card__titles">
+          <span className="dashboard-page-card__title">{title}</span>
+          <span className="dashboard-page-card__description">{description}</span>
+        </div>
+      </div>
+      <span className="dashboard-page-card__cta">Open module</span>
+    </button>
   );
 }
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const {
-    data,
-    metrics,
-    isLoading,
-    isFetching,
-    userErrorMessage,
-    refresh,
-  } = useDashboard();
+  const { metrics, isLoading, isFetching, userErrorMessage, refresh } = useDashboard();
 
-  const [stateFilter, setStateFilter] = useState<InventoryFilterValue>('ALL');
-  const [search, setSearch] = useState('');
-
-  const filteredBatches = useMemo(() => {
-    const inventory = data?.inventory ?? [];
-    return inventory
-      .filter((batch) => stateFilter === 'ALL' || batch.status === stateFilter)
-      .filter((batch) => matchesSearch(batch, search))
-      .slice(0, 20);
-  }, [data?.inventory, search, stateFilter]);
-
-  if (userErrorMessage && !data) {
+  if (userErrorMessage && !metrics) {
     return (
       <RequirePermission permission="dashboard:view">
         <AlErrorState
@@ -86,12 +137,17 @@ export function DashboardPage() {
     );
   }
 
+  const inventory = metrics?.inventory;
+  const batchManagement = metrics?.batchManagement;
+  const promos = metrics?.promos;
+  const catalog = metrics?.catalog;
+
   return (
     <RequirePermission permission="dashboard:view">
-      <AlStack gap="md">
+      <AlStack gap="lg">
         <AlPageHeader
           title="Dashboard"
-          description="Overview of QR batches and platform health."
+          description="Live counts from each module."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -102,76 +158,172 @@ export function DashboardPage() {
           }
         />
 
-        <AlGrid columns={4} gap="md">
-          {isLoading || !metrics ? (
-            <>
-              <MetricSkeleton />
-              <MetricSkeleton />
-              <MetricSkeleton />
-              <MetricSkeleton />
-            </>
-          ) : (
-            <>
-              <AlStatCard
-                label="QR batches"
-                value={metrics.batchCount.toLocaleString()}
-                icon={<ScanLineIcon size={18} aria-hidden />}
+        {isLoading || !metrics || !inventory || !batchManagement || !promos ? (
+          <div className="dashboard-page-grid dashboard-page-grid--loading">
+            {Array.from({ length: 8 }, (_, index) => (
+              <MetricSkeleton key={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="dashboard-page-grid">
+            <DashboardPageCard
+              title="Stock"
+              description="Sticker stock by batch"
+              icon={<ScanLineIcon size={20} aria-hidden />}
+              primaryValue={inventory.totalBatches.toLocaleString()}
+              primaryLabel="batches"
+              stats={[
+                {
+                  label: 'Provisioned batches',
+                  value: inventory.provisionedBatches.toLocaleString(),
+                  tone: toneWhenPositive(inventory.provisionedBatches),
+                },
+                {
+                  label: 'In distribution',
+                  value: inventory.inDistributionBatches.toLocaleString(),
+                  tone: toneWhenPositive(inventory.inDistributionBatches),
+                },
+                {
+                  label: 'Sticker codes',
+                  value: inventory.totalProvisionedCodes.toLocaleString(),
+                  tone: 'neutral',
+                },
+              ]}
+              onClick={() => {
+                void navigate(adminPaths.inventory);
+              }}
+            />
+            <DashboardPageCard
+              title="Batches"
+              description="Create batches and run lifecycle"
+              icon={<ScanLineIcon size={20} aria-hidden />}
+              primaryValue={batchManagement.draftBatches.toLocaleString()}
+              primaryLabel="draft batches"
+              primaryTone={toneWhenPendingWork(batchManagement.draftBatches)}
+              stats={[
+                {
+                  label: 'In pipeline',
+                  value: batchManagement.pipelineBatches.toLocaleString(),
+                  tone: toneWhenPendingWork(batchManagement.pipelineBatches),
+                },
+                {
+                  label: 'Provisioned',
+                  value: batchManagement.provisionedBatches.toLocaleString(),
+                  tone: toneWhenPositive(batchManagement.provisionedBatches),
+                },
+                {
+                  label: 'Total batches',
+                  value: batchManagement.totalBatches.toLocaleString(),
+                  tone: 'neutral',
+                },
+              ]}
+              onClick={() => {
+                void navigate(adminPaths.qrBatches);
+              }}
+            />
+            {catalog ? (
+              <DashboardPageCard
+                title="Catalog"
+                description="Plan versions and SKU shelves"
+                icon={<StoreIcon size={20} aria-hidden />}
+                primaryValue={catalog.skus.toLocaleString()}
+                primaryLabel="SKUs"
+                primaryTone={toneForCatalogSkus(catalog.skus, catalog.emptyShelves)}
+                stats={[
+                  {
+                    label: 'Plan versions',
+                    value: catalog.planVersions.toLocaleString(),
+                    tone: 'neutral',
+                  },
+                  {
+                    label: 'Live plans',
+                    value: catalog.livePlans.toLocaleString(),
+                    tone: catalog.livePlans > 0 ? 'success' : 'warning',
+                  },
+                  {
+                    label: 'Empty shelves',
+                    value: catalog.emptyShelves.toLocaleString(),
+                    tone: toneWhenIssue(catalog.emptyShelves),
+                  },
+                ]}
+                onClick={() => {
+                  void navigate(adminPaths.catalog);
+                }}
               />
-              <AlMetricCard
-                label="Provisioned codes"
-                value={metrics.provisionedCodes.toLocaleString()}
+            ) : (
+              <DashboardLinkCard
+                title="Catalog"
+                description="Plan versions and SKU shelves"
+                icon={<StoreIcon size={20} aria-hidden />}
+                onClick={() => {
+                  void navigate(adminPaths.catalog);
+                }}
               />
-              <AlMetricCard
-                label="In distribution"
-                value={metrics.inDistributionBatches.toLocaleString()}
-              />
-              <AlStatCard
-                label="Active promos"
-                value={metrics.activePromos.toLocaleString()}
-                icon={<CreditCardIcon size={18} aria-hidden />}
-              />
-            </>
-          )}
-        </AlGrid>
-
-        <AdminDataBlock
-          filters={
-            <>
-              <AdminFilterField label="Search">
-                <AlSearchInput
-                  value={search}
-                  placeholder="Batch code, channel, status…"
-                  ariaLabel="Search batches"
-                  onChange={setSearch}
-                />
-              </AdminFilterField>
-              <AdminFilterField label="Status">
-                <AdminFilterChips
-                  options={INVENTORY_STATE_FILTERS}
-                  value={stateFilter}
-                  onChange={setStateFilter}
-                  aria-label="Batch status"
-                />
-              </AdminFilterField>
-            </>
-          }
-        >
-          <AlDataTable
-            {...DASHBOARD_TABLE_PROPS}
-            tableId="dashboard-batches"
-            columns={dashboardBatchColumns}
-            data={filteredBatches}
-            loading={isLoading}
-            isRefreshing={isFetching}
-            pageSize={20}
-            emptyTitle="No batches match your filters"
-            emptyDescription="Try another status or clear the search."
-            getRowId={(row) => row.id}
-            onRowClick={() => {
-              void navigate(adminPaths.inventory);
-            }}
-          />
-        </AdminDataBlock>
+            )}
+            <DashboardPageCard
+              title="Promos"
+              description="Campaigns and discount codes"
+              icon={<CreditCardIcon size={20} aria-hidden />}
+              primaryValue={promos.activePromos.toLocaleString()}
+              primaryLabel="active promos"
+              primaryTone={toneForActivePromos(promos.activePromos)}
+              stats={[
+                {
+                  label: 'Total promos',
+                  value: promos.totalPromos.toLocaleString(),
+                  tone: 'neutral',
+                },
+                {
+                  label: 'Upcoming',
+                  value: promos.upcomingPromos.toLocaleString(),
+                  tone: promos.upcomingPromos > 0 ? 'warning' : 'neutral',
+                },
+                {
+                  label: 'Expired',
+                  value: promos.expiredPromos.toLocaleString(),
+                  tone: toneWhenIssue(promos.expiredPromos),
+                },
+              ]}
+              onClick={() => {
+                void navigate(adminPaths.promos);
+              }}
+            />
+            <DashboardPageCard
+              title="Activity Log"
+              description="Administrative activity timeline"
+              icon={<ReceiptTextIcon size={20} aria-hidden />}
+              primaryValue={metrics.auditLatestCount.toLocaleString()}
+              primaryLabel="events in latest feed"
+              onClick={() => {
+                void navigate(adminPaths.auditEvents);
+              }}
+            />
+            <DashboardLinkCard
+              title="Settlements"
+              description="Clawbacks and settlement batches"
+              icon={<ShieldCheckIcon size={20} aria-hidden />}
+              onClick={() => {
+                void navigate(adminPaths.finance);
+              }}
+            />
+            <DashboardLinkCard
+              title="Ownership"
+              description="Initiate and approve transfers"
+              icon={<UserIcon size={20} aria-hidden />}
+              onClick={() => {
+                void navigate(adminPaths.ownershipTransfers);
+              }}
+            />
+            <DashboardLinkCard
+              title="Customers"
+              description="Find a customer; manage account access"
+              icon={<UsersIcon size={20} aria-hidden />}
+              onClick={() => {
+                void navigate(adminPaths.users);
+              }}
+            />
+          </div>
+        )}
       </AlStack>
     </RequirePermission>
   );

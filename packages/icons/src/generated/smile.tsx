@@ -1,5 +1,5 @@
-import { IconSvg } from '../IconSvg.js';
-import type { IconProps } from '../types.js';
+import { IconSvg } from '../IconSvg';
+import type { IconProps } from '../types';
 
 /** Figma icon/smile — node 588:309 (E3 relation grid · Friend). */
 export function SmileIcon(props: IconProps) {

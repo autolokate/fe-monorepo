@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlBottomNavProps } from './BottomNav.types.js';
+import type { AlBottomNavProps } from './BottomNav.types';
 import './BottomNav.css';
 
 export function AlBottomNav({ items, className, layout = 'inline', ...props }: AlBottomNavProps) {

@@ -1,13 +1,10 @@
-"use client";
+'use client';
 
-import {
-  VEHICLE_PREFERENCE_CHANGE_EVENT,
-  VEHICLE_PREFERENCE_STORAGE_KEY,
-} from "./constants";
-import type { VehicleCategory } from "./types";
+import { VEHICLE_PREFERENCE_CHANGE_EVENT, VEHICLE_PREFERENCE_STORAGE_KEY } from './constants';
+import type { VehicleCategory } from './types';
 
 function canUseStorage(): boolean {
-  return typeof window !== "undefined";
+  return typeof window !== 'undefined';
 }
 
 /**
@@ -26,7 +23,7 @@ function notifyPreferenceChange(): void {
 }
 
 function isVehicleCategory(value: string | null): value is VehicleCategory {
-  return value === "cars" || value === "bikes";
+  return value === 'cars' || value === 'bikes';
 }
 
 export function readVehiclePreference(): VehicleCategory | null {
@@ -72,12 +69,14 @@ export function subscribeVehiclePreference(handler: () => void): () => void {
   const onStorage = (e: StorageEvent) => {
     if (!e.key || e.key === VEHICLE_PREFERENCE_STORAGE_KEY) handler();
   };
-  const onCustom = () => handler();
+  const onCustom = () => {
+    handler();
+  };
 
-  window.addEventListener("storage", onStorage);
+  window.addEventListener('storage', onStorage);
   window.addEventListener(VEHICLE_PREFERENCE_CHANGE_EVENT, onCustom);
   return () => {
-    window.removeEventListener("storage", onStorage);
+    window.removeEventListener('storage', onStorage);
     window.removeEventListener(VEHICLE_PREFERENCE_CHANGE_EVENT, onCustom);
   };
 }

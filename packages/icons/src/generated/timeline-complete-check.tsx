@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma 181:28 — green stroke circle-check for CC tracker complete steps. */
 export function TimelineCompleteCheckIcon({

@@ -1,8 +1,11 @@
 import type { BatchSummaryDto, QrBatchStatus } from '@autolokate/api-client';
 
-import { computeInventoryMetrics, type InventoryMetrics } from '@/services/inventory/inventory-metrics.js';
+import {
+  computeInventoryMetrics,
+  type InventoryMetrics,
+} from '@/services/inventory/inventory-metrics';
 
-export type BatchLifecycleActionId = 'generate' | 'provision';
+export type BatchLifecycleActionId = 'generate' | 'provision' | 'distribute';
 
 export type BatchLifecycleAction = {
   id: BatchLifecycleActionId;
@@ -27,6 +30,10 @@ const BATCH_LIFECYCLE_ACTIONS: Record<BatchLifecycleActionId, Omit<BatchLifecycl
     label: 'Provision batch',
     description: 'Provision batch codes for distribution.',
   },
+  distribute: {
+    label: 'Distribute batch',
+    description: 'Release provisioned stock to the field (PROVISIONED → IN_DISTRIBUTION).',
+  },
 };
 
 /** OpenAPI-supported batch lifecycle transitions only. */
@@ -39,6 +46,10 @@ export function getBatchLifecycleActions(batch: BatchSummaryDto): BatchLifecycle
 
   if (PROVISION_ELIGIBLE_STATUSES.includes(batch.status)) {
     actions.push({ id: 'provision', ...BATCH_LIFECYCLE_ACTIONS.provision });
+  }
+
+  if (batch.status === 'PROVISIONED') {
+    actions.push({ id: 'distribute', ...BATCH_LIFECYCLE_ACTIONS.distribute });
   }
 
   return actions;
@@ -80,7 +91,7 @@ export function describeBatchLifecycleStatus(status: QrBatchStatus): string {
     case 'REPRINT':
       return 'Batch requires reprint before provisioning.';
     case 'PROVISIONED':
-      return 'Batch provisioned and ready for allocation.';
+      return 'Batch provisioned. Distribute to release codes to the field.';
     case 'ALLOCATED':
       return 'Batch allocated to partners or channels.';
     case 'IN_DISTRIBUTION':

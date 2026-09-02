@@ -1,14 +1,4 @@
-import { formatAuditField } from '@/platform/utils/audit-field.js';
-
-export function actionTone(action: string): 'active' | 'pending' | 'inactive' {
-  if (action.includes('APPROVED') || action.includes('PAID') || action.includes('MINTED')) {
-    return 'active';
-  }
-  if (action.includes('REJECTED') || action.includes('SCRAPPED') || action.includes('ERASURE')) {
-    return 'inactive';
-  }
-  return 'pending';
-}
+import { formatAuditField } from '@/platform/utils/audit-field';
 
 export function formatRelativeTime(value: string): string {
   const date = new Date(value);
@@ -27,12 +17,8 @@ export function formatRelativeTime(value: string): string {
   return date.toLocaleDateString();
 }
 
-export function formatActivityDetail(targetType: object | null, targetId: object | null): string {
+export function formatActivityDetail(targetType: object | null, _targetId: object | null): string {
   const target = formatAuditField(targetType);
-  const id = formatAuditField(targetId);
-  if (id !== '—') {
-    return `${target} · ${id}`;
-  }
   if (target !== '—') {
     return target;
   }

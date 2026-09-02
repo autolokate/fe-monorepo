@@ -3,11 +3,11 @@ export {
   formatMobileNumber,
   formatVehicleRegistration,
   maskMobileNumber,
-} from './format.js';
+} from './format';
 export {
   normalizeDigits,
   validateMobileNumber,
   validateOtp,
   validateVehicleRegistration,
   type ValidationResult,
-} from './validation.js';
+} from './validation';

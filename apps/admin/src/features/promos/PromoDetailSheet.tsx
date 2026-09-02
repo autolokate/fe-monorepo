@@ -1,15 +1,13 @@
 import type { AdminPromoDto } from '@autolokate/api-client';
-import { AlButton, AlSheet, AlStack, AlStatusBadge } from '@autolokate/ui';
+import { AlButton, AlModal, AlStack, AlStatusBadge } from '@autolokate/ui';
 
 import {
   AdminDetailField,
   AdminDetailGrid,
   AdminDetailSection,
-} from '@/platform/components/AdminDetailField.js';
-import {
-  formatPromoDiscount,
-  getPromoLifecycleStatus,
-} from '@/services/promos/promo-metrics.js';
+} from '@/platform/components/AdminDetailField';
+import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
+import { formatPromoDiscount, getPromoLifecycleStatus } from '@/services/promos/promo-metrics';
 
 export type PromoDetailSheetProps = {
   promo: AdminPromoDto | null;
@@ -47,18 +45,25 @@ export function PromoDetailSheet({
   const lifecycle = getPromoLifecycleStatus(promo);
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="lg"
       title={promo.code}
       description={formatPromoDiscount(promo)}
     >
       <AlStack gap="md">
         <AdminDetailSection title="Status">
-          <div className="admin-sheet-actions">
+          <div className="admin-modal-actions">
             <AlStatusBadge
               label={lifecycle}
-              status={lifecycle === 'ACTIVE' ? 'active' : lifecycle === 'UPCOMING' ? 'pending' : 'inactive'}
+              status={
+                lifecycle === 'ACTIVE'
+                  ? 'active'
+                  : lifecycle === 'UPCOMING'
+                    ? 'pending'
+                    : 'inactive'
+              }
             />
             <AlStatusBadge
               label={promo.active ? 'Enabled' : 'Disabled'}
@@ -75,8 +80,8 @@ export function PromoDetailSheet({
               value={promo.discountPercent !== null ? `${String(promo.discountPercent)}%` : '—'}
             />
             <AdminDetailField
-              label="Fixed amount (paise)"
-              value={promo.discountPaise !== null ? promo.discountPaise.toLocaleString() : '—'}
+              label="Fixed amount"
+              value={promo.discountPaise !== null ? formatPaiseAsRupees(promo.discountPaise) : '—'}
             />
           </AdminDetailGrid>
         </AdminDetailSection>
@@ -95,23 +100,21 @@ export function PromoDetailSheet({
           </AdminDetailGrid>
         </AdminDetailSection>
 
-        <AdminDetailSection title="Reference">
-          <AdminDetailField label="Promo ID" value={promo.id} mono />
-        </AdminDetailSection>
-
         {canWrite && onCreatePromo ? (
           <AdminDetailSection title="Actions">
-            <AlButton
-              size="sm"
-              onClick={() => {
-                onCreatePromo();
-              }}
-            >
-              Create another promo
-            </AlButton>
+            <div className="admin-modal-actions">
+              <AlButton
+                size="sm"
+                onClick={() => {
+                  onCreatePromo();
+                }}
+              >
+                Create another promo
+              </AlButton>
+            </div>
           </AdminDetailSection>
         ) : null}
       </AlStack>
-    </AlSheet>
+    </AlModal>
   );
 }

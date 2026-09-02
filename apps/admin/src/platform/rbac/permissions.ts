@@ -9,7 +9,7 @@ export type AdminRole =
 
 /** API session role strings that map to an internal admin role. */
 function resolveApiRoleAlias(normalized: string): AdminRole | null {
-  if (normalized === 'OPERATOR') {
+  if (normalized === 'ADMIN') {
     return 'SUPER_ADMIN';
   }
   return null;
@@ -27,6 +27,18 @@ export type AdminPermission =
   | 'promos:write'
   | 'promo:view'
   | 'promo:write'
+  | 'catalog:read'
+  | 'catalog:write'
+  | 'orders:view'
+  | 'orders:refund'
+  | 'subscriptions:view'
+  | 'shipments:view'
+  | 'shipments:update'
+  | 'payments:view'
+  | 'support:view'
+  | 'support:write'
+  // Break-glass emergency-incident PII read. SUPER_ADMIN only — narrow by design; every read is server-audited.
+  | 'incidents:view'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -34,7 +46,9 @@ export type AdminPermission =
   | 'partners:read'
   | 'partners:write'
   | 'settings:read'
-  | 'settings:write';
+  | 'settings:write'
+  | 'users:read'
+  | 'users:write';
 
 const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
   SUPER_ADMIN: [
@@ -49,6 +63,22 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'promos:write',
     'promo:view',
     'promo:write',
+    // Catalog writes move money: a price, a shelf, a default plan. SUPER_ADMIN only.
+    'catalog:read',
+    'catalog:write',
+    'orders:view',
+    // A full money refund — SUPER_ADMIN + FINANCE only, never the broad orders:view set.
+    'orders:refund',
+    'subscriptions:view',
+    'shipments:view',
+    // Manual shipment milestone mark (POST /admin/v1/shipments/{orderId}/status) — OPS/FINANCE per the contract.
+    'shipments:update',
+    'payments:view',
+    // The support-ticket console (read + status triage) — SUPPORT/OPS/SUPER_ADMIN.
+    'support:view',
+    'support:write',
+    // Break-glass incident PII read — SUPER_ADMIN only (14-roles §14.6 · security.md § Break-glass).
+    'incidents:view',
     'audit:read',
     'audit:view',
     'settlements:write',
@@ -57,6 +87,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'partners:write',
     'settings:read',
     'settings:write',
+    // Role grant/revoke is SUPER_ADMIN-only (14-roles §14.6) — no other tier may escalate privilege.
+    'users:read',
+    'users:write',
   ],
   OPS: [
     'dashboard:view',
@@ -66,16 +99,86 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     'qr-batches:read',
     'qr-batches:write',
     'qr-lifecycle:write',
+    // READ, not write: OPS manufactures batches AGAINST a Sku, so it has to be able to see which Sku it is
+    // picking and what that Sku actually sells (its shelf) — `GET /admin/v1/skus` is an OPS route in the
+    // locked contract. Authoring the catalog (prices, shelves) stays with FINANCE.
+    'catalog:read',
     'promos:read',
     'promo:view',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'shipments:update',
+    'payments:view',
+    'support:view',
+    'support:write',
     'audit:read',
     'audit:view',
     'partners:read',
   ],
-  SUPPORT: ['dashboard:view', 'inventory:view', 'inventory:read', 'audit:read', 'audit:view', 'partners:read'],
-  FINANCE: ['dashboard:view', 'audit:read', 'audit:view', 'settlements:write', 'clawbacks:write', 'promos:read', 'promo:view'],
-  PARTNER_MANAGER: ['dashboard:view', 'inventory:view', 'inventory:read', 'partners:read', 'partners:write', 'audit:read', 'audit:view'],
-  READ_ONLY: ['dashboard:view', 'inventory:view', 'inventory:read', 'qr-batches:read', 'promos:read', 'promo:view', 'audit:read', 'audit:view', 'partners:read'],
+  SUPPORT: [
+    'dashboard:view',
+    'inventory:view',
+    'inventory:read',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    // Support tickets are this role's core queue — read + status triage.
+    'support:view',
+    'support:write',
+    'audit:read',
+    'audit:view',
+    'partners:read',
+  ],
+  FINANCE: [
+    'dashboard:view',
+    'audit:read',
+    'audit:view',
+    'settlements:write',
+    'clawbacks:write',
+    'promos:read',
+    'promo:view',
+    'catalog:read',
+    'orders:view',
+    // Refunds are a finance money action (FINANCE·step_up).
+    'orders:refund',
+    'subscriptions:view',
+    'shipments:view',
+    'shipments:update',
+    'payments:view',
+  ],
+  PARTNER_MANAGER: [
+    'dashboard:view',
+    'inventory:view',
+    'inventory:read',
+    'partners:read',
+    'partners:write',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    'audit:read',
+    'audit:view',
+  ],
+  READ_ONLY: [
+    'dashboard:view',
+    'inventory:view',
+    'inventory:read',
+    'qr-batches:read',
+    'promos:read',
+    'promo:view',
+    'catalog:read',
+    'orders:view',
+    'subscriptions:view',
+    'shipments:view',
+    'payments:view',
+    // Read-only oversight of the support queue (no status triage).
+    'support:view',
+    'audit:read',
+    'audit:view',
+    'partners:read',
+  ],
 };
 
 export function normalizeAdminRole(role: string | null | undefined): AdminRole {

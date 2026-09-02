@@ -123,6 +123,21 @@
   background: var(--al-signal-green);
 }
 
+/* ---------- Loading / empty state ---------- */
+.stateShell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  margin-top: 2.5rem;
+}
+
+.stateText {
+  font-size: 0.95rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
 /* ---------- Plan card ---------- */
 .card {
   border: 1px solid var(--border);

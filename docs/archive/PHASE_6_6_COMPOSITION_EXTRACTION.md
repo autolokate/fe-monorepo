@@ -1,6 +1,6 @@
 # Phase 6.6 — Composition Extraction
 
-**App:** `@autolokate/onboarding`  
+**App:** `@autolokate/qr`  
 **Scope:** P0 refactors from [Phase 6.5 Composition Audit](./PHASE_6_5_COMPOSITION_AUDIT.md)  
 **Mode:** Refactor only — no Prepaid, B2B, B2B2C, or Emergency flows  
 **Date:** 2026-06-17
@@ -26,11 +26,11 @@ All 12 screens (R01–R06, P01–P06) updated. Thin shell wrappers retained for 
 
 ### 1. FlowStepShell
 
-| Before | After |
-|--------|-------|
-| `OnboardingStepShell.tsx` (75 LOC) | Thin wrapper → `FlowStepShell phase="shared"` (8 LOC) |
-| `PurchaseStepShell.tsx` (80 LOC) | Thin wrapper → `FlowStepShell phase="purchase"` (8 LOC) |
-| `onboarding-step-shell.css` | Moved to `flow-step-shell/flow-step-shell.css` (unchanged rules) |
+| Before                             | After                                                            |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| `OnboardingStepShell.tsx` (75 LOC) | Thin wrapper → `FlowStepShell phase="shared"` (8 LOC)            |
+| `PurchaseStepShell.tsx` (80 LOC)   | Thin wrapper → `FlowStepShell phase="purchase"` (8 LOC)          |
+| `onboarding-step-shell.css`        | Moved to `flow-step-shell/flow-step-shell.css` (unchanged rules) |
 
 **New file:** `components/flow-step-shell/FlowStepShell.tsx`
 
@@ -49,10 +49,10 @@ All 12 screens (R01–R06, P01–P06) updated. Thin shell wrappers retained for 
 
 **Phase config (no visual delta):**
 
-| Phase | Step total | Progress label | Shell class |
-|-------|------------|----------------|-------------|
-| `shared` | 6 | Progress | `ob-shell` |
-| `purchase` | 6 | Purchase | `ob-shell ob-shell--purchase` |
+| Phase      | Step total | Progress label | Shell class                   |
+| ---------- | ---------- | -------------- | ----------------------------- |
+| `shared`   | 6          | Progress       | `ob-shell`                    |
+| `purchase` | 6          | Purchase       | `ob-shell ob-shell--purchase` |
 
 All 12 screens now import `FlowStepShell` directly with the appropriate `phase`.
 
@@ -71,14 +71,14 @@ CSS uses the same token mix as the former `ob-purchase-banner` (error/success). 
 
 **Replaced in:**
 
-| Screen | Variants used |
-|--------|---------------|
-| P01 | error, success |
-| P02 | error |
-| P03 | error |
-| P04 | error |
-| P05 | error |
-| P06 | error |
+| Screen | Variants used  |
+| ------ | -------------- |
+| P01    | error, success |
+| P02    | error          |
+| P03    | error          |
+| P04    | error          |
+| P05    | error          |
+| P06    | error          |
 
 **Removed:** `.ob-purchase-banner` / `.ob-purchase-banner--success` from `purchase-step-shell.css`
 
@@ -96,13 +96,13 @@ Wraps `.ob-state-panel` with optional icon, heading, message, and children slot.
 
 **Replaced in:**
 
-| Screen | Usage |
-|--------|-------|
-| R01 | empty hero + plate input child |
-| R02 | loading, empty, error heroes |
-| R06 | empty hero |
-| P05 | processing/success custom content via children |
-| P06 | success hero + secondary CTA child |
+| Screen | Usage                                          |
+| ------ | ---------------------------------------------- |
+| R01    | empty hero + plate input child                 |
+| R02    | loading, empty, error heroes                   |
+| R06    | empty hero                                     |
+| P05    | processing/success custom content via children |
+| P06    | success hero + secondary CTA child             |
 
 ---
 
@@ -120,14 +120,14 @@ Removes redundant `AlStack gap="lg" className="ob-field-stack"` double-gap patte
 
 ## LOC reduction
 
-| Area | Before (approx.) | After (approx.) | Δ |
-|------|------------------|-----------------|----|
-| Shell JSX (dual implementation) | 155 | 99 + 16 (wrappers) | **−40** |
-| Banner markup (6 screens × ~4 LOC) | 28 | 7 × ~3 + 21 (component) | **−7 net** |
-| Hero panel markup (8 blocks × ~8 LOC) | 64 | 8 × ~5 + 44 (component) | **−15 net** |
-| Field stack wrappers | 12 | 4 × ~1 + 9 (component) | **−3 net** |
-| Banner CSS (in purchase shell) | 13 | 23 (composition CSS + variants) | +10 (capability) |
-| **Net screen + shell reduction** | — | — | **~−55 LOC** |
+| Area                                  | Before (approx.) | After (approx.)                 | Δ                |
+| ------------------------------------- | ---------------- | ------------------------------- | ---------------- |
+| Shell JSX (dual implementation)       | 155              | 99 + 16 (wrappers)              | **−40**          |
+| Banner markup (6 screens × ~4 LOC)    | 28               | 7 × ~3 + 21 (component)         | **−7 net**       |
+| Hero panel markup (8 blocks × ~8 LOC) | 64               | 8 × ~5 + 44 (component)         | **−15 net**      |
+| Field stack wrappers                  | 12               | 4 × ~1 + 9 (component)          | **−3 net**       |
+| Banner CSS (in purchase shell)        | 13               | 23 (composition CSS + variants) | +10 (capability) |
+| **Net screen + shell reduction**      | —                | —                               | **~−55 LOC**     |
 
 New composition infrastructure: **~97 LOC** (components + banner CSS). Net project reduction after accounting for new files: **~−55 LOC** in duplicated screen/shell code, with **4 reusable compositions** added.
 
@@ -135,27 +135,27 @@ New composition infrastructure: **~97 LOC** (components + banner CSS). Net proje
 
 ## Duplicate reduction
 
-| Pattern | Before (instances) | After (instances) | Reduction |
-|---------|-------------------|-------------------|-----------|
-| Full shell JSX duplication | 2 implementations | 1 `FlowStepShell` | **100%** |
-| `ob-purchase-banner` markup | 7 | 0 (component) | **100%** |
-| `ob-state-panel` + icon/heading/text JSX | 8 blocks | 0 (component) | **100%** |
-| `ob-field-stack` + redundant `AlStack` | 4 | 0 (component) | **100%** |
-| View-state boolean blocks | 12 | 12 | 0% (kept local per audit) |
-| Caption footnotes | 10+ | 10+ | 0% (kept local) |
+| Pattern                                  | Before (instances) | After (instances) | Reduction                 |
+| ---------------------------------------- | ------------------ | ----------------- | ------------------------- |
+| Full shell JSX duplication               | 2 implementations  | 1 `FlowStepShell` | **100%**                  |
+| `ob-purchase-banner` markup              | 7                  | 0 (component)     | **100%**                  |
+| `ob-state-panel` + icon/heading/text JSX | 8 blocks           | 0 (component)     | **100%**                  |
+| `ob-field-stack` + redundant `AlStack`   | 4                  | 0 (component)     | **100%**                  |
+| View-state boolean blocks                | 12                 | 12                | 0% (kept local per audit) |
+| Caption footnotes                        | 10+                | 10+               | 0% (kept local)           |
 
 ---
 
 ## Component inventory (implemented)
 
-| Component | Path | Exported from |
-|-----------|------|-------------|
-| **FlowStepShell** | `components/flow-step-shell/` | `@autolokate/onboarding` |
-| **InlineStatusBanner** | `components/compositions/inline-status-banner/` | `components/compositions` |
-| **EmptyStateHero** | `components/compositions/empty-state-hero/` | `components/compositions` |
-| **FormFieldStack** | `components/compositions/form-field-stack/` | `components/compositions` |
-| OnboardingStepShell *(compat)* | `components/onboarding-step-shell/` | `@autolokate/onboarding` |
-| PurchaseStepShell *(compat)* | `components/purchase-step-shell/` | `@autolokate/onboarding` |
+| Component                      | Path                                            | Exported from             |
+| ------------------------------ | ----------------------------------------------- | ------------------------- |
+| **FlowStepShell**              | `components/flow-step-shell/`                   | `@autolokate/qr`          |
+| **InlineStatusBanner**         | `components/compositions/inline-status-banner/` | `components/compositions` |
+| **EmptyStateHero**             | `components/compositions/empty-state-hero/`     | `components/compositions` |
+| **FormFieldStack**             | `components/compositions/form-field-stack/`     | `components/compositions` |
+| OnboardingStepShell _(compat)_ | `components/onboarding-step-shell/`             | `@autolokate/qr`          |
+| PurchaseStepShell _(compat)_   | `components/purchase-step-shell/`               | `@autolokate/qr`          |
 
 **Still in inventory only (not implemented):** PlanCarousel, CheckoutSummary, RiderSelectorRow, LegalConsentBlock, VehicleSummary, etc.
 
@@ -163,16 +163,16 @@ New composition infrastructure: **~97 LOC** (components + banner CSS). Net proje
 
 ## Remaining duplication
 
-| Pattern | Screens | Class | Next step |
-|---------|---------|-------|-----------|
-| View-state flags (`loading`, `isError`, …) | All 12 | B — keep local | Optional hook later |
-| Caption footnotes | R03–R06, P01–P04 | B — keep local | — |
-| `ob-purchase-plan-carousel` | P01 | A — PlanCarousel | Phase 7+ |
-| `ob-purchase-checkout` + rows | P04 | A — CheckoutSummary | Phase 7+ |
-| `ob-purchase-rider-row` | P03 | A — RiderSelectorRow | Emergency flow |
-| `ob-legal-copy` | R06 | A — LegalConsentBlock | Prepaid legal step |
-| P06 secondary CTA in content | P06 | B — terminal UX | Figma alignment |
-| Purchase CSS loaded for shared phase | R01–R06 | Low | Split CSS import if bundle matters |
+| Pattern                                    | Screens          | Class                 | Next step                          |
+| ------------------------------------------ | ---------------- | --------------------- | ---------------------------------- |
+| View-state flags (`loading`, `isError`, …) | All 12           | B — keep local        | Optional hook later                |
+| Caption footnotes                          | R03–R06, P01–P04 | B — keep local        | —                                  |
+| `ob-purchase-plan-carousel`                | P01              | A — PlanCarousel      | Phase 7+                           |
+| `ob-purchase-checkout` + rows              | P04              | A — CheckoutSummary   | Phase 7+                           |
+| `ob-purchase-rider-row`                    | P03              | A — RiderSelectorRow  | Emergency flow                     |
+| `ob-legal-copy`                            | R06              | A — LegalConsentBlock | Prepaid legal step                 |
+| P06 secondary CTA in content               | P06              | B — terminal UX       | Figma alignment                    |
+| Purchase CSS loaded for shared phase       | R01–R06          | Low                   | Split CSS import if bundle matters |
 
 ---
 
@@ -180,20 +180,20 @@ New composition infrastructure: **~97 LOC** (components + banner CSS). Net proje
 
 ### Screens checked
 
-| ID | Shell | Banner | Hero | Field stack |
-|----|-------|--------|------|-------------|
-| R01 | `FlowStepShell shared` | — | ✓ | ✓ |
-| R02 | ✓ | — | ✓ ×3 | — |
-| R03 | ✓ | — | — | ✓ |
-| R04 | ✓ | — | — | ✓ |
-| R05 | ✓ | — | — | ✓ |
-| R06 | ✓ | — | ✓ | — |
-| P01 | `FlowStepShell purchase` | ✓ ×2 | — | — |
-| P02 | ✓ | ✓ | — | — |
-| P03 | ✓ | ✓ | — | — |
-| P04 | ✓ | ✓ | — | — |
-| P05 | ✓ | ✓ | ✓ | — |
-| P06 | ✓ | ✓ | ✓ | — |
+| ID  | Shell                    | Banner | Hero | Field stack |
+| --- | ------------------------ | ------ | ---- | ----------- |
+| R01 | `FlowStepShell shared`   | —      | ✓    | ✓           |
+| R02 | ✓                        | —      | ✓ ×3 | —           |
+| R03 | ✓                        | —      | —    | ✓           |
+| R04 | ✓                        | —      | —    | ✓           |
+| R05 | ✓                        | —      | —    | ✓           |
+| R06 | ✓                        | —      | ✓    | —           |
+| P01 | `FlowStepShell purchase` | ✓ ×2   | —    | —           |
+| P02 | ✓                        | ✓      | —    | —           |
+| P03 | ✓                        | ✓      | —    | —           |
+| P04 | ✓                        | ✓      | —    | —           |
+| P05 | ✓                        | ✓      | ✓    | —           |
+| P06 | ✓                        | ✓      | ✓    | —           |
 
 ### Compliance (unchanged)
 
@@ -205,28 +205,28 @@ New composition infrastructure: **~97 LOC** (components + banner CSS). Net proje
 ### Build
 
 ```bash
-pnpm --filter @autolokate/onboarding lint    # ✓
-pnpm --filter @autolokate/onboarding build  # ✓
+pnpm --filter @autolokate/qr lint    # ✓
+pnpm --filter @autolokate/qr build  # ✓
 ```
 
 ---
 
 ## QA matrix
 
-**Dev preview:** `pnpm --filter @autolokate/onboarding dev`
+**Dev preview:** `pnpm --filter @autolokate/qr dev`
 
-| Viewport | Shared R01–R06 | Purchase P01–P06 |
-|----------|----------------|------------------|
-| 320 | Shell max-width, hero centering, field stack | Carousel snap, banners, checkout scroll |
-| 360 | ✓ | ✓ |
-| 375 | ✓ | ✓ |
-| 390 | ✓ | ✓ |
-| 414 | ✓ | ✓ |
+| Viewport | Shared R01–R06                               | Purchase P01–P06                        |
+| -------- | -------------------------------------------- | --------------------------------------- |
+| 320      | Shell max-width, hero centering, field stack | Carousel snap, banners, checkout scroll |
+| 360      | ✓                                            | ✓                                       |
+| 375      | ✓                                            | ✓                                       |
+| 390      | ✓                                            | ✓                                       |
+| 414      | ✓                                            | ✓                                       |
 
-| Theme | Check |
-|-------|-------|
+| Theme | Check                                                |
+| ----- | ---------------------------------------------------- |
 | Light | `AlScreenBg protected` tint, banner mixes, hero text |
-| Dark | Semantic tokens via dev theme toggle |
+| Dark  | Semantic tokens via dev theme toggle                 |
 
 **Visual regression guardrails preserved:**
 
@@ -240,22 +240,22 @@ pnpm --filter @autolokate/onboarding build  # ✓
 
 ## Onboarding health score
 
-| Dimension | Phase 6.5 | Phase 6.6 | Δ |
-|-----------|-----------|-----------|---|
-| DS import compliance | 100 | 100 | — |
-| Token hygiene | 96 | 96 | — |
-| Shell architecture | 88 | **95** | +7 |
-| CSS centralization | 92 | **94** | +2 |
-| JSX DRY | 68 | **85** | +17 |
-| Composition readiness | 75 | **90** | +15 |
+| Dimension             | Phase 6.5 | Phase 6.6 | Δ   |
+| --------------------- | --------- | --------- | --- |
+| DS import compliance  | 100       | 100       | —   |
+| Token hygiene         | 96        | 96        | —   |
+| Shell architecture    | 88        | **95**    | +7  |
+| CSS centralization    | 92        | **94**    | +2  |
+| JSX DRY               | 68        | **85**    | +17 |
+| Composition readiness | 75        | **90**    | +15 |
 
 ### **Overall: 93 / 100 (A−)**
 
-| Grade | Range | Status |
-|-------|-------|--------|
-| A | 90–100 | **Current — Prepaid-ready for shell + P0 compositions** |
-| B+ | 85–89 | Phase 6.5 |
-| B | 80–84 | — |
+| Grade | Range  | Status                                                  |
+| ----- | ------ | ------------------------------------------------------- |
+| A     | 90–100 | **Current — Prepaid-ready for shell + P0 compositions** |
+| B+    | 85–89  | Phase 6.5                                               |
+| B     | 80–84  | —                                                       |
 
 ---
 

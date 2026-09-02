@@ -1,8 +1,8 @@
-import { cn } from '../../../utils/cn.js';
-import { AlChip } from '../Chip/Chip.js';
-import { AlField } from '../Field/Field.js';
+import { cn } from '../../../utils/cn';
+import { AlChip } from '../Chip/Chip';
+import { AlField } from '../Field/Field';
 
-import type { AlVehicleRcCardProps } from './VehicleRcCard.types.js';
+import type { AlVehicleRcCardProps } from './VehicleRcCard.types';
 import './VehicleRcCard.css';
 
 function chunkFields<T>(items: T[], size: number): T[][] {
@@ -24,7 +24,10 @@ export function AlVehicleRcCard({
   const rows = chunkFields(fields, 2);
 
   return (
-    <section className={cn('al-vehicle-rc-card', className)} aria-label="Vehicle registration details">
+    <section
+      className={cn('al-vehicle-rc-card', className)}
+      aria-label="Vehicle registration details"
+    >
       {watermarkIcon ? (
         <div className="al-vehicle-rc-card__watermark" aria-hidden>
           {watermarkIcon}

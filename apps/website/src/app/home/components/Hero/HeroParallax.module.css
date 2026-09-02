@@ -1,0 +1,11 @@
+.wrap {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap {
+    will-change: auto;
+    transition: none;
+  }
+}

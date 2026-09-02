@@ -12,7 +12,7 @@ export type AdminMutationResultPanelProps = {
 
 export function AdminMutationResultPanel({ title, fields }: AdminMutationResultPanelProps) {
   return (
-    <section className="admin-mutation-result" aria-label={title}>
+    <section className="admin-result-panel" aria-label={title}>
       <AlText variant="label">{title}</AlText>
       <AlStack gap="sm">
         {fields.map((field) => (

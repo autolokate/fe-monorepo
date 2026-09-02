@@ -14,7 +14,8 @@
   flex-shrink: 0;
   width: auto;
   background: var(--al-color-surface);
-  box-shadow: var(--al-admin-shadow-sidebar);
+  box-shadow: none;
+  border-right: var(--al-border-width-thin) solid var(--al-color-border-subtle);
   transition: transform var(--al-admin-motion-sidebar) var(--al-admin-ease-sidebar);
 }
 
@@ -32,7 +33,8 @@
   flex-shrink: 0;
   min-height: var(--al-admin-header-height);
   background: var(--al-color-surface);
-  box-shadow: var(--al-admin-shadow-header);
+  box-shadow: none;
+  border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
 }
 
 .al-page-layout__content {

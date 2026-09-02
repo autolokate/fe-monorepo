@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { StatusBarProps } from './StatusBar.types.js';
+import type { StatusBarProps } from './StatusBar.types';
 import './StatusBar.css';
 
 function DefaultStatusIcons() {
@@ -20,7 +20,12 @@ function DefaultStatusIcons() {
 
 export function StatusBar({ time, icons, className, ...props }: StatusBarProps) {
   return (
-    <div className={cn('al-status-bar', className)} role="status" aria-label="Device status bar" {...props}>
+    <div
+      className={cn('al-status-bar', className)}
+      role="status"
+      aria-label="Device status bar"
+      {...props}
+    >
       <time className="al-status-bar__time" dateTime={time}>
         {time}
       </time>

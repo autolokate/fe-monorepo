@@ -3,4 +3,4 @@ export {
   type AlBottomNavItem,
   type AlBottomNavLayout,
   type AlBottomNavProps,
-} from './BottomNav/index.js';
+} from './BottomNav/index';

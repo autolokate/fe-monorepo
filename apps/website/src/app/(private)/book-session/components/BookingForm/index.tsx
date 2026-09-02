@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Check, IndianRupee, Loader2, LogIn } from "lucide-react";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Check, IndianRupee, Loader2, LogIn } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
-import { useBookingSlots, useBookSession } from "@/hooks/booking";
-import type { ExpertTimeSlot } from "@/lib/booking/types";
-import type { AuthUser } from "@/services/auth/types";
+import { useBookingSlots, useBookSession } from '@/hooks/booking';
+import type { ExpertTimeSlot } from '@/lib/booking/types';
+import type { AuthUser } from '@/services/auth/types';
 
-import { SESSION_FEE } from "../../constants";
-import { BookSessionCalendar } from "../BookSessionCalendar";
-import { FORM_LABEL, INPUT_BASE, INPUT_LIGHT } from "./constants";
+import { SESSION_FEE } from '../../constants';
+import { BookSessionCalendar } from '../BookSessionCalendar';
+import { FORM_LABEL, INPUT_BASE, INPUT_LIGHT } from './constants';
 
-const digitsOnly = (s: string) => s.replace(/\D/g, "");
+const digitsOnly = (s: string) => s.replace(/\D/g, '');
 
 export interface BookingFormProps {
   /** Resolved auth state. `null` = still hydrating. */
@@ -32,9 +32,9 @@ export interface BookingFormProps {
  * disabled and a "Sign in required" CTA replaces the pay button.
  */
 export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [date, setDate] = useState("");
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [date, setDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState<ExpertTimeSlot | null>(null);
 
   const { pay, paying } = useBookSession({ onSettled: onPaymentSettled });
@@ -51,19 +51,16 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
   // Prefill from user once it lands; never overwrite a value the user has typed.
   useEffect(() => {
     if (!user) return;
-    setName((prev) => prev.trim() || (user.full_name ? String(user.full_name) : ""));
-    setPhone((prev) => prev.trim() || (user.phone ? String(user.phone) : ""));
+    setName((prev) => prev.trim() || (user.full_name ? user.full_name : ''));
+    setPhone((prev) => prev.trim() || (user.phone ? user.phone : ''));
   }, [user]);
 
-  const effectiveName = name.trim() || (user?.full_name ? String(user.full_name) : "");
-  const effectivePhone = phone.trim() || (user?.phone ? String(user.phone) : "");
+  const effectiveName = name.trim() || (user?.full_name ? user.full_name : '');
+  const effectivePhone = phone.trim() || (user?.phone ? user.phone : '');
   const phoneDigits = digitsOnly(phone).length;
 
-  const contactReady = Boolean(
-    authed === true &&
-      effectiveName.length > 0 &&
-      digitsOnly(effectivePhone).length >= 10,
-  );
+  const contactReady =
+    authed === true && effectiveName.length > 0 && digitsOnly(effectivePhone).length >= 10;
   const ready = Boolean(contactReady && date && selectedSlot);
 
   const inputCls = cn(INPUT_BASE, INPUT_LIGHT);
@@ -91,7 +88,7 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
               Reserve a slot
             </p>
             <ul className="mt-2 space-y-1.5">
-              {["15 min expert call", "Email recap after the call"].map((item) => (
+              {['15 min expert call', 'Email recap after the call'].map((item) => (
                 <li
                   key={item}
                   className="flex items-center gap-2 text-xs leading-snug text-muted-foreground"
@@ -126,14 +123,9 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs leading-snug text-amber-800 sm:text-[0.8125rem]">
             <p className="font-semibold text-amber-900">Sign in required</p>
             <p className="mt-1.5 text-amber-700">
-              Bookings are tied to your account. Sign in with OTP to see live slots
-              and pay.
+              Bookings are tied to your account. Sign in with OTP to see live slots and pay.
             </p>
-            <Button
-              variant="default"
-              className="mt-3 h-10 w-full text-sm font-semibold"
-              asChild
-            >
+            <Button variant="default" className="mt-3 h-10 w-full text-sm font-semibold" asChild>
               <Link href="/auth/login">
                 <LogIn className="h-4 w-4" aria-hidden />
                 Sign in
@@ -152,7 +144,9 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
               id="bs-name"
               placeholder="Name on ID"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
               className={inputCls}
               autoComplete="name"
               disabled={authed !== true}
@@ -168,7 +162,9 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
               inputMode="numeric"
               placeholder="10-digit number"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+              }}
               className={inputCls}
               autoComplete="tel"
               disabled={authed !== true}
@@ -192,12 +188,7 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
           <p className="text-xs font-semibold uppercase tracking-wide text-foreground/70">
             Choose a date <span className="text-destructive">*</span>
           </p>
-          <BookSessionCalendar
-            compact
-            value={date}
-            onChange={setDate}
-            disabled={authed !== true}
-          />
+          <BookSessionCalendar compact value={date} onChange={setDate} disabled={authed !== true} />
         </div>
 
         {/* Time slots */}
@@ -224,7 +215,7 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
             </div>
           ) : slotsQuery.isError ? (
             <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-700">
-              {slotsQuery.error?.message ?? "Could not load slots."}
+              {slotsQuery.error?.message ?? 'Could not load slots.'}
             </p>
           ) : slotsQuery.slots.length === 0 ? (
             <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-700">
@@ -239,20 +230,22 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
               {slotsQuery.slots.map((slot) => {
                 const active =
                   selectedSlot?.slotStartTime === slot.slotStartTime &&
-                  selectedSlot?.slotEndTime === slot.slotEndTime;
+                  selectedSlot.slotEndTime === slot.slotEndTime;
                 return (
                   <button
                     key={`${slot.slotStartTime}|${slot.slotEndTime}`}
                     type="button"
-                    onClick={() => setSelectedSlot(slot)}
+                    onClick={() => {
+                      setSelectedSlot(slot);
+                    }}
                     className={cn(
-                      "min-h-10 rounded-lg border px-1.5 py-2 text-center text-xs font-semibold leading-tight transition-all",
+                      'min-h-10 rounded-lg border px-1.5 py-2 text-center text-xs font-semibold leading-tight transition-all',
                       active
-                        ? "border-primary/50 bg-primary/15 text-primary"
-                        : "border-border bg-muted text-muted-foreground hover:border-primary/30 hover:text-foreground",
+                        ? 'border-primary/50 bg-primary/15 text-primary'
+                        : 'border-border bg-muted text-muted-foreground hover:border-primary/30 hover:text-foreground',
                     )}
                   >
-                    {slot.label.replace(" ", "\u00A0")}
+                    {slot.label.replace(' ', '\u00A0')}
                   </button>
                 );
               })}
@@ -268,7 +261,9 @@ export function BookingForm({ authed, user, onPaymentSettled }: BookingFormProps
           variant="default"
           className="h-11 w-full gap-2 text-sm font-semibold"
           disabled={!ready || paying || authed !== true}
-          onClick={handlePay}
+          onClick={() => {
+            void handlePay();
+          }}
         >
           {paying ? (
             <>

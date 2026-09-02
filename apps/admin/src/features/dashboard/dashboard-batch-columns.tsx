@@ -1,7 +1,7 @@
 import type { BatchSummaryDto } from '@autolokate/api-client';
-import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
+import type { ColumnDef } from '@autolokate/ui';
 
-import { batchStatusTone } from '@/platform/utils/batch-status.js';
+import { BatchStatusBadge } from '@/platform/components/EntityStatusBadge';
 
 function formatShortDate(value: string | null): string {
   if (!value) {
@@ -31,9 +31,7 @@ export const dashboardBatchColumns: ColumnDef<BatchSummaryDto>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }) => (
-      <AlStatusBadge label={row.original.status} status={batchStatusTone(row.original.status)} />
-    ),
+    cell: ({ row }) => <BatchStatusBadge status={row.original.status} />,
   },
   {
     accessorKey: 'totalCount',

@@ -1,0 +1,75 @@
+#!/bin/bash
+# Frontend staging bootstrap (Amazon Linux 2023, arm64). Installs Docker + compose, logs into ECR,
+# materializes the app .env + the Cloudflare Origin Certificate from SSM Parameter Store, drops the
+# compose + Caddyfile, and brings the stack up. Caddy is the origin reverse proxy behind Cloudflare
+# (orange-cloud, Full-strict) — it serves the CF Origin Cert (not Let's Encrypt) and routes
+# staging.<apex> -> the website container.
+set -euo pipefail
+
+dnf install -y docker
+systemctl enable --now docker
+
+# docker compose plugin
+mkdir -p /usr/libexec/docker/cli-plugins
+curl -fsSL "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-aarch64" \
+  -o /usr/libexec/docker/cli-plugins/docker-compose
+chmod +x /usr/libexec/docker/cli-plugins/docker-compose
+
+dnf install -y awscli jq
+
+APP_DIR=/opt/autolokate-fe
+mkdir -p "$APP_DIR"
+cat > "$APP_DIR/docker-compose.yml" <<'COMPOSE'
+${compose}
+COMPOSE
+cat > "$APP_DIR/Caddyfile" <<'CADDY'
+${caddyfile}
+CADDY
+
+REGION="${region}"
+ECR_REGISTRY="${account_id}.dkr.ecr.$REGION.amazonaws.com"
+
+# Materialize .env from every SSM param under this stack's prefix EXCEPT the CF_ORIGIN_* cert material —
+# those are files for Caddy, and a PEM would break the env_file. The leaf name IS the env key.
+# IMAGE_TAG_BLUE/GREEN: one per blue/green deploy slot (docker-compose.yml) so deploy-staging.yml can
+# redeploy the currently-INACTIVE slot to a new SHA without changing what the active slot is running.
+# First boot only ever starts the blue slot (below) — both default to the bootstrap image already
+# pushed to ECR; deploy-staging.yml overwrites its target slot's line on every redeploy.
+{
+  echo "ECR_REGISTRY=$ECR_REGISTRY"
+  echo "IMAGE_TAG_BLUE=latest"
+  echo "IMAGE_TAG_GREEN=latest"
+  aws ssm get-parameters-by-path --region "$REGION" --path "/${name}/" --with-decryption --recursive \
+    --query "Parameters[].{N:Name,V:Value}" --output json \
+  | jq -r '.[] | (.N | split("/") | last) as $k | select(($k | startswith("CF_ORIGIN_")) | not) | $k + "=" + .V'
+} > "$APP_DIR/.env"
+chmod 600 "$APP_DIR/.env"
+
+# blue/green cutover pointer (deploy-staging.yml reads/writes this) — first boot is always blue.
+echo "blue" > "$APP_DIR/active_slot"
+
+# Cloudflare Origin Certificate -> files Caddy serves (Full-strict). Stored base64 in SSM to survive
+# transit intact; decode to PEM here.
+mkdir -p "$APP_DIR/origin"
+aws ssm get-parameter --region "$REGION" --name "/${name}/CF_ORIGIN_CERT" --with-decryption --query Parameter.Value --output text | base64 -d > "$APP_DIR/origin/tls.crt"
+aws ssm get-parameter --region "$REGION" --name "/${name}/CF_ORIGIN_KEY" --with-decryption --query Parameter.Value --output text | base64 -d > "$APP_DIR/origin/tls.key"
+chmod 600 "$APP_DIR/origin/tls.key"
+
+aws ecr get-login-password --region "$REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+# Caddy first, unconditionally: its image (caddy:2, Docker Hub) always resolves, and its active health
+# check (Caddyfile) already tolerates an upstream that isn't up yet — so Caddy coming up must never be
+# gated on website-blue's image existing. website-blue is best-effort here: on a genuinely fresh
+# environment (this stack's first-ever boot, before any CI deploy has pushed an image) ECR has no
+# `website` tag at all yet and the pull 404s — that's expected, not fatal, and the first deploy-staging.yml
+# run brings it up for real. Explicit service names, not a bare `up -d`: the green profile is intentionally
+# left stopped — Compose only starts a profiled service when it's targeted by name
+# (docs.docker.com/compose/how-tos/profiles), which keeps steady-state RAM at ~1x website on this t4g box.
+cd "$APP_DIR"
+docker compose pull caddy
+docker compose up -d caddy
+if docker compose pull website-blue; then
+  docker compose up -d website-blue
+else
+  echo "website-blue: no image in ECR yet (expected on first boot) -- Caddy is up; deploy-staging.yml starts it on the first CI deploy."
+fi

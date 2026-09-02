@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ClawbackResultDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlInput, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 import {
   createClawbackSchema,
   type CreateClawbackFormValues,
-} from '@/features/finance/create-clawback-schema.js';
-import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations.js';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
+} from '@/features/finance/create-clawback-schema';
+import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
 
 export type CreateClawbackSheetProps = {
   open: boolean;
@@ -56,51 +56,56 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
   });
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="md"
       title="Create clawback"
       description="Reverse a captured payment and claw back its commission."
+      footer={
+        <div className="admin-modal-actions">
+          <AlButton
+            type="submit"
+            form="create-clawback-form"
+            size="sm"
+            loading={clawbackMutation.isPending}
+            disabled={clawbackMutation.isPending}
+          >
+            Create clawback
+          </AlButton>
+          <AlButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={clawbackMutation.isPending}
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
+            Cancel
+          </AlButton>
+        </div>
+      }
     >
       <form
+        id="create-clawback-form"
+        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlStack gap="lg">
-          <AlInput
-            label="Payment reference"
-            mono
-            autoComplete="off"
-            {...form.register('paymentRef')}
-            errorText={form.formState.errors.paymentRef?.message}
-            helperText="Opaque PaymentRef of the CAPTURED payment to reverse."
-          />
+        <AlInput
+          label="Payment reference"
+          mono
+          autoComplete="off"
+          {...form.register('paymentRef')}
+          errorText={form.formState.errors.paymentRef?.message}
+          helperText="Opaque PaymentRef of the CAPTURED payment to reverse."
+        />
 
-          {submitError ? <AlText role="alert">{submitError}</AlText> : null}
-
-          <AlStack gap="sm" direction="row">
-            <AlButton
-              type="submit"
-              loading={clawbackMutation.isPending}
-              disabled={clawbackMutation.isPending}
-            >
-              Create clawback
-            </AlButton>
-            <AlButton
-              type="button"
-              variant="secondary"
-              disabled={clawbackMutation.isPending}
-              onClick={() => {
-                onOpenChange(false);
-              }}
-            >
-              Cancel
-            </AlButton>
-          </AlStack>
-        </AlStack>
+        {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }
 

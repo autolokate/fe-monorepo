@@ -1,7 +1,7 @@
 # PWA Light Theme Report
 
 **Date:** 2026-06-17  
-**Feature:** `apps/onboarding/src/features/post-activation-pwa`  
+**Feature:** `apps/qr/src/features/post-activation-pwa`  
 **Routes:** 32 active paths under `/pwa/scan/*`
 
 ---
@@ -16,27 +16,27 @@ PWA was the **highest-impact** light-theme failure zone. Components promoted fro
 
 ## Previously flagged components — re-audit
 
-| Component | Prior issue | Light theme now | Fix location |
-|-----------|-------------|-----------------|--------------|
-| ScannerHubCard | Park-me forced `#1a1a1a` gradient | White surface, muted chevron | `ScannerHubCard.css` |
-| DispatchTimeline | `#4A4A4A` connectors, white glyphs | Outline + on-warning glyphs | `DispatchTimeline.css/tsx` |
-| StatusTracker | Dark card, white-only text | Semantic surface/on-surface | `StatusTracker.css` |
-| Vehicle cards (Scanned / Confirmation) | Dark gradients | `--al-color-surface` + RC gradient tokens | `*Vehicle*.css` |
-| Status heroes | Amber/grey halos + fixed dark strokes | CSS variable SVG | `IncidentStatusHero.tsx` |
-| SOS components | Hint text hardcoded grey; ring hex | Muted/on-surface + signal tokens | `SosHoldButton.css`, `pwa-emergency-screen.css` |
-| PhotoGrid | White map pin on light green | Success-coloured pin | `PhotoGrid.css/tsx` |
-| PermissionSheet | Dark scrim/panel assumptions | `--al-color-overlay`, surface | `PermissionSheet.css` |
+| Component                              | Prior issue                           | Light theme now                           | Fix location                                    |
+| -------------------------------------- | ------------------------------------- | ----------------------------------------- | ----------------------------------------------- |
+| ScannerHubCard                         | Park-me forced `#1a1a1a` gradient     | White surface, muted chevron              | `ScannerHubCard.css`                            |
+| DispatchTimeline                       | `#4A4A4A` connectors, white glyphs    | Outline + on-warning glyphs               | `DispatchTimeline.css/tsx`                      |
+| StatusTracker                          | Dark card, white-only text            | Semantic surface/on-surface               | `StatusTracker.css`                             |
+| Vehicle cards (Scanned / Confirmation) | Dark gradients                        | `--al-color-surface` + RC gradient tokens | `*Vehicle*.css`                                 |
+| Status heroes                          | Amber/grey halos + fixed dark strokes | CSS variable SVG                          | `IncidentStatusHero.tsx`                        |
+| SOS components                         | Hint text hardcoded grey; ring hex    | Muted/on-surface + signal tokens          | `SosHoldButton.css`, `pwa-emergency-screen.css` |
+| PhotoGrid                              | White map pin on light green          | Success-coloured pin                      | `PhotoGrid.css/tsx`                             |
+| PermissionSheet                        | Dark scrim/panel assumptions          | `--al-color-overlay`, surface             | `PermissionSheet.css`                           |
 
 ---
 
 ## PWA CSS files audited
 
-| File | Hardcoded colours (before) | Status |
-|------|------------------------------|--------|
-| `pwa-emergency-screen.css` | 5+ hex (regression) | ✅ Tokenized |
-| `pwa-scan.css` | Invalid vars + muted hex | ✅ Fixed |
-| `pwa-scan-shell.css` | Logo filter only (light block) | ✅ Intentional |
-| `components/pwa-scan-shell.css` | Light footer sticky override | ✅ Token-based |
+| File                            | Hardcoded colours (before)     | Status         |
+| ------------------------------- | ------------------------------ | -------------- |
+| `pwa-emergency-screen.css`      | 5+ hex (regression)            | ✅ Tokenized   |
+| `pwa-scan.css`                  | Invalid vars + muted hex       | ✅ Fixed       |
+| `pwa-scan-shell.css`            | Logo filter only (light block) | ✅ Intentional |
+| `components/pwa-scan-shell.css` | Light footer sticky override   | ✅ Token-based |
 
 ---
 
@@ -44,60 +44,60 @@ PWA was the **highest-impact** light-theme failure zone. Components promoted fro
 
 ### Bootstrap & hub
 
-| Route | Screen | Light |
-|-------|--------|-------|
-| `/loading` | Spinner + copy | ✅ |
-| `/vehicle` | Scanned card + hub cards | ✅ |
-| `/verify/mobile` | A1 shell reuse | ✅ |
-| `/verify/otp` | OTP shell reuse | ✅ |
-| `/verify/name` | A3 shell reuse | ✅ |
+| Route            | Screen                   | Light |
+| ---------------- | ------------------------ | ----- |
+| `/loading`       | Spinner + copy           | ✅    |
+| `/vehicle`       | Scanned card + hub cards | ✅    |
+| `/verify/mobile` | A1 shell reuse           | ✅    |
+| `/verify/otp`    | OTP shell reuse          | ✅    |
+| `/verify/name`   | A3 shell reuse           | ✅    |
 
 ### Park Me
 
-| Route | Screen | Light |
-|-------|--------|-------|
-| `/park-me/vehicle-number` | Plate input | ✅ |
-| `/park-me/looking-up` | Spinner | ✅ |
-| `/park-me/confirm` | Vehicle confirmation | ✅ |
-| `/park-me/confirm-protected` | Protected badge card | ✅ |
-| `/park-me/permissions` | Sheet over photo backdrop | ✅ |
-| `/park-me/photos` | Dual photo + location | ✅ |
-| `/park-me/status/checking` | Timeline | ✅ |
-| `/park-me/status/calling` | Timeline | ✅ |
-| `/park-me/status/resolved` | Timeline + Done | ✅ |
-| `/park-me/photo-not-clear` | Error timeline | ✅ |
+| Route                        | Screen                    | Light |
+| ---------------------------- | ------------------------- | ----- |
+| `/park-me/vehicle-number`    | Plate input               | ✅    |
+| `/park-me/looking-up`        | Spinner                   | ✅    |
+| `/park-me/confirm`           | Vehicle confirmation      | ✅    |
+| `/park-me/confirm-protected` | Protected badge card      | ✅    |
+| `/park-me/permissions`       | Sheet over photo backdrop | ✅    |
+| `/park-me/photos`            | Dual photo + location     | ✅    |
+| `/park-me/status/checking`   | Timeline                  | ✅    |
+| `/park-me/status/calling`    | Timeline                  | ✅    |
+| `/park-me/status/resolved`   | Timeline + Done           | ✅    |
+| `/park-me/photo-not-clear`   | Error timeline            | ✅    |
 
 ### SOS / Emergency
 
-| Route | Screen | Light |
-|-------|--------|-------|
-| `/sos` | Hold button + location chip | ✅ |
-| `/sos/holding` | Progress ring | ✅ |
-| `/sos/allow-location` | Permission sheet | ✅ |
-| `/sos/leave-confirm` | Permission sheet | ✅ |
-| `/sos/scene-photos` | Quad photo grid | ✅ |
-| `/sos/scene-photos/captured` | Review quad | ✅ |
-| `/sos/location-unavailable` | Status hero | ✅ |
-| `/sos/sending` | Emergency spinner | ✅ |
-| `/sos/couldnt-send` | Status hero | ✅ |
-| `/sos/help-received` | SOS timeline | ✅ |
-| `/sos/help-dispatched` | SOS timeline | ✅ |
-| `/sos/resolved` | Protected timeline | ✅ |
-| `/sos/alert-cancelled` | Neutral hero | ✅ |
-| `/sos/contacts-only` | Contacts timeline | ✅ |
+| Route                        | Screen                      | Light |
+| ---------------------------- | --------------------------- | ----- |
+| `/sos`                       | Hold button + location chip | ✅    |
+| `/sos/holding`               | Progress ring               | ✅    |
+| `/sos/allow-location`        | Permission sheet            | ✅    |
+| `/sos/leave-confirm`         | Permission sheet            | ✅    |
+| `/sos/scene-photos`          | Quad photo grid             | ✅    |
+| `/sos/scene-photos/captured` | Review quad                 | ✅    |
+| `/sos/location-unavailable`  | Status hero                 | ✅    |
+| `/sos/sending`               | Emergency spinner           | ✅    |
+| `/sos/couldnt-send`          | Status hero                 | ✅    |
+| `/sos/help-received`         | SOS timeline                | ✅    |
+| `/sos/help-dispatched`       | SOS timeline                | ✅    |
+| `/sos/resolved`              | Protected timeline          | ✅    |
+| `/sos/alert-cancelled`       | Neutral hero                | ✅    |
+| `/sos/contacts-only`         | Contacts timeline           | ✅    |
 
 ---
 
 ## Dark-theme assumptions removed
 
-| Pattern removed | Replacement |
-|-----------------|-------------|
-| `background: #1a1a1a` | `var(--al-color-surface)` |
-| `color: #ffffff` (body text) | `var(--al-color-on-surface)` |
-| `color: #8a8a8a` (muted) | `var(--al-color-on-surface-muted)` |
-| `border-color: #4a4a4a` | `var(--al-color-outline)` |
-| Dark-only park-me gradient | Surface + outline tokens |
-| White SVG on light tint | Semantic icon colour |
+| Pattern removed              | Replacement                        |
+| ---------------------------- | ---------------------------------- |
+| `background: #1a1a1a`        | `var(--al-color-surface)`          |
+| `color: #ffffff` (body text) | `var(--al-color-on-surface)`       |
+| `color: #8a8a8a` (muted)     | `var(--al-color-on-surface-muted)` |
+| `border-color: #4a4a4a`      | `var(--al-color-outline)`          |
+| Dark-only park-me gradient   | Surface + outline tokens           |
+| White SVG on light tint      | Semantic icon colour               |
 
 ---
 
@@ -132,7 +132,7 @@ http://127.0.0.1:5199/pwa/scan/park-me/confirm-protected
 Set theme:
 
 ```js
-localStorage.setItem('al-onboarding-theme', 'light');
+localStorage.setItem('al-qr-theme', 'light');
 document.documentElement.setAttribute('data-theme', 'light');
 location.reload();
 ```

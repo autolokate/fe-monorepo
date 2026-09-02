@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
-import { humanizeSegment } from "@/components/catalogue/BrandModelsPage/model-utils";
-import { ModelDetailPage } from "@/components/catalogue/ModelDetailPage";
+import { humanizeSegment } from '@/components/catalogue/BrandModelsPage/model-utils';
+import { ModelDetailPage } from '@/components/catalogue/ModelDetailPage';
 
 type Props = { params: Promise<{ brandSlug: string; modelSlug: string }> };
 

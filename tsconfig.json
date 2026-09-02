@@ -1,5 +1,5 @@
 {
-  "extends": "@autolokate/config/typescript/base.json",
+  "extends": "@autolokate/config/typescript/base",
   "files": [],
   "references": [
     { "path": "./packages/config" },

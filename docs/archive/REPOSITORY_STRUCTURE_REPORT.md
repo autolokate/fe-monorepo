@@ -7,7 +7,7 @@
 ## Target Structure — Verified ✅
 
 ```
-apps/onboarding/src/
+apps/qr/src/
 ├── app/                    # App bootstrap
 ├── components/
 │   ├── compositions/       # Domain-specific reusable UI
@@ -43,6 +43,7 @@ packages/
 ## Feature Ownership ✅
 
 Each feature owns:
+
 - `screens/` — route-mounted components
 - `data/` — demo data + domain helpers
 - `types.ts` — feature types
@@ -54,32 +55,32 @@ No mixed-responsibility dumping grounds after cleanup.
 
 ## Removed Structure
 
-| Removed | Was |
-|---------|-----|
-| `features/qr-activation/` | Dead QR scan feature |
-| `features/qr-purchase/screens/p01–p06/` | Legacy purchase phase |
-| `features/qr-purchase/screens/r14–r15/` | Archived screens |
-| `components/compositions/language-*` | Unwired experiments |
-| `components/compositions/permission-row/` | R14-only |
+| Removed                                   | Was                   |
+| ----------------------------------------- | --------------------- |
+| `features/qr-activation/`                 | Dead QR scan feature  |
+| `features/qr-purchase/screens/p01–p06/`   | Legacy purchase phase |
+| `features/qr-purchase/screens/r14–r15/`   | Archived screens      |
+| `components/compositions/language-*`      | Unwired experiments   |
+| `components/compositions/permission-row/` | R14-only              |
 
 ---
 
 ## New Structure
 
-| Added | Purpose |
-|-------|---------|
-| `src/shared/` | Cross-feature utilities (format-mobile) |
-| `@/` path alias | Clean imports from src root |
+| Added           | Purpose                                 |
+| --------------- | --------------------------------------- |
+| `src/shared/`   | Cross-feature utilities (format-mobile) |
+| `@/` path alias | Clean imports from src root             |
 
 ---
 
 ## Cohesive Large Files (retained)
 
-| File | Lines | Justification |
-|------|------:|---------------|
-| `PurchaseRoutes.tsx` | ~861 | Route orchestration + guards |
-| `EmergencyRoutes.tsx` | ~861 | Multi-path emergency graph |
-| `ScreenDevApp.tsx` | ~930 | Dev preview harness (reduced from ~1043) |
+| File                  | Lines | Justification                            |
+| --------------------- | ----: | ---------------------------------------- |
+| `PurchaseRoutes.tsx`  |  ~861 | Route orchestration + guards             |
+| `EmergencyRoutes.tsx` |  ~861 | Multi-path emergency graph               |
+| `ScreenDevApp.tsx`    |  ~930 | Dev preview harness (reduced from ~1043) |
 
 Not split — readable and maintainable per user guidance.
 

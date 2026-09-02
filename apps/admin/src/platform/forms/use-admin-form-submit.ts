@@ -33,19 +33,22 @@ export function useAdminFormSubmit<T extends FieldValues>({
 }) {
   const submittingRef = useRef(false);
 
-  const onSubmit = form.handleSubmit(async (values) => {
-    if (isPending || submittingRef.current) {
-      return;
-    }
-    submittingRef.current = true;
-    try {
-      await onValid(values);
-    } finally {
-      submittingRef.current = false;
-    }
-  }, (errors) => {
-    focusFirstInvalidField(errors, document.activeElement?.closest('form'));
-  });
+  const onSubmit = form.handleSubmit(
+    async (values) => {
+      if (isPending || submittingRef.current) {
+        return;
+      }
+      submittingRef.current = true;
+      try {
+        await onValid(values);
+      } finally {
+        submittingRef.current = false;
+      }
+    },
+    (errors) => {
+      focusFirstInvalidField(errors, document.activeElement?.closest('form'));
+    },
+  );
 
   const handleFormKeyDown = useCallback(
     (event: KeyboardEvent<HTMLFormElement>) => {

@@ -1,0 +1,1 @@
+export { useRegisterDevice } from './useRegisterDevice';

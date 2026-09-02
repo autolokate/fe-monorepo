@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useApiQuery } from "@/hooks/useApiQuery";
-import type { EmiQuote } from "@/services/prices/prices-api";
-import { getEmiQuote } from "@/services/prices/prices-api";
+import { useApiQuery } from '@/hooks/useApiQuery';
+import type { EmiQuote } from '@/services/prices/prices-api';
+import { getEmiQuote } from '@/services/prices/prices-api';
 
 const EMI_RATE = 9.5;
 const EMI_MONTHS = 60;
@@ -13,13 +13,17 @@ export function useEmiFromPrincipal(
 ) {
   const { enabled = true } = options;
   const p =
-    typeof principal === "number" && Number.isFinite(principal) && principal >= 10_000
+    typeof principal === 'number' && Number.isFinite(principal) && principal >= 10_000
       ? principal
       : null;
-  const canRun = Boolean(enabled && p != null);
+  const canRun = enabled && p != null;
 
   return useApiQuery<EmiQuote>(
-    () => getEmiQuote({ principal: p!, rate: EMI_RATE, tenure_months: EMI_MONTHS }),
+    () => {
+      // `canRun` gates the fetch, so `p` is always a valid principal here.
+      if (p == null) throw new Error('EMI query ran without a principal');
+      return getEmiQuote({ principal: p, rate: EMI_RATE, tenure_months: EMI_MONTHS });
+    },
     [p, enabled],
     { enabled: canRun },
   );

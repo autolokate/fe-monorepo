@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import { useQrInventory } from '@/hooks/inventory/useQrInventory.js';
-import { computeBatchManagementMetrics } from '@/services/qr-batches/batch-lifecycle.js';
+import { useQrInventory } from '@/hooks/inventory/useQrInventory';
+import { computeBatchManagementMetrics } from '@/services/qr-batches/batch-lifecycle';
 
 /** Batch management list — reuses inventory query and metrics with management-specific rollups. */
 export function useQrBatches(initialStateFilter?: Parameters<typeof useQrInventory>[0]) {

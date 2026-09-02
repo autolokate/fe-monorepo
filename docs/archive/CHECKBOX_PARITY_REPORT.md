@@ -7,26 +7,26 @@
 
 ## Figma Spec (MCP verified)
 
-| Property | Unchecked | Checked |
-|----------|-----------|---------|
-| Size | 22×22 | 22×22 |
-| Radius | 8px | 8px |
-| Border | 1.5px `#4A4A4A` | none (fill) |
-| Background | transparent | `#1FA24A` |
-| Checkmark | — | 6.5×5, 1.8px white stroke |
-| Tap target | 48×48 | 48×48 |
-| Label gap | 12px | 12px |
-| Row padding-top | 8px | 8px |
+| Property        | Unchecked       | Checked                   |
+| --------------- | --------------- | ------------------------- |
+| Size            | 22×22           | 22×22                     |
+| Radius          | 8px             | 8px                       |
+| Border          | 1.5px `#4A4A4A` | none (fill)               |
+| Background      | transparent     | `#1FA24A`                 |
+| Checkmark       | —               | 6.5×5, 1.8px white stroke |
+| Tap target      | 48×48           | 48×48                     |
+| Label gap       | 12px            | 12px                      |
+| Row padding-top | 8px             | 8px                       |
 
 ---
 
 ## Usages Audited
 
-| Location | Component | Status |
-|----------|-----------|--------|
-| Auth A1 mobile | `InlineConsentBlock` → `AlCheckbox` | **Fixed** |
-| Purchase R06 legal | `AlCheckbox` with label | **Fixed** (inherits base) |
-| PWA | No standalone checkbox | N/A |
+| Location           | Component                           | Status                    |
+| ------------------ | ----------------------------------- | ------------------------- |
+| Auth A1 mobile     | `InlineConsentBlock` → `AlCheckbox` | **Fixed**                 |
+| Purchase R06 legal | `AlCheckbox` with label             | **Fixed** (inherits base) |
+| PWA                | No standalone checkbox              | N/A                       |
 
 ---
 
@@ -55,13 +55,13 @@
 
 ## States
 
-| State | Implementation |
-|-------|----------------|
-| Unchecked | Gray 1.5px border, transparent fill |
-| Checked | Green fill, white checkmark |
-| Disabled | Existing `.is-disabled` opacity rules |
-| Error | `errorText` on `AlCheckbox` (R06 legal) |
-| Focus | `:focus-visible` outline on box |
+| State     | Implementation                          |
+| --------- | --------------------------------------- |
+| Unchecked | Gray 1.5px border, transparent fill     |
+| Checked   | Green fill, white checkmark             |
+| Disabled  | Existing `.is-disabled` opacity rules   |
+| Error     | `errorText` on `AlCheckbox` (R06 legal) |
+| Focus     | `:focus-visible` outline on box         |
 
 ---
 

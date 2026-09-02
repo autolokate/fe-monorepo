@@ -1,6 +1,9 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlIncidentStatusHeroProps, AlIncidentStatusHeroScene } from './IncidentStatusHero.types.js';
+import type {
+  AlIncidentStatusHeroProps,
+  AlIncidentStatusHeroScene,
+} from './IncidentStatusHero.types';
 import './IncidentStatusHero.css';
 
 function CouldntSendHero() {
@@ -17,10 +20,30 @@ function CouldntSendHero() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M120 113.75V122.083" stroke="var(--al-color-on-surface)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M120 130.417H120.021" stroke="var(--al-color-on-surface)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M120 113.75V122.083"
+        stroke="var(--al-color-on-surface)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M120 130.417H120.021"
+        stroke="var(--al-color-on-surface)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <defs>
-        <filter id="filter0_f_couldnt_send_halo" x="20" y="20" width="200" height="200" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <filter
+          id="filter0_f_couldnt_send_halo"
+          x="20"
+          y="20"
+          width="200"
+          height="200"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
           <feGaussianBlur stdDeviation="20" />
@@ -52,7 +75,15 @@ function AlertCancelledHero() {
         strokeLinejoin="round"
       />
       <defs>
-        <filter id="filter0_f_alert_cancelled_halo" x="20" y="20" width="200" height="200" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <filter
+          id="filter0_f_alert_cancelled_halo"
+          x="20"
+          y="20"
+          width="200"
+          height="200"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
           <feGaussianBlur stdDeviation="20" />
@@ -84,7 +115,15 @@ function LocationUnavailableHero() {
         strokeLinejoin="round"
       />
       <defs>
-        <filter id="filter0_f_location_unavailable_halo" x="20" y="20" width="200" height="200" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <filter
+          id="filter0_f_location_unavailable_halo"
+          x="20"
+          y="20"
+          width="200"
+          height="200"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
+        >
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
           <feGaussianBlur stdDeviation="20" />
@@ -117,7 +156,9 @@ export function AlIncidentStatusHero({
   const resolvedVisual = scene ? sceneVisual(scene) : visual;
 
   return (
-    <div className={cn('al-incident-status-hero', `al-incident-status-hero--${variant}`, className)}>
+    <div
+      className={cn('al-incident-status-hero', `al-incident-status-hero--${variant}`, className)}
+    >
       <div className="al-incident-status-hero__visual">{resolvedVisual}</div>
     </div>
   );

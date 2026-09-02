@@ -1,30 +1,27 @@
-import { CalendarDays, FileText, Scale } from "lucide-react";
-import { LegalHeroBanner } from "@/components/legal/LegalHeroBanner";
-import {
-  TC_EFFECTIVE_DATE,
-  TC_LAST_UPDATED,
-} from "../TermsContent/constants";
+import { HERO_COPY } from './constants';
+import styles from './index.module.css';
 
 export function HeroBanner() {
+  const { eyebrow, headline, lastUpdated, description } = HERO_COPY;
+
   return (
-    <LegalHeroBanner
-      badgeLabel="Legal"
-      BadgeIcon={Scale}
-      title="Terms & Conditions"
-      description="The general rules of the road for using Autolokate — from account access and prohibited conduct to QR-sticker usage, liability, and governing law."
-      meta={[
-        {
-          label: "Last updated",
-          value: TC_LAST_UPDATED,
-          Icon: CalendarDays,
-        },
-        {
-          label: "Effective from",
-          value: TC_EFFECTIVE_DATE,
-          Icon: CalendarDays,
-        },
-        { label: "Version", value: "v1.0", Icon: FileText },
-      ]}
-    />
+    <section className={styles.hero} aria-labelledby="terms-hero-heading">
+      <div className={styles.glow} aria-hidden="true" />
+
+      <div className={styles.inner}>
+        <p className={styles.eyebrow}>
+          <span className={styles.eyebrowDash} aria-hidden="true" />
+          {eyebrow}
+        </p>
+
+        <h1 id="terms-hero-heading" className={styles.headline}>
+          {headline}
+        </h1>
+
+        <p className={styles.lastUpdated}>Last updated {lastUpdated}</p>
+
+        <p className={styles.description}>{description}</p>
+      </div>
+    </section>
   );
 }

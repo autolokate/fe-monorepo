@@ -1,4 +1,4 @@
-import { NotFoundContent } from "@/app/page-not-found";
+import { NotFoundContent } from './404';
 
 export default function SiteNotFoundPage() {
   return <NotFoundContent />;

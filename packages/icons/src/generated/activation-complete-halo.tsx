@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma R15 halo — node 171:62, 240×240 radial green + shield-check. */
 export function ActivationCompleteHaloIcon({
@@ -20,7 +20,13 @@ export function ActivationCompleteHaloIcon({
       role={ariaLabel ? 'img' : undefined}
       {...props}
     >
-      <circle cx="120" cy="120" r="120" className="al-activation-halo__ambient" fill="url(#paint0_radial_activation_halo)" />
+      <circle
+        cx="120"
+        cy="120"
+        r="120"
+        className="al-activation-halo__ambient"
+        fill="url(#paint0_radial_activation_halo)"
+      />
       <circle cx="120" cy="120" r="75" stroke="var(--al-color-success)" strokeWidth="2" />
       <path
         d="M120 156.667C140.301 156.667 156.667 140.301 156.667 120C156.667 99.699 140.301 83.3333 120 83.3333C99.699 83.3333 83.3333 99.699 83.3333 120C83.3333 140.301 99.699 156.667 120 156.667Z"

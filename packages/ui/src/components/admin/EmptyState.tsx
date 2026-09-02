@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
-import { AlButton, AlHeading, AlStack, AlText } from '../primitives/index.js';
+import { cn } from '../../utils/cn';
+import { AlButton, AlHeading, AlStack, AlText } from '../primitives/index';
 import './EmptyState.css';
 
 export type AlEmptyStateProps = {
@@ -23,7 +23,11 @@ export function AlEmptyState({
 }: AlEmptyStateProps) {
   return (
     <div className={cn('al-empty-state', compact && 'al-empty-state--compact')} role="status">
-      {icon ? <div className="al-empty-state__icon" aria-hidden>{icon}</div> : null}
+      {icon ? (
+        <div className="al-empty-state__icon" aria-hidden>
+          {icon}
+        </div>
+      ) : null}
       <AlStack gap="xs" align="center">
         <AlHeading variant="h4">{title}</AlHeading>
         {description ? <AlText tone="muted">{description}</AlText> : null}

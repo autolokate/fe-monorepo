@@ -1,4 +1,4 @@
-import type { VehicleCategory } from "@/lib/preferences/types";
+import type { VehicleCategory } from '@/lib/preferences/types';
 
 /**
  * Compare uses `/{cars|bikes}/compare?model=` with segments joined by the literal delimiter `vvs`.
@@ -8,7 +8,7 @@ import type { VehicleCategory } from "@/lib/preferences/types";
  *   `/cars/compare?model=tata__hariervvsmg__astorvvshyundai__creta`
  */
 
-export const COMPARE_MODEL_SEGMENT_DELIMITER = "vvs";
+export const COMPARE_MODEL_SEGMENT_DELIMITER = 'vvs';
 
 export type CompareModelSegment = {
   brandSlug: string;
@@ -23,7 +23,7 @@ export function compareRootPath(vehicleCategory: VehicleCategory): string {
 export function parseCompareIdsParam(raw: string | null | undefined): string[] {
   if (!raw?.trim()) return [];
   return raw
-    .split(",")
+    .split(',')
     .map((s) => decodeURIComponent(s.trim()))
     .filter(Boolean)
     .slice(0, 3);
@@ -45,7 +45,7 @@ export function parseCompareModelParam(raw: string | null | undefined): CompareM
     .filter(Boolean)
     .slice(0, 3)
     .map((part) => {
-      const idx = part.indexOf("__");
+      const idx = part.indexOf('__');
       if (idx <= 0) return null;
       const brandSlug = part.slice(0, idx).trim();
       const modelSlug = part.slice(idx + 2).trim();
@@ -78,9 +78,12 @@ export function comparePathWithVariantIds(
   vehicleCategory: VehicleCategory,
   variantIds: string[],
 ): string {
-  const cleaned = variantIds.map((id) => id.trim()).filter(Boolean).slice(0, 3);
+  const cleaned = variantIds
+    .map((id) => id.trim())
+    .filter(Boolean)
+    .slice(0, 3);
   const base = compareRootPath(vehicleCategory);
   if (!cleaned.length) return base;
-  const q = cleaned.map((id) => encodeURIComponent(id)).join(",");
+  const q = cleaned.map((id) => encodeURIComponent(id)).join(',');
   return `${base}?ids=${q}`;
 }

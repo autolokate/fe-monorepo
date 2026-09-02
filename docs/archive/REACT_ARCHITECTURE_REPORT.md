@@ -18,13 +18,13 @@ No journey architecture, route order, flow order, or guard logic changes.
 
 ## Component Structure
 
-| Layer | Responsibility |
-|-------|----------------|
-| Route files | Thin orchestrators — session read/write + navigation |
-| Screen components | Presentation + local form state |
-| Compositions | Reusable domain UI (PurchaseStatusShell, EmptyStateHero) |
-| `@autolokate/ui` | Generic Figma primitives |
-| Hooks | Side effects isolated (geolocation, photo capture, hold progress) |
+| Layer             | Responsibility                                                    |
+| ----------------- | ----------------------------------------------------------------- |
+| Route files       | Thin orchestrators — session read/write + navigation              |
+| Screen components | Presentation + local form state                                   |
+| Compositions      | Reusable domain UI (PurchaseStatusShell, EmptyStateHero)          |
+| `@autolokate/ui`  | Generic Figma primitives                                          |
+| Hooks             | Side effects isolated (geolocation, photo capture, hold progress) |
 
 ---
 
@@ -38,12 +38,12 @@ No journey architecture, route order, flow order, or guard logic changes.
 
 ## Effect Quality (from prior hardening pass)
 
-| Fix | Status |
-|-----|--------|
-| PurchaseRoutes stable deps | ✅ |
-| Geolocation unmount guard | ✅ |
-| SOS hold timer refs | ✅ |
-| Park Me auto-locate ref gate | ✅ |
+| Fix                          | Status |
+| ---------------------------- | ------ |
+| PurchaseRoutes stable deps   | ✅     |
+| Geolocation unmount guard    | ✅     |
+| SOS hold timer refs          | ✅     |
+| Park Me auto-locate ref gate | ✅     |
 
 No setState-in-render. Timer cleanup verified in route effects.
 
@@ -51,12 +51,12 @@ No setState-in-render. Timer cleanup verified in route effects.
 
 ## Cleanup Impact on React Tree
 
-| Change | React impact |
-|--------|--------------|
-| Deleted orphan screens | Smaller dev catalog; production tree unchanged |
-| Mobile formatter consolidation | Pure function imports — no component changes |
-| `@/` import aliases | No runtime change |
-| ScreenDevApp cleanup | Dev-only — no production render path change |
+| Change                         | React impact                                   |
+| ------------------------------ | ---------------------------------------------- |
+| Deleted orphan screens         | Smaller dev catalog; production tree unchanged |
+| Mobile formatter consolidation | Pure function imports — no component changes   |
+| `@/` import aliases            | No runtime change                              |
+| ScreenDevApp cleanup           | Dev-only — no production render path change    |
 
 ---
 

@@ -1,0 +1,286 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 120px 80px;
+}
+
+.errorBody {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 120px 80px;
+}
+
+/* ── Back link (aligned to the left edge of the centered 600px column) ── */
+.backLink {
+  position: absolute;
+  top: 16px;
+  left: calc(50% - 300px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #6b7079;
+  cursor: pointer;
+}
+
+.backLink:hover {
+  color: #0a0a0c;
+}
+
+.backIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Heading ────────────────────────────────────────────────────────── */
+.hd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 52px;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.subhead {
+  max-width: 600px;
+  margin: 0;
+  font-size: 19px;
+  line-height: 28px;
+  color: #6b7079;
+}
+
+/* ── Summary column ─────────────────────────────────────────────────── */
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 600px;
+  max-width: 100%;
+}
+
+/* ── Notices (offline / cancelled / payment failed) ─────────────────── */
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid;
+  border-radius: 18px;
+}
+
+.noticeFailed {
+  background: #fef3dd;
+  border-color: #9a6106;
+}
+
+/* Nothing went wrong here, so this stays neutral rather than amber. */
+.noticeCancelled {
+  background: #eef1f5;
+  border-color: #c4c9d2;
+}
+
+.noticeOffline {
+  background: #e8e8e8;
+  border-color: #c4c4c4;
+}
+
+.noticeIcon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  color: #0a0a0c;
+}
+
+.noticeText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.noticeTitle {
+  font-size: 15.5px;
+  font-weight: 500;
+  color: #0a0a0c;
+}
+
+.noticeSub {
+  font-size: 14px;
+  line-height: 20px;
+  color: #6b7079;
+}
+
+/* ── Auto-renew row ─────────────────────────────────────────────────── */
+.autoRenew {
+  display: flex;
+  gap: 10px;
+  padding-left: 28px;
+}
+
+.autoRenewIcon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  color: #6b7079;
+}
+
+.autoRenewText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.autoRenewTitle {
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 24px;
+  color: #0a0a0c;
+}
+
+.autoRenewSub {
+  font-size: 14px;
+  line-height: 20px;
+  color: #6b7079;
+}
+
+/* ── Pay CTA / processing bar ───────────────────────────────────────── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 56px;
+  padding: 16px 28px;
+  background: #0a0a0c;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.cta:hover:not(.ctaDisabled) {
+  opacity: 0.9;
+}
+
+.ctaDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ctaIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.processing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 56px;
+  background: #0a0a0c;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Fine print ─────────────────────────────────────────────────────── */
+.fine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+  text-align: center;
+}
+
+.fineIcon {
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .body,
+  .errorBody {
+    padding: 48px 40px 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .backLink {
+    left: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .body,
+  .errorBody {
+    padding: 56px 20px 48px;
+  }
+
+  .body {
+    gap: 28px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .subhead {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

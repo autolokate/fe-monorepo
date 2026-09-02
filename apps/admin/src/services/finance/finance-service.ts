@@ -3,12 +3,9 @@ import type {
   ClawbackResultDto,
   SettlementBatchResultDto,
 } from '@autolokate/api-client';
-import {
-  createClawback,
-  runSettlementBatch,
-} from '@autolokate/api-client';
+import { createClawback, runSettlementBatch } from '@autolokate/api-client';
 
-import { getAdminApiClient } from '@/platform/api/admin-api-client.js';
+import { getAdminApiClient } from '@/platform/api/admin-api-client';
 
 export async function submitClawback(
   body: ClawbackBody,

@@ -1,0 +1,202 @@
+/**
+ * Marketing page heroes — light by default (premium, Tesla-like).
+ * Use .heroDark only for intentional dark story beats.
+ */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--mkt-surface);
+  color: var(--mkt-ink-dark);
+  border-bottom: 1px solid var(--mkt-border-subtle);
+}
+
+.heroDark {
+  background-color: var(--mkt-black);
+  color: var(--mkt-ink-primary);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 50% 0%,
+      color-mix(in srgb, var(--mkt-green) 6%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 90% 80%,
+      color-mix(in srgb, var(--mkt-yellow) 5%, transparent) 0%,
+      transparent 50%
+    );
+}
+
+.heroDark .glow {
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 38%, rgba(255, 255, 255, 0.04) 0%, transparent 62%),
+    radial-gradient(
+      ellipse 40% 35% at 80% 70%,
+      color-mix(in srgb, var(--mkt-red) 8%, transparent) 0%,
+      transparent 55%
+    );
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
+  max-width: 52rem;
+  padding: clamp(5rem, 12vw, 6.5rem) var(--mkt-gutter) clamp(3.5rem, 8vw, 5rem);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mkt-green-deep);
+}
+
+.heroDark .eyebrow {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.eyebrowDash {
+  width: 1.25rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--mkt-green);
+}
+
+.heroDark .eyebrowDash {
+  background: var(--mkt-red-soft);
+}
+
+.headline {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-hero);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  color: inherit;
+}
+
+.headlineAccent {
+  color: var(--mkt-green);
+}
+
+.heroDark .headlineAccent {
+  color: var(--mkt-green-bright);
+}
+
+.description {
+  max-width: 40rem;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.65;
+  color: var(--mkt-ink-dark-secondary);
+}
+
+.heroDark .description {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.callout {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--mkt-ink-dark-muted);
+}
+
+.heroDark .callout {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.calloutAccent {
+  color: var(--mkt-ink-dark);
+  font-weight: 600;
+}
+
+.heroDark .calloutAccent {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Shared hero CTAs live in marketing-hero-cta.module.css */
+
+.ctas {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.875rem;
+  width: 100%;
+  max-width: 22rem;
+}
+
+@media (min-width: 640px) {
+  .ctas {
+    flex-direction: row;
+    justify-content: center;
+    width: auto;
+    max-width: none;
+  }
+}
+
+.ctaPrimary {
+  border: none;
+  border-radius: var(--mkt-radius-sm);
+  background-color: var(--mkt-green);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background-color: var(--mkt-green-deep);
+  opacity: 1;
+}
+
+.ctaSecondary {
+  border: 1px solid var(--mkt-border);
+  border-radius: var(--mkt-radius-sm);
+  background-color: transparent;
+  color: var(--mkt-ink-dark);
+  font-weight: 500;
+}
+
+.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  border-color: color-mix(in srgb, var(--mkt-ink-dark) 25%, var(--mkt-border));
+  background-color: var(--mkt-surface-muted);
+  opacity: 1;
+}
+
+.heroDark button.ctaPrimary {
+  background-color: #ffffff;
+  color: var(--mkt-black);
+}
+
+.heroDark button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background-color: #e8e8e8;
+}
+
+.heroDark button.ctaSecondary {
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  background-color: transparent;
+}
+
+.heroDark button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.06);
+}

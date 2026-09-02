@@ -1,8 +1,5 @@
-import {
-  clearVehiclePreference,
-  writeVehiclePreference,
-} from "./storage";
-import type { VehicleCategory } from "./types";
+import { clearVehiclePreference, writeVehiclePreference } from './storage';
+import type { VehicleCategory } from './types';
 
 /**
  * Translate the API's `preferred_vehicle_category` value into our internal
@@ -15,20 +12,18 @@ import type { VehicleCategory } from "./types";
  * groups them under a single category today. Unknown or empty values return
  * `null` so callers can leave any existing local preference untouched.
  */
-export function fromApiVehicleCategory(
-  value: string | null | undefined,
-): VehicleCategory | null {
+export function fromApiVehicleCategory(value: string | null | undefined): VehicleCategory | null {
   if (!value) return null;
   const normalized = value.trim().toLowerCase();
   if (!normalized) return null;
-  if (normalized === "car" || normalized === "cars") return "cars";
+  if (normalized === 'car' || normalized === 'cars') return 'cars';
   if (
-    normalized === "bike" ||
-    normalized === "bikes" ||
-    normalized === "scooter" ||
-    normalized === "scooters"
+    normalized === 'bike' ||
+    normalized === 'bikes' ||
+    normalized === 'scooter' ||
+    normalized === 'scooters'
   ) {
-    return "bikes";
+    return 'bikes';
   }
   return null;
 }
@@ -37,8 +32,8 @@ export function fromApiVehicleCategory(
  * Translate an internal `VehicleCategory` back to the API's singular form so
  * it can be sent in profile updates without a separate switch on the caller.
  */
-export function toApiVehicleCategory(value: VehicleCategory): "car" | "bike" {
-  return value === "cars" ? "car" : "bike";
+export function toApiVehicleCategory(value: VehicleCategory): 'car' | 'bike' {
+  return value === 'cars' ? 'car' : 'bike';
 }
 
 /**
@@ -52,16 +47,14 @@ export function toApiVehicleCategory(value: VehicleCategory): "car" | "bike" {
  * sync, profile-update success handler, etc.) so all those call sites apply
  * the same rule.
  */
-export function applyApiVehicleCategoryToStorage(
-  value: string | null | undefined,
-): void {
+export function applyApiVehicleCategoryToStorage(value: string | null | undefined): void {
   if (value === null) {
     clearVehiclePreference();
     return;
   }
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     const trimmed = value.trim();
-    if (trimmed === "") {
+    if (trimmed === '') {
       clearVehiclePreference();
       return;
     }

@@ -8,15 +8,15 @@
 
 ## Test matrix
 
-| Width | Height | Themes | Screens | Configurations |
-|-------|--------|--------|---------|----------------|
-| 320 | 852 | dark, light | 30 | 60 |
-| 360 | 852 | dark, light | 30 | 60 |
-| 375 | 852 | dark, light | 30 | 60 |
-| 390 | 852 | dark, light | 30 | 60 |
-| 393 | 852 | dark, light | 30 | 60 |
-| 414 | 852 | dark, light | 30 | 60 |
-| **Total** | | | | **360** |
+| Width     | Height | Themes      | Screens | Configurations |
+| --------- | ------ | ----------- | ------- | -------------- |
+| 320       | 852    | dark, light | 30      | 60             |
+| 360       | 852    | dark, light | 30      | 60             |
+| 375       | 852    | dark, light | 30      | 60             |
+| 390       | 852    | dark, light | 30      | 60             |
+| 393       | 852    | dark, light | 30      | 60             |
+| 414       | 852    | dark, light | 30      | 60             |
+| **Total** |        |             |         | **360**        |
 
 Theme applied via `document.documentElement.setAttribute('data-theme', …)` before navigation.
 
@@ -28,23 +28,23 @@ Legend: ✅ no layout issues · ⚠️ P1 degraded · ❌ P0 broken
 
 ### Dark theme
 
-| Screen | 320 | 360 | 375 | 390 | 393 | 414 |
-|--------|-----|-----|-----|-----|-----|-----|
-| 09 empty | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 09 filled* | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 09b | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 10 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 11 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 12 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 13 | ⚠️† | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 14 | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 14b–14d | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 15 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 19 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 20 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 21 | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 23 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 08 / 08b | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| Screen      | 320 | 360 | 375 | 390 | 393 | 414 |
+| ----------- | --- | --- | --- | --- | --- | --- |
+| 09 empty    | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 09 filled\* | ❌  | ❌  | ❌  | ❌  | ❌  | ❌  |
+| 09b         | ❌  | ❌  | ❌  | ❌  | ❌  | ❌  |
+| 10          | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 11          | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 12          | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 13          | ⚠️† | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 14          | ⚠️  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 14b–14d     | ⚠️  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 15          | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 19          | ❌  | ❌  | ❌  | ❌  | ❌  | ❌  |
+| 20          | ❌  | ❌  | ❌  | ❌  | ❌  | ❌  |
+| 21          | ❌  | ❌  | ❌  | ❌  | ❌  | ❌  |
+| 23          | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| 08 / 08b    | ⚠️  | ⚠️  | ⚠️  | ⚠️  | ⚠️  | ⚠️  |
 
 \*Filled = photos + location in session (real completion path). Empty audit seed passes all widths.
 
@@ -60,24 +60,24 @@ Same pattern as dark — **no theme-specific layout escapes**. Breakage is width
 
 ### 320px (smallest)
 
-| Issue | Screens | Severity |
-|-------|---------|----------|
-| Footer CTA below fold | 09 filled, 19, 20, 21 | P0 |
-| Review map +16px horizontal bleed | 09b | P0 |
-| SOS aura +6px bleed | 14, 14b, 14c, 14d | P1 |
-| RC card watermark bleed | 08, 08b | P1 |
-| Timeline/footer 4px gap | 13 | P2 |
+| Issue                             | Screens               | Severity |
+| --------------------------------- | --------------------- | -------- |
+| Footer CTA below fold             | 09 filled, 19, 20, 21 | P0       |
+| Review map +16px horizontal bleed | 09b                   | P0       |
+| SOS aura +6px bleed               | 14, 14b, 14c, 14d     | P1       |
+| RC card watermark bleed           | 08, 08b               | P1       |
+| Timeline/footer 4px gap           | 13                    | P2       |
 
 **320 is the stress viewport** but **393 and 414 fail the same P0 screens** — not a narrow-only problem for timelines.
 
 ### 393px (Figma reference)
 
-| Metric | 19 Help received | 09 filled | 09b |
-|--------|------------------|-----------|-----|
-| scrollHeight | 930 | 1055 | 852 |
-| CTA bottom | 914 (off-screen) | 1039 (off-screen) | 836 (on-screen) |
-| Timeline bottom | 840 | — | — |
-| Horizontal overflow | No | No | Yes (+16px) |
+| Metric              | 19 Help received | 09 filled         | 09b             |
+| ------------------- | ---------------- | ----------------- | --------------- |
+| scrollHeight        | 930              | 1055              | 852             |
+| CTA bottom          | 914 (off-screen) | 1039 (off-screen) | 836 (on-screen) |
+| Timeline bottom     | 840              | —                 | —               |
+| Horizontal overflow | No               | No                | Yes (+16px)     |
 
 ### 414px (largest phone)
 
@@ -87,23 +87,23 @@ Same P0 set as 393 for timelines and 09 filled. Extra width does **not** fix ver
 
 ## Scroll behavior by screen class
 
-| Shell type | Screens | Vertical scroll @393 | Expected |
-|------------|---------|----------------------|----------|
-| `PwaScanShell` short content | 01–08, 09 empty, 10–12, 15, 23 | No | ✅ |
-| `PwaScanShell` tall content | 09 filled, 19–21 | Yes (78–203px) | ❌ Should scroll inside `main` |
-| `PurchaseStatusShell` | 16–18, 22 | No | ✅ |
-| Permission overlay | 09a, 14c, 14d | No | ✅ |
+| Shell type                   | Screens                        | Vertical scroll @393 | Expected                       |
+| ---------------------------- | ------------------------------ | -------------------- | ------------------------------ |
+| `PwaScanShell` short content | 01–08, 09 empty, 10–12, 15, 23 | No                   | ✅                             |
+| `PwaScanShell` tall content  | 09 filled, 19–21               | Yes (78–203px)       | ❌ Should scroll inside `main` |
+| `PurchaseStatusShell`        | 16–18, 22                      | No                   | ✅                             |
+| Permission overlay           | 09a, 14c, 14d                  | No                   | ✅                             |
 
 ---
 
 ## Light vs dark
 
-| Check | Result |
-|-------|--------|
-| Footer overlap differs by theme | No |
-| Overflow offenders differ | No |
-| CTA visibility differs | No |
-| Contrast-related layout shift | None detected |
+| Check                           | Result        |
+| ------------------------------- | ------------- |
+| Footer overlap differs by theme | No            |
+| Overflow offenders differ       | No            |
+| CTA visibility differs          | No            |
+| Contrast-related layout shift   | None detected |
 
 Light theme **does not introduce** additional layout breakage. Non-identical colors are out of scope for this audit.
 
@@ -111,20 +111,20 @@ Light theme **does not introduce** additional layout breakage. Non-identical col
 
 ## Special-focus responsive summary
 
-| Frame | Broken at 393? | Broken at 320? | Notes |
-|-------|----------------|----------------|-------|
-| 09 | Yes (filled) | Yes (filled) | Empty state OK all widths |
-| 09b | Yes | Yes | Map lines all widths |
-| 10 | No | No | 6-step timeline fits |
-| 11 | No | No | |
-| 12 | No | No | Done visible |
-| 13 | No | Tight only | |
-| 14 | No | Aura bleed | Functional @393 |
-| 15 | No | No | Quad grid OK |
-| 19 | Yes | Yes | All widths |
-| 20 | Yes | Yes | |
-| 21 | Yes | Yes | |
-| 23 | No | No | 3-step timeline fits |
+| Frame | Broken at 393? | Broken at 320? | Notes                     |
+| ----- | -------------- | -------------- | ------------------------- |
+| 09    | Yes (filled)   | Yes (filled)   | Empty state OK all widths |
+| 09b   | Yes            | Yes            | Map lines all widths      |
+| 10    | No             | No             | 6-step timeline fits      |
+| 11    | No             | No             |                           |
+| 12    | No             | No             | Done visible              |
+| 13    | No             | Tight only     |                           |
+| 14    | No             | Aura bleed     | Functional @393           |
+| 15    | No             | No             | Quad grid OK              |
+| 19    | Yes            | Yes            | All widths                |
+| 20    | Yes            | Yes            |                           |
+| 21    | Yes            | Yes            |                           |
+| 23    | No             | No             | 3-step timeline fits      |
 
 ---
 

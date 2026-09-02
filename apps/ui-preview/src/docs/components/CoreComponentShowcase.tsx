@@ -2,9 +2,9 @@ import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { AlButton, AlHeading, AlStack, AlText } from '@autolokate/ui';
 
-import { CopyButton } from './CopyButton.js';
-import { PropsTable } from './PropsTable.js';
-import type { PropRow } from '../types.js';
+import { CopyButton } from './CopyButton';
+import { PropsTable } from './PropsTable';
+import type { PropRow } from '../types';
 
 import './core-showcase.css';
 

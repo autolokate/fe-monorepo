@@ -1,30 +1,33 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
+
+const title = 'Autolokate – Automatic Crash Detection & Vehicle Safety';
+const description =
+  'Your phone detects a serious crash and alerts our 24/7 Control Center. Family alerts, ambulance and roadside help, cashless cover, and a Smart QR backup — protection from ₹999 a year.';
 
 export const homeMetadata: Metadata = {
-  title: "Autolokate – AI Car Discovery Platform",
-  description:
-    "Find the right car with confidence. Compare models, explore variants, and get smart recommendations based on your budget, fuel type, and lifestyle.",
+  title,
+  description,
   keywords: [
-    "Autolokate",
-    "AI car discovery",
-    "car comparison India",
-    "car recommendation engine",
-    "expert consultation",
+    'Autolokate',
+    'automatic crash detection',
+    'vehicle safety India',
+    'emergency SOS',
+    'smart QR sticker',
+    'roadside assistance',
+    '24/7 control center',
   ],
   alternates: {
-    canonical: "/",
+    canonical: '/',
   },
   openGraph: {
-    title: "Autolokate – AI Car Discovery Platform",
-    description:
-      "Find the right car with AI prompts, rich detail pages, side-by-side comparison, and expert consultations.",
-    url: "/",
-    type: "website",
+    title,
+    description,
+    url: '/',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Autolokate – AI Car Discovery Platform",
-    description:
-      "AI-first car discovery and compare experience built for confident buying decisions.",
+    card: 'summary_large_image',
+    title,
+    description,
   },
 };

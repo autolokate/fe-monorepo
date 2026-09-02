@@ -1,0 +1,100 @@
+.promo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 16px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 14px;
+}
+
+.boxApplied {
+  background: #e7f6ec;
+  border-color: #1fa24a;
+}
+
+.boxInvalid {
+  border-color: #9a6106;
+}
+
+.icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #6b7079;
+}
+
+.iconApplied {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #1fa24a;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #0a0a0c;
+}
+
+.input::placeholder {
+  color: #6b7079;
+}
+
+.appliedText {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1fa24a;
+}
+
+.apply {
+  flex: none;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+  cursor: pointer;
+}
+
+.apply:disabled {
+  color: #9aa0a8;
+  cursor: default;
+}
+
+.remove {
+  flex: none;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6b7079;
+  cursor: pointer;
+}
+
+.remove:hover:not(:disabled) {
+  color: #0a0a0c;
+}
+
+.invalidText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #9a6106;
+}

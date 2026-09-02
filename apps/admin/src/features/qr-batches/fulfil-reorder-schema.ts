@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { adminReorderIdSchema } from '@/platform/validation/admin-openapi-schemas.js';
+import { adminReorderIdSchema } from '@/platform/validation/admin-openapi-schemas';
 
 export const fulfilPartnerReorderSchema = z.object({
   reorderId: adminReorderIdSchema,

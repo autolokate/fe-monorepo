@@ -1,8 +1,8 @@
-import { cn } from '../../../utils/cn.js';
-import { CarIconGlyph } from '../icons/CarIconGlyph.js';
-import { AlDispatchTimeline } from '../DispatchTimeline/DispatchTimeline.js';
+import { cn } from '../../../utils/cn';
+import { CarIconGlyph } from '../icons/CarIconGlyph';
+import { AlDispatchTimeline } from '../DispatchTimeline/DispatchTimeline';
 
-import type { AlStatusTrackerProps } from './StatusTracker.types.js';
+import type { AlStatusTrackerProps } from './StatusTracker.types';
 import './StatusTracker.css';
 
 /** Figma 1063:2427 + CC tracker — vehicle chip + timeline. */

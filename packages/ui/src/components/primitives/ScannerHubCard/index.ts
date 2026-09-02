@@ -1,2 +1,2 @@
-export { AlScannerHubCard } from './ScannerHubCard.js';
-export type { AlScannerHubCardProps, AlScannerHubCardVariant } from './ScannerHubCard.types.js';
+export { AlScannerHubCard } from './ScannerHubCard';
+export type { AlScannerHubCardProps, AlScannerHubCardVariant } from './ScannerHubCard.types';

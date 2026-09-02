@@ -1,1 +1,1 @@
-export { bikesMetadata } from "./config/metadata";
+export { bikesMetadata } from './config/metadata';

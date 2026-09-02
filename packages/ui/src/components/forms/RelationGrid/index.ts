@@ -1,2 +1,2 @@
-export { AlRelationGrid } from './RelationGrid.js';
-export type { AlRelationGridOption, AlRelationGridProps } from './RelationGrid.types.js';
+export { AlRelationGrid } from './RelationGrid';
+export type { AlRelationGridOption, AlRelationGridProps } from './RelationGrid.types';

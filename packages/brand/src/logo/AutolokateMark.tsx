@@ -1,4 +1,4 @@
-import { type BrandLogoProps } from '../types.js';
+import { type BrandLogoProps } from '../types';
 
 const DEFAULT_LABEL = 'Autolokate';
 
@@ -19,7 +19,6 @@ export function AlBrandMark({
       width={size}
       height={size}
       className={className}
-      role="img"
       aria-label={ariaLabel}
       draggable={false}
       style={{

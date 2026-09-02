@@ -1,30 +1,27 @@
-import { CalendarDays, FileText, ShieldCheck } from "lucide-react";
-import { LegalHeroBanner } from "@/components/legal/LegalHeroBanner";
-import {
-  PRIVACY_EFFECTIVE_DATE,
-  PRIVACY_LAST_UPDATED,
-} from "../PolicyContent/constants";
+import { HERO_COPY } from './constants';
+import styles from './index.module.css';
 
 export function HeroBanner() {
+  const { eyebrow, headline, lastUpdated, description } = HERO_COPY;
+
   return (
-    <LegalHeroBanner
-      badgeLabel="Privacy First"
-      BadgeIcon={ShieldCheck}
-      title="Privacy Policy"
-      description="Your privacy matters. This policy explains what information Autolokate collects, how we use it, and the choices you have to stay in control of your data."
-      meta={[
-        {
-          label: "Last updated",
-          value: PRIVACY_LAST_UPDATED,
-          Icon: CalendarDays,
-        },
-        {
-          label: "Effective from",
-          value: PRIVACY_EFFECTIVE_DATE,
-          Icon: CalendarDays,
-        },
-        { label: "Version", value: "v1.0", Icon: FileText },
-      ]}
-    />
+    <section className={styles.hero} aria-labelledby="privacy-hero-heading">
+      <div className={styles.glow} aria-hidden="true" />
+
+      <div className={styles.inner}>
+        <p className={styles.eyebrow}>
+          <span className={styles.eyebrowDash} aria-hidden="true" />
+          {eyebrow}
+        </p>
+
+        <h1 id="privacy-hero-heading" className={styles.headline}>
+          {headline}
+        </h1>
+
+        <p className={styles.lastUpdated}>Last updated {lastUpdated}</p>
+
+        <p className={styles.description}>{description}</p>
+      </div>
+    </section>
   );
 }

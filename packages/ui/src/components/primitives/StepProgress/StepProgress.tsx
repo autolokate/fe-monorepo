@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlStepProgressProps } from './StepProgress.types.js';
+import type { AlStepProgressProps } from './StepProgress.types';
 import './StepProgress.css';
 
 export function AlStepProgress({

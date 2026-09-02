@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './Divider.css';
 
 export type DividerOrientation = 'horizontal' | 'vertical';
@@ -12,11 +12,5 @@ export type DividerProps = HTMLAttributes<HTMLHRElement> & {
 export type AlDividerProps = DividerProps;
 
 export function AlDivider({ orientation = 'horizontal', className, ...props }: DividerProps) {
-  return (
-    <hr
-      role="separator"
-      className={cn('al-divider', `al-divider--${orientation}`, className)}
-      {...props}
-    />
-  );
+  return <hr className={cn('al-divider', `al-divider--${orientation}`, className)} {...props} />;
 }

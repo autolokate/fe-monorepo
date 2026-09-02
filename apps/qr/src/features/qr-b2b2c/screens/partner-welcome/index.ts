@@ -1,0 +1,1 @@
+export { PartnerWelcomeScreen } from './PartnerWelcomeScreen';

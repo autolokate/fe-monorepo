@@ -1,5 +1,5 @@
-export { AlVehicleConfirmationCard } from './VehicleConfirmationCard.js';
+export { AlVehicleConfirmationCard } from './VehicleConfirmationCard';
 export type {
   AlVehicleConfirmationCardProps,
   AlVehicleConfirmationCardVariant,
-} from './VehicleConfirmationCard.types.js';
+} from './VehicleConfirmationCard.types';

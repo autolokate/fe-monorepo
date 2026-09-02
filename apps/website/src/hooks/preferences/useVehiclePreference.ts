@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 import {
   clearVehiclePreference,
   readVehiclePreference,
   subscribeVehiclePreference,
   writeVehiclePreference,
   type VehicleCategory,
-} from "@/lib/preferences";
+} from '@/lib/preferences';
 
 export interface UseVehiclePreferenceResult {
   /** Saved category, or `null` when no preference is stored yet. */
@@ -30,7 +30,9 @@ export function useVehiclePreference(): UseVehiclePreferenceResult {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const read = () => setValue(readVehiclePreference());
+    const read = () => {
+      setValue(readVehiclePreference());
+    };
     read();
     setHydrated(true);
     return subscribeVehiclePreference(read);

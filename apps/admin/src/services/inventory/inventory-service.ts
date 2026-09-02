@@ -1,6 +1,10 @@
-import { listQrInventory, type BatchSummaryDto, type ListQrInventoryQuery } from '@autolokate/api-client';
+import {
+  listQrInventory,
+  type BatchSummaryDto,
+  type ListQrInventoryQuery,
+} from '@autolokate/api-client';
 
-import { getAdminApiClient } from '@/platform/api/admin-api-client.js';
+import { getAdminApiClient } from '@/platform/api/admin-api-client';
 
 export async function fetchQrInventory(
   query: ListQrInventoryQuery = {},

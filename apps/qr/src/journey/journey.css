@@ -1,0 +1,70 @@
+.journey-frame {
+  width: min(100%, 24.5625rem);
+  margin-inline: auto;
+  min-height: 100dvh;
+}
+
+.journey-home {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-lg);
+  min-height: 100dvh;
+  padding: var(--al-space-lg);
+  padding-block-end: calc(var(--al-space-lg) + env(safe-area-inset-bottom, 0px));
+  color: var(--al-color-on-surface);
+  background: var(--al-color-background);
+}
+
+.journey-home__theme {
+  display: flex;
+  gap: var(--al-space-sm);
+}
+
+.journey-home__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-md);
+  flex: 1;
+}
+
+.journey-placeholder {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-lg);
+  min-height: 100dvh;
+  padding: var(--al-space-lg);
+  padding-block-end: calc(var(--al-space-lg) + env(safe-area-inset-bottom, 0px));
+  color: var(--al-color-on-surface);
+  background: var(--al-color-background);
+}
+
+.journey-placeholder__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-sm);
+}
+
+.journey-placeholder__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-sm);
+  margin-block-start: auto;
+}
+
+/* Full-screen route bootstrap — spinner centered like splash / PWA loading */
+.qr-route-loader.al-screen-bg {
+  min-height: 100dvh;
+}
+
+.qr-route-loader.al-screen-bg .al-screen-bg__content {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  max-width: 24.5625rem;
+  margin-inline: auto;
+}

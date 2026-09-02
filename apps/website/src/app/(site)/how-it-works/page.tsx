@@ -1,12 +1,11 @@
 import {
-  CrashDetectionSection,
-  CtaSection,
-  FaqSection,
+  ClosingCtaSection,
+  CrashTimelineSection,
   HeroBanner,
-  QrBackupSection,
-  SetupStepsSection,
+  MechanicsFaqSection,
+  SmartQrSection,
   howQrWorksMetadata,
-} from "./";
+} from './';
 
 export const metadata = howQrWorksMetadata;
 
@@ -14,11 +13,10 @@ export default function HowQrWorksPage() {
   return (
     <main className="relative">
       <HeroBanner />
-      <SetupStepsSection />
-      <CrashDetectionSection />
-      <QrBackupSection />
-      <FaqSection />
-      <CtaSection />
+      <CrashTimelineSection />
+      <SmartQrSection />
+      <MechanicsFaqSection />
+      <ClosingCtaSection />
     </main>
   );
 }

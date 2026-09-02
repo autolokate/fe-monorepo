@@ -29,12 +29,12 @@ QA required a **single-step** screen: upload placeholders become filled previews
 
 ### Photos Route (`PwaParkMePhotosRoute`)
 
-| Before | After |
-|--------|-------|
-| CTA disabled until ready → navigates to review | CTA disabled until ready → navigates to `parkMeStatusChecking` |
-| Static helper text | Dynamic: *Add photos…* / *Ready to send to the owner* |
-| Location label inline strings | `formatPwaLocationLabel(session.location)` |
-| Empty/filled via stacked grid | Same — filled photos render inside upload cards with retake overlay |
+| Before                                         | After                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| CTA disabled until ready → navigates to review | CTA disabled until ready → navigates to `parkMeStatusChecking`      |
+| Static helper text                             | Dynamic: _Add photos…_ / _Ready to send to the owner_               |
+| Location label inline strings                  | `formatPwaLocationLabel(session.location)`                          |
+| Empty/filled via stacked grid                  | Same — filled photos render inside upload cards with retake overlay |
 
 ### Review Route (`PwaParkMeReviewRoute`)
 
@@ -76,10 +76,10 @@ SOS photo flow unchanged (4-up quad + captured review remains per existing SOS j
 
 ## Screenshots
 
-| | Description |
-|---|-------------|
-| Before | Two screens: empty photos → review with map card |
-| After | Single screen — recapture script batch pending for `09-park-me-photos` |
+|        | Description                                                            |
+| ------ | ---------------------------------------------------------------------- |
+| Before | Two screens: empty photos → review with map card                       |
+| After  | Single screen — recapture script batch pending for `09-park-me-photos` |
 
 ---
 

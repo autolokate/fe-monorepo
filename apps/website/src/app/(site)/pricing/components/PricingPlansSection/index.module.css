@@ -1,0 +1,285 @@
+/* Pricing plans — automotive protection tiers */
+
+.section {
+  position: relative;
+  z-index: 1;
+  background: var(--mkt-warm-white, #faf9f7);
+  color: var(--mkt-ink-dark);
+}
+
+.inner {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 3.5rem);
+  max-width: var(--mkt-container);
+  padding: var(--mkt-space-section) var(--mkt-gutter);
+}
+
+.header {
+  max-width: 32rem;
+  text-align: left;
+}
+
+.headlineAccent {
+  color: var(--mkt-ink-secondary);
+}
+
+.subheading {
+  margin-top: 0.875rem;
+  font-size: var(--mkt-text-lg);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
+}
+
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 1.25rem;
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  border-radius: 0.75rem;
+  background: var(--mkt-surface, #fff);
+  border: 1px solid var(--mkt-divider-strong);
+  overflow: visible;
+  transition:
+    border-color var(--mkt-duration) var(--mkt-ease-out),
+    box-shadow var(--mkt-duration) var(--mkt-ease-out),
+    transform var(--mkt-duration) var(--mkt-ease-out);
+}
+
+.cardPopular {
+  border-color: var(--mkt-ink-dark);
+  box-shadow: 0 24px 56px rgba(12, 13, 15, 0.12);
+}
+
+@media (min-width: 900px) {
+  .cardPopular {
+    transform: translateY(-0.375rem);
+  }
+}
+
+.popularPill {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  background: var(--mkt-ink-dark);
+  color: var(--mkt-on-dark);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.popularDot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--mkt-green-bright, #3ba86e);
+}
+
+.planIntro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.cardPopular .planIntro {
+  padding-top: 0.5rem;
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.nameGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.tierBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  background: var(--mkt-stone);
+  color: var(--mkt-ink-dark);
+}
+
+.levelName {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.375rem;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.tagline {
+  font-size: var(--mkt-text-sm);
+  line-height: 1.45;
+  color: var(--mkt-ink-secondary);
+}
+
+.priceRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.375rem;
+  padding-top: 0.25rem;
+}
+
+.price {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 2.25rem;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.unit {
+  font-size: var(--mkt-text-sm);
+  color: var(--mkt-ink-muted);
+  padding-bottom: 0.2rem;
+}
+
+.note {
+  font-size: 0.75rem;
+  color: var(--mkt-ink-muted);
+}
+
+.protectBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--mkt-divider);
+}
+
+.protectLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mkt-ink-muted);
+}
+
+.description {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--mkt-ink-secondary);
+}
+
+.highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.45;
+  color: var(--mkt-ink-secondary);
+}
+
+.checkIcon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  color: var(--mkt-green, #2d8f5c);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.actions :global(button) {
+  width: 100%;
+}
+
+button.ctaSecondary {
+  border-color: var(--mkt-ink-dark);
+  color: var(--mkt-ink-dark);
+  background: transparent;
+}
+
+button.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  background: var(--mkt-ink-dark);
+  color: var(--mkt-on-dark);
+  opacity: 1;
+}
+
+button.ctaPrimary {
+  border: none;
+  background: var(--mkt-ink-dark);
+  color: var(--mkt-on-dark);
+  font-weight: 600;
+}
+
+button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background: var(--mkt-steel);
+  opacity: 1;
+}
+
+.detailsLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-size: var(--mkt-text-sm);
+  font-weight: 500;
+  color: inherit;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.detailsLink:hover {
+  opacity: 1;
+}
+
+.footnote {
+  max-width: 40rem;
+  font-size: var(--mkt-text-sm);
+  color: var(--mkt-ink-muted);
+}

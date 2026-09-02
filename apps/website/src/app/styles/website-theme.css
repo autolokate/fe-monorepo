@@ -1,0 +1,207 @@
+/**
+ * Autolokate marketing website — black / white / yellow / green / red palette.
+ * Maps onto @autolokate/design-system traffic-signal primitives where possible.
+ */
+:root {
+  /* ── Brand core ── */
+  --website-black: var(--al-brand-black, #0a0a0a);
+  --website-white: var(--al-brand-white, #ffffff);
+
+  /* Ink scale (black family) */
+  --website-ink: var(--website-black);
+  --website-ink-soft: #141414;
+  --website-ink-muted: #1a1a1a;
+
+  /* Green — primary accent, CTAs, success */
+  --website-green: var(--al-signal-green, #1fa24a);
+  --website-green-bright: #39c46b;
+  --website-green-deep: #178a3f;
+  --website-green-glow: rgba(31, 162, 74, 0.18);
+
+  /* Yellow — highlights, badges, attention */
+  --website-yellow: var(--al-signal-amber, #f5a623);
+  --website-yellow-bright: #fbbf24;
+  --website-yellow-deep: #d4890f;
+  --website-yellow-glow: rgba(245, 166, 35, 0.18);
+
+  /* Red — danger, emergency emphasis */
+  --website-red: var(--al-signal-red, #e5342a);
+  --website-red-bright: var(--al-signal-red-bright, #ff4a3d);
+  --website-red-deep: #c42b22;
+  --website-red-glow: rgba(229, 52, 42, 0.16);
+
+  /* Accent aliases (green = primary action color) */
+  --website-accent: var(--website-green-bright);
+  --website-accent-bright: var(--website-green-bright);
+  --website-accent-deep: var(--website-green-deep);
+  --website-accent-glow: var(--website-green-glow);
+  --website-accent-line: rgba(57, 196, 107, 0.9);
+
+  --website-highlight: var(--website-yellow);
+  --website-highlight-glow: var(--website-yellow-glow);
+  --website-danger: var(--website-red);
+
+  /* Surfaces */
+  --website-canvas: #f5f5f5;
+  --website-surface: var(--website-white);
+  --website-surface-muted: #f0f0f0;
+  --website-border: #e0e0e0;
+  --website-border-subtle: #ebebeb;
+
+  /* Text on light */
+  --website-text: var(--website-ink);
+  --website-text-muted: #5c5c5c;
+  --website-text-soft: #8a8a8a;
+
+  /* Text on dark */
+  --website-on-dark: var(--website-white);
+  --website-on-dark-muted: #b3b3b3;
+  --website-on-dark-soft: #8c8c8c;
+
+  /* Elevation */
+  --website-shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.06);
+  --website-shadow-md: 0 8px 24px -8px rgba(10, 10, 10, 0.14);
+  --website-shadow-lg: 0 20px 48px -16px rgba(10, 10, 10, 0.18);
+  --website-shadow-nav: 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  /* Radius */
+  --website-radius-sm: 0.625rem;
+  --website-radius-md: 0.875rem;
+  --website-radius-lg: 1.125rem;
+  --website-radius-xl: 1.5rem;
+
+  /* Tailwind / shadcn bridges */
+  --background: var(--website-canvas);
+  --foreground: var(--website-text);
+  --card: var(--website-surface);
+  --card-foreground: var(--website-text);
+  --primary: var(--website-ink);
+  --primary-foreground: var(--website-on-dark);
+  --muted-foreground: var(--website-text-muted);
+  --border: var(--website-border);
+  --ring: var(--website-green);
+  --cta-hover: var(--website-ink-soft);
+  --success: var(--website-green);
+  --destructive: var(--website-red);
+}
+
+[data-theme='dark'] {
+  --website-canvas: var(--website-black);
+  --website-surface: var(--website-ink-soft);
+  --website-surface-muted: var(--website-ink-muted);
+  --website-border: #2a2a2a;
+  --website-border-subtle: #222222;
+  --website-text: var(--website-white);
+  --website-text-muted: #a3a3a3;
+  --website-text-soft: #737373;
+  --background: var(--website-canvas);
+  --foreground: var(--website-text);
+  --card: var(--website-surface);
+  --primary: var(--website-white);
+  --primary-foreground: var(--website-black);
+  --cta-hover: #e5e5e5;
+}
+
+/* ── Shared marketing section shells ── */
+.website-section {
+  position: relative;
+  padding-block: clamp(3.5rem, 8vw, 6rem);
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.website-section-inner {
+  margin-inline: auto;
+  max-width: 75rem;
+  width: 100%;
+}
+
+.website-section-alt {
+  background: var(--website-surface-muted);
+  border-block: 1px solid var(--website-border-subtle);
+}
+
+.website-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--website-yellow) 35%, transparent);
+  background: color-mix(in srgb, var(--website-yellow) 12%, transparent);
+  padding: 0.375rem 0.875rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--website-yellow-deep);
+}
+
+.website-headline {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--website-text);
+  text-wrap: balance;
+}
+
+.website-subhead {
+  max-width: 42rem;
+  font-size: clamp(1rem, 2vw, 1.1875rem);
+  line-height: 1.6;
+  color: var(--website-text-muted);
+}
+
+.website-closing-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(255, 255, 255, 0.04) 0%, transparent 62%),
+    var(--website-black);
+  color: var(--website-on-dark);
+}
+
+.website-closing-accent {
+  color: #ff8a82;
+}
+
+.website-section-dark {
+  background: var(--website-black);
+  color: var(--website-on-dark);
+}
+
+.website-section-charcoal {
+  background: var(--website-ink-soft);
+  color: var(--website-on-dark);
+  border-block: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.website-section-light {
+  background: #f5f5f5;
+  color: var(--website-ink);
+}
+
+.website-card {
+  border: 1px solid var(--website-border-subtle);
+  border-radius: var(--website-radius-lg);
+  background: var(--website-surface);
+  box-shadow: var(--website-shadow-sm);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.website-card:hover {
+  border-color: color-mix(in srgb, var(--website-ink) 12%, var(--website-border));
+  box-shadow: var(--website-shadow-md);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .website-card:hover {
+    transform: none;
+  }
+}

@@ -1,15 +1,15 @@
-import type { CompositionPageId } from '../../types.js';
-import { CompositionShowcase } from '../../components/CompositionShowcase.js';
-import { BottomNavComposition } from '../../compositions/BottomNavComposition.js';
-import { ContactCardComposition } from '../../compositions/ContactCardComposition.js';
-import { EmptyContentComposition } from '../../compositions/EmptyContentComposition.js';
-import { FormSectionComposition } from '../../compositions/FormSectionComposition.js';
-import { PlanCardComposition } from '../../compositions/PlanCardComposition.js';
-import { QuickActionRowComposition } from '../../compositions/QuickActionRowComposition.js';
-import { StatusCardComposition } from '../../compositions/StatusCardComposition.js';
-import { StepProgressComposition } from '../../compositions/StepProgressComposition.js';
-import { VehicleInfoComposition } from '../../compositions/VehicleInfoComposition.js';
-import { getCompositionMeta } from '../../compositions/metadata.js';
+import type { CompositionPageId } from '../../types';
+import { CompositionShowcase } from '../../components/CompositionShowcase';
+import { BottomNavComposition } from '../../compositions/BottomNavComposition';
+import { ContactCardComposition } from '../../compositions/ContactCardComposition';
+import { EmptyContentComposition } from '../../compositions/EmptyContentComposition';
+import { FormSectionComposition } from '../../compositions/FormSectionComposition';
+import { PlanCardComposition } from '../../compositions/PlanCardComposition';
+import { QuickActionRowComposition } from '../../compositions/QuickActionRowComposition';
+import { StatusCardComposition } from '../../compositions/StatusCardComposition';
+import { StepProgressComposition } from '../../compositions/StepProgressComposition';
+import { VehicleInfoComposition } from '../../compositions/VehicleInfoComposition';
+import { getCompositionMeta } from '../../compositions/metadata';
 
 const compositionIssues: Partial<Record<CompositionPageId, string[]>> = {
   'composition-form-section': [

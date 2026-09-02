@@ -1,21 +1,13 @@
-import type { LucideIcon } from "lucide-react";
-
-export interface AboutHeroCopy {
-  badge: string;
+export interface HeroCopy {
+  eyebrow: string;
   headline: string;
-  subheading: string;
-  primaryCta: { label: string; href: string };
-  secondaryCta: { label: string; href: string };
+  headlineAccent: string;
+  description: string;
+  /** Callout parts: plain segments interleaved with green-accented highlights. */
+  callout: HeroCalloutPart[];
 }
 
-export interface AboutHeroFeature {
-  title: string;
-  body: string;
-  Icon: LucideIcon;
-}
-
-export interface AboutHeroStat {
-  value: string;
-  label: string;
-  Icon: LucideIcon;
+export interface HeroCalloutPart {
+  text: string;
+  accent?: boolean;
 }

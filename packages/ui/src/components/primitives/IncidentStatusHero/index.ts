@@ -1,6 +1,6 @@
-export { AlIncidentStatusHero } from './IncidentStatusHero.js';
+export { AlIncidentStatusHero } from './IncidentStatusHero';
 export type {
   AlIncidentStatusHeroProps,
   AlIncidentStatusHeroScene,
   AlIncidentStatusHeroVariant,
-} from './IncidentStatusHero.types.js';
+} from './IncidentStatusHero.types';

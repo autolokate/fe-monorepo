@@ -1,8 +1,8 @@
 import type { BatchSummaryDto } from '@autolokate/api-client';
-import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
+import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
-import { batchStatusTone } from '@/platform/utils/batch-status.js';
+import { BatchStatusBadge } from '@/platform/components/EntityStatusBadge';
 
 function formatDateTime(value: string | null): string {
   if (!value) {
@@ -45,9 +45,7 @@ export function useQrBatchColumns(): ColumnDef<BatchSummaryDto>[] {
       {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => (
-          <AlStatusBadge label={row.original.status} status={batchStatusTone(row.original.status)} />
-        ),
+        cell: ({ row }) => <BatchStatusBadge status={row.original.status} />,
       },
     ],
     [],

@@ -1,7 +1,7 @@
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import type { ReactNode } from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '../../utils/cn';
 import './Tabs.css';
 
 export type AlTabItem = {

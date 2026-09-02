@@ -11,8 +11,16 @@
   --al-color-border: var(--al-color-outline);
   --al-color-border-subtle: color-mix(in srgb, var(--al-color-outline) 55%, transparent);
   --al-color-surface-elevated: var(--al-color-surface-variant);
-  --al-color-surface-hover: color-mix(in srgb, var(--al-color-on-surface) 4%, var(--al-color-surface));
-  --al-color-surface-active: color-mix(in srgb, var(--al-color-on-surface) 7%, var(--al-color-surface));
+  --al-color-surface-hover: color-mix(
+    in srgb,
+    var(--al-color-on-surface) 4%,
+    var(--al-color-surface)
+  );
+  --al-color-surface-active: color-mix(
+    in srgb,
+    var(--al-color-on-surface) 7%,
+    var(--al-color-surface)
+  );
   --al-color-focus-ring: var(--al-color-focus);
 
   /* Numeric spacing scale (4px rhythm) */
@@ -26,32 +34,76 @@
   --al-space-7: 2.5rem;
   --al-space-8: var(--al-space-xxxl);
 
-  /* Admin shell layout */
-  --al-admin-sidebar-width: 15.5rem;
+  /* Admin shell layout — Google Admin Console density */
+  --al-admin-sidebar-width: 16rem;
   --al-admin-sidebar-collapsed-width: 4.25rem;
-  --al-admin-header-height: 3.625rem;
-  --al-admin-content-max-width: 75rem;
+  --al-admin-header-height: 4rem;
+  --al-admin-content-max-width: 80rem;
   --al-admin-content-padding-x: var(--al-space-xxl);
   --al-admin-content-padding-y: var(--al-space-xl);
   --al-admin-section-gap: var(--al-space-xl);
-  --al-admin-nav-item-height: 2.375rem;
-  --al-admin-nav-icon-size: 1.125rem;
-  --al-admin-radius-panel: var(--al-radius-lg);
-  --al-admin-radius-control: var(--al-radius-md);
+  --al-admin-nav-item-height: 2.5rem;
+  --al-admin-nav-icon-size: 1.25rem;
+  --al-admin-radius-panel: var(--al-radius-sm);
+  --al-admin-radius-control: var(--al-radius-sm);
 
-  /* Elevation */
-  --al-admin-shadow-panel: 0 1px 2px color-mix(in srgb, var(--al-color-on-surface) 6%, transparent),
+  /* Elevation — flat surfaces, border-first (Google style) */
+  --al-admin-shadow-panel: none;
+  --al-admin-shadow-header: none;
+  --al-admin-shadow-sidebar: none;
+  --al-admin-shadow-overlay:
+    0 4px 16px color-mix(in srgb, var(--al-color-on-surface) 12%, transparent),
     0 0 0 1px var(--al-color-border-subtle);
-  --al-admin-shadow-header: 0 1px 0 var(--al-color-border-subtle);
-  --al-admin-shadow-sidebar: 1px 0 0 var(--al-color-border-subtle);
-  --al-admin-shadow-overlay: 0 8px 28px color-mix(in srgb, var(--al-color-on-surface) 14%, transparent),
-    0 0 0 1px var(--al-color-border-subtle);
-  --al-admin-shadow-dropdown: 0 4px 16px color-mix(in srgb, var(--al-color-on-surface) 10%, transparent),
+  --al-admin-shadow-dropdown:
+    0 2px 8px color-mix(in srgb, var(--al-color-on-surface) 10%, transparent),
     0 0 0 1px var(--al-color-border-subtle);
 
   /* Motion */
   --al-admin-motion-sidebar: var(--al-motion-standard);
   --al-admin-ease-sidebar: var(--al-motion-ease-standard);
+}
+
+/* Compact, dashboard-appropriate controls inside admin surfaces */
+.al-page-layout,
+.al-modal {
+  --al-comp-input-height: 2.25rem;
+  --al-comp-input-radius: var(--al-radius-sm);
+  --al-comp-text-field-radius: var(--al-radius-sm);
+  --al-comp-button-height: 2.25rem;
+  --al-comp-button-radius: var(--al-radius-sm);
+  --al-comp-button-padding-x: var(--al-space-4);
+  --al-comp-button-font-size: var(--al-text-label-size);
+  --al-comp-button-line-height: var(--al-text-label-line-height);
+}
+
+[data-theme='dark'] {
+  --al-color-text-subtle: color-mix(in srgb, var(--al-color-on-surface-muted) 88%, transparent);
+  --al-color-border-subtle: color-mix(in srgb, var(--al-color-outline) 72%, transparent);
+  --al-color-surface-hover: color-mix(
+    in srgb,
+    var(--al-color-on-surface) 6%,
+    var(--al-color-surface)
+  );
+  --al-color-surface-active: color-mix(
+    in srgb,
+    var(--al-color-on-surface) 10%,
+    var(--al-color-surface)
+  );
+}
+
+[data-theme='light'] {
+  --al-color-text-subtle: color-mix(in srgb, var(--al-color-on-surface-muted) 80%, transparent);
+  --al-color-border-subtle: color-mix(in srgb, var(--al-color-outline) 62%, transparent);
+  --al-color-surface-hover: color-mix(
+    in srgb,
+    var(--al-color-on-surface) 3.5%,
+    var(--al-color-surface)
+  );
+  --al-color-surface-active: color-mix(
+    in srgb,
+    var(--al-color-on-surface) 6%,
+    var(--al-color-surface)
+  );
 }
 
 /* Shared surfaces */

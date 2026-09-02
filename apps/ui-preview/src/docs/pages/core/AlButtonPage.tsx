@@ -1,9 +1,6 @@
 import { AlButton } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderButtonState(state: ShowcaseState) {
   const loading = state === 'loading';
@@ -50,8 +47,8 @@ export function AlButtonPage() {
       overview={
         <p>
           Figma specs: 58px height, 24px horizontal padding, 16px/600 Inter label, 20px line-height.
-          Loading uses a 20px spinner with 2.5px stroke. Disabled uses neutral-700 fill and
-          muted label.
+          Loading uses a 20px spinner with 2.5px stroke. Disabled uses neutral-700 fill and muted
+          label.
         </p>
       }
       variants={renderButtonVariants()}
@@ -65,10 +62,30 @@ export function AlButtonPage() {
 <AlButton variant="primary" loading />
 <AlButton variant="primary" disabled>Continue</AlButton>`}
       props={[
-        { name: 'variant', type: 'AlButtonVariant', defaultValue: 'primary', description: 'primary | secondary | destructive | outline | ghost | success' },
-        { name: 'size', type: 'AlButtonSize', defaultValue: 'md', description: 'sm | md | lg | icon' },
-        { name: 'loading', type: 'boolean', defaultValue: 'false', description: '20px Figma spinner.' },
-        { name: 'disabled', type: 'boolean', defaultValue: 'false', description: 'Neutral-700 fill, muted text.' },
+        {
+          name: 'variant',
+          type: 'AlButtonVariant',
+          defaultValue: 'primary',
+          description: 'primary | secondary | destructive | outline | ghost | success',
+        },
+        {
+          name: 'size',
+          type: 'AlButtonSize',
+          defaultValue: 'md',
+          description: 'sm | md | lg | icon',
+        },
+        {
+          name: 'loading',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: '20px Figma spinner.',
+        },
+        {
+          name: 'disabled',
+          type: 'boolean',
+          defaultValue: 'false',
+          description: 'Neutral-700 fill, muted text.',
+        },
       ]}
     />
   );

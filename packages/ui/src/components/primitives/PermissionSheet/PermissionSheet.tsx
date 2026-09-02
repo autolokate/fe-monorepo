@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { AlButton } from '../Button/Button.js';
-import { cn } from '../../../utils/cn.js';
+import { AlButton } from '../Button/Button';
+import { cn } from '../../../utils/cn';
 
-import type { AlPermissionSheetProps } from './PermissionSheet.types.js';
+import type { AlPermissionSheetProps } from './PermissionSheet.types';
 import './PermissionSheet.css';
 
 /** Figma 1049:2422 · 1110:2471 · 1113:2486 — permission / confirm sheets. */

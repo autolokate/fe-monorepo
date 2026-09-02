@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { AlHeading, AlText } from '@autolokate/ui';
 import { motion, useReducedMotion } from 'framer-motion';
 
-import { CopyButton } from './CopyButton.js';
+import { CopyButton } from './CopyButton';
 
 export function TokenGrid({
   title,

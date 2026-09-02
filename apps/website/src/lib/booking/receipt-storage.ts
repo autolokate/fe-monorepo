@@ -1,9 +1,9 @@
-import type { StoredConsultReceipt } from "./types";
+import type { StoredConsultReceipt } from './types';
 
-const STORAGE_KEY = "autolokate_consult_receipt_api";
+const STORAGE_KEY = 'autolokate_consult_receipt_api';
 
 export function storeConsultReceipt(receipt: StoredConsultReceipt): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(receipt));
   } catch {
@@ -13,7 +13,7 @@ export function storeConsultReceipt(receipt: StoredConsultReceipt): void {
 }
 
 export function readConsultReceipt(): StoredConsultReceipt | null {
-  if (typeof window === "undefined") return null;
+  if (typeof window === 'undefined') return null;
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -24,7 +24,7 @@ export function readConsultReceipt(): StoredConsultReceipt | null {
 }
 
 export function clearConsultReceipt(): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === 'undefined') return;
   try {
     sessionStorage.removeItem(STORAGE_KEY);
   } catch {

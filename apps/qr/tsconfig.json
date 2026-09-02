@@ -1,0 +1,10 @@
+{
+  "extends": "@autolokate/config/typescript/vite-app",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts", "../../packages/config/typescript/css-modules.d.ts"]
+}

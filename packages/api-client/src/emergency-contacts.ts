@@ -1,6 +1,6 @@
-import type { ApiClient } from './client.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope } from './envelope.js';
+import type { ApiClient } from './client';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope } from './envelope';
 
 export type EmergencyContactDto = {
   id: string;
@@ -54,11 +54,9 @@ export async function requestEmergencyContactOtp(
   body: RequestEmergencyContactOtpBody,
   options?: { signal?: AbortSignal },
 ): Promise<EmergencyContactOtpRequestedDto> {
-  const response = await client.post<unknown>(
-    endpoints.emergencyContacts.otpRequest,
-    body,
-    { ...(options?.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.post<unknown>(endpoints.emergencyContacts.otpRequest, body, {
+    ...(options?.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as EmergencyContactOtpRequestedDto;
 }
 
@@ -68,11 +66,9 @@ export async function verifyEmergencyContactOtp(
   body: VerifyEmergencyContactOtpBody,
   options?: { signal?: AbortSignal },
 ): Promise<EmergencyContactOtpVerifiedDto> {
-  const response = await client.post<unknown>(
-    endpoints.emergencyContacts.otpVerify,
-    body,
-    { ...(options?.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.post<unknown>(endpoints.emergencyContacts.otpVerify, body, {
+    ...(options?.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as EmergencyContactOtpVerifiedDto;
 }
 

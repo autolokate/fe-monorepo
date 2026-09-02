@@ -1,0 +1,449 @@
+.ob-auth-shell--error.al-screen-bg {
+  --al-screen-bg-tint: radial-gradient(
+    circle at 50% 20%,
+    color-mix(in srgb, var(--al-color-warning) 12%, transparent) 0%,
+    transparent 65%
+  );
+}
+
+/* Figma R03/R05 — fill_6YNX4V ambient (subtler than default protected) */
+.ob-auth-shell--purchase.al-screen-bg--protected {
+  --al-comp-screen-bg-tint-offset-y: 6px;
+  --al-comp-screen-bg-tint-size: 46.25rem;
+}
+
+.ob-auth-shell--purchase.al-screen-bg--protected .al-screen-bg__tint {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(31, 162, 74, 0.04) 0%,
+    rgba(31, 162, 74, 0.01) 50%,
+    rgba(31, 162, 74, 0) 100%
+  );
+}
+
+.ob-auth-shell--purchase .ob-auth-shell__frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100dvh;
+  min-height: 0;
+}
+
+.ob-auth-shell--purchase.ob-auth-shell--plan-screen .ob-auth-shell__frame {
+  overflow: hidden;
+}
+
+.ob-auth-shell--purchase .ob-auth-shell__heading .al-heading--h2 {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.ob-auth-shell--purchase .ob-auth-shell__description {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--al-color-on-surface-muted);
+}
+
+.ob-auth-shell--purchase .ob-auth-shell__body--mobile {
+  gap: 20px;
+}
+
+.ob-auth-shell__body--otp {
+  gap: 24px;
+}
+
+.ob-auth-shell__body--plan {
+  gap: 14px;
+}
+
+.ob-auth-shell--purchase .ob-auth-shell__body {
+  max-width: 100%;
+}
+
+.ob-auth-shell--purchase .ob-auth-shell__heading {
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+/* R06 · Figma layout_8CHEV7 — column gap 14, carousel peek */
+.ob-auth-shell--plan-screen .ob-auth-shell__body {
+  gap: 14px;
+  padding-block: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.ob-auth-shell--plan-screen .ob-auth-shell__heading {
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+/* Figma Headline — 28px/36px/700 #FFFFFF */
+.ob-auth-shell--plan-screen .ob-auth-shell__heading .al-heading--h2 {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* Figma Body — 16px/24px/400 #8A8A8A */
+.ob-auth-shell--plan-screen .ob-auth-shell__description {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--al-color-on-surface-muted);
+}
+
+/* R06 / R07 Skip — above CTA; underlined, muted, no border/fill */
+.ob-auth-shell--plan-screen .ob-shell__footer-secondary-link,
+.ob-auth-shell--rider-screen .ob-shell__footer-secondary-link {
+  min-height: 0;
+  padding: 0 0 8px;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: var(--al-color-on-surface-muted);
+}
+
+.ob-auth-shell--purchase.ob-auth-shell--plan-screen .ob-auth-shell__frame {
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.ob-auth-shell--plan-screen .ob-plan-carousel {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+/* Figma layout_GMGXUF — sequential CTA label swap on plan / rider change (R06, R07) */
+.ob-auth-shell--plan-screen .ob-auth-shell__cta-motion,
+.ob-auth-shell--rider-screen .ob-auth-shell__cta-motion {
+  display: inline-block;
+  animation: ob-plan-cta-pulse 480ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ob-auth-shell--plan-screen .ob-auth-shell__cta-label,
+.ob-auth-shell--rider-screen .ob-auth-shell__cta-label {
+  display: inline-block;
+  text-shadow: none;
+}
+
+.ob-auth-shell--plan-screen .ob-auth-shell__cta-label--exit,
+.ob-auth-shell--rider-screen .ob-auth-shell__cta-label--exit {
+  animation: ob-plan-cta-label-out 200ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.ob-auth-shell--plan-screen .ob-auth-shell__cta-label--enter,
+.ob-auth-shell--rider-screen .ob-auth-shell__cta-label--enter {
+  animation: ob-plan-cta-label-in 280ms cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes ob-plan-cta-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.015);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ob-plan-cta-label-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ob-plan-cta-label-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-auth-shell--plan-screen .ob-auth-shell__cta-motion,
+  .ob-auth-shell--plan-screen .ob-auth-shell__cta-label--enter,
+  .ob-auth-shell--plan-screen .ob-auth-shell__cta-label--exit,
+  .ob-auth-shell--rider-screen .ob-auth-shell__cta-motion,
+  .ob-auth-shell--rider-screen .ob-auth-shell__cta-label--enter,
+  .ob-auth-shell--rider-screen .ob-auth-shell__cta-label--exit {
+    animation: none;
+  }
+}
+
+@media (max-height: 44rem) {
+  .ob-auth-shell--plan-screen .ob-auth-shell__body {
+    overflow-y: auto;
+  }
+}
+
+.ob-auth-shell__body--name {
+  gap: 20px;
+}
+
+.ob-auth-shell__progress .al-step-progress__label {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--al-color-on-surface-muted);
+}
+
+.ob-auth-shell__description {
+  font-size: var(--al-text-body-size);
+  line-height: var(--al-text-body-line-height);
+}
+
+.ob-auth-mobile-field.al-text-field {
+  gap: 0;
+}
+
+.ob-auth-mobile-field.al-text-field .al-text-field__error {
+  display: none;
+}
+
+.ob-auth-shell__header-accessory {
+  align-self: center;
+  margin-inline: auto;
+}
+
+.ob-auth-shell__offline-chip {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+}
+
+.ob-auth-otp-input.al-otp-input {
+  gap: 0;
+}
+
+.ob-auth-otp-input .al-otp-input__cell {
+  background-color: transparent;
+}
+
+.ob-auth-otp-input .al-otp-input__cell:-webkit-autofill,
+.ob-auth-otp-input .al-otp-input__cell:-webkit-autofill:hover,
+.ob-auth-otp-input .al-otp-input__cell:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--al-color-background) inset;
+  -webkit-text-fill-color: var(--al-color-on-surface);
+  caret-color: var(--al-color-on-surface);
+}
+
+.ob-auth-otp-input .al-otp-input__error {
+  display: none;
+}
+
+.ob-auth-otp-input.al-otp-input--error .al-otp-input__cell,
+.ob-auth-otp-input.al-otp-input--error .al-otp-input__cell:focus,
+.ob-auth-otp-input.al-otp-input--error .al-otp-input__cell--has-value,
+.ob-auth-otp-input.al-otp-input--error .al-otp-input__cell--has-value:not(:focus) {
+  border-width: 2px;
+  border-color: var(--al-signal-amber);
+}
+
+.ob-auth-otp-input.al-otp-input--success .al-otp-input__cell,
+.ob-auth-otp-input.al-otp-input--success .al-otp-input__cell:focus,
+.ob-auth-otp-input.al-otp-input--success .al-otp-input__cell:-webkit-autofill,
+.ob-auth-otp-input.al-otp-input--success .al-otp-input__cell:-webkit-autofill:focus {
+  border: var(--al-border-width-thick) solid var(--al-color-success);
+}
+
+.ob-auth-mobile-field .al-text-field__control {
+  min-height: 62px;
+  padding-inline: 16px;
+  gap: 12px;
+  border-radius: 12px;
+  border-width: 1px;
+  border-color: var(--al-color-outline);
+  background-color: var(--al-color-surface);
+}
+
+.ob-auth-mobile-field .al-text-field__control:focus-within {
+  border-width: 2px;
+  border-color: var(--al-color-on-surface);
+}
+
+.ob-auth-mobile-field.al-text-field--error .al-text-field__control {
+  border-color: var(--al-color-warning);
+  border-width: 2px;
+}
+
+.ob-auth-mobile-field .al-text-field__prefix {
+  padding-inline-end: 12px;
+  border-inline-end-width: 1px;
+  border-inline-end-color: var(--al-color-outline);
+  font-size: 19px;
+  line-height: 22px;
+}
+
+.ob-auth-mobile-field .al-text-field__input {
+  font-size: 20px;
+  line-height: 22px;
+  scroll-margin-block: 80px;
+  caret-color: var(--al-color-on-surface);
+}
+
+.ob-auth-shell__frame {
+  position: relative;
+}
+
+.ob-auth-shell__body--mobile {
+  gap: 20px;
+}
+
+.ob-auth-shell__body--mobile .ob-trust-row--center {
+  align-self: stretch;
+}
+
+.ob-auth-shell__body--mobile .ob-inline-consent {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.ob-auth-mobile-field.al-text-field {
+  flex-shrink: 0;
+}
+
+.ob-auth-name-field {
+  width: 100%;
+}
+
+.ob-auth-name-field .al-text-field__control {
+  min-height: 62px;
+  border-radius: 16px;
+  border-width: 1px;
+  border-color: var(--al-color-outline);
+  box-shadow: none;
+  background-color: var(--al-color-surface);
+}
+
+.ob-auth-name-field .al-text-field__control:focus-within {
+  border-width: 2px;
+  border-color: var(--al-color-on-surface);
+}
+
+.ob-auth-name-field .al-text-field__input {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  text-shadow: none;
+  filter: none;
+}
+
+.ob-auth-otp-desc {
+  margin: 0;
+  font-size: var(--al-text-body-size);
+  line-height: var(--al-text-body-line-height);
+  color: var(--al-color-on-surface);
+}
+
+.ob-auth-otp-desc .al-text {
+  display: inline;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+.ob-auth-otp-desc__change {
+  display: inline;
+  padding: 0;
+  margin-inline-start: 0.25em;
+  border: none;
+  background: none;
+  color: var(--al-color-on-surface);
+  font: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+  vertical-align: baseline;
+}
+
+.ob-auth-otp-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+.ob-auth-otp-resend-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--al-color-on-surface);
+  font: inherit;
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.ob-auth-otp-countdown {
+  margin: 0;
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-caption-size);
+  line-height: var(--al-text-caption-line-height);
+  color: var(--al-color-on-surface-muted);
+  text-align: center;
+}
+
+.ob-auth-otp-resend-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ob-auth-resend-failed {
+  color: var(--al-color-warning);
+  text-align: center;
+  width: 100%;
+}
+
+.ob-auth-shell__footer-secondary-link {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+  padding: 16px 0 15px;
+  border: none;
+  background: none;
+  font-family: var(--al-text-ui-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 17px;
+  color: var(--al-color-on-surface-muted);
+  text-align: center;
+  cursor: pointer;
+}
+
+/* R06 — keep secondary skip compact so the plan carousel is not clipped */
+.ob-auth-shell--plan-screen .ob-auth-shell__footer-secondary-link {
+  min-height: 0;
+  padding: 8px 0 0;
+}

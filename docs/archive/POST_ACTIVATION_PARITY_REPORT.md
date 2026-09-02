@@ -8,16 +8,16 @@
 
 ## Parity score
 
-| Category | Score | Notes |
-|----------|-------|-------|
-| **Route coverage** | 100% (30/30) | All audited frames have routes |
-| **Copy / strings** | 95% | Figma-exact on hub, verify, SOS hero; minor timeline label synthesis |
-| **Layout / tokens** | 92% | 393px logical width, 16px padding, 58px CTAs, DS tokens |
-| **Components** | 94% | 8 promoted primitives; onboarding screens reused |
-| **Motion** | 90% | Framer Motion fades + spring press; SOS hold via rAF |
-| **Web APIs** | 100% | Real camera, geo, permissions — no mocks |
-| **Exclusions applied** | 100% | No status bar, no language picker |
-| **Themes** | 90% | Dark + light via existing theme system |
+| Category               | Score        | Notes                                                                |
+| ---------------------- | ------------ | -------------------------------------------------------------------- |
+| **Route coverage**     | 100% (30/30) | All audited frames have routes                                       |
+| **Copy / strings**     | 95%          | Figma-exact on hub, verify, SOS hero; minor timeline label synthesis |
+| **Layout / tokens**    | 92%          | 393px logical width, 16px padding, 58px CTAs, DS tokens              |
+| **Components**         | 94%          | 8 promoted primitives; onboarding screens reused                     |
+| **Motion**             | 90%          | Framer Motion fades + spring press; SOS hold via rAF                 |
+| **Web APIs**           | 100%         | Real camera, geo, permissions — no mocks                             |
+| **Exclusions applied** | 100%         | No status bar, no language picker                                    |
+| **Themes**             | 90%          | Dark + light via existing theme system                               |
 
 ### **Overall parity: 94%**
 
@@ -62,36 +62,36 @@
 
 ## QA matrix
 
-| Check | Status |
-|-------|--------|
-| Every route reachable | PASS |
-| Park Me full branch | PASS |
-| SOS full branch | PASS |
-| Verify gate before flows | PASS |
-| All CTAs wired | PASS |
-| Error states (photo not clear, couldn't send, location) | PASS |
-| Loading states (bootstrap, vahan, sending) | PASS |
-| Permission states (camera, location sheets) | PASS |
-| Success states (resolved, owner notified) | PASS |
-| Dark theme | PASS |
-| Light theme | PASS |
-| Browser refresh (sessionStorage) | PASS |
-| Deep links `/pwa/scan/*` | PASS |
-| TypeScript build | PASS |
-| Vite production build | PASS |
+| Check                                                   | Status |
+| ------------------------------------------------------- | ------ |
+| Every route reachable                                   | PASS   |
+| Park Me full branch                                     | PASS   |
+| SOS full branch                                         | PASS   |
+| Verify gate before flows                                | PASS   |
+| All CTAs wired                                          | PASS   |
+| Error states (photo not clear, couldn't send, location) | PASS   |
+| Loading states (bootstrap, vahan, sending)              | PASS   |
+| Permission states (camera, location sheets)             | PASS   |
+| Success states (resolved, owner notified)               | PASS   |
+| Dark theme                                              | PASS   |
+| Light theme                                             | PASS   |
+| Browser refresh (sessionStorage)                        | PASS   |
+| Deep links `/pwa/scan/*`                                | PASS   |
+| TypeScript build                                        | PASS   |
+| Vite production build                                   | PASS   |
 
 ---
 
 ## Known gaps
 
-| Gap | Severity | Detail |
-|-----|----------|--------|
-| Live QR camera viewport | Low | Entry via `/journey` card or deep link; sticker decode simulated on loading screen |
-| Static map tiles | Low | GPS preview uses coordinates + pin, not Mapbox/Google tiles |
-| Backend integration | Expected | VAHAN, dispatch, and owner notification use demo timers |
-| Service worker / offline PWA manifest | Medium | Session persists; no installable SW yet |
-| Lottie-specific SOS aura | Low | CSS blur aura matches Figma; no separate Lottie asset |
-| Exact Figma logo Y offset | Cosmetic | Shell uses flex header vs absolute Figma coords |
+| Gap                                   | Severity | Detail                                                                             |
+| ------------------------------------- | -------- | ---------------------------------------------------------------------------------- |
+| Live QR camera viewport               | Low      | Entry via `/journey` card or deep link; sticker decode simulated on loading screen |
+| Static map tiles                      | Low      | GPS preview uses coordinates + pin, not Mapbox/Google tiles                        |
+| Backend integration                   | Expected | VAHAN, dispatch, and owner notification use demo timers                            |
+| Service worker / offline PWA manifest | Medium   | Session persists; no installable SW yet                                            |
+| Lottie-specific SOS aura              | Low      | CSS blur aura matches Figma; no separate Lottie asset                              |
+| Exact Figma logo Y offset             | Cosmetic | Shell uses flex header vs absolute Figma coords                                    |
 
 ---
 
@@ -99,8 +99,8 @@
 
 ```
 pnpm --filter @autolokate/ui build         ✅
-pnpm --filter @autolokate/onboarding build ✅
-pnpm --filter @autolokate/onboarding typecheck ✅
+pnpm --filter @autolokate/qr build ✅
+pnpm --filter @autolokate/qr typecheck ✅
 ```
 
 Console warnings: Vite chunk size advisory only (pre-existing pattern with Lottie bundle).

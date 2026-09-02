@@ -1,9 +1,6 @@
 import { AlField } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 function renderFieldState(state: ShowcaseState) {
   return (
@@ -42,7 +39,12 @@ export function AlFieldPage() {
       props={[
         { name: 'label', type: 'string', description: 'Field label.' },
         { name: 'value', type: 'ReactNode', description: 'Displayed value.' },
-        { name: 'tone', type: "'default' | 'muted'", defaultValue: 'default', description: 'Visual emphasis.' },
+        {
+          name: 'tone',
+          type: "'default' | 'muted'",
+          defaultValue: 'default',
+          description: 'Visual emphasis.',
+        },
       ]}
     />
   );

@@ -8,7 +8,13 @@
     "build": "tsc -p tsconfig.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:e2e": "node ./e2e/run-playwright.mjs test",
+    "test:e2e:headed": "E2E_HEADED=1 node ./e2e/run-playwright.mjs test",
+    "test:e2e:watch": "E2E_HEADED=1 E2E_PAUSE=1 E2E_SLOWMO_MS=500 E2E_STEP_MS=2000 node ./e2e/run-playwright.mjs test",
+    "test:e2e:debug": "E2E_HEADED=1 E2E_PAUSE=1 node ./e2e/run-playwright.mjs test --debug",
+    "test:e2e:ui": "node ./e2e/run-playwright.mjs test --ui",
+    "test:e2e:report": "pnpm exec playwright show-report"
   },
   "dependencies": {
     "@autolokate/api-client": "workspace:*",
@@ -38,6 +44,7 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/vite": "^4.1.11",
     "@types/node": "^22.15.21",
     "@types/react": "^19.1.8",

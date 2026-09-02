@@ -1,0 +1,28 @@
+# Frontend origin reverse proxy behind Cloudflare (orange-cloud, Full-strict). staging.<apex> -> the
+# Next.js website app. TLS here is the Cloudflare Origin Certificate (written to ./origin by the
+# bootstrap) — NOT Let's Encrypt: Cloudflare terminates the public cert at its edge and validates THIS
+# origin cert in Full-strict. APP_DOMAIN (= the apex) is injected from the box's .env. The real client
+# IP arrives in CF-Connecting-IP — forward it as X-Forwarded-For.
+#
+# Zero-downtime blue/green: the host lists BOTH the `-blue` and `-green` website upstreams
+# (infra/staging/docker-compose.yml). Only one is actually running at a time in steady state — the idle
+# one simply fails DNS/health and Caddy's active health check (health_uri) excludes it from rotation, no
+# config reload needed. deploy-staging.yml starts the idle slot fresh, verifies it independently, and
+# only then stops the old one — Caddy's own health check will already have started routing to the new
+# slot by then, and `lb_retries`/`lb_try_duration` transparently retries any in-flight request against
+# the other slot if a connection fails outright.
+{
+	auto_https disable_redirects
+}
+
+staging.{$APP_DOMAIN} {
+	tls /etc/caddy/origin/tls.crt /etc/caddy/origin/tls.key
+	reverse_proxy website-blue:3000 website-green:3000 {
+		header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		health_uri /api/health
+		health_interval 5s
+		health_timeout 3s
+		lb_retries 2
+		lb_try_duration 5s
+	}
+}

@@ -19,20 +19,20 @@ The R10 handoff **does navigate correctly**. The blank screen is **not** caused 
 
 ### Runtime test (seeded journey session, auth complete, `selectedFlow: purchase`)
 
-| Plan | R10 Continue → `window.location.pathname` | Handoff target (expected) |
-|------|-------------------------------------------|---------------------------|
-| **Safe** | `/journey/emergency/contacts-empty` | ✅ Correct (`getEmergencyHandoffPath`) |
-| **Secure** | `/journey/emergency/rider-prompt` | ✅ Correct |
+| Plan       | R10 Continue → `window.location.pathname` | Handoff target (expected)              |
+| ---------- | ----------------------------------------- | -------------------------------------- |
+| **Safe**   | `/journey/emergency/contacts-empty`       | ✅ Correct (`getEmergencyHandoffPath`) |
+| **Secure** | `/journey/emergency/rider-prompt`         | ✅ Correct                             |
 
 **Logged values (browser CDP):**
 
 ```javascript
 // Safe — after R10 Continue click
-window.location.pathname
+window.location.pathname;
 // → "/journey/emergency/contacts-empty"
 
 // Secure — after R10 Continue click
-window.location.pathname
+window.location.pathname;
 // → "/journey/emergency/rider-prompt"
 ```
 
@@ -54,7 +54,7 @@ BrowserRouter
 
 ### Parent route — exists and matches
 
-```79:79:apps/onboarding/src/journey/routes/JourneyRoutes.tsx
+```79:79:apps/qr/src/journey/routes/JourneyRoutes.tsx
         <Route path="/journey/emergency/*" element={<EmergencyActivationRoute />} />
 ```
 
@@ -64,14 +64,14 @@ Runtime: URL stays at `/journey/emergency/...` (no bounce to auth or `*` fallbac
 
 `EmergencyActivationRoute` wraps:
 
-1. `RequireAuthCompleted` — redirects to auth if incomplete  
+1. `RequireAuthCompleted` — redirects to auth if incomplete
 2. `RequireSelectedFlow` — redirects if no `selectedFlow`
 
 Runtime with seeded `authStatus: 'AUTH_COMPLETED'` + `selectedFlow: 'purchase'`: **no guard redirect**.
 
 ### Child routes — registered but **never match**
 
-```660:676:apps/onboarding/src/journey/routes/EmergencyRoutes.tsx
+```660:676:apps/qr/src/journey/routes/EmergencyRoutes.tsx
 export function EmergencyRoutes() {
   return (
     <EmergencySegmentBootstrap>
@@ -90,14 +90,14 @@ export function EmergencyRoutes() {
 
 `emergencyJourneyPaths.*` values are **full paths**, e.g.:
 
-| Constant | Value |
-|----------|-------|
-| `riderPrompt` | `/journey/emergency/rider-prompt` |
+| Constant        | Value                               |
+| --------------- | ----------------------------------- |
+| `riderPrompt`   | `/journey/emergency/rider-prompt`   |
 | `contactsEmpty` | `/journey/emergency/contacts-empty` |
 
 ### Working reference — PurchaseRoutes (same pattern, correct paths)
 
-```661:672:apps/onboarding/src/journey/routes/PurchaseRoutes.tsx
+```661:672:apps/qr/src/journey/routes/PurchaseRoutes.tsx
       <Routes>
         <Route index element={<Navigate to={purchaseJourneyPaths.r03Vehicle} replace />} />
         <Route path="r03-vehicle" element={<R03Route />} />
@@ -117,26 +117,26 @@ Emergency uses **absolute** paths (`/journey/emergency/rider-prompt`) under pare
 ### DOM after blank screen
 
 ```javascript
-document.getElementById('root').innerHTML
+document.getElementById('root').innerHTML;
 // → "<div class=\"journey-frame\"></div>"
 
-document.querySelector('.journey-frame').innerHTML
+document.querySelector('.journey-frame').innerHTML;
 // → ""   (empty string)
 ```
 
-| Check | Result |
-|-------|--------|
-| `JourneyRoutes` mounts | ✅ `journey-frame` present |
-| Parent `/journey/emergency/*` matches | ✅ URL unchanged |
-| Guards render children | ✅ (not redirected to auth) |
-| `EmergencySegmentBootstrap` mounts | ✅ (no error; frame exists) |
-| Child `<Routes>` matches a route | ❌ **No match** |
-| Target screen component mounts | ❌ `E01` / `E05` never render |
-| Redirect loop | ❌ None — URL stable |
-| Guard redirect | ❌ None (with valid session) |
-| `null` return from route | ✅ **Implicit** — RR renders nothing when no match |
-| Missing `JourneyProvider` | ❌ Not the issue — purchase routes work in same tree |
-| React render exception | ❌ None in console |
+| Check                                 | Result                                               |
+| ------------------------------------- | ---------------------------------------------------- |
+| `JourneyRoutes` mounts                | ✅ `journey-frame` present                           |
+| Parent `/journey/emergency/*` matches | ✅ URL unchanged                                     |
+| Guards render children                | ✅ (not redirected to auth)                          |
+| `EmergencySegmentBootstrap` mounts    | ✅ (no error; frame exists)                          |
+| Child `<Routes>` matches a route      | ❌ **No match**                                      |
+| Target screen component mounts        | ❌ `E01` / `E05` never render                        |
+| Redirect loop                         | ❌ None — URL stable                                 |
+| Guard redirect                        | ❌ None (with valid session)                         |
+| `null` return from route              | ✅ **Implicit** — RR renders nothing when no match   |
+| Missing `JourneyProvider`             | ❌ Not the issue — purchase routes work in same tree |
+| React render exception                | ❌ None in console                                   |
 
 ### Screenshot
 
@@ -146,12 +146,12 @@ Full black/empty viewport at `/journey/emergency/contacts-empty` and `/journey/e
 
 ## 4. Per-plan runtime report
 
-| Plan | R10 destination URL | Parent matched route | Child matched route | Rendered component |
-|------|---------------------|----------------------|---------------------|-------------------|
-| **Safe** | `/journey/emergency/contacts-empty` | `/journey/emergency/*` | **none** | **blank** (`journey-frame` empty) |
-| **Secure** | `/journey/emergency/rider-prompt` | `/journey/emergency/*` | **none** | **blank** |
-| **Shield** | `/journey/emergency/rider-prompt` (by code) | `/journey/emergency/*` | **none** | **blank** (same mechanism) |
-| **Shield+** | `/journey/emergency/rider-prompt` (by code) | `/journey/emergency/*` | **none** | **blank** (same mechanism) |
+| Plan        | R10 destination URL                         | Parent matched route   | Child matched route | Rendered component                |
+| ----------- | ------------------------------------------- | ---------------------- | ------------------- | --------------------------------- |
+| **Safe**    | `/journey/emergency/contacts-empty`         | `/journey/emergency/*` | **none**            | **blank** (`journey-frame` empty) |
+| **Secure**  | `/journey/emergency/rider-prompt`           | `/journey/emergency/*` | **none**            | **blank**                         |
+| **Shield**  | `/journey/emergency/rider-prompt` (by code) | `/journey/emergency/*` | **none**            | **blank** (same mechanism)        |
+| **Shield+** | `/journey/emergency/rider-prompt` (by code) | `/journey/emergency/*` | **none**            | **blank** (same mechanism)        |
 
 **Conclusion:** Plan routing at handoff is correct. Blank screen is identical for all plans.
 
@@ -159,12 +159,12 @@ Full black/empty viewport at `/journey/emergency/contacts-empty` and `/journey/e
 
 ## 5. Browser console
 
-| Error type | Observed |
-|------------|----------|
-| React errors | **None** |
+| Error type                              | Observed          |
+| --------------------------------------- | ----------------- |
+| React errors                            | **None**          |
 | Route warnings (e.g. no routes matched) | **None** (silent) |
-| Context errors (`useJourney`) | **None** |
-| Render exceptions | **None** |
+| Context errors (`useJourney`)           | **None**          |
+| Render exceptions                       | **None**          |
 
 React Router v7 returns **no UI and no error** when a descendant `<Routes>` has zero matches — this presents as a blank screen.
 
@@ -190,15 +190,15 @@ After Secure R10 → Continue (still blank at `rider-prompt`):
 }
 ```
 
-| Field | Status |
-|-------|--------|
-| `selectedPlanId` | ✅ Preserved |
-| `riderCount` | ✅ Preserved |
-| `paymentStatus` | ✅ `'success'` |
-| `paidAmountInr` | ✅ Preserved |
-| `session.emergency` | Empty `{}` — expected before first emergency screen mounts |
-| `JourneyProvider` | ✅ Present (purchase R10 rendered correctly in same session) |
-| `phase` | Set to `'emergency'` by `EmergencySegmentBootstrap` (not externally visible; bootstrap runs when parent matches) |
+| Field               | Status                                                                                                           |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `selectedPlanId`    | ✅ Preserved                                                                                                     |
+| `riderCount`        | ✅ Preserved                                                                                                     |
+| `paymentStatus`     | ✅ `'success'`                                                                                                   |
+| `paidAmountInr`     | ✅ Preserved                                                                                                     |
+| `session.emergency` | Empty `{}` — expected before first emergency screen mounts                                                       |
+| `JourneyProvider`   | ✅ Present (purchase R10 rendered correctly in same session)                                                     |
+| `phase`             | Set to `'emergency'` by `EmergencySegmentBootstrap` (not externally visible; bootstrap runs when parent matches) |
 
 **Session persistence is not the problem.**
 
@@ -252,7 +252,7 @@ When parent `/journey/emergency/*` matches URL `/journey/emergency/rider-prompt`
 
 ## 10. Exact fix (routing only — no UI changes)
 
-**File:** `apps/onboarding/src/journey/routes/EmergencyRoutes.tsx`
+**File:** `apps/qr/src/journey/routes/EmergencyRoutes.tsx`
 
 Change child `Route` `path` props from full `emergencyJourneyPaths.*` URLs to **relative segments**, mirroring `PurchaseRoutes`:
 
@@ -282,33 +282,33 @@ Change child `Route` `path` props from full `emergencyJourneyPaths.*` URLs to **
 
 ### Post-fix expected runtime
 
-| Plan | URL after R10 | Matched child path | Component |
-|------|---------------|-------------------|-----------|
-| Safe | `/journey/emergency/contacts-empty` | `contacts-empty` | `E05ContactsEmptyScreen` |
-| Secure | `/journey/emergency/rider-prompt` | `rider-prompt` | `E01RiderPromptScreen` |
-| Shield | `/journey/emergency/rider-prompt` | `rider-prompt` | `E01RiderPromptScreen` |
-| Shield+ | `/journey/emergency/rider-prompt` | `rider-prompt` | `E01RiderPromptScreen` |
+| Plan    | URL after R10                       | Matched child path | Component                |
+| ------- | ----------------------------------- | ------------------ | ------------------------ |
+| Safe    | `/journey/emergency/contacts-empty` | `contacts-empty`   | `E05ContactsEmptyScreen` |
+| Secure  | `/journey/emergency/rider-prompt`   | `rider-prompt`     | `E01RiderPromptScreen`   |
+| Shield  | `/journey/emergency/rider-prompt`   | `rider-prompt`     | `E01RiderPromptScreen`   |
+| Shield+ | `/journey/emergency/rider-prompt`   | `rider-prompt`     | `E01RiderPromptScreen`   |
 
 ### Verification steps after fix
 
-1. Complete purchase → R10 → Continue for Safe and Secure  
-2. Confirm `window.location.pathname` unchanged (already correct)  
-3. Confirm `document.querySelector('.journey-frame')` contains screen headings  
-4. Confirm `session.purchase.selectedPlanId` still drives emergency limits  
+1. Complete purchase → R10 → Continue for Safe and Secure
+2. Confirm `window.location.pathname` unchanged (already correct)
+3. Confirm `document.querySelector('.journey-frame')` contains screen headings
+4. Confirm `session.purchase.selectedPlanId` still drives emergency limits
 
 ---
 
 ## Appendix — runtime evidence log
 
-| Step | Action | URL | `journey-frame` content |
-|------|--------|-----|-------------------------|
-| A | Direct nav (auth incomplete) | `/journey/auth/mobile` | Auth mobile screen (guard redirect) |
-| B | Seed session + nav `/journey/emergency/contacts-empty` | `/journey/emergency/contacts-empty` | **empty** |
-| C | Seed session + R10 Safe + Continue | `/journey/emergency/contacts-empty` | **empty** |
-| D | Seed session + nav `/journey/emergency/rider-prompt` | `/journey/emergency/rider-prompt` | **empty** |
-| E | Seed session + R10 Secure + Continue | `/journey/emergency/rider-prompt` | **empty** |
-| F | Seed session + nav `/journey/purchase/r10-payment-success` | `/journey/purchase/r10-payment-success` | Payment success screen ✅ |
+| Step | Action                                                     | URL                                     | `journey-frame` content             |
+| ---- | ---------------------------------------------------------- | --------------------------------------- | ----------------------------------- |
+| A    | Direct nav (auth incomplete)                               | `/journey/auth/mobile`                  | Auth mobile screen (guard redirect) |
+| B    | Seed session + nav `/journey/emergency/contacts-empty`     | `/journey/emergency/contacts-empty`     | **empty**                           |
+| C    | Seed session + R10 Safe + Continue                         | `/journey/emergency/contacts-empty`     | **empty**                           |
+| D    | Seed session + nav `/journey/emergency/rider-prompt`       | `/journey/emergency/rider-prompt`       | **empty**                           |
+| E    | Seed session + R10 Secure + Continue                       | `/journey/emergency/rider-prompt`       | **empty**                           |
+| F    | Seed session + nav `/journey/purchase/r10-payment-success` | `/journey/purchase/r10-payment-success` | Payment success screen ✅           |
 
 ---
 
-*Audit complete. Handoff navigation works; emergency child route paths do not match at runtime.*
+_Audit complete. Handoff navigation works; emergency child route paths do not match at runtime._

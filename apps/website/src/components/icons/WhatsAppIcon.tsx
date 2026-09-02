@@ -1,15 +1,9 @@
-import type { SVGProps } from "react";
+import type { SVGProps } from 'react';
 
 /** Inline WhatsApp glyph — lucide doesn't ship one. Sized via parent. */
 export function WhatsAppIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      fill="currentColor"
-      className={className}
-      {...props}
-    >
+    <svg viewBox="0 0 24 24" aria-hidden fill="currentColor" className={className} {...props}>
       <path d="M19.05 4.91A10 10 0 0 0 3.04 17.4L2 22l4.72-1.04A10 10 0 1 0 19.05 4.91Zm-7.06 15.41h-.01a8.32 8.32 0 0 1-4.24-1.16l-.3-.18-2.8.62.62-2.73-.2-.31a8.34 8.34 0 1 1 6.93 3.76Zm4.57-6.24c-.25-.13-1.48-.73-1.71-.81-.23-.09-.4-.13-.57.13-.17.25-.65.81-.8.98-.15.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.24a7.65 7.65 0 0 1-1.41-1.76c-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.43.13-.15.17-.25.25-.42.09-.17.04-.32-.02-.45-.06-.13-.57-1.37-.78-1.87-.2-.5-.41-.43-.57-.43h-.49a.94.94 0 0 0-.68.32c-.23.25-.89.87-.89 2.12s.91 2.46 1.04 2.62c.13.17 1.79 2.74 4.34 3.84.61.26 1.08.42 1.45.54.61.19 1.16.16 1.6.1.49-.07 1.48-.6 1.69-1.18.21-.59.21-1.09.15-1.19-.06-.11-.23-.17-.49-.3Z" />
     </svg>
   );

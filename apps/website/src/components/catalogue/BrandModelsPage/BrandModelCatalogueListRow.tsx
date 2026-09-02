@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { Car, FileText, GitCompare } from "lucide-react";
-import { toast } from "sonner";
+import { Car, FileText, GitCompare } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { BrandLogo } from "@/components/shared/BrandLogo";
-import { Button } from "@/components/ui/button";
-import type { CatalogueModel } from "@/lib/catalogue/types";
-import type { VehicleCategory } from "@/lib/preferences";
-import { cn } from "@/lib/utils";
+import { BrandLogo } from '@/components/shared/BrandLogo';
+import { Button } from '@/components/ui/button';
+import type { CatalogueModel } from '@/lib/catalogue/types';
+import type { VehicleCategory } from '@/lib/preferences';
+import { cn } from '@/lib/utils';
 
 import {
   brandLabelForModel,
@@ -18,7 +18,7 @@ import {
   detailsHrefForModel,
   formatModelPriceBlock,
   modelLabelFor,
-} from "./model-utils";
+} from './model-utils';
 
 export function BrandModelCatalogueListRow({
   model,
@@ -42,20 +42,19 @@ export function BrandModelCatalogueListRow({
   const discontinued = model.is_discontinued === true;
 
   const heroUrl =
-    typeof model.hero_image_url === "string" && model.hero_image_url.trim()
+    typeof model.hero_image_url === 'string' && model.hero_image_url.trim()
       ? model.hero_image_url.trim()
       : null;
 
-  const onCompare = () =>
-    toast.message("Compare isn’t wired on this catalogue view yet.");
+  const onCompare = () => toast.message('Compare isn’t wired on this catalogue view yet.');
 
   return (
     <li>
       <div
         className={cn(
-          "group flex items-stretch gap-0 overflow-hidden rounded-2xl border border-border/80 bg-card shadow-[0_2px_8px_-4px_rgba(15,23,42,0.10)] ring-1 ring-black/[0.03]",
-          "transition-[border-color,box-shadow] duration-200 hover:border-primary/20 hover:shadow-[0_4px_16px_-8px_rgba(15,23,42,0.14)]",
-          "dark:shadow-none dark:ring-white/[0.03] dark:hover:border-primary/25",
+          'group flex items-stretch gap-0 overflow-hidden rounded-2xl border border-border/80 bg-card shadow-[0_2px_8px_-4px_rgba(15,23,42,0.10)] ring-1 ring-black/[0.03]',
+          'transition-[border-color,box-shadow] duration-200 hover:border-primary/20 hover:shadow-[0_4px_16px_-8px_rgba(15,23,42,0.14)]',
+          'dark:shadow-none dark:ring-white/[0.03] dark:hover:border-primary/25',
         )}
       >
         <Link href={href} tabIndex={-1} aria-hidden className="block shrink-0">
@@ -98,7 +97,9 @@ export function BrandModelCatalogueListRow({
               {modelLabel}
             </h2>
             {metaLine ? (
-              <p className="line-clamp-2 text-[11px] text-muted-foreground sm:line-clamp-1">{metaLine}</p>
+              <p className="line-clamp-2 text-[11px] text-muted-foreground sm:line-clamp-1">
+                {metaLine}
+              </p>
             ) : null}
           </Link>
 

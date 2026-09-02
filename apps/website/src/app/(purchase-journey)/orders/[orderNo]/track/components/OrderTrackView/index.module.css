@@ -1,0 +1,276 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 120px 80px;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+  width: 600px;
+  max-width: 100%;
+  padding-top: 8px;
+}
+
+/* ── Back link ──────────────────────────────────────────────────────── */
+.backLink {
+  position: absolute;
+  top: 16px;
+  left: calc(50% - 300px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #6b7079;
+  cursor: pointer;
+}
+
+.backLink:hover {
+  color: #0a0a0c;
+}
+
+.backIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Head ───────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0a0a0c;
+}
+
+.sub {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #6b7079;
+}
+
+/* ── Status banner ──────────────────────────────────────────────────── */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: #e8e8e8;
+  border-radius: 18px;
+}
+
+.bannerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border-radius: 10px;
+}
+
+.bannerGlyph {
+  width: 22px;
+  height: 22px;
+  color: #0a0a0c;
+}
+
+.bannerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bannerTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.bannerSub {
+  font-size: 14px;
+  color: #6b7079;
+}
+
+/* ── Timeline card ──────────────────────────────────────────────────── */
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+}
+
+.step {
+  display: flex;
+  gap: 14px;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22px;
+}
+
+.seg {
+  width: 2px;
+  flex: 1;
+}
+
+.segGreen {
+  background: #1fa24a;
+}
+
+.segGrey {
+  background: #c4c4c4;
+}
+
+.segNone {
+  background: transparent;
+}
+
+.dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+}
+
+.dotOn {
+  background: #1fa24a;
+}
+
+.dotOff {
+  background: #ffffff;
+  border: 2px solid #c4c4c4;
+}
+
+.dotIcon {
+  width: 12px;
+  height: 12px;
+  color: #ffffff;
+  stroke-width: 3;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  padding: 13px 0;
+}
+
+.rowTitle {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.rowTitleMuted {
+  font-weight: 500;
+  color: #6b7079;
+}
+
+.rowDesc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: #6b7079;
+}
+
+/* ── Error ──────────────────────────────────────────────────────────── */
+.errorWrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 16px;
+}
+
+/* ── Activate note + help ───────────────────────────────────────────── */
+.activate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.activateIcon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: #6b7079;
+}
+
+.activateText {
+  font-size: 14.5px;
+  line-height: 22px;
+  color: #6b7079;
+}
+
+.help {
+  align-self: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #6b7079;
+  text-decoration: underline;
+}
+
+.help:hover {
+  color: #0a0a0c;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .body {
+    padding: 48px 40px 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .backLink {
+    left: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .body {
+    padding: 56px 20px 48px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+}

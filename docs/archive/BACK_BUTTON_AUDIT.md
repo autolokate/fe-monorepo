@@ -7,26 +7,26 @@
 
 ## Figma Spec
 
-| Property | Value |
-|----------|-------|
-| Icon | `arrow-left` |
-| Icon size | 24×24 |
-| Hit area | 48×48 |
-| Position | 4px from screen left (within 16px content padding → `-12px` offset) |
-| Hover | No background pill |
-| Opacity | Full white icon |
+| Property  | Value                                                               |
+| --------- | ------------------------------------------------------------------- |
+| Icon      | `arrow-left`                                                        |
+| Icon size | 24×24                                                               |
+| Hit area  | 48×48                                                               |
+| Position  | 4px from screen left (within 16px content padding → `-12px` offset) |
+| Hover     | No background pill                                                  |
+| Opacity   | Full white icon                                                     |
 
 ---
 
 ## Implementations Audited
 
-| Shell | File | Status |
-|-------|------|--------|
-| Auth | `AuthStepShell` → `step-shell-chrome.css` | **Fixed** |
-| Purchase / Emergency / Prepaid / B2B2C | `FlowStepShell` → shared chrome | **Fixed** |
-| PWA | `PwaScanShell` → `pwa-scan-shell.css` | **Fixed** |
-| Purchase status | `PurchaseStatusShell` | Inherits chrome |
-| Welcome activation | `WelcomeActivationShell` | Inherits chrome |
+| Shell                                  | File                                      | Status          |
+| -------------------------------------- | ----------------------------------------- | --------------- |
+| Auth                                   | `AuthStepShell` → `step-shell-chrome.css` | **Fixed**       |
+| Purchase / Emergency / Prepaid / B2B2C | `FlowStepShell` → shared chrome           | **Fixed**       |
+| PWA                                    | `PwaScanShell` → `pwa-scan-shell.css`     | **Fixed**       |
+| Purchase status                        | `PurchaseStatusShell`                     | Inherits chrome |
+| Welcome activation                     | `WelcomeActivationShell`                  | Inherits chrome |
 
 ---
 

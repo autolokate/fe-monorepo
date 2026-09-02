@@ -1,21 +1,18 @@
-"use client";
+'use client';
 
-import { endpoints } from "@/lib/api/endpoints";
-import { dedupedRequest } from "@/lib/api/dedupe-cache";
-import { ApiService } from "@/services/api.service";
+import { endpoints } from '@/lib/api/endpoints';
+import { dedupedRequest } from '@/lib/api/dedupe-cache';
+import { ApiService } from '@/services/api.service';
 import {
   normalizeBrand,
   normalizeModel,
   normalizeVariant,
   readArray,
   readObject,
+  toStr,
   unbox,
-} from "@/lib/catalogue/normalize";
-import type {
-  CatalogueBrand,
-  CatalogueModel,
-  CatalogueVariant,
-} from "@/lib/catalogue/types";
+} from '@/lib/catalogue/normalize';
+import type { CatalogueBrand, CatalogueModel, CatalogueVariant } from '@/lib/catalogue/types';
 
 /** Shared cache window for "stable" catalogue reads (brands, trending, etc.). */
 const CATALOGUE_TTL_MS = 5 * 60_000;
@@ -27,8 +24,8 @@ const CATALOGUE_TTL_MS = 5 * 60_000;
  * stats only trigger one network call per page lifetime.
  */
 export async function getBrands(): Promise<CatalogueBrand[]> {
-  return dedupedRequest("catalogue:brands", CATALOGUE_TTL_MS, async () => {
-    const res = await ApiService.get<unknown>(endpoints.catalogue.brands, {
+  return dedupedRequest('catalogue:brands', CATALOGUE_TTL_MS, async () => {
+    const res = await ApiService.get(endpoints.catalogue.brands, {
       withAuth: false,
     });
     const rows = readArray<unknown>(unbox(res.data));
@@ -43,10 +40,9 @@ export async function getBrandDetails(brandSlug: string): Promise<CatalogueBrand
   const trimmed = brandSlug.trim();
   if (!trimmed) return null;
   try {
-    const res = await ApiService.get<unknown>(
-      endpoints.catalogue.brandBySlug(trimmed),
-      { withAuth: false },
-    );
+    const res = await ApiService.get(endpoints.catalogue.brandBySlug(trimmed), {
+      withAuth: false,
+    });
     const payload = unbox(res.data);
     if (!payload) return null;
     return normalizeBrand(payload);
@@ -62,7 +58,7 @@ export async function getBrandModels(brandSlug: string): Promise<CatalogueModel[
   const trimmed = brandSlug.trim();
   if (!trimmed) return [];
 
-  const res = await ApiService.get<unknown>(endpoints.catalogue.brandModels(trimmed), {
+  const res = await ApiService.get(endpoints.catalogue.brandModels(trimmed), {
     withAuth: false,
   });
   const rows = readArray<unknown>(unbox(res.data));
@@ -86,7 +82,7 @@ export async function getModelDetails(
   const key = `catalogue:modelDetails:${b}:${m}`;
   try {
     return await dedupedRequest(key, CATALOGUE_TTL_MS, async () => {
-      const res = await ApiService.get<unknown>(endpoints.catalogue.modelDetails(b, m), {
+      const res = await ApiService.get(endpoints.catalogue.modelDetails(b, m), {
         withAuth: false,
       });
       const payload = unbox(res.data);
@@ -109,10 +105,9 @@ export async function getModelVariants(
   if (!b || !m) return [];
   const key = `catalogue:modelVariants:${b}:${m}`;
   return dedupedRequest(key, CATALOGUE_TTL_MS, async () => {
-    const res = await ApiService.get<unknown>(
-      endpoints.catalogue.modelVariants(b, m),
-      { withAuth: false },
-    );
+    const res = await ApiService.get(endpoints.catalogue.modelVariants(b, m), {
+      withAuth: false,
+    });
     const rows = readArray<unknown>(unbox(res.data));
     return rows.map(normalizeVariant);
   });
@@ -128,17 +123,16 @@ export async function getVariantDetails(
   const m = modelSlug.trim();
   const v = variantSlug.trim();
   if (!v) return {};
-  const res = await ApiService.get<unknown>(
-    endpoints.catalogue.variantDetails(b, m, v),
-    { withAuth: false },
-  );
+  const res = await ApiService.get(endpoints.catalogue.variantDetails(b, m, v), {
+    withAuth: false,
+  });
   return normalizeVariant(unbox(res.data));
 }
 
 /** GET /v1/catalogue/trending — top picks for the hero trending rail. */
 export async function getTrendingModels(): Promise<CatalogueModel[]> {
-  return dedupedRequest("catalogue:trending", CATALOGUE_TTL_MS, async () => {
-    const res = await ApiService.get<unknown>(endpoints.catalogue.trending, {
+  return dedupedRequest('catalogue:trending', CATALOGUE_TTL_MS, async () => {
+    const res = await ApiService.get(endpoints.catalogue.trending, {
       withAuth: false,
     });
     const rows = readArray<unknown>(unbox(res.data));
@@ -147,10 +141,8 @@ export async function getTrendingModels(): Promise<CatalogueModel[]> {
 }
 
 /** GET /v1/catalogue/models — supports optional filter params. */
-export async function getModels(
-  params?: Record<string, string>,
-): Promise<CatalogueModel[]> {
-  const res = await ApiService.get<unknown>(endpoints.catalogue.models, {
+export async function getModels(params?: Record<string, string>): Promise<CatalogueModel[]> {
+  const res = await ApiService.get(endpoints.catalogue.models, {
     params,
     withAuth: false,
   });
@@ -159,11 +151,11 @@ export async function getModels(
 }
 
 function readModelsEnvelopeCursor(payload: unknown): string | null {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
   const meta = (payload as Record<string, unknown>).meta;
-  if (!meta || typeof meta !== "object" || Array.isArray(meta)) return null;
+  if (!meta || typeof meta !== 'object' || Array.isArray(meta)) return null;
   const c = (meta as Record<string, unknown>).next_cursor;
-  return typeof c === "string" && c.trim() ? c.trim() : null;
+  return typeof c === 'string' && c.trim() ? c.trim() : null;
 }
 
 export type CatalogueModelsPageResult = {
@@ -175,18 +167,20 @@ export type CatalogueModelsPageResult = {
  * GET /v1/catalogue/models — cursor-paginated index (`meta.next_cursor`).
  * Preserves the full JSON envelope so pagination metadata is not lost (unlike {@link getModels}).
  */
-export async function getCatalogueModelsPage(opts: {
-  cursor?: string | null;
-} = {}): Promise<CatalogueModelsPageResult> {
+export async function getCatalogueModelsPage(
+  opts: {
+    cursor?: string | null;
+  } = {},
+): Promise<CatalogueModelsPageResult> {
   const params: Record<string, string> = {};
   if (opts.cursor) params.cursor = opts.cursor;
-  const res = await ApiService.get<unknown>(endpoints.catalogue.models, {
+  const res = await ApiService.get(endpoints.catalogue.models, {
     params: Object.keys(params).length ? params : undefined,
     withAuth: false,
   });
   const envelope = res.data;
   let rowsPayload: unknown = envelope;
-  if (envelope && typeof envelope === "object" && !Array.isArray(envelope)) {
+  if (envelope && typeof envelope === 'object' && !Array.isArray(envelope)) {
     const inner = (envelope as Record<string, unknown>).data;
     if (inner !== undefined) rowsPayload = inner;
   }
@@ -199,13 +193,13 @@ export async function getCatalogueModelsPage(opts: {
 
 /** GET /v1/catalogue/search?q=… — combined results across models/brands/variants. */
 export async function searchCatalogue(query: string): Promise<CatalogueModel[]> {
-  const res = await ApiService.get<unknown>(endpoints.catalogue.search, {
+  const res = await ApiService.get(endpoints.catalogue.search, {
     params: { q: query },
     withAuth: false,
   });
   const payload = unbox(res.data);
   if (Array.isArray(payload)) return payload.map(normalizeModel);
-  if (payload && typeof payload === "object") {
+  if (payload && typeof payload === 'object') {
     const p = payload as Record<string, unknown>;
     return readArray<unknown>(p.models).map(normalizeModel);
   }
@@ -214,37 +208,37 @@ export async function searchCatalogue(query: string): Promise<CatalogueModel[]> 
 
 /** Normalised search hit for compare picker (models resolve to a default variant separately). */
 export type CatalogueSearchHit =
-  | { kind: "brand"; row: CatalogueBrand }
-  | { kind: "model"; row: CatalogueModel }
-  | { kind: "variant"; row: CatalogueVariant };
+  | { kind: 'brand'; row: CatalogueBrand }
+  | { kind: 'model'; row: CatalogueModel }
+  | { kind: 'variant'; row: CatalogueVariant };
 
 function classifySearchRow(raw: unknown): CatalogueSearchHit | null {
   const row = readObject(raw);
   const id = row.id;
-  const longId = typeof id === "string" && id.replace(/-/g, "").length >= 16;
-  const variantLabel = String(row.variant_name ?? "").trim();
-  const modelSlug = String(row.model_slug ?? row.slug ?? "").trim();
-  const brandSlug = String(row.brand_slug ?? "").trim();
+  const longId = typeof id === 'string' && id.replace(/-/g, '').length >= 16;
+  const variantLabel = toStr(row.variant_name).trim();
+  const modelSlug = toStr(row.model_slug ?? row.slug).trim();
+  const brandSlug = toStr(row.brand_slug).trim();
 
   if (longId && variantLabel) {
-    return { kind: "variant", row: normalizeVariant(raw) };
+    return { kind: 'variant', row: normalizeVariant(raw) };
   }
   if (brandSlug && modelSlug && !variantLabel) {
-    return { kind: "model", row: normalizeModel(raw) };
+    return { kind: 'model', row: normalizeModel(raw) };
   }
   if (longId && (variantLabel || brandSlug)) {
-    return { kind: "variant", row: normalizeVariant(raw) };
+    return { kind: 'variant', row: normalizeVariant(raw) };
   }
   const brandish =
-    typeof row.name === "string" &&
+    typeof row.name === 'string' &&
     !modelSlug &&
     !variantLabel &&
-    (typeof row.slug === "string" || typeof row.brand_slug === "string");
+    (typeof row.slug === 'string' || typeof row.brand_slug === 'string');
   if (brandish) {
-    return { kind: "brand", row: normalizeBrand(raw) };
+    return { kind: 'brand', row: normalizeBrand(raw) };
   }
   if (brandSlug || row.brand_name) {
-    return { kind: "model", row: normalizeModel(raw) };
+    return { kind: 'model', row: normalizeModel(raw) };
   }
   return null;
 }
@@ -257,24 +251,24 @@ export async function searchCatalogueMixed(query: string): Promise<CatalogueSear
   const q = query.trim();
   if (q.length < 2) return [];
 
-  const res = await ApiService.get<unknown>(endpoints.catalogue.search, {
+  const res = await ApiService.get(endpoints.catalogue.search, {
     params: { q },
     withAuth: false,
   });
   const payload = unbox(res.data);
 
-  if (payload && typeof payload === "object" && !Array.isArray(payload)) {
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
     const p = payload as Record<string, unknown>;
     const brands = readArray<unknown>(p.brands).map((raw) => ({
-      kind: "brand" as const,
+      kind: 'brand' as const,
       row: normalizeBrand(raw),
     }));
     const models = readArray<unknown>(p.models).map((raw) => ({
-      kind: "model" as const,
+      kind: 'model' as const,
       row: normalizeModel(raw),
     }));
     const variants = readArray<unknown>(p.variants).map((raw) => ({
-      kind: "variant" as const,
+      kind: 'variant' as const,
       row: normalizeVariant(raw),
     }));
     const merged = [...variants, ...models, ...brands];
@@ -295,10 +289,13 @@ export async function searchCatalogueMixed(query: string): Promise<CatalogueSear
 
 /** GET /v1/catalogue/compare?ids=… — raw envelope from the catalogue service. */
 export async function compareVariants(variantIds: string[]): Promise<unknown> {
-  const ids = variantIds.map((id) => id.trim()).filter(Boolean).slice(0, 3);
+  const ids = variantIds
+    .map((id) => id.trim())
+    .filter(Boolean)
+    .slice(0, 3);
   if (ids.length < 2) return [];
 
-  const res = await ApiService.get<unknown>(endpoints.catalogue.compare(ids), {
+  const res = await ApiService.get(endpoints.catalogue.compare(ids), {
     withAuth: false,
   });
   return unbox(res.data);
@@ -306,13 +303,16 @@ export async function compareVariants(variantIds: string[]): Promise<unknown> {
 
 /** Normalised variant rows for compare tables (handles several envelope shapes). */
 export async function compareVariantsList(variantIds: string[]): Promise<CatalogueVariant[]> {
-  const ids = variantIds.map((id) => id.trim()).filter(Boolean).slice(0, 3);
+  const ids = variantIds
+    .map((id) => id.trim())
+    .filter(Boolean)
+    .slice(0, 3);
   if (ids.length < 2) return [];
 
   const raw = await compareVariants(ids);
   if (Array.isArray(raw)) return raw.map((v) => normalizeVariant(v));
 
-  if (raw && typeof raw === "object") {
+  if (raw && typeof raw === 'object') {
     const o = raw as Record<string, unknown>;
     if (Array.isArray(o.items)) return (o.items as unknown[]).map((v) => normalizeVariant(v));
     if (Array.isArray(o.variants)) return (o.variants as unknown[]).map((v) => normalizeVariant(v));

@@ -11,21 +11,21 @@ import {
 } from '@autolokate/ui';
 import { useCallback, useMemo, useState } from 'react';
 
-import { AuditActionFilter } from '@/features/audit/AuditActionFilter.js';
-import { AuditDetailSheet } from '@/features/audit/AuditDetailSheet.js';
+import { AuditActionFilter } from '@/features/audit/AuditActionFilter';
+import { AuditDetailSheet } from '@/features/audit/AuditDetailSheet';
 import {
   AUDIT_PAGE_SIZE_OPTIONS,
   DEFAULT_AUDIT_EXPLORER_FILTERS,
   hasActiveAuditFilters,
   resolveActionFilter,
   type AuditExplorerFilters,
-} from '@/features/audit/audit-filters.js';
-import { useAuditColumns } from '@/features/audit/audit-columns.js';
-import { useAuditExplorer } from '@/hooks/audit/useAuditExplorer.js';
-import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
-import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
-import { buildPageSummary } from '@/platform/components/build-page-summary.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
+} from '@/features/audit/audit-filters';
+import { useAuditColumns } from '@/features/audit/audit-columns';
+import { useAuditExplorer } from '@/hooks/audit/useAuditExplorer';
+import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
+import { buildPageSummary } from '@/platform/components/build-page-summary';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './audit-events.css';
 
@@ -40,7 +40,6 @@ export function AuditEventsPage() {
   const {
     events,
     hasMore,
-    requestMeta,
     isLoading,
     isFetching,
     isFetchingNextPage,
@@ -105,7 +104,7 @@ export function AuditEventsPage() {
     <RequirePermission permission="audit:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Audit Events"
+          title="Activity Log"
           description={pageDescription}
           actions={
             <AlPageHeaderAction
@@ -162,10 +161,10 @@ export function AuditEventsPage() {
               </div>
               {showAdvancedFilters ? (
                 <div className="audit-filters-advanced">
-                  <AdminFilterField label="Target ID">
+                  <AdminFilterField label="Entity reference">
                     <AlInput
                       value={filters.targetId}
-                      placeholder="Entity identifier"
+                      placeholder="Filter by entity"
                       mono
                       onChange={(event) => {
                         setFilters((current) => ({ ...current, targetId: event.target.value }));
@@ -227,12 +226,7 @@ export function AuditEventsPage() {
           </div>
         ) : null}
 
-        <AuditDetailSheet
-          event={selectedEvent}
-          open={detailOpen}
-          onOpenChange={setDetailOpen}
-          envelopeMeta={requestMeta}
-        />
+        <AuditDetailSheet event={selectedEvent} open={detailOpen} onOpenChange={setDetailOpen} />
       </AlStack>
     </RequirePermission>
   );

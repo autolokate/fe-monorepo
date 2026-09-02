@@ -1,0 +1,34 @@
+.hero {
+  composes: hero from '../../../../styles/marketing-hero.module.css';
+}
+
+.inner {
+  composes: inner from '../../../../styles/marketing-hero.module.css';
+}
+
+.headGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.eyebrow {
+  composes: eyebrow from '../../../../styles/marketing-hero.module.css';
+}
+
+.eyebrowDash {
+  composes: eyebrowDash from '../../../../styles/marketing-hero.module.css';
+}
+
+.headline {
+  composes: headline from '../../../../styles/marketing-hero.module.css';
+}
+
+.headlineAccent {
+  composes: headlineAccent from '../../../../styles/marketing-hero.module.css';
+}
+
+.description {
+  composes: description from '../../../../styles/marketing-hero.module.css';
+}

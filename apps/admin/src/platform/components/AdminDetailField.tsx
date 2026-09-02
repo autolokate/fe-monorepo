@@ -29,9 +29,7 @@ export function AdminDetailSection({ title, description, children }: AdminDetail
     <section className="admin-detail-section">
       <div className="admin-detail-section__header">
         <h3 className="admin-detail-section__title">{title}</h3>
-        {description ? (
-          <p className="admin-detail-section__description">{description}</p>
-        ) : null}
+        {description ? <p className="admin-detail-section__description">{description}</p> : null}
       </div>
       <div className="admin-detail-section__body">{children}</div>
     </section>
@@ -42,14 +40,29 @@ export function AdminDetailGrid({ children }: { children: ReactNode }) {
   return <div className="admin-detail-grid">{children}</div>;
 }
 
-export function formatMetadataEntries(metadata: object | null): Array<{ label: string; value: string }> {
+function isIdLikeMetadataKey(key: string): boolean {
+  const normalized = key.toLowerCase();
+  if (normalized === 'id' || normalized.endsWith('id') || normalized.includes('_id')) {
+    return true;
+  }
+  if (normalized.includes('uuid') || normalized.endsWith('ref')) {
+    return true;
+  }
+  return normalized === 'requestid' || normalized === 'correlationid';
+}
+
+export function formatMetadataEntries(
+  metadata: object | null,
+): Array<{ label: string; value: string }> {
   if (!metadata || typeof metadata !== 'object') {
     return [];
   }
-  return Object.entries(metadata as Record<string, unknown>).map(([key, value]) => ({
-    label: key,
-    value: formatMetadataValue(value),
-  }));
+  return Object.entries(metadata as Record<string, unknown>)
+    .filter(([key]) => !isIdLikeMetadataKey(key))
+    .map(([key, value]) => ({
+      label: key,
+      value: formatMetadataValue(value),
+    }));
 }
 
 function formatMetadataValue(value: unknown): string {

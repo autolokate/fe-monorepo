@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Toaster } from "sonner";
+import { Toaster } from 'sonner';
 
 /** sonner Toaster — the website is light-only. */
 export function ThemedToaster() {
@@ -12,8 +12,7 @@ export function ThemedToaster() {
       theme="light"
       toastOptions={{
         classNames: {
-          toast:
-            "rounded-xl border border-border/70 bg-card text-card-foreground shadow-lg",
+          toast: 'rounded-xl border border-border/70 bg-card text-card-foreground shadow-lg',
         },
       }}
     />

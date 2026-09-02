@@ -8,25 +8,25 @@
 
 ## Automated Verification ✅
 
-| Check | Command | Result |
-|-------|---------|--------|
-| TypeScript | `pnpm -r typecheck` | ✅ PASS |
-| ESLint | `pnpm -r lint` | ✅ PASS |
-| Production build | `pnpm -r build` | ✅ PASS |
+| Check            | Command             | Result  |
+| ---------------- | ------------------- | ------- |
+| TypeScript       | `pnpm -r typecheck` | ✅ PASS |
+| ESLint           | `pnpm -r lint`      | ✅ PASS |
+| Production build | `pnpm -r build`     | ✅ PASS |
 
 ---
 
 ## Flow Verification (Code Path Review)
 
-| Flow | Entry | Guards | Terminal | Status |
-|------|-------|--------|----------|--------|
-| **Auth** | `/journey/auth/mobile` | OTP/owner prereqs | → flow handoff | ✅ Unchanged |
-| **Purchase** | R03 after auth | Auth + flow match + payment guards | R10 → Emergency | ✅ Effect fix only |
-| **Prepaid** | `/journey/prepaid/welcome` | None | Emergency → Completed | ✅ Unchanged |
-| **B2B2C** | `/journey/b2b2c/welcome` | None | Emergency → Completed | ✅ Unchanged |
-| **Emergency** | contacts-empty / rider-prompt | Auth + selected flow | Completed | ✅ Unchanged |
-| **PWA** | `/pwa/scan/loading` | Isolated session | Vehicle hub loop | ✅ Icon/layout fixes retained |
-| **Completed** | Emergency continue | None | Finish → `/journey` | ✅ Unchanged |
+| Flow          | Entry                         | Guards                             | Terminal              | Status                        |
+| ------------- | ----------------------------- | ---------------------------------- | --------------------- | ----------------------------- |
+| **Auth**      | `/journey/auth/mobile`        | OTP/owner prereqs                  | → flow handoff        | ✅ Unchanged                  |
+| **Purchase**  | R03 after auth                | Auth + flow match + payment guards | R10 → Emergency       | ✅ Effect fix only            |
+| **Prepaid**   | `/journey/prepaid/welcome`    | None                               | Emergency → Completed | ✅ Unchanged                  |
+| **B2B2C**     | `/journey/b2b2c/welcome`      | None                               | Emergency → Completed | ✅ Unchanged                  |
+| **Emergency** | contacts-empty / rider-prompt | Auth + selected flow               | Completed             | ✅ Unchanged                  |
+| **PWA**       | `/pwa/scan/loading`           | Isolated session                   | Vehicle hub loop      | ✅ Icon/layout fixes retained |
+| **Completed** | Emergency continue            | None                               | Finish → `/journey`   | ✅ Unchanged                  |
 
 **No route order, guard logic, business rules, or session schema changes made.**
 
@@ -34,10 +34,10 @@
 
 ## Theme Verification
 
-| Theme | Mechanism | Status |
-|-------|-----------|--------|
-| Dark | `al-onboarding-theme` + design tokens | ✅ Token-based |
-| Light | Theme toggle in dev/shell | ✅ No hardening changes |
+| Theme | Mechanism                     | Status                  |
+| ----- | ----------------------------- | ----------------------- |
+| Dark  | `al-qr-theme` + design tokens | ✅ Token-based          |
+| Light | Theme toggle in dev/shell     | ✅ No hardening changes |
 
 ---
 
@@ -54,13 +54,13 @@ Prior signoff passes verified at 320, 360, 375, 390, 393, 414px. This hardening 
 
 ## PWA-Specific Checks
 
-| Screen | Change in Hardening | Regression Risk |
-|--------|---------------------|-----------------|
-| SOS idle (`/pwa/scan/sos`) | Effect/timer fixes only | Low |
-| SOS timeline resolved | Car + circle-check icons (prior pass) | None this pass |
-| Park Me photos | Auto-locate ref gate | Low — same UX |
-| Vehicle hub | `footerLabel` prop rename | None — same copy |
-| Verify OTP | Removed unused destructure | None |
+| Screen                     | Change in Hardening                   | Regression Risk  |
+| -------------------------- | ------------------------------------- | ---------------- |
+| SOS idle (`/pwa/scan/sos`) | Effect/timer fixes only               | Low              |
+| SOS timeline resolved      | Car + circle-check icons (prior pass) | None this pass   |
+| Park Me photos             | Auto-locate ref gate                  | Low — same UX    |
+| Vehicle hub                | `footerLabel` prop rename             | None — same copy |
+| Verify OTP                 | Removed unused destructure            | None             |
 
 ---
 

@@ -1,0 +1,1 @@
+export { useLegalDocument } from './useLegalDocument';

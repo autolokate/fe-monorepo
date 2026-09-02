@@ -14,7 +14,11 @@ export type AdminMoreActionsProps = {
   trailing?: ReactNode;
 };
 
-export function AdminMoreActions({ actions, label = 'More actions', trailing }: AdminMoreActionsProps) {
+export function AdminMoreActions({
+  actions,
+  label = 'More actions',
+  trailing,
+}: AdminMoreActionsProps) {
   if (actions.length === 0) {
     return trailing ? <>{trailing}</> : null;
   }

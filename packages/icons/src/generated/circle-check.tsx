@@ -1,5 +1,5 @@
-import { IconSvg } from '../IconSvg.js';
-import type { IconProps } from '../types.js';
+import { IconSvg } from '../IconSvg';
+import type { IconProps } from '../types';
 
 /** Figma 181:28 — 2px stroke #1FA24A; non-scaling stroke preserves weight at 14px verified chip. */
 export function CircleCheckIcon(props: IconProps) {

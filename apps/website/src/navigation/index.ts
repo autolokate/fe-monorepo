@@ -8,7 +8,7 @@ export type {
   NavigationConfig,
   FeatureId,
   NavigationHelpers,
-} from "./types";
+} from './types';
 
 // Navigation Configuration and Helpers
 export {
@@ -24,7 +24,7 @@ export {
   getNavigationItemsByOrderRange,
   // Legacy exports for backward compatibility
   getNavigationItems,
-} from "./config";
+} from './config';
 
 // Re-export for convenience
-export { navigationConfig as default } from "./config";
+export { navigationConfig as default } from './config';

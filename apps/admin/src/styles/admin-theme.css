@@ -1,6 +1,6 @@
 /**
  * Admin layout polish — uses Autolokate design-system tokens only.
- * Color roles come from theme.css (same as onboarding). No palette overrides.
+ * Color roles come from theme.css (same as QR PWA). No palette overrides.
  */
 
 .al-page-layout__header {
@@ -15,20 +15,10 @@
   position: relative;
 }
 
-.admin-shell-nav-item.is-active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.375rem;
-  bottom: 0.375rem;
-  width: 3px;
-  border-radius: 0 var(--al-radius-sm) var(--al-radius-sm) 0;
-  background: var(--al-color-primary);
-}
-
 .admin-action-bar {
   background: var(--al-color-surface);
-  box-shadow: var(--al-admin-shadow-panel);
+  box-shadow: none;
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
 }
 
 .admin-action-bar--notice {
@@ -39,11 +29,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--al-space-1);
-  padding: var(--al-space-1);
-  border-radius: var(--al-radius-pill);
-  background: var(--al-color-surface);
-  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+  gap: var(--al-space-2);
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: none;
   width: fit-content;
   max-width: 100%;
 }
@@ -53,7 +43,7 @@
   background: transparent;
   padding: 0;
   cursor: pointer;
-  border-radius: var(--al-radius-pill);
+  border-radius: var(--al-radius-sm);
 }
 
 .admin-filter-chip:focus-visible {
@@ -62,18 +52,32 @@
 }
 
 .admin-filter-chip .al-badge {
-  transition: background var(--al-motion-fast) var(--al-admin-ease-sidebar),
-    color var(--al-motion-fast) var(--al-admin-ease-sidebar);
+  min-height: 2rem;
+  padding: 0.375rem 0.875rem;
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  font-weight: var(--al-font-weight-medium);
+  color: color-mix(in srgb, var(--al-color-on-surface) 84%, transparent);
+  background: var(--al-color-surface);
+  border: 1px solid color-mix(in srgb, var(--al-color-outline) 88%, transparent);
+  box-shadow: none;
+  transition:
+    background var(--al-motion-fast) var(--al-admin-ease-sidebar),
+    color var(--al-motion-fast) var(--al-admin-ease-sidebar),
+    border-color var(--al-motion-fast) var(--al-admin-ease-sidebar);
 }
 
 .admin-filter-chip[aria-pressed='true'] .al-badge {
-  background: var(--al-color-surface-active);
   color: var(--al-color-text);
-  box-shadow: inset 0 0 0 1px var(--al-color-border-subtle);
+  background: color-mix(in srgb, var(--al-color-primary) 14%, var(--al-color-surface));
+  border-color: color-mix(in srgb, var(--al-color-primary) 50%, transparent);
+  box-shadow: inset 0 -2px 0 var(--al-color-primary);
 }
 
 .admin-filter-chip:hover:not([aria-pressed='true']) .al-badge {
+  color: var(--al-color-text);
   background: var(--al-color-surface-hover);
+  border-color: var(--al-color-outline);
 }
 
 .al-page-layout .al-page-header {
@@ -214,10 +218,10 @@
 }
 
 .admin-data-block {
-  border-radius: var(--al-radius-md);
+  border-radius: var(--al-radius-sm);
   overflow: hidden;
   background: var(--al-color-surface);
-  box-shadow: var(--al-admin-shadow-panel);
+  box-shadow: none;
   border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
 }
 
@@ -225,9 +229,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: var(--al-space-3) var(--al-space-4);
-  padding: var(--al-space-3) var(--al-space-4);
-  background: var(--al-color-surface-variant);
+  gap: var(--al-space-3) var(--al-space-5);
+  padding: var(--al-space-4);
+  background: var(--al-color-surface);
   border-bottom: var(--al-border-width-thin) solid var(--al-color-border-subtle);
 }
 
@@ -246,11 +250,14 @@
 
 .admin-filter-field__label {
   font-family: var(--al-text-ui-family);
-  font-size: var(--al-text-caption-size);
-  font-weight: var(--al-font-weight-semibold);
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--al-color-text-subtle);
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(
+    --al-admin-label-color,
+    color-mix(in srgb, var(--al-color-on-surface) 86%, transparent)
+  );
 }
 
 .admin-filter-field__control {
@@ -416,3 +423,7 @@
     min-width: 0;
   }
 }
+
+/* Typography hierarchy — overridden by admin-google-surface.css for page layout */
+
+/* Form polish — see admin-modal-forms.css */

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useApiQuery } from "@/hooks/useApiQuery";
-import { fetchCatalogueModelDetailPayload } from "@/lib/catalogue/model-detail-payload";
-import type { CatalogueModelDetailPayload } from "@/lib/catalogue/types";
+import { useApiQuery } from '@/hooks/useApiQuery';
+import { fetchCatalogueModelDetailPayload } from '@/lib/catalogue/model-detail-payload';
+import type { CatalogueModelDetailPayload } from '@/lib/catalogue/types';
 
 /** Loads model + variants + grouped specs/features (Autolokate `LiveModelDetailLoader` parity). */
 export function useCatalogueModelDetail(
@@ -11,8 +11,8 @@ export function useCatalogueModelDetail(
   options: { enabled?: boolean } = {},
 ) {
   const { enabled = true } = options;
-  const b = String(brandSlug ?? "").trim();
-  const m = String(modelSlug ?? "").trim();
+  const b = (brandSlug ?? '').trim();
+  const m = (modelSlug ?? '').trim();
   const canRun = Boolean(enabled && b && m);
 
   return useApiQuery<CatalogueModelDetailPayload>(

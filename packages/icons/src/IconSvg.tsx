@@ -5,7 +5,7 @@ import {
   ICON_DEFAULT_STROKE_WIDTH,
   ICON_VIEW_BOX,
   type IconProps,
-} from './types.js';
+} from './types';
 
 export function IconSvg({
   size = ICON_DEFAULT_SIZE,

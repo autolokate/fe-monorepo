@@ -26,13 +26,13 @@ Route graph unchanged: **14 → 14b → 15**
 
 ### Engage gate (`PWA_SOS_HOLD_ENGAGE_MS = 200`)
 
-| Phase | Route | Behavior |
-|-------|-------|----------|
-| Press | 14 | Record `holdStartAt`, start progress locally |
-| < 200ms release | 14 | Reset — **no navigation** |
+| Phase                 | Route    | Behavior                                          |
+| --------------------- | -------- | ------------------------------------------------- |
+| Press                 | 14       | Record `holdStartAt`, start progress locally      |
+| < 200ms release       | 14       | Reset — **no navigation**                         |
 | ≥ 200ms still holding | 14 → 14b | Navigate with `{ holdStartAt }` in location state |
-| Release before 100% | 14b → 14 | Cancel |
-| Progress ≥ 100% | 14b → 15 | Complete |
+| Release before 100%   | 14b → 14 | Cancel                                            |
+| Progress ≥ 100%       | 14b → 15 | Complete                                          |
 
 ### Progress continuity
 
@@ -49,13 +49,13 @@ Route graph unchanged: **14 → 14b → 15**
 
 ## Verification
 
-| Test | Result |
-|------|--------|
-| Quick tap on 14 | No route change ✅ |
-| Hold < 200ms | No route change ✅ |
-| Hold ≥ 200ms, release early on 14b | Returns to 14 ✅ |
-| Full 2200ms hold | Advances to scene photos ✅ |
-| Progress arc visible during hold | ✅ |
+| Test                               | Result                      |
+| ---------------------------------- | --------------------------- |
+| Quick tap on 14                    | No route change ✅          |
+| Hold < 200ms                       | No route change ✅          |
+| Hold ≥ 200ms, release early on 14b | Returns to 14 ✅            |
+| Full 2200ms hold                   | Advances to scene photos ✅ |
+| Progress arc visible during hold   | ✅                          |
 
 Evidence: [14-sos after](audit-screenshots/bugfix/after/14-sos.png) · [14b after](audit-screenshots/bugfix/after/14b-sos-holding.png)
 

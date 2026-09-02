@@ -1,4 +1,4 @@
-import type { IconProps } from '../types.js';
+import type { IconProps } from '../types';
 
 /** Figma 876:2212 — alert cancelled neutral halo + check. */
 export function AlertCancelledHaloIcon({

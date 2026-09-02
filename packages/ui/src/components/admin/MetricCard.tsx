@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { AlHeading, AlStack, AlText } from '../primitives/index.js';
+import { AlHeading, AlStack, AlText } from '../primitives/index';
 import './MetricCard.css';
 
 export type AlMetricCardProps = {
@@ -18,7 +18,11 @@ export function AlMetricCard({ label, value, hint, trend }: AlMetricCardProps) {
           {label}
         </AlText>
         <AlHeading variant="h3">{value}</AlHeading>
-        {hint ? <AlText variant="caption" tone="muted">{hint}</AlText> : null}
+        {hint ? (
+          <AlText variant="caption" tone="muted">
+            {hint}
+          </AlText>
+        ) : null}
         {trend ? (
           <span className={`al-metric-card__trend al-metric-card__trend--${trend.direction}`}>
             {trend.label}
@@ -36,13 +40,21 @@ export type AlStatCardProps = AlMetricCardProps & {
 export function AlStatCard({ icon, label, value, hint, trend }: AlStatCardProps) {
   return (
     <article className="al-stat-card al-admin-surface">
-      {icon ? <div className="al-stat-card__icon" aria-hidden>{icon}</div> : null}
+      {icon ? (
+        <div className="al-stat-card__icon" aria-hidden>
+          {icon}
+        </div>
+      ) : null}
       <AlStack gap="xs" className="al-stat-card__body">
         <AlText variant="label" tone="muted">
           {label}
         </AlText>
         <AlHeading variant="h3">{value}</AlHeading>
-        {hint ? <AlText variant="caption" tone="muted">{hint}</AlText> : null}
+        {hint ? (
+          <AlText variant="caption" tone="muted">
+            {hint}
+          </AlText>
+        ) : null}
         {trend ? (
           <span className={`al-metric-card__trend al-metric-card__trend--${trend.direction}`}>
             {trend.label}

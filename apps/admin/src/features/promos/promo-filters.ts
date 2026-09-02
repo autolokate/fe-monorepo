@@ -3,7 +3,7 @@ import type { AdminPromoDto } from '@autolokate/api-client';
 import {
   getPromoLifecycleStatus,
   type PromoLifecycleStatus,
-} from '@/services/promos/promo-metrics.js';
+} from '@/services/promos/promo-metrics';
 
 export type PromoStatusFilter = PromoLifecycleStatus | 'ALL';
 

@@ -1,0 +1,152 @@
+/* Figma layout_OWJHKC — column center, gap 18, width 330 */
+
+/* Figma fill_67PUMG — purchase screens */
+.ob-purchase-status-shell--purchase.al-screen-bg--protected .al-screen-bg__tint {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(31, 162, 74, 0.04) 0%,
+    rgba(31, 162, 74, 0.01) 50%,
+    rgba(31, 162, 74, 0) 100%
+  );
+}
+
+/* Figma R04b fill_L73IEG — amber ambient */
+.ob-purchase-status-shell--attention.al-screen-bg--protected .al-screen-bg__tint {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(245, 166, 35, 0.04) 0%,
+    rgba(245, 166, 35, 0.01) 50%,
+    rgba(245, 166, 35, 0) 100%
+  );
+}
+
+.ob-purchase-status-shell__celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ob-purchase-status-shell--celebration .ob-purchase-status-shell__frame {
+  position: relative;
+  z-index: 2;
+}
+
+.ob-purchase-status-shell__frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.ob-purchase-status-shell__header {
+  gap: 0;
+  padding-block-start: calc(var(--al-space-lg) + env(safe-area-inset-top, 0px));
+}
+
+.ob-purchase-status-shell__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 20.625rem;
+  min-height: 0;
+  margin-inline: auto;
+  padding-block: var(--al-space-lg);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  text-align: center;
+}
+
+/* Figma layout_OWJHKC — y: 180, width 330, gap 18 */
+
+.ob-purchase-status-shell__title {
+  width: 100%;
+  text-align: center;
+}
+
+.ob-purchase-status-shell__description {
+  width: 100%;
+  font-size: var(--al-text-body-size);
+  line-height: var(--al-text-body-line-height);
+}
+
+/* Figma Display — 36/44/700 centered */
+.ob-purchase-status-shell__title.al-heading--h1 {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.ob-purchase-status-shell__footer {
+  gap: 0;
+}
+
+/* Figma R09b check status link — Body 16/24 #8A8A8A centered */
+.ob-purchase-status-shell__text-link {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0;
+  border: none;
+  background: none;
+  font-family: var(--al-text-ui-family);
+  font-size: var(--al-text-body-size);
+  font-weight: 400;
+  line-height: var(--al-text-body-line-height);
+  color: var(--al-color-on-surface-muted);
+  text-align: center;
+  cursor: pointer;
+}
+
+.ob-purchase-status-shell__text-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Figma R04b Enter manually — Semi Bold 14/20 #8A8A8A centered */
+.ob-purchase-status-shell__secondary-link {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0;
+  border: none;
+  background: none;
+  font-family: var(--al-text-ui-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--al-color-on-surface-muted);
+  text-align: center;
+  cursor: pointer;
+}
+
+.ob-purchase-status-halo {
+  flex-shrink: 0;
+  width: 15rem;
+  height: 15rem;
+}
+
+/* R10 — invoice download link above Continue (same secondary-above-CTA pattern as Skip) */
+.ob-purchase-status-shell.ob-purchase-success-shell .ob-purchase-status-shell__footer {
+  gap: 0.875rem;
+}
+
+.ob-purchase-success-invoice-link.ob-purchase-status-shell__secondary-link {
+  min-height: auto;
+  padding-block: 0.25rem;
+  padding-bottom: 0.5rem;
+  font-size: var(--al-text-body-size);
+  font-weight: 400;
+  line-height: var(--al-text-body-line-height);
+  color: var(--al-color-on-surface-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-color: currentColor;
+  -webkit-text-decoration: underline;
+}

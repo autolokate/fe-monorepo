@@ -1,7 +1,7 @@
 import { AlInput } from '@autolokate/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { AUDIT_ACTION_OPTIONS } from '@/features/audit/audit-filters.js';
+import { AUDIT_ACTION_OPTIONS } from '@/features/audit/audit-filters';
 
 import './audit-events.css';
 
@@ -12,7 +12,12 @@ export type AuditActionFilterProps = {
   compact?: boolean;
 };
 
-export function AuditActionFilter({ value, onChange, errorText, compact = false }: AuditActionFilterProps) {
+export function AuditActionFilter({
+  value,
+  onChange,
+  errorText,
+  compact = false,
+}: AuditActionFilterProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 

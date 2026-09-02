@@ -215,7 +215,9 @@
   line-height: 16px;
   color: var(--al-color-on-surface-muted);
   text-align: center;
-  transition: color 0.2s ease, opacity 0.2s ease;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .al-sos-hold--holding .al-sos-hold__hint {

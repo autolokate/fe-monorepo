@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlScannerHubCardProps } from './ScannerHubCard.types.js';
+import type { AlScannerHubCardProps } from './ScannerHubCard.types';
 import './ScannerHubCard.css';
 
 /** Figma 843:2080 · Park Me / Emergency action cards on vehicle found hub. */

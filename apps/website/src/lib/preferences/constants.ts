@@ -1,17 +1,16 @@
-import type { VehicleCategory } from "./types";
+import type { VehicleCategory } from './types';
 
 /** localStorage key for the persisted vehicle-category preference. */
-export const VEHICLE_PREFERENCE_STORAGE_KEY = "autolokate_vehicle_preference";
+export const VEHICLE_PREFERENCE_STORAGE_KEY = 'autolokate_vehicle_preference';
 
 /** Custom DOM event fired when the vehicle preference is written or cleared. */
-export const VEHICLE_PREFERENCE_CHANGE_EVENT =
-  "autolokate:vehicle-preference-change";
+export const VEHICLE_PREFERENCE_CHANGE_EVENT = 'autolokate:vehicle-preference-change';
 
 /**
  * Category used whenever we need a preference but the user hasn't picked one
  * (e.g. while the multi-category prompt is disabled below).
  */
-export const DEFAULT_VEHICLE_CATEGORY: VehicleCategory = "cars";
+export const DEFAULT_VEHICLE_CATEGORY: VehicleCategory = 'cars';
 
 /**
  * Feature flag for the Cars/Bikes preference popup.
@@ -33,13 +32,13 @@ export interface VehicleCategoryOption {
 /** Source-of-truth for the radio options shown in the preference dialog. */
 export const VEHICLE_CATEGORY_OPTIONS: readonly VehicleCategoryOption[] = [
   {
-    value: "cars",
-    label: "Cars",
-    description: "Hatchbacks, Sedans, SUVs and more.",
+    value: 'cars',
+    label: 'Cars',
+    description: 'Hatchbacks, Sedans, SUVs and more.',
   },
   {
-    value: "bikes",
-    label: "Bikes",
-    description: "Scooters, Commuters and Superbikes.",
+    value: 'bikes',
+    label: 'Bikes',
+    description: 'Scooters, Commuters and Superbikes.',
   },
 ] as const;

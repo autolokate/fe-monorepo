@@ -1,0 +1,94 @@
+/* About FAQ — editorial Q&A on graphite */
+
+.section {
+  background: var(--mkt-surface);
+  color: var(--mkt-ink-dark);
+  color: var(--mkt-ink-primary);
+}
+
+.inner {
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+  padding: var(--mkt-space-section) var(--mkt-gutter);
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4rem);
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: minmax(0, 20rem) 1fr;
+    gap: clamp(3rem, 6vw, 6rem);
+    align-items: start;
+  }
+}
+
+.header {
+  max-width: 20rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mkt-ink-muted);
+}
+
+.eyebrowLine {
+  width: 1.5rem;
+  height: 1px;
+  background: var(--mkt-accent);
+  flex-shrink: 0;
+}
+
+.headline {
+  margin-top: 1rem;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-2xl);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.headlineAccent {
+  color: var(--mkt-accent);
+}
+
+.questions {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  max-width: 42rem;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding-block: 1.5rem;
+}
+
+.question {
+  font-size: var(--mkt-text-base);
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+.answer {
+  margin: 0;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.65;
+  color: var(--mkt-ink-secondary);
+}
+
+.divider {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--mkt-surface-muted);
+}

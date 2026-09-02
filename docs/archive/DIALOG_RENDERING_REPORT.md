@@ -21,13 +21,13 @@ Leave-emergency and permission sheets appeared **blurry** — soft text edges, f
 
 ## Fixes
 
-| Change | Detail |
-|--------|--------|
-| **Portal** | `createPortal(sheet, document.body)` — sheet escapes shell transform/opacity tree |
-| **Settled state** | After 320ms, class `al-permission-sheet--settled` sets `transform: none` |
-| **Font smoothing** | `-webkit-font-smoothing: antialiased` on panel |
-| **Z-index** | Raised to `1000` for reliable top layer |
-| **Scrim** | Solid `rgba(10,10,12,0.72)` — no backdrop-filter blur |
+| Change             | Detail                                                                            |
+| ------------------ | --------------------------------------------------------------------------------- |
+| **Portal**         | `createPortal(sheet, document.body)` — sheet escapes shell transform/opacity tree |
+| **Settled state**  | After 320ms, class `al-permission-sheet--settled` sets `transform: none`          |
+| **Font smoothing** | `-webkit-font-smoothing: antialiased` on panel                                    |
+| **Z-index**        | Raised to `1000` for reliable top layer                                           |
+| **Scrim**          | Solid `rgba(10,10,12,0.72)` — no backdrop-filter blur                             |
 
 ---
 
@@ -41,13 +41,13 @@ Leave-emergency and permission sheets appeared **blurry** — soft text edges, f
 
 ## Verification
 
-| Check | Result |
-|-------|--------|
-| Title text sharp at 390px | ✅ |
-| Primary CTA edges crisp | ✅ |
-| Secondary link readable | ✅ |
-| No blur after animation completes | ✅ |
-| Scrim does not blur underlying content | ✅ |
+| Check                                  | Result |
+| -------------------------------------- | ------ |
+| Title text sharp at 390px              | ✅     |
+| Primary CTA edges crisp                | ✅     |
+| Secondary link readable                | ✅     |
+| No blur after animation completes      | ✅     |
+| Scrim does not blur underlying content | ✅     |
 
 Evidence: [14d before](audit-screenshots/bugfix/before/14d-sos-leave-confirm.png) → [14d after](audit-screenshots/bugfix/after/14d-sos-leave-confirm.png)
 

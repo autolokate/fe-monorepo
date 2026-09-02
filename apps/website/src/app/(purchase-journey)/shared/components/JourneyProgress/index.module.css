@@ -1,0 +1,94 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 52px;
+  background: #ffffff;
+  border-bottom: 1px solid #eceff3;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1.5px solid #c4c4c4;
+  color: #6b7079;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.markerOn {
+  background: #1fa24a;
+  border-color: #1fa24a;
+  color: #ffffff;
+}
+
+.check {
+  width: 13px;
+  height: 13px;
+  stroke-width: 3;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #6b7079;
+  white-space: nowrap;
+}
+
+.labelOn {
+  font-weight: 600;
+  color: #0a0a0c;
+}
+
+.connector {
+  width: 28px;
+  height: 2px;
+  flex: none;
+  margin-left: 4px;
+  border-radius: 1px;
+  background: #c4c4c4;
+}
+
+@media (max-width: 640px) {
+  .stepper {
+    gap: 6px;
+  }
+
+  .connector {
+    width: 16px;
+    margin-left: 2px;
+  }
+
+  .label {
+    display: none;
+  }
+
+  .step:last-child .label,
+  .step [aria-current='step'] + .label {
+    display: inline;
+  }
+}

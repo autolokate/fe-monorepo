@@ -1,0 +1,127 @@
+.wrap {
+  max-width: 33rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  width: 4.75rem;
+  height: 4.75rem;
+  margin: 1.25rem auto 1.4rem;
+  border-radius: 50%;
+  background: var(--success);
+  color: #fff;
+}
+
+.badgePending {
+  background: var(--primary);
+}
+
+.badgeFailed {
+  background: var(--destructive, #dc2626);
+}
+
+/* Payment still settling past the poll cap: amber, not a failure. */
+.badgeWaiting {
+  background: var(--warn-soft);
+  border: 1px solid color-mix(in srgb, var(--warn-soft-foreground) 30%, var(--border));
+  color: var(--warn-soft-foreground);
+}
+
+.title {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.9rem, 5vw, 2.35rem);
+  color: var(--foreground);
+}
+
+.lead {
+  margin: 0 auto 1.75rem;
+  max-width: 30rem;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+/* Tighter spacing between the stacked confirmation paragraphs. */
+.leadTight {
+  margin-bottom: 0.75rem;
+}
+
+.invoiceLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 700;
+  color: var(--primary);
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.invoiceLink:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  color: var(--foreground);
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  background: var(--card);
+  text-align: left;
+  margin-bottom: 1.15rem;
+}
+
+.cardTitle {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.steps {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+}
+
+.num {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.storeRow {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.15rem;
+}
+
+.store {
+  padding: 0.8rem 1.35rem;
+  border-radius: 0.75rem;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.track {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+  border-bottom: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  padding-bottom: 0.15rem;
+}

@@ -1,7 +1,7 @@
 # Architecture Principles
 
 **Status:** **BASELINE LOCKED** (2026-06-17)  
-**Scope:** `autolokate-web` monorepo — onboarding + post-activation PWA
+**Scope:** `autolokate-web` monorepo — QR + post-activation PWA
 
 This document describes the **locked reference architecture**. Do not alter these principles without explicit architecture approval and a documented migration plan.
 
@@ -12,8 +12,10 @@ This document describes the **locked reference architecture**. Do not alter thes
 ```
 autolokate-web/
 ├── apps/
-│   ├── onboarding/          ← Production PWA (reference app)
-│   └── ui-preview/          ← Component preview harness
+│   ├── qr/           ← Production QR PWA (reference app)
+│   ├── admin/        ← Internal admin dashboard
+│   ├── website/      ← Marketing site
+│   └── ui-preview/   ← Component preview harness
 ├── packages/
 │   ├── ui/                  ← Shared UI primitives
 │   ├── icons/               ← Icon set
@@ -30,7 +32,7 @@ autolokate-web/
 ## 2. Application Layers
 
 ```
-apps/onboarding/src/
+apps/qr/src/
 ├── journey/                 ← Orchestration, routing, guards, persistence
 ├── features/                ← Flow-specific screens and logic
 │   ├── shared-auth/
@@ -62,10 +64,10 @@ BrowserRouter
             └── *            →  JourneyRoutes
 ```
 
-| Provider | Responsibility | Storage |
-|----------|----------------|---------|
-| `JourneyProvider` | Auth, purchase, prepaid, B2B2C, emergency, phase | `sessionStorage` key `al-journey-v1` |
-| `PwaScanProvider` | Post-activation scan, SOS, Park Me | `sessionStorage` key `al-pwa-scan-v1` |
+| Provider          | Responsibility                                   | Storage                               |
+| ----------------- | ------------------------------------------------ | ------------------------------------- |
+| `JourneyProvider` | Auth, purchase, prepaid, B2B2C, emergency, phase | `sessionStorage` key `al-journey-v1`  |
+| `PwaScanProvider` | Post-activation scan, SOS, Park Me               | `sessionStorage` key `al-pwa-scan-v1` |
 
 **Locked behaviour:**
 
@@ -77,21 +79,21 @@ BrowserRouter
 
 ## 4. Session & Storage Keys (Locked)
 
-| Key | Storage | Purpose |
-|-----|---------|---------|
-| `al-journey-v1` | `sessionStorage` | Full journey persisted state |
-| `al-selected-flow` | `localStorage` | Selected activation flow |
-| `al-onboarding-theme` | `localStorage` | Dark/light theme |
-| `al-pwa-scan-v1` | `sessionStorage` | PWA scan session |
-| `al-pwa-install-dismissed-at` | `localStorage` | Install prompt dismiss |
-| `al-pwa-update-dismissed-at` | `sessionStorage` | Update prompt dismiss |
-| `al-pwa-photo-diagnostics` | `sessionStorage` | Photo capture diagnostics |
+| Key                           | Storage          | Purpose                      |
+| ----------------------------- | ---------------- | ---------------------------- |
+| `al-journey-v1`               | `sessionStorage` | Full journey persisted state |
+| `al-selected-flow`            | `localStorage`   | Selected activation flow     |
+| `al-qr-theme`                 | `localStorage`   | Dark/light theme             |
+| `al-pwa-scan-v1`              | `sessionStorage` | PWA scan session             |
+| `al-pwa-install-dismissed-at` | `localStorage`   | Install prompt dismiss       |
+| `al-pwa-update-dismissed-at`  | `sessionStorage` | Update prompt dismiss        |
+| `al-pwa-photo-diagnostics`    | `sessionStorage` | Photo capture diagnostics    |
 
 **Schema sources:**
 
-- `JourneySession` → `apps/onboarding/src/journey/types.ts`
-- `EmergencySession` → `apps/onboarding/src/features/emergency/types.ts`
-- `PwaScanSession` → `apps/onboarding/src/features/post-activation-pwa/context/`
+- `JourneySession` → `apps/qr/src/journey/types.ts`
+- `EmergencySession` → `apps/qr/src/features/emergency/types.ts`
+- `PwaScanSession` → `apps/qr/src/features/post-activation-pwa/context/`
 
 Any schema change requires:
 
@@ -129,13 +131,13 @@ Welcome → Auth → Emergency (no purchase, no payment, no vehicle activation)
 
 ### Emergency
 
-| Step | Route | Notes |
-|------|-------|-------|
-| R0 | `rider-prompt` | If rider entitled |
-| R1–R4 | rider setup | Optional |
-| E0 | `contacts-empty` | Entry from R10 |
-| E1–E3 | contact setup | Mandatory (min 1) unless rider skipped |
-| E5 | `contacts-summary` | → Completed |
+| Step  | Route              | Notes                                  |
+| ----- | ------------------ | -------------------------------------- |
+| R0    | `rider-prompt`     | If rider entitled                      |
+| R1–R4 | rider setup        | Optional                               |
+| E0    | `contacts-empty`   | Entry from R10                         |
+| E1–E3 | contact setup      | Mandatory (min 1) unless rider skipped |
+| E5    | `contacts-summary` | → Completed                            |
 
 **Locked P0 behaviours:**
 
@@ -154,12 +156,12 @@ Welcome → Auth → Emergency (no purchase, no payment, no vehicle activation)
 
 Four entry flows via query dispatch on `/journey`:
 
-| Type | Params | Handler |
-|------|--------|---------|
-| `purchase` | `token`, optional `orgId` | `dispatch-qr-payload.ts` |
-| `prepaid` | `voucherId` | Same |
-| `b2b2c` | `partnerId`, `variant` | Same |
-| `activated` | `vehicleId`, `plate`, optional `planLabel` | Routes to PWA scan |
+| Type        | Params                                     | Handler                  |
+| ----------- | ------------------------------------------ | ------------------------ |
+| `purchase`  | `token`, optional `orgId`                  | `dispatch-qr-payload.ts` |
+| `prepaid`   | `voucherId`                                | Same                     |
+| `b2b2c`     | `partnerId`, `variant`                     | Same                     |
+| `activated` | `vehicleId`, `plate`, optional `planLabel` | Routes to PWA scan       |
 
 Parser: `platform/qr/parse-qr-url.ts`  
 URL builder: `platform/qr/qr-entry-urls.ts`  
@@ -178,13 +180,13 @@ Registry: `platform/entry/flow-entry-registry.ts`
 
 ## 9. Component Ownership Boundaries
 
-| Layer | Owns |
-|-------|------|
-| `@autolokate/design-system` | Tokens, typography scale, color modes |
-| `@autolokate/icons` | SVG icon components |
-| `@autolokate/ui` | Buttons, fields, OTP, cards, chips, sheets, timelines, SOS hold, scanner cards |
-| `apps/onboarding/components/compositions/` | Flow shells, consent blocks, contact rows |
-| `apps/onboarding/features/*/screens/` | Screen-level composition |
+| Layer                              | Owns                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------ |
+| `@autolokate/design-system`        | Tokens, typography scale, color modes                                          |
+| `@autolokate/icons`                | SVG icon components                                                            |
+| `@autolokate/ui`                   | Buttons, fields, OTP, cards, chips, sheets, timelines, SOS hold, scanner cards |
+| `apps/qr/components/compositions/` | Flow shells, consent blocks, contact rows                                      |
+| `apps/qr/features/*/screens/`      | Screen-level composition                                                       |
 
 **Never duplicate** a primitive that exists in `@autolokate/ui`.
 
@@ -192,18 +194,18 @@ Registry: `platform/entry/flow-entry-registry.ts`
 
 ## 10. PWA Architecture (Locked)
 
-| Concern | Implementation |
-|---------|----------------|
-| Manifest | Vite PWA plugin — `vite.config.ts` |
-| Service worker | Workbox generated SW |
-| Offline | `PwaOfflineScreen`, `use-online-status` |
-| Install | `PwaInstallPrompt`, `PwaIosInstallSheet`, `use-pwa-install` |
-| Safe areas | CSS env(safe-area-inset-*) in PWA shell |
-| Camera | `use-camera-capture`, `use-pwa-photo-capture` |
-| Location | `use-geolocation`, reverse geocode utils |
-| Permissions | `AlPermissionSheet`, `PwaPermissionRecoveryActions` |
-| Theme | `localStorage` `al-onboarding-theme`, applied at boot in `main.tsx` |
-| Updates | `use-pwa-update`, `PwaUpdatePrompt` |
+| Concern        | Implementation                                              |
+| -------------- | ----------------------------------------------------------- |
+| Manifest       | Vite PWA plugin — `vite.config.ts`                          |
+| Service worker | Workbox generated SW                                        |
+| Offline        | `PwaOfflineScreen`, `use-online-status`                     |
+| Install        | `PwaInstallPrompt`, `PwaIosInstallSheet`, `use-pwa-install` |
+| Safe areas     | CSS env(safe-area-inset-\*) in PWA shell                    |
+| Camera         | `use-camera-capture`, `use-pwa-photo-capture`               |
+| Location       | `use-geolocation`, reverse geocode utils                    |
+| Permissions    | `AlPermissionSheet`, `PwaPermissionRecoveryActions`         |
+| Theme          | `localStorage` `al-qr-theme`, applied at boot in `main.tsx` |
+| Updates        | `use-pwa-update`, `PwaUpdatePrompt`                         |
 
 ---
 

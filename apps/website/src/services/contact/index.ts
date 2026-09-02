@@ -1,2 +1,2 @@
-export * from "./contact-api";
-export * from "./types";
+export * from './contact-api';
+export * from './types';

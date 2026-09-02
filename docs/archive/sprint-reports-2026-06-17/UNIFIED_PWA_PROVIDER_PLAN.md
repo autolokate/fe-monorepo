@@ -20,10 +20,10 @@ JourneyOrchestrator
 └── Route *            → JourneyProvider → JourneyRoutes
 ```
 
-| Provider | File | Hook | Consumers |
-|----------|------|------|-----------|
-| JourneyProvider | `journey/JourneyContext.tsx` | `useJourney()` | 15+ files |
-| PwaScanProvider | `features/post-activation-pwa/context/PwaScanContext.tsx` | `usePwaScan()` | 8+ files |
+| Provider        | File                                                      | Hook           | Consumers |
+| --------------- | --------------------------------------------------------- | -------------- | --------- |
+| JourneyProvider | `journey/JourneyContext.tsx`                              | `useJourney()` | 15+ files |
+| PwaScanProvider | `features/post-activation-pwa/context/PwaScanContext.tsx` | `usePwaScan()` | 8+ files  |
 
 **Critical:** Providers are mutually exclusive at runtime. Navigating `/journey` → `/pwa/scan/loading` unmounts one and mounts the other.
 
@@ -83,10 +83,10 @@ Single `session` object merging all fields — **rejected** due to field collisi
 
 Phase 1 of provider unification must **not** break existing call sites.
 
-| Shim hook | Delegates to | Until |
-|-----------|--------------|-------|
+| Shim hook      | Delegates to                 | Until                                          |
+| -------------- | ---------------------------- | ---------------------------------------------- |
 | `useJourney()` | `useAutolokate().activation` | All call sites migrated or permanently shimmed |
-| `usePwaScan()` | `useAutolokate().scanner` | All call sites migrated or permanently shimmed |
+| `usePwaScan()` | `useAutolokate().scanner`    | All call sites migrated or permanently shimmed |
 
 **Implementation location (future):** `platform/AutolokateContext.tsx` with re-exports from `journey/JourneyContext.tsx` and `post-activation-pwa/context/PwaScanContext.tsx` as thin wrappers.
 
@@ -96,10 +96,10 @@ Phase 1 of provider unification must **not** break existing call sites.
 
 ### Phase P0 — Root mount (no API change)
 
-| Step | Action | Risk |
-|------|--------|------|
-| P0.1 | Create `AutolokateProvider` composing existing providers nested | 🟢 Low |
-| P0.2 | Move both providers inside single `BrowserRouter` route tree | 🟢 Low |
+| Step | Action                                                              | Risk      |
+| ---- | ------------------------------------------------------------------- | --------- |
+| P0.1 | Create `AutolokateProvider` composing existing providers nested     | 🟢 Low    |
+| P0.2 | Move both providers inside single `BrowserRouter` route tree        | 🟢 Low    |
 | P0.3 | Change `JourneyOrchestrator` to mount one wrapper, not split routes | 🟡 Medium |
 
 **P0 structure:**
@@ -117,31 +117,31 @@ AutolokateProvider
 
 ### Phase P1 — Orchestrator flatten
 
-| Step | Action | Risk |
-|------|--------|------|
-| P1.1 | Remove provider boundary at `/pwa/scan/*` route level | 🟢 if P0 done |
-| P1.2 | Delete `PwaScanProvider` wrapper inside `PwaScanRoutes.tsx` | 🟢 |
-| P1.3 | Verify all PWA routes still resolve `usePwaScan()` | 🟢 |
+| Step | Action                                                      | Risk          |
+| ---- | ----------------------------------------------------------- | ------------- |
+| P1.1 | Remove provider boundary at `/pwa/scan/*` route level       | 🟢 if P0 done |
+| P1.2 | Delete `PwaScanProvider` wrapper inside `PwaScanRoutes.tsx` | 🟢            |
+| P1.3 | Verify all PWA routes still resolve `usePwaScan()`          | 🟢            |
 
 ### Phase P2 — State merge into single context
 
-| Step | Action | Risk |
-|------|--------|------|
-| P2.1 | Implement namespaced state in `AutolokateProvider` | 🟡 |
-| P2.2 | Wire activation slice to `al-journey-v1` persistence | 🟡 |
-| P2.3 | Wire scanner slice to `al-pwa-scan-v1` persistence | 🟡 |
-| P2.4 | Replace nested providers with single reducer/context | 🔴 |
-| P2.5 | Keep compat hooks | 🟢 |
+| Step | Action                                               | Risk |
+| ---- | ---------------------------------------------------- | ---- |
+| P2.1 | Implement namespaced state in `AutolokateProvider`   | 🟡   |
+| P2.2 | Wire activation slice to `al-journey-v1` persistence | 🟡   |
+| P2.3 | Wire scanner slice to `al-pwa-scan-v1` persistence   | 🟡   |
+| P2.4 | Replace nested providers with single reducer/context | 🔴   |
+| P2.5 | Keep compat hooks                                    | 🟢   |
 
 **Do not start P2 until session plan approved** — see [UNIFIED_PWA_SESSION_PLAN.md](./UNIFIED_PWA_SESSION_PLAN.md).
 
 ### Phase P3 — Deprecate legacy providers
 
-| Step | Action | Risk |
-|------|--------|------|
-| P3.1 | Mark `JourneyProvider` / `PwaScanProvider` as internal | 🟢 |
-| P3.2 | Export only `AutolokateProvider`, `useAutolokate` | 🟢 |
-| P3.3 | Migrate dev preview `JourneyProvider` wrapper in `ScreenDevApp.tsx` | 🟡 |
+| Step | Action                                                              | Risk |
+| ---- | ------------------------------------------------------------------- | ---- |
+| P3.1 | Mark `JourneyProvider` / `PwaScanProvider` as internal              | 🟢   |
+| P3.2 | Export only `AutolokateProvider`, `useAutolokate`                   | 🟢   |
+| P3.3 | Migrate dev preview `JourneyProvider` wrapper in `ScreenDevApp.tsx` | 🟡   |
 
 ---
 
@@ -149,49 +149,49 @@ AutolokateProvider
 
 ### useJourney() — must continue working
 
-| File | Usage |
-|------|-------|
-| `journey/routes/AuthRoutes.tsx` | session, updateSession, selectedFlow, setPhase |
-| `journey/routes/PurchaseRoutes.tsx` | session, updateSession, setPhase |
-| `journey/routes/EmergencyRoutes.tsx` | session, updateSession, selectedFlow, setPhase |
-| `journey/routes/JourneySharedAuthRoute.tsx` | completeAuth, selectedFlow, session |
-| `journey/guards/JourneyRouteGuards.tsx` | selectedFlow, authStatus, session |
-| `journey/screens/FlowEntryScreen.tsx` | setSelectedFlow, setPhase, updateSession |
-| `journey/screens/FlowHubScreen.tsx` | setSelectedFlow, setPhase, updateSession |
-| `journey/screens/JourneyCompletedScreen.tsx` | session, clearJourney, setPhase |
-| `features/qr-prepaid/.../PrepaidWelcomeScreen.tsx` | setSelectedFlow, setPhase, updateSession |
-| `features/qr-b2b2c/.../PartnerWelcomeScreen.tsx` | setSelectedFlow, setPhase, updateSession |
-| `dev/DevCompletedPreview.tsx` | updateSession |
-| `dev/ScreenDevApp.tsx` | JourneyProvider wrapper |
+| File                                               | Usage                                          |
+| -------------------------------------------------- | ---------------------------------------------- |
+| `journey/routes/AuthRoutes.tsx`                    | session, updateSession, selectedFlow, setPhase |
+| `journey/routes/PurchaseRoutes.tsx`                | session, updateSession, setPhase               |
+| `journey/routes/EmergencyRoutes.tsx`               | session, updateSession, selectedFlow, setPhase |
+| `journey/routes/JourneySharedAuthRoute.tsx`        | completeAuth, selectedFlow, session            |
+| `journey/guards/JourneyRouteGuards.tsx`            | selectedFlow, authStatus, session              |
+| `journey/screens/FlowEntryScreen.tsx`              | setSelectedFlow, setPhase, updateSession       |
+| `journey/screens/FlowHubScreen.tsx`                | setSelectedFlow, setPhase, updateSession       |
+| `journey/screens/JourneyCompletedScreen.tsx`       | session, clearJourney, setPhase                |
+| `features/qr-prepaid/.../PrepaidWelcomeScreen.tsx` | setSelectedFlow, setPhase, updateSession       |
+| `features/qr-b2b2c/.../PartnerWelcomeScreen.tsx`   | setSelectedFlow, setPhase, updateSession       |
+| `dev/DevCompletedPreview.tsx`                      | updateSession                                  |
+| `dev/ScreenDevApp.tsx`                             | JourneyProvider wrapper                        |
 
 ### usePwaScan() — must continue working
 
-| File | Usage |
-|------|-------|
-| `post-activation-pwa/routes/pwa-shared-routes.tsx` | session, updateSession |
-| `post-activation-pwa/routes/pwa-park-me-routes.tsx` | session, updateSession |
-| `post-activation-pwa/routes/pwa-sos-routes.tsx` | session, updateSession |
-| `post-activation-pwa/hooks/use-pwa-photo-capture.ts` | updateSession, storageError |
-| `post-activation-pwa/hooks/use-resolve-stored-location-name.ts` | session, updateSession |
-| `post-activation-pwa/components/PwaEmergencyScreen.tsx` | session |
-| `post-activation-pwa/components/PwaPhotoRouteGuard.tsx` | storageError |
+| File                                                            | Usage                       |
+| --------------------------------------------------------------- | --------------------------- |
+| `post-activation-pwa/routes/pwa-shared-routes.tsx`              | session, updateSession      |
+| `post-activation-pwa/routes/pwa-park-me-routes.tsx`             | session, updateSession      |
+| `post-activation-pwa/routes/pwa-sos-routes.tsx`                 | session, updateSession      |
+| `post-activation-pwa/hooks/use-pwa-photo-capture.ts`            | updateSession, storageError |
+| `post-activation-pwa/hooks/use-resolve-stored-location-name.ts` | session, updateSession      |
+| `post-activation-pwa/components/PwaEmergencyScreen.tsx`         | session                     |
+| `post-activation-pwa/components/PwaPhotoRouteGuard.tsx`         | storageError                |
 
 ---
 
 ## API compatibility requirements
 
-| Current API | Must preserve |
-|-------------|---------------|
-| `useJourney().selectedFlow` | ✓ |
-| `useJourney().authStatus` | ✓ |
-| `useJourney().completeAuth()` | ✓ |
-| `useJourney().updateSession(partial)` | ✓ — partial merge semantics |
-| `useJourney().clearJourney()` | ✓ — clears `al-journey-v1` + `al-selected-flow` |
-| `useJourney().phase` | ✓ — in-memory |
-| `usePwaScan().updateSession(patch \| fn)` | ✓ — functional patch |
-| `usePwaScan().updateSession` return value | ✓ — `SavePwaScanSessionResult` |
-| `usePwaScan().resetSession()` | ✓ — resets to `defaultPwaScanSession()` |
-| `usePwaScan().storageError` | ✓ — photo quota |
+| Current API                               | Must preserve                                   |
+| ----------------------------------------- | ----------------------------------------------- |
+| `useJourney().selectedFlow`               | ✓                                               |
+| `useJourney().authStatus`                 | ✓                                               |
+| `useJourney().completeAuth()`             | ✓                                               |
+| `useJourney().updateSession(partial)`     | ✓ — partial merge semantics                     |
+| `useJourney().clearJourney()`             | ✓ — clears `al-journey-v1` + `al-selected-flow` |
+| `useJourney().phase`                      | ✓ — in-memory                                   |
+| `usePwaScan().updateSession(patch \| fn)` | ✓ — functional patch                            |
+| `usePwaScan().updateSession` return value | ✓ — `SavePwaScanSessionResult`                  |
+| `usePwaScan().resetSession()`             | ✓ — resets to `defaultPwaScanSession()`         |
+| `usePwaScan().storageError`               | ✓ — photo quota                                 |
 
 ---
 
@@ -211,11 +211,11 @@ AutolokateProvider
 
 **Unified rule (required):**
 
-| Action | Clears activation slice | Clears scanner slice |
-|--------|------------------------|---------------------|
-| `clearJourney()` | ✓ | ✗ |
-| `resetSession()` | ✗ | ✓ |
-| Full app reset (future) | ✓ | ✓ | Explicit new API only |
+| Action                  | Clears activation slice | Clears scanner slice |
+| ----------------------- | ----------------------- | -------------------- | --------------------- |
+| `clearJourney()`        | ✓                       | ✗                    |
+| `resetSession()`        | ✗                       | ✓                    |
+| Full app reset (future) | ✓                       | ✓                    | Explicit new API only |
 
 **Breaking if violated:** User completes activation, scans QR, loses scanner state on "Go to home" — or vice versa.
 
@@ -246,12 +246,12 @@ AutolokateProvider
 
 ## Timeline estimate
 
-| Phase | Effort | Prerequisite |
-|-------|--------|--------------|
-| P0 — nested root mount | 1–2 days | None |
-| P1 — flatten route providers | 0.5 day | P0 |
-| P2 — merged context | 3–5 days | Session plan |
-| P3 — deprecate legacy | 1–2 days | P2 + full regression |
+| Phase                        | Effort   | Prerequisite         |
+| ---------------------------- | -------- | -------------------- |
+| P0 — nested root mount       | 1–2 days | None                 |
+| P1 — flatten route providers | 0.5 day  | P0                   |
+| P2 — merged context          | 3–5 days | Session plan         |
+| P3 — deprecate legacy        | 1–2 days | P2 + full regression |
 
 **Minimum viable unification:** P0 + P1 = one provider tree, zero session merge, **SAFE TO MERGE**.
 
@@ -259,8 +259,8 @@ AutolokateProvider
 
 ## Verdict for provider plan
 
-| Approach | Verdict |
-|----------|---------|
-| P0 + P1 (nested providers, single mount) | ✅ SAFE TO MERGE |
-| P2 (merged state) without session plan | ❌ NOT SAFE TO MERGE |
+| Approach                                          | Verdict              |
+| ------------------------------------------------- | -------------------- |
+| P0 + P1 (nested providers, single mount)          | ✅ SAFE TO MERGE     |
+| P2 (merged state) without session plan            | ❌ NOT SAFE TO MERGE |
 | Big-bang delete JourneyProvider + PwaScanProvider | ❌ NOT SAFE TO MERGE |

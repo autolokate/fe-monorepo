@@ -1,12 +1,7 @@
 // import { homeNavigation } from "@/app/home-old/config/navigation";
 // import { mentorsNavigation } from "@/app/explore-mentors/config/navigation";
 
-import type {
-  FeatureNavigation,
-  NavigationConfig,
-  FeatureId,
-  NavigationSubItem,
-} from "./types";
+import type { FeatureNavigation, NavigationConfig, FeatureId, NavigationSubItem } from './types';
 
 /**
  * Main navigation configuration
@@ -15,7 +10,6 @@ import type {
 export const navigationConfig: NavigationConfig = [
   // homeNavigation,
   // mentorsNavigation,
-
 ];
 
 /**
@@ -26,26 +20,20 @@ export const navigationConfig: NavigationConfig = [
  * Get navigation items for header display (filtered and sorted)
  */
 export const getHeaderNavigationItems = (): FeatureNavigation[] => {
-  return navigationConfig
-    .filter((item) => item.showInHeader)
-    .sort((a, b) => a.order - b.order);
+  return navigationConfig.filter((item) => item.showInHeader).sort((a, b) => a.order - b.order);
 };
 
 /**
  * Get navigation items for footer display (filtered and sorted)
  */
 export const getFooterNavigationItems = (): FeatureNavigation[] => {
-  return navigationConfig
-    .filter((item) => item.showInFooter)
-    .sort((a, b) => a.order - b.order);
+  return navigationConfig.filter((item) => item.showInFooter).sort((a, b) => a.order - b.order);
 };
 
 /**
  * Get a specific navigation item by its ID
  */
-export const getNavigationById = (
-  id: FeatureId
-): FeatureNavigation | undefined => {
+export const getNavigationById = (id: FeatureId): FeatureNavigation | undefined => {
   return navigationConfig.find((item) => item.id === id);
 };
 
@@ -94,13 +82,8 @@ export const getExternalNavigationItems = (): FeatureNavigation[] => {
 /**
  * Get navigation items by order range
  */
-export const getNavigationItemsByOrderRange = (
-  min: number,
-  max: number
-): FeatureNavigation[] => {
-  return navigationConfig.filter(
-    (item) => item.order >= min && item.order <= max
-  );
+export const getNavigationItemsByOrderRange = (min: number, max: number): FeatureNavigation[] => {
+  return navigationConfig.filter((item) => item.order >= min && item.order <= max);
 };
 
 // Legacy function names for backward compatibility

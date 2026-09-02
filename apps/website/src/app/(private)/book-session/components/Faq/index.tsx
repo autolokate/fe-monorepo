@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { FAQ_ITEMS } from "./constants";
+import { FAQ_ITEMS } from './constants';
 
 export function Faq() {
   return (
@@ -25,9 +25,7 @@ export function Faq() {
             <summary className="cursor-pointer list-none text-sm font-medium text-foreground sm:text-[0.9375rem]">
               <span className="flex items-center justify-between gap-2">
                 {item.q}
-                <span className="text-muted-foreground transition group-open:rotate-180">
-                  ▼
-                </span>
+                <span className="text-muted-foreground transition group-open:rotate-180">▼</span>
               </span>
             </summary>
             <p className="mt-2 border-t border-border/50 pt-2 text-sm leading-relaxed text-muted-foreground">

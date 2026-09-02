@@ -1,0 +1,47 @@
+/* Shared light-hero CTA styles — import via composes on class selectors only */
+
+.ctas {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.875rem;
+  width: 100%;
+  max-width: 22rem;
+}
+
+@media (min-width: 640px) {
+  .ctas {
+    flex-direction: row;
+    justify-content: center;
+    width: auto;
+    max-width: none;
+  }
+}
+
+.ctaPrimary {
+  border: none;
+  border-radius: var(--mkt-radius-sm);
+  background-color: var(--mkt-green);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.ctaPrimary:hover:not(:disabled):not(.is-loading) {
+  background-color: var(--mkt-green-deep);
+  opacity: 1;
+}
+
+.ctaSecondary {
+  border: 1px solid var(--mkt-border);
+  border-radius: var(--mkt-radius-sm);
+  background-color: transparent;
+  color: var(--mkt-ink-dark);
+  font-weight: 500;
+}
+
+.ctaSecondary:hover:not(:disabled):not(.is-loading) {
+  border-color: color-mix(in srgb, var(--mkt-ink-dark) 25%, var(--mkt-border));
+  background-color: var(--mkt-surface-muted);
+  opacity: 1;
+}

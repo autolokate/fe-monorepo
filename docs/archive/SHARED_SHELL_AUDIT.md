@@ -7,29 +7,29 @@
 
 ## Summary
 
-| Shell | Consumer screens | Issues | Fixed |
-|-------|------------------:|-------:|------:|
-| Step chrome (`step-shell-chrome.css`) | ~36 | 3 | ✅ |
-| AuthStepShell | 3 + legal | 1 | ✅ |
-| FlowStepShell | ~25 | 2 | ✅ |
-| WelcomeActivationShell | 3 | 2 | ✅ |
-| PwaScanShell | 29 | 2 | ✅ |
-| PurchaseStatusShell | ~6 | 0 | ✅ |
-| Flow Entry | 1 | 1 | ✅ |
-| Completion | 1 | 0 | ✅ |
+| Shell                                 | Consumer screens | Issues | Fixed |
+| ------------------------------------- | ---------------: | -----: | ----: |
+| Step chrome (`step-shell-chrome.css`) |              ~36 |      3 |    ✅ |
+| AuthStepShell                         |        3 + legal |      1 |    ✅ |
+| FlowStepShell                         |              ~25 |      2 |    ✅ |
+| WelcomeActivationShell                |                3 |      2 |    ✅ |
+| PwaScanShell                          |               29 |      2 |    ✅ |
+| PurchaseStatusShell                   |               ~6 |      0 |    ✅ |
+| Flow Entry                            |                1 |      1 |    ✅ |
+| Completion                            |                1 |      0 |    ✅ |
 
 ---
 
 ## Layout Token Contract
 
-| Token | Value | Figma source |
-|-------|------:|--------------|
-| `--ob-shell-gutter` | 16px | Frame `102:270` padding |
-| `--ob-shell-touch-bleed` | 12px | Tap target x:4 vs content x:16 |
-| `--ob-shell-section-gap` | 20px | Frame column gap |
-| `--ob-shell-heading-gap` | 8px | Heading block gap |
-| `--ob-shell-header-top` | 22px | y:66 − status 44 |
-| `--ob-shell-content-width` | 393px max | Frame width |
+| Token                      |     Value | Figma source                   |
+| -------------------------- | --------: | ------------------------------ |
+| `--ob-shell-gutter`        |      16px | Frame `102:270` padding        |
+| `--ob-shell-touch-bleed`   |      12px | Tap target x:4 vs content x:16 |
+| `--ob-shell-section-gap`   |      20px | Frame column gap               |
+| `--ob-shell-heading-gap`   |       8px | Heading block gap              |
+| `--ob-shell-header-top`    |      22px | y:66 − status 44               |
+| `--ob-shell-content-width` | 393px max | Frame width                    |
 
 ---
 
@@ -111,16 +111,16 @@
 
 ## Checklist (all shells)
 
-| Check | Status |
-|-------|:------:|
-| Content width 361 @ 393 viewport | ✅ |
-| Horizontal padding 16px (step flows) | ✅ |
-| Top spacing 22px + safe-area | ✅ |
-| Back spacing 20px to next header row | ✅ |
-| Title placement x:16 | ✅ |
-| Footer CTA full width in gutter | ✅ |
-| Safe area bottom on footer | ✅ |
-| No double horizontal padding | ✅ |
+| Check                                | Status |
+| ------------------------------------ | :----: |
+| Content width 361 @ 393 viewport     |   ✅   |
+| Horizontal padding 16px (step flows) |   ✅   |
+| Top spacing 22px + safe-area         |   ✅   |
+| Back spacing 20px to next header row |   ✅   |
+| Title placement x:16                 |   ✅   |
+| Footer CTA full width in gutter      |   ✅   |
+| Safe area bottom on footer           |   ✅   |
+| No double horizontal padding         |   ✅   |
 
 ---
 

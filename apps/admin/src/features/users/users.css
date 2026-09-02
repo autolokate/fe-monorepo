@@ -1,0 +1,18 @@
+.admin-user-lookup,
+.admin-user-account,
+.admin-user-activity {
+  padding: var(--al-space-5);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface);
+  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+}
+
+.admin-user-lookup form {
+  max-width: 28rem;
+}
+
+.admin-user-account__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--al-space-2);
+}

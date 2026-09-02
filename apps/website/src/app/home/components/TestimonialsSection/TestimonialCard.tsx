@@ -1,45 +1,39 @@
-import { MapPin, Star } from "lucide-react";
-import type { Testimonial } from "./types";
-import styles from "./index.module.css";
+import type { Testimonial } from './types';
+import styles from './index.module.css';
 
 interface TestimonialCardProps {
   testimonial: Testimonial;
+  featured: boolean;
 }
 
-const MAX_STARS = 5;
-
-export function TestimonialCard({ testimonial }: TestimonialCardProps) {
-  const { name, role, initials, rating, quote, location } = testimonial;
-
+function QuoteGlyph() {
   return (
-    <article className={`${styles.card} flex h-full flex-col rounded-2xl p-5 sm:p-6`}>
-      <div className="flex items-center gap-3.5">
-        <span className={styles.avatar} aria-hidden>
-          {initials}
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-[15px] font-bold leading-snug text-foreground">{name}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">{role}</p>
-        </div>
-      </div>
+    <svg
+      className={styles.quoteGlyph}
+      width="13.52"
+      height="10.33"
+      viewBox="0 0 14 11"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M0 10.6912V7.51472C0 6.61276 0.176471 5.69119 0.529412 4.75001C0.882354 3.80883 1.34804 2.92157 1.92647 2.08824C2.50491 1.2549 3.13236 0.558823 3.80883 0L6.57354 1.63236C6.02452 2.4951 5.57354 3.39706 5.2206 4.33824C4.87746 5.27942 4.70589 6.32844 4.70589 7.48531V10.6912H0ZM7.42648 10.6912V7.51472C7.42648 6.61276 7.60295 5.69119 7.9559 4.75001C8.30884 3.80883 8.77453 2.92157 9.35296 2.08824C9.93139 1.2549 10.5588 0.558823 11.2353 0L14 1.63236C13.451 2.4951 13 3.39706 12.6471 4.33824C12.3039 5.27942 12.1324 6.32844 12.1324 7.48531V10.6912H7.42648Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
 
-      <div className="mt-4 flex items-center gap-1" aria-label={`${rating} out of ${MAX_STARS} stars`}>
-        {Array.from({ length: MAX_STARS }).map((_, index) => (
-          <Star
-            key={index}
-            className={`h-4 w-4 ${index < rating ? styles.starActive : styles.starMuted}`}
-            aria-hidden
-          />
-        ))}
-      </div>
-
-      <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-        &ldquo;{quote}&rdquo;
-      </blockquote>
-
-      <div className="mt-5 flex items-center gap-2 border-t border-border/60 pt-4 text-sm text-muted-foreground">
-        <MapPin className={`${styles.accent} h-4 w-4 shrink-0`} strokeWidth={1.9} aria-hidden />
-        <span className="truncate">{location}</span>
+export function TestimonialCard({ testimonial, featured }: TestimonialCardProps) {
+  return (
+    <article className={`${styles.card} ${featured ? styles.cardFeatured : styles.cardPeek}`}>
+      {featured ? <QuoteGlyph /> : null}
+      <p className={`${styles.quote} ${featured ? styles.quoteFeatured : styles.quotePeek}`}>
+        {testimonial.quote}
+      </p>
+      <div className={styles.attribution}>
+        <p className={styles.name}>{testimonial.name}</p>
+        <p className={styles.role}>{testimonial.role}</p>
       </div>
     </article>
   );

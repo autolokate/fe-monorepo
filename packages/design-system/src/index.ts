@@ -14,7 +14,7 @@ export {
   type NeutralToken,
   type SemanticColorToken,
   type SignalToken,
-} from './tokens/colors.js';
+} from './tokens/colors';
 export {
   fontFamily,
   textBody,
@@ -29,7 +29,7 @@ export {
   type FontFamilyToken,
   type TextRoleToken,
   type TypographyToken,
-} from './tokens/typography.js';
+} from './tokens/typography';
 export {
   border,
   elevation,
@@ -46,7 +46,7 @@ export {
   type ShadowToken,
   type SpaceToken,
   type SpacingToken,
-} from './tokens/spacing.js';
+} from './tokens/spacing';
 export {
   motion,
   motionDuration,
@@ -56,7 +56,7 @@ export {
   type MotionEasingToken,
   type MotionScaleToken,
   type MotionToken,
-} from './tokens/motion.js';
+} from './tokens/motion';
 export {
   alAnimations,
   alMotionDurations,
@@ -64,7 +64,7 @@ export {
   type AlAnimationName,
   type AlMotionEasing,
   type AlMotionSpeed,
-} from './motion/index.js';
+} from './motion/index';
 export {
   applyTheme,
   createPrimitiveStylesheet,
@@ -80,4 +80,4 @@ export {
   type CssVariableName,
   type Theme,
   type ThemeMode,
-} from './theme.js';
+} from './theme';

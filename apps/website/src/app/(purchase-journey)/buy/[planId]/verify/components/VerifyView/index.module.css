@@ -1,0 +1,113 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 64px 120px 80px;
+}
+
+/* ── Back link (aligned to the left of the centered 440px form) ─────── */
+.backLink {
+  position: absolute;
+  top: 16px;
+  left: calc(50% - 220px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: #6b7079;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: #0a0a0c;
+}
+
+.backIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Heading ────────────────────────────────────────────────────────── */
+.hd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 52px;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.subhead {
+  max-width: 600px;
+  margin: 0;
+  font-size: 19px;
+  line-height: 28px;
+  color: #6b7079;
+}
+
+.change {
+  font-size: 19px;
+  line-height: 28px;
+  color: #0a0a0c;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.change:hover {
+  opacity: 0.8;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .body {
+    padding: 48px 40px 64px;
+  }
+}
+
+@media (max-width: 560px) {
+  .body {
+    padding: 56px 20px 48px;
+    gap: 28px;
+  }
+
+  .backLink {
+    left: 20px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .subhead {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .change {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

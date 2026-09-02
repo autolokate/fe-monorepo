@@ -1,0 +1,139 @@
+.section {
+  padding: clamp(3.5rem, 8vw, 6rem) clamp(1.25rem, 4vw, 2.5rem);
+  background: #f5f5f5;
+  color: #0a0a0a;
+}
+
+.inner {
+  margin-inline: auto;
+  max-width: 52rem;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #737373;
+}
+
+.headline {
+  margin-top: 0.75rem;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.body {
+  margin-top: 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: #525252;
+}
+
+.pillars {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .pillars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.pillar {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.pillarTitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.pillarBody {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #737373;
+}
+
+.cta {
+  padding: clamp(3rem, 7vw, 4.5rem) clamp(1.25rem, 4vw, 2.5rem);
+  background: #0a0a0a;
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ctaInner {
+  margin-inline: auto;
+  max-width: 40rem;
+  text-align: center;
+}
+
+.ctaHeadline {
+  margin: 0;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.ctaBody {
+  margin: 0.875rem 0 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.ctaRow {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 9999px;
+  background: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0a0a0a;
+  transition: background 0.2s ease;
+}
+
+.primaryBtn:hover {
+  background: #f0f0f0;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.125rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.secondaryBtn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+}

@@ -1,8 +1,8 @@
 import { useId } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlToggleProps } from './Toggle.types.js';
+import type { AlToggleProps } from './Toggle.types';
 import './Toggle.css';
 
 export function AlToggle({

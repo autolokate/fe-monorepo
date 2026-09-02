@@ -1,0 +1,72 @@
+/* Safe starter — editorial split with sticker visual. */
+
+.section {
+  background: var(--mkt-surface-muted);
+  color: var(--mkt-ink-dark);
+  padding-block: var(--mkt-space-section);
+}
+
+.inner {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  align-items: center;
+  max-width: var(--mkt-container);
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: auto 1fr;
+    gap: clamp(3rem, 8vw, 6rem);
+  }
+}
+
+.stickerWrap {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sticker {
+  width: clamp(14rem, 28vw, 18rem);
+  height: auto;
+  filter: drop-shadow(0 28px 56px rgba(0, 0, 0, 0.4));
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .copy {
+    text-align: left;
+  }
+}
+
+.headlineAccent {
+  color: var(--mkt-green);
+}
+
+.description {
+  max-width: 36rem;
+  font-size: var(--mkt-text-lg);
+  line-height: 1.65;
+  color: var(--mkt-ink-secondary);
+}
+
+.availability {
+  font-size: var(--mkt-text-sm);
+  line-height: 1.6;
+  color: var(--mkt-ink-muted);
+}
+
+.upgrade {
+  max-width: 36rem;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--mkt-divider);
+}

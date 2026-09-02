@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { FLOW_STEPS } from "./constants";
+import { cn } from '@/lib/utils';
+import { FLOW_STEPS } from './constants';
 
 export function HowItWorks() {
   return (
@@ -21,7 +21,7 @@ export function HowItWorks() {
         {FLOW_STEPS.map((item, i) => (
           <li
             key={item.step}
-            className={cn("relative pb-6 last:pb-0 sm:pb-7", i === 0 && "-mt-0.5")}
+            className={cn('relative pb-6 last:pb-0 sm:pb-7', i === 0 && '-mt-0.5')}
           >
             <span
               className="absolute -left-6 top-0 flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-primary/30 bg-background text-xs font-bold text-primary"
@@ -29,12 +29,8 @@ export function HowItWorks() {
             >
               {item.step}
             </span>
-            <p className="font-medium text-foreground sm:text-[1.0625rem]">
-              {item.title}
-            </p>
-            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              {item.text}
-            </p>
+            <p className="font-medium text-foreground sm:text-[1.0625rem]">{item.title}</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.text}</p>
           </li>
         ))}
       </ol>

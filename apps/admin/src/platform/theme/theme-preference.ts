@@ -1,12 +1,9 @@
-import {
-  resolveScheduledTheme,
-  type ThemeMode,
-} from '@/platform/theme/resolve-scheduled-theme.js';
+import { resolveScheduledTheme, type ThemeMode } from '@/platform/theme/resolve-scheduled-theme';
 
 export type ThemePreference = ThemeMode | 'auto';
 
-/** Shared with onboarding — one theme preference across Autolokate web apps. */
-export const THEME_PREFERENCE_KEY = 'al-onboarding-theme';
+/** Shared with QR PWA — one theme preference across Autolokate web apps. */
+export const THEME_PREFERENCE_KEY = 'al-qr-theme';
 
 export function readThemePreference(): ThemePreference {
   try {

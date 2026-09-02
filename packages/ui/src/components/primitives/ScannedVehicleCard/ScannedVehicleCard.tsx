@@ -1,7 +1,7 @@
-import { cn } from '../../../utils/cn.js';
-import { CarIconGlyph } from '../icons/CarIconGlyph.js';
+import { cn } from '../../../utils/cn';
+import { CarIconGlyph } from '../icons/CarIconGlyph';
 
-import type { AlScannedVehicleCardProps } from './ScannedVehicleCard.types.js';
+import type { AlScannedVehicleCardProps } from './ScannedVehicleCard.types';
 import './ScannedVehicleCard.css';
 
 /** Figma icon/shield-check · 18:11 */
@@ -35,6 +35,7 @@ export function AlScannedVehicleCard({
   className,
 }: AlScannedVehicleCardProps) {
   const resolvedFooter = footerLabel;
+
 
   return (
     <article

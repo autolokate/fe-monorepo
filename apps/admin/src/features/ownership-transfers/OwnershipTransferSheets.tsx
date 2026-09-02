@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { TransferCompletedDto, TransferInitiatedDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlInput, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -9,9 +9,9 @@ import {
   initiateTransferSchema,
   type ApproveTransferFormValues,
   type InitiateTransferFormValues,
-} from '@/features/ownership-transfers/ownership-transfer-schemas.js';
-import { useOwnershipTransferMutations } from '@/hooks/ownership-transfers/useOwnershipTransferMutations.js';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
+} from '@/features/ownership-transfers/ownership-transfer-schemas';
+import { useOwnershipTransferMutations } from '@/hooks/ownership-transfers/useOwnershipTransferMutations';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
 
 export type InitiateTransferSheetProps = {
   open: boolean;
@@ -62,51 +62,56 @@ export function InitiateTransferSheet({
   });
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="md"
       title="Initiate ownership transfer"
       description="Start an ownership transfer for a vehicle QR code."
+      footer={
+        <div className="admin-modal-actions">
+          <AlButton
+            type="submit"
+            form="initiate-transfer-form"
+            size="sm"
+            loading={initiateMutation.isPending}
+            disabled={initiateMutation.isPending}
+          >
+            Initiate transfer
+          </AlButton>
+          <AlButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={initiateMutation.isPending}
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
+            Cancel
+          </AlButton>
+        </div>
+      }
     >
       <form
+        id="initiate-transfer-form"
+        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlStack gap="lg">
-          <AlInput
-            label="QR code"
-            mono
-            autoComplete="off"
-            {...form.register('code')}
-            errorText={form.formState.errors.code?.message}
-            helperText="Code to open an ownership-transfer case for."
-          />
+        <AlInput
+          label="QR code"
+          mono
+          autoComplete="off"
+          {...form.register('code')}
+          errorText={form.formState.errors.code?.message}
+          helperText="Code to open an ownership-transfer case for."
+        />
 
-          {submitError ? <AlText role="alert">{submitError}</AlText> : null}
-
-          <AlStack gap="sm" direction="row">
-            <AlButton
-              type="submit"
-              loading={initiateMutation.isPending}
-              disabled={initiateMutation.isPending}
-            >
-              Initiate transfer
-            </AlButton>
-            <AlButton
-              type="button"
-              variant="secondary"
-              disabled={initiateMutation.isPending}
-              onClick={() => {
-                onOpenChange(false);
-              }}
-            >
-              Cancel
-            </AlButton>
-          </AlStack>
-        </AlStack>
+        {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }
 
@@ -114,11 +119,7 @@ export function TransferInitiatedPanel({ result }: { result: TransferInitiatedDt
   return (
     <AdminMutationResultPanel
       title="Transfer initiated"
-      fields={[
-        { label: 'Transfer ID', value: result.transferId },
-        { label: 'Vehicle ID', value: result.vehicleId },
-        { label: 'Status', value: result.status },
-      ]}
+      fields={[{ label: 'Status', value: result.status }]}
     />
   );
 }
@@ -177,59 +178,65 @@ export function ApproveTransferSheet({
   });
 
   return (
-    <AlSheet
+    <AlModal
       open={open}
       onOpenChange={onOpenChange}
+      size="md"
       title="Approve ownership transfer"
       description="Complete the transfer and assign the vehicle to the new owner."
+      footer={
+        <div className="admin-modal-actions">
+          <AlButton
+            type="submit"
+            form="approve-transfer-form"
+            size="sm"
+            loading={approveMutation.isPending}
+            disabled={approveMutation.isPending}
+          >
+            Approve transfer
+          </AlButton>
+          <AlButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={approveMutation.isPending}
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
+            Cancel
+          </AlButton>
+        </div>
+      }
     >
       <form
+        id="approve-transfer-form"
+        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlStack gap="lg">
-          <AlInput
-            label="Transfer ID"
-            mono
-            autoComplete="off"
-            {...form.register('transferId')}
-            errorText={form.formState.errors.transferId?.message}
-          />
+        <AlInput
+          label="Transfer reference"
+          mono
+          autoComplete="off"
+          {...form.register('transferId')}
+          errorText={form.formState.errors.transferId?.message}
+          helperText="From the initiate-transfer result or your operations workflow."
+        />
 
-          <AlInput
-            label="New owner account ID"
-            mono
-            autoComplete="off"
-            {...form.register('toAccountId')}
-            errorText={form.formState.errors.toAccountId?.message}
-            helperText="UUID of the new owner's account (OTP-verified login)."
-          />
+        <AlInput
+          label="New owner account"
+          mono
+          autoComplete="off"
+          {...form.register('toAccountId')}
+          errorText={form.formState.errors.toAccountId?.message}
+          helperText="Account for the new owner (OTP-verified login)."
+        />
 
-          {submitError ? <AlText role="alert">{submitError}</AlText> : null}
-
-          <AlStack gap="sm" direction="row">
-            <AlButton
-              type="submit"
-              loading={approveMutation.isPending}
-              disabled={approveMutation.isPending}
-            >
-              Approve transfer
-            </AlButton>
-            <AlButton
-              type="button"
-              variant="secondary"
-              disabled={approveMutation.isPending}
-              onClick={() => {
-                onOpenChange(false);
-              }}
-            >
-              Cancel
-            </AlButton>
-          </AlStack>
-        </AlStack>
+        {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
-    </AlSheet>
+    </AlModal>
   );
 }
 
@@ -237,12 +244,7 @@ export function TransferCompletedPanel({ result }: { result: TransferCompletedDt
   return (
     <AdminMutationResultPanel
       title="Transfer completed"
-      fields={[
-        { label: 'Transfer ID', value: result.transferId },
-        { label: 'Vehicle ID', value: result.vehicleId },
-        { label: 'New owner account', value: result.toAccountId },
-        { label: 'Status', value: result.status },
-      ]}
+      fields={[{ label: 'Status', value: result.status }]}
     />
   );
 }

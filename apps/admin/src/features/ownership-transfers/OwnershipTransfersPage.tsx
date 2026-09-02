@@ -7,9 +7,9 @@ import {
   InitiateTransferSheet,
   TransferCompletedPanel,
   TransferInitiatedPanel,
-} from '@/features/ownership-transfers/OwnershipTransferSheets.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
-import { useAdminPermission } from '@/platform/rbac/useAdminPermission.js';
+} from '@/features/ownership-transfers/OwnershipTransferSheets';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 export function OwnershipTransfersPage() {
   const canWrite = useAdminPermission('qr-lifecycle:write');
@@ -23,8 +23,8 @@ export function OwnershipTransfersPage() {
     <RequirePermission permission="inventory:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Ownership Transfers"
-          description="Initiate and approve vehicle ownership transfers. Open a transfer from your workflow using the IDs returned below."
+          title="Ownership"
+          description="Initiate and approve vehicle ownership transfers."
           actions={
             canWrite ? (
               <>
@@ -51,6 +51,12 @@ export function OwnershipTransfersPage() {
           {initiatedResult ? <TransferInitiatedPanel result={initiatedResult} /> : null}
           {approvedResult ? <TransferCompletedPanel result={approvedResult} /> : null}
         </div>
+
+        {!initiatedResult && !approvedResult ? (
+          <p className="admin-empty-note admin-operations-empty">
+            Transfer status appears here after you initiate or approve a transfer.
+          </p>
+        ) : null}
 
         <InitiateTransferSheet
           open={initiateOpen}

@@ -1,0 +1,78 @@
+.wrap {
+  max-width: 25rem;
+  margin-inline: auto;
+}
+
+.card {
+  padding: 2.1rem 1.75rem;
+  border-radius: 1.75rem;
+  background: var(--foreground);
+  color: var(--background);
+  text-align: center;
+  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.45);
+}
+
+.ring {
+  display: grid;
+  place-items: center;
+  width: 6.9rem;
+  height: 6.9rem;
+  margin: 0 auto 1.1rem;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
+.ringInner {
+  display: grid;
+  place-items: center;
+  width: 5.15rem;
+  height: 5.15rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+  color: var(--background);
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.65rem;
+  color: var(--background);
+}
+
+.sub {
+  margin: 0 0 1.4rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--background) 68%, transparent);
+}
+
+.sub b {
+  color: var(--background);
+}
+
+.checklist {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.15rem;
+  list-style: none;
+  text-align: left;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--background) 8%, transparent);
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--background) 78%, transparent);
+}
+
+.dashboard {
+  width: 100%;
+  justify-content: center;
+}
+
+.restart {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--background) 55%, transparent);
+  text-decoration: underline;
+}

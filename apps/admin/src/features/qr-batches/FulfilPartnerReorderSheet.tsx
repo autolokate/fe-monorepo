@@ -1,15 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ReorderFulfilResultDto } from '@autolokate/api-client';
-import { AlButton, AlConfirmationDialog, AlInput, AlSheet, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlConfirmationDialog, AlInput, AlModal } from '@autolokate/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import {
   fulfilPartnerReorderSchema,
   type FulfilPartnerReorderFormValues,
-} from '@/features/qr-batches/fulfil-reorder-schema.js';
-import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel.js';
+} from '@/features/qr-batches/fulfil-reorder-schema';
+import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
 
 export type FulfilPartnerReorderSheetProps = {
   open: boolean;
@@ -65,61 +65,63 @@ export function FulfilPartnerReorderSheet({
 
   return (
     <>
-      <AlSheet
+      <AlModal
         open={open}
         onOpenChange={onOpenChange}
+        size="md"
         title="Fulfil partner reorder"
         description="Allocate provisioned stock to a partner reorder."
+        footer={
+          <div className="admin-modal-actions">
+            <AlButton
+              type="submit"
+              form="fulfil-reorder-form"
+              size="sm"
+              loading={fulfilReorderMutation.isPending}
+              disabled={fulfilReorderMutation.isPending}
+            >
+              Review & fulfil
+            </AlButton>
+            <AlButton
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={fulfilReorderMutation.isPending}
+              onClick={() => {
+                onOpenChange(false);
+              }}
+            >
+              Cancel
+            </AlButton>
+          </div>
+        }
       >
         <form
+          id="fulfil-reorder-form"
+          className="admin-form-stack"
           onSubmit={(event) => {
             event.preventDefault();
             setConfirmOpen(true);
           }}
         >
-          <AlStack gap="lg">
-            <AlText tone="muted">
-              Enter the pending reorder ID from your partner operations workflow.
-            </AlText>
+          <AlInput
+            label="Reorder reference"
+            mono
+            autoComplete="off"
+            {...form.register('reorderId')}
+            errorText={form.formState.errors.reorderId?.message}
+            helperText="From your partner operations workflow."
+          />
 
-            <AlInput
-              label="Reorder ID"
-              mono
-              autoComplete="off"
-              {...form.register('reorderId')}
-              errorText={form.formState.errors.reorderId?.message}
-            />
-
-            {submitError ? <AlText role="alert">{submitError}</AlText> : null}
-
-            <AlStack gap="sm" direction="row">
-              <AlButton
-                type="submit"
-                loading={fulfilReorderMutation.isPending}
-                disabled={fulfilReorderMutation.isPending}
-              >
-                Review & fulfil
-              </AlButton>
-              <AlButton
-                type="button"
-                variant="secondary"
-                disabled={fulfilReorderMutation.isPending}
-                onClick={() => {
-                  onOpenChange(false);
-                }}
-              >
-                Cancel
-              </AlButton>
-            </AlStack>
-          </AlStack>
+          {submitError ? <p className="admin-form-error">{submitError}</p> : null}
         </form>
-      </AlSheet>
+      </AlModal>
 
       <AlConfirmationDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         title="Fulfil partner reorder"
-        description={`Allocate PROVISIONED stock and confirm reorder ${form.getValues('reorderId') || ''}?`}
+        description="Allocate PROVISIONED stock and confirm this reorder?"
         confirmLabel="Fulfil reorder"
         loading={fulfilReorderMutation.isPending}
         onConfirm={() => {
@@ -135,10 +137,8 @@ export function ReorderFulfilResultPanel({ result }: { result: ReorderFulfilResu
     <AdminMutationResultPanel
       title="Reorder fulfilled"
       fields={[
-        { label: 'Reorder ID', value: result.reorderId },
         { label: 'Status', value: result.status },
         { label: 'Allocated codes', value: result.allocated.toLocaleString() },
-        { label: 'Location ID', value: result.locationId },
       ]}
     />
   );

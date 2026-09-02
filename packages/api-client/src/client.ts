@@ -1,7 +1,7 @@
 import type { TokenManager } from '@autolokate/auth';
 
-import { endpoints } from './endpoints.js';
-import { readEnvelopeMeta } from './envelope.js';
+import { endpoints } from './endpoints';
+import { readEnvelopeMeta } from './envelope';
 
 export type ApiClientConfig = {
   baseUrl: string;
@@ -28,7 +28,12 @@ export class ApiError extends Error {
   readonly code: string | null;
   readonly details: unknown;
 
-  constructor(message: string, status: number, code: string | null = null, details: unknown = null) {
+  constructor(
+    message: string,
+    status: number,
+    code: string | null = null,
+    details: unknown = null,
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
@@ -37,7 +42,7 @@ export class ApiError extends Error {
   }
 }
 
-import type { ApiErrorEnvelope } from './envelope.js';
+import type { ApiErrorEnvelope } from './envelope';
 
 type ErrorBody = {
   message?: string;
@@ -87,6 +92,67 @@ export class ApiClient {
     return this.request<T>(path, { ...options, method: 'GET' });
   }
 
+  /**
+   * GET a non-JSON body (e.g. CSV export). Uses the same auth/refresh path as
+   * {@link request}, but returns a Blob + optional filename from Content-Disposition.
+   */
+  async getBlob(
+    path: string,
+    options: Omit<ApiRequestOptions, 'method' | 'body'> & { accept?: string } = {},
+  ): Promise<{ blob: Blob; filename: string | null }> {
+    const {
+      accept = 'application/octet-stream',
+      headers = {},
+      signal,
+      skipAuth = false,
+      skipAuthRetry = false,
+    } = options;
+    const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+    const token = skipAuth ? null : this.getAccessToken();
+    // Held in its own binding: `RequestInit.headers` widens to `HeadersInit` (which may be an array or
+    // a Headers instance), and spreading that into an object would yield a map of indices.
+    const requestHeaders: Record<string, string> = {
+      Accept: accept,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(this.correlationId ? { 'X-Correlation-Id': this.correlationId } : {}),
+      ...headers,
+    };
+    const requestInit: RequestInit = {
+      method: 'GET',
+      headers: requestHeaders,
+      ...(signal !== undefined ? { signal } : {}),
+    };
+
+    let response = await this.fetchImpl(url, requestInit);
+
+    if (response.status === 401 && !skipAuthRetry && this.shouldAttemptRefresh(path)) {
+      const refreshed = await this.tokenManager?.refresh();
+      if (refreshed) {
+        const retryToken = this.getAccessToken();
+        response = await this.fetchImpl(url, {
+          ...requestInit,
+          headers: {
+            ...requestHeaders,
+            ...(retryToken ? { Authorization: `Bearer ${retryToken}` } : {}),
+          },
+        });
+      } else {
+        this.onAuthFailure?.();
+      }
+    }
+
+    if (!response.ok) {
+      throw await this.parseError(response);
+    }
+
+    const disposition = response.headers.get('Content-Disposition');
+    const filenameMatch = disposition?.match(/filename="([^"]+)"/i);
+    return {
+      blob: await response.blob(),
+      filename: filenameMatch?.[1] ?? null,
+    };
+  }
+
   async post<T>(
     path: string,
     body?: unknown,
@@ -111,13 +177,21 @@ export class ApiClient {
     return this.request<T>(path, { ...options, method: 'PATCH', body });
   }
 
-  async delete<T>(path: string, options: Omit<ApiRequestOptions, 'method' | 'body'> = {}): Promise<T> {
+  /** `body` is optional: `DELETE /v1/devices/token` identifies the row by a body field rather than
+   *  putting the device's push token in the URL, where it would reach access logs. */
+  async delete<T>(path: string, options: Omit<ApiRequestOptions, 'method'> = {}): Promise<T> {
     return this.request<T>(path, { ...options, method: 'DELETE' });
   }
 
   async request<T>(path: string, options: ApiRequestOptions = {}, isRetry = false): Promise<T> {
-    const { method = 'GET', body, headers = {}, signal, skipAuth = false, skipAuthRetry = false } =
-      options;
+    const {
+      method = 'GET',
+      body,
+      headers = {},
+      signal,
+      skipAuth = false,
+      skipAuthRetry = false,
+    } = options;
     const url = `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
     const token = skipAuth ? null : this.getAccessToken();
     const requestInit: RequestInit = {

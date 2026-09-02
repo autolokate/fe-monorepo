@@ -94,11 +94,11 @@ export function toAuditQueryParams(filters: AuditExplorerFilters): {
 export function hasActiveAuditFilters(filters: AuditExplorerFilters): boolean {
   return Boolean(
     resolveActionFilter(filters.action) ||
-      filters.action.trim() ||
-      filters.targetType.trim() ||
-      filters.targetId.trim() ||
-      filters.from ||
-      filters.to ||
-      filters.limit !== DEFAULT_AUDIT_EXPLORER_FILTERS.limit,
+    filters.action.trim() ||
+    filters.targetType.trim() ||
+    filters.targetId.trim() ||
+    filters.from ||
+    filters.to ||
+    filters.limit !== DEFAULT_AUDIT_EXPLORER_FILTERS.limit,
   );
 }

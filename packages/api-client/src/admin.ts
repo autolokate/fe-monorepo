@@ -1,6 +1,7 @@
-import type { ApiClient } from './client.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope, readEnvelopeMeta } from './envelope.js';
+import type { ApiClient } from './client';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope, readEnvelopeMeta } from './envelope';
+import type { ApiPlanTier } from './plans';
 
 /** OpenAPI `BatchSummaryDto.status` */
 export type QrBatchStatus =
@@ -105,11 +106,126 @@ export type AuditEventDto = {
   at: string;
 };
 
-/** OpenAPI `CreateBatchDto` */
+/** OpenAPI `CreateBatchDto` — `planTier` required when `channel` is `B2B` (ops batch_code). */
 export type CreateBatchBody = {
   channel: QrBatchChannel;
   skuId: string;
   totalCount: number;
+  planTier?: ApiPlanTier;
+};
+
+/**
+ * OpenAPI `SkuSummaryDto` — a catalog row. Carries the SHELF (`offeredTiers`), because the shelf is a
+ * server-enforced money control, not a display hint: a tier that is not on it cannot be sold against this
+ * Sku's stock ([09-sales-channels § Routing]). The console must be able to see and edit it.
+ */
+export type SkuSummaryDto = {
+  id: string;
+  skuCode: string;
+  channel: QrBatchChannel;
+  prepaid: boolean;
+  listPricePaise: number;
+  /** The sellable shelf. Empty is never legitimate — it sells nothing (fail-closed). */
+  offeredTiers: ApiPlanTier[];
+  defaultPlanId: string | null;
+  /** Server-derived from the default plan row; never sent by a client. */
+  defaultPlanVersion: number | null;
+  riderDefault: number;
+  sponsorOrgId: string | null;
+  /** Eligible for NEW batches. Does NOT gate the sell path — stickers already printed keep selling. */
+  active: boolean;
+};
+
+/** Query for `GET /admin/v1/skus`. */
+export type ListSkusQuery = {
+  channel?: QrBatchChannel;
+  /** Default false — the picker only wants Skus you may still manufacture against. */
+  includeInactive?: boolean;
+};
+
+/** Body for `POST /admin/v1/skus`. `defaultPlanVersion` is absent on purpose — the server derives it. */
+export type CreateSkuBody = {
+  skuCode: string;
+  channel: QrBatchChannel;
+  defaultPlanId: string;
+  offeredTiers: ApiPlanTier[];
+  listPricePaise: number;
+  prepaid: boolean;
+  riderDefault?: number;
+  sponsorOrgId?: string;
+  active?: boolean;
+};
+
+/**
+ * Body for `PATCH /admin/v1/skus/{skuId}` — the MUTABLE set only. `skuCode`, `channel`, `prepaid` and
+ * `sponsorOrgId` are immutable after create: a QrBatch freezes its `(channel, sku_id)` at generate, so
+ * flipping a channel would retroactively rewrite the journey of every sticker already printed.
+ */
+export type UpdateSkuBody = {
+  defaultPlanId?: string;
+  offeredTiers?: ApiPlanTier[];
+  listPricePaise?: number;
+  riderDefault?: number;
+  active?: boolean;
+};
+
+/** OpenAPI `AdminPlanDto` — one plan VERSION, including superseded/retired ones (the console needs history). */
+export type AdminPlanDto = {
+  id: string;
+  tier: ApiPlanTier;
+  version: number;
+  name: string;
+  pricePaise: number;
+  riderEligible: boolean;
+  period: 'YEARLY';
+  effectiveFrom: string | null;
+  effectiveTo: string | null;
+  isEffectiveNow: boolean;
+};
+
+/** Query for `GET /admin/v1/plans`. */
+export type ListAdminPlansQuery = {
+  tier?: ApiPlanTier;
+};
+
+/**
+ * Body for `POST /admin/v1/plans` — mints a NEW `(tier, version)`. `version` is absent on purpose: plans are
+ * IMMUTABLE, so a price/name change is a new row, and the server derives `version = max+1` under a lock.
+ * `retireCurrent` stamps the outgoing version's `effective_to` in the same transaction.
+ */
+export type CreatePlanBody = {
+  tier: ApiPlanTier;
+  name: string;
+  pricePaise: number;
+  riderEligible: boolean;
+  period: 'YEARLY';
+  effectiveFrom?: string;
+  retireCurrent?: boolean;
+};
+
+/**
+ * Body for `PATCH /admin/v1/plans/{planId}` — LIFECYCLE ONLY (publish / retire). Price, tier and name are
+ * absent by design: a live Subscription pins `(plan_id, plan_version)`, so editing a price in place would
+ * retro-reprice customers who already paid. The server rejects a body naming them.
+ */
+export type UpdatePlanBody = {
+  effectiveFrom?: string | null;
+  effectiveTo?: string | null;
+};
+
+/** OpenAPI `PlanFeaturesDto` — the plan card's copy, keyed by the PLAN VERSION it was authored for. */
+export type PlanFeaturesDto = {
+  planId: string;
+  features: string[];
+  badge: string | null;
+  includesLabel: string | null;
+};
+
+/** Body for `PATCH /admin/v1/plans/{planId}/features`. An empty `features` renders a blank card → rejected. */
+export type UpdatePlanFeaturesBody = {
+  features: string[];
+  badge?: string | null;
+  includesLabel?: string | null;
 };
 
 /** OpenAPI `ReplacedDto` */
@@ -191,6 +307,40 @@ export type ListQrInventoryQuery = {
   state?: QrBatchStatus;
 };
 
+/** OpenAPI `BatchCodeDto.status` */
+export type QrCodeStatus =
+  | 'MANUFACTURED'
+  | 'PROVISIONED'
+  | 'DISTRIBUTED'
+  | 'ATTACHED'
+  | 'ATTACHED_UNPAID'
+  | 'ACTIVATED'
+  | 'LAPSED'
+  | 'TRANSFERRED'
+  | 'CANCELLED'
+  | 'REPLACED_LOST'
+  | 'RETIRED';
+
+/** OpenAPI `BatchCodeDto` — opaque sticker drill-down (non-PII). */
+export type BatchCodeDto = {
+  id: string;
+  code: string;
+  status: QrCodeStatus;
+  createdAt: string;
+  activatedAt: string | null;
+  retiredAt: string | null;
+  /** The retail order this code is allocated to fulfil; null when unallocated or partner-channel. */
+  retailOrderId: string | null;
+  /** The buyer-facing `ALK-…` number of that order; set with retailOrderId. */
+  retailOrderNumber: string | null;
+};
+
+export type ListQrBatchCodesQuery = {
+  status?: QrCodeStatus;
+  cursor?: string;
+  limit?: number;
+};
+
 export type QueryAuditEventsParams = {
   action?: AuditAction;
   targetType?: string;
@@ -217,6 +367,132 @@ export type AuditEventsPageResult = {
   correlationId: string | null;
 };
 
+/** Paginated batch codes response with envelope meta. */
+export type QrBatchCodesPageResult = {
+  codes: BatchCodeDto[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** OpenAPI `AdminOrderSummary.status` / `AdminOrderDetail.status` — the order lifecycle. */
+export type AdminOrderStatus = 'DRAFT' | 'PENDING_PAYMENT' | 'PAID' | 'FAILED' | 'CANCELLED';
+
+/** OpenAPI `AdminOrderSummary.orderKind` — how the order was raised. */
+export type AdminOrderKind = 'SCAN_SELF_PAY' | 'RETAIL_SHIP' | 'UPGRADE' | 'RENEWAL';
+
+/** OpenAPI `AdminOrderDetail.paymentOutcome` — the settled result of the order's payment. */
+export type AdminPaymentOutcome = 'PAID' | 'FAILED' | 'UNCONFIRMED' | 'PENDING' | 'REFUNDED';
+
+/** Fulfillment projection carried by both the order summary and detail (null when nothing ships). */
+export type AdminOrderFulfillment = {
+  status: string;
+  courier: string | null;
+  awbNo: string | null;
+  trackingUrl: string | null;
+  deliveredAt: string | null;
+};
+
+/** OpenAPI `AdminOrderSummary` — one row in the admin orders list. */
+export type AdminOrderSummary = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  orderKind: AdminOrderKind;
+  status: AdminOrderStatus;
+  planName: string;
+  planVersion: number;
+  riderCount: number;
+  totalPaise: number;
+  createdAt: string;
+  fulfillment: AdminOrderFulfillment | null;
+};
+
+/** OpenAPI `AdminOrderDetail` — a single order with its money breakdown and partner attribution. */
+export type AdminOrderDetail = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  orderKind: AdminOrderKind;
+  qrCodeId: string | null;
+  planId: string;
+  planName: string;
+  planVersion: number;
+  riderCount: number;
+  subtotalPaise: number;
+  gstPaise: number;
+  discountPaise: number;
+  totalPaise: number;
+  promoCodeId: string | null;
+  status: AdminOrderStatus;
+  paymentOutcome: AdminPaymentOutcome | null;
+  partnerOrgId: string | null;
+  partnerStaffId: string | null;
+  partnerLocationId: string | null;
+  attachEventId: string | null;
+  createdAt: string;
+  fulfillment: AdminOrderFulfillment | null;
+};
+
+/** Query for `GET /admin/v1/orders` — every field optional. */
+export type ListAdminOrdersQuery = {
+  status?: AdminOrderStatus;
+  kind?: AdminOrderKind;
+  accountId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated orders response with envelope pagination meta. */
+export type AdminOrdersPageResult = {
+  items: AdminOrderSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** OpenAPI `AdminSubscriptionSummary.status` / `AdminSubscriptionDetail.status` — the subscription lifecycle. */
+export type AdminSubscriptionStatus = 'ACTIVE' | 'LAPSED' | 'CANCELLED' | 'REFUNDED';
+
+/** OpenAPI `AdminSubscriptionSummary.activatedVia` — how the live subscription was activated. */
+export type AdminSubscriptionActivatedVia =
+  | 'PARTNER_PREPAID_B2B2C'
+  | 'PARTNER_PREPAID_B2B'
+  | 'CONSUMER_PREPAID_COMMERCE'
+  | 'CONSUMER_PREPAID_RETAIL';
+
+/** OpenAPI `AdminSubscriptionSummary` — one row in the admin subscriptions list (money-free, no PII). */
+export type AdminSubscriptionSummary = {
+  subscriptionId: string;
+  accountId: string;
+  qrCodeId: string;
+  vehicleId: string;
+  planId: string;
+  planTier: ApiPlanTier;
+  planVersion: number;
+  status: AdminSubscriptionStatus;
+  activatedVia: AdminSubscriptionActivatedVia;
+  autoRenew: boolean;
+  startedAt: string | null;
+  renewsAt: string | null;
+};
+
+/** OpenAPI `AdminSubscriptionDetail` — a single subscription with its billing-mandate link (money-free, no PII). */
+export type AdminSubscriptionDetail = AdminSubscriptionSummary & {
+  billingMandateId: string | null;
+};
+
+/** Query for `GET /admin/v1/subscriptions` — offset-paginated; every field optional. */
+export type ListAdminSubscriptionsQuery = {
+  status?: AdminSubscriptionStatus;
+  planId?: string;
+  accountId?: string;
+  limit?: number;
+  offset?: number;
+};
+
 function buildQuery(params: Record<string, string | number | undefined>): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
@@ -239,6 +515,64 @@ export async function listQrInventory(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as BatchSummaryDto[];
+}
+
+/** GET /admin/v1/qr-batches/{id}/codes — data only. */
+export async function listQrBatchCodes(
+  client: ApiClient,
+  batchId: string,
+  query: ListQrBatchCodesQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<BatchCodeDto[]> {
+  const page = await listQrBatchCodesPage(client, batchId, query, options);
+  return page.codes;
+}
+
+/** GET /admin/v1/qr-batches/{id}/codes — includes pagination meta. */
+export async function listQrBatchCodesPage(
+  client: ApiClient,
+  batchId: string,
+  query: ListQrBatchCodesQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<QrBatchCodesPageResult> {
+  const path = `${endpoints.admin.qrBatchCodes(batchId)}${buildQuery({
+    status: query.status,
+    cursor: query.cursor,
+    limit: query.limit,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    codes: unwrapEnvelope(response) as BatchCodeDto[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/qr-batches/{id}/codes/export — print-house CSV download. */
+export async function exportQrBatchCodesCsv(
+  client: ApiClient,
+  batchId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<{ blob: Blob; filename: string }> {
+  const { blob, filename } = await client.getBlob(endpoints.admin.exportQrBatchCodes(batchId), {
+    accept: 'text/csv',
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return {
+    blob,
+    filename: filename ?? `qr-batch-${batchId}-print.csv`,
+  };
 }
 
 /** GET /admin/v1/promos */
@@ -264,6 +598,110 @@ export async function createAdminPromo(
   return unwrapEnvelope(response) as AdminPromoDto;
 }
 
+/** GET /admin/v1/skus */
+export async function listSkus(
+  client: ApiClient,
+  query: ListSkusQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<SkuSummaryDto[]> {
+  const path = `${endpoints.admin.skus}${buildQuery({
+    channel: query.channel,
+    includeInactive: query.includeInactive ? 'true' : undefined,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as SkuSummaryDto[];
+}
+
+/** POST /admin/v1/skus */
+export async function createSku(
+  client: ApiClient,
+  body: CreateSkuBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<SkuSummaryDto> {
+  const response = await client.post<unknown>(endpoints.admin.skus, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as SkuSummaryDto;
+}
+
+/** PATCH /admin/v1/skus/{skuId} */
+export async function updateSku(
+  client: ApiClient,
+  skuId: string,
+  body: UpdateSkuBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<SkuSummaryDto> {
+  const response = await client.patch<unknown>(endpoints.admin.sku(skuId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as SkuSummaryDto;
+}
+
+/** GET /admin/v1/plans — every version, including superseded/retired ones. */
+export async function listAdminPlans(
+  client: ApiClient,
+  query: ListAdminPlansQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPlanDto[]> {
+  const path = `${endpoints.admin.plans}${buildQuery({ tier: query.tier })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminPlanDto[];
+}
+
+/** POST /admin/v1/plans — mint a new (tier, version). */
+export async function createPlanVersion(
+  client: ApiClient,
+  body: CreatePlanBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPlanDto> {
+  const response = await client.post<unknown>(endpoints.admin.plans, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminPlanDto;
+}
+
+/** PATCH /admin/v1/plans/{planId} — lifecycle only (publish / retire). */
+export async function updatePlan(
+  client: ApiClient,
+  planId: string,
+  body: UpdatePlanBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPlanDto> {
+  const response = await client.patch<unknown>(endpoints.admin.plan(planId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminPlanDto;
+}
+
+/** GET /admin/v1/plans/{planId}/features */
+export async function getPlanFeatures(
+  client: ApiClient,
+  planId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<PlanFeaturesDto> {
+  const response = await client.get<unknown>(endpoints.admin.planFeatures(planId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as PlanFeaturesDto;
+}
+
+/** PATCH /admin/v1/plans/{planId}/features */
+export async function updatePlanFeatures(
+  client: ApiClient,
+  planId: string,
+  body: UpdatePlanFeaturesBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<PlanFeaturesDto> {
+  const response = await client.patch<unknown>(endpoints.admin.planFeatures(planId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as PlanFeaturesDto;
+}
+
 /** POST /admin/v1/qr-batches */
 export async function createQrBatch(
   client: ApiClient,
@@ -282,11 +720,9 @@ export async function generateQrBatchCodes(
   batchId: string,
   options: { signal?: AbortSignal } = {},
 ): Promise<BatchSummaryDto> {
-  const response = await client.post<unknown>(
-    endpoints.admin.generateQrBatch(batchId),
-    undefined,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.post<unknown>(endpoints.admin.generateQrBatch(batchId), undefined, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as BatchSummaryDto;
 }
 
@@ -298,6 +734,20 @@ export async function provisionQrBatch(
 ): Promise<BatchSummaryDto> {
   const response = await client.post<unknown>(
     endpoints.admin.provisionQrBatch(batchId),
+    undefined,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as BatchSummaryDto;
+}
+
+/** POST /admin/v1/qr-batches/{id}/distribute — PROVISIONED → IN_DISTRIBUTION */
+export async function distributeQrBatch(
+  client: ApiClient,
+  batchId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<BatchSummaryDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.distributeQrBatch(batchId),
     undefined,
     { ...(options.signal ? { signal: options.signal } : {}) },
   );
@@ -445,4 +895,701 @@ export async function queryAuditEventsPage(
     requestId: meta?.requestId ?? null,
     correlationId: meta?.correlationId ?? null,
   };
+}
+
+/** GET /admin/v1/orders — includes pagination meta from the envelope. */
+export async function listAdminOrdersPage(
+  client: ApiClient,
+  query: ListAdminOrdersQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminOrdersPageResult> {
+  const path = `${endpoints.admin.adminOrders}${buildQuery({
+    status: query.status,
+    kind: query.kind,
+    accountId: query.accountId,
+    from: query.from,
+    to: query.to,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminOrderSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/orders/{orderId} */
+export async function getAdminOrder(
+  client: ApiClient,
+  orderId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminOrderDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminOrder(orderId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminOrderDetail;
+}
+
+/**
+ * OpenAPI `RefundOrderResult` — the result of `POST /admin/v1/orders/{orderId}/refund`.
+ * The refund is ASYNC: the response settles at `REFUND_PENDING`; the terminal `REFUNDED` state lands
+ * later via the payment provider's webhook.
+ */
+export type RefundOrderResult = {
+  paymentRef: string;
+  state: 'REFUND_PENDING';
+  amountPaise: number;
+  refundRef: string;
+};
+
+/**
+ * POST /admin/v1/orders/{orderId}/refund — initiate a FULL refund of a PAID order (FINANCE·step_up).
+ * Only a PAID order with a captured payment is refundable; the server returns 409 `order_not_refundable`
+ * (or 404) otherwise.
+ */
+export async function refundAdminOrder(
+  client: ApiClient,
+  orderId: string,
+  body: { reason: string },
+  options: { signal?: AbortSignal } = {},
+): Promise<RefundOrderResult> {
+  const response = await client.post<unknown>(endpoints.admin.refundAdminOrder(orderId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as RefundOrderResult;
+}
+
+/**
+ * GET /admin/v1/subscriptions — the account-wide subscription list.
+ * Offset-paginated on the server, so `data` is a bare array (no pagination meta on the envelope).
+ */
+export async function listAdminSubscriptions(
+  client: ApiClient,
+  query: ListAdminSubscriptionsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSubscriptionSummary[]> {
+  const path = `${endpoints.admin.adminSubscriptions}${buildQuery({
+    status: query.status,
+    planId: query.planId,
+    accountId: query.accountId,
+    limit: query.limit,
+    offset: query.offset,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminSubscriptionSummary[];
+}
+
+/** GET /admin/v1/subscriptions/{subscriptionId} */
+export async function getAdminSubscription(
+  client: ApiClient,
+  subscriptionId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSubscriptionDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminSubscription(subscriptionId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminSubscriptionDetail;
+}
+
+/** OpenAPI `AdminShipmentSummary.status` / `AdminShipmentDetail.status` — the logistics (fulfilment) FSM. */
+export type AdminShipmentStatus =
+  | 'PAID'
+  | 'ALLOCATED'
+  | 'SHIPPED'
+  | 'IN_TRANSIT'
+  | 'DELIVERED'
+  | 'RETURNED'
+  | 'CANCELLED'
+  | 'LOST';
+
+/** OpenAPI `AdminShipmentSummary` — one row in the admin shipments list (no PII; pincode masked). */
+export type AdminShipmentSummary = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  status: AdminShipmentStatus;
+  courier: string | null;
+  awbNo: string | null;
+  trackingUrl: string | null;
+  maskedPincode: string;
+  /** The claimed sticker's opaque code (`ALK-…`); null until allocated. */
+  allocatedQrCode: string | null;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  createdAt: string;
+};
+
+/** OpenAPI `AdminShipmentEventDto` — one checkpoint on the tracking timeline. */
+export type AdminShipmentEvent = {
+  status: AdminShipmentStatus;
+  rawStatus: string | null;
+  location: string | null;
+  activity: string | null;
+  occurredAt: string;
+};
+
+/** OpenAPI `AdminShipmentDetail` — a single shipment with its per-state timestamps and tracking timeline (no PII). */
+export type AdminShipmentDetail = {
+  orderId: string;
+  orderNumber: string;
+  accountId: string | null;
+  status: AdminShipmentStatus;
+  courier: string | null;
+  awbNo: string | null;
+  trackingUrl: string | null;
+  maskedPincode: string;
+  /** The claimed sticker's opaque code (`ALK-…`); null until allocated. */
+  allocatedQrCode: string | null;
+  allocatedAt: string | null;
+  shippedAt: string | null;
+  inTransitAt: string | null;
+  deliveredAt: string | null;
+  returnedAt: string | null;
+  cancelledAt: string | null;
+  lostAt: string | null;
+  events: AdminShipmentEvent[];
+};
+
+/** Query for `GET /admin/v1/shipments` — keyset-paginated; every field optional. */
+export type ListAdminShipmentsQuery = {
+  status?: AdminShipmentStatus;
+  courier?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated shipments response with envelope pagination meta. */
+export type AdminShipmentsPageResult = {
+  items: AdminShipmentSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** GET /admin/v1/shipments — includes pagination meta from the envelope. */
+export async function listAdminShipmentsPage(
+  client: ApiClient,
+  query: ListAdminShipmentsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminShipmentsPageResult> {
+  const path = `${endpoints.admin.adminShipments}${buildQuery({
+    status: query.status,
+    courier: query.courier,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminShipmentSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/shipments/{orderId} */
+export async function getAdminShipment(
+  client: ApiClient,
+  orderId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminShipmentDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminShipment(orderId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminShipmentDetail;
+}
+
+/** The statuses an admin may manually mark — the courier-checkpoint targets (never PAID/ALLOCATED). */
+export type ManualShipmentStatus = Exclude<AdminShipmentStatus, 'PAID' | 'ALLOCATED'>;
+
+/**
+ * POST /admin/v1/shipments/{orderId}/status — manually mark the next milestone (rank-guarded, forward only;
+ * a non-advance is `shipment_state_invalid` 409). Returns the refreshed detail.
+ */
+export async function updateAdminShipmentStatus(
+  client: ApiClient,
+  orderId: string,
+  body: { status: ManualShipmentStatus },
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminShipmentDetail> {
+  const response = await client.post<unknown>(
+    endpoints.admin.updateAdminShipmentStatus(orderId),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as AdminShipmentDetail;
+}
+
+/** OpenAPI `AdminPaymentSummary.mode` / `AdminPaymentDetail.mode` — the payment channel. */
+export type AdminPaymentMode = 'ONLINE' | 'CASH';
+
+/** OpenAPI `AdminPaymentSummary.state` / `AdminPaymentDetail.state` — the fine-grained payment FSM state. */
+export type AdminPaymentState =
+  | 'CREATED'
+  | 'REQUIRES_ACTION'
+  | 'AUTHORIZED'
+  | 'CAPTURED'
+  | 'PARTIALLY_CAPTURED'
+  | 'FAILED'
+  | 'EXPIRED'
+  | 'VOIDED'
+  | 'REFUND_PENDING'
+  | 'REFUNDED'
+  | 'REFUND_FAILED'
+  | 'CHARGEBACK'
+  | 'CB_WON'
+  | 'CB_LOST';
+
+/** OpenAPI `AdminPaymentSummary` — one row in the admin payments list (money-inclusive, no PII). */
+export type AdminPaymentSummary = {
+  paymentId: string;
+  orderId: string | null;
+  orderNumber: string | null;
+  ref: string;
+  providerRef: string | null;
+  mode: AdminPaymentMode;
+  state: AdminPaymentState;
+  outcome: AdminPaymentOutcome;
+  amountPaise: number;
+  createdAt: string;
+};
+
+/** OpenAPI `AdminPaymentDetail` — a single payment with its captured amount and FSM sequence (no PII). */
+export type AdminPaymentDetail = AdminPaymentSummary & {
+  capturedPaise: number | null;
+  stateSeq: number;
+};
+
+/** Query for `GET /admin/v1/payments` — keyset-paginated; every field optional. */
+export type ListAdminPaymentsQuery = {
+  outcome?: AdminPaymentOutcome;
+  mode?: AdminPaymentMode;
+  state?: AdminPaymentState;
+  orderId?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated payments response with envelope pagination meta. */
+export type AdminPaymentsPageResult = {
+  items: AdminPaymentSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** GET /admin/v1/payments — includes pagination meta from the envelope. */
+export async function listAdminPaymentsPage(
+  client: ApiClient,
+  query: ListAdminPaymentsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPaymentsPageResult> {
+  const path = `${endpoints.admin.adminPayments}${buildQuery({
+    outcome: query.outcome,
+    mode: query.mode,
+    state: query.state,
+    orderId: query.orderId,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminPaymentSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/payments/{paymentId} */
+export async function getAdminPayment(
+  client: ApiClient,
+  paymentId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminPaymentDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminPayment(paymentId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminPaymentDetail;
+}
+
+/** OpenAPI `AdminSupportTicketSummary.status` / `AdminSupportTicketDetail.status` — the ticket lifecycle. */
+export type AdminSupportTicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+
+/** OpenAPI `AdminSupportTicketSummary.type` / `AdminSupportTicketDetail.type` — the ticket category. */
+export type AdminSupportTicketType = 'LOST_QR' | 'BILLING' | 'ACCOUNT' | 'GENERAL';
+
+/** OpenAPI `AdminSupportTicketSummary` — one row in the admin support-ticket list (subject only, no body). */
+export type AdminSupportTicketSummary = {
+  ticketId: string;
+  accountId: string;
+  type: AdminSupportTicketType;
+  subject: string;
+  status: AdminSupportTicketStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/**
+ * OpenAPI `AdminSupportTicketDetail` — a single ticket in full. `subject`/`body` are operator-readable
+ * for triage; `metadata` is the structured context (e.g. `{ qr_code }` for a LOST_QR ticket).
+ */
+export type AdminSupportTicket = {
+  ticketId: string;
+  accountId: string;
+  type: AdminSupportTicketType;
+  subject: string;
+  body: string;
+  status: AdminSupportTicketStatus;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Query for `GET /admin/v1/support/tickets` — keyset-paginated; every field optional. */
+export type ListAdminSupportTicketsQuery = {
+  status?: AdminSupportTicketStatus;
+  type?: AdminSupportTicketType;
+  accountId?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated support-ticket response with envelope pagination meta. */
+export type AdminSupportTicketsPageResult = {
+  items: AdminSupportTicketSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** Body for `PATCH /admin/v1/support/tickets/{ticketId}` — the triage action (set status). */
+export type UpdateSupportTicketStatusBody = {
+  status: AdminSupportTicketStatus;
+};
+
+/** GET /admin/v1/support/tickets — includes pagination meta from the envelope. */
+export async function listAdminSupportTicketsPage(
+  client: ApiClient,
+  query: ListAdminSupportTicketsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSupportTicketsPageResult> {
+  const path = `${endpoints.admin.adminSupportTickets}${buildQuery({
+    status: query.status,
+    type: query.type,
+    accountId: query.accountId,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminSupportTicketSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/support/tickets/{ticketId} */
+export async function getAdminSupportTicket(
+  client: ApiClient,
+  ticketId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSupportTicket> {
+  const response = await client.get<unknown>(endpoints.admin.adminSupportTicket(ticketId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminSupportTicket;
+}
+
+/** PATCH /admin/v1/support/tickets/{ticketId} — triage a ticket (set its status). */
+export async function updateAdminSupportTicketStatus(
+  client: ApiClient,
+  ticketId: string,
+  status: AdminSupportTicketStatus,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminSupportTicket> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.adminSupportTicket(ticketId),
+    { status } satisfies UpdateSupportTicketStatusBody,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as AdminSupportTicket;
+}
+
+/** OpenAPI `AdminIncidentSummary.status` / `AdminIncidentDetail.status` — derived from `resolved_at` (the incident carries no status enum). */
+export type AdminIncidentStatus = 'OPEN' | 'RESOLVED';
+
+/** OpenAPI `AdminIncidentSummary.source` — how the incident was first reported. */
+export type AdminIncidentSource = 'BYSTANDER' | 'TELEMATICS' | 'CONVERGED';
+
+/** OpenAPI `AdminIncidentAlert.status` — the corroborating SOS alert's lifecycle. */
+export type AdminIncidentAlertStatus =
+  | 'RECEIVED'
+  | 'DISPATCHED'
+  | 'RESOLVED'
+  | 'CANCELLED'
+  | 'CONTACTS_ONLY';
+
+/** OpenAPI `AdminIncidentAlert.severity` — graded best-effort by the validator (never gates dispatch). */
+export type AdminEmergencySeverity = 'CRITICAL' | 'MAJOR' | 'MINOR' | 'UNKNOWN';
+
+/** OpenAPI `AdminIncidentAlert.dispatchPath` — full ambulance vs contacts-only. */
+export type AdminDispatchPath = 'FULL' | 'CONTACTS_ONLY';
+
+/** OpenAPI `AdminIncidentTimelineStep.step` — a Control-Center dispatch-tracker step. */
+export type AdminDispatchStep =
+  | 'ALERT_RECEIVED'
+  | 'SEVERITY'
+  | 'AMBULANCE_DISPATCHED'
+  | 'CONTACTS_CALLED'
+  | 'WHATSAPP'
+  | 'ROADSIDE'
+  | 'MONITORING'
+  | 'UPDATES'
+  | 'RESOLVED'
+  | 'INSURANCE';
+
+/** OpenAPI `AdminIncidentTimelineStep.state` — a dispatch step's progress. */
+export type AdminDispatchStepState = 'PENDING' | 'ACTIVE' | 'DONE';
+
+/** OpenAPI `AdminIncidentMedia.slot` — a scene / park photo slot. */
+export type AdminScanMediaSlot = 'BLOCKING' | 'BLOCKED' | 'FRONT' | 'REAR' | 'LEFT' | 'RIGHT';
+
+/** OpenAPI `AdminIncidentSummary` — one row in the break-glass incident list. */
+export type AdminIncidentSummary = {
+  incidentId: string;
+  qrCodeId: string | null;
+  vehicleId: string | null;
+  source: AdminIncidentSource;
+  status: AdminIncidentStatus;
+  openedAt: string;
+  suspectedFalseAlarm: boolean;
+};
+
+/** OpenAPI `AdminIncidentAlert` — one corroborating SOS report on an incident. */
+export type AdminIncidentAlert = {
+  alertId: string;
+  status: AdminIncidentAlertStatus;
+  severity: AdminEmergencySeverity | null;
+  dispatchPath: AdminDispatchPath;
+  scanEventId: string | null;
+  qrCodeId: string | null;
+  createdAt: string;
+};
+
+/** OpenAPI `AdminIncidentTimelineStep` — one Control-Center dispatch-tracker step. */
+export type AdminIncidentTimelineStep = {
+  alertId: string;
+  step: AdminDispatchStep;
+  state: AdminDispatchStepState;
+  detail: Record<string, unknown> | null;
+  at: string;
+};
+
+/** OpenAPI `AdminIncidentMedia` — one scene-photo ref (may carry plates/faces — PII). */
+export type AdminIncidentMedia = {
+  alertId: string;
+  mediaAssetId: string;
+  slot: AdminScanMediaSlot;
+  contentPii: boolean;
+  createdAt: string;
+};
+
+/**
+ * OpenAPI `AdminIncidentDetail` — the full break-glass PII view of an incident: its core, the corroborating
+ * alerts, the dispatch-tracker timeline, and the scene-media refs. Every fetch is audited (`INCIDENT_PII_ACCESS`).
+ */
+export type AdminIncidentDetail = {
+  incidentId: string;
+  qrCodeId: string | null;
+  vehicleId: string | null;
+  source: AdminIncidentSource;
+  status: AdminIncidentStatus;
+  coverageSnapshot: Record<string, unknown> | null;
+  openedAt: string;
+  windowExpiresAt: string;
+  lastProgressAt: string;
+  dispatchOrchestrator: string;
+  suspectedFalseAlarm: boolean;
+  resolvedAt: string | null;
+  alerts: AdminIncidentAlert[];
+  timeline: AdminIncidentTimelineStep[];
+  media: AdminIncidentMedia[];
+};
+
+/** Query for `GET /admin/v1/incidents` — keyset-paginated; every field optional. */
+export type ListAdminIncidentsQuery = {
+  status?: AdminIncidentStatus;
+  source?: AdminIncidentSource;
+  qrCodeId?: string;
+  vehicleId?: string;
+  from?: string;
+  to?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** Paginated incidents response with envelope pagination meta. */
+export type AdminIncidentsPageResult = {
+  items: AdminIncidentSummary[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/**
+ * GET /admin/v1/incidents — the account-wide break-glass incident list (SUPER_ADMIN · step_up).
+ * Includes pagination meta from the envelope. Every call is audited server-side as `INCIDENT_PII_ACCESS`.
+ */
+export async function listAdminIncidentsPage(
+  client: ApiClient,
+  query: ListAdminIncidentsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminIncidentsPageResult> {
+  const path = `${endpoints.admin.adminIncidents}${buildQuery({
+    status: query.status,
+    source: query.source,
+    qrCodeId: query.qrCodeId,
+    vehicleId: query.vehicleId,
+    from: query.from,
+    to: query.to,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminIncidentSummary[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/incidents/{incidentId} — the full break-glass PII view (audited `INCIDENT_PII_ACCESS`). */
+export async function getAdminIncident(
+  client: ApiClient,
+  incidentId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminIncidentDetail> {
+  const response = await client.get<unknown>(endpoints.admin.adminIncident(incidentId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminIncidentDetail;
+}
+
+/** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */
+export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
+
+/** OpenAPI `AdminUserRoleDto` — one ACTIVE grant on an account. */
+export type AdminUserRoleDto = {
+  role: string;
+  scopeRef: string | null;
+  grantedAt: string;
+};
+
+/** OpenAPI `AdminUserDto` — an account and its ACTIVE roles. Never carries PII. */
+export type AdminUserDto = {
+  id: string;
+  roles: AdminUserRoleDto[];
+};
+
+/**
+ * GET /admin/v1/users?phone= — resolve ONE account by its OTP-verified phone.
+ * The server matches on a keyed-HMAC blind index, so the number never round-trips as PII.
+ * Throws `not_found` when no account carries that number.
+ */
+export async function findAdminUserByPhone(
+  client: ApiClient,
+  phone: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserDto> {
+  const path = `${endpoints.admin.users}${buildQuery({ phone })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserDto;
+}
+
+/** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent). */
+export async function grantUserRole(
+  client: ApiClient,
+  userId: string,
+  role: GrantableUserRole,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.userRoles(userId),
+    { role },
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as AdminUserDto;
+}
+
+/** DELETE /admin/v1/users/{userId}/roles/{role} — revoke a platform role (idempotent; `last_admin` 409 guards). */
+export async function revokeUserRole(
+  client: ApiClient,
+  userId: string,
+  role: GrantableUserRole,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserDto> {
+  const response = await client.delete<unknown>(endpoints.admin.userRole(userId, role), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserDto;
 }

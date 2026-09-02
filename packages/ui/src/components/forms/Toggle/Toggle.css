@@ -113,7 +113,8 @@
   position: absolute;
   inset: var(--al-space-xs);
   border-radius: var(--al-radius-pill);
-  border: var(--al-border-width-thick) solid color-mix(in srgb, var(--al-brand-white) 30%, transparent);
+  border: var(--al-border-width-thick) solid
+    color-mix(in srgb, var(--al-brand-white) 30%, transparent);
   border-top-color: var(--al-brand-white);
   animation: al-toggle-spin var(--al-motion-slow) linear infinite;
   opacity: 0;

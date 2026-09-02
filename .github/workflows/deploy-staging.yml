@@ -1,0 +1,280 @@
+name: deploy-staging
+
+# Gated on ci.yml's success (workflow_run is GitHub's documented "run only after another workflow
+# succeeds" pattern). workflow_run always evaluates from the DEFAULT branch's copy of this file, so it
+# only starts firing on staging pushes once merged to main at least once. workflow_dispatch is a manual
+# escape hatch.
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [staging]
+  workflow_dispatch:
+
+permissions:
+  contents: write # move the `staging-deployed` tag after a successful deploy
+  id-token: write # GitHub OIDC -> AWS (the autolokate-fe-staging-deployer role, infra/terraform/staging/iam.tf)
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_NAMESPACE: autolokate-fe-staging
+  # workflow_run jobs inherit github.sha from the DEFAULT branch — resolve the real triggering commit.
+  DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  # Change-aware gate: only deploy the apps actually affected since the last successful deploy (the
+  # `staging-deployed` tag). turbo's affected detection is transitive — an app is affected if any of its
+  # workspace deps changed. First-ever deploy (no tag yet) treats all three as affected.
+  changes:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      admin: ${{ steps.affected.outputs.admin }}
+      qr: ${{ steps.affected.outputs.qr }}
+      website: ${{ steps.affected.outputs.website }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - id: affected
+        name: Determine affected apps
+        run: |
+          if git rev-parse -q --verify refs/tags/staging-deployed >/dev/null; then
+            BASE=$(git rev-parse refs/tags/staging-deployed)
+            echo "Comparing $BASE..$DEPLOY_SHA"
+            AFFECTED=$(TURBO_SCM_BASE="$BASE" TURBO_SCM_HEAD="$DEPLOY_SHA" \
+              pnpm turbo ls --affected --output=json 2>/dev/null \
+              | jq -r '.packages.items[].name')
+          else
+            echo "No staging-deployed tag yet — first deploy, treating all apps as affected."
+            AFFECTED="@autolokate/admin @autolokate/qr @autolokate/website"
+          fi
+          echo "affected packages: $AFFECTED"
+          contains() { echo "$AFFECTED" | grep -q "$1" && echo true || echo false; }
+          {
+            echo "admin=$(contains '@autolokate/admin')"
+            echo "qr=$(contains '@autolokate/qr')"
+            echo "website=$(contains '@autolokate/website')"
+          } >> "$GITHUB_OUTPUT"
+
+  # --- Static SPAs: build + sync to S3 (Cloudflare fronts them, Flexible SSL) ---
+  deploy-admin:
+    needs: changes
+    if: needs.changes.outputs.admin == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Build admin
+        run: pnpm turbo build --filter=@autolokate/admin
+        env:
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_ENVIRONMENT: staging
+          VITE_ENABLE_LOGS: 'false'
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_FE_STAGING_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Sync to S3
+        run: aws s3 sync apps/admin/dist "s3://${{ vars.FE_STAGING_ADMIN_BUCKET }}" --delete
+
+  deploy-qr:
+    needs: changes
+    if: needs.changes.outputs.qr == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Build qr
+        run: pnpm turbo build --filter=@autolokate/qr
+        env:
+          VITE_API_BASE_URL: ${{ vars.STAGING_API_BASE_URL }}
+          VITE_ENVIRONMENT: staging
+          VITE_ENABLE_LOGS: 'false'
+          VITE_RAZORPAY_KEY: ${{ vars.STAGING_RAZORPAY_KEY_ID }}
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_FE_STAGING_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Sync to S3
+        run: aws s3 sync apps/qr/dist "s3://${{ vars.FE_STAGING_QR_BUCKET }}" --delete
+
+  # --- Next.js website (SSR): build+push image, then blue/green redeploy on the box ---
+  build-push-website:
+    needs: changes
+    if: needs.changes.outputs.website == 'true'
+    # Native arm64 runner — the staging box is t4g (Graviton/arm64), so this builds natively instead of
+    # amd64-runner + QEMU emulation.
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_FE_STAGING_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - uses: docker/setup-buildx-action@v4
+      - name: Build & push website
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/website/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: ${{ steps.ecr.outputs.registry }}/${{ env.ECR_NAMESPACE }}/website:${{ env.DEPLOY_SHA }}
+          # NEXT_PUBLIC_* are inlined into the client bundle at build time (all public staging values).
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ vars.STAGING_SITE_URL }}
+            NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL=${{ vars.STAGING_API_BASE_URL }}
+            NEXT_PUBLIC_RAZORPAY_KEY_ID=${{ vars.STAGING_RAZORPAY_KEY_ID }}
+          cache-from: type=gha,scope=staging-website
+          cache-to: type=gha,mode=max,scope=staging-website
+
+  deploy-website:
+    needs: [changes, build-push-website]
+    if: needs.changes.outputs.website == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_FE_STAGING_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # The box's OWN instance role does the ECR login + pull — this role only asks SSM to run the fixed
+      # AWS-RunShellScript document. Blue/green cutover only ever touches the currently-INACTIVE slot; the
+      # new slot's /api/health is verified directly (bypassing Caddy) BEFORE the old slot is stopped — a
+      # never-healthy build is torn down and the active slot is left untouched (== rollback).
+      - name: Blue/green redeploy via SSM RunCommand
+        env:
+          INSTANCE_ID: ${{ vars.AWS_FE_STAGING_INSTANCE_ID }}
+        run: |
+          cat > /tmp/redeploy.sh <<'SCRIPT'
+          set -euo pipefail
+          cd /opt/autolokate-fe
+
+          ACTIVE=$(cat active_slot 2>/dev/null || echo blue)
+          if [ "$ACTIVE" = "blue" ]; then TARGET=green; else TARGET=blue; fi
+          echo "active=$ACTIVE target=$TARGET"
+
+          TARGET_UPPER=$(echo "$TARGET" | tr '[:lower:]' '[:upper:]')
+          if grep -q "^IMAGE_TAG_${TARGET_UPPER}=" .env; then
+            sed -i "s|^IMAGE_TAG_${TARGET_UPPER}=.*|IMAGE_TAG_${TARGET_UPPER}=__NEW_TAG__|" .env
+          else
+            echo "IMAGE_TAG_${TARGET_UPPER}=__NEW_TAG__" >> .env
+          fi
+
+          ECR_REGISTRY=$(grep '^ECR_REGISTRY=' .env | cut -d= -f2)
+          aws ecr get-login-password --region __REGION__ | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+          docker compose pull "website-$TARGET"
+          docker compose up -d --no-deps "website-$TARGET"
+
+          # Poll the NEW slot directly by IP (bypassing Caddy) for up to 90s.
+          OK=0
+          for _ in $(seq 1 30); do
+            CID=$(docker compose ps -q "website-$TARGET" 2>/dev/null || echo "")
+            IP=$([ -n "$CID" ] && docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$CID" 2>/dev/null || echo "")
+            if [ -n "$IP" ] && curl -fsS --max-time 3 "http://$IP:3000/api/health" >/dev/null 2>&1; then
+              OK=1; break
+            fi
+            sleep 3
+          done
+
+          if [ "$OK" != "1" ]; then
+            echo "New slot ($TARGET) never became healthy -- rolling back: tearing it down, $ACTIVE stays live untouched"
+            docker compose logs --tail=80 "website-$TARGET" || true
+            docker compose stop "website-$TARGET" || true
+            docker compose rm -f "website-$TARGET" || true
+            exit 1
+          fi
+
+          # New slot healthy — Caddy's own health check will have started routing to it. Give it one more
+          # interval to converge, then retire the old slot (in-flight requests fail over via lb_retries).
+          sleep 8
+          echo "$TARGET" > active_slot
+          docker compose stop "website-$ACTIVE"
+          docker compose rm -f "website-$ACTIVE"
+          docker image prune -f
+          echo "redeploy-ok: active slot is now $TARGET (was $ACTIVE)"
+          SCRIPT
+
+          sed -i "s|__NEW_TAG__|${DEPLOY_SHA}|g; s|__REGION__|${AWS_REGION}|g" /tmp/redeploy.sh
+
+          PARAMS=$(jq -Rs '{commands: [.]}' /tmp/redeploy.sh)
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --comment "deploy-staging website ${DEPLOY_SHA}" \
+            --parameters "$PARAMS" \
+            --query 'Command.CommandId' --output text)
+          echo "SSM command: $COMMAND_ID"
+
+          STATUS=Pending
+          for _ in $(seq 1 60); do
+            STATUS=$(aws ssm get-command-invocation --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID" \
+              --query 'Status' --output text 2>/dev/null || echo Pending)
+            case "$STATUS" in
+              Success | Failed | Cancelled | TimedOut) break ;;
+            esac
+            sleep 5
+          done
+
+          aws ssm get-command-invocation --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID" \
+            --query '[Status,StandardOutputContent,StandardErrorContent]' --output text
+          test "$STATUS" = "Success"
+
+  # Move the `staging-deployed` tag to this commit ONLY if every triggered deploy succeeded (skipped
+  # jobs are fine). This is the base ref the next run's affected-detection compares against.
+  mark-deployed:
+    needs: [changes, deploy-admin, deploy-qr, build-push-website, deploy-website]
+    if: >
+      !cancelled() &&
+      needs.changes.result == 'success' &&
+      needs.deploy-admin.result != 'failure' &&
+      needs.deploy-qr.result != 'failure' &&
+      needs.build-push-website.result != 'failure' &&
+      needs.deploy-website.result != 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+      - name: Move staging-deployed tag
+        run: |
+          git tag -f staging-deployed "$DEPLOY_SHA"
+          git push -f origin "refs/tags/staging-deployed"

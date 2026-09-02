@@ -13,13 +13,13 @@ import {
   msUntilNextThemeChange,
   resolveScheduledTheme,
   type ThemeMode,
-} from '@/platform/theme/resolve-scheduled-theme.js';
+} from '@/platform/theme/resolve-scheduled-theme';
 import {
   readThemePreference,
   resolveEffectiveTheme,
   writeThemePreference,
   type ThemePreference,
-} from '@/platform/theme/theme-preference.js';
+} from '@/platform/theme/theme-preference';
 
 export type ThemeContextValue = {
   themeMode: ThemeMode;

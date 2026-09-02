@@ -1,6 +1,6 @@
 import { AlHeading, AlStack, AlText } from '@autolokate/ui';
 
-import { compositionMeta } from '../../compositions/metadata.js';
+import { compositionMeta } from '../../compositions/metadata';
 
 export function CompositionIndexPage() {
   return (

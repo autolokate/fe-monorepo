@@ -1,6 +1,6 @@
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlRelationGridProps } from './RelationGrid.types.js';
+import type { AlRelationGridProps } from './RelationGrid.types';
 import './RelationGrid.css';
 
 /** Figma AlRelationGrid — 721:2136 */

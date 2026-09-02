@@ -1,7 +1,7 @@
-import type { ApiClient } from './client.js';
-import type { ApiPlanTier } from './plans.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope } from './envelope.js';
+import type { ApiClient } from './client';
+import type { ApiPlanTier } from './plans';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope } from './envelope';
 
 /** Vahan RC record returned by GET /v1/vehicles/lookup (no owner PII). */
 export type RcRecordDto = {
@@ -53,7 +53,10 @@ export async function listVehicles(client: ApiClient): Promise<VehicleSummaryDto
 }
 
 /** GET /v1/vehicles/{id} — fetch a single vehicle by id. */
-export async function getVehicleById(client: ApiClient, vehicleId: string): Promise<VehicleDetailDto> {
+export async function getVehicleById(
+  client: ApiClient,
+  vehicleId: string,
+): Promise<VehicleDetailDto> {
   const response = await client.get<unknown>(endpoints.vehicles.detail(vehicleId));
   return unwrapEnvelope(response) as VehicleDetailDto;
 }

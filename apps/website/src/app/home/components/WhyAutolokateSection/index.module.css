@@ -1,40 +1,206 @@
-/* WhyAutolokateSection — shares the home design language: green accent, token
-   surfaces, and the same hover lift + green ring used by the QR / Getting
-   Started cards. */
+/* WhyAutolokateSection — light-gray "Beyond Emergencies" utility grid. */
 
-.accent {
-  color: var(--al-signal-green);
+.section {
+  position: relative;
+  z-index: 1;
+  background-color: #f4f6f9;
+  color: #0a0a0c;
 }
 
-.iconBadge {
-  color: var(--al-signal-green);
-  border: 1px solid color-mix(in srgb, var(--al-signal-green) 42%, transparent);
-  background: color-mix(in srgb, var(--al-signal-green) 10%, transparent);
+.inner {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  max-width: 75rem;
+  padding: 4rem 1.25rem;
 }
 
-.featureCard {
-  border: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+@media (min-width: 640px) {
+  .inner {
+    padding: 5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 6rem 2.5rem;
+  }
+}
+
+/* ---------- Header ---------- */
+.header {
+  max-width: 52.5rem;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mkt-green-deep, #178a3f);
+}
+
+.eyebrowDash {
+  display: inline-block;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--mkt-green, #1fa24a);
+}
+
+.headline {
+  margin-top: 0.875rem;
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.182;
+  letter-spacing: -0.012em;
+}
+
+.headlineAccent {
+  color: var(--mkt-green, #1fa24a);
+}
+
+.subheadline {
+  margin-top: 0.875rem;
+  font-size: 1.1875rem;
+  line-height: 1.474;
+  color: #4a4f57;
+}
+
+.eyebrowIndex {
+  font-variant-numeric: tabular-nums;
+  color: var(--mkt-ink-muted, #a1a1a1);
+}
+
+/* ---------- Feature grid ---------- */
+.rail {
+  position: relative;
+  width: 100%;
+}
+
+.railLine {
+  display: none;
+}
+
+.tiles {
+  display: grid;
+  gap: 1.25rem;
+  width: 100%;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .tiles {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.75rem;
+  background: #ffffff;
+  border: 1px solid #e8eaee;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px -16px rgba(8, 15, 26, 0.08);
   transition:
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
+    border-color var(--mkt-duration, 0.35s) var(--mkt-ease-out, ease),
+    box-shadow var(--mkt-duration, 0.35s) var(--mkt-ease-out, ease);
 }
 
-.featureCard:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--al-signal-green) 50%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--al-signal-green) 30%, transparent),
-    0 16px 34px -22px color-mix(in srgb, var(--al-signal-green) 42%, transparent);
+@media (min-width: 768px) {
+  .tile:nth-child(1),
+  .tile:nth-child(2),
+  .tile:nth-child(3) {
+    grid-column: span 2;
+  }
+
+  .tile:nth-child(4),
+  .tile:nth-child(5) {
+    grid-column: span 3;
+  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .featureCard {
-    transition: none;
-  }
-  .featureCard:hover {
-    transform: none;
-  }
+.tile:hover {
+  border-color: #d8dce3;
+  box-shadow: 0 20px 40px -18px rgba(8, 15, 26, 0.12);
+}
+
+.tileTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.index {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #a1a6af;
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #f4f6f9;
+  color: #0a0a0c;
+}
+
+.toneDefault {
+  background: #f4f6f9;
+  color: #0a0a0c;
+}
+
+.toneBrand {
+  background: color-mix(in srgb, var(--mkt-green, #1fa24a) 12%, #ffffff);
+  color: var(--mkt-green-deep, #178a3f);
+}
+
+.toneAmber {
+  background: color-mix(in srgb, #f5a623 14%, #ffffff);
+  color: #9e6407;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.title {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #0a0a0c;
+}
+
+.body {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #6b7079;
+}
+
+.hoverLine {
+  display: none;
+}
+
+/* ---------- CTA ---------- */
+.ctaRow {
+  display: flex;
+  justify-content: center;
 }

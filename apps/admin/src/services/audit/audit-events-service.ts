@@ -4,7 +4,7 @@ import {
   type QueryAuditEventsParams,
 } from '@autolokate/api-client';
 
-import { getAdminApiClient } from '@/platform/api/admin-api-client.js';
+import { getAdminApiClient } from '@/platform/api/admin-api-client';
 
 export async function fetchAuditEvents(
   params: QueryAuditEventsParams = {},

@@ -26,14 +26,14 @@
 
 ### Files changed
 
-| File | Change |
-|------|--------|
-| `packages/design-system/src/interaction-reset.css` | **New** — global tap highlight + pointer focus reset |
-| `packages/design-system/src/theme.css` | Import interaction reset |
-| `packages/ui/src/components/primitives/Button/Button.css` | Tap highlight + `:focus:not(:focus-visible)` |
-| `packages/ui/src/components/primitives/IconButton.css` | Tap highlight + `:focus:not(:focus-visible)` |
-| `packages/ui/src/components/primitives/Chip/Chip.css` | Tap highlight + `:focus:not(:focus-visible)` |
-| `apps/onboarding/src/components/auth-step-shell/auth-step-shell.css` | Mobile field focus-within active border |
+| File                                                         | Change                                               |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| `packages/design-system/src/interaction-reset.css`           | **New** — global tap highlight + pointer focus reset |
+| `packages/design-system/src/theme.css`                       | Import interaction reset                             |
+| `packages/ui/src/components/primitives/Button/Button.css`    | Tap highlight + `:focus:not(:focus-visible)`         |
+| `packages/ui/src/components/primitives/IconButton.css`       | Tap highlight + `:focus:not(:focus-visible)`         |
+| `packages/ui/src/components/primitives/Chip/Chip.css`        | Tap highlight + `:focus:not(:focus-visible)`         |
+| `apps/qr/src/components/auth-step-shell/auth-step-shell.css` | Mobile field focus-within active border              |
 
 ### Screens affected
 
@@ -43,14 +43,14 @@ All onboarding, PWA, and ui-preview surfaces that import `@autolokate/design-sys
 
 ### Verification matrix
 
-| Element | Tap | Click | Focus (touch) | Focus (keyboard) | iOS | Android |
-|---------|-----|-------|---------------|------------------|-----|---------|
-| Primary CTA buttons | No blue flash | No blue flash | No default ring | Focus ring visible | Expected | Expected |
-| Icon back buttons | No blue flash | No blue flash | No default ring | Focus ring visible | Expected | Expected |
-| Chips (interactive) | No blue flash | No blue flash | No default ring | Focus ring visible | Expected | Expected |
-| Plan / rider cards | No blue flash | No blue flash | — | Focus ring visible | Expected | Expected |
-| Text inputs | No blue flash | No blue flash | No blue fill | Component border | Expected | Expected |
-| OTP cells | No blue flash | No blue flash | Active 2px border | Active 2px border | Expected | Expected |
+| Element             | Tap           | Click         | Focus (touch)     | Focus (keyboard)   | iOS      | Android  |
+| ------------------- | ------------- | ------------- | ----------------- | ------------------ | -------- | -------- |
+| Primary CTA buttons | No blue flash | No blue flash | No default ring   | Focus ring visible | Expected | Expected |
+| Icon back buttons   | No blue flash | No blue flash | No default ring   | Focus ring visible | Expected | Expected |
+| Chips (interactive) | No blue flash | No blue flash | No default ring   | Focus ring visible | Expected | Expected |
+| Plan / rider cards  | No blue flash | No blue flash | —                 | Focus ring visible | Expected | Expected |
+| Text inputs         | No blue flash | No blue flash | No blue fill      | Component border   | Expected | Expected |
+| OTP cells           | No blue flash | No blue flash | Active 2px border | Active 2px border  | Expected | Expected |
 
 ---
 

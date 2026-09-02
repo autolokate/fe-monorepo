@@ -10,7 +10,10 @@ export type PromoMetrics = {
 
 export type PromoLifecycleStatus = 'ACTIVE' | 'INACTIVE' | 'UPCOMING' | 'EXPIRED';
 
-export function getPromoLifecycleStatus(promo: AdminPromoDto, now = Date.now()): PromoLifecycleStatus {
+export function getPromoLifecycleStatus(
+  promo: AdminPromoDto,
+  now = Date.now(),
+): PromoLifecycleStatus {
   if (!promo.active) {
     return 'INACTIVE';
   }

@@ -1,6 +1,6 @@
-import type { ApiClient } from './client.js';
-import { endpoints } from './endpoints.js';
-import { unwrapEnvelope } from './envelope.js';
+import type { ApiClient } from './client';
+import { endpoints } from './endpoints';
+import { unwrapEnvelope } from './envelope';
 
 export type ApiPlanTier = 'SAFE' | 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
 
@@ -15,23 +15,50 @@ export type RiderOptionDto = {
 
 /** Plan catalog row from GET /v1/plans. */
 export type PlanOptionDto = {
+  /** Plan-version id — pass to POST /v1/cart as planId. */
+  id: string;
   tier: ApiPlanTier;
+  version: number;
   name: string;
   pricePaise: number;
   period: PlanPeriod;
   riderEligible: boolean;
+  /** Included / entitled rider slots for this tier. */
+  riderCount?: number;
+  /** Max emergency contacts for this tier. */
+  emergencyCount?: number;
   features: string[];
   badge: string | null;
   includesLabel: string | null;
   riderOptions: RiderOptionDto[];
 };
 
+export type ListPlansParams = {
+  tier?: ApiPlanTier;
+  /** Purchase QR sticker code — scopes plan catalog to the scanned QR. */
+  code?: string;
+  /** Optional SKU shelf filter (OpenAPI `sku` query). */
+  sku?: string;
+};
+
 /** GET /v1/plans — list currently-effective plans (one per tier). */
 export async function listPlans(
   client: ApiClient,
-  tier?: ApiPlanTier,
+  params?: ListPlansParams,
 ): Promise<PlanOptionDto[]> {
-  const query = tier ? `?${new URLSearchParams({ tier }).toString()}` : '';
+  const search = new URLSearchParams();
+  if (params?.tier) {
+    search.set('tier', params.tier);
+  }
+  const code = params?.code?.trim();
+  if (code) {
+    search.set('code', code);
+  }
+  const sku = params?.sku?.trim();
+  if (sku) {
+    search.set('sku', sku);
+  }
+  const query = search.toString() ? `?${search.toString()}` : '';
   const response = await client.get<unknown>(`${endpoints.plans.list}${query}`);
   return unwrapEnvelope(response) as PlanOptionDto[];
 }

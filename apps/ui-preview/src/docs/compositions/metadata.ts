@@ -1,4 +1,4 @@
-import type { CompositionPageId } from '../types.js';
+import type { CompositionPageId } from '../types';
 
 export type SpacingRhythmEntry = {
   token: string;
@@ -50,7 +50,8 @@ export const compositionMeta: CompositionMeta[] = [
   {
     id: 'composition-vehicle-info',
     name: 'Vehicle info section',
-    description: 'RC card from R05 · Confirm vehicle — registration emphasis, verified chip, 2-column field grid.',
+    description:
+      'RC card from R05 · Confirm vehicle — registration emphasis, verified chip, 2-column field grid.',
     figmaNode: '170:79 · RC card',
     figmaSection: 'R05 · Confirm vehicle',
     components: ['AlVehicleRcCard', 'AlField', 'AlChip'],
@@ -80,10 +81,7 @@ export const compositionMeta: CompositionMeta[] = [
       { token: '--al-space-md (12)', px: 12, usage: 'Avatar-to-field horizontal gap' },
       { token: '--al-comp-field-gap (2)', px: 2, usage: 'Owner label/value gap' },
     ],
-    typography: [
-      'Owner label — Inter 13px / 500 muted',
-      'Owner value — Inter 16px / 600',
-    ],
+    typography: ['Owner label — Inter 13px / 500 muted', 'Owner value — Inter 16px / 600'],
     iconAlignment: ['AlAvatar user icon centered in 46px circle'],
     touchTargets: ['AlAvatar — 46px (below 48dp; display-only in this composition)'],
   },
@@ -168,17 +166,15 @@ export const compositionMeta: CompositionMeta[] = [
       { token: '--al-space-lg (16)', px: 16, usage: 'Between step state previews' },
       { token: '--al-comp-step-segment-gap (6)', px: 6, usage: 'Between progress segments' },
     ],
-    typography: [
-      'Step label — Inter 13px / 500',
-      'Step count — Inter 13px / 500 muted',
-    ],
+    typography: ['Step label — Inter 13px / 500', 'Step count — Inter 13px / 500 muted'],
     iconAlignment: ['No icons — segment track only'],
     touchTargets: ['Display-only progress indicator'],
   },
   {
     id: 'composition-plan-card',
     name: 'Plan card composition',
-    description: 'AlPlanCardW Secure tier from R06 · Choose plan carousel with badge, includes pill, addon, and selected tick.',
+    description:
+      'AlPlanCardW Secure tier from R06 · Choose plan carousel with badge, includes pill, addon, and selected tick.',
     figmaNode: '232:102 · AlPlanCardW',
     figmaSection: 'R06 · Choose plan',
     components: ['AlPlanCard', 'AlIcon', 'AlStack'],

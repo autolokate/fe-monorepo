@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
-import { useCurrentUser, useIsAuthenticated } from "@/hooks/auth";
-import { useCancelBooking, useMyBookings } from "@/hooks/booking";
-import type { UserBookingSummary } from "@/lib/booking/types";
+import { useCurrentUser, useIsAuthenticated } from '@/hooks/auth';
+import { useCancelBooking, useMyBookings } from '@/hooks/booking';
+import type { UserBookingSummary } from '@/lib/booking/types';
 
-import { HeroBanner } from "../HeroBanner";
-import { WhyBook } from "../WhyBook";
-import { FounderCard } from "../FounderCard";
-import { SessionDetails } from "../SessionDetails";
-import { HowItWorks } from "../HowItWorks";
-import { Faq } from "../Faq";
-import { BookingForm } from "../BookingForm";
-import { BookingHistoryMini } from "../BookingHistoryMini";
-import { CancelDialog } from "../CancelDialog";
+import { HeroBanner } from '../HeroBanner';
+import { WhyBook } from '../WhyBook';
+import { FounderCard } from '../FounderCard';
+import { SessionDetails } from '../SessionDetails';
+import { HowItWorks } from '../HowItWorks';
+import { Faq } from '../Faq';
+import { BookingForm } from '../BookingForm';
+import { BookingHistoryMini } from '../BookingHistoryMini';
+import { CancelDialog } from '../CancelDialog';
 
 /**
  * Top-level client wrapper for `/book-session`. Owns the auth state, the
@@ -47,10 +47,7 @@ export function BookSessionContent() {
   return (
     <div className="antialiased">
       {/* Ambient glow */}
-      <div
-        className="pointer-events-none fixed inset-0 overflow-hidden"
-        aria-hidden
-      >
+      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_130%_90%_at_50%_-25%,rgba(24,24,27,0.05),transparent_58%)]" />
       </div>
 
@@ -81,9 +78,7 @@ export function BookSessionContent() {
                     bookings={bookingsQuery.bookings}
                     isLoading={bookingsQuery.isLoading}
                     onRequestCancel={setCancelTarget}
-                    cancellingId={
-                      cancelMutation.isLoading ? cancelTarget?.id ?? null : null
-                    }
+                    cancellingId={cancelMutation.isLoading ? (cancelTarget?.id ?? null) : null}
                   />
                 )}
               </div>
@@ -101,9 +96,8 @@ export function BookSessionContent() {
                 <div className="my-8 h-px bg-border sm:my-9" role="presentation" />
                 <Faq />
                 <p className="mt-8 rounded-2xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground">
-                  Autolokate expert sessions are guidance only — not financial,
-                  legal, or insurance advice. See checkout for reschedule and
-                  refund terms.
+                  Autolokate expert sessions are guidance only — not financial, legal, or insurance
+                  advice. See checkout for reschedule and refund terms.
                 </p>
               </div>
             </article>
@@ -113,7 +107,9 @@ export function BookSessionContent() {
 
       <CancelDialog
         target={cancelTarget}
-        onClose={() => setCancelTarget(null)}
+        onClose={() => {
+          setCancelTarget(null);
+        }}
         onConfirm={handleConfirmCancel}
         loading={cancelMutation.isLoading}
       />

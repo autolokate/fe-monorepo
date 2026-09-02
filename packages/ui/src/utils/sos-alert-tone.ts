@@ -252,9 +252,12 @@ export function stopSosAlertTone() {
     activeSession.output.gain.value = 0;
   }
 
-  activeSession.stopTimer = setTimeout(() => {
-    teardownSession(activeSession);
-  }, (FADE_SEC + 0.02) * 1000);
+  activeSession.stopTimer = setTimeout(
+    () => {
+      teardownSession(activeSession);
+    },
+    (FADE_SEC + 0.02) * 1000,
+  );
 }
 
 /** Warm the alarm buffer after first user gesture for instant SOS playback. */

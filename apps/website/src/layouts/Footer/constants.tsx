@@ -1,4 +1,4 @@
-import type { ComponentType, SVGProps } from "react";
+import type { ComponentType, SVGProps } from 'react';
 
 /** Minimal brand marks — keep stroke consistent with lucide sizing. */
 export function YoutubeIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
@@ -74,40 +74,47 @@ export interface FooterLinkSection {
   links: FooterLink[];
 }
 
+export const INSTAGRAM_URL = 'https://www.instagram.com/autolokate?igsh=eW9taGQyMnJhYWl6';
+export const LINKEDIN_URL = 'https://www.linkedin.com/company/autolokate/';
+export const WHATSAPP_URL = 'https://wa.me/919062524516';
+export const SUPPORT_EMAIL = 'support@autolokate.com';
+
 export const footerLinks: FooterLinkSection[] = [
   {
-    title: "Platform",
+    title: 'Platform',
     links: [
-      { id: "about", label: "About Us", href: "/about-us" },
-      { id: "how-it-works", label: "How It Works", href: "/how-it-works" },
-      { id: "explore", label: "Explore Cars", href: "/explore" },
-      { id: "compare", label: "Compare Cars", href: "/compare" },
-      { id: "media", label: "Media", href: "/media" },
+      { id: 'how-it-works', label: 'How it works', href: '/how-it-works' },
+      { id: 'safety', label: 'Emergency & safety', href: '/emergency-safety' },
+      { id: 'features', label: 'Features', href: '/features' },
+      { id: 'pricing', label: 'Pricing', href: '/pricing' },
+      { id: 'products', label: 'Products', href: '/products' },
+      { id: 'media', label: 'Media', href: '/media' },
+      { id: 'about', label: 'About us', href: '/about-us' },
+      { id: 'team', label: 'Team', href: '/team' },
     ],
   },
   {
-    title: "Support",
+    title: 'Support',
     links: [
-      { id: "contact", label: "Contact Us", href: "/contact-us" },
-      { id: "book-session", label: "Book a session", href: "/book-session" },
+      { id: 'contact', label: 'Contact us', href: '/contact-us' },
+      { id: 'whatsapp', label: 'WhatsApp us', href: WHATSAPP_URL, external: true },
+      { id: 'orders', label: 'My orders', href: '/my-orders' },
     ],
   },
   {
-    title: "Legal",
+    title: 'Legal',
     links: [
-      { id: "privacy", label: "Privacy Policy", href: "/privacy-policy" },
-      { id: "terms", label: "Terms of Service", href: "/terms-of-service" },
-      { id: "terms-conditions", label: "Terms & Conditions", href: "/terms-and-conditions" },
+      { id: 'privacy', label: 'Privacy policy', href: '/privacy-policy' },
+      { id: 'terms-conditions', label: 'Terms & conditions', href: '/terms-and-conditions' },
+      { id: 'refund', label: 'Refund & cancellation', href: '/refund-and-cancellation' },
+      { id: 'shipping', label: 'Shipping & delivery', href: '/shipping-and-delivery' },
+      { id: 'grievance', label: 'Grievance officer', href: '/grievance-redressal' },
     ],
   },
 ];
 
-export const INSTAGRAM_URL =
-  "https://www.instagram.com/autolokate?igsh=eW9taGQyMnJhYWl6";
-export const LINKEDIN_URL = "https://www.linkedin.com/company/autolokate/";
-
 export interface SocialLink {
-  id: "instagram" | "youtube" | "facebook" | "linkedin";
+  id: 'instagram' | 'youtube' | 'facebook' | 'linkedin';
   label: string;
   href: string;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
@@ -117,50 +124,53 @@ export interface SocialLink {
 
 export const socialLinks: SocialLink[] = [
   {
-    id: "instagram",
-    label: "Instagram",
+    id: 'instagram',
+    label: 'Instagram',
     href: INSTAGRAM_URL,
     Icon: InstagramIcon,
-    brandColor: "#E4405F",
+    brandColor: '#E4405F',
   },
   {
-    id: "youtube",
-    label: "YouTube",
-    href: "https://www.youtube.com/@IndianDriveGuide",
+    id: 'youtube',
+    label: 'YouTube',
+    href: 'https://www.youtube.com/@IndianDriveGuide',
     Icon: YoutubeIcon,
-    brandColor: "#FF0000",
+    brandColor: '#FF0000',
   },
   {
-    id: "facebook",
-    label: "Facebook",
-    href: "https://www.facebook.com/",
+    id: 'facebook',
+    label: 'Facebook',
+    href: 'https://www.facebook.com/',
     Icon: FacebookIcon,
-    brandColor: "#1877F2",
+    brandColor: '#1877F2',
   },
   {
-    id: "linkedin",
-    label: "LinkedIn",
+    id: 'linkedin',
+    label: 'LinkedIn',
     href: LINKEDIN_URL,
     Icon: LinkedInIcon,
-    brandColor: "#0A66C2",
+    brandColor: '#0A66C2',
   },
 ];
 
 export const footerBrand = {
-  name: "Autolokate",
-  legalName: "Autolokate Software Private Limited",
+  name: 'Autolokate',
+  legalName: 'Autolokate Software Private Limited',
   tagline:
-    "India's premier vehicle safety platform. Connect, manage, and protect your vehicles with smart QR technology.",
+    'Automatic crash detection and emergency coordination for every drive. Your phone senses a serious crash, alerts your family, and gets help moving — without you reaching for it.',
+  controlCenter:
+    '24/7 Control Center · Ambulance, police coordination, roadside assistance, and family alerts',
+  email: SUPPORT_EMAIL,
+  disclaimer:
+    'Autolokate coordinates emergency response. It does not replace 112 or official emergency services.',
 };
 
-export const FOOTER_BACKGROUND = "/images/footer/footer_bg.png";
-
 export const ANDROID_STORE_URL =
-  "https://play.google.com/store/apps/details?id=com.mycompany.indiandriveguide";
-export const IOS_STORE_URL = "https://apps.apple.com/in/app/idg-autolokate/id6733244175";
+  'https://play.google.com/store/apps/details?id=com.mycompany.indiandriveguide';
+export const IOS_STORE_URL = 'https://apps.apple.com/in/app/idg-autolokate/id6733244175';
 
 export const footerDownload = {
-  title: "Download App",
+  title: 'Get the app',
   androidUrl: ANDROID_STORE_URL,
   iosUrl: IOS_STORE_URL,
 };

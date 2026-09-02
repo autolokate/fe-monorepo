@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import Image from "next/image";
-import { Sparkles } from "lucide-react";
+import Image from 'next/image';
+import { Sparkles } from 'lucide-react';
 
-import type { VehicleCategory } from "@/lib/preferences";
-import { cn } from "@/lib/utils";
+import type { VehicleCategory } from '@/lib/preferences';
+import { cn } from '@/lib/utils';
 
 /** Banner image fallback — matches Autolokate `CarsPageApi`. */
 export const BRAND_HERO_FALLBACK_IMG =
-  "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&auto=format&fit=crop&q=80";
+  'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&auto=format&fit=crop&q=80';
 
 export type BrandHeroBannerImage = { url: string; label: string };
 
@@ -72,15 +72,15 @@ export function BrandCatalogueHero({
                 <div className="flex h-full items-end justify-center gap-3 lg:justify-end">
                   {bannerImages.map((img, i) => (
                     <div
-                      key={`${img.url}-${i}`}
+                      key={`${img.url}-${i.toString()}`}
                       className={cn(
-                        "relative shrink-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-lg ring-1 ring-black/[0.06]",
-                        "transition-transform duration-300 dark:ring-white/10",
+                        'relative shrink-0 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-lg ring-1 ring-black/[0.06]',
+                        'transition-transform duration-300 dark:ring-white/10',
                         i === 0
-                          ? "h-40 w-36 translate-y-4 sm:h-52 sm:w-44 lg:h-60 lg:w-52"
+                          ? 'h-40 w-36 translate-y-4 sm:h-52 sm:w-44 lg:h-60 lg:w-52'
                           : i === 1
-                            ? "h-44 w-40 sm:h-56 sm:w-48 lg:h-64 lg:w-56"
-                            : "h-36 w-32 translate-y-6 sm:h-48 sm:w-44 lg:h-56 lg:w-48",
+                            ? 'h-44 w-40 sm:h-56 sm:w-48 lg:h-64 lg:w-56'
+                            : 'h-36 w-32 translate-y-6 sm:h-48 sm:w-44 lg:h-56 lg:w-48',
                       )}
                       style={{ opacity: 1 - i * 0.06 }}
                     >
@@ -99,7 +99,7 @@ export function BrandCatalogueHero({
                 <div className="relative h-full overflow-hidden rounded-2xl border border-border/60 shadow-lg">
                   <Image
                     src={BRAND_HERO_FALLBACK_IMG}
-                    alt={vehicleType === "cars" ? "Car catalogue" : "Bike catalogue"}
+                    alt={vehicleType === 'cars' ? 'Car catalogue' : 'Bike catalogue'}
                     fill
                     className="object-cover object-center"
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -140,12 +140,12 @@ export function BrandCatalogueHeroSkeleton() {
               <div
                 key={i}
                 className={cn(
-                  "animate-pulse rounded-2xl bg-muted/55",
+                  'animate-pulse rounded-2xl bg-muted/55',
                   i === 0
-                    ? "h-36 w-[7.25rem] translate-y-4 sm:h-[13rem] sm:w-[11rem]"
+                    ? 'h-36 w-[7.25rem] translate-y-4 sm:h-[13rem] sm:w-[11rem]'
                     : i === 1
-                      ? "h-40 w-40 sm:h-56 sm:w-48 lg:h-64 lg:w-56"
-                      : "h-32 w-[7.75rem] translate-y-6 sm:h-48 sm:w-44 lg:h-56 lg:w-48",
+                      ? 'h-40 w-40 sm:h-56 sm:w-48 lg:h-64 lg:w-56'
+                      : 'h-32 w-[7.75rem] translate-y-6 sm:h-48 sm:w-44 lg:h-56 lg:w-48',
                 )}
               />
             ))}

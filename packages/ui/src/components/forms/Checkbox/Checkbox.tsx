@@ -1,8 +1,8 @@
 import { useId } from 'react';
 
-import { cn } from '../../../utils/cn.js';
+import { cn } from '../../../utils/cn';
 
-import type { AlCheckboxProps } from './Checkbox.types.js';
+import type { AlCheckboxProps } from './Checkbox.types';
 import './Checkbox.css';
 
 export function AlCheckbox({
@@ -61,7 +61,9 @@ export function AlCheckbox({
         <span className="al-checkbox__meta">
           <span className="al-checkbox__label">{label}</span>
           {errorText ? <span className="al-checkbox__error">{errorText}</span> : null}
-          {!errorText && helperText ? <span className="al-checkbox__hint">{helperText}</span> : null}
+          {!errorText && helperText ? (
+            <span className="al-checkbox__hint">{helperText}</span>
+          ) : null}
         </span>
       )}
       {isIconOnly && errorText ? (

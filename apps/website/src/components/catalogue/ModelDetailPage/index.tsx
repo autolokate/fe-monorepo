@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   ArrowLeft,
@@ -11,47 +11,44 @@ import {
   Receipt,
   Star,
   Wallet,
-} from "lucide-react";
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+} from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 
-import {
-  humanizeSegment,
-  modelLabelFor,
-} from "@/components/catalogue/BrandModelsPage/model-utils";
-import { PageFade } from "@/components/shared/PageFade";
+import { humanizeSegment, modelLabelFor } from '@/components/catalogue/BrandModelsPage/model-utils';
+import { PageFade } from '@/components/shared/PageFade';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useCatalogueModelDetail } from "@/hooks/catalogue/useCatalogueModelDetail";
-import { useCatalogueTaxonomy } from "@/hooks/catalogue/useCatalogueTaxonomy";
-import { useEmiFromPrincipal } from "@/hooks/prices/useEmiFromPrincipal";
-import { useVariantTco } from "@/hooks/prices/useVariantTco";
-import { useApiQuery } from "@/hooks/useApiQuery";
-import type { SpecGroupRow } from "@/lib/catalogue/types";
-import type { CatalogueVariant } from "@/lib/catalogue/types";
-import { cn, formatINR, formatIntIn } from "@/lib/utils";
-import { getFuelPrices } from "@/services/prices/prices-api";
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCatalogueModelDetail } from '@/hooks/catalogue/useCatalogueModelDetail';
+import { useCatalogueTaxonomy } from '@/hooks/catalogue/useCatalogueTaxonomy';
+import { useEmiFromPrincipal } from '@/hooks/prices/useEmiFromPrincipal';
+import { useVariantTco } from '@/hooks/prices/useVariantTco';
+import { useApiQuery } from '@/hooks/useApiQuery';
+import type { SpecGroupRow } from '@/lib/catalogue/types';
+import type { CatalogueVariant } from '@/lib/catalogue/types';
+import { cn, formatINR, formatIntIn } from '@/lib/utils';
+import { getFuelPrices } from '@/services/prices/prices-api';
 
-import { DEFAULT_CITY, PRICING_CITIES } from "./constants";
+import { DEFAULT_CITY, PRICING_CITIES } from './constants';
 
 /** Radix Select value when no city is chosen (`null` in state). */
-const ON_ROAD_CITY_UNSET = "__on_road_city_unset__";
+const ON_ROAD_CITY_UNSET = '__on_road_city_unset__';
 
 type ModelDetailPageProps = {
   brandSlug: string;
@@ -59,13 +56,8 @@ type ModelDetailPageProps = {
 };
 
 function imageUrlFrom(row: Record<string, unknown>): string | null {
-  const u =
-    row.url ??
-    row.src ??
-    row.image_url ??
-    row.hero_image_url ??
-    row.thumbnail_url;
-  return typeof u === "string" && u.trim() ? u.trim() : null;
+  const u = row.url ?? row.src ?? row.image_url ?? row.hero_image_url ?? row.thumbnail_url;
+  return typeof u === 'string' && u.trim() ? u.trim() : null;
 }
 
 function findSpec(specGroups: SpecGroupRow[], needles: string[]): string | null {
@@ -80,23 +72,30 @@ function findSpec(specGroups: SpecGroupRow[], needles: string[]): string | null 
 }
 
 function variantFuelKey(v: CatalogueVariant): string {
-  const raw = String(v.fuel_type ?? "").toLowerCase();
-  if (/electric|ev\b|battery/.test(raw)) return "electric";
-  if (raw.includes("cng")) return "cng";
-  if (raw.includes("diesel")) return "diesel";
-  if (raw.includes("petrol") || raw.includes("gasoline")) return "petrol";
-  return "other";
+  const raw = (v.fuel_type ?? '').toLowerCase();
+  if (/electric|ev\b|battery/.test(raw)) return 'electric';
+  if (raw.includes('cng')) return 'cng';
+  if (raw.includes('diesel')) return 'diesel';
+  if (raw.includes('petrol') || raw.includes('gasoline')) return 'petrol';
+  return 'other';
 }
 
 function groupVariantsByFuel(variants: CatalogueVariant[]) {
   const map = new Map<string, CatalogueVariant[]>();
   for (const v of variants) {
     const k = variantFuelKey(v);
-    if (!map.has(k)) map.set(k, []);
-    map.get(k)!.push(v);
+    let items = map.get(k);
+    if (!items) {
+      items = [];
+      map.set(k, items);
+    }
+    items.push(v);
   }
-  const order = ["diesel", "petrol", "cng", "electric", "other"];
-  return order.filter((k) => map.has(k)).map((k) => ({ fuel: k, items: map.get(k)! }));
+  const order = ['diesel', 'petrol', 'cng', 'electric', 'other'];
+  return order.flatMap((k) => {
+    const items = map.get(k);
+    return items ? [{ fuel: k, items }] : [];
+  });
 }
 
 /** Fixed site header (~64–88px) — used so anchor scroll lands below it. */
@@ -106,7 +105,7 @@ function scrollToSection(id: string) {
   const el = document.getElementById(id);
   if (!el) return;
   const top = el.getBoundingClientRect().top + window.scrollY - HEADER_SCROLL_OFFSET_PX;
-  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
 }
 
 function FloatingDock() {
@@ -122,7 +121,9 @@ function FloatingDock() {
         type="button"
         title="Price, EMI & compare"
         aria-label="Scroll to price, EMI and compare section"
-        onClick={() => scrollToSection("finance-strip")}
+        onClick={() => {
+          scrollToSection('finance-strip');
+        }}
       >
         <Wallet className="h-4 w-4 shrink-0" aria-hidden />
       </Button>
@@ -157,7 +158,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
   const slugModel = decodeURIComponent(modelSlug);
 
   const detailQuery = useCatalogueModelDetail(slugBrand, slugModel);
-  const taxonomyQuery = useCatalogueTaxonomy("car", {
+  const taxonomyQuery = useCatalogueTaxonomy('car', {
     enabled: detailQuery.isSuccess,
   });
 
@@ -179,25 +180,23 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
     }
     setSelectedKey((prev) => {
       if (prev && variants.some((v) => String(v.slug ?? v.id) === prev)) return prev;
-      return String(variants[0]?.slug ?? variants[0]?.id ?? "");
+      return variants[0]?.slug ?? variants[0]?.id ?? '';
     });
   }, [variants]);
 
   const selectedVariant = useMemo(() => {
     if (!variants.length) return null;
     const k = selectedKey;
-    return (
-      variants.find((v) => String(v.slug ?? v.id) === k) ?? variants[0] ?? null
-    );
+    return variants.find((v) => String(v.slug ?? v.id) === k) ?? variants[0];
   }, [variants, selectedKey]);
 
-  const variantId = String(selectedVariant?.id ?? "").trim();
+  const variantId = (selectedVariant?.id ?? '').trim();
 
   const fuelGroups = useMemo(() => groupVariantsByFuel(variants), [variants]);
-  const [fuelTab, setFuelTab] = useState<string>("diesel");
+  const [fuelTab, setFuelTab] = useState<string>('diesel');
   useEffect(() => {
     if (fuelGroups.length && !fuelGroups.some((g) => g.fuel === fuelTab)) {
-      setFuelTab(fuelGroups[0]!.fuel);
+      setFuelTab(fuelGroups[0].fuel);
     }
   }, [fuelGroups, fuelTab]);
 
@@ -210,43 +209,40 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
     enabled: tcoQuery.isSuccess,
   });
 
-  const fuelRowsQuery = useApiQuery<unknown[]>(
-    () => getFuelPrices(fuelCity),
-    [fuelCity],
-    { enabled: Boolean(fuelCity && detailQuery.isSuccess) },
-  );
+  const fuelRowsQuery = useApiQuery<unknown[]>(() => getFuelPrices(fuelCity), [fuelCity], {
+    enabled: Boolean(fuelCity && detailQuery.isSuccess),
+  });
 
   const specKeyLabel = useMemo(() => {
     const m = new Map<string, string>();
     for (const s of taxonomyQuery.data?.specs ?? []) {
-      const k = s.canonical_key?.toLowerCase();
+      const k = s.canonical_key.toLowerCase();
       if (k) m.set(k, s.display_name);
     }
     return m;
   }, [taxonomyQuery.data]);
 
   const heroTitle = listing
-    ? `${humanizeSegment(String(listing.brand_name ?? slugBrand))} ${modelLabelFor(listing)}`
+    ? `${humanizeSegment(listing.brand_name ?? slugBrand)} ${modelLabelFor(listing)}`
     : humanizeSegment(slugModel);
 
   const heroImages = useMemo(() => {
     const urls: string[] = [];
     const imgs = data?.modelImages ?? [];
     for (const row of imgs) {
-      const u = imageUrlFrom(row as Record<string, unknown>);
+      const u = imageUrlFrom(row);
       if (u) urls.push(u);
     }
     const hero = listing?.hero_image_url;
-    if (typeof hero === "string" && hero && !urls.includes(hero)) urls.unshift(hero);
-    if (!urls.length) urls.push("/icons/icon-192.png");
+    if (typeof hero === 'string' && hero && !urls.includes(hero)) urls.unshift(hero);
+    if (!urls.length) urls.push('/icons/icon-192.png');
     return urls;
   }, [data?.modelImages, listing]);
 
-  const activeHero = heroImages[Math.min(thumbIndex, heroImages.length - 1)] ?? "";
+  const activeHero = heroImages[Math.min(thumbIndex, heroImages.length - 1)] ?? '';
 
-  const reviewCount = data?.reviews?.length ?? 0;
-  const ratingFromApi =
-    typeof data?.details?.rating === "number" ? (data.details.rating as number) : 4.2;
+  const reviewCount = data?.reviews.length ?? 0;
+  const ratingFromApi = typeof data?.details.rating === 'number' ? data.details.rating : 4.2;
 
   const exPrice =
     selectedVariant?.ex_showroom_price ??
@@ -301,8 +297,8 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
           <div className="min-w-0">
             <div
               className={cn(
-                "relative overflow-hidden rounded-3xl border border-border/80 bg-muted/30",
-                "ring-1 ring-foreground/[0.04] dark:bg-card/40 dark:ring-white/[0.06]",
+                'relative overflow-hidden rounded-3xl border border-border/80 bg-muted/30',
+                'ring-1 ring-foreground/[0.04] dark:bg-card/40 dark:ring-white/[0.06]',
               )}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -319,14 +315,16 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
               <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
                 {heroImages.map((src, i) => (
                   <button
-                    key={`${src}-${i}`}
+                    key={`${src}-${String(i)}`}
                     type="button"
-                    onClick={() => setThumbIndex(i)}
+                    onClick={() => {
+                      setThumbIndex(i);
+                    }}
                     className={cn(
-                      "h-14 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all sm:h-16 sm:w-24",
+                      'h-14 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all sm:h-16 sm:w-24',
                       i === thumbIndex
-                        ? "border-primary ring-2 ring-primary/30"
-                        : "border-transparent opacity-80 hover:opacity-100",
+                        ? 'border-primary ring-2 ring-primary/30'
+                        : 'border-transparent opacity-80 hover:opacity-100',
                     )}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -342,12 +340,8 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
               </h1>
               <p className="text-sm text-muted-foreground sm:text-base">
                 {selectedVariant
-                  ? String(
-                      selectedVariant.variant_name ??
-                        selectedVariant.name ??
-                        "Variant",
-                    )
-                  : `${modelLabelFor(listing!)} — India`}
+                  ? (selectedVariant.variant_name ?? selectedVariant.name ?? 'Variant')
+                  : `${modelLabelFor(data.listing)} — India`}
               </p>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -355,7 +349,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                   <span className="text-sm font-semibold">{ratingFromApi.toFixed(1)}</span>
                   <span className="text-sm text-muted-foreground">
-                    ({reviewCount.toLocaleString("en-IN")} reviews)
+                    ({reviewCount.toLocaleString('en-IN')} reviews)
                   </span>
                 </div>
                 <Badge
@@ -371,9 +365,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   Ex-showroom
                 </p>
                 <p className="mt-1 font-display text-3xl font-bold text-foreground">
-                  {typeof exPrice === "number" && exPrice > 0
+                  {typeof exPrice === 'number' && exPrice > 0
                     ? formatINR(exPrice)
-                    : "Price on request"}
+                    : 'Price on request'}
                 </p>
 
                 {tcoQuery.isSuccess && tcoQuery.data && !onRoadPanelOpen ? (
@@ -385,14 +379,16 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       {formatINR(tcoQuery.data.purchase_price)}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Indicative drive-away for this variant. Open details for the full{" "}
+                      Indicative drive-away for this variant. Open details for the full{' '}
                       {tcoQuery.data.years}-year breakdown.
                     </p>
                     <Button
                       variant="ghost"
                       type="button"
                       className="mt-2 h-auto px-0 text-xs font-semibold text-primary hover:bg-transparent hover:text-primary/90"
-                      onClick={() => setOnRoadPanelOpen(true)}
+                      onClick={() => {
+                        setOnRoadPanelOpen(true);
+                      }}
                     >
                       <ChevronDown className="h-3.5 w-3.5" aria-hidden />
                       Show full breakdown
@@ -406,7 +402,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       variant="primary"
                       type="button"
                       className="h-12 w-full sm:max-w-sm"
-                      onClick={() => setOnRoadPanelOpen(true)}
+                      onClick={() => {
+                        setOnRoadPanelOpen(true);
+                      }}
                     >
                       <MapIcon className="h-4 w-4" aria-hidden />
                       Check on-road price
@@ -425,23 +423,21 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       </label>
                       <Select
                         value={tcoCity ?? ON_ROAD_CITY_UNSET}
-                        onValueChange={(v) =>
-                          setTcoCity(v === ON_ROAD_CITY_UNSET ? null : v)
-                        }
+                        onValueChange={(v) => {
+                          setTcoCity(v === ON_ROAD_CITY_UNSET ? null : v);
+                        }}
                       >
                         <SelectTrigger
                           id="on-road-city"
                           className={cn(
-                            "mt-2 h-11 w-full rounded-xl border-border/70 bg-background text-sm font-medium text-foreground",
-                            "focus:ring-primary/30",
+                            'mt-2 h-11 w-full rounded-xl border-border/70 bg-background text-sm font-medium text-foreground',
+                            'focus:ring-primary/30',
                           )}
                         >
                           <SelectValue placeholder="Select city" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={ON_ROAD_CITY_UNSET}>
-                            Select city
-                          </SelectItem>
+                          <SelectItem value={ON_ROAD_CITY_UNSET}>Select city</SelectItem>
                           {PRICING_CITIES.map((c) => (
                             <SelectItem key={c} value={c}>
                               {c}
@@ -480,8 +476,8 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                                 {formatINR(tcoQuery.data.purchase_price)}
                               </p>
                               <p className="mt-1 text-xs text-muted-foreground">
-                                Modelled drive-away in {tcoQuery.data.city}. Totals below are over{" "}
-                                {tcoQuery.data.years} years at{" "}
+                                Modelled drive-away in {tcoQuery.data.city}. Totals below are over{' '}
+                                {tcoQuery.data.years} years at{' '}
                                 {formatIntIn(tcoQuery.data.km_per_year)} km/year.
                               </p>
                             </div>
@@ -496,10 +492,10 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                               <dl className="mt-3 space-y-2.5 text-sm">
                                 {(
                                   [
-                                    ["Fuel", tcoQuery.data.fuel_cost],
-                                    ["Insurance", tcoQuery.data.insurance_cost],
-                                    ["Maintenance", tcoQuery.data.maintenance_cost],
-                                    ["Depreciation", tcoQuery.data.depreciation],
+                                    ['Fuel', tcoQuery.data.fuel_cost],
+                                    ['Insurance', tcoQuery.data.insurance_cost],
+                                    ['Maintenance', tcoQuery.data.maintenance_cost],
+                                    ['Depreciation', tcoQuery.data.depreciation],
                                   ] as const
                                 ).map(([label, value]) => (
                                   <div
@@ -532,7 +528,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       variant="ghost"
                       type="button"
                       className="h-auto w-full justify-center py-2 text-xs text-muted-foreground hover:text-foreground"
-                      onClick={() => setOnRoadPanelOpen(false)}
+                      onClick={() => {
+                        setOnRoadPanelOpen(false);
+                      }}
                     >
                       <ChevronUp className="h-3.5 w-3.5" aria-hidden />
                       Hide on-road details
@@ -548,7 +546,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                     Dimensions, performance & safety
                   </h2>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Expand a section for headline figures. Full technical data is in{" "}
+                    Expand a section for headline figures. Full technical data is in{' '}
                     <span className="font-medium text-foreground">Specifications</span> on the
                     right.
                   </p>
@@ -568,10 +566,10 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       <AccordionContent className="text-foreground">
                         <dl className="space-y-2.5 pb-3 pl-0.5 text-sm">
                           {[
-                            ["Length", findSpec(data.specGroups, ["length", "overall"])],
-                            ["Width", findSpec(data.specGroups, ["width"])],
-                            ["Wheelbase", findSpec(data.specGroups, ["wheelbase"])],
-                            ["Height", findSpec(data.specGroups, ["height"])],
+                            ['Length', findSpec(data.specGroups, ['length', 'overall'])],
+                            ['Width', findSpec(data.specGroups, ['width'])],
+                            ['Wheelbase', findSpec(data.specGroups, ['wheelbase'])],
+                            ['Height', findSpec(data.specGroups, ['height'])],
                           ].map(([label, val]) => (
                             <div
                               key={String(label)}
@@ -579,7 +577,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                             >
                               <dt className="text-muted-foreground">{label}</dt>
                               <dd className="text-right font-medium tabular-nums">
-                                {val && String(val).trim() && val !== "—" ? val : "—"}
+                                {val && val.trim() && val !== '—' ? val : '—'}
                               </dd>
                             </div>
                           ))}
@@ -597,12 +595,12 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                         <ul className="space-y-2.5 pb-3 pl-0.5 text-sm">
                           {(
                             [
-                              ["Power", findSpec(data.specGroups, ["power", "bhp", "ps"])],
-                              ["Torque", findSpec(data.specGroups, ["torque", "nm"])],
-                              ["Fuel tank", findSpec(data.specGroups, ["tank", "fuel tank"])],
+                              ['Power', findSpec(data.specGroups, ['power', 'bhp', 'ps'])],
+                              ['Torque', findSpec(data.specGroups, ['torque', 'nm'])],
+                              ['Fuel tank', findSpec(data.specGroups, ['tank', 'fuel tank'])],
                               [
-                                "Mileage",
-                                findSpec(data.specGroups, ["mileage", "kmpl", "fuel economy"]),
+                                'Mileage',
+                                findSpec(data.specGroups, ['mileage', 'kmpl', 'fuel economy']),
                               ],
                             ] as const
                           ).map(([label, val]) => (
@@ -611,7 +609,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                               className="flex justify-between gap-4 border-b border-border/30 py-1.5 last:border-0"
                             >
                               <span className="text-muted-foreground">{label}</span>
-                              <span className="text-right font-medium">{val ?? "—"}</span>
+                              <span className="text-right font-medium">{val ?? '—'}</span>
                             </li>
                           ))}
                         </ul>
@@ -626,8 +624,8 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       </AccordionTrigger>
                       <AccordionContent className="text-foreground">
                         <p className="pb-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                          {findSpec(data.specGroups, ["ncap", "star", "rating"]) ??
-                            "Refer to Global NCAP / Bharat NCAP results for the latest trim."}
+                          {findSpec(data.specGroups, ['ncap', 'star', 'rating']) ??
+                            'Refer to Global NCAP / Bharat NCAP results for the latest trim.'}
                         </p>
                         <div className="space-y-3 pb-2">
                           <div>
@@ -678,23 +676,27 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                       <div className="flex gap-2 overflow-x-auto pb-2">
                         {g.items.map((v, idx) => {
                           const key = String(v.slug ?? v.id ?? idx);
-                          const name = String(v.variant_name ?? v.name ?? key);
+                          const name = v.variant_name ?? v.name ?? key;
                           const price = v.ex_showroom_price ?? v.min_price;
                           const selected = selectedKey === key;
                           return (
                             <button
                               key={key}
                               type="button"
-                              onClick={() => setSelectedKey(key)}
+                              onClick={() => {
+                                setSelectedKey(key);
+                              }}
                               className={cn(
-                                "min-w-[148px] max-w-[200px] shrink-0 rounded-xl border px-3 py-2.5 text-left transition-all sm:min-w-[156px] sm:max-w-[210px]",
+                                'min-w-[148px] max-w-[200px] shrink-0 rounded-xl border px-3 py-2.5 text-left transition-all sm:min-w-[156px] sm:max-w-[210px]',
                                 selected
-                                  ? "border-primary bg-primary/5 shadow-sm ring-1 ring-primary/35"
-                                  : "border-border/80 bg-card/80 hover:border-primary/40 dark:bg-card/60",
+                                  ? 'border-primary bg-primary/5 shadow-sm ring-1 ring-primary/35'
+                                  : 'border-border/80 bg-card/80 hover:border-primary/40 dark:bg-card/60',
                               )}
                             >
                               <div className="flex items-start justify-between gap-1.5">
-                                <p className="text-xs font-semibold leading-snug sm:text-[13px]">{name}</p>
+                                <p className="text-xs font-semibold leading-snug sm:text-[13px]">
+                                  {name}
+                                </p>
                                 {idx === g.items.length - 1 ? (
                                   <Badge className="h-5 shrink-0 rounded px-1.5 py-0 text-[9px] leading-none sm:text-[10px]">
                                     Top pick
@@ -702,12 +704,10 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                                 ) : null}
                               </div>
                               <p className="mt-1.5 text-sm font-bold tabular-nums text-primary sm:text-base">
-                                {typeof price === "number" && price > 0
-                                  ? formatINR(price)
-                                  : "—"}
+                                {typeof price === 'number' && price > 0 ? formatINR(price) : '—'}
                               </p>
                               <p className="mt-0.5 text-[10px] text-muted-foreground capitalize leading-tight sm:text-xs">
-                                {String(v.fuel_type ?? g.fuel)} · variant
+                                {v.fuel_type ?? g.fuel} · variant
                               </p>
                             </button>
                           );
@@ -743,12 +743,12 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                         >
                           {data.specGroups.map((g, i) => (
                             <AccordionItem
-                              key={`${g.group}-${i}`}
-                              value={`spec-group-${i}`}
+                              key={`${g.group}-${String(i)}`}
+                              value={`spec-group-${String(i)}`}
                               className="border-border/60 px-4 last:border-b-0"
                             >
                               <AccordionTrigger className="py-3.5 text-base font-semibold capitalize text-foreground hover:no-underline hover:text-primary [&[data-state=open]]:text-primary">
-                                {humanizeSegment(g.group.replace(/_/g, " "))}
+                                {humanizeSegment(g.group.replace(/_/g, ' '))}
                               </AccordionTrigger>
                               <AccordionContent className="text-foreground">
                                 <div className="space-y-0 border-t border-border/50 pt-1">
@@ -782,15 +782,10 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                 <TabsContent value="features" className="mt-0">
                   {data.featureGroups[0]?.features?.length ? (
                     <div className="space-y-4">
-                      {data.featureGroups[0]!.features.map((f) => (
-                        <Card
-                          key={f.key}
-                          className="border-border/80 bg-card/90 dark:bg-card/60"
-                        >
+                      {data.featureGroups[0].features.map((f) => (
+                        <Card key={f.key} className="border-border/80 bg-card/90 dark:bg-card/60">
                           <CardHeader className="pb-2">
-                            <CardTitle className="text-base capitalize">
-                              {f.display_name}
-                            </CardTitle>
+                            <CardTitle className="text-base capitalize">{f.display_name}</CardTitle>
                           </CardHeader>
                           <CardContent>
                             <ul className="grid gap-1 text-sm sm:grid-cols-2">
@@ -817,12 +812,17 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   <div className="flex flex-wrap gap-3">
                     {data.modelColors.length ? (
                       data.modelColors.map((c, i) => {
-                        const rec = c as Record<string, unknown>;
-                        const name = String(rec.name ?? rec.label ?? `Colour ${i + 1}`);
-                        const hex = String(rec.hex ?? rec.color_code ?? "#999");
+                        const rec = c;
+                        const rawName = rec.name ?? rec.label;
+                        const name =
+                          typeof rawName === 'string' && rawName
+                            ? rawName
+                            : `Colour ${String(i + 1)}`;
+                        const rawHex = rec.hex ?? rec.color_code;
+                        const hex = typeof rawHex === 'string' && rawHex ? rawHex : '#999';
                         return (
                           <div
-                            key={`${name}-${i}`}
+                            key={`${name}-${String(i)}`}
                             className="flex items-center gap-2 rounded-xl border border-border/80 bg-card px-3 py-2"
                           >
                             <span
@@ -872,7 +872,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                 <div className="flex justify-between gap-4">
                   <span className="text-muted-foreground">Ex-showroom</span>
                   <span className="font-semibold tabular-nums text-foreground">
-                    {typeof exPrice === "number" && exPrice > 0 ? formatINR(exPrice) : "—"}
+                    {typeof exPrice === 'number' && exPrice > 0 ? formatINR(exPrice) : '—'}
                   </span>
                 </div>
                 <div className="flex justify-between gap-4">
@@ -880,10 +880,10 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   <span className="font-semibold tabular-nums text-foreground">
                     {tcoQuery.isLoading ? (
                       <Loader2 className="inline h-4 w-4 animate-spin text-primary" />
-                    ) : typeof tcoQuery.data?.purchase_price === "number" ? (
+                    ) : typeof tcoQuery.data?.purchase_price === 'number' ? (
                       formatINR(tcoQuery.data.purchase_price)
                     ) : (
-                      "—"
+                      '—'
                     )}
                   </span>
                 </div>
@@ -892,7 +892,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   <span className="font-semibold tabular-nums text-foreground">
                     {emiQuery.data?.monthly_emi != null
                       ? `${formatINR(emiQuery.data.monthly_emi)}/mo`
-                      : "—"}
+                      : '—'}
                   </span>
                 </div>
                 <Button variant="primary" className="mt-auto h-11 w-full" type="button">
@@ -907,7 +907,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                 <p className="text-xs font-semibold uppercase tracking-wider text-primary">
                   Shortlist
                 </p>
-                <CardTitle className="pt-1 text-base text-foreground">Compare & shortlist</CardTitle>
+                <CardTitle className="pt-1 text-base text-foreground">
+                  Compare & shortlist
+                </CardTitle>
                 <p className="text-xs font-normal text-muted-foreground">
                   Start from the variant you care about, then widen the comparison.
                 </p>
@@ -917,21 +919,23 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   variant="outline"
                   className="h-11 w-full shrink-0 justify-center border-primary/70 font-semibold text-primary shadow-[0_2px_12px_-4px_rgba(15,23,42,0.18)] hover:border-primary hover:bg-primary/10 hover:text-primary"
                   type="button"
-                  onClick={() => scrollToSection("variants")}
+                  onClick={() => {
+                    scrollToSection('variants');
+                  }}
                 >
                   <GitCompare className="h-4 w-4" aria-hidden />
                   Compare variants
                 </Button>
                 <ol className="space-y-2.5 text-xs leading-relaxed text-muted-foreground">
                   {[
-                    "Select a trim in the column beside the gallery to anchor pricing.",
-                    "Side-by-side matrices and saved shortlists will appear here as they ship.",
+                    'Select a trim in the column beside the gallery to anchor pricing.',
+                    'Side-by-side matrices and saved shortlists will appear here as they ship.',
                   ].map((line, i) => (
                     <li key={line} className="flex gap-2.5">
                       <span
                         className={cn(
-                          "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-primary/35",
-                          "bg-primary/10 text-[11px] font-semibold tabular-nums text-primary dark:bg-primary/15",
+                          'flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-primary/35',
+                          'bg-primary/10 text-[11px] font-semibold tabular-nums text-primary dark:bg-primary/15',
                         )}
                       >
                         {i + 1}
@@ -941,9 +945,9 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                   ))}
                 </ol>
                 <p className="mt-auto border-t border-primary/10 pt-3 text-[11px] leading-relaxed text-muted-foreground">
-                  Verify equipment in{" "}
-                  <span className="font-semibold text-primary">Specifications</span> before you decide
-                  on a variant.
+                  Verify equipment in{' '}
+                  <span className="font-semibold text-primary">Specifications</span> before you
+                  decide on a variant.
                 </p>
               </CardContent>
             </Card>

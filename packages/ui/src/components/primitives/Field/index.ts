@@ -1,2 +1,2 @@
-export { AlField } from './Field.js';
-export type { AlFieldProps } from './Field.types.js';
+export { AlField } from './Field';
+export type { AlFieldProps } from './Field.types';

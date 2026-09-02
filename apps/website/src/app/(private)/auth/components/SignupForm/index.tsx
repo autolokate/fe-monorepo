@@ -1,50 +1,50 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
-import { toast } from "sonner";
-import { Loader2, Send, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRequestOtp } from "@/hooks/auth";
-import { AuthShell } from "../AuthShell";
-import { BrandWordmark } from "../BrandWordmark";
-import { PhoneField } from "../PhoneField";
-import { PHONE_DIGITS, normalizePhoneDigits, toE164 } from "../constants";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { type SubmitEvent, useState } from 'react';
+import { toast } from 'sonner';
+import { Loader2, Send, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useRequestOtp } from '@/hooks/auth';
+import { AuthShell } from '../AuthShell';
+import { BrandWordmark } from '../BrandWordmark';
+import { PhoneField } from '../PhoneField';
+import { PHONE_DIGITS, normalizePhoneDigits, toE164 } from '../constants';
 
 const FIELD =
-  "h-12 w-full rounded-xl border border-border/80 bg-background px-4 text-base text-foreground shadow-inner outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60";
+  'h-12 w-full rounded-xl border border-border/80 bg-background px-4 text-base text-foreground shadow-inner outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60';
 
 export function SignupForm() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [digits, setDigits] = useState("");
+  const [name, setName] = useState('');
+  const [digits, setDigits] = useState('');
 
   const requestOtp = useRequestOtp({
     onSuccess: (response, vars) => {
       if (!response.sent) {
-        toast.error("Unable to send OTP. Please try again.");
+        toast.error('Unable to send OTP. Please try again.');
         return;
       }
-      toast.success(response.message || "OTP sent successfully.");
+      toast.success(response.message || 'OTP sent successfully.');
       const q = new URLSearchParams();
-      q.set("step", "otp");
-      q.set("phone", vars.phone);
+      q.set('step', 'otp');
+      q.set('phone', vars.phone);
       router.replace(`/auth/login?${q.toString()}`);
     },
   });
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  function onSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const trimmedName = name.trim();
     const clean = normalizePhoneDigits(digits);
 
     if (trimmedName.length < 2) {
-      toast.error("Please enter your full name.");
+      toast.error('Please enter your full name.');
       return;
     }
     if (clean.length !== PHONE_DIGITS) {
-      toast.error("Please enter a valid 10-digit mobile number.");
+      toast.error('Please enter a valid 10-digit mobile number.');
       return;
     }
     void requestOtp.mutate({ phone: toE164(clean) });
@@ -63,8 +63,7 @@ export function SignupForm() {
           Create your account
         </h1>
         <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-          Sign up with your mobile number — we&apos;ll send a one-time code to verify
-          it&apos;s you.
+          Sign up with your mobile number — we&apos;ll send a one-time code to verify it&apos;s you.
         </p>
       </div>
 
@@ -79,7 +78,9 @@ export function SignupForm() {
             placeholder="Your name"
             autoComplete="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
             disabled={requestOtp.isLoading}
             className={FIELD}
           />
@@ -122,7 +123,7 @@ export function SignupForm() {
       </div>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Already registered?{" "}
+        Already registered?{' '}
         <Link
           href="/auth/login"
           className="font-semibold text-primary underline-offset-4 hover:underline"

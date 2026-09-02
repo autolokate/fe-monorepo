@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { AlIcon } from '@autolokate/icons';
 import { AlBottomNav, AlStack, AlText } from '@autolokate/ui';
 
-import {
-  CoreComponentShowcase,
-  type ShowcaseState,
-} from '../../components/CoreComponentShowcase.js';
+import { CoreComponentShowcase, type ShowcaseState } from '../../components/CoreComponentShowcase';
 
 const navItems = [
   { id: 'home', label: 'Home', icon: <AlIcon name="house" size={20} aria-hidden /> },
@@ -118,10 +115,18 @@ import { AlIcon } from '@autolokate/icons';
   ]}
 />`}
       props={[
-        { name: 'items', type: 'AlBottomNavItem[]', description: 'Tab definitions with icon and handler.' },
+        {
+          name: 'items',
+          type: 'AlBottomNavItem[]',
+          description: 'Tab definitions with icon and handler.',
+        },
         { name: 'items[].active', type: 'boolean', description: 'Current tab state.' },
         { name: 'items[].onClick', type: '() => void', description: 'Tab selection handler.' },
-        { name: 'layout', type: "'inline' | 'stacked'", description: "Icon/label arrangement. Defaults to 'inline'." },
+        {
+          name: 'layout',
+          type: "'inline' | 'stacked'",
+          description: "Icon/label arrangement. Defaults to 'inline'.",
+        },
       ]}
     />
   );

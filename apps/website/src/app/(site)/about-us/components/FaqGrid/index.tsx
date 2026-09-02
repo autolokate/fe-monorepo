@@ -1,47 +1,35 @@
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { faqs, type FaqItem } from "./constants";
-
-function FaqColumn({ items }: { items: FaqItem[] }) {
-  return (
-    <div className="rounded-2xl border border-border/80 bg-card px-5 shadow-app-soft sm:px-6">
-      {items.map((item, i) => (
-        <details
-          key={item.q}
-          className={cn(
-            "group border-b border-border/70 py-4 [&[open]>summary>svg]:rotate-180",
-            i === items.length - 1 && "border-b-0",
-          )}
-        >
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-foreground sm:text-[15px]">
-            <span>{item.q}</span>
-            <ChevronDown
-              className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200"
-              aria-hidden
-            />
-          </summary>
-          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">{item.a}</p>
-        </details>
-      ))}
-    </div>
-  );
-}
+import { Fragment } from 'react';
+import { FAQS, FAQ_COPY } from './constants';
+import styles from './index.module.css';
 
 export function FaqGrid() {
-  return (
-    <section className="bg-muted/30 py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Frequently Asked Questions
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">Common questions about Autolokate.</p>
-        </div>
+  const { eyebrow, headline, headlineAccent } = FAQ_COPY;
 
-        <div className="mt-10 grid gap-4 lg:grid-cols-2 lg:gap-6">
-          <FaqColumn items={faqs.left} />
-          <FaqColumn items={faqs.right} />
-        </div>
+  return (
+    <section aria-labelledby="about-faq-heading" className={styles.section}>
+      <div className={styles.inner}>
+        <header className={styles.header}>
+          <p className={styles.eyebrow}>
+            <span className={styles.eyebrowLine} aria-hidden="true" />
+            {eyebrow}
+          </p>
+
+          <h2 id="about-faq-heading" className={styles.headline}>
+            {headline} <span className={styles.headlineAccent}>{headlineAccent}</span>
+          </h2>
+        </header>
+
+        <dl className={styles.questions}>
+          {FAQS.map((faq, index) => (
+            <Fragment key={faq.id}>
+              {index > 0 && <span className={styles.divider} aria-hidden="true" />}
+              <div className={styles.item}>
+                <dt className={styles.question}>{faq.question}</dt>
+                <dd className={styles.answer}>{faq.answer}</dd>
+              </div>
+            </Fragment>
+          ))}
+        </dl>
       </div>
     </section>
   );

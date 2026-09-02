@@ -20,11 +20,11 @@ Per release criteria:
 ## Device matrix execution status
 
 | Device / Browser | Available in session | Tests executed | Evidence attached |
-|------------------|---------------------|----------------|-------------------|
-| Android Chrome | ❌ No | ❌ None | ❌ None |
-| Samsung Internet | ❌ No | ❌ None | ❌ None |
-| iPhone Safari | ❌ No | ❌ None | ❌ None |
-| iPhone Chrome | ❌ No | ❌ None | ❌ None |
+| ---------------- | -------------------- | -------------- | ----------------- |
+| Android Chrome   | ❌ No                | ❌ None        | ❌ None           |
+| Samsung Internet | ❌ No                | ❌ None        | ❌ None           |
+| iPhone Safari    | ❌ No                | ❌ None        | ❌ None           |
+| iPhone Chrome    | ❌ No                | ❌ None        | ❌ None           |
 
 ---
 
@@ -32,12 +32,12 @@ Per release criteria:
 
 These were run against production URL only. They **do not** validate install, picker, rider loop, or visual QA on hardware.
 
-| Check | Result | Timestamp (UTC) |
-|-------|--------|-----------------|
-| `GET /journey` | HTTP 200 | 2026-06-21 |
-| `GET /manifest.webmanifest` | HTTP 200 | 2026-06-21 |
-| Production JS bundle | `index-D1UH5oZ4.js` (~1.1 MB) | 2026-06-21 |
-| Bundle string scan | Contains minified refs to `PwaIosSafariInstallBanner`, `riderSkipped` | 2026-06-21 |
+| Check                       | Result                                                                | Timestamp (UTC) |
+| --------------------------- | --------------------------------------------------------------------- | --------------- |
+| `GET /journey`              | HTTP 200                                                              | 2026-06-21      |
+| `GET /manifest.webmanifest` | HTTP 200                                                              | 2026-06-21      |
+| Production JS bundle        | `index-D1UH5oZ4.js` (~1.1 MB)                                         | 2026-06-21      |
+| Bundle string scan          | Contains minified refs to `PwaIosSafariInstallBanner`, `riderSkipped` | 2026-06-21      |
 
 **Limitation:** String presence in a minified bundle does not prove runtime behaviour on any device.
 
@@ -47,76 +47,76 @@ These were run against production URL only. They **do not** validate install, pi
 
 ### TEST 1 — Install experience (Android Chrome)
 
-| Step | Status | Evidence |
-|------|--------|----------|
-| Install App CTA | **NOT RUN** | — |
-| Launch from icon | **NOT RUN** | — |
-| Kill app → reopen | **NOT RUN** | — |
-| Standalone mode | **NOT RUN** | — |
-| No browser chrome | **NOT RUN** | — |
-| Theme persistence | **NOT RUN** | — |
-| Session persistence | **NOT RUN** | — |
+| Step                | Status      | Evidence |
+| ------------------- | ----------- | -------- |
+| Install App CTA     | **NOT RUN** | —        |
+| Launch from icon    | **NOT RUN** | —        |
+| Kill app → reopen   | **NOT RUN** | —        |
+| Standalone mode     | **NOT RUN** | —        |
+| No browser chrome   | **NOT RUN** | —        |
+| Theme persistence   | **NOT RUN** | —        |
+| Session persistence | **NOT RUN** | —        |
 
 ---
 
 ### TEST 2 — iPhone Safari (A2HS + flows)
 
-| Step | Status | Evidence |
-|------|--------|----------|
-| Add to Home Screen guidance | **NOT RUN** | — |
-| Add to Home Screen | **NOT RUN** | — |
-| Launch from icon | **NOT RUN** | — |
-| Safe areas | **NOT RUN** | — |
-| Keyboard | **NOT RUN** | — |
-| OTP | **NOT RUN** | — |
-| Camera | **NOT RUN** | — |
-| Location | **NOT RUN** | — |
+| Step                        | Status      | Evidence |
+| --------------------------- | ----------- | -------- |
+| Add to Home Screen guidance | **NOT RUN** | —        |
+| Add to Home Screen          | **NOT RUN** | —        |
+| Launch from icon            | **NOT RUN** | —        |
+| Safe areas                  | **NOT RUN** | —        |
+| Keyboard                    | **NOT RUN** | —        |
+| OTP                         | **NOT RUN** | —        |
+| Camera                      | **NOT RUN** | —        |
+| Location                    | **NOT RUN** | —        |
 
 ---
 
 ### TEST 3 — iPhone Chrome (install UX)
 
-| Step | Status | Evidence |
-|------|--------|----------|
-| No Android install banner | **NOT RUN** | — |
-| Correct Safari guidance sheet | **NOT RUN** | — |
-| No dead CTA | **NOT RUN** | — |
-| No broken links | **NOT RUN** | — |
+| Step                          | Status      | Evidence |
+| ----------------------------- | ----------- | -------- |
+| No Android install banner     | **NOT RUN** | —        |
+| Correct Safari guidance sheet | **NOT RUN** | —        |
+| No dead CTA                   | **NOT RUN** | —        |
+| No broken links               | **NOT RUN** | —        |
 
 ---
 
 ### TEST 4 — Emergency contact flow
 
-| Step | Android Chrome | iPhone Safari |
-|------|----------------|---------------|
-| Native contact picker | **NOT RUN** | N/A (fallback expected) |
-| Mobile auto-filled + editable | **NOT RUN** | **NOT RUN** |
-| OTP path | **NOT RUN** | **NOT RUN** |
-| Name auto-filled + editable | **NOT RUN** | **NOT RUN** |
-| No loops / duplicate nav | **NOT RUN** | **NOT RUN** |
+| Step                          | Android Chrome | iPhone Safari           |
+| ----------------------------- | -------------- | ----------------------- |
+| Native contact picker         | **NOT RUN**    | N/A (fallback expected) |
+| Mobile auto-filled + editable | **NOT RUN**    | **NOT RUN**             |
+| OTP path                      | **NOT RUN**    | **NOT RUN**             |
+| Name auto-filled + editable   | **NOT RUN**    | **NOT RUN**             |
+| No loops / duplicate nav      | **NOT RUN**    | **NOT RUN**             |
 
 ---
 
 ### TEST 5 — Rider flow (Purchase / Prepaid / B2B2C)
 
-| Flow | Skip → contact → completed | No R0 return | Evidence |
-|------|---------------------------|--------------|----------|
-| Purchase | **NOT RUN** | **NOT RUN** | — |
-| Prepaid | **NOT RUN** | **NOT RUN** | — |
-| B2B2C | **NOT RUN** | **NOT RUN** | — |
+| Flow     | Skip → contact → completed | No R0 return | Evidence |
+| -------- | -------------------------- | ------------ | -------- |
+| Purchase | **NOT RUN**                | **NOT RUN**  | —        |
+| Prepaid  | **NOT RUN**                | **NOT RUN**  | —        |
+| B2B2C    | **NOT RUN**                | **NOT RUN**  | —        |
 
 ---
 
 ### TEST 6 — Visual QA (393px, dark/light)
 
-| Item | Status | Evidence |
-|------|--------|----------|
-| Consent checkbox alignment | **NOT RUN** | — |
-| OTP boxes | **NOT RUN** | — |
-| Back button spacing | **NOT RUN** | — |
-| Title spacing | **NOT RUN** | — |
-| Input active state | **NOT RUN** | — |
-| No clipping / overflow / jumps | **NOT RUN** | — |
+| Item                           | Status      | Evidence |
+| ------------------------------ | ----------- | -------- |
+| Consent checkbox alignment     | **NOT RUN** | —        |
+| OTP boxes                      | **NOT RUN** | —        |
+| Back button spacing            | **NOT RUN** | —        |
+| Title spacing                  | **NOT RUN** | —        |
+| Input active state             | **NOT RUN** | —        |
+| No clipping / overflow / jumps | **NOT RUN** | —        |
 
 ---
 
@@ -124,11 +124,11 @@ These were run against production URL only. They **do not** validate install, pi
 
 Prior sprint reports (`REAL_DEVICE_SIGNOFF_V2.md`, `IOS_*`, `RIDER_LOOP_*`) document **code-level fixes** with device QA marked **pending**. This session **did not close that gap**.
 
-| Prior report claim | Device evidence in repo |
-|--------------------|-------------------------|
+| Prior report claim       | Device evidence in repo  |
+| ------------------------ | ------------------------ |
 | iOS contact picker FIXED | ❌ No screenshots/videos |
-| Rider loop FIXED | ❌ No screenshots/videos |
-| iOS install FIXED | ❌ No screenshots/videos |
+| Rider loop FIXED         | ❌ No screenshots/videos |
+| iOS install FIXED        | ❌ No screenshots/videos |
 
 ---
 

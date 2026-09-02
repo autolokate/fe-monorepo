@@ -1,32 +1,20 @@
-import type { WhyItMattersCopy } from "./types";
+import type { WhyItMattersCopy } from './types';
 
-/**
- * Theme + viewport aware background plates. The actual swapping happens in
- * `index.module.css` (media query + `[data-theme]` selectors) — these paths are
- * kept here so the asset wiring is documented in one place.
- */
-export const WHY_IT_MATTERS_BACKGROUND = {
-  mobileDark: "/images/new-design/whiyItMatterBgMobileDark.png",
-  mobileLight: "/images/new-design/whiyItMatterBgMobileLight.png",
-  webDark: "/images/new-design/whiyItMatterBgWebDark.png",
-  webLight: "/images/new-design/whiyItMatterBgWebLight.png",
-};
+export const INDIA_MAP_IMAGE = '/images/new-design/home/india-map.svg';
 
 export const WHY_IT_MATTERS_COPY: WhyItMattersCopy = {
-  eyebrow: "Why It Matters",
+  eyebrow: 'The stakes on Indian roads',
+  headline: 'In a serious crash, the first hour',
+  headlineAccent: 'decides who comes home.',
   stat: {
-    value: "173,000+",
-    label: "lives lost on Indian roads every year.",
+    value: '1,72,890',
+    label: 'lives lost in road crashes in 2023',
+    source: 'Source: MoRTH · Road Accidents in India 2023',
   },
-  half: {
-    lead: "Nearly",
-    emphasis: "half",
-    body: "could be saved with timely help in the first hour.",
+  body: 'You may not reach your phone—or be able to say where you are. Autolokate detects the impact, gauges severity, and dispatches help with your precise location while alerting those who matter most.',
+  callout: 'Response starts before anyone else knows you need it.',
+  map: {
+    heading: 'Nationwide reach, local response.',
+    pill: 'Partner network · 30,000+ ambulances · 600+ locations',
   },
-  crash: {
-    headline: "In a serious crash, you may not be able to reach your phone.",
-    brand: "Autolokate",
-    body: " detects, alerts, and helps coordinate support automatically.",
-  },
-  footer: "Every second counts. We make sure help gets there first.",
 };

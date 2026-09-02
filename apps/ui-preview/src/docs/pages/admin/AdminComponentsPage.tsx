@@ -91,11 +91,23 @@ export function AdminComponentsPage() {
                         ]}
                       />
                     }
-                    actions={<AlButton variant="primary" size="sm">Primary action</AlButton>}
+                    actions={
+                      <AlButton variant="primary" size="sm">
+                        Primary action
+                      </AlButton>
+                    }
                   />
-                  <AlSectionHeader title="Section header" description="Secondary sections within a page." />
+                  <AlSectionHeader
+                    title="Section header"
+                    description="Secondary sections within a page."
+                  />
                   <AlStack gap="md" direction="row">
-                    <AlMetricCard label="Provisioned" value="1,650" hint="Example metric" trend={{ label: '+8%', direction: 'up' }} />
+                    <AlMetricCard
+                      label="Provisioned"
+                      value="1,650"
+                      hint="Example metric"
+                      trend={{ label: '+8%', direction: 'up' }}
+                    />
                     <AlStatCard label="Pending" value="24" hint="Awaiting review" />
                   </AlStack>
                 </AlStack>
@@ -120,7 +132,9 @@ export function AdminComponentsPage() {
               content: (
                 <AlStack gap="md">
                   <AlToolbar
-                    leading={<AlSearchInput value={search} onChange={setSearch} placeholder="Search…" />}
+                    leading={
+                      <AlSearchInput value={search} onChange={setSearch} placeholder="Search…" />
+                    }
                     trailing={<AlBadge variant="info">Demo</AlBadge>}
                   />
                   <AlFilterBar>
@@ -137,7 +151,10 @@ export function AdminComponentsPage() {
               content: (
                 <AlStack gap="lg">
                   <AlSectionHeader title="Empty" />
-                  <AlEmptyState title="No records" description="Shown when a table or list has no rows." />
+                  <AlEmptyState
+                    title="No records"
+                    description="Shown when a table or list has no rows."
+                  />
                   <AlSectionHeader title="Error" />
                   <AlErrorState message="Failed to load preview data." onRetry={() => undefined} />
                   <AlSectionHeader title="Loading" />

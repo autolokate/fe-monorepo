@@ -1,0 +1,151 @@
+/* ── Framed (problem scene on light bg) ── */
+.frame {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--mkt-charcoal, #1c1f24);
+  aspect-ratio: 16 / 10;
+  min-height: clamp(14rem, 36vw, 22rem);
+  box-shadow:
+    0 1px 0 rgba(12, 13, 15, 0.04),
+    0 28px 56px rgba(12, 13, 15, 0.14);
+}
+
+.frameWide {
+  aspect-ratio: 16 / 9;
+  min-height: clamp(16rem, 40vw, 28rem);
+  width: 100%;
+}
+
+.image {
+  object-fit: cover;
+  object-position: center;
+}
+
+.frameWide .image {
+  object-fit: contain;
+  object-position: center;
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, #1a1d22 0%, #0a0b0d 100%);
+}
+
+/* ── Dark sections — single surface, no frame box ── */
+.frameSeamless {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  min-height: clamp(14rem, 32vw, 20rem);
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.frameSeamless .image {
+  object-fit: cover;
+  object-position: center;
+  background: none;
+}
+
+/* ── Light / stone sections — image only, no dark letterbox ── */
+.frameLight {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  min-height: clamp(14rem, 32vw, 20rem);
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: transparent;
+  box-shadow: 0 20px 48px rgba(12, 13, 15, 0.1);
+}
+
+.frameLight .image {
+  object-fit: cover;
+  object-position: center;
+  background: none;
+}
+
+/* ── Full bleed — edge-to-edge, no frame, no letterbox ── */
+.frameFull {
+  position: relative;
+  width: 100%;
+  min-height: clamp(16rem, 48vw, 28rem);
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  aspect-ratio: unset;
+}
+
+.frameFull .image {
+  object-fit: cover;
+  object-position: center;
+  background: none;
+}
+
+/* ── Compact — capped size to avoid upscaling 1024px assets ── */
+.frameCompact {
+  position: relative;
+  width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
+  aspect-ratio: 3 / 2;
+  max-height: 24rem;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.frameCompact .image {
+  object-fit: contain;
+  object-position: center;
+  background: none;
+}
+
+/* ── Transparent PNG — no box behind asset ── */
+.frameTransparent {
+  position: relative;
+  width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
+  aspect-ratio: 3 / 2;
+  max-height: 22rem;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.frameTransparent .image {
+  object-fit: contain;
+  object-position: center;
+  background: none;
+}
+
+/* ── Portrait phone PNG — transparent, no frame or shadow ── */
+.framePhone {
+  position: relative;
+  width: clamp(13rem, 40vw, 17rem);
+  aspect-ratio: 853 / 1844;
+  margin-inline: auto;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.framePhone .image {
+  object-fit: contain;
+  object-position: center top;
+  background: none;
+}
+
+@media (min-width: 1024px) {
+  .frameFull {
+    min-height: clamp(20rem, 36vw, 32rem);
+  }
+
+  .frameTransparent {
+    max-height: 20rem;
+  }
+}

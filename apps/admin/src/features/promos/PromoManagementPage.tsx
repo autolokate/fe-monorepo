@@ -8,17 +8,17 @@ import {
 } from '@autolokate/ui';
 import { useCallback, useMemo, useState } from 'react';
 
-import { CreatePromoSheet } from '@/features/promos/CreatePromoSheet.js';
-import { PromoDetailSheet } from '@/features/promos/PromoDetailSheet.js';
-import { PROMO_STATUS_FILTERS } from '@/features/promos/promo-filters.js';
-import { usePromoColumns } from '@/features/promos/promo-columns.js';
-import { usePromoManagement } from '@/hooks/promos/usePromoManagement.js';
-import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
-import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
-import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
-import { buildPageSummary } from '@/platform/components/build-page-summary.js';
-import { useCanWritePromoMutations } from '@/platform/rbac/module-write-permissions.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
+import { CreatePromoSheet } from '@/features/promos/CreatePromoSheet';
+import { PromoDetailSheet } from '@/features/promos/PromoDetailSheet';
+import { PROMO_STATUS_FILTERS } from '@/features/promos/promo-filters';
+import { usePromoColumns } from '@/features/promos/promo-columns';
+import { usePromoManagement } from '@/hooks/promos/usePromoManagement';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
+import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { buildPageSummary } from '@/platform/components/build-page-summary';
+import { useCanWritePromoMutations } from '@/platform/rbac/module-write-permissions';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './promos.css';
 
@@ -82,7 +82,7 @@ export function PromoManagementPage() {
     <RequirePermission permission="promo:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Promo Management"
+          title="Promos"
           description={pageDescription}
           actions={
             <>

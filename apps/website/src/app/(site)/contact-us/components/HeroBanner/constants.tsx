@@ -1,13 +1,8 @@
-import { ShieldCheck, Users, Zap, type LucideIcon } from "lucide-react";
+import type { HeroCopy } from './types';
 
-export interface HeroMetaItem {
-  label: string;
-  value: string;
-  Icon: LucideIcon;
-}
-
-export const heroMeta: HeroMetaItem[] = [
-  { Icon: Zap, label: "Quick Support", value: "Within 24 Hours" },
-  { Icon: ShieldCheck, label: "Privacy First", value: "Your data is safe" },
-  { Icon: Users, label: "Trusted by", value: "80K+ Users" },
-];
+export const HERO_COPY: HeroCopy = {
+  eyebrow: 'Support',
+  headline: 'Let’s talk.',
+  headlineAccent: 'We’re here.',
+  description: 'A problem, a question or feedback—you’re one message away from an answer.',
+};

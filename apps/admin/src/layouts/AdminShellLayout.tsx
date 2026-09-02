@@ -2,9 +2,9 @@ import { AlPageContent, AlPageLayout } from '@autolokate/ui';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import { AdminCommandPalette } from '@/components/AdminCommandPalette.js';
-import { AdminHeader } from '@/layouts/AdminHeader.js';
-import { AdminSidebar } from '@/layouts/AdminSidebar.js';
+import { AdminCommandPalette } from '@/components/AdminCommandPalette';
+import { AdminHeader } from '@/layouts/AdminHeader';
+import { AdminSidebar } from '@/layouts/AdminSidebar';
 
 export function AdminShellLayout() {
   const [collapsed, setCollapsed] = useState(false);

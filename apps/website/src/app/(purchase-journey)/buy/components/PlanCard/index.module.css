@@ -1,0 +1,221 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 384px;
+  max-width: 100%;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
+}
+
+.cardHero {
+  padding-top: 46px;
+  background: #0a0a0c;
+  border-color: #0a0a0c;
+}
+
+/* ── "Most popular" badge (hero) ────────────────────────────────────── */
+.badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #e7f6ec;
+  color: #14803a;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 17px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #1fa24a;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconTile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 12px;
+  background: #e7f6ec;
+}
+
+.cardHero .iconTile {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  color: #0a0a0c;
+}
+
+.cardHero .title {
+  color: #ffffff;
+}
+
+/* ── Price ──────────────────────────────────────────────────────────── */
+.priceRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 16px 0 4px;
+}
+
+.price {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 52px;
+  letter-spacing: -0.012em;
+  color: #0a0a0c;
+}
+
+.cardHero .price {
+  color: #ffffff;
+}
+
+.priceUnit {
+  padding-bottom: 8px;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: #6b7079;
+}
+
+.cardHero .priceUnit {
+  color: #9aa0a8;
+}
+
+.fineNote {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 18px;
+  color: #6b7079;
+}
+
+.cardHero .fineNote {
+  color: #9aa0a8;
+}
+
+/* ── Features ───────────────────────────────────────────────────────── */
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 15.5px;
+  line-height: 24px;
+  color: #4a4f57;
+}
+
+.cardHero .feature {
+  color: #c9cdd3;
+}
+
+.check {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 4px;
+}
+
+/* ── CTA + details link ─────────────────────────────────────────────── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* Push the CTA (and the details link below it) to the card's bottom so the
+     buttons line up across cards of differing feature counts / heights. */
+  margin-top: auto;
+  padding: 16px 28px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.ctaSecondary {
+  background: #ffffff;
+  border: 1.5px solid #0a0a0c;
+  color: #0a0a0c;
+}
+
+.ctaSecondary:hover {
+  background: #0a0a0c;
+  color: #ffffff;
+}
+
+.ctaPrimary {
+  background: #ffffff;
+  border: 1.5px solid #ffffff;
+  color: #0a0a0c;
+}
+
+.ctaPrimary:hover {
+  opacity: 0.9;
+}
+
+.detailsLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  font-size: 14px;
+  line-height: 21px;
+  color: #0a0a0c;
+  text-decoration: none;
+}
+
+.detailsLink:hover {
+  opacity: 0.8;
+}
+
+.cardHero .detailsLink {
+  color: #ffffff;
+}
+
+.detailsText {
+  text-decoration: underline;
+}

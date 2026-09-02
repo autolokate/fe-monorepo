@@ -1,10 +1,14 @@
 import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 
-import { cn } from '../../../utils/cn.js';
-import { startSosAlertTone, stopSosAlertTone, preloadSosAlertTone } from '../../../utils/sos-alert-tone.js';
+import { cn } from '../../../utils/cn';
+import {
+  startSosAlertTone,
+  stopSosAlertTone,
+  preloadSosAlertTone,
+} from '../../../utils/sos-alert-tone';
 
-import type { AlSosHoldButtonProps } from './SosHoldButton.types.js';
+import type { AlSosHoldButtonProps } from './SosHoldButton.types';
 import './SosHoldButton.css';
 
 const HOLD_CIRCUMFERENCE = 2 * Math.PI * 110;
@@ -13,8 +17,10 @@ function isIosDevice() {
   if (typeof navigator === 'undefined') {
     return false;
   }
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent));
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent))
+  );
 }
 
 function triggerHaptic(pattern: number | number[]) {
@@ -103,7 +109,9 @@ export function AlSosHoldButton({
         {useRingProgressRef.current ? (
           <div
             className="al-sos-hold__progress-ring"
-            style={{ '--sos-hold-progress': `${String(clampedProgress * 360)}deg` } as CSSProperties}
+            style={
+              { '--sos-hold-progress': `${String(clampedProgress * 360)}deg` } as CSSProperties
+            }
             aria-hidden
           />
         ) : (

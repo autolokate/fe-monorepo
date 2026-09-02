@@ -1,0 +1,225 @@
+/* App showcase — product storytelling with split flagship + stacked partners. */
+
+.section {
+  padding-block: var(--mkt-space-section);
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vw, 4rem);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 40rem;
+}
+
+.headingAccent {
+  color: var(--mkt-green);
+}
+
+.subheading {
+  max-width: 34rem;
+}
+
+/* ---------- Flagship split ---------- */
+.flagship {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3rem);
+  align-items: center;
+  padding: clamp(2rem, 5vw, 3rem);
+  background: var(--mkt-black);
+  color: var(--mkt-on-dark);
+  --mkt-ink-primary: var(--mkt-on-dark);
+  --mkt-ink-secondary: var(--mkt-on-dark-secondary);
+  --mkt-ink-muted: var(--mkt-on-dark-muted);
+  --mkt-divider: rgba(255, 255, 255, 0.12);
+}
+
+@media (min-width: 1024px) {
+  .flagship {
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
+  }
+}
+
+.flagshipCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.tileHead {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.appIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--mkt-radius-md);
+}
+
+.nameGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.appName {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-3xl);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  color: var(--mkt-ink-primary);
+}
+
+.appAudience {
+  font-size: var(--mkt-text-base);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
+}
+
+.appNameDark {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-2xl);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--mkt-ink-primary);
+}
+
+.appAudienceDark {
+  font-size: var(--mkt-text-base);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
+}
+
+.capabilities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.capability {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.capabilityLabel {
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+}
+
+.capabilityDetail {
+  font-size: var(--mkt-text-sm);
+  line-height: 1.55;
+}
+
+.capDark .capabilityLabel {
+  color: var(--mkt-ink-primary);
+}
+
+.capDark .capabilityDetail {
+  color: var(--mkt-ink-secondary);
+}
+
+.capLight .capabilityLabel {
+  color: var(--mkt-ink-primary);
+}
+
+.capLight .capabilityDetail {
+  color: var(--mkt-ink-secondary);
+}
+
+.device {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.phone {
+  width: auto;
+  height: clamp(18rem, 40vw, 25rem);
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* ---------- Partner stack ---------- */
+.partnerStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--mkt-divider);
+}
+
+.partner {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(2rem, 5vw, 2.5rem) 0;
+  border-bottom: 1px solid var(--mkt-divider);
+}
+
+.partnerIndex {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--mkt-ink-muted);
+  padding-top: 0.25rem;
+}
+
+.partnerMain {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+button.ctaLight,
+button.ctaDark {
+  align-self: flex-start;
+  min-height: 0;
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--mkt-radius-sm);
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+}
+
+button.ctaLight {
+  border: none;
+  background-color: #ffffff;
+  color: var(--mkt-ink-dark);
+}
+
+button.ctaLight:hover:not(:disabled):not(.is-loading) {
+  background-color: #e8e8e8;
+  opacity: 1;
+}
+
+button.ctaDark {
+  border: 1px solid var(--mkt-border);
+  background-color: var(--mkt-ink-dark);
+  color: #ffffff;
+}
+
+button.ctaDark:hover:not(:disabled):not(.is-loading) {
+  border-color: var(--mkt-ink-dark);
+  background-color: var(--mkt-steel);
+  opacity: 1;
+}
+
+@media (max-width: 639px) {
+  .partner {
+    grid-template-columns: 1fr;
+  }
+}

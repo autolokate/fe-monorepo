@@ -7,28 +7,30 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { BatchManagementDetailSheet } from '@/features/qr-batches/BatchManagementDetailSheet.js';
-import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet.js';
-import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters.js';
-import { useInventoryColumns } from '@/features/inventory/inventory-columns.js';
-import { useQrInventory } from '@/hooks/inventory/useQrInventory.js';
-import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations.js';
-import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock.js';
-import { AdminFilterChips } from '@/platform/components/AdminFilterChips.js';
-import { AdminMoreActions } from '@/platform/components/AdminMoreActions.js';
-import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props.js';
-import { buildPageSummary } from '@/platform/components/build-page-summary.js';
+import { adminInventoryBatchPath } from '@/app/routes/admin-paths';
+import { CreateBatchSheet } from '@/features/qr-batches/CreateBatchSheet';
+import { INVENTORY_STATE_FILTERS } from '@/features/inventory/inventory-filters';
+import { useInventoryColumns } from '@/features/inventory/inventory-columns';
+import { useQrInventory } from '@/hooks/inventory/useQrInventory';
+import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
+import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminMoreActions } from '@/platform/components/AdminMoreActions';
+import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { buildPageSummary } from '@/platform/components/build-page-summary';
 import {
   useCanRunQrLifecycleMutations,
   useCanWriteInventoryMutations,
-} from '@/platform/rbac/module-write-permissions.js';
-import { RequirePermission } from '@/platform/rbac/RequirePermission.js';
+} from '@/platform/rbac/module-write-permissions';
+import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './inventory.css';
 
 export function QrInventoryPage() {
+  const navigate = useNavigate();
   const {
     data,
     metrics,
@@ -44,29 +46,18 @@ export function QrInventoryPage() {
   const canRunLifecycle = useCanRunQrLifecycleMutations();
   const { sweepMutation } = useQrBatchMutations();
 
-  const [selectedBatch, setSelectedBatch] = useState<BatchSummaryDto | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [sweepConfirmOpen, setSweepConfirmOpen] = useState(false);
 
-  const openBatch = useCallback((batch: BatchSummaryDto) => {
-    setSelectedBatch(batch);
-    setSheetOpen(true);
-  }, []);
+  const openBatch = useCallback(
+    (batch: BatchSummaryDto) => {
+      void navigate(adminInventoryBatchPath(batch.id), { state: { batch } });
+    },
+    [navigate],
+  );
 
   const columns = useInventoryColumns();
   const batches = data ?? [];
-
-  useEffect(() => {
-    if (!selectedBatch?.id || !data) {
-      return;
-    }
-    const updated = data.find((batch) => batch.id === selectedBatch.id);
-    if (!updated) {
-      return;
-    }
-    setSelectedBatch((current) => (current?.id === updated.id && current !== updated ? updated : current));
-  }, [data, selectedBatch?.id]);
 
   const handleBatchCreated = useCallback(
     (batch: BatchSummaryDto) => {
@@ -74,10 +65,6 @@ export function QrInventoryPage() {
     },
     [openBatch],
   );
-
-  const handleBatchUpdated = useCallback((batch: BatchSummaryDto) => {
-    setSelectedBatch(batch);
-  }, []);
 
   const pageDescription = useMemo(() => {
     if (isLoading || !metrics) {
@@ -124,7 +111,7 @@ export function QrInventoryPage() {
     <RequirePermission permission="inventory:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="QR Inventory"
+          title="Stock"
           description={pageDescription}
           actions={
             <>
@@ -180,14 +167,6 @@ export function QrInventoryPage() {
           open={createOpen}
           onOpenChange={setCreateOpen}
           onCreated={handleBatchCreated}
-        />
-
-        <BatchManagementDetailSheet
-          batch={selectedBatch}
-          open={sheetOpen}
-          onOpenChange={setSheetOpen}
-          canWrite={canRunLifecycle}
-          onBatchUpdated={handleBatchUpdated}
         />
 
         <AlConfirmationDialog

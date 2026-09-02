@@ -1,0 +1,94 @@
+/* R15 · Activation complete — Figma 171:59 */
+
+.ob-completion.al-screen-bg--protected .al-screen-bg__tint {
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--al-color-success) 4%, transparent) 0%,
+    color-mix(in srgb, var(--al-color-success) 1%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+.ob-completion__frame {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  margin-inline: auto;
+  padding-inline: 16px;
+  padding-block: calc(env(safe-area-inset-top, 0px)) calc(32px + env(safe-area-inset-bottom, 0px));
+}
+
+.ob-completion__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 20.625rem;
+  margin-block-start: 11.25rem;
+}
+
+.ob-completion__hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15rem;
+  height: 15rem;
+  flex-shrink: 0;
+}
+
+.ob-completion__title.al-heading--h1 {
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.ob-completion__subtitle.al-text {
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.ob-completion__status-chip.al-chip--green {
+  padding: 4px 12px;
+  gap: 8px;
+  background-color: var(--al-color-surface-variant);
+  color: var(--al-color-on-surface);
+  border: none;
+}
+
+.ob-completion__status-chip.al-chip--green .al-chip__dot {
+  width: 8px;
+  height: 8px;
+}
+
+.ob-completion__footer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 22.5625rem;
+  margin-block-start: auto;
+  padding-block-start: var(--al-space-lg);
+}
+
+.ob-completion__cta {
+  width: 100%;
+  min-height: 58px;
+  border-radius: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-completion__hero,
+  .ob-completion__title,
+  .ob-completion__subtitle,
+  .ob-completion__footer {
+    animation: none !important;
+  }
+}

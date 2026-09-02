@@ -1,5 +1,5 @@
-import { BookSessionContent } from "./components/BookSessionContent";
-import { bookSessionMetadata, bookSessionViewport } from "./config/metadata";
+import { BookSessionContent } from './components/BookSessionContent';
+import { bookSessionMetadata, bookSessionViewport } from './config/metadata';
 
 export const metadata = bookSessionMetadata;
 export const viewport = bookSessionViewport;

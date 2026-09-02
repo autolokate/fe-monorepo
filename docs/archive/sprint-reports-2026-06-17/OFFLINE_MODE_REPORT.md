@@ -7,24 +7,24 @@
 
 ## Layers
 
-| Layer | File | Purpose |
-|-------|------|---------|
-| Static fallback | `public/offline.html` | Branded page when shell cannot load |
-| In-app offline | `PwaOfflineScreen.tsx` | React recovery screen |
-| Runtime banner | `PwaOfflineBanner.css` | Non-blocking notice when offline with cached SW |
-| Shell gate | `PwaAppShell.tsx` | Chooses blocking vs cached offline UX |
+| Layer           | File                   | Purpose                                         |
+| --------------- | ---------------------- | ----------------------------------------------- |
+| Static fallback | `public/offline.html`  | Branded page when shell cannot load             |
+| In-app offline  | `PwaOfflineScreen.tsx` | React recovery screen                           |
+| Runtime banner  | `PwaOfflineBanner.css` | Non-blocking notice when offline with cached SW |
+| Shell gate      | `PwaAppShell.tsx`      | Chooses blocking vs cached offline UX           |
 
 ---
 
 ## Behavior Matrix
 
-| Scenario | UX |
-|----------|-----|
-| First visit, offline, no SW | Full `PwaOfflineScreen` — no white page |
-| Return visit, offline, SW active | Cached app + top offline banner |
-| Back online | Banner clears automatically |
-| User taps Try again | `window.location.reload()` |
-| SW navigate fallback | Serves precached `index.html` |
+| Scenario                         | UX                                      |
+| -------------------------------- | --------------------------------------- |
+| First visit, offline, no SW      | Full `PwaOfflineScreen` — no white page |
+| Return visit, offline, SW active | Cached app + top offline banner         |
+| Back online                      | Banner clears automatically             |
+| User taps Try again              | `window.location.reload()`              |
+| SW navigate fallback             | Serves precached `index.html`           |
 
 ---
 
