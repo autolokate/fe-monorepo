@@ -84,7 +84,6 @@ export const footerLinks: FooterLinkSection[] = [
     title: 'Platform',
     links: [
       { id: 'how-it-works', label: 'How it works', href: '/how-it-works' },
-      { id: 'safety', label: 'Emergency & safety', href: '/emergency-safety' },
       { id: 'features', label: 'Features', href: '/features' },
       { id: 'pricing', label: 'Pricing', href: '/pricing' },
       { id: 'products', label: 'Products', href: '/products' },

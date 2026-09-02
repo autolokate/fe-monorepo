@@ -1,0 +1,253 @@
+/* Animated crash-response flow — step cards with progress */
+
+.flow {
+  width: 100%;
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.progressBar {
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--mkt-divider-strong);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--mkt-emergency),
+    color-mix(in srgb, var(--mkt-emergency) 70%, var(--mkt-green))
+  );
+  transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progressLabel {
+  margin: 0.75rem 0 1.25rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mkt-ink-muted);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stepCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.125rem 1.25rem;
+  border-radius: 0.875rem;
+  border: 1px solid var(--mkt-divider-strong);
+  background: var(--mkt-surface);
+  box-shadow: 0 8px 24px -16px color-mix(in srgb, var(--mkt-ink-dark) 12%, transparent);
+  opacity: 0.42;
+  transform: translateX(0);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
+}
+
+.stepActive {
+  opacity: 1;
+  transform: translateX(4px);
+  border-color: color-mix(in srgb, var(--mkt-emergency) 35%, var(--mkt-divider-strong));
+  box-shadow:
+    0 16px 40px -20px color-mix(in srgb, var(--mkt-emergency) 22%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--mkt-emergency) 8%, transparent);
+}
+
+.stepPast {
+  opacity: 0.82;
+}
+
+.stepWarn.stepActive {
+  border-color: color-mix(in srgb, var(--mkt-roadside) 45%, var(--mkt-divider-strong));
+  box-shadow:
+    0 16px 40px -20px color-mix(in srgb, var(--mkt-roadside) 20%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--mkt-roadside) 10%, transparent);
+}
+
+.stepRail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.stepIndex {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--mkt-ink-muted);
+}
+
+.stepActive .stepIndex {
+  color: var(--mkt-emergency);
+}
+
+.stepWarn.stepActive .stepIndex {
+  color: var(--mkt-yellow-deep);
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--mkt-emergency) 10%, var(--mkt-stone));
+  color: var(--mkt-emergency);
+  transition:
+    background 0.45s ease,
+    color 0.45s ease,
+    transform 0.45s ease;
+}
+
+.stepWarn .iconWrap {
+  background: color-mix(in srgb, var(--mkt-roadside) 12%, var(--mkt-stone));
+  color: var(--mkt-yellow-deep);
+}
+
+.stepActive .iconWrap {
+  transform: scale(1.06);
+  background: color-mix(in srgb, var(--mkt-emergency) 16%, var(--mkt-surface));
+}
+
+.stepWarn.stepActive .iconWrap {
+  background: color-mix(in srgb, var(--mkt-roadside) 18%, var(--mkt-surface));
+}
+
+.icon {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.stepCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  padding-top: 0.125rem;
+}
+
+.stepHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stepTitle {
+  margin: 0;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-lg);
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--mkt-ink-primary);
+}
+
+.stepBadge {
+  display: inline-flex;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--mkt-emergency) 28%, transparent);
+  background: color-mix(in srgb, var(--mkt-emergency) 8%, var(--mkt-surface));
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mkt-emergency);
+}
+
+.stepWarn .stepBadge {
+  border-color: color-mix(in srgb, var(--mkt-roadside) 35%, transparent);
+  background: color-mix(in srgb, var(--mkt-roadside) 10%, var(--mkt-surface));
+  color: var(--mkt-yellow-deep);
+}
+
+.stepBody {
+  margin: 0;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.65;
+  color: var(--mkt-ink-secondary);
+}
+
+.connector {
+  display: block;
+  width: 2px;
+  height: 1.25rem;
+  margin-left: 2.375rem;
+  border-radius: 1px;
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--mkt-ink-dark) 14%, transparent) 0,
+    color-mix(in srgb, var(--mkt-ink-dark) 14%, transparent) 3px,
+    transparent 3px,
+    transparent 6px
+  );
+  transition: background 0.45s ease;
+}
+
+.connectorLit {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--mkt-emergency) 75%, transparent),
+    color-mix(in srgb, var(--mkt-emergency) 18%, transparent)
+  );
+  box-shadow: 0 0 6px color-mix(in srgb, var(--mkt-emergency) 15%, transparent);
+}
+
+.activePulse {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid color-mix(in srgb, var(--mkt-emergency) 35%, transparent);
+  pointer-events: none;
+  animation: stepPulse 2.4s ease-in-out infinite;
+}
+
+.stepWarn .activePulse {
+  border-color: color-mix(in srgb, var(--mkt-roadside) 40%, transparent);
+}
+
+@keyframes stepPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.008);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepCard,
+  .progressFill,
+  .iconWrap {
+    transition: none;
+  }
+
+  .activePulse {
+    animation: none;
+    opacity: 0.5;
+  }
+}

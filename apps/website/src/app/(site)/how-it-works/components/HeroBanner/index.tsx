@@ -31,7 +31,7 @@ export function HeroBanner() {
         <div className={styles.scene}>
           <Image
             src={HERO_PHONE_IMAGE}
-            alt="Autolokate app detecting severe impact and starting the emergency response sequence automatically"
+            alt="Autolokate how it works: crash detection, cancel window, Control Center, help dispatched, and Smart QR backup"
             width={853}
             height={1844}
             priority

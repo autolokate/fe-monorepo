@@ -23,8 +23,8 @@ export const FLAGSHIP_PHONE_IMAGE = MARKETING_STORY_IMAGES.controlCenterPhone;
 
 export const APP_ICONS = {
   autolokate: '/images/new-design/products/app-icon-autolokate.svg',
-  partner: '/images/new-design/products/app-icon-partner.svg',
-  qrPartner: '/images/new-design/products/app-icon-qr-partner.svg',
+  partner: '/images/new-design/products/app-icon-partner-v4.svg',
+  qrPartner: '/images/new-design/products/app-icon-qr-partner-v4.svg',
 } as const;
 
 export const SECTION_HEADER: SectionHeaderCopy = {

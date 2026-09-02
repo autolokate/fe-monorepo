@@ -15,4 +15,4 @@ export const HERO_TRUST_POINTS = [
   'Upgrade or add vehicles anytime',
 ] as const;
 
-export const HERO_VISUAL_IMAGE = MARKETING_STORY_IMAGES.qrSticker;
+export const HERO_VISUAL_IMAGE = MARKETING_STORY_IMAGES.pricingHeroCover;

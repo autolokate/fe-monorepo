@@ -1,10 +1,8 @@
 import { SAFE_START_DISPLAY } from '@/lib/plan-display-names';
+import { MARKETING_STORY_IMAGES } from '@/lib/marketing-story-images';
 import type { SafeStarterCopy } from './types';
 
-/** Reuse the how-it-works redesign Smart QR sticker (identical asset). */
-import { MARKETING_STORY_IMAGES } from '@/lib/marketing-story-images';
-
-export const STARTER_STICKER_IMAGE = MARKETING_STORY_IMAGES.qrSticker;
+export const STARTER_VISUAL_IMAGE = MARKETING_STORY_IMAGES.safeStartRetail;
 
 export const SAFE_STARTER_COPY: SafeStarterCopy = {
   eyebrow: `Starter · ${SAFE_START_DISPLAY}`,

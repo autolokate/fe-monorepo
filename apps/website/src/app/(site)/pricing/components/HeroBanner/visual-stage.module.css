@@ -1,0 +1,437 @@
+/* Pricing hero visual — neon ring pulse + floating product shot */
+
+.stage {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: clamp(22rem, 58vw, 34rem);
+  overflow: visible;
+}
+
+.glow {
+  position: absolute;
+  inset: 8% 4% 6%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 58% 48% at 50% 58%,
+    rgba(45, 143, 92, 0.34),
+    rgba(45, 143, 92, 0.08) 42%,
+    transparent 72%
+  );
+  opacity: 0.45;
+  filter: blur(4px);
+  pointer-events: none;
+  transition: opacity 0.7s ease;
+}
+
+.stageActive .glow {
+  opacity: 1;
+  animation: glowPulse 4.5s ease-in-out infinite;
+}
+
+.ring {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 62%;
+  width: min(78%, 22rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--mkt-green) 55%, transparent);
+  box-shadow:
+    0 0 24px color-mix(in srgb, var(--mkt-green) 35%, transparent),
+    inset 0 0 24px color-mix(in srgb, var(--mkt-green) 18%, transparent);
+  transform: translate(-50%, -50%) scale(0.86);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stageActive .ring {
+  opacity: 0.85;
+  animation: ringExpand 5.5s ease-in-out infinite;
+}
+
+.ringSoft {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 62%;
+  width: min(92%, 26rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--mkt-green) 28%, transparent);
+  transform: translate(-50%, -50%) scale(0.9);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stageActive .ringSoft {
+  opacity: 0.5;
+  animation: ringExpandSoft 7s ease-in-out infinite;
+}
+
+.spark {
+  position: absolute;
+  z-index: 2;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mkt-green-bright, #3ba86e) 90%, white);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--mkt-green) 70%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stageActive .spark {
+  opacity: 1;
+}
+
+.spark[data-spark='a'] {
+  top: 18%;
+  left: 22%;
+  animation: sparkFloatA 5.5s ease-in-out infinite;
+}
+
+.spark[data-spark='b'] {
+  top: 28%;
+  right: 16%;
+  width: 0.3rem;
+  height: 0.3rem;
+  animation: sparkFloatB 6.5s ease-in-out infinite;
+}
+
+.spark[data-spark='c'] {
+  bottom: 24%;
+  left: 18%;
+  width: 0.35rem;
+  height: 0.35rem;
+  animation: sparkFloatC 7s ease-in-out infinite;
+}
+
+.mediaShell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 36rem;
+  border-radius: 1.35rem;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(1.75rem) scale(0.96);
+  filter: drop-shadow(0 28px 56px rgba(8, 9, 10, 0.28));
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stageActive .mediaShell {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: mediaFloat 6s ease-in-out infinite;
+}
+
+.mediaInner {
+  position: relative;
+  width: 100%;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  object-position: center;
+  background: transparent;
+}
+
+/* QR scan — measured to white QR face on pricing-hero-cover.png (1536×1024) */
+.qrScanZone {
+  position: absolute;
+  z-index: 3;
+  top: 43.8%;
+  left: 62.2%;
+  width: 14.4%;
+  height: 22.4%;
+  border-radius: 0.15rem;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stageActive .qrScanZone {
+  opacity: 1;
+}
+
+.qrCorner {
+  position: absolute;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-color: #7dff9a;
+  border-style: solid;
+  filter: drop-shadow(0 0 4px rgba(45, 143, 92, 0.7));
+}
+
+.qrCorner[data-corner='tl'] {
+  top: 0.12rem;
+  left: 0.12rem;
+  border-width: 2px 0 0 2px;
+}
+
+.qrCorner[data-corner='tr'] {
+  top: 0.12rem;
+  right: 0.12rem;
+  border-width: 2px 2px 0 0;
+}
+
+.qrCorner[data-corner='bl'] {
+  bottom: 0.12rem;
+  left: 0.12rem;
+  border-width: 0 0 2px 2px;
+}
+
+.qrCorner[data-corner='br'] {
+  bottom: 0.12rem;
+  right: 0.12rem;
+  border-width: 0 2px 2px 0;
+}
+
+.stageActive .qrCorner {
+  animation: cornerPulse 2.2s ease-in-out infinite;
+}
+
+.qrWash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 75% 65% at 50% 48%, rgba(45, 143, 92, 0.1), transparent 72%);
+  opacity: 0.55;
+}
+
+.qrScanBeam {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 8%;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(125, 255, 154, 0.35) 20%,
+    #7dff9a 50%,
+    rgba(125, 255, 154, 0.35) 80%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 8px rgba(125, 255, 154, 0.85),
+    0 0 16px rgba(45, 143, 92, 0.5);
+  opacity: 0;
+}
+
+.stageActive .qrScanBeam {
+  opacity: 1;
+  animation: qrScanSweep 2.2s ease-in-out infinite;
+}
+
+.qrScanBeam::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -0.55rem;
+  height: 0.55rem;
+  background: linear-gradient(180deg, transparent, rgba(45, 143, 92, 0.22));
+  pointer-events: none;
+}
+
+.qrScanBeam::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0.55rem;
+  background: linear-gradient(180deg, rgba(45, 143, 92, 0.18), transparent);
+  pointer-events: none;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes ringExpand {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.88);
+    opacity: 0.35;
+  }
+
+  45% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 0.9;
+  }
+
+  70% {
+    transform: translate(-50%, -50%) scale(1.16);
+    opacity: 0.2;
+  }
+}
+
+@keyframes ringExpandSoft {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.55;
+  }
+}
+
+@keyframes mediaFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes sparkFloatA {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.35;
+  }
+
+  50% {
+    transform: translate(10px, -16px);
+    opacity: 1;
+  }
+}
+
+@keyframes sparkFloatB {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: translate(-12px, 14px);
+    opacity: 0.95;
+  }
+}
+
+@keyframes sparkFloatC {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: translate(14px, -10px);
+    opacity: 1;
+  }
+}
+
+@keyframes qrScanSweep {
+  0% {
+    top: 8%;
+    opacity: 0.4;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  50% {
+    top: 86%;
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 0.9;
+  }
+
+  100% {
+    top: 8%;
+    opacity: 0.4;
+  }
+}
+
+@keyframes cornerPulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stage {
+    min-height: clamp(28rem, 42vw, 38rem);
+  }
+
+  .mediaShell {
+    max-width: 40rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .stage {
+    min-height: clamp(18rem, 88vw, 26rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow,
+  .ring,
+  .ringSoft,
+  .spark,
+  .stageActive .mediaShell,
+  .stageActive .qrScanBeam,
+  .stageActive .qrCorner {
+    animation: none;
+  }
+
+  .mediaShell,
+  .stageActive .mediaShell {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .glow,
+  .ring,
+  .ringSoft,
+  .spark,
+  .qrScanZone {
+    opacity: 0.55;
+  }
+
+  .qrScanBeam {
+    opacity: 0.7;
+    top: 45%;
+  }
+}

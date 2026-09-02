@@ -8,6 +8,8 @@ export interface TimelineStep {
   body: string;
   Icon: LucideIcon;
   tone: TimelineTone;
+  /** Short status chip shown on the active step card */
+  badge?: string;
 }
 
 export interface CrashTimelineCopy {

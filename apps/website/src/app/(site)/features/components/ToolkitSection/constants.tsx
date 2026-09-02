@@ -64,7 +64,8 @@ export const TOOLKIT_COPY: ToolkitCopy = {
   eyebrow: 'The full toolkit',
   headlineAccent: 'Everything',
   headline: ' the app does.',
-  subheading: 'Daily errands to once-a-year decisions—all in one place.',
+  subheading:
+    'Daily errands, garage bookings, driver score, and community—organized by what you actually use.',
 };
 
 export const TOOLKIT_ROWS: ToolkitRow[] = [
@@ -140,8 +141,8 @@ export const TOOLKIT_ROWS: ToolkitRow[] = [
           },
           {
             id: 'smart-qr',
-            label: 'Smart QR',
-            detail: 'one sticker for every vehicle',
+            label: 'Vehicle QR',
+            detail: 'sticker and scan settings per vehicle',
             Icon: ScanLine,
           },
         ],

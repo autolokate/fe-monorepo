@@ -1,13 +1,14 @@
-/* Crash journey — vertical editorial timeline (readable at every width). */
+/* Crash journey — primary layer with animated flow */
 
 .section {
   padding-block: var(--mkt-space-section);
+  background: var(--mkt-warm-white, #faf9f7);
 }
 
 .inner {
   display: flex;
   flex-direction: column;
-  gap: clamp(2.5rem, 6vw, 4rem);
+  gap: clamp(2rem, 5vw, 3rem);
 }
 
 .header {
@@ -15,94 +16,42 @@
   flex-direction: column;
   gap: 1rem;
   max-width: 42rem;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .headlineAccent {
-  color: var(--mkt-green);
+  color: var(--mkt-emergency);
 }
 
 .subheading {
   max-width: 34rem;
-}
-
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--mkt-divider);
-}
-
-.step {
-  display: grid;
-  grid-template-columns: minmax(3.5rem, 4.5rem) 1fr;
-  gap: clamp(1rem, 3vw, 1.5rem);
-  align-items: start;
-  padding-block: clamp(1.5rem, 4vw, 2rem);
-  border-bottom: 1px solid var(--mkt-divider);
-}
-
-.stepWarn .index {
-  color: var(--mkt-accent);
-}
-
-.rail {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.index {
-  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: var(--mkt-ink-muted);
-}
-
-.connector {
-  display: none;
-}
-
-.copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-width: 0;
-}
-
-.stepTitle {
-  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: var(--mkt-text-xl);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  color: var(--mkt-ink-primary);
-}
-
-.stepBody {
-  max-width: 40rem;
-  font-size: var(--mkt-text-sm);
-  line-height: 1.65;
-  color: var(--mkt-ink-secondary);
+  margin-inline: auto;
 }
 
 .callout {
-  max-width: 40rem;
-  padding-top: 0.5rem;
-  font-size: var(--mkt-text-base);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  max-width: 44rem;
+  margin-inline: auto;
+  margin-top: 0.5rem;
+  padding: 1.125rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--mkt-green) 22%, var(--mkt-divider-strong));
+  background: color-mix(in srgb, var(--mkt-green) 6%, var(--mkt-surface));
+  font-size: var(--mkt-text-sm);
   font-weight: 500;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--mkt-ink-secondary);
 }
 
-@media (max-width: 479px) {
-  .step {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
+.calloutIcon {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+  background: var(--mkt-green);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mkt-green) 18%, transparent);
 }

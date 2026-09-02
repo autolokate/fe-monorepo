@@ -1,34 +1,57 @@
-/* Smart QR — editorial split: sticker + fork journey narrative. */
+/* Smart QR backup layer — dark split with phone stage + animated flow */
 
 .section {
-  background: var(--mkt-surface-muted);
-  color: var(--mkt-ink-dark);
+  position: relative;
+  isolation: isolate;
+  padding-block: var(--mkt-space-section);
+  background: var(--mkt-void, #08090a);
+  color: var(--mkt-on-dark);
+  overflow: hidden;
+}
+
+.ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 42% at 22% 48%, rgba(46, 125, 50, 0.1), transparent 68%),
+    radial-gradient(ellipse 45% 38% at 78% 62%, rgba(214, 69, 69, 0.08), transparent 70%);
+}
+
+[data-theme='light'] .ambient {
+  background:
+    radial-gradient(ellipse 50% 42% at 22% 48%, rgba(46, 125, 50, 0.07), transparent 68%),
+    radial-gradient(ellipse 45% 38% at 78% 62%, rgba(214, 69, 69, 0.05), transparent 70%);
 }
 
 .inner {
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
-.split {
+.grid {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3rem);
   align-items: center;
 }
 
-.stickerCol {
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(2.5rem, 4vw, 4rem);
+  }
+}
+
+.visualCol {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
-.sticker {
-  width: clamp(14rem, 28vw, 21.5rem);
-  height: auto;
-  filter: drop-shadow(0 32px 64px rgba(0, 0, 0, 0.45));
-}
-
-.story {
+.contentCol {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: clamp(1.5rem, 3vw, 2rem);
 }
 
 .header {
@@ -37,65 +60,76 @@
   gap: 1rem;
 }
 
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mkt-on-dark-muted);
+}
+
+.eyebrowLine {
+  width: 1.25rem;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.headline {
+  margin: 0;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.875rem, 4vw, 2.625rem);
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  max-width: 16ch;
+}
+
 .headlineAccent {
   color: var(--mkt-green);
 }
 
 .subheading {
-  max-width: 32rem;
-}
-
-.journey {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
   margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--mkt-divider);
-}
-
-.journeyStep {
-  display: grid;
-  grid-template-columns: minmax(4.5rem, 6rem) 1fr;
-  gap: 1.25rem;
-  align-items: start;
-  padding-block: 1.5rem;
-  border-bottom: 1px solid var(--mkt-divider);
-}
-
-.stepLabel {
-  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: var(--mkt-text-sm);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--mkt-ink-muted);
-  padding-top: 0.25rem;
-}
-
-.stepCopy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.itemTitle {
   font-size: var(--mkt-text-lg);
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--mkt-ink-primary);
-}
-
-.itemBody {
-  font-size: var(--mkt-text-sm);
-  line-height: 1.6;
-  color: var(--mkt-ink-secondary);
+  line-height: 1.65;
+  color: var(--mkt-on-dark-secondary);
+  max-width: 36ch;
 }
 
 .callout {
-  font-size: var(--mkt-text-base);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1.125rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: var(--mkt-text-sm);
   font-weight: 500;
-  line-height: 1.55;
-  color: var(--mkt-ink-secondary);
+  line-height: 1.6;
+  color: var(--mkt-on-dark-secondary);
+}
+
+.calloutIcon {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+  background: var(--mkt-green);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mkt-green) 22%, transparent);
+}
+
+@media (max-width: 1023px) {
+  .visualCol {
+    order: -1;
+  }
+
+  .headline,
+  .subheading {
+    max-width: none;
+  }
 }

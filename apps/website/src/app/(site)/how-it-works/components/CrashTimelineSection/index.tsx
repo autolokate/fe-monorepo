@@ -1,4 +1,5 @@
-import { CRASH_TIMELINE_COPY, CRASH_TIMELINE_STEPS } from './constants';
+import { CrashTimelineFlow } from './CrashTimelineFlow';
+import { CRASH_TIMELINE_COPY } from './constants';
 import styles from './index.module.css';
 
 export function CrashTimelineSection() {
@@ -30,30 +31,12 @@ export function CrashTimelineSection() {
           </p>
         </header>
 
-        <ol className={styles.timeline}>
-          {CRASH_TIMELINE_STEPS.map((step, index) => {
-            const isLast = index === CRASH_TIMELINE_STEPS.length - 1;
+        <CrashTimelineFlow />
 
-            return (
-              <li
-                key={step.id}
-                className={`${styles.step} ${step.tone === 'warn' ? styles.stepWarn : ''}`}
-              >
-                <div className={styles.rail} aria-hidden="true">
-                  <span className={styles.index}>{String(index + 1).padStart(2, '0')}</span>
-                  {!isLast ? <span className={styles.connector} /> : null}
-                </div>
-
-                <div className={styles.copy}>
-                  <h3 className={styles.stepTitle}>{step.title}</h3>
-                  <p className={styles.stepBody}>{step.body}</p>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-
-        <p className={styles.callout}>{callout}</p>
+        <p className={styles.callout}>
+          <span className={styles.calloutIcon} aria-hidden="true" />
+          {callout}
+        </p>
       </div>
     </section>
   );

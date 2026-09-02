@@ -1,8 +1,8 @@
 import { MARKETING_STORY_IMAGES } from '@/lib/marketing-story-images';
 import type { HeroCopy } from './types';
 
-/** Crash detection + radar — matches "detection is automatic" */
-export const HERO_PHONE_IMAGE = MARKETING_STORY_IMAGES.detectionRadar;
+/** How it works hero — crash detection through Smart QR backup */
+export const HERO_PHONE_IMAGE = MARKETING_STORY_IMAGES.howItWorksHero;
 
 export const HERO_COPY: HeroCopy = {
   eyebrow: 'How it works',

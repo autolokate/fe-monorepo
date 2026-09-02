@@ -1,0 +1,217 @@
+/* Phone mockup — step-reactive scan / emergency / park overlays */
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 20rem;
+}
+
+.glow {
+  position: absolute;
+  inset: -12% -25% 8%;
+  background: radial-gradient(
+    ellipse 55% 50% at 50% 42%,
+    color-mix(in srgb, var(--mkt-green) 22%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
+  transition: background 0.6s ease;
+}
+
+.stage:has(.emergencyOverlay.overlayOn) .glow {
+  background: radial-gradient(
+    ellipse 55% 50% at 50% 42%,
+    color-mix(in srgb, var(--mkt-emergency) 20%, transparent),
+    transparent 72%
+  );
+}
+
+.scanRing {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  width: 72%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 1.25rem;
+  border: 2px solid transparent;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.stage:has(.scanOverlay.overlayOn) .scanRing {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--mkt-green) 55%, transparent);
+  animation: scanRingPulse 2s ease-in-out infinite;
+}
+
+.phoneShell {
+  position: relative;
+  z-index: 1;
+  width: clamp(13rem, 36vw, 17.5rem);
+  filter: drop-shadow(0 32px 64px rgba(0, 0, 0, 0.55));
+  animation: phoneFloat 5s ease-in-out infinite;
+}
+
+.phoneImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1.75rem;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.75rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.overlayOn {
+  opacity: 1;
+}
+
+.scanOverlay {
+  background: radial-gradient(
+    ellipse 70% 45% at 50% 38%,
+    color-mix(in srgb, var(--mkt-green) 18%, transparent),
+    transparent 70%
+  );
+}
+
+.emergencyOverlay {
+  background: radial-gradient(
+    ellipse 80% 55% at 50% 45%,
+    color-mix(in srgb, var(--mkt-emergency) 16%, transparent),
+    transparent 72%
+  );
+}
+
+.parkOverlay {
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 55%,
+    rgba(255, 255, 255, 0.06),
+    transparent 70%
+  );
+}
+
+.scanBeam {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 28%;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--mkt-green) 90%, white),
+    transparent
+  );
+  opacity: 0;
+  transform: translateY(0);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--mkt-green) 50%, transparent);
+}
+
+.beamOn {
+  opacity: 1;
+  animation: scanSweep 2.2s ease-in-out infinite;
+}
+
+.stepChips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mkt-on-dark-muted);
+  transition:
+    border-color 0.4s ease,
+    background 0.4s ease,
+    color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.chipOn {
+  border-color: color-mix(in srgb, var(--mkt-green) 45%, transparent);
+  background: color-mix(in srgb, var(--mkt-green) 14%, transparent);
+  color: #b8e8be;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--mkt-green) 20%, transparent);
+}
+
+.chipOn:nth-child(2) {
+  border-color: color-mix(in srgb, var(--mkt-emergency) 45%, transparent);
+  background: color-mix(in srgb, var(--mkt-emergency) 14%, transparent);
+  color: #ffc8c8;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--mkt-emergency) 18%, transparent);
+}
+
+@keyframes phoneFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes scanSweep {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+
+  50% {
+    transform: translateY(5.5rem);
+    opacity: 1;
+  }
+}
+
+@keyframes scanRingPulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: translateX(-50%) scale(1.03);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phoneShell {
+    animation: none;
+  }
+
+  .scanBeam,
+  .scanRing {
+    animation: none;
+  }
+
+  .beamOn {
+    opacity: 0.6;
+    transform: translateY(2.5rem);
+  }
+}

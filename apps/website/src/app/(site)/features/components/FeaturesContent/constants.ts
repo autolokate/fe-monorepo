@@ -2,135 +2,68 @@ import { MARKETING_STORY_IMAGES } from '@/lib/marketing-story-images';
 
 export const FEATURES_HERO = {
   eyebrow: 'The Autolokate app',
-  headline: 'Safety when it matters.',
-  headlineLine2: 'Tools for every day.',
-  body: 'Crash detection on every drive. Smart QR on every vehicle. Plus the jobs your car keeps giving you—handled from one place.',
+  headline: 'Everything your vehicle',
+  headlineLine2: 'needs. One app.',
+  body: 'Challans, crash detection, garages, driver score, Smart QR, and every car you own—handled from one place.',
   image: MARKETING_STORY_IMAGES.featuresHero,
-  imageAlt: 'Autolokate app — live tracking, QR scan, driver score, and everyday services',
-  primaryCta: { label: 'Get protected', href: '/buy' },
-  secondaryCta: { label: 'How it works', href: '/how-it-works' },
+  imageAlt: 'Autolokate app — vehicle management, safety, and everyday tools',
+  primaryCta: { label: 'Browse features', href: '#features' },
+  secondaryCta: { label: 'View plans', href: '/pricing' },
 } as const;
 
-export interface FeatureChapter {
-  id: string;
-  eyebrow: string;
-  headline: string;
-  body: string;
-  detail?: string;
-  image?: string;
-  imageAlt?: string;
-  /** light | dark | stone */
-  surface: 'light' | 'dark' | 'stone';
-  /** image beside copy, or full-bleed background */
-  layout: 'split-right' | 'split-left' | 'full-bleed' | 'text-only';
-}
+export const FEATURES_HERO_STATS = [
+  { value: '29+', label: 'Features' },
+  { value: '7', label: 'Categories' },
+  { value: 'Free', label: 'To install' },
+] as const;
 
-export const SAFETY_CHAPTERS: FeatureChapter[] = [
-  {
-    id: 'detection',
-    eyebrow: 'Crash detection',
-    headline: 'Your phone senses impact. Help starts automatically.',
-    body: 'Severe impacts trigger the response sequence from your phone—no hardware, no manual SOS. You get a short window to cancel a false alarm before anything is sent.',
-    detail: 'Phone-based · 30-second cancel window · Works on everyday Android devices',
-    image: MARKETING_STORY_IMAGES.detectionRadar,
-    imageAlt: 'Autolokate app detecting severe impact and connecting emergency responders',
-    surface: 'stone',
-    layout: 'split-right',
-  },
-  {
-    id: 'response',
-    eyebrow: 'Automatic response',
-    headline: 'One confirmed crash. Every channel activated.',
-    body: 'Ambulance dispatch, family alerts on call and WhatsApp, police coordination when needed, and roadside help for your vehicle—sent together from one incident.',
-    image: MARKETING_STORY_IMAGES.responseNetworkCrash,
-    imageAlt:
-      'Autolokate accident detected — ambulance, police, and roadside help dispatched to a crash scene',
-    surface: 'dark',
-    layout: 'split-left',
-  },
-  {
-    id: 'family',
-    eyebrow: 'Family network',
-    headline: 'Your people know—before you can tell them.',
-    body: 'Emergency contacts receive your live location on call, WhatsApp, and SMS the moment a crash is confirmed. They see help is already moving.',
-    surface: 'light',
-    layout: 'text-only',
-  },
-  {
-    id: 'control',
-    eyebrow: 'Control Center',
-    headline: 'Humans on standby. Machines that never sleep.',
-    body: 'Our 24/7 operations team calls you, verifies the incident, and coordinates dispatch—so you are not navigating hotlines when every second counts.',
-    image: MARKETING_STORY_IMAGES.controlCenterCoordinates,
-    imageAlt:
-      'Autolokate Control Center — crash detected, call initiated, location tracked, and help dispatched from one place',
-    surface: 'stone',
-    layout: 'split-right',
-  },
-  {
-    id: 'rsa',
-    eyebrow: 'Roadside assistance',
-    headline: 'Help reaches the vehicle—not just the person.',
-    body: 'Towing, fuel delivery, flat tyres, and battery jump-starts are dispatched to your vehicle location on Guardian and Guardian Plus plans.',
-    surface: 'light',
-    layout: 'text-only',
-  },
-  {
-    id: 'smart-qr',
-    eyebrow: 'Smart QR',
-    headline: 'When your phone cannot respond, your vehicle still can.',
-    body: 'One sticker per vehicle. Anyone scans it—no app, no login—and our Control Center responds or places a verified Park Me call without sharing your number.',
-    image: MARKETING_STORY_IMAGES.smartQrEcosystem,
-    imageAlt:
-      'Someone scans an Autolokate QR on a vehicle — help verified and emergency assistance dispatched',
-    surface: 'dark',
-    layout: 'split-left',
-  },
-];
+export const FEATURES_CATALOG_COPY = {
+  eyebrow: 'Full feature list',
+  headline: 'Every capability,',
+  headlineAccent: 'in one place.',
+  subheading: 'Organized by what you use—scroll or jump to a category.',
+} as const;
 
-export interface UtilityBand {
-  id: string;
-  title: string;
-  subtitle: string;
-  items: string[];
-}
+export const FEATURES_DAILY_UTILITY_MEDIA = {
+  image: MARKETING_STORY_IMAGES.dailyUtilityPhone,
+  imageAlt:
+    'Autolokate daily utility — challans, FASTag, renewal alerts, parking memory, and phone dashcam',
+} as const;
 
-export const UTILITY_BANDS: UtilityBand[] = [
-  {
-    id: 'daily',
-    title: 'Daily utility',
-    subtitle: 'The small jobs your vehicle keeps giving you.',
-    items: [
-      'Challans & dues',
-      'FASTag recharge',
-      'Renewal alerts',
-      'Parking memory',
-      'Phone dashcam',
-    ],
-  },
+export const FEATURES_GARAGES_MEDIA = {
+  image: MARKETING_STORY_IMAGES.garagesServicesPhone,
+  imageAlt:
+    'Autolokate garages and services — verified garages, mod shops, booking history, and service history on QR',
+} as const;
+
+export const FEATURES_SHOWCASES = [
   {
     id: 'garage',
-    title: 'Garages & services',
-    subtitle: 'Book trusted work. Keep proof forever.',
-    items: ['Verified garages', 'Mod shops', 'Booking history', 'Digital service history on QR'],
+    eyebrow: 'Your garage',
+    headline: 'Every vehicle. One dashboard.',
+    body: 'Switch between cars and bikes instantly. Track plans, contacts, service history, and everyday tasks from a single login.',
+    image: MARKETING_STORY_IMAGES.yourGarageDashboard,
+    imageAlt:
+      'Autolokate multi-vehicle garage — switch between cars and bikes, track plans, service history, and everyday tasks from one dashboard',
   },
-  {
-    id: 'drive',
-    title: 'Driver score',
-    subtitle: 'Built from how you actually drive.',
-    items: ['Trip scores', 'City leaderboards', 'Personalised tips'],
-  },
-  {
-    id: 'garage-account',
-    title: 'Multi-vehicle',
-    subtitle: 'The whole garage, one login.',
-    items: ['Every car and bike', 'Instant switch', 'Per-vehicle contacts & history'],
-  },
-];
+] as const;
+
+export const FEATURES_SAFETY_DARK = {
+  eyebrow: 'Safety & emergencies',
+  headline: 'Built for the moment',
+  headlineAccent: 'you cannot call.',
+  body: 'Crash detection, Control Center coordination, family alerts, ambulance dispatch, hospital cover, Smart QR, and roadside help—designed to run without you reaching for your phone.',
+  image: MARKETING_STORY_IMAGES.safetyEmergenciesHero,
+  imageAlt:
+    'Autolokate safety and emergencies — crash detection, Control Center, family alerts, ambulance dispatch, hospital cover, Smart QR, and roadside help',
+  cta: { label: 'How it works', href: '/how-it-works' },
+} as const;
 
 export const FEATURES_CLOSING = {
-  headline: 'Everything here comes with',
-  headlineAccent: 'every protection plan.',
-  subheading: 'Download free. Upgrade to Protect, Guardian, or Guardian Plus when you are ready.',
-  cta: { label: 'View plans', href: '/pricing' },
+  headline: 'Download free.',
+  headlineAccent: 'Upgrade when ready.',
+  subheading:
+    'The app costs nothing to install. Add a protection plan per vehicle when you want crash detection and cover activated.',
+  primaryCta: { label: 'Get protected', href: '/buy' },
+  secondaryCta: { label: 'See pricing', href: '/pricing' },
 } as const;

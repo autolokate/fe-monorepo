@@ -20,6 +20,7 @@ export const CRASH_TIMELINE_STEPS: TimelineStep[] = [
     body: 'Your phone reads a severe impact the moment it happens.',
     Icon: Activity,
     tone: 'brand',
+    badge: 'Automatic',
   },
   {
     id: 'cancel',
@@ -27,6 +28,7 @@ export const CRASH_TIMELINE_STEPS: TimelineStep[] = [
     body: 'You get 30 seconds to cancel a false alarm in one tap. Nothing is sent if you do.',
     Icon: Timer,
     tone: 'warn',
+    badge: '30 sec window',
   },
   {
     id: 'control-center',
@@ -34,6 +36,7 @@ export const CRASH_TIMELINE_STEPS: TimelineStep[] = [
     body: 'If you don’t respond, our 24/7 Control Center is alerted automatically. It calls you and watches your live location.',
     Icon: Radio,
     tone: 'brand',
+    badge: '24/7 live',
   },
   {
     id: 'everything-sent',
@@ -41,6 +44,7 @@ export const CRASH_TIMELINE_STEPS: TimelineStep[] = [
     body: 'An ambulance heads to your location while your family is alerted on call, WhatsApp and SMS—with your live location.',
     Icon: Share2,
     tone: 'brand',
+    badge: 'All channels',
   },
   {
     id: 'cover-activated',
@@ -48,5 +52,6 @@ export const CRASH_TIMELINE_STEPS: TimelineStep[] = [
     body: 'The ambulance bill is covered and hospital care is cashless at network hospitals. Roadside help and cover amounts vary by plan.',
     Icon: ShieldCheck,
     tone: 'brand',
+    badge: 'Cashless care',
   },
 ];

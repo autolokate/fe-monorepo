@@ -3,12 +3,12 @@ import type { Metadata } from 'next';
 export const featuresMetadata: Metadata = {
   title: 'Features — Autolokate',
   description:
-    'Everything the Autolokate app does — crash detection and Smart QR safety, plus the everyday tools you actually use: challans, FASTag, renewals, garages, driver score, multi-vehicle and more.',
+    'Everything the Autolokate app does—challans, FASTag, crash detection, Control Center, Smart QR, garages, driver score, multi-vehicle, and more in one place.',
   alternates: { canonical: '/features' },
   openGraph: {
     title: 'Autolokate Features',
     description:
-      'Safety when it matters, and everything else every day — challans, FASTag, renewals, bookings, your driver score, and every vehicle in one app.',
+      'Every capability in one app—daily utility, safety, garages, driver score, and your whole garage.',
     url: '/features',
     type: 'website',
   },

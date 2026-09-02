@@ -1,6 +1,6 @@
 import { BRAND_LOGO } from '@/lib/brand-logos';
-import Image from 'next/image';
-import { HERO_COPY, HERO_TRUST_POINTS, HERO_VISUAL_IMAGE } from './constants';
+import { HERO_COPY, HERO_TRUST_POINTS } from './constants';
+import { PricingHeroVisual } from './PricingHeroVisual';
 import styles from './index.module.css';
 
 const LOGO = BRAND_LOGO.onLightBg;
@@ -8,6 +8,8 @@ const LOGO = BRAND_LOGO.onLightBg;
 export function HeroBanner() {
   return (
     <section className={styles.hero} aria-labelledby="pricing-hero-heading">
+      <div className={styles.ambient} aria-hidden="true" />
+
       <div className={styles.inner}>
         <div className={styles.copy}>
           <div className={styles.logoRow}>
@@ -34,14 +36,10 @@ export function HeroBanner() {
         </div>
 
         <div className={styles.visual}>
-          <Image
-            src={HERO_VISUAL_IMAGE}
-            alt="Autolokate Smart QR emergency sticker included with every plan"
-            width={344}
-            height={424}
-            className={styles.visualImage}
-            sizes="(min-width: 1024px) 280px, 55vw"
-          />
+          <PricingHeroVisual />
+          <span className="sr-only">
+            Autolokate pricing — one year cover with Smart QR sticker included
+          </span>
         </div>
       </div>
     </section>

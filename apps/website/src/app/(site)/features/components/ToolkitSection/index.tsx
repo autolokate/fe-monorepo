@@ -1,14 +1,46 @@
-import { TOOLKIT_COPY, TOOLKIT_ROWS } from './constants';
+import { ICON_COLOR, TOOLKIT_COPY, TOOLKIT_ROWS } from './constants';
 import type { ToolkitTile } from './types';
 import styles from './index.module.css';
 
-function StoryBlock({ tile, index }: { tile: ToolkitTile; index: number }) {
+function CapabilityItem({
+  label,
+  detail,
+  Icon,
+}: {
+  label: string;
+  detail: string;
+  Icon: ToolkitTile['capabilities'][number]['Icon'];
+}) {
+  const iconColor = ICON_COLOR.get(Icon) ?? 'var(--mkt-ink-primary)';
+
   return (
-    <article className={styles.story}>
+    <li className={styles.capability}>
+      <span className={styles.capIcon} style={{ color: iconColor }} aria-hidden="true">
+        <Icon className={styles.capIconSvg} strokeWidth={1.75} />
+      </span>
+      <div className={styles.capCopy}>
+        <span className={styles.capLabel}>{label}</span>
+        <span className={styles.capDetail}>{detail}</span>
+      </div>
+    </li>
+  );
+}
+
+function StoryBlock({ tile, index }: { tile: ToolkitTile; index: number }) {
+  const TileIcon = tile.Icon;
+  const iconColor = ICON_COLOR.get(TileIcon) ?? 'var(--mkt-ink-primary)';
+
+  return (
+    <article id={tile.id} className={styles.story}>
       <div className={styles.storyLead}>
         <span className={styles.storyIndex}>{String(index).padStart(2, '0')}</span>
         <div className={styles.storyHead}>
-          <h3 className={styles.storyTitle}>{tile.title}</h3>
+          <div className={styles.storyTitleRow}>
+            <span className={styles.tileIcon} style={{ color: iconColor }} aria-hidden="true">
+              <TileIcon className={styles.tileIconSvg} strokeWidth={1.75} />
+            </span>
+            <h3 className={styles.storyTitle}>{tile.title}</h3>
+          </div>
           <p className={styles.storySubtitle}>{tile.subtitle}</p>
         </div>
       </div>
@@ -19,10 +51,12 @@ function StoryBlock({ tile, index }: { tile: ToolkitTile; index: number }) {
         }`}
       >
         {tile.capabilities.map((capability) => (
-          <li key={capability.id} className={styles.capability}>
-            <span className={styles.capLabel}>{capability.label}</span>
-            <span className={styles.capDetail}>{capability.detail}</span>
-          </li>
+          <CapabilityItem
+            key={capability.id}
+            label={capability.label}
+            detail={capability.detail}
+            Icon={capability.Icon}
+          />
         ))}
       </ul>
     </article>
@@ -35,6 +69,7 @@ export function ToolkitSection() {
 
   return (
     <section
+      id="toolkit"
       aria-labelledby="toolkit-heading"
       className={`mkt-section mkt-mutedBg ${styles.section}`}
     >

@@ -1,4 +1,4 @@
-/* Safe starter — editorial split with sticker visual. */
+/* Safe starter — editorial split with retail pack + app visual. */
 
 .section {
   background: var(--mkt-surface-muted);
@@ -8,28 +8,21 @@
 
 .inner {
   display: grid;
-  gap: clamp(2.5rem, 6vw, 4rem);
+  gap: clamp(2rem, 5vw, 3.5rem);
   align-items: center;
   max-width: var(--mkt-container);
 }
 
 @media (min-width: 1024px) {
   .inner {
-    grid-template-columns: auto 1fr;
-    gap: clamp(3rem, 8vw, 6rem);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
+    gap: clamp(2.5rem, 6vw, 4.5rem);
   }
 }
 
-.stickerWrap {
-  display: flex;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.sticker {
-  width: clamp(14rem, 28vw, 18rem);
-  height: auto;
-  filter: drop-shadow(0 28px 56px rgba(0, 0, 0, 0.4));
+.visual {
+  width: 100%;
+  min-width: 0;
 }
 
 .copy {

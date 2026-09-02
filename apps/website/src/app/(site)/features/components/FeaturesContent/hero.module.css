@@ -1,7 +1,7 @@
 .section {
   position: relative;
   isolation: isolate;
-  min-height: clamp(28rem, 72vh, 40rem);
+  min-height: clamp(22rem, 58vh, 32rem);
   display: flex;
   align-items: flex-end;
   color: var(--mkt-on-dark, #f5f4f2);
@@ -17,6 +17,9 @@
 .image {
   object-fit: cover;
   object-position: center 30%;
+  transform: translateZ(0) scale(1.04);
+  backface-visibility: hidden;
+  animation: heroDrift 18s ease-in-out infinite alternate;
 }
 
 .scrim {
@@ -28,6 +31,20 @@
     rgba(8, 9, 10, 0.55) 45%,
     rgba(8, 9, 10, 0.25) 100%
   );
+}
+
+.sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.05) 48%,
+    transparent 62%
+  );
+  mix-blend-mode: screen;
+  animation: sheenSweep 9s ease-in-out infinite;
 }
 
 .inner {
@@ -78,8 +95,46 @@
   color: var(--mkt-on-dark-secondary);
 }
 
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 4.5rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.statValue {
+  margin: 0;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--mkt-on-dark);
+}
+
+.statLabel {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mkt-on-dark-muted);
+}
+
 .ctas {
-  margin-top: 1.75rem;
+  margin-top: 1.5rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
@@ -119,6 +174,87 @@
 .secondary:hover {
   border-color: rgba(255, 255, 255, 0.38);
   background: rgba(255, 255, 255, 0.06);
+}
+
+.enter,
+.enterDelay1,
+.enterDelay2,
+.enterDelay3,
+.enterDelay4 {
+  opacity: 0;
+  transform: translateY(1.1rem);
+  animation: heroEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.enterDelay1 {
+  animation-delay: 0.08s;
+}
+
+.enterDelay2 {
+  animation-delay: 0.16s;
+}
+
+.enterDelay3 {
+  animation-delay: 0.24s;
+}
+
+.enterDelay4 {
+  animation-delay: 0.32s;
+}
+
+@keyframes heroEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroDrift {
+  from {
+    transform: scale(1.04) translate(0, 0);
+  }
+
+  to {
+    transform: scale(1.08) translate(-1.2%, 1%);
+  }
+}
+
+@keyframes sheenSweep {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateX(-8%);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: translateX(8%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image,
+  .sheen,
+  .enter,
+  .enterDelay1,
+  .enterDelay2,
+  .enterDelay3,
+  .enterDelay4 {
+    animation: none;
+  }
+
+  .image {
+    transform: none;
+  }
+
+  .enter,
+  .enterDelay1,
+  .enterDelay2,
+  .enterDelay3,
+  .enterDelay4 {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .srOnly {

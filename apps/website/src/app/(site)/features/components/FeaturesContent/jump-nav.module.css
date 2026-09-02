@@ -1,0 +1,128 @@
+.sentinel {
+  height: 1px;
+  width: 100%;
+  pointer-events: none;
+}
+
+.placeholder {
+  width: 100%;
+  pointer-events: none;
+}
+
+.nav {
+  position: sticky;
+  top: 4rem;
+  z-index: 45;
+  border-bottom: 1px solid var(--mkt-divider);
+  background: color-mix(in srgb, var(--mkt-warm-white, #faf9f7) 92%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.navPinned {
+  position: fixed;
+  inset-inline: 0;
+  top: 4rem;
+  width: 100%;
+  box-shadow: 0 10px 32px -24px color-mix(in srgb, var(--mkt-ink-dark) 22%, transparent);
+}
+
+.inner {
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+  padding: 0.625rem var(--mkt-gutter);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.inner::-webkit-scrollbar {
+  display: none;
+}
+
+.list {
+  display: flex;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: max-content;
+}
+
+.pill {
+  display: inline-flex;
+  padding: 0.4375rem 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--mkt-ink-secondary);
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.pill:hover {
+  color: var(--mkt-ink-primary);
+  background: var(--mkt-surface);
+  border-color: var(--mkt-divider-strong);
+}
+
+.pillActive {
+  color: var(--mkt-ink-primary);
+  background: var(--mkt-surface);
+  border-color: color-mix(in srgb, var(--mkt-green) 28%, var(--mkt-divider-strong));
+  box-shadow: 0 4px 16px -10px color-mix(in srgb, var(--mkt-green) 22%, transparent);
+}
+
+.pillSafety {
+  color: color-mix(in srgb, #c44 72%, var(--mkt-ink-secondary));
+}
+
+.pillSafety:hover {
+  color: color-mix(in srgb, #c44 88%, var(--mkt-ink-primary));
+  border-color: color-mix(in srgb, #d64545 24%, var(--mkt-divider-strong));
+}
+
+.pillSafetyActive {
+  color: #b33;
+  background: color-mix(in srgb, #d64545 8%, var(--mkt-surface));
+  border-color: color-mix(in srgb, #d64545 32%, var(--mkt-divider-strong));
+  box-shadow: 0 4px 16px -10px color-mix(in srgb, #d64545 28%, transparent);
+}
+
+.navDark {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--mkt-void, #08090a) 94%, transparent);
+}
+
+.navDark .pill {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.navDark .pill:hover {
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.navDark .pillActive {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.navDark .pillSafetyActive {
+  color: #f0a0a0;
+  background: rgba(214, 69, 69, 0.14);
+  border-color: rgba(214, 69, 69, 0.35);
+}
+
+@media (max-width: 639px) {
+  .nav,
+  .navPinned {
+    top: 3.5rem;
+  }
+}

@@ -1,8 +1,9 @@
 import {
+  FeaturesCatalog,
   FeaturesClosing,
   FeaturesHero,
-  SafetyChapters,
-  UtilityBands,
+  FeaturesJumpNav,
+  FeaturesSafetyDark,
 } from './components/FeaturesContent';
 import { featuresMetadata } from './config/metadata';
 
@@ -10,11 +11,13 @@ export const metadata = featuresMetadata;
 
 export default function FeaturesPage() {
   return (
-    <main className="relative">
+    <>
       <FeaturesHero />
-      <SafetyChapters />
-      <UtilityBands />
+      <FeaturesJumpNav />
+      <FeaturesCatalog part="intro" />
+      <FeaturesSafetyDark />
+      <FeaturesCatalog part="rest" />
       <FeaturesClosing />
-    </main>
+    </>
   );
 }

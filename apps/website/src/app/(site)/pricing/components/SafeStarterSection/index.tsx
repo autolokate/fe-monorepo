@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import { SAFE_STARTER_COPY, STARTER_STICKER_IMAGE } from './constants';
+import { SAFE_STARTER_COPY } from './constants';
+import { SafeStartVisual } from './SafeStartVisual';
 import styles from './index.module.css';
 
 export function SafeStarterSection() {
@@ -19,14 +19,8 @@ export function SafeStarterSection() {
       className={`mkt-section mkt-mutedBg ${styles.section}`}
     >
       <div className={`mkt-container ${styles.inner}`}>
-        <div className={styles.stickerWrap}>
-          <Image
-            src={STARTER_STICKER_IMAGE}
-            alt="Autolokate ₹99 Safe Smart QR starter sticker"
-            width={344}
-            height={424}
-            className={styles.sticker}
-          />
+        <div className={styles.visual}>
+          <SafeStartVisual />
         </div>
 
         <div className={styles.copy}>

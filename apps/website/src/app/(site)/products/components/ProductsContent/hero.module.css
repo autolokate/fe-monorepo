@@ -1,9 +1,9 @@
 .section {
   position: relative;
   isolation: isolate;
-  min-height: clamp(26rem, 68vh, 38rem);
+  min-height: clamp(32rem, 78vh, 46rem);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   color: var(--mkt-on-dark);
   overflow: hidden;
 }
@@ -16,18 +16,29 @@
 
 .image {
   object-fit: cover;
-  object-position: center;
+  object-position: 72% center;
 }
 
 .scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    100deg,
-    rgba(8, 9, 10, 0.92) 0%,
-    rgba(8, 9, 10, 0.65) 42%,
-    rgba(8, 9, 10, 0.35) 100%
-  );
+  background:
+    linear-gradient(
+      100deg,
+      rgba(8, 9, 10, 0.86) 0%,
+      rgba(8, 9, 10, 0.5) 36%,
+      rgba(8, 9, 10, 0.18) 66%,
+      rgba(8, 9, 10, 0.36) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(8, 9, 10, 0.35) 0%,
+      transparent 18%,
+      transparent 55%,
+      rgba(8, 9, 10, 0.55) 78%,
+      rgba(8, 9, 10, 0.94) 92%,
+      #08090a 100%
+    );
 }
 
 .inner {
@@ -36,7 +47,8 @@
   width: 100%;
   max-width: var(--mkt-container);
   margin-inline: auto;
-  padding: clamp(5rem, 12vw, 7rem) var(--mkt-gutter) clamp(3rem, 8vw, 4.5rem);
+  padding: calc(4.75rem + env(safe-area-inset-top, 0px)) var(--mkt-gutter)
+    clamp(5.5rem, 11vw, 7.5rem);
 }
 
 .eyebrow {
