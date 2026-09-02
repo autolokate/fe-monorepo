@@ -1,3 +1,4 @@
+import { PLAN_DISPLAY_BY_SLUG } from '@/lib/plan-display-names';
 import type { BillingFaqCopy, FaqItem } from './types';
 
 export const BILLING_FAQ_COPY: BillingFaqCopy = {
@@ -44,13 +45,11 @@ export const BILLING_FAQS: FaqItem[] = [
   {
     id: 'ambulance-roadside',
     question: 'What does the ambulance and roadside cover include?',
-    answer:
-      'Ambulance dispatch with the bill covered, from ₹3,000 to ₹10,000 by plan. Roadside help on Shield and above: towing and minor repairs, fuel delivery, flat tyre, battery jump-start and lockout help.',
+    answer: `Ambulance dispatch with the bill covered, from ₹3,000 to ₹10,000 by plan. Roadside help on ${PLAN_DISPLAY_BY_SLUG.shield} and above: towing and minor repairs, fuel delivery, flat tyre, battery jump-start and lockout help.`,
   },
   {
     id: 'rider-pillion',
     question: 'Does it cover a rider or pillion?',
-    answer:
-      'Rider cover is available as an add-on on Secure and above, for up to two riders. You can add them in the app.',
+    answer: `Rider cover is available as an add-on on ${PLAN_DISPLAY_BY_SLUG.secure} and above, for up to two riders. You can add them in the app.`,
   },
 ];

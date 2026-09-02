@@ -6,6 +6,6 @@ export const CLOSING_SIGNAL_RINGS = '/images/new-design/home/closing-signal-ring
 export const CLOSING_CTA_COPY: ClosingCtaCopy = {
   headline: 'Built for',
   headlineAccent: 'India’s roads.',
-  subheading: 'And for the moment you hope never comes.',
+  subheading: 'For the moment you hope never comes.',
   cta: { label: 'Get protected', href: '/#safety-packs' },
 };

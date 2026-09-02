@@ -1,19 +1,19 @@
 import { BeyondCta } from './BeyondCta';
-import { HighlightCard } from './HighlightCard';
+import { FeatureTile } from './FeatureTile';
 import { WHY_AUTOLOKATE_COPY, WHY_HIGHLIGHTS } from './constants';
 import styles from './index.module.css';
 
 export function WhyAutolokateSection() {
   const { eyebrow, headline, headlineAccent, headlineSuffix, subheadline } = WHY_AUTOLOKATE_COPY;
-  const stacked = WHY_HIGHLIGHTS.filter((item) => item.layout === 'stacked');
-  const wide = WHY_HIGHLIGHTS.filter((item) => item.layout === 'wide');
 
   return (
     <section aria-labelledby="beyond-heading" className={styles.section}>
       <div className={styles.inner}>
         <header className={styles.header}>
           <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+            <span className={styles.eyebrowIndex} aria-hidden="true">
+              05
+            </span>
             {eyebrow}
           </p>
           <h2 id="beyond-heading" className={styles.headline}>
@@ -24,15 +24,11 @@ export function WhyAutolokateSection() {
           <p className={styles.subheadline}>{subheadline}</p>
         </header>
 
-        <div className={styles.grid}>
-          <div className={styles.rowStacked}>
-            {stacked.map((highlight) => (
-              <HighlightCard key={highlight.id} highlight={highlight} />
-            ))}
-          </div>
-          <div className={styles.rowWide}>
-            {wide.map((highlight) => (
-              <HighlightCard key={highlight.id} highlight={highlight} />
+        <div className={styles.rail}>
+          <div className={styles.railLine} aria-hidden="true" />
+          <div className={styles.tiles}>
+            {WHY_HIGHLIGHTS.map((highlight, index) => (
+              <FeatureTile key={highlight.id} highlight={highlight} index={index + 1} />
             ))}
           </div>
         </div>

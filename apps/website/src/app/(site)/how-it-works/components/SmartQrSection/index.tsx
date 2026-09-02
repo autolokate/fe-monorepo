@@ -4,26 +4,15 @@ import styles from './index.module.css';
 
 export function SmartQrSection() {
   const { eyebrow, headline, headlineAccent, subheading, callout } = SMART_QR_COPY;
-  const { Icon: ScanIcon } = QR_SCAN_STEP;
 
   return (
-    <section aria-labelledby="smart-qr-heading" className={styles.section}>
-      <div className={styles.inner}>
-        <header className={styles.header}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
-            {eyebrow}
-          </p>
-
-          <h2 id="smart-qr-heading" className={styles.headline}>
-            {headline} <span className={styles.headlineAccent}>{headlineAccent}</span>
-          </h2>
-
-          <p className={styles.subheading}>{subheading}</p>
-        </header>
-
-        <div className={styles.journey}>
-          <div className={styles.stickerWrap}>
+    <section
+      aria-labelledby="smart-qr-heading"
+      className={`mkt-section mkt-lightBg ${styles.section}`}
+    >
+      <div className={`mkt-container ${styles.inner}`}>
+        <div className={`mkt-split mkt-splitWide ${styles.split}`}>
+          <div className={styles.stickerCol}>
             <Image
               src={QR_STICKER_IMAGE}
               alt="Autolokate Smart QR emergency sticker"
@@ -33,52 +22,43 @@ export function SmartQrSection() {
             />
           </div>
 
-          <div className={styles.chain}>
-            <div className={`${styles.item} ${styles.scan}`}>
-              <span className={styles.node} aria-hidden="true">
-                <ScanIcon className="h-[22px] w-[22px]" strokeWidth={1.9} />
-              </span>
-              <div className={styles.itemCopy}>
-                <h3 className={styles.itemTitle}>{QR_SCAN_STEP.title}</h3>
-                <p className={styles.itemBody}>{QR_SCAN_STEP.body}</p>
-              </div>
-            </div>
+          <div className={styles.story}>
+            <header className={styles.header}>
+              <p className="mkt-eyebrow">
+                <span className="mkt-eyebrowLine" aria-hidden="true" />
+                {eyebrow}
+              </p>
 
-            <svg
-              className={styles.bracket}
-              viewBox="0 0 72 252"
-              fill="none"
-              aria-hidden="true"
-              preserveAspectRatio="none"
-            >
-              <path
-                d="M0 126 H36 M36 53 V199 M36 53 H72 M36 199 H72"
-                stroke="#C4C4C4"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
+              <h2 id="smart-qr-heading" className={`mkt-headline ${styles.headline}`}>
+                {headline} <span className={styles.headlineAccent}>{headlineAccent}</span>
+              </h2>
 
-            <div className={styles.branches}>
-              {QR_BRANCH_STEPS.map((step) => {
-                const { Icon } = step;
-                return (
-                  <div key={step.id} className={styles.item}>
-                    <span className={styles.node} aria-hidden="true">
-                      <Icon className="h-[22px] w-[22px]" strokeWidth={1.9} />
-                    </span>
-                    <div className={styles.itemCopy}>
-                      <h3 className={styles.itemTitle}>{step.title}</h3>
-                      <p className={styles.itemBody}>{step.body}</p>
-                    </div>
+              <p className={`mkt-body ${styles.subheading}`}>{subheading}</p>
+            </header>
+
+            <ol className={styles.journey}>
+              <li className={styles.journeyStep}>
+                <span className={styles.stepLabel}>01</span>
+                <div className={styles.stepCopy}>
+                  <h3 className={styles.itemTitle}>{QR_SCAN_STEP.title}</h3>
+                  <p className={styles.itemBody}>{QR_SCAN_STEP.body}</p>
+                </div>
+              </li>
+
+              {QR_BRANCH_STEPS.map((step, index) => (
+                <li key={step.id} className={styles.journeyStep}>
+                  <span className={styles.stepLabel}>{String(index + 2).padStart(2, '0')}</span>
+                  <div className={styles.stepCopy}>
+                    <h3 className={styles.itemTitle}>{step.title}</h3>
+                    <p className={styles.itemBody}>{step.body}</p>
                   </div>
-                );
-              })}
-            </div>
+                </li>
+              ))}
+            </ol>
+
+            <p className={styles.callout}>{callout}</p>
           </div>
         </div>
-
-        <p className={styles.callout}>{callout}</p>
       </div>
     </section>
   );

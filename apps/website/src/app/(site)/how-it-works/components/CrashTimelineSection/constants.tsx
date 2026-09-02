@@ -3,14 +3,14 @@ import type { CrashTimelineCopy, TimelineStep } from './types';
 
 export const CRASH_TIMELINE_COPY: CrashTimelineCopy = {
   eyebrow: 'The primary layer',
-  headline: 'What happens in the moments',
-  headlineAccent: 'after impact.',
+  headline: 'After impact,',
+  headlineAccent: 'second by second.',
   subheadingLines: [
-    'The full sequence, from detection to dispatch.',
+    'From detection to dispatch—the full sequence.',
     'Nothing depends on you being able to respond.',
   ],
   callout:
-    'Built to act when every second counts. And built to stand down the moment you say you’re fine.',
+    'Built to act when every second counts—and to stand down the moment you say you’re fine.',
 };
 
 export const CRASH_TIMELINE_STEPS: TimelineStep[] = [
@@ -38,7 +38,7 @@ export const CRASH_TIMELINE_STEPS: TimelineStep[] = [
   {
     id: 'everything-sent',
     title: 'Everything sent together',
-    body: 'An ambulance heads to your location while your family is alerted on call, WhatsApp and SMS, with your live location.',
+    body: 'An ambulance heads to your location while your family is alerted on call, WhatsApp and SMS—with your live location.',
     Icon: Share2,
     tone: 'brand',
   },

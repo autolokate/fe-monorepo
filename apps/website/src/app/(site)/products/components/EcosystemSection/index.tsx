@@ -5,33 +5,34 @@ import styles from './index.module.css';
 
 export function EcosystemSection() {
   return (
-    <section className={styles.section} aria-labelledby="ecosystem-heading">
-      <div className={styles.inner}>
+    <section
+      className={`mkt-section mkt-lightBg ${styles.section}`}
+      aria-labelledby="ecosystem-heading"
+    >
+      <div className={`mkt-container ${styles.inner}`}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+          <p className="mkt-eyebrow">
+            <span className="mkt-eyebrowLine" aria-hidden="true" />
             {ECOSYSTEM_COPY.eyebrow}
           </p>
-          <h2 id="ecosystem-heading" className={styles.heading}>
+          <h2 id="ecosystem-heading" className={`mkt-headline ${styles.heading}`}>
             {ECOSYSTEM_COPY.heading}{' '}
             <span className={styles.headingAccent}>{ECOSYSTEM_COPY.headingAccent}</span>
           </h2>
-          <p className={styles.subheading}>{ECOSYSTEM_COPY.subheading}</p>
+          <p className={`mkt-body ${styles.subheading}`}>{ECOSYSTEM_COPY.subheading}</p>
         </header>
 
-        <ul className={styles.audiences}>
-          {ECOSYSTEM_AUDIENCES.map(({ id, title, description, Icon }) => (
-            <li key={id} className={styles.audience}>
-              <span className={styles.node} aria-hidden="true">
-                <Icon className="h-5 w-5" strokeWidth={1.8} />
-              </span>
+        <ol className={styles.audiences}>
+          {ECOSYSTEM_AUDIENCES.map((audience, index) => (
+            <li key={audience.id} className={styles.audience}>
+              <span className={styles.index}>{String(index + 1).padStart(2, '0')}</span>
               <div className={styles.copy}>
-                <h3 className={styles.audienceTitle}>{title}</h3>
-                <p className={styles.audienceBody}>{description}</p>
+                <h3 className={styles.audienceTitle}>{audience.title}</h3>
+                <p className={styles.audienceBody}>{audience.description}</p>
               </div>
             </li>
           ))}
-        </ul>
+        </ol>
 
         <p className={styles.footnote}>{ECOSYSTEM_COPY.footnote}</p>
 

@@ -1,11 +1,12 @@
-import { SAFETY_PACKS_SECTION_ID } from '../SafetyPacksSection/constants';
+import { CLOSING_COPY } from '../story/constants';
 import type { ClosingCtaCopy } from './types';
 
-export const CLOSING_SIGNAL_RINGS = '/images/new-design/home/closing-signal-rings.svg';
-
 export const CLOSING_CTA_COPY: ClosingCtaCopy = {
-  headline: 'Protected before your next',
-  headlineAccent: 'trip.',
-  subheading: 'Set up in minutes. Covered for a full year, from ₹999.',
-  cta: { label: 'Get protected', href: `/#${SAFETY_PACKS_SECTION_ID}` },
+  eyebrow: CLOSING_COPY.eyebrow,
+  headline: CLOSING_COPY.headline,
+  headlineAccent: CLOSING_COPY.headlineAccent,
+  subheading: CLOSING_COPY.subheading,
+  features: CLOSING_COPY.features,
+  imageAlt: CLOSING_COPY.imageAlt,
+  cta: CLOSING_COPY.cta,
 };

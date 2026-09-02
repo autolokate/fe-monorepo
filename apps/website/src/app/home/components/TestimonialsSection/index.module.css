@@ -43,15 +43,15 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #14803a;
+  color: var(--mkt-green-deep, #178a3f);
 }
 
 .eyebrowDash {
   display: inline-block;
   width: 22px;
-  height: 3px;
+  height: 2px;
   border-radius: 2px;
-  background: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
 }
 
 .headline {
@@ -64,7 +64,7 @@
 }
 
 .headlineAccent {
-  color: #1fa24a;
+  color: var(--mkt-green, #1fa24a);
 }
 
 /* ---------- Carousel ---------- */

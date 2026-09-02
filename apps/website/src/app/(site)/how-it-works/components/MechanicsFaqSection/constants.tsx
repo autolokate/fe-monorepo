@@ -13,13 +13,13 @@ export const MECHANICS_FAQS: MechanicsFaqItem[] = [
     id: 'device',
     question: 'Do I need to install any device in my car?',
     answer:
-      'No hardware, ever. Crash detection runs on your phone. The Smart QR sticker goes on your vehicle, and that is the whole install.',
+      'No hardware, ever. Crash detection runs on your phone. The Smart QR sticker goes on your vehicle—that is the whole install.',
   },
   {
     id: 'battery',
     question: 'Will it drain my battery or data?',
     answer:
-      'It uses your phone’s low-power motion sensors, not the camera or GPS running full time, so the battery and data impact is designed to be minimal.',
+      'It uses your phone’s low-power motion sensors—not the camera or GPS running full time—so the battery and data impact is designed to be minimal.',
   },
   {
     id: 'crash',
@@ -48,7 +48,7 @@ export const MECHANICS_FAQS: MechanicsFaqItem[] = [
     id: 'scan-no-app',
     question: 'Can anyone scan the QR without an app?',
     answer:
-      'Yes. Any phone camera works. No app, no login, and emergency scanning is never blocked.',
+      'Yes. Any phone camera works. No app, no login—and emergency scanning is never blocked.',
   },
   {
     id: 'privacy',

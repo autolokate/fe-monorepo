@@ -1,137 +1,55 @@
-/* Products "Three apps" section — light band with the flagship consumer tile
-   and the two partner tiles. Matches Figma "06 · Products · D" → Three apps. */
+/* App showcase — product storytelling with split flagship + stacked partners. */
 
 .section {
-  position: relative;
-  background-color: #f4f6f9;
-  color: #0a0a0c;
+  padding-block: var(--mkt-space-section);
 }
 
 .inner {
-  margin-inline: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 3rem; /* 48px */
-  max-width: 75rem;
-  padding: 4rem 1.25rem;
+  gap: clamp(2.5rem, 6vw, 4rem);
 }
 
-@media (min-width: 640px) {
-  .inner {
-    padding: 5rem 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .inner {
-    /* Figma content is 1200px wide on a 120px gutter (1440 frame). */
-    max-width: 80rem; /* 1280px incl. 2×40px padding → 1200px content */
-    padding: 6rem 2.5rem;
-  }
-}
-
-/* ---------- Section header ---------- */
 .header {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.875rem; /* 14px */
-  text-align: center;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-size: 0.75rem;
-  line-height: 1.0625rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #14803a;
-}
-
-.eyebrowDash {
-  display: inline-block;
-  width: 22px;
-  height: 3px;
-  background: #1fa24a;
-}
-
-.heading {
-  max-width: 52.5rem;
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2rem, 4.6vw, 2.75rem); /* up to 44px */
-  line-height: 1.18;
-  font-weight: 700;
-  letter-spacing: -0.012em;
-  text-wrap: balance;
+  gap: 1rem;
+  max-width: 40rem;
 }
 
 .headingAccent {
-  color: #1fa24a;
+  color: var(--mkt-green);
 }
 
 .subheading {
-  max-width: 40rem;
-  font-size: 1.1875rem;
-  line-height: 1.47;
-  color: #4a4f57;
+  max-width: 34rem;
 }
 
-/* ---------- Showcase stack ---------- */
-.showcase {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem; /* 24px */
-  width: 100%;
-}
-
-.tile {
-  border-radius: 18px;
-  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
-}
-
-/* ---------- Flagship tile (dark) ---------- */
+/* ---------- Flagship split ---------- */
 .flagship {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
-  background-color: #0a0a0c;
-  color: #fff;
-  overflow: hidden;
-}
-
-@media (min-width: 640px) {
-  .flagship {
-    padding: 2.5rem;
-  }
+  display: grid;
+  gap: clamp(2rem, 5vw, 3rem);
+  align-items: center;
+  padding: clamp(2rem, 5vw, 3rem);
+  background: var(--mkt-black);
+  color: var(--mkt-on-dark);
+  --mkt-ink-primary: var(--mkt-on-dark);
+  --mkt-ink-secondary: var(--mkt-on-dark-secondary);
+  --mkt-ink-muted: var(--mkt-on-dark-muted);
+  --mkt-divider: rgba(255, 255, 255, 0.12);
 }
 
 @media (min-width: 1024px) {
   .flagship {
-    flex-direction: row;
-    align-items: center;
-    gap: 2.5rem; /* 40px */
-    padding: 3rem; /* 48px */
+    grid-template-columns: 1fr auto;
+    gap: 3rem;
   }
 }
 
-.identity {
+.flagshipCopy {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* keep the CTA hugging its content, not full-width */
-  gap: 1.75rem; /* 28px */
-}
-
-@media (min-width: 1024px) {
-  .identity {
-    flex: 0 0 22.5rem; /* 360px */
-    width: 22.5rem;
-  }
+  gap: 1.75rem;
 }
 
 .tileHead {
@@ -143,112 +61,86 @@
 .appIcon {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: var(--mkt-radius-md);
 }
 
 .nameGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 0.5rem;
 }
 
 .appName {
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(1.75rem, 3.4vw, 2.375rem); /* up to 38px */
-  line-height: 1.16;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-3xl);
   font-weight: 700;
-  letter-spacing: -0.012em;
-  color: #fff;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  color: var(--mkt-ink-primary);
 }
 
 .appAudience {
-  font-size: 1.0625rem;
-  line-height: 1.55;
-  color: #c9cdd3;
+  font-size: var(--mkt-text-base);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
 }
 
 .appNameDark {
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(1.5rem, 3vw, 2.375rem);
-  line-height: 1.16;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-2xl);
   font-weight: 700;
-  letter-spacing: -0.012em;
-  color: #0a0a0c;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--mkt-ink-primary);
 }
 
 .appAudienceDark {
-  font-size: 1.0625rem;
-  line-height: 1.55;
-  color: #6b7079;
+  font-size: var(--mkt-text-base);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
 }
 
-/* ---------- Capability list (shared) ---------- */
 .capabilities {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem; /* 12px */
-}
-
-@media (min-width: 1024px) {
-  .flagship .capabilities {
-    flex: 1;
-  }
 }
 
 .capability {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.capabilityIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 18px;
-  width: 18px;
-  height: 18px;
-}
-
-.capabilityText {
-  font-size: 0.875rem;
-  line-height: 1.5;
+  flex-direction: column;
+  gap: 0.125rem;
 }
 
 .capabilityLabel {
+  font-size: var(--mkt-text-sm);
   font-weight: 600;
 }
 
-/* Dark flagship tone */
-.flagship .capabilityIcon {
-  color: #ffffff;
+.capabilityDetail {
+  font-size: var(--mkt-text-sm);
+  line-height: 1.55;
 }
 
-.flagship .capabilityLabel {
-  color: #fff;
+.capDark .capabilityLabel {
+  color: var(--mkt-ink-primary);
 }
 
-.flagship .capabilityDetail {
-  color: #c9cdd3;
+.capDark .capabilityDetail {
+  color: var(--mkt-ink-secondary);
 }
 
-/* Light partner tone */
-.partnerTile .capabilityIcon {
-  color: #0a0a0c;
+.capLight .capabilityLabel {
+  color: var(--mkt-ink-primary);
 }
 
-.partnerTile .capabilityLabel {
-  color: #0a0a0c;
+.capLight .capabilityDetail {
+  color: var(--mkt-ink-secondary);
 }
 
-.partnerTile .capabilityDetail {
-  color: #4a4f57;
-}
-
-/* ---------- Flagship device ---------- */
 .device {
   display: flex;
   justify-content: center;
@@ -257,97 +149,77 @@
 
 .phone {
   width: auto;
-  height: 20rem;
+  height: clamp(18rem, 40vw, 25rem);
   max-width: 100%;
   object-fit: contain;
 }
 
-@media (min-width: 640px) {
-  .phone {
-    height: 25rem;
-  }
+/* ---------- Partner stack ---------- */
+.partnerStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--mkt-divider);
 }
 
-@media (min-width: 1024px) {
-  /* Desktop: fixed 314×400 device (the top of the phone, pre-clipped in Figma),
-     inset by the card padding and vertically centred — matching the design. */
-  .device {
-    flex: 0 0 19.625rem; /* 314px */
-    align-items: flex-start;
-  }
-
-  .phone {
-    width: 19.625rem; /* 314px */
-    height: 25rem; /* 400px */
-    object-fit: contain;
-  }
-}
-
-/* ---------- Partner pair (light tiles) ---------- */
-.partnerPair {
+.partner {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 4rem 1fr;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(2rem, 5vw, 2.5rem) 0;
+  border-bottom: 1px solid var(--mkt-divider);
 }
 
-@media (min-width: 900px) {
-  .partnerPair {
-    grid-template-columns: 1fr 1fr;
-  }
+.partnerIndex {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--mkt-ink-muted);
+  padding-top: 0.25rem;
 }
 
-.partnerTile {
+.partnerMain {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 2rem;
-  background-color: #fff;
 }
 
-@media (min-width: 640px) {
-  .partnerTile {
-    padding: 2.5rem;
-  }
-}
-
-.partnerCtaRow {
-  display: flex;
-  justify-content: center;
-  margin-top: auto;
-}
-
-/* ---------- CTA buttons ---------- */
-/* Match Figma WebButton/Primary: 16×28 padding, 14px radius, 16px label. */
 button.ctaLight,
 button.ctaDark {
+  align-self: flex-start;
   min-height: 0;
-  padding: 1rem 1.75rem; /* 16px 28px */
-  border: none;
-  border-radius: 14px;
-  font-size: 1rem; /* 16px */
-  line-height: 1.5; /* 24px → 56px tall */
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--mkt-radius-sm);
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
 }
 
 button.ctaLight {
-  border-color: transparent;
-  background-color: #fff;
-  color: #0a0a0c;
-  font-weight: 600;
+  border: none;
+  background-color: #ffffff;
+  color: var(--mkt-ink-dark);
 }
 
 button.ctaLight:hover:not(:disabled):not(.is-loading) {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: #e8e8e8;
   opacity: 1;
 }
 
 button.ctaDark {
-  border-color: transparent;
-  background-color: #0a0a0c;
-  color: #fff;
-  font-weight: 600;
+  border: 1px solid var(--mkt-border);
+  background-color: var(--mkt-ink-dark);
+  color: #ffffff;
 }
 
 button.ctaDark:hover:not(:disabled):not(.is-loading) {
-  background-color: rgba(10, 10, 12, 0.88);
+  border-color: var(--mkt-ink-dark);
+  background-color: var(--mkt-steel);
   opacity: 1;
+}
+
+@media (max-width: 639px) {
+  .partner {
+    grid-template-columns: 1fr;
+  }
 }

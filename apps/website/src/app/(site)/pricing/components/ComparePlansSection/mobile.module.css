@@ -1,0 +1,98 @@
+/* Mobile-first plan comparison — light premium cards */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .stack {
+    display: none;
+  }
+}
+
+.planCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: var(--mkt-radius-lg);
+  border: 1px solid var(--mkt-border);
+  background: var(--mkt-surface);
+  box-shadow: var(--mkt-shadow-sm);
+}
+
+.planCardPopular {
+  padding-top: 2rem;
+  border: 2px solid var(--mkt-green);
+  box-shadow: var(--mkt-shadow-md);
+}
+
+.badge {
+  position: absolute;
+  top: -0.625rem;
+  left: 1.5rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mkt-yellow) 14%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--mkt-yellow) 35%, transparent);
+  color: var(--mkt-yellow-deep);
+  font-size: var(--mkt-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.planHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.planName {
+  margin: 0;
+  font-size: var(--mkt-text-xl);
+  font-weight: 600;
+  color: var(--mkt-ink-dark);
+}
+
+.planPrice {
+  margin: 0;
+  font-size: var(--mkt-text-sm);
+  color: var(--mkt-ink-dark-muted);
+  white-space: nowrap;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.45;
+  color: var(--mkt-ink-dark-secondary);
+}
+
+.checkIcon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  color: var(--mkt-green);
+}
+
+.planCard :global(button) {
+  width: 100%;
+  border-radius: var(--mkt-radius-sm);
+}

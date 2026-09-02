@@ -90,6 +90,7 @@ export const footerLinks: FooterLinkSection[] = [
       { id: 'products', label: 'Products', href: '/products' },
       { id: 'media', label: 'Media', href: '/media' },
       { id: 'about', label: 'About us', href: '/about-us' },
+      { id: 'team', label: 'Team', href: '/team' },
     ],
   },
   {
@@ -156,11 +157,12 @@ export const footerBrand = {
   name: 'Autolokate',
   legalName: 'Autolokate Software Private Limited',
   tagline:
-    "India's app-first vehicle safety network. Automatic crash detection, instant family alerts, and a Smart QR backup that works even when your phone can't.",
-  controlCenter: '24/7 Control Center · Ambulance, roadside help and family alerts',
+    'Automatic crash detection and emergency coordination for every drive. Your phone senses a serious crash, alerts your family, and gets help moving — without you reaching for it.',
+  controlCenter:
+    '24/7 Control Center · Ambulance, police coordination, roadside assistance, and family alerts',
   email: SUPPORT_EMAIL,
   disclaimer:
-    'Autolokate coordinates emergency help. It does not replace 112 or official emergency services.',
+    'Autolokate coordinates emergency response. It does not replace 112 or official emergency services.',
 };
 
 export const ANDROID_STORE_URL =

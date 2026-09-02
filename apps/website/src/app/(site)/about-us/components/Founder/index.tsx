@@ -7,14 +7,14 @@ export function Founder() {
   return (
     <section aria-labelledby="founder-heading" className={styles.section}>
       <div className={styles.inner}>
-        <div className={styles.headerStack}>
+        <div className={styles.editorial}>
           <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+            <span className={styles.eyebrowLine} aria-hidden="true" />
             {eyebrow}
           </p>
 
           <blockquote id="founder-heading" className={styles.quote}>
-            {quote}
+            &ldquo;{quote}&rdquo;
           </blockquote>
         </div>
 

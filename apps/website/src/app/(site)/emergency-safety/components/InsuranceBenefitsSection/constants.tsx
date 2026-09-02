@@ -1,4 +1,5 @@
 import { Ambulance, Banknote, ShieldCheck } from 'lucide-react';
+import { PLAN_DISPLAY_BY_SLUG } from '@/lib/plan-display-names';
 import type { InsuranceBenefit, InsuranceCopy } from './types';
 
 export const INSURANCE_COPY: InsuranceCopy = {
@@ -20,7 +21,7 @@ export const INSURANCE_BENEFITS: InsuranceBenefit[] = [
   {
     id: 'accident-cover',
     title: 'Accident cover',
-    body: 'Accidental death, permanent total disability and partial disability, from ₹1 lakh to ₹5 lakh. Paid to you or your family. Rider cover extends it to your pillion, on Secure and above.',
+    body: `Accidental death, permanent total disability and partial disability, from ₹1 lakh to ₹5 lakh. Paid to you or your family. Rider cover extends it to your pillion, on ${PLAN_DISPLAY_BY_SLUG.secure} and above.`,
     Icon: ShieldCheck,
   },
   {

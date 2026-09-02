@@ -6,7 +6,7 @@
   isolation: isolate;
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 50%, rgba(31, 162, 74, 0.14) 0%, rgba(31, 162, 74, 0) 60%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.04) 60%),
     #0a0a0c;
   color: #fff;
 }

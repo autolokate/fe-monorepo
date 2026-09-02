@@ -1,20 +1,22 @@
 import {
-  AppShowcaseSection,
-  ClosingCtaSection,
-  EcosystemSection,
-  HeroBanner,
-  productsMetadata,
-} from './';
+  ExperienceFlow,
+  FlagshipMoment,
+  PartnerApps,
+  ProductsClosing,
+  ProductsHero,
+} from './components/ProductsContent';
+import { productsMetadata } from './config/metadata';
 
 export const metadata = productsMetadata;
 
 export default function ProductsPage() {
   return (
     <main className="relative">
-      <HeroBanner />
-      <AppShowcaseSection />
-      <EcosystemSection />
-      <ClosingCtaSection />
+      <ProductsHero />
+      <ExperienceFlow />
+      <FlagshipMoment />
+      <PartnerApps />
+      <ProductsClosing />
     </main>
   );
 }

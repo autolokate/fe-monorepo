@@ -44,15 +44,15 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #14803a;
+  color: var(--mkt-green-deep, #178a3f);
 }
 
 .eyebrowDash {
   display: inline-block;
   width: 22px;
-  height: 3px;
+  height: 2px;
   border-radius: 2px;
-  background: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
 }
 
 .headline {
@@ -72,7 +72,7 @@
 }
 
 .headlineAccent {
-  color: #1fa24a;
+  color: var(--mkt-green, #1fa24a);
 }
 
 .subheadline {
@@ -125,14 +125,14 @@
   background: #ffffff;
   border: 1.6px solid #e5e8ec;
   box-shadow: 0 10px 24px 0 rgba(15, 18, 28, 0.1);
-  color: #1fa24a;
+  color: var(--mkt-green, #1fa24a);
 }
 
 .stepBadgeHighlight {
-  background: #1fa24a;
-  border-color: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
+  border-color: var(--mkt-green, #1fa24a);
   color: #ffffff;
-  box-shadow: 0 12px 28px 0 rgba(31, 162, 74, 0.35);
+  box-shadow: 0 12px 28px 0 color-mix(in srgb, var(--mkt-green) 35%, transparent);
 }
 
 .stepIcon {

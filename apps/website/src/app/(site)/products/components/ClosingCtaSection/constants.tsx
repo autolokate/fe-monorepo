@@ -6,6 +6,6 @@ export const CLOSING_SIGNAL_RINGS = '/images/new-design/home/closing-signal-ring
 export const CLOSING_CTA_COPY: ClosingCtaCopy = {
   headline: 'Your business,',
   headlineAccent: 'on the network.',
-  subheading: 'Tell us what you run, and we’ll show you the next step.',
+  subheading: 'Tell us what you run—we’ll show you the next step.',
   cta: { label: 'Connect on WhatsApp', href: 'https://wa.me/919062524516' },
 };

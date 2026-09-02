@@ -10,11 +10,11 @@ const buttonVariants = cva(
       variant: {
         /** Default = solid black CTA. */
         default:
-          'border border-transparent bg-primary text-primary-foreground shadow-[0_6px_20px_-6px_rgba(15,23,42,0.25)] hover:bg-[color:var(--cta-hover)] hover:shadow-[0_10px_28px_-8px_rgba(15,23,42,0.32)]',
+          'border border-transparent bg-primary text-primary-foreground shadow-[var(--website-shadow-md)] hover:bg-[color:var(--cta-hover)] hover:shadow-[var(--website-shadow-lg)]',
         primary:
-          'border border-transparent bg-primary text-primary-foreground shadow-[0_6px_20px_-6px_rgba(15,23,42,0.25)] hover:bg-[color:var(--cta-hover)] hover:shadow-[0_10px_28px_-8px_rgba(15,23,42,0.32)]',
+          'border border-transparent bg-primary text-primary-foreground shadow-[var(--website-shadow-md)] hover:bg-[color:var(--cta-hover)] hover:shadow-[var(--website-shadow-lg)]',
         destructive:
-          'border border-transparent bg-destructive text-white shadow-sm hover:bg-[#dc2626]',
+          'border border-transparent bg-destructive text-white shadow-sm hover:bg-[var(--website-red-deep)]',
         /** Outline = transparent with a foreground border + label. */
         outline:
           'border border-foreground/80 bg-transparent text-foreground hover:bg-foreground/5 hover:border-foreground hover:text-foreground',

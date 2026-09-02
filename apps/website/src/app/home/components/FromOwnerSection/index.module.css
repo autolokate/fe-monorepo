@@ -1,9 +1,9 @@
-/* FromOwnerSection — soft-green "From the Founder" quote block. */
+/* FromOwnerSection — editorial founder quote on muted surface. */
 
 .section {
   position: relative;
   z-index: 1;
-  background-color: #e7f6ec;
+  background-color: #f5f5f5;
   color: #0a0a0c;
 }
 
@@ -38,15 +38,15 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #14803a;
+  color: var(--mkt-green-deep, #178a3f);
 }
 
 .eyebrowDash {
   display: inline-block;
   width: 22px;
-  height: 3px;
+  height: 2px;
   border-radius: 2px;
-  background: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
 }
 
 .quote {

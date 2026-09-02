@@ -1,26 +1,29 @@
-/* How-it-works hero — dark band with copy + live-map phone mockup.
-   Matches the redesign Figma "02 · How it works · D" → Hero. */
-
 .hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background-color: #0a0a0c;
-  color: #fff;
+  composes: hero from '../../../../styles/marketing-hero.module.css';
 }
 
-/* Radial green glow anchored right, behind the phone. */
 .glow {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    50% 55% at 80% 45%,
-    rgba(31, 162, 74, 0.16) 0%,
-    rgba(31, 162, 74, 0.04) 48%,
-    rgba(31, 162, 74, 0) 72%
-  );
+  composes: glow from '../../../../styles/marketing-hero.module.css';
+}
+
+.eyebrow {
+  composes: eyebrow from '../../../../styles/marketing-hero.module.css';
+}
+
+.eyebrowDash {
+  composes: eyebrowDash from '../../../../styles/marketing-hero.module.css';
+}
+
+.headline {
+  composes: headline from '../../../../styles/marketing-hero.module.css';
+}
+
+.headlineAccent {
+  composes: headlineAccent from '../../../../styles/marketing-hero.module.css';
+}
+
+.description {
+  composes: description from '../../../../styles/marketing-hero.module.css';
 }
 
 .inner {
@@ -31,14 +34,8 @@
   flex-direction: column;
   align-items: center;
   gap: 2.5rem;
-  max-width: 75rem;
-  padding: 3.5rem 1.25rem 3rem;
-}
-
-@media (min-width: 640px) {
-  .inner {
-    padding: 4.5rem 2rem 4rem;
-  }
+  max-width: var(--mkt-container);
+  padding: clamp(3.5rem, 10vw, 5.5rem) var(--mkt-gutter) clamp(3rem, 8vw, 5rem);
 }
 
 @media (min-width: 1024px) {
@@ -47,11 +44,10 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 4rem;
-    padding: 6rem 2.5rem;
+    text-align: left;
   }
 }
 
-/* ---------- Copy column ---------- */
 .copy {
   order: 1;
   width: 100%;
@@ -67,62 +63,13 @@
   }
 }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #39c46b;
-}
-
-.eyebrowDash {
-  display: inline-block;
-  width: 22px;
-  height: 3px;
-  border-radius: 2px;
-  background: #39c46b;
-}
-
-.headline {
-  margin-top: 1.5rem;
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2.5rem, 5.4vw, 3.625rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
-}
-
-.headlineAccent {
-  color: #39c46b;
-}
-
-.description {
-  margin-top: 1.75rem;
-  margin-inline: auto;
-  max-width: 35rem;
-  font-size: 1.0625rem;
-  line-height: 1.6;
-  color: #c9cdd3;
-}
-
-@media (min-width: 1024px) {
-  .description {
-    margin-inline: 0;
-  }
-}
-
 .microcopy {
   margin-top: 1.25rem;
-  font-size: 0.84375rem;
+  font-size: var(--mkt-text-sm);
   line-height: 1.5;
-  color: #9aa0a8;
+  color: var(--mkt-ink-muted);
 }
 
-/* ---------- CTA ---------- */
 .ctas {
   margin-top: 1.75rem;
   display: flex;
@@ -146,19 +93,18 @@
 }
 
 button.ctaPrimary {
-  border-color: transparent;
-  background-color: #fff;
-  color: #0a0a0c;
+  border: none;
+  border-radius: var(--mkt-radius-sm);
+  background-color: var(--mkt-green);
+  color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 14px 34px -14px rgba(255, 255, 255, 0.45);
 }
 
 button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--mkt-green-deep);
   opacity: 1;
 }
 
-/* ---------- Phone scene ---------- */
 .scene {
   order: 2;
   display: flex;
@@ -173,22 +119,9 @@ button.ctaPrimary:hover:not(:disabled):not(.is-loading) {
 }
 
 .phone {
-  width: auto;
-  height: 30rem;
-  max-width: 100%;
-  animation: heroPhoneIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@media (min-width: 640px) {
-  .phone {
-    height: 36rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .phone {
-    height: 40rem;
-  }
+  width: min(100%, 18rem);
+  height: auto;
+  animation: heroPhoneIn 0.9s var(--mkt-ease-out) both;
 }
 
 @keyframes heroPhoneIn {

@@ -1,57 +1,47 @@
-/* eslint-disable @next/next/no-img-element -- decorative fork-bracket SVG, no optimization benefit */
-import { FORK_BRACKET, RESPONSE_BRANCHES, RESPONSE_COPY, RESPONSE_SOURCE } from './constants';
+import { RESPONSE_BRANCHES, RESPONSE_COPY, RESPONSE_SOURCE } from './constants';
 import styles from './index.module.css';
 
 export function OnGroundResponseSection() {
   const { eyebrow, headline, headlineAccent, subheading, footnote } = RESPONSE_COPY;
-  const { Icon: SourceIcon } = RESPONSE_SOURCE;
 
   return (
-    <section aria-labelledby="response-heading" className={styles.section}>
-      <div className={styles.inner}>
+    <section
+      aria-labelledby="response-heading"
+      className={`mkt-section mkt-lightBg ${styles.section}`}
+    >
+      <div className={`mkt-container ${styles.inner}`}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+          <p className="mkt-eyebrow">
+            <span className="mkt-eyebrowLine" aria-hidden="true" />
             {eyebrow}
           </p>
 
-          <h2 id="response-heading" className={styles.headline}>
-            {headline}
-            <br />
-            <span className={styles.headlineAccent}>{headlineAccent}</span>
+          <h2 id="response-heading" className={`mkt-headline ${styles.headline}`}>
+            {headline} <span className={styles.headlineAccent}>{headlineAccent}</span>
           </h2>
 
-          <p className={styles.subheading}>{subheading}</p>
+          <p className={`mkt-body ${styles.subheading}`}>{subheading}</p>
         </header>
 
         <div className={styles.chain}>
-          <div className={styles.source}>
-            <span className={styles.node} aria-hidden="true">
-              <SourceIcon className="h-[22px] w-[22px]" strokeWidth={1.9} />
-            </span>
+          <article className={styles.source}>
+            <span className={styles.phase}>Dispatch</span>
             <div className={styles.copy}>
               <h3 className={styles.itemTitle}>{RESPONSE_SOURCE.title}</h3>
               <p className={styles.itemBody}>{RESPONSE_SOURCE.body}</p>
             </div>
-          </div>
-
-          <img src={FORK_BRACKET} alt="" aria-hidden="true" className={styles.fork} />
+          </article>
 
           <ul className={styles.branches}>
-            {RESPONSE_BRANCHES.map((branch) => {
-              const { Icon } = branch;
-              return (
-                <li key={branch.id} className={styles.branch}>
-                  <span className={styles.node} aria-hidden="true">
-                    <Icon className="h-[22px] w-[22px]" strokeWidth={1.9} />
-                  </span>
-                  <div className={styles.copy}>
-                    <h3 className={styles.itemTitle}>{branch.title}</h3>
-                    <p className={styles.itemBody}>{branch.body}</p>
-                  </div>
-                </li>
-              );
-            })}
+            {RESPONSE_BRANCHES.map((branch, index) => (
+              <li key={branch.id} className={styles.branch}>
+                <span className={styles.phase}>{String(index + 1).padStart(2, '0')}</span>
+                <div className={styles.copy}>
+                  <h3 className={styles.itemTitle}>{branch.title}</h3>
+                  <p className={styles.itemBody}>{branch.body}</p>
+                </div>
+              </li>
+            ))}
           </ul>
         </div>
 

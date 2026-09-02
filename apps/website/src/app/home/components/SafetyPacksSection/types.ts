@@ -19,6 +19,8 @@ export interface SafetyPlan {
   popular?: boolean;
   popularBadge?: string;
   ctaLabel: string;
+  /** Secondary link label below the plan CTA (pricing page). */
+  detailsLabel: string;
   /** One-line plan summary shown on the home plan grid (matches Figma). */
   summary?: string;
   features: PlanFeature[];

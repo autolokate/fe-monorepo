@@ -51,15 +51,15 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #14803a;
+  color: rgba(10, 10, 10, 0.5);
 }
 
 .eyebrowDash {
   display: inline-block;
   width: 22px;
-  height: 3px;
+  height: 2px;
   border-radius: 2px;
-  background: #1fa24a;
+  background: #e5342a;
 }
 
 .headline {
@@ -72,7 +72,7 @@
 }
 
 .headlineAccent {
-  color: #1fa24a;
+  color: var(--mkt-green, #1fa24a);
 }
 
 .subheading {
@@ -104,34 +104,36 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 2rem;
-  border-radius: 18px;
+  border-radius: var(--mkt-radius-lg, 0.625rem);
   background: #ffffff;
-  border: 1px solid #eceff3;
-  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.1);
 }
 
 .cardPopular {
   padding-top: 2.875rem;
-  background: #0a0a0c;
-  border-color: #0a0a0c;
-  color: #ffffff;
+  background: #ffffff;
+  border: 2px solid var(--mkt-green, #1fa24a);
+  color: #0a0a0a;
+  box-shadow: var(--mkt-shadow-lg, 0 24px 48px -20px rgba(31, 162, 74, 0.2));
 }
 
 .popularPill {
   position: absolute;
-  top: -14px;
+  top: -0.875rem;
   left: 50%;
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.3125rem 0.75rem;
-  border-radius: 999px;
-  background: #e7f6ec;
-  color: #116e33;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mkt-yellow, #f5a623) 14%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--mkt-yellow, #f5a623) 35%, transparent);
+  color: var(--mkt-yellow-deep, #d4890f);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
@@ -139,7 +141,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
 }
 
 .head {
@@ -155,13 +157,13 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #e7f6ec;
-  color: #14803a;
+  background: #f5f5f5;
+  color: #0a0a0a;
 }
 
 .cardPopular .tierBadge {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--mkt-green, #1fa24a) 12%, #ffffff);
+  color: var(--mkt-green-deep, #178a3f);
 }
 
 .tierName {
@@ -192,17 +194,9 @@
   padding-bottom: 0.25rem;
 }
 
-.cardPopular .pricePeriod {
-  color: #9aa0a8;
-}
-
 .gst {
   font-size: 0.78125rem;
   color: #6b7079;
-}
-
-.cardPopular .gst {
-  color: #9aa0a8;
 }
 
 .summary {
@@ -213,7 +207,7 @@
 }
 
 .cardPopular .summary {
-  color: #c9cdd3;
+  color: #4a4f57;
 }
 
 .cta {
@@ -239,7 +233,7 @@
 }
 
 .cardPopular .includedLink {
-  color: #ffffff;
+  color: #0a0a0c;
 }
 
 button.ctaDefault {
@@ -256,13 +250,13 @@ button.ctaDefault:hover:not(:disabled):not(.is-loading) {
 
 button.ctaPopular {
   border-color: transparent;
-  background: #ffffff;
-  color: #0a0a0c;
+  background: var(--mkt-green, #1fa24a);
+  color: #ffffff;
   font-weight: 600;
 }
 
 button.ctaPopular:hover:not(:disabled):not(.is-loading) {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--mkt-green-deep, #178a3f);
   opacity: 1;
 }
 

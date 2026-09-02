@@ -32,6 +32,9 @@ function ListRow({ item }: { item: VideoItem }) {
           <span className={styles.listTitle}>{item.title}</span>
           <span className={styles.duration}>{item.duration}</span>
         </span>
+        <span className={styles.listArrow} aria-hidden="true">
+          →
+        </span>
       </a>
     </li>
   );
@@ -47,7 +50,7 @@ export function VideosSection() {
       <div className={styles.inner}>
         <header className={styles.header}>
           <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+            <span className={styles.eyebrowLine} aria-hidden="true" />
             {eyebrow}
           </p>
 
@@ -98,11 +101,11 @@ export function VideosSection() {
 
         <div className={styles.more}>
           <p className={styles.moreLabel}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+            <span className={styles.eyebrowLine} aria-hidden="true" />
             {moreLabel}
           </p>
 
-          <ul className={styles.moreGrid}>
+          <ul className={styles.moreList}>
             {MORE_VIDEOS.map((item) => {
               const { Icon } = item;
               return (
@@ -111,14 +114,19 @@ export function VideosSection() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.card}
+                    className={styles.moreRow}
                   >
-                    <span className={styles.cardThumb}>
-                      <Icon className={styles.cardThumbIcon} strokeWidth={1.6} aria-hidden="true" />
+                    <span className={styles.moreThumb}>
+                      <Icon className={styles.moreIcon} strokeWidth={1.6} aria-hidden="true" />
                       <PlayBadge size="md" />
                     </span>
-                    <span className={styles.cardTitle}>{item.title}</span>
-                    <span className={styles.duration}>{item.duration}</span>
+                    <span className={styles.moreCopy}>
+                      <span className={styles.moreTitle}>{item.title}</span>
+                      <span className={styles.duration}>{item.duration}</span>
+                    </span>
+                    <span className={styles.moreArrow} aria-hidden="true">
+                      →
+                    </span>
                   </a>
                 </li>
               );

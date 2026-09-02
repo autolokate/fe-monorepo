@@ -6,15 +6,15 @@ export function MechanicsFaqSection() {
   const { eyebrow, headline, headlineAccent, note, noteLink } = MECHANICS_FAQ_COPY;
 
   return (
-    <section aria-labelledby="mechanics-faq-heading" className={styles.section}>
-      <div className={styles.inner}>
+    <section aria-labelledby="mechanics-faq-heading" className={`mkt-section ${styles.section}`}>
+      <div className={`mkt-container ${styles.inner}`}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+          <p className="mkt-eyebrow">
+            <span className="mkt-eyebrowLine" aria-hidden="true" />
             {eyebrow}
           </p>
 
-          <h2 id="mechanics-faq-heading" className={styles.headline}>
+          <h2 id="mechanics-faq-heading" className={`mkt-headline ${styles.headline}`}>
             {headline} <span className={styles.headlineAccent}>{headlineAccent}</span>
           </h2>
         </header>

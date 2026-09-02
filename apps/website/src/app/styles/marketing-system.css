@@ -1,0 +1,349 @@
+/**
+ * Autolokate Marketing Design System v4
+ * Premium automotive safety — graphite / carbon / warm stone palette.
+ * Signal colors used sparingly and with purpose.
+ */
+
+:root {
+  /* ── Foundation ── */
+  --mkt-void: #08090a;
+  --mkt-graphite: #0f1012;
+  --mkt-carbon: #16181c;
+  --mkt-charcoal: #1c1f24;
+  --mkt-steel: #2a2d33;
+  --mkt-silver: #8b9099;
+  --mkt-stone: #eceae6;
+  --mkt-warm-white: #faf9f7;
+  --mkt-surface: #ffffff;
+
+  /* ── Legacy aliases (compat) ── */
+  --mkt-black: var(--mkt-void);
+  --mkt-surface-muted: #f0eeea;
+  --mkt-surface-subtle: var(--mkt-warm-white);
+  --mkt-border: #ddd9d2;
+  --mkt-border-subtle: #ebe8e3;
+
+  /* ── Text on light ── */
+  --mkt-ink-dark: #0c0d0f;
+  --mkt-ink-dark-secondary: #4a4e55;
+  --mkt-ink-dark-muted: #6e737c;
+
+  /* ── Semantic text (light-first) ── */
+  --mkt-ink-primary: var(--mkt-ink-dark);
+  --mkt-ink-secondary: var(--mkt-ink-dark-secondary);
+  --mkt-ink-muted: var(--mkt-ink-dark-muted);
+  --mkt-ink-faint: #a3a8b0;
+  --mkt-divider: rgba(12, 13, 15, 0.08);
+  --mkt-divider-strong: rgba(12, 13, 15, 0.14);
+
+  /* ── On-dark text ── */
+  --mkt-on-dark: #f5f4f2;
+  --mkt-on-dark-secondary: #c8c9cc;
+  --mkt-on-dark-muted: #8b9099;
+
+  /* ── Signal palette (purposeful, restrained) ── */
+  --mkt-emergency: #d64545;
+  --mkt-emergency-soft: #e87878;
+  --mkt-roadside: #c4923a;
+  --mkt-police: #4a7fd4;
+  --mkt-green: #2d8f5c;
+  --mkt-green-bright: #3ba86e;
+  --mkt-green-deep: #1f6b44;
+  --mkt-yellow: var(--mkt-roadside);
+  --mkt-yellow-deep: #9a6b22;
+  --mkt-red: var(--mkt-emergency);
+  --mkt-red-soft: var(--mkt-emergency-soft);
+  --mkt-accent: var(--mkt-emergency);
+  --mkt-accent-soft: var(--mkt-emergency-soft);
+  --mkt-action: var(--mkt-ink-dark);
+  --mkt-action-bright: var(--mkt-steel);
+  --mkt-highlight: var(--mkt-roadside);
+
+  /* ── Layout ── */
+  --mkt-container: 75rem;
+  --mkt-gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --mkt-space-section: clamp(5rem, 11vw, 8rem);
+  --mkt-space-section-sm: clamp(3.5rem, 8vw, 5.5rem);
+
+  /* ── Typography ── */
+  --mkt-text-display: clamp(2.5rem, 6vw, 4.25rem);
+  --mkt-text-hero: clamp(2.125rem, 5vw, 3.5rem);
+  --mkt-text-3xl: clamp(1.75rem, 3.2vw, 2.5rem);
+  --mkt-text-2xl: clamp(1.375rem, 2.5vw, 1.875rem);
+  --mkt-text-xl: clamp(1.125rem, 1.8vw, 1.375rem);
+  --mkt-text-lg: 1.0625rem;
+  --mkt-text-base: 1rem;
+  --mkt-text-sm: 0.875rem;
+  --mkt-text-xs: 0.6875rem;
+
+  /* ── Radius & shadow ── */
+  --mkt-radius-sm: 0.25rem;
+  --mkt-radius-md: 0.375rem;
+  --mkt-radius-lg: 0.5rem;
+  --mkt-shadow-sm: 0 1px 2px rgba(8, 9, 10, 0.04);
+  --mkt-shadow-md: 0 12px 40px -16px rgba(8, 9, 10, 0.14);
+  --mkt-shadow-lg: 0 32px 64px -24px rgba(8, 9, 10, 0.22);
+
+  /* ── Motion ── */
+  --mkt-duration: 0.35s;
+  --mkt-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Section shells ── */
+.mkt-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.mkt-container {
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+  width: 100%;
+  padding-inline: var(--mkt-gutter);
+}
+
+.mkt-split {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .mkt-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: clamp(3rem, 6vw, 5rem);
+  }
+}
+
+.mkt-splitWide {
+  align-items: center;
+}
+
+@media (min-width: 960px) {
+  .mkt-splitWide {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  }
+}
+
+.mkt-lightBg {
+  background: var(--mkt-surface);
+  color: var(--mkt-ink-dark);
+}
+
+.mkt-mutedBg {
+  background: var(--mkt-warm-white);
+  color: var(--mkt-ink-dark);
+}
+
+.mkt-subtleBg {
+  background: var(--mkt-stone);
+  color: var(--mkt-ink-dark);
+}
+
+.mkt-darkBg,
+.mkt-dark {
+  background: var(--mkt-void);
+  color: var(--mkt-on-dark);
+  --mkt-ink-primary: var(--mkt-on-dark);
+  --mkt-ink-secondary: var(--mkt-on-dark-secondary);
+  --mkt-ink-muted: var(--mkt-on-dark-muted);
+  --mkt-divider: rgba(255, 255, 255, 0.1);
+  --mkt-divider-strong: rgba(255, 255, 255, 0.14);
+}
+
+.mkt-charcoalBg {
+  background: var(--mkt-carbon);
+  color: var(--mkt-on-dark);
+  --mkt-ink-primary: var(--mkt-on-dark);
+  --mkt-ink-secondary: var(--mkt-on-dark-secondary);
+  --mkt-ink-muted: var(--mkt-on-dark-muted);
+  --mkt-divider: rgba(255, 255, 255, 0.1);
+}
+
+.mkt-blackBg,
+.mkt-voidBg,
+.mkt-graphiteBg {
+  background: var(--mkt-graphite);
+  color: var(--mkt-on-dark);
+  --mkt-ink-primary: var(--mkt-on-dark);
+  --mkt-ink-secondary: var(--mkt-on-dark-secondary);
+  --mkt-ink-muted: var(--mkt-on-dark-muted);
+  --mkt-divider: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Typography ── */
+.mkt-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.mkt-lightBg .mkt-eyebrow,
+.mkt-mutedBg .mkt-eyebrow,
+.mkt-subtleBg .mkt-eyebrow {
+  color: var(--mkt-ink-muted);
+}
+
+.mkt-darkBg .mkt-eyebrow,
+.mkt-dark .mkt-eyebrow,
+.mkt-charcoalBg .mkt-eyebrow,
+.mkt-graphiteBg .mkt-eyebrow {
+  color: var(--mkt-on-dark-muted);
+}
+
+.mkt-eyebrowLine {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1px;
+  flex-shrink: 0;
+  background: var(--mkt-steel);
+}
+
+.mkt-eyebrowLeft {
+  justify-content: flex-start;
+}
+
+.mkt-darkBg .mkt-eyebrowLine,
+.mkt-charcoalBg .mkt-eyebrowLine,
+.mkt-graphiteBg .mkt-eyebrowLine {
+  background: var(--mkt-emergency-soft);
+}
+
+.mkt-headline {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-3xl);
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: inherit;
+}
+
+.mkt-display {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-display);
+  font-weight: 650;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.mkt-body {
+  font-size: var(--mkt-text-lg);
+  line-height: 1.65;
+}
+
+.mkt-lightBg .mkt-body,
+.mkt-mutedBg .mkt-body,
+.mkt-subtleBg .mkt-body {
+  color: var(--mkt-ink-dark-secondary);
+}
+
+.mkt-darkBg .mkt-body,
+.mkt-charcoalBg .mkt-body,
+.mkt-graphiteBg .mkt-body {
+  color: var(--mkt-on-dark-secondary);
+}
+
+.mkt-accentEmergency {
+  color: var(--mkt-emergency);
+}
+
+.mkt-accentRoadside {
+  color: var(--mkt-roadside);
+}
+
+/* ── Buttons ── */
+.mkt-btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.5rem;
+  border-radius: var(--mkt-radius-sm);
+  background: var(--mkt-ink-dark);
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+  line-height: 1.5;
+  color: #ffffff;
+  transition: background var(--mkt-duration) var(--mkt-ease-out);
+}
+
+.mkt-btnPrimary:hover {
+  background: var(--mkt-steel);
+}
+
+.mkt-darkBg .mkt-btnPrimary,
+.mkt-charcoalBg .mkt-btnPrimary {
+  background: #ffffff;
+  color: var(--mkt-ink-dark);
+}
+
+.mkt-darkBg .mkt-btnPrimary:hover,
+.mkt-charcoalBg .mkt-btnPrimary:hover {
+  background: var(--mkt-stone);
+}
+
+.mkt-btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.375rem;
+  border-radius: var(--mkt-radius-sm);
+  border: 1px solid var(--mkt-border);
+  background: transparent;
+  font-size: var(--mkt-text-sm);
+  font-weight: 500;
+  color: var(--mkt-ink-dark);
+  transition:
+    border-color var(--mkt-duration) var(--mkt-ease-out),
+    background var(--mkt-duration) var(--mkt-ease-out);
+}
+
+.mkt-btnGhost:hover {
+  border-color: color-mix(in srgb, var(--mkt-ink-dark) 25%, var(--mkt-border));
+  background: var(--mkt-warm-white);
+}
+
+.mkt-darkBg .mkt-btnGhost,
+.mkt-charcoalBg .mkt-btnGhost {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--mkt-on-dark);
+}
+
+.mkt-darkBg .mkt-btnGhost:hover,
+.mkt-charcoalBg .mkt-btnGhost:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mkt-btnDark {
+  composes: mkt-btnPrimary;
+}
+
+.mkt-reveal {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition:
+    opacity 0.6s var(--mkt-ease-out),
+    transform 0.6s var(--mkt-ease-out);
+}
+
+.mkt-revealVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

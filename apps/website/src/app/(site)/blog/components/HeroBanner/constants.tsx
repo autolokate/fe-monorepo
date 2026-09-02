@@ -5,5 +5,5 @@ export const HERO_COPY: HeroCopy = {
   headline: 'Guides, notes and',
   headlineAccent: 'deep-dives.',
   description:
-    'Plain-language reads on safety, plans and the product, from the team behind Autolokate.',
+    'Plain-language reads on safety, plans and the product—from the team behind Autolokate.',
 };

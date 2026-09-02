@@ -17,7 +17,9 @@ const WHATSAPP_URL = 'https://wa.me/919062524516';
 const ANDROID_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.mycompany.indiandriveguide';
 
-export const FLAGSHIP_PHONE_IMAGE = '/images/new-design/products/flagship-phone.png';
+import { MARKETING_STORY_IMAGES } from '@/lib/marketing-story-images';
+
+export const FLAGSHIP_PHONE_IMAGE = MARKETING_STORY_IMAGES.controlCenterPhone;
 
 export const APP_ICONS = {
   autolokate: '/images/new-design/products/app-icon-autolokate.svg',
@@ -30,7 +32,7 @@ export const SECTION_HEADER: SectionHeaderCopy = {
   heading: 'Built for the way',
   headingAccent: 'you work.',
   subheading:
-    'Whether you drive, run a workshop or manage parking and pumps, one of these is yours.',
+    'Whether you drive, run a workshop or manage parking and pumps—one of these is yours.',
 };
 
 export const FLAGSHIP_APP: AppTile = {

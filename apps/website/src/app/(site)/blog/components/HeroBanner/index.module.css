@@ -1,37 +1,9 @@
-/* Blog hero — centred dark band with eyebrow, headline and body.
-   Matches the redesign Figma "07a · Blog list · D" → Hero. */
-
 .hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background-color: #0a0a0c;
-  color: #fff;
+  composes: hero from '../../../../styles/marketing-hero.module.css';
 }
 
 .inner {
-  position: relative;
-  z-index: 1;
-  margin-inline: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1.5rem;
-  max-width: 60rem;
-  padding: 4.5rem 1.25rem 4rem;
-}
-
-@media (min-width: 640px) {
-  .inner {
-    padding: 5.5rem 2rem 5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .inner {
-    padding: 6rem 2.5rem;
-  }
+  composes: inner from '../../../../styles/marketing-hero.module.css';
 }
 
 .headGroup {
@@ -42,41 +14,21 @@
 }
 
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #39c46b;
+  composes: eyebrow from '../../../../styles/marketing-hero.module.css';
 }
 
 .eyebrowDash {
-  display: inline-block;
-  width: 22px;
-  height: 3px;
-  border-radius: 2px;
-  background: #1fa24a;
+  composes: eyebrowDash from '../../../../styles/marketing-hero.module.css';
 }
 
 .headline {
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2.5rem, 5.6vw, 3.625rem);
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
+  composes: headline from '../../../../styles/marketing-hero.module.css';
 }
 
 .headlineAccent {
-  color: #39c46b;
+  composes: headlineAccent from '../../../../styles/marketing-hero.module.css';
 }
 
 .description {
-  margin-inline: auto;
-  max-width: 42.5rem;
-  font-size: 1.0625rem;
-  line-height: 1.6;
-  color: #c9cdd3;
+  composes: description from '../../../../styles/marketing-hero.module.css';
 }

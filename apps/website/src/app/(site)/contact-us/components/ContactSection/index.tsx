@@ -6,16 +6,18 @@ import styles from './index.module.css';
 export function ContactSection() {
   return (
     <section className={styles.section} aria-label="Contact form and direct channels">
-      <div className={styles.card}>
-        <ContactForm />
+      <div className={styles.inner}>
+        <div className={styles.formColumn}>
+          <ContactForm />
+        </div>
 
-        <div className={styles.channels}>
+        <aside className={styles.channelsColumn}>
           <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+            <span className={styles.eyebrowLine} aria-hidden="true" />
             {CHANNELS_EYEBROW}
           </p>
 
-          <ul className={styles.channelGrid}>
+          <ul className={styles.channelList}>
             {CHANNELS.map(({ key, Icon, label, value, href, external }) => (
               <li key={key}>
                 <a
@@ -24,9 +26,7 @@ export function ContactSection() {
                   target={external ? '_blank' : undefined}
                   rel={external ? 'noopener noreferrer' : undefined}
                 >
-                  <span className={styles.channelChip} aria-hidden="true">
-                    <Icon className={styles.channelIcon} />
-                  </span>
+                  <Icon className={styles.channelIcon} aria-hidden="true" />
                   <span className={styles.channelText}>
                     <span className={styles.channelLabel}>{label}</span>
                     <span className={styles.channelValue}>{value}</span>
@@ -38,7 +38,7 @@ export function ContactSection() {
           </ul>
 
           <p className={styles.follow}>
-            <span className={styles.followLabel}>Follow: </span>
+            <span className={styles.followLabel}>Follow </span>
             {FOLLOW_LINKS.map(({ id, label, href }, index) => (
               <span key={id}>
                 {index > 0 ? <span className={styles.followSep}> · </span> : null}
@@ -53,7 +53,7 @@ export function ContactSection() {
               </span>
             ))}
           </p>
-        </div>
+        </aside>
       </div>
     </section>
   );

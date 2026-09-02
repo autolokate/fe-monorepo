@@ -1,4 +1,5 @@
 import { Ambulance, Radio, Users, Wrench } from 'lucide-react';
+import { PLAN_DISPLAY_BY_SLUG } from '@/lib/plan-display-names';
 import type { ResponseBranch, ResponseCopy, ResponseSource } from './types';
 
 /** Fork bracket connector exported from the redesign Figma (72×398). */
@@ -28,13 +29,13 @@ export const RESPONSE_BRANCHES: ResponseBranch[] = [
   {
     id: 'family',
     title: 'Your family is alerted',
-    body: 'On call, WhatsApp and SMS, with your live location.',
+    body: 'On call, WhatsApp and SMS—with your live location.',
     Icon: Users,
   },
   {
     id: 'roadside',
     title: 'Roadside help reaches the vehicle',
-    body: 'Towing and minor repairs · fuel delivery · flat tyre · battery jump-start · lockout help. Included on Shield and Shield+ plans.',
+    body: `Towing and minor repairs · fuel delivery · flat tyre · battery jump-start · lockout help. Included on ${PLAN_DISPLAY_BY_SLUG.shield} and ${PLAN_DISPLAY_BY_SLUG['shield-plus']} plans.`,
     Icon: Wrench,
   },
 ];

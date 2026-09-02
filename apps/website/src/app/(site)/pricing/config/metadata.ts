@@ -8,7 +8,7 @@ export const pricingMetadata: Metadata = {
   openGraph: {
     title: 'Autolokate Pricing',
     description:
-      'Secure, Shield and Shield+ — annual, per-vehicle plans with crash detection, ambulance and roadside cover. From ₹999, GST included.',
+      'Protect, Guardian and Guardian Plus — annual per-vehicle plans with crash detection, ambulance and roadside cover. From ₹999, GST included.',
     url: '/pricing',
     type: 'website',
   },

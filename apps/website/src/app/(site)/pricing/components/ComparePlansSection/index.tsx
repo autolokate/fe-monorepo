@@ -2,34 +2,35 @@ import { Fragment } from 'react';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { CompareCta } from './CompareCta';
+import { ComparePlansMobile } from './ComparePlansMobile';
 import { COMPARE_COLUMNS, COMPARE_COPY, COMPARE_GROUPS } from './constants';
 import styles from './index.module.css';
 
 export function ComparePlansSection() {
   return (
-    <section className={styles.section} aria-labelledby="compare-plans-heading">
-      <div className={styles.inner}>
+    <section className={`mkt-section ${styles.section}`} aria-labelledby="compare-plans-heading">
+      <div className={`mkt-container ${styles.inner}`}>
         <header className={styles.header}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+          <p className="mkt-eyebrow">
+            <span className="mkt-eyebrowLine" aria-hidden="true" />
             {COMPARE_COPY.eyebrow}
           </p>
 
-          <h2 id="compare-plans-heading" className={styles.headline}>
+          <h2 id="compare-plans-heading" className={`mkt-headline ${styles.headline}`}>
             {COMPARE_COPY.headline}{' '}
             <span className={styles.headlineAccent}>{COMPARE_COPY.headlineAccent}</span>
           </h2>
 
-          <p className={styles.subheading}>{COMPARE_COPY.subheading}</p>
+          <p className={`mkt-body ${styles.subheading}`}>{COMPARE_COPY.subheading}</p>
         </header>
+
+        <ComparePlansMobile />
 
         <div className={styles.matrixCard}>
           <div className={styles.scroll}>
             <div className={styles.table}>
-              {/* Continuous highlight behind the "Shield" column. */}
               <span className={styles.columnHighlight} aria-hidden="true" />
 
-              {/* Header */}
               <div className={styles.headRow}>
                 <div className={styles.headBlank} aria-hidden="true" />
                 {COMPARE_COLUMNS.map((col) => (
@@ -41,7 +42,6 @@ export function ComparePlansSection() {
                 ))}
               </div>
 
-              {/* Groups */}
               {COMPARE_GROUPS.map((group) => (
                 <Fragment key={group.id}>
                   <div className={styles.groupTitle}>{group.title}</div>
@@ -54,7 +54,7 @@ export function ComparePlansSection() {
                           <div key={COMPARE_COLUMNS[i].id} className={styles.cell}>
                             {included ? (
                               <span className={styles.yes}>
-                                <Check className="h-4 w-4 stroke-[3]" aria-hidden="true" />
+                                <Check className="h-4 w-4 stroke-[2.5]" aria-hidden="true" />
                                 <span className="sr-only">Included</span>
                               </span>
                             ) : (
@@ -71,7 +71,6 @@ export function ComparePlansSection() {
                 </Fragment>
               ))}
 
-              {/* CTA row */}
               <div className={styles.ctaRow}>
                 <div className={styles.headBlank} aria-hidden="true" />
                 {COMPARE_COLUMNS.map((col) => (

@@ -64,7 +64,7 @@ export const TOOLKIT_COPY: ToolkitCopy = {
   eyebrow: 'The full toolkit',
   headlineAccent: 'Everything',
   headline: ' the app does.',
-  subheading: 'From the daily errands to the once-a-year decisions.',
+  subheading: 'Daily errands to once-a-year decisions—all in one place.',
 };
 
 export const TOOLKIT_ROWS: ToolkitRow[] = [
@@ -75,7 +75,7 @@ export const TOOLKIT_ROWS: ToolkitRow[] = [
       {
         id: 'daily-utility',
         title: 'Daily utility',
-        subtitle: 'The small jobs your vehicle keeps giving you, done from one place.',
+        subtitle: 'The small jobs your vehicle keeps giving you—done from one place.',
         Icon: Zap,
         width: 'wide',
         capabilityColumns: 2,
@@ -95,7 +95,7 @@ export const TOOLKIT_ROWS: ToolkitRow[] = [
           {
             id: 'renewals',
             label: 'Renewal alerts',
-            detail: 'insurance, FASTag and PUC, on push and WhatsApp',
+            detail: 'insurance, FASTag and PUC—on push and WhatsApp',
             Icon: Bell,
           },
           {
@@ -155,7 +155,7 @@ export const TOOLKIT_ROWS: ToolkitRow[] = [
       {
         id: 'garages',
         title: 'Garages & services',
-        subtitle: 'Book trusted work, keep proof forever.',
+        subtitle: 'Book trusted work. Keep proof forever.',
         Icon: Wrench,
         width: 'default',
         capabilityColumns: 1,

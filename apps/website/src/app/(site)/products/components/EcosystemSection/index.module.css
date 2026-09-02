@@ -1,180 +1,131 @@
-/* Products "Ecosystem" section — white band with three connected audience
-   nodes. Matches Figma "06 · Products · D" → Ecosystem. */
+/* Ecosystem — editorial audience timeline, no icon circles. */
 
 .section {
-  position: relative;
-  background-color: #ffffff;
-  color: #0a0a0c;
+  background: var(--mkt-surface-muted);
+  color: var(--mkt-ink-dark);
+  padding-block: var(--mkt-space-section);
 }
 
 .inner {
-  margin-inline: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 3rem; /* 48px */
-  max-width: 75rem;
-  padding: 4rem 1.25rem;
+  align-items: flex-start;
+  gap: clamp(2rem, 5vw, 3rem);
 }
 
-@media (min-width: 640px) {
-  .inner {
-    padding: 5rem 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .inner {
-    padding: 6rem 2.5rem;
-  }
-}
-
-/* ---------- Section header ---------- */
 .header {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.875rem;
-  text-align: center;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-size: 0.75rem;
-  line-height: 1.0625rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #14803a;
-}
-
-.eyebrowDash {
-  display: inline-block;
-  width: 22px;
-  height: 3px;
-  background: #1fa24a;
-}
-
-.heading {
-  max-width: 52.5rem;
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2rem, 4.6vw, 2.75rem);
-  line-height: 1.18;
-  font-weight: 700;
-  letter-spacing: -0.012em;
-  text-wrap: balance;
+  gap: 1rem;
+  max-width: 40rem;
 }
 
 .headingAccent {
-  color: #1fa24a;
+  color: var(--mkt-green);
 }
 
 .subheading {
-  max-width: 40rem;
-  font-size: 1.1875rem;
-  line-height: 1.47;
-  color: #4a4f57;
+  max-width: 34rem;
 }
 
-/* ---------- Audiences ---------- */
 .audiences {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
-  width: 100%;
-  max-width: 62rem;
+  border-top: 1px solid var(--mkt-divider);
 }
 
 @media (min-width: 768px) {
   .audiences {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
+    flex-direction: row;
+    border-top: none;
+    gap: 0;
   }
 
-  /* Connector line linking the three node centres (node centre = 22px). */
   .audiences::before {
     content: '';
     position: absolute;
-    top: 22px;
-    left: 16.66%;
-    right: 16.66%;
-    height: 1.5px;
-    background: #c4c4c4;
-    z-index: 0;
+    left: var(--mkt-gutter);
+    right: var(--mkt-gutter);
+    top: 50%;
+    height: 1px;
+    background: var(--mkt-surface-muted);
+    pointer-events: none;
   }
 }
 
 .audience {
   position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  text-align: center;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--mkt-divider);
 }
 
-.node {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  border-radius: 999px;
-  border: 1.5px solid #c4c4c4;
-  background: #ffffff;
-  color: #1fa24a;
+@media (min-width: 768px) {
+  .audience {
+    flex: 1;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 2rem 1.5rem 0;
+    border-bottom: none;
+    text-align: left;
+  }
+}
+
+.index {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-xl);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--mkt-ink-muted);
 }
 
 .copy {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
-  max-width: 18.75rem; /* 300px */
 }
 
 .audienceTitle {
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: var(--mkt-text-lg);
   font-weight: 600;
-  color: #0a0a0c;
+  line-height: 1.35;
+  color: var(--mkt-ink-primary);
 }
 
 .audienceBody {
-  font-size: 0.96875rem; /* 15.5px */
-  line-height: 1.548;
-  color: #4a4f57;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.65;
+  color: var(--mkt-ink-secondary);
 }
 
-/* ---------- Footnote + link ---------- */
 .footnote {
-  max-width: 43.75rem; /* 700px */
-  text-align: center;
-  font-size: 0.96875rem;
-  line-height: 1.548;
-  color: #6b7079;
+  max-width: 40rem;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.6;
+  color: var(--mkt-ink-muted);
 }
 
 .link {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.96875rem;
-  font-weight: 500;
-  color: #0a0a0c;
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+  color: var(--mkt-ink-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
-  transition: color 0.15s ease;
+  transition: color var(--mkt-duration) var(--mkt-ease-out);
 }
 
 .link:hover {
-  color: #1fa24a;
+  color: var(--mkt-accent);
 }

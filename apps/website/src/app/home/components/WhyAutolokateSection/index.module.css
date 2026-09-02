@@ -43,15 +43,15 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #14803a;
+  color: var(--mkt-green-deep, #178a3f);
 }
 
 .eyebrowDash {
   display: inline-block;
   width: 22px;
-  height: 3px;
+  height: 2px;
   border-radius: 2px;
-  background: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
 }
 
 .headline {
@@ -64,7 +64,7 @@
 }
 
 .headlineAccent {
-  color: #1fa24a;
+  color: var(--mkt-green, #1fa24a);
 }
 
 .subheadline {
@@ -74,109 +74,129 @@
   color: #4a4f57;
 }
 
-/* ---------- Grid ---------- */
-.grid {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.eyebrowIndex {
+  font-variant-numeric: tabular-nums;
+  color: var(--mkt-ink-muted, #a1a1a1);
 }
 
-.rowStacked,
-.rowWide {
+/* ---------- Feature grid ---------- */
+.rail {
+  position: relative;
+  width: 100%;
+}
+
+.railLine {
+  display: none;
+}
+
+.tiles {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  width: 100%;
   grid-template-columns: 1fr;
 }
 
 @media (min-width: 768px) {
-  .rowStacked {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .rowWide {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .tiles {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
-/* ---------- Card ---------- */
-.card {
-  background: #ffffff;
-  border: 1px solid #eceff3;
-  border-radius: 18px;
-  box-shadow: 0 20px 40px -14px rgba(8, 15, 26, 0.09);
-}
-
-.cardStacked {
+.tile {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.875rem;
-  padding: 2rem;
+  gap: 1rem;
+  padding: 1.75rem;
+  background: #ffffff;
+  border: 1px solid #e8eaee;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px -16px rgba(8, 15, 26, 0.08);
+  transition:
+    border-color var(--mkt-duration, 0.35s) var(--mkt-ease-out, ease),
+    box-shadow var(--mkt-duration, 0.35s) var(--mkt-ease-out, ease);
 }
 
-.cardWide {
+@media (min-width: 768px) {
+  .tile:nth-child(1),
+  .tile:nth-child(2),
+  .tile:nth-child(3) {
+    grid-column: span 2;
+  }
+
+  .tile:nth-child(4),
+  .tile:nth-child(5) {
+    grid-column: span 3;
+  }
+}
+
+.tile:hover {
+  border-color: #d8dce3;
+  box-shadow: 0 20px 40px -18px rgba(8, 15, 26, 0.12);
+}
+
+.tileTop {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 1.25rem;
-  padding: 2rem;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.iconBadge {
+.index {
+  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #a1a6af;
+}
+
+.iconWrap {
   display: flex;
-  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #f4f6f9;
   color: #0a0a0c;
 }
 
-/* Stacked cards: icon sits in a 44×44 slot with a 4px top inset (per Figma icon slot). */
-.iconBadgeStacked {
-  width: 44px;
-  height: 44px;
-  padding-top: 4px;
-  align-items: flex-start;
-  justify-content: flex-start;
+.toneDefault {
+  background: #f4f6f9;
+  color: #0a0a0c;
 }
 
-/* Wide cards: icon is a bare 36×36 glyph, vertically centered with the text. */
-.iconBadgeWide {
-  align-items: center;
-  justify-content: center;
+.toneBrand {
+  background: color-mix(in srgb, var(--mkt-green, #1fa24a) 12%, #ffffff);
+  color: var(--mkt-green-deep, #178a3f);
 }
 
-.iconBadgeBrand {
-  color: #1fa24a;
-}
-
-.iconBadgeAmber {
+.toneAmber {
+  background: color-mix(in srgb, #f5a623 14%, #ffffff);
   color: #9e6407;
 }
 
-.cardText {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
-.cardTextStacked {
-  gap: 14px;
-}
-
-.cardTextWide {
-  gap: 8px;
-}
-
-.cardTitle {
+.title {
   font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
-  line-height: 1.444;
+  line-height: 1.35;
   color: #0a0a0c;
 }
 
-.cardBody {
+.body {
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.55;
   color: #6b7079;
+}
+
+.hoverLine {
+  display: none;
 }
 
 /* ---------- CTA ---------- */

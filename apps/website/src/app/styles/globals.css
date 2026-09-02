@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import './website-theme.css';
+@import './marketing-system.css';
 
 /* Autolokate FE — light + dark themes.
    Theme is selected via `data-theme` on <html> (see ThemeProvider), matching
@@ -40,44 +42,29 @@
 :root {
   --radius: 0.875rem;
 
-  /* Color tokens are mapped onto the shared design-system semantic tokens
-     (@autolokate/design-system/theme.css). They switch automatically with
-     `data-theme` on <html> — no per-theme values are duplicated here. */
-  --background: var(--al-color-background);
-  --foreground: var(--al-color-on-background);
-  --card: var(--al-color-surface);
-  --card-foreground: var(--al-color-on-surface);
-  --popover: var(--al-color-surface);
-  --popover-foreground: var(--al-color-on-surface);
-  --primary: var(--al-color-primary);
-  --primary-foreground: var(--al-color-on-primary);
-  --secondary: var(--al-color-surface-variant);
-  --secondary-foreground: var(--al-color-on-surface);
-  --muted: var(--al-color-surface-variant);
-  --muted-foreground: var(--al-color-on-surface-muted);
-  --accent: var(--al-color-surface-variant);
-  --accent-foreground: var(--al-color-on-surface);
-  --destructive: var(--al-color-danger);
-  --border: var(--al-color-outline);
-  --input: var(--al-color-outline);
-  --ring: var(--al-color-focus);
-  --success: var(--al-color-success);
-  --text-dim: var(--al-color-on-surface-muted);
-  --cta: var(--al-color-primary);
-  --cta-foreground: var(--al-color-on-primary);
+  /* Marketing site bridges — detailed palette lives in website-theme.css */
+  --secondary: var(--website-surface-muted);
+  --secondary-foreground: var(--website-text);
+  --muted: var(--website-surface-muted);
+  --accent: var(--website-surface-muted);
+  --accent-foreground: var(--website-text);
+  --destructive: var(--website-red);
+  --popover: var(--website-surface);
+  --popover-foreground: var(--website-text);
+  --input: var(--website-border);
+  --text-dim: var(--website-text-muted);
+  --cta: var(--website-ink);
+  --cta-foreground: var(--website-on-dark);
 
-  /* Website-only tokens with no design-system equivalent. */
-  --cta-hover: #18181b;
-  --warn-soft: #fff7eb;
-  --warn-soft-foreground: #6b4420;
+  --warn-soft: #fef9ec;
+  --warn-soft-foreground: #92400e;
 }
 
 /* Dark values for the few website-only tokens not covered by the
    design-system semantic tokens above. */
 [data-theme='dark'] {
-  --cta-hover: #e4e4e7;
-  --warn-soft: #2a2113;
-  --warn-soft-foreground: #f5d9a8;
+  --warn-soft: #2a2008;
+  --warn-soft-foreground: #fbbf24;
 }
 
 /* Dark theme — adjust decorative surfaces that hardcode light tints so they
@@ -139,7 +126,7 @@
   background-image:
     radial-gradient(ellipse 120% 80% at 5% 0%, rgba(228, 228, 231, 0.08), transparent 50%),
     radial-gradient(ellipse 100% 70% at 95% 10%, rgba(228, 228, 231, 0.06), transparent 48%),
-    linear-gradient(180deg, #0a0a0c 0%, #050506 100%);
+    linear-gradient(180deg, var(--website-ink) 0%, #050506 100%);
   background-size:
     140% 140%,
     140% 140%,
@@ -268,9 +255,9 @@
 .bg-hero-mesh {
   background-color: var(--background);
   background-image:
-    radial-gradient(ellipse 130% 85% at 92% -25%, rgba(39, 39, 42, 0.07), transparent 55%),
-    radial-gradient(ellipse 95% 65% at 5% 105%, rgba(113, 113, 122, 0.12), transparent 50%),
-    radial-gradient(rgba(63, 63, 70, 0.04) 0.8px, transparent 0.8px);
+    radial-gradient(ellipse 130% 85% at 92% -25%, var(--website-accent-glow), transparent 55%),
+    radial-gradient(ellipse 95% 65% at 5% 105%, rgba(10, 10, 10, 0.06), transparent 50%),
+    radial-gradient(rgba(10, 10, 10, 0.035) 0.8px, transparent 0.8px);
   background-size:
     auto,
     auto,
@@ -594,9 +581,9 @@
 
 .bg-premium-aurora {
   background-image:
-    radial-gradient(ellipse 120% 80% at 5% 0%, rgba(24, 24, 27, 0.06), transparent 50%),
-    radial-gradient(ellipse 100% 70% at 95% 10%, rgba(24, 24, 27, 0.05), transparent 48%),
-    linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    radial-gradient(ellipse 120% 80% at 5% 0%, var(--website-accent-glow), transparent 50%),
+    radial-gradient(ellipse 100% 70% at 95% 10%, rgba(245, 166, 35, 0.06), transparent 48%),
+    linear-gradient(180deg, var(--website-surface) 0%, var(--website-canvas) 100%);
   background-size:
     140% 140%,
     140% 140%,
@@ -1034,14 +1021,14 @@ html {
 .site-breadcrumb-nav a:hover,
 .site-breadcrumb-nav .breadcrumb-inactive-text,
 .site-breadcrumb-nav svg[aria-hidden='true'] {
-  color: #a3a3a3 !important;
+  color: var(--website-text-soft) !important;
 }
 .site-breadcrumb-nav [aria-current='page'],
 .site-breadcrumb-nav .breadcrumb-active-text {
-  color: #0a0a0a !important;
+  color: var(--website-text) !important;
   font-weight: 600;
 }
 [data-theme='dark'] .site-breadcrumb-nav [aria-current='page'],
 [data-theme='dark'] .site-breadcrumb-nav .breadcrumb-active-text {
-  color: #fafafa !important;
+  color: var(--website-on-dark) !important;
 }

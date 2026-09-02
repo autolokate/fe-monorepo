@@ -4,15 +4,16 @@ export interface PlanCard {
   id: string;
   name: string;
   Icon: LucideIcon;
+  tagline: string;
   price: string;
   unit: string;
   note: string;
   description: string;
+  highlights: string[];
   ctaLabel: string;
   ctaHref: string;
   detailsLabel: string;
   detailsHref: string;
-  /** Highlighted "hero" plan — rendered as the dark, most-popular card. */
   popular?: boolean;
   badge?: string;
 }

@@ -3,4 +3,4 @@ export const INITIAL_COUNT = 6;
 
 export const LOAD_MORE_LABEL = 'Load more articles';
 
-export const READ_LABEL = 'Read the article';
+export const READ_LABEL = 'Read article';

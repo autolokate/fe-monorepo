@@ -1,27 +1,29 @@
-/* ClosingCtaSection — dark closing call-to-action with green signal-ring glow.
-   Matches Figma "06 · Products · D" → WebClosingCta. */
+/* Closing CTA — premium black. */
 
 .section {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  background: var(--mkt-black);
+  color: var(--mkt-on-dark);
+  --mkt-ink-primary: var(--mkt-on-dark);
+  --mkt-ink-secondary: var(--mkt-on-dark-secondary);
+  --mkt-ink-muted: var(--mkt-on-dark-muted);
+  --mkt-divider: rgba(255, 255, 255, 0.1);
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   background:
-    radial-gradient(circle at 50% 50%, rgba(31, 162, 74, 0.14) 0%, rgba(31, 162, 74, 0) 60%),
-    #0a0a0c;
-  color: #fff;
+    radial-gradient(ellipse 50% 40% at 50% 100%, rgba(232, 93, 82, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 55%);
 }
 
 .rings {
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 0;
-  width: min(1440px, 130%);
-  max-width: none;
-  height: auto;
-  pointer-events: none;
-  opacity: 0.9;
+  display: none;
 }
 
 .inner {
@@ -32,59 +34,45 @@
   flex-direction: column;
   align-items: center;
   gap: 2.5rem;
-  max-width: 60rem;
-  padding: 6rem 1.25rem;
+  max-width: 42rem;
+  padding: clamp(5rem, 12vw, 8rem) var(--mkt-gutter);
   text-align: center;
 }
 
-@media (min-width: 640px) {
-  .inner {
-    padding: 7rem 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .inner {
-    padding: 8.125rem 2.5rem;
-  }
-}
-
 .headingStack {
-  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .headline {
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2.5rem, 5.2vw, 3.625rem);
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-display);
   font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.015em;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
 .headlineAccent {
-  color: #39c46b;
+  color: var(--mkt-green-bright);
 }
 
 .subheading {
-  margin-inline: auto;
-  max-width: 34rem;
-  font-size: 1.1875rem;
-  line-height: 1.5;
-  color: #c9cdd3;
+  font-size: var(--mkt-text-lg);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
 }
 
 button.cta {
-  border-color: transparent;
-  background-color: #fff;
-  color: #0a0a0c;
+  border: none;
+  border-radius: var(--mkt-radius-sm);
+  background-color: var(--mkt-ink-primary);
+  color: var(--mkt-black);
   font-weight: 600;
 }
 
 button.cta:hover:not(:disabled):not(.is-loading) {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: #e8e8e8;
   opacity: 1;
 }

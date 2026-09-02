@@ -11,37 +11,57 @@ export function ArticlesSection() {
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
   const visibleArticles = BLOG_ARTICLES.slice(0, visibleCount);
   const hasMore = visibleCount < BLOG_ARTICLES.length;
+  const [featured, ...rest] = visibleArticles;
 
   return (
     <section aria-label="Articles" className={styles.section}>
       <div className={styles.inner}>
-        <ul className={styles.grid}>
-          {visibleArticles.map((article) => {
-            const { Icon } = article;
-            return (
-              <li key={article.slug}>
-                <Link href={`/blog/${article.slug}`} className={styles.card}>
-                  <span className={styles.thumb}>
-                    <Icon className={styles.thumbIcon} strokeWidth={1.7} aria-hidden="true" />
-                  </span>
+        <article className={styles.featured}>
+          <Link href={`/blog/${featured.slug}`} className={styles.featuredLink}>
+            <span className={styles.featuredMeta}>
+              <span className={styles.tag}>{featured.category}</span>
+              <span className={styles.featuredTitle}>{featured.title}</span>
+              <span className={styles.featuredExcerpt}>{featured.excerpt}</span>
+              <span className={styles.meta}>
+                {featured.readTime} · {featured.updated}
+              </span>
+              <span className={styles.readLink}>
+                {READ_LABEL} <span aria-hidden="true">→</span>
+              </span>
+            </span>
+            <span className={styles.featuredThumb} aria-hidden="true">
+              <featured.Icon className={styles.thumbIcon} strokeWidth={1.5} />
+            </span>
+          </Link>
+        </article>
 
-                  <span className={styles.body}>
-                    <span className={styles.top}>
+        {rest.length > 0 ? (
+          <ul className={styles.list}>
+            {rest.map((article) => {
+              const { Icon } = article;
+              return (
+                <li key={article.slug}>
+                  <Link href={`/blog/${article.slug}`} className={styles.row}>
+                    <span className={styles.rowThumb} aria-hidden="true">
+                      <Icon className={styles.rowIcon} strokeWidth={1.6} />
+                    </span>
+                    <span className={styles.rowBody}>
                       <span className={styles.tag}>{article.category}</span>
-                      <span className={styles.title}>{article.title}</span>
-                      <span className={styles.excerpt}>{article.excerpt}</span>
+                      <span className={styles.rowTitle}>{article.title}</span>
+                      <span className={styles.rowExcerpt}>{article.excerpt}</span>
                     </span>
-
-                    <span className={styles.readLink}>
-                      <span className={styles.readLabel}>{READ_LABEL}</span>{' '}
-                      <span aria-hidden="true">→</span>
+                    <span className={styles.rowMeta}>
+                      <span className={styles.meta}>{article.readTime}</span>
+                      <span className={styles.rowArrow} aria-hidden="true">
+                        →
+                      </span>
                     </span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
 
         {hasMore ? (
           <AlButton

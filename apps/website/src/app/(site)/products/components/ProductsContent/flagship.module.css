@@ -1,0 +1,114 @@
+.section {
+  padding: var(--mkt-space-section) var(--mkt-gutter);
+  background: var(--mkt-void);
+  color: var(--mkt-on-dark);
+}
+
+.inner {
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: clamp(3rem, 8vw, 5rem);
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mkt-on-dark-muted);
+}
+
+.eyebrowLine {
+  width: 1.25rem;
+  height: 1px;
+  background: var(--mkt-emergency-soft);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon {
+  border-radius: 0.75rem;
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.audience {
+  margin: 0.25rem 0 0;
+  font-size: var(--mkt-text-sm);
+  color: var(--mkt-on-dark-secondary);
+}
+
+.capabilities {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.25rem;
+}
+
+.capability {
+  font-size: var(--mkt-text-base);
+  line-height: 1.5;
+  color: var(--mkt-on-dark-secondary);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.625rem;
+  background: #fff;
+  color: var(--mkt-ink-dark);
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.cta:hover {
+  background: var(--mkt-warm-white);
+}
+
+.visual {
+  width: 100%;
+  min-width: 0;
+}
+
+.phone {
+  width: min(100%, 22rem);
+  height: auto;
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
+}

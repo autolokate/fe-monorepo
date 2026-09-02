@@ -1,4 +1,5 @@
 import { Shield, ShieldCheck, ShieldPlus } from 'lucide-react';
+import { PLAN_DISPLAY_BY_SLUG } from '@/lib/plan-display-names';
 import type {
   PayMethod,
   PurchasePlan,
@@ -24,7 +25,7 @@ export const GST_RATE = 0.18;
 export const PURCHASE_PLANS: PurchasePlan[] = [
   {
     id: 'secure',
-    name: 'Secure',
+    name: PLAN_DISPLAY_BY_SLUG.secure,
     tag: 'The essentials',
     price: 999,
     Icon: ShieldCheck,
@@ -32,14 +33,14 @@ export const PURCHASE_PLANS: PurchasePlan[] = [
   },
   {
     id: 'shield',
-    name: 'Shield',
+    name: PLAN_DISPLAY_BY_SLUG.shield,
     tag: 'Full crash protection',
     price: 1999,
     Icon: Shield,
     popular: true,
     popularBadge: 'Most Popular · 7 in 10 choose this',
     features: [
-      'Everything in Secure',
+      `Everything in ${PLAN_DISPLAY_BY_SLUG.secure}`,
       'Automatic crash detection',
       'Family alerts + live location',
       'Roadside assistance tools',
@@ -48,12 +49,12 @@ export const PURCHASE_PLANS: PurchasePlan[] = [
   },
   {
     id: 'shield-plus',
-    name: 'Shield+',
+    name: PLAN_DISPLAY_BY_SLUG['shield-plus'],
     tag: 'Whole-family cover',
     price: 2999,
     Icon: ShieldPlus,
     features: [
-      'Everything in Shield',
+      `Everything in ${PLAN_DISPLAY_BY_SLUG.shield}`,
       'Family safety circle',
       'Advanced alerts',
       'Resale & transfer support',

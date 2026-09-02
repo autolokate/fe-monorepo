@@ -1,231 +1,101 @@
-/* SmartQrSection — light-gray "backup layer" section: Smart QR sticker +
-   a scan-to-help fork journey. Matches Figma "Smart QR journey". */
+/* Smart QR — editorial split: sticker + fork journey narrative. */
 
 .section {
-  position: relative;
-  z-index: 1;
-  background-color: #f4f6f9;
-  color: #0a0a0c;
+  background: var(--mkt-surface-muted);
+  color: var(--mkt-ink-dark);
 }
 
 .inner {
-  margin-inline: auto;
   display: flex;
   flex-direction: column;
+}
+
+.split {
   align-items: center;
-  gap: 3rem;
-  max-width: 75rem;
-  padding: 4rem 1.25rem;
 }
 
-@media (min-width: 640px) {
-  .inner {
-    padding: 5rem 2rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .inner {
-    padding: 6rem 2.5rem;
-  }
-}
-
-/* ---------- Header ---------- */
-.header {
+.stickerCol {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.875rem;
-  text-align: center;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #14803a;
-}
-
-.eyebrowDash {
-  display: inline-block;
-  width: 22px;
-  height: 3px;
-  border-radius: 2px;
-  background: #1fa24a;
-}
-
-.headline {
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2rem, 4.2vw, 2.75rem);
-  font-weight: 700;
-  line-height: 1.18;
-  letter-spacing: -0.012em;
-  text-wrap: balance;
-}
-
-.headlineAccent {
-  color: #1fa24a;
-}
-
-.subheading {
-  max-width: 40rem;
-  font-size: 1.1875rem;
-  line-height: 1.47;
-  color: #4a4f57;
-}
-
-/* ---------- Journey ---------- */
-.journey {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3rem;
-  width: 100%;
-}
-
-@media (min-width: 1200px) {
-  .journey {
-    flex-direction: row;
-    justify-content: center;
-    gap: 4rem;
-  }
-}
-
-.stickerWrap {
-  flex-shrink: 0;
-  filter: drop-shadow(0 27px 54px rgba(8, 15, 26, 0.14));
+  justify-content: center;
 }
 
 .sticker {
-  width: 17rem;
+  width: clamp(14rem, 28vw, 21.5rem);
   height: auto;
+  filter: drop-shadow(0 32px 64px rgba(0, 0, 0, 0.45));
 }
 
-@media (min-width: 640px) {
-  .sticker {
-    width: 21.5rem;
-  }
-}
-
-/* ---------- Fork chain ---------- */
-.chain {
+.story {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  width: 100%;
-  max-width: 30rem;
+  gap: 2rem;
 }
 
-@media (min-width: 1200px) {
-  .chain {
-    flex-direction: row;
-    align-items: center;
-    gap: 0;
-    max-width: none;
-  }
-}
-
-.item {
+.header {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.node {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 999px;
-  border: 1px solid #c4c4c4;
-  background: #ffffff;
-  color: #1fa24a;
+.headlineAccent {
+  color: var(--mkt-green);
 }
 
-.itemCopy {
+.subheading {
+  max-width: 32rem;
+}
+
+.journey {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--mkt-divider);
+}
+
+.journeyStep {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, 6rem) 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--mkt-divider);
+}
+
+.stepLabel {
+  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--mkt-text-sm);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mkt-ink-muted);
+  padding-top: 0.25rem;
+}
+
+.stepCopy {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
 }
 
 .itemTitle {
-  font-size: 1.25rem;
+  font-size: var(--mkt-text-lg);
   font-weight: 600;
-  line-height: 1.4;
-  color: #0a0a0c;
+  line-height: 1.35;
+  color: var(--mkt-ink-primary);
 }
 
 .itemBody {
-  font-size: 0.96875rem;
-  line-height: 1.55;
-  color: #4a4f57;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
 }
 
-.bracket {
-  display: none;
-}
-
-.branches {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-/* Desktop fork geometry — scan copy sits left of its node, bracket splits to
-   the two fixed-height (106px) branches on the right so the connector arms
-   line up with each branch node. Matches Figma "Journey chain". */
-@media (min-width: 1200px) {
-  .scan {
-    flex: 0 0 auto;
-    width: 14rem;
-    align-items: center;
-  }
-
-  .scan .itemCopy {
-    order: -1;
-    text-align: right;
-    align-items: flex-end;
-  }
-
-  .scan .itemBody {
-    max-width: 11rem;
-  }
-
-  .bracket {
-    display: block;
-    flex: 0 0 auto;
-    width: 72px;
-    height: 252px;
-  }
-
-  .branches {
-    flex: 0 0 auto;
-    width: 23rem;
-    gap: 2.5rem;
-  }
-
-  .branches .item {
-    align-items: center;
-    min-height: 106px;
-  }
-
-  .branches .itemBody {
-    max-width: 19rem;
-  }
-}
-
-/* ---------- Callout ---------- */
 .callout {
-  max-width: 47.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.5;
-  color: #0a0a0c;
-  text-align: center;
+  font-size: var(--mkt-text-base);
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--mkt-ink-secondary);
 }

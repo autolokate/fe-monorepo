@@ -1,110 +1,48 @@
-/* About hero — centred dark band with eyebrow, display headline, body and a
-   green-accented stats callout. Matches Figma "08 · About · D" → Hero (#723:92). */
-
 .hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background-color: #0a0a0c;
-  color: #fff;
+  composes: hero from '../../../../styles/marketing-hero.module.css';
 }
 
-/* Radial green glow behind the headline. */
 .glow {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    58% 60% at 50% 40%,
-    rgba(31, 162, 74, 0.16) 0%,
-    rgba(31, 162, 74, 0.04) 48%,
-    rgba(31, 162, 74, 0) 72%
-  );
+  composes: glow from '../../../../styles/marketing-hero.module.css';
 }
 
 .inner {
-  position: relative;
-  z-index: 1;
-  margin-inline: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1.5rem; /* 24px */
-  max-width: 60rem;
-  padding: 4.5rem 1.25rem 4rem;
+  composes: inner from '../../../../styles/marketing-hero.module.css';
 }
 
-@media (min-width: 640px) {
-  .inner {
-    padding: 5.5rem 2rem 5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .inner {
-    padding: 6rem 2.5rem; /* Figma 96px 120px */
-  }
-}
-
-/* ---------- Head group (eyebrow + headline, 14px gap) ---------- */
 .headGroup {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.875rem; /* 14px */
+  gap: 0.875rem;
 }
 
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem; /* 10px */
-  font-size: 0.75rem; /* 12px */
-  line-height: 1.0625rem; /* 17px */
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #39c46b;
+  composes: eyebrow from '../../../../styles/marketing-hero.module.css';
 }
 
 .eyebrowDash {
-  display: inline-block;
-  width: 22px;
-  height: 3px;
-  background: #1fa24a;
+  composes: eyebrowDash from '../../../../styles/marketing-hero.module.css';
 }
 
 .headline {
-  max-width: 50rem; /* 800px */
-  font-family: var(--font-display), 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(2.5rem, 5.6vw, 3.625rem); /* up to 58px */
-  font-weight: 700;
-  line-height: 1.103; /* 64/58 */
-  letter-spacing: -0.015em;
-  text-wrap: balance;
+  composes: headline from '../../../../styles/marketing-hero.module.css';
 }
 
 .headlineAccent {
-  color: #39c46b;
+  composes: headlineAccent from '../../../../styles/marketing-hero.module.css';
 }
 
 .description {
-  max-width: 42.5rem; /* 680px */
-  font-size: 1.0625rem; /* 17px */
-  line-height: 1.588; /* 27/17 */
-  color: #c9cdd3;
+  composes: description from '../../../../styles/marketing-hero.module.css';
 }
 
 .callout {
+  composes: callout from '../../../../styles/marketing-hero.module.css';
   max-width: 45rem;
-  font-size: 1rem; /* 16px */
-  line-height: 1.5; /* 24/16 */
-  font-weight: 600;
-  color: #c9cdd3;
   text-wrap: balance;
 }
 
 .calloutAccent {
-  color: #39c46b;
+  composes: calloutAccent from '../../../../styles/marketing-hero.module.css';
 }

@@ -40,7 +40,7 @@
   margin-inline: auto;
   aspect-ratio: 470 / 430;
   border-radius: 28px;
-  background: linear-gradient(135deg, #eaf3ed 0%, #f4f8f6 73%);
+  background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 73%);
 }
 
 /* Sticker sized/positioned so the visible card matches Figma (card bbox ≈ 91.5,25 → 359.5,361.5
@@ -80,7 +80,7 @@
   width: 32px;
   height: 32px;
   border-radius: 10px;
-  background: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
   color: #ffffff;
 }
 
@@ -118,15 +118,15 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #14803a;
+  color: var(--mkt-green-deep, #178a3f);
 }
 
 .eyebrowDash {
   display: inline-block;
   width: 22px;
-  height: 3px;
+  height: 2px;
   border-radius: 2px;
-  background: #1fa24a;
+  background: var(--mkt-green, #1fa24a);
 }
 
 .headline {
@@ -138,7 +138,7 @@
 }
 
 .headlineAccent {
-  color: #1fa24a;
+  color: var(--mkt-green, #1fa24a);
 }
 
 .body {
@@ -182,8 +182,8 @@
 }
 
 .featureIconBrand {
-  background: rgba(31, 162, 74, 0.1);
-  color: #1fa24a;
+  background: color-mix(in srgb, var(--mkt-green) 10%, #ffffff);
+  color: var(--mkt-green, #1fa24a);
 }
 
 .featureText {

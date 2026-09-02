@@ -31,9 +31,9 @@ export function HeroBanner() {
         <div className={styles.scene}>
           <Image
             src={HERO_PHONE_IMAGE}
-            alt="Autolokate app showing a live map with the Control Center and an ambulance on the way"
-            width={426}
-            height={752}
+            alt="Autolokate app detecting severe impact and starting the emergency response sequence automatically"
+            width={853}
+            height={1844}
             priority
             className={styles.phone}
           />

@@ -1,0 +1,390 @@
+.wrap {
+  display: flex;
+  justify-content: center;
+  filter: drop-shadow(0 28px 56px rgba(12, 13, 15, 0.22));
+}
+
+.device {
+  position: relative;
+  width: clamp(11.5rem, 28vw, 15rem);
+  padding: 0.5rem;
+  border-radius: 1.75rem;
+  background: linear-gradient(160deg, #2a2d33 0%, #121316 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.notch {
+  position: absolute;
+  top: 0.625rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: #0a0b0d;
+  z-index: 3;
+}
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.35rem;
+  background: #0d0f12;
+  min-height: clamp(18rem, 42vw, 24rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.screenAlert {
+  animation: screenShake 0.45s ease;
+}
+
+@keyframes screenShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-3px);
+  }
+
+  40% {
+    transform: translateX(3px);
+  }
+
+  60% {
+    transform: translateX(-2px);
+  }
+
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 0.625rem 0.5rem;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.statusMark {
+  height: 0.875rem;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.statusText {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #7dd4a0;
+  font-size: 0.5rem;
+  font-weight: 700;
+}
+
+.liveDot {
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 50%;
+  background: currentColor;
+  animation: blink 1.4s ease-in-out infinite;
+}
+
+.map {
+  position: relative;
+  flex: 1;
+  margin: 0 0.5rem;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, #14171c 0%, #0a0c0f 100%);
+  min-height: 9rem;
+}
+
+.mapGrid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 1.25rem 1.25rem;
+  opacity: 0.5;
+}
+
+.road {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 38%;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.road::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 0.5rem,
+    rgba(255, 255, 255, 0.35) 0.5rem,
+    rgba(255, 255, 255, 0.35) 0.875rem
+  );
+}
+
+.car {
+  position: absolute;
+  top: 34%;
+  left: 22%;
+  width: 1.125rem;
+  height: 1.625rem;
+  border-radius: 0.25rem;
+  background: linear-gradient(180deg, #4ecf8a 0%, #2d8f5c 100%);
+  box-shadow: 0 0 12px rgba(78, 207, 138, 0.45);
+}
+
+.car::before {
+  content: '';
+  position: absolute;
+  inset: 0.2rem 0.15rem auto;
+  height: 0.375rem;
+  border-radius: 0.125rem;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.carMoving {
+  animation: drive 4s ease-in-out infinite;
+}
+
+@keyframes drive {
+  0%,
+  100% {
+    left: 18%;
+  }
+
+  50% {
+    left: 62%;
+  }
+}
+
+.carStopped {
+  left: 48%;
+  background: linear-gradient(180deg, #e87878 0%, #d64545 100%);
+  box-shadow: 0 0 16px rgba(214, 69, 69, 0.55);
+  animation: carHit 0.5s ease;
+}
+
+@keyframes carHit {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.15) rotate(-8deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+.impactRing {
+  position: absolute;
+  top: 30%;
+  left: 44%;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: -1.25rem 0 0 -1.25rem;
+  border-radius: 50%;
+  border: 2px solid rgba(232, 120, 120, 0.7);
+  animation: impactPulse 1.6s ease-out infinite;
+}
+
+@keyframes impactPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.radar {
+  position: absolute;
+  inset: 20% 25%;
+  border-radius: 50%;
+  border: 1px solid rgba(78, 207, 138, 0.25);
+}
+
+.radar span {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  border: 1px solid rgba(78, 207, 138, 0.2);
+  animation: radar 2.4s ease-out infinite;
+}
+
+.radar span:last-child {
+  animation-delay: 0.8s;
+}
+
+@keyframes radar {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.alertCard,
+.connectPanel,
+.controlCard {
+  margin: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.625rem;
+  background: rgba(255, 255, 255, 0.96);
+  animation: slideUp 0.45s var(--mkt-ease-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alertTitle {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #d64545;
+}
+
+.alertSub {
+  margin: 0.25rem 0 0;
+  font-size: 0.5625rem;
+  color: #4a4e55;
+}
+
+.connectPanel {
+  background: rgba(22, 24, 28, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.connectTitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.connectList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.connectItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.5625rem;
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.35s ease;
+}
+
+.connectItemOn {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.connectDot {
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.connectItemOn .connectDot {
+  background: #7dd4a0;
+  box-shadow: 0 0 0 3px rgba(125, 212, 160, 0.2);
+}
+
+.controlCard {
+  background: linear-gradient(135deg, #1c1f24 0%, #0f1012 100%);
+  border: 1px solid rgba(74, 127, 212, 0.35);
+}
+
+.controlEyebrow {
+  margin: 0;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b9de8;
+}
+
+.controlTitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.controlSub {
+  margin: 0.25rem 0 0;
+  font-size: 0.5625rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carMoving,
+  .impactRing,
+  .radar span,
+  .liveDot,
+  .screenAlert {
+    animation: none;
+  }
+}

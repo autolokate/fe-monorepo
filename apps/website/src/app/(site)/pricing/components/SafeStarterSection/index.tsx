@@ -14,8 +14,11 @@ export function SafeStarterSection() {
   } = SAFE_STARTER_COPY;
 
   return (
-    <section aria-labelledby="safe-starter-heading" className={styles.section}>
-      <div className={styles.inner}>
+    <section
+      aria-labelledby="safe-starter-heading"
+      className={`mkt-section mkt-mutedBg ${styles.section}`}
+    >
+      <div className={`mkt-container ${styles.inner}`}>
         <div className={styles.stickerWrap}>
           <Image
             src={STARTER_STICKER_IMAGE}
@@ -27,12 +30,12 @@ export function SafeStarterSection() {
         </div>
 
         <div className={styles.copy}>
-          <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+          <p className="mkt-eyebrow">
+            <span className="mkt-eyebrowLine" aria-hidden="true" />
             {eyebrow}
           </p>
 
-          <h2 id="safe-starter-heading" className={styles.headline}>
+          <h2 id="safe-starter-heading" className={`mkt-headline ${styles.headline}`}>
             {headlineLead} <span className={styles.headlineAccent}>{headlineAccent}</span>{' '}
             {headlineRest}
           </h2>

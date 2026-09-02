@@ -1,9 +1,9 @@
 import type { HeroCopy } from './types';
 
 export const HERO_COPY: HeroCopy = {
-  eyebrow: 'The Autolokate ecosystem',
+  eyebrow: 'The Autolokate network',
   headline: 'One platform.',
   headlineAccent: 'Three purpose-built apps.',
   description:
-    'One for drivers, one for garages and workshops, one for parking agencies and petrol pumps. All sharing one account, one network.',
+    'One for drivers. One for garages and workshops. One for parking agencies and petrol pumps. One account, one network.',
 };

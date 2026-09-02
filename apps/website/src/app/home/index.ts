@@ -1,4 +1,4 @@
-export { HeroBanner } from './components/HeroBanner';
+export { HomeHero } from './components/Hero';
 export { WhyItMattersSection } from './components/WhyItMattersSection';
 export { GettingStartedSection } from './components/GettingStartedSection';
 export { QrSection } from './components/QrSection';

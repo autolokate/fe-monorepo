@@ -11,7 +11,7 @@ export function BlogSection() {
       <div className={styles.inner}>
         <header className={styles.header}>
           <p className={styles.eyebrow}>
-            <span className={styles.eyebrowDash} aria-hidden="true" />
+            <span className={styles.eyebrowLine} aria-hidden="true" />
             {eyebrow}
           </p>
 
@@ -22,23 +22,21 @@ export function BlogSection() {
           <p className={styles.subheading}>{subheading}</p>
         </header>
 
-        <ul className={styles.cards}>
+        <ul className={styles.articles}>
           {BLOG_ARTICLES.map((article) => {
             const { Icon } = article;
             return (
               <li key={article.id}>
-                <Link href={article.href} className={styles.card}>
-                  <span className={styles.thumb}>
-                    <Icon className={styles.thumbIcon} strokeWidth={1.7} aria-hidden="true" />
+                <Link href={article.href} className={styles.row}>
+                  <span className={styles.rowThumb} aria-hidden="true">
+                    <Icon className={styles.thumbIcon} strokeWidth={1.6} />
                   </span>
-
-                  <span className={styles.body}>
-                    <span className={styles.top}>
-                      <span className={styles.tag}>{article.category}</span>
-                      <span className={styles.title}>{article.title}</span>
-                      <span className={styles.excerpt}>{article.excerpt}</span>
-                    </span>
-
+                  <span className={styles.rowBody}>
+                    <span className={styles.tag}>{article.category}</span>
+                    <span className={styles.title}>{article.title}</span>
+                    <span className={styles.excerpt}>{article.excerpt}</span>
+                  </span>
+                  <span className={styles.rowAction}>
                     <span className={styles.readLink}>
                       {readLabel} <span aria-hidden="true">→</span>
                     </span>

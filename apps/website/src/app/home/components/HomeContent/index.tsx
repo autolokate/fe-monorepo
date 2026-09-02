@@ -1,28 +1,47 @@
-import { HeroBanner } from '../HeroBanner';
-import { WhyItMattersSection } from '../WhyItMattersSection';
-import { GettingStartedSection } from '../GettingStartedSection';
-import { QrSection } from '../QrSection';
-import { WhyAutolokateSection } from '../WhyAutolokateSection';
-import { SafetyPacksSection } from '../SafetyPacksSection';
-import { TestimonialsSection } from '../TestimonialsSection';
-import { FromOwnerSection } from '../FromOwnerSection';
+import { HomeReveal } from '../HomeReveal';
+import { HomeHero } from '../Hero';
 import { ClosingCtaSection } from '../ClosingCtaSection';
+import {
+  ControlCenterSection,
+  DetectionSection,
+  ProblemSection,
+  ProtectionMomentSection,
+  ResponseNetworkSection,
+  SmartQrMomentSection,
+  TrustMomentSection,
+} from '../story';
 
 /**
- * Top-level home page composition. Each section is self-contained and rendered
- * in order, matching the redesign reference (Figma "01 · Home · D").
+ * Homepage — safety story → Smart QR → everyday utility → protection.
  */
 export function HomeContent() {
   return (
     <main className="relative">
-      <HeroBanner />
-      <WhyItMattersSection />
-      <GettingStartedSection />
-      <QrSection />
-      <WhyAutolokateSection />
-      <SafetyPacksSection />
-      <TestimonialsSection />
-      <FromOwnerSection />
+      <HomeHero />
+
+      <HomeReveal>
+        <ProblemSection />
+      </HomeReveal>
+      <HomeReveal delay={40}>
+        <DetectionSection />
+      </HomeReveal>
+      <HomeReveal delay={60}>
+        <ResponseNetworkSection />
+      </HomeReveal>
+      <HomeReveal delay={40}>
+        <ControlCenterSection />
+      </HomeReveal>
+      <HomeReveal delay={60}>
+        <SmartQrMomentSection />
+      </HomeReveal>
+
+      <HomeReveal delay={40}>
+        <ProtectionMomentSection />
+      </HomeReveal>
+      <HomeReveal delay={60}>
+        <TrustMomentSection />
+      </HomeReveal>
+
       <ClosingCtaSection />
     </main>
   );

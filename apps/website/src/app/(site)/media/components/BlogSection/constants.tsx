@@ -36,7 +36,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     id: 'smart-qr-privacy',
     Icon: ScanLine,
     category: 'Product',
-    title: 'Smart QR, and what a stranger can and can’t see',
+    title: 'Smart QR: what a stranger can and can’t see',
     excerpt: 'How privacy-first scanning actually works',
     href: '/how-it-works',
   },

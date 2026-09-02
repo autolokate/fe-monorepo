@@ -25,7 +25,7 @@ export const VIDEOS_COPY: VideosCopy = {
 export const FEATURED_VIDEO: FeaturedVideo = {
   Icon: Activity,
   eyebrow: 'Featured',
-  title: 'How automatic crash detection actually works',
+  title: 'How automatic crash detection works',
   duration: '6 min watch',
   href: INDIAN_DRIVE_GUIDE_CHANNEL_URL,
 };

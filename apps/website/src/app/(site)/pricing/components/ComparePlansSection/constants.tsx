@@ -1,13 +1,13 @@
+import { PLAN_DISPLAY_BY_SLUG, planCtaLabel } from '@/lib/plan-display-names';
 import type { CompareColumn, CompareCopy, CompareGroup } from './types';
 
-const CHECKOUT_HREF = '/#safety-packs';
+const CHECKOUT_HREF = '/buy';
 
 export const COMPARE_COPY: CompareCopy = {
   eyebrow: 'Compare plans',
-  headline: 'Row by row,',
-  headlineAccent: 'no fine print.',
-  subheading:
-    'Crash detection starts at Secure. Higher plans add roadside distance and bigger cover.',
+  headline: 'Row by row.',
+  headlineAccent: 'No fine print.',
+  subheading: `Crash detection starts at ${PLAN_DISPLAY_BY_SLUG.secure}. Higher plans add roadside distance and bigger cover.`,
   handoff: 'Every plan here also includes the full app.',
   handoffLink: { label: 'See everything the app does', href: '/features' },
 };
@@ -15,25 +15,25 @@ export const COMPARE_COPY: CompareCopy = {
 export const COMPARE_COLUMNS: CompareColumn[] = [
   {
     id: 'secure',
-    name: 'Secure',
+    name: PLAN_DISPLAY_BY_SLUG.secure,
     price: '₹999/year',
-    ctaLabel: 'Choose Secure',
+    ctaLabel: planCtaLabel('secure'),
     ctaHref: CHECKOUT_HREF,
   },
   {
     id: 'shield',
-    name: 'Shield',
+    name: PLAN_DISPLAY_BY_SLUG.shield,
     price: '₹1,999/year',
     popular: true,
     badge: 'Most popular',
-    ctaLabel: 'Choose Shield',
+    ctaLabel: planCtaLabel('shield'),
     ctaHref: CHECKOUT_HREF,
   },
   {
     id: 'shield-plus',
-    name: 'Shield+',
+    name: PLAN_DISPLAY_BY_SLUG['shield-plus'],
     price: '₹2,999/year',
-    ctaLabel: 'Choose Shield+',
+    ctaLabel: planCtaLabel('shield-plus'),
     ctaHref: CHECKOUT_HREF,
   },
 ];
@@ -61,7 +61,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   },
   {
     id: 'added-in-shield',
-    title: 'Added in Shield',
+    title: `Added in ${PLAN_DISPLAY_BY_SLUG.shield}`,
     rows: [
       { id: 'roadside-50', label: 'Roadside help (50 km)', cells: [false, true, true] },
       {
@@ -78,7 +78,7 @@ export const COMPARE_GROUPS: CompareGroup[] = [
   },
   {
     id: 'added-in-shield-plus',
-    title: 'Added in Shield+',
+    title: `Added in ${PLAN_DISPLAY_BY_SLUG['shield-plus']}`,
     rows: [
       { id: 'roadside-100', label: 'Roadside help (100 km+)', cells: [false, false, true] },
       {
