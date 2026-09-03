@@ -88,13 +88,13 @@ export const footerLinks: FooterLinkSection[] = [
       { id: 'pricing', label: 'Pricing', href: '/pricing' },
       { id: 'products', label: 'Products', href: '/products' },
       { id: 'media', label: 'Media', href: '/media' },
-      { id: 'about', label: 'About us', href: '/about-us' },
-      { id: 'team', label: 'Team', href: '/team' },
     ],
   },
   {
-    title: 'Support',
+    title: 'Company',
     links: [
+      { id: 'about', label: 'About us', href: '/about-us' },
+      { id: 'team', label: 'Team', href: '/team' },
       { id: 'contact', label: 'Contact us', href: '/contact-us' },
       { id: 'whatsapp', label: 'WhatsApp us', href: WHATSAPP_URL, external: true },
       { id: 'orders', label: 'My orders', href: '/my-orders' },

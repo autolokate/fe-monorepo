@@ -31,10 +31,14 @@
 
 @media (min-width: 1024px) {
   .top {
-    grid-template-columns: minmax(0, 22.5rem) minmax(0, 1fr) auto;
-    column-gap: 4rem;
+    grid-template-columns: minmax(16rem, 0.95fr) minmax(0, 1.45fr) auto;
+    column-gap: 3.5rem;
     align-items: start;
   }
+}
+
+.brandCol {
+  min-width: 0;
 }
 
 /* ── Brand column ── */
@@ -102,19 +106,19 @@
 .columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2rem;
+  gap: 2rem 1.5rem;
 }
 
 @media (min-width: 640px) {
   .columns {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 3rem;
+    gap: 2rem 2.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .columns {
-    gap: 4.5rem;
+    gap: 2rem 2.75rem;
   }
 }
 
@@ -229,11 +233,11 @@
 
 /* ── Social row ── */
 .social {
-  margin-top: 3rem;
+  margin-top: 1.5rem;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .socialIcon {

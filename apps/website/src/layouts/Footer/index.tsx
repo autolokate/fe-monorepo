@@ -16,7 +16,7 @@ export function Footer({ className }: FooterProps) {
     <footer className={cn(styles.footer, className)}>
       <div className={styles.inner}>
         <div className={styles.top}>
-          <div>
+          <div className={styles.brandCol}>
             <Link href="/" aria-label={`${footerBrand.name} home`} className={styles.brandLink}>
               <AlMark className={styles.brandMark} />
               <span className={styles.brandWord}>utolokate</span>
@@ -26,6 +26,23 @@ export function Footer({ className }: FooterProps) {
             <a href={`mailto:${footerBrand.email}`} className={styles.email}>
               {footerBrand.email}
             </a>
+            <ul aria-label="Social links" className={styles.social}>
+              {socialLinks.map(({ id, label, href, Icon, brandColor }) => (
+                <li key={id}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className={styles.socialIcon}
+                    data-social={id}
+                    style={{ '--social-brand': brandColor } as React.CSSProperties}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className={styles.columns}>
@@ -52,24 +69,6 @@ export function Footer({ className }: FooterProps) {
 
           <FooterDownload />
         </div>
-
-        <ul aria-label="Social links" className={styles.social}>
-          {socialLinks.map(({ id, label, href, Icon, brandColor }) => (
-            <li key={id}>
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className={styles.socialIcon}
-                data-social={id}
-                style={{ '--social-brand': brandColor } as React.CSSProperties}
-              >
-                <Icon className="h-5 w-5" />
-              </a>
-            </li>
-          ))}
-        </ul>
 
         <hr className={styles.divider} />
 
