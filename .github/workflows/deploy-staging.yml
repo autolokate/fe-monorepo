@@ -1,15 +1,16 @@
 name: deploy-staging
 
-# Gated on ci.yml's success (workflow_run is GitHub's documented "run only after another workflow
-# succeeds" pattern). workflow_run always evaluates from the DEFAULT branch's copy of this file, so it
-# only starts firing on staging pushes once merged to main at least once. workflow_dispatch is a manual
-# escape hatch.
+# Auto-deploys on every push or merge into `staging` (this file is read from the staging branch,
+# unlike workflow_run which only uses the default-branch copy). workflow_dispatch remains a manual
+# re-run hatch.
 on:
-  workflow_run:
-    workflows: [ci]
-    types: [completed]
+  push:
     branches: [staging]
   workflow_dispatch:
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
 
 permissions:
   contents: write # move the `staging-deployed` tag after a successful deploy
@@ -18,15 +19,14 @@ permissions:
 env:
   AWS_REGION: ap-south-1
   ECR_NAMESPACE: autolokate-fe-staging
-  # workflow_run jobs inherit github.sha from the DEFAULT branch — resolve the real triggering commit.
-  DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+  DEPLOY_SHA: ${{ github.sha }}
 
 jobs:
   # Change-aware gate: only deploy the apps actually affected since the last successful deploy (the
   # `staging-deployed` tag). turbo's affected detection is transitive — an app is affected if any of its
   # workspace deps changed. First-ever deploy (no tag yet) treats all three as affected.
   changes:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
       admin: ${{ steps.affected.outputs.admin }}

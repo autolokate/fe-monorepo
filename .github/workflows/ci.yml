@@ -5,8 +5,7 @@ on:
   push:
     # Deliberately NOT `main`: a merge to main is already gated by the pull_request run above (branch
     # protection requires it green before merge) — re-running on the merge commit is redundant.
-    # `staging` is the one push-triggered branch: it's also deploy-staging.yml's upstream gate via
-    # workflow_run.
+    # `staging` still runs CI on push; deploy-staging.yml deploys the same push independently.
     branches: [staging]
 
 # A superseding push/PR-update cancels the stale run instead of racing it to completion.
