@@ -1,10 +1,7 @@
-/* Philosophy — editorial numbered beliefs on charcoal */
-
 .section {
-  background: var(--mkt-surface-muted);
-  color: var(--mkt-ink-dark);
+  background: var(--mkt-warm-white);
   color: var(--mkt-ink-primary);
-  border-block: 1px solid var(--mkt-border-subtle);
+  border-bottom: 1px solid var(--mkt-divider);
 }
 
 .inner {
@@ -13,7 +10,7 @@
   padding: var(--mkt-space-section) var(--mkt-gutter);
   display: flex;
   flex-direction: column;
-  gap: clamp(2.5rem, 5vw, 4rem);
+  gap: clamp(2rem, 4vw, 3rem);
 }
 
 .header {
@@ -24,38 +21,39 @@
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
+  margin: 0;
   font-size: var(--mkt-text-xs);
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--mkt-ink-muted);
+  color: var(--mkt-green-deep);
 }
 
-.eyebrowLine {
-  width: 1.5rem;
-  height: 1px;
-  background: var(--mkt-accent);
-  flex-shrink: 0;
+.eyebrowDash {
+  width: 1.375rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--mkt-green);
 }
 
 .headline {
-  margin-top: 1rem;
-  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  margin: 0.85rem 0 0;
   font-size: var(--mkt-text-3xl);
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   text-wrap: balance;
+  color: var(--mkt-ink-dark);
 }
 
 .headlineAccent {
-  color: var(--mkt-accent);
+  color: var(--mkt-green-deep);
 }
 
 .subheading {
-  margin-top: 1rem;
+  margin: 0.85rem 0 0;
   font-size: var(--mkt-text-lg);
-  line-height: 1.65;
+  line-height: 1.55;
   color: var(--mkt-ink-secondary);
 }
 
@@ -63,59 +61,80 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .belief {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: clamp(1.25rem, 3vw, 2.5rem);
-  padding-block: clamp(1.75rem, 3vw, 2.5rem);
-  border-top: 1px solid var(--mkt-divider);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.35rem 1.35rem 1.5rem;
+  border: 1px solid var(--mkt-border-subtle);
+  border-radius: var(--mkt-radius-lg);
+  background: var(--mkt-surface);
+  box-shadow: var(--mkt-shadow-sm);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s var(--mkt-ease-out);
 }
 
-.belief:last-child {
-  border-bottom: 1px solid var(--mkt-divider);
+.belief:hover {
+  border-color: var(--mkt-border);
+  box-shadow: var(--mkt-shadow-md);
+  transform: translateY(-2px);
+}
+
+.beliefTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .beliefIndex {
-  font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: var(--mkt-text-sm);
+  font-size: var(--mkt-text-xs);
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--mkt-ink-faint);
-  padding-top: 0.25rem;
 }
 
-.beliefContent {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: var(--mkt-radius-sm);
+  background: color-mix(in srgb, var(--mkt-green) 10%, var(--mkt-surface));
+  color: var(--mkt-green-deep);
+}
+
+.icon {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .beliefTitle {
   margin: 0;
-  font-size: clamp(1.125rem, 2vw, 1.375rem);
-  font-weight: 600;
+  font-size: clamp(1.05rem, 1.8vw, 1.2rem);
+  font-weight: 650;
   letter-spacing: -0.02em;
   line-height: 1.3;
+  color: var(--mkt-ink-dark);
 }
 
 .beliefBody {
   margin: 0;
-  font-size: var(--mkt-text-base);
-  line-height: 1.65;
+  font-size: var(--mkt-text-sm);
+  line-height: 1.6;
   color: var(--mkt-ink-secondary);
-  max-width: 38rem;
 }
 
-@media (min-width: 768px) {
-  .belief {
-    grid-template-columns: 4rem 1fr;
-  }
-
-  .beliefIndex {
-    font-size: var(--mkt-text-base);
+@media (max-width: 740px) {
+  .beliefs {
+    grid-template-columns: 1fr;
   }
 }

@@ -9,7 +9,7 @@ export function ImportantToKnow() {
       <div className={styles.inner}>
         <header className={styles.header}>
           <p className={styles.eyebrow}>
-            <span className={styles.eyebrowLine} aria-hidden="true" />
+            <span className={styles.eyebrowDash} aria-hidden="true" />
             {eyebrow}
           </p>
 

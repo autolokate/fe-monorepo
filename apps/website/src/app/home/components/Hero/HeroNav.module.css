@@ -4,7 +4,29 @@
   position: relative;
   z-index: 10;
   max-width: 36rem;
-  padding: clamp(6rem, 14vh, 8rem) var(--mkt-gutter, 1.25rem) clamp(3rem, 8vh, 5rem);
+  padding: clamp(4.5rem, 10vh, 8rem) var(--mkt-gutter, 1.25rem) clamp(2.5rem, 7vh, 5rem);
+}
+
+@media (max-width: 767px) {
+  .copy {
+    padding-top: 4.25rem;
+    padding-bottom: 2rem;
+  }
+
+  .headline {
+    font-size: clamp(1.85rem, 8vw, 2.4rem);
+  }
+
+  .ctaRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 .eyebrow {

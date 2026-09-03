@@ -39,25 +39,25 @@ export const RESPONSE_NODES = [
     id: 'ambulance',
     label: 'Ambulance dispatched',
     sub: 'To your live location',
-    image: '/images/home/hero/hero-marker-ambulance-v2.png',
+    image: '/images/home/hero/hero-marker-ambulance-v5.png',
   },
   {
     id: 'police',
     label: 'Police alerted',
     sub: 'Coordinated when needed',
-    image: '/images/home/hero/hero-marker-police-v2.png',
+    image: '/images/home/hero/hero-marker-police-v5.png',
   },
   {
     id: 'rsa',
     label: 'Roadside help',
     sub: 'Tow, fuel, flat tyre',
-    image: '/images/home/hero/hero-marker-rsa-v2.png',
+    image: '/images/home/hero/hero-marker-rsa-v5.png',
   },
   {
     id: 'control',
     label: 'Control Center live',
     sub: '24/7 coordination',
-    image: '/images/home/hero/hero-marker-control-v2.png',
+    image: '/images/home/hero/hero-marker-control-v5.png',
   },
 ] as const;
 

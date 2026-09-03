@@ -24,7 +24,7 @@ export function PricingHeroVisual() {
       ([entry]) => {
         setActive(entry.isIntersecting);
       },
-      { threshold: 0.25 },
+      { threshold: 0.2 },
     );
 
     observer.observe(node);

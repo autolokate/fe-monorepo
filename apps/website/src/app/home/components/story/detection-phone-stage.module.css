@@ -317,6 +317,40 @@
   }
 }
 
+@media (max-width: 1023px) {
+  .waveGlow {
+    width: 7.5rem;
+    height: 7.5rem;
+    margin: -3.75rem 0 0 -3.75rem;
+  }
+
+  .wave {
+    width: 5.5rem;
+    height: 5.5rem;
+    margin: -2.75rem 0 0 -2.75rem;
+  }
+
+  @keyframes waveExpand {
+    0% {
+      transform: scale(0.45);
+      opacity: 0.8;
+    }
+
+    65% {
+      opacity: 0.28;
+    }
+
+    100% {
+      transform: scale(3.4);
+      opacity: 0;
+    }
+  }
+
+  .phoneWrap {
+    width: min(100%, 14.5rem);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phoneCrash,
   .phoneAlert,

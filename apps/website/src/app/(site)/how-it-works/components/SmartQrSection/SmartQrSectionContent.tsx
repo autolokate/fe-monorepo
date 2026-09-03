@@ -25,7 +25,7 @@ export function SmartQrSectionContent() {
       ([entry]) => {
         setIsInView(entry.isIntersecting);
       },
-      { threshold: 0.22 },
+      { threshold: 0.2 },
     );
 
     observer.observe(node);

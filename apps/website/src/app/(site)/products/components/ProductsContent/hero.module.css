@@ -101,3 +101,26 @@
   white-space: nowrap;
   border: 0;
 }
+
+@media (max-width: 767px) {
+  .section {
+    min-height: min(70vh, 28rem);
+  }
+
+  .image {
+    object-position: center;
+  }
+
+  .inner {
+    padding: calc(4.25rem + env(safe-area-inset-top, 0px)) var(--mkt-gutter) 3.5rem;
+  }
+
+  .headline {
+    max-width: none;
+    font-size: clamp(1.85rem, 8vw, 2.4rem);
+  }
+
+  .body {
+    font-size: var(--mkt-text-base);
+  }
+}

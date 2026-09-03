@@ -1,48 +1,151 @@
 .hero {
-  composes: hero from '../../../../styles/marketing-hero.module.css';
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 10% 0%,
+      color-mix(in srgb, var(--mkt-green) 9%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 60% 45% at 95% 20%,
+      color-mix(in srgb, var(--mkt-roadside) 7%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(180deg, var(--mkt-surface) 0%, var(--mkt-warm-white) 100%);
+  color: var(--mkt-ink-primary);
+  border-bottom: none;
 }
 
 .glow {
-  composes: glow from '../../../../styles/marketing-hero.module.css';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .inner {
-  composes: inner from '../../../../styles/marketing-hero.module.css';
-}
-
-.headGroup {
+  position: relative;
+  z-index: 1;
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+  padding: clamp(4.25rem, 10vw, 6.25rem) var(--mkt-gutter) clamp(3.25rem, 6vw, 4.5rem);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.875rem;
+  gap: 1rem;
+}
+
+.copy {
+  max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
 .eyebrow {
-  composes: eyebrow from '../../../../styles/marketing-hero.module.css';
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: var(--mkt-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mkt-green-deep);
 }
 
 .eyebrowDash {
-  composes: eyebrowDash from '../../../../styles/marketing-hero.module.css';
+  width: 1.375rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--mkt-green);
 }
 
 .headline {
-  composes: headline from '../../../../styles/marketing-hero.module.css';
-}
-
-.headlineAccent {
-  composes: headlineAccent from '../../../../styles/marketing-hero.module.css';
-}
-
-.description {
-  composes: description from '../../../../styles/marketing-hero.module.css';
-}
-
-.callout {
-  composes: callout from '../../../../styles/marketing-hero.module.css';
-  max-width: 45rem;
+  margin: 0;
+  font-size: var(--mkt-text-hero);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: var(--mkt-ink-dark);
   text-wrap: balance;
 }
 
-.calloutAccent {
-  composes: calloutAccent from '../../../../styles/marketing-hero.module.css';
+.headlineAccent {
+  color: var(--mkt-green-deep);
+}
+
+.description {
+  margin: 0;
+  max-width: 38rem;
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+  line-height: 1.6;
+  color: var(--mkt-ink-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.primaryCta,
+.secondaryCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: var(--mkt-radius-sm);
+  font-size: var(--mkt-text-sm);
+  font-weight: 650;
+  text-decoration: none;
+  transition:
+    background-color var(--mkt-duration) var(--mkt-ease-out),
+    border-color var(--mkt-duration) var(--mkt-ease-out),
+    color var(--mkt-duration) var(--mkt-ease-out);
+}
+
+.primaryCta {
+  background: var(--mkt-green);
+  color: #fff;
+}
+
+.primaryCta:hover {
+  background: var(--mkt-green-deep);
+}
+
+.secondaryCta {
+  border: 1px solid var(--mkt-border);
+  background: var(--mkt-surface);
+  color: var(--mkt-ink-dark);
+}
+
+.secondaryCta:hover {
+  border-color: color-mix(in srgb, var(--mkt-ink-dark) 22%, var(--mkt-border));
+  background: var(--mkt-surface-muted);
+}
+
+.primaryCta:focus-visible,
+.secondaryCta:focus-visible {
+  outline: 2px solid var(--mkt-green);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .inner {
+    padding-top: 3.5rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .primaryCta,
+  .secondaryCta {
+    flex: 1 1 auto;
+  }
 }

@@ -19,7 +19,7 @@ export function ControlCenterPhoneStage() {
       ([entry]) => {
         setIsInView(entry.isIntersecting);
       },
-      { threshold: 0.35 },
+      { threshold: 0.2 },
     );
 
     observer.observe(node);

@@ -31,7 +31,7 @@ export function FeaturesReveal({ children, className, delayMs = 0 }: FeaturesRev
           observer.disconnect();
         }
       },
-      { threshold: 0.14, rootMargin: '0px 0px -8% 0px' },
+      { threshold: 0.2 },
     );
 
     observer.observe(el);

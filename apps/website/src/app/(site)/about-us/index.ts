@@ -1,4 +1,7 @@
 export { HeroBanner } from './components/HeroBanner';
+export { ImpactSection } from './components/ImpactSection';
+export { MissionSection } from './components/MissionSection';
+export { NetworkStrip } from './components/NetworkStrip';
 export { Philosophy } from './components/Philosophy';
 export { ImportantToKnow } from './components/ImportantToKnow';
 export { Founder } from './components/Founder';

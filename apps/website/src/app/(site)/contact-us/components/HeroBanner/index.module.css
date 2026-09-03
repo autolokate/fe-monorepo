@@ -29,3 +29,28 @@
 .description {
   composes: description from '../../../../styles/marketing-hero.module.css';
 }
+
+@media (max-width: 767px) {
+  .inner {
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.875rem;
+    padding-block: 2.5rem 2.25rem;
+  }
+
+  .headline {
+    font-size: clamp(1.85rem, 8vw, 2.35rem);
+  }
+
+  .description {
+    font-size: var(--mkt-text-base);
+    max-width: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    max-width: 44rem;
+    padding-block: clamp(4rem, 9vw, 5.5rem);
+  }
+}

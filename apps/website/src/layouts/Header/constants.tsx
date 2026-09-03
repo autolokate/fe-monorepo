@@ -78,13 +78,13 @@ export function NavBrand({
   return (
     <span
       className={cn(
-        'flex items-center gap-[2px]',
+        'inline-flex h-8 items-center gap-[3px]',
         tone === 'light' ? 'text-white' : 'text-[#0c0d0f]',
         className,
       )}
     >
-      <AlMark className="h-[19px] w-auto lg:h-[23px]" />
-      <span className="text-[20px] font-bold leading-none tracking-[-0.03em] lg:text-[24px]">
+      <AlMark className="h-[17px] w-auto shrink-0 lg:h-[22px]" />
+      <span className="text-[17px] font-bold leading-none tracking-[-0.03em] lg:text-[23px]">
         utolokate
       </span>
     </span>

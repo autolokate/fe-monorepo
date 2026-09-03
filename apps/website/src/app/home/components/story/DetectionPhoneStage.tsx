@@ -35,7 +35,7 @@ export function DetectionPhoneStage({ priority }: { priority?: boolean }) {
       ([entry]) => {
         setIsInView(entry.isIntersecting);
       },
-      { threshold: 0.35 },
+      { threshold: 0.2 },
     );
 
     observer.observe(node);

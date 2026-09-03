@@ -1,7 +1,7 @@
 'use client';
 
 import { CinematicScene } from './CinematicScene';
-import { HeroCopyBlock, HeroNav } from './HeroNav';
+import { HeroCopyBlock } from './HeroNav';
 import { HeroParallax } from './HeroParallax';
 import { HeroStatsBar } from './HeroStatsBar';
 import styles from './HomeHero.module.css';
@@ -12,7 +12,6 @@ export function HomeHero() {
     <section className={styles.hero} aria-labelledby="home-hero-heading">
       <CinematicScene className={styles.scene} />
       <div className={styles.gradient} aria-hidden="true" />
-      <HeroNav />
       <HeroParallax>
         <div className={styles.content}>
           <HeroCopyBlock />

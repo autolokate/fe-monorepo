@@ -200,6 +200,21 @@
   }
 }
 
+@media (max-width: 1023px) {
+  .scanBeam,
+  .scanRing {
+    display: none;
+  }
+
+  .phoneShell {
+    animation: none;
+  }
+
+  .stage {
+    max-width: 16.5rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phoneShell {
     animation: none;

@@ -1,40 +1,36 @@
+import Link from 'next/link';
 import { HERO_COPY } from './constants';
 import styles from './index.module.css';
 
 export function HeroBanner() {
-  const { eyebrow, headline, headlineAccent, description, callout } = HERO_COPY;
+  const { eyebrow, headline, headlineAccent, description } = HERO_COPY;
 
   return (
     <section className={styles.hero} aria-labelledby="about-hero-heading">
       <div className={styles.glow} aria-hidden="true" />
 
       <div className={styles.inner}>
-        <div className={styles.headGroup}>
+        <div className={styles.copy}>
           <p className={styles.eyebrow}>
             <span className={styles.eyebrowDash} aria-hidden="true" />
             {eyebrow}
           </p>
 
           <h1 id="about-hero-heading" className={styles.headline}>
-            {headline}
-            <br />
-            <span className={styles.headlineAccent}>{headlineAccent}</span>
+            {headline} <span className={styles.headlineAccent}>{headlineAccent}</span>
           </h1>
+
+          <p className={styles.description}>{description}</p>
+
+          <div className={styles.actions}>
+            <Link href="/pricing" className={styles.primaryCta}>
+              Get protected
+            </Link>
+            <Link href="/how-it-works" className={styles.secondaryCta}>
+              See how it works
+            </Link>
+          </div>
         </div>
-
-        <p className={styles.description}>{description}</p>
-
-        <p className={styles.callout}>
-          {callout.map((part, index) =>
-            part.accent ? (
-              <span key={index} className={styles.calloutAccent}>
-                {part.text}
-              </span>
-            ) : (
-              <span key={index}>{part.text}</span>
-            ),
-          )}
-        </p>
       </div>
     </section>
   );

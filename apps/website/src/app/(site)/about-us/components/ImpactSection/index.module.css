@@ -1,0 +1,230 @@
+.section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--mkt-on-dark);
+  border-block: 1px solid rgba(245, 244, 242, 0.06);
+  min-height: min(88vh, 52rem);
+  display: flex;
+  align-items: center;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bgImage {
+  object-fit: cover;
+  object-position: 62% center;
+  transform: scale(1.06);
+  filter: brightness(0.72) saturate(1.05);
+}
+
+.visible .bgImage {
+  animation: impactKenBurns 18s ease-in-out infinite alternate;
+}
+
+.bgScrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      105deg,
+      rgba(8, 10, 12, 0.92) 0%,
+      rgba(8, 10, 12, 0.78) 38%,
+      rgba(8, 10, 12, 0.42) 62%,
+      rgba(8, 10, 12, 0.55) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(8, 10, 12, 0.35) 0%,
+      transparent 28%,
+      transparent 72%,
+      rgba(8, 10, 12, 0.55) 100%
+    );
+}
+
+.bgVignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 70% at 20% 45%,
+    transparent 0%,
+    rgba(8, 10, 12, 0.35) 100%
+  );
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  margin-inline: auto;
+  margin-inline-start: max(var(--mkt-gutter), calc((100% - var(--mkt-container)) / 2));
+  width: min(100% - (var(--mkt-gutter) * 2), 40rem);
+  padding: clamp(3.5rem, 8vw, 6.5rem) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: var(--mkt-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245, 244, 242, 0.72);
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.55s var(--mkt-ease-out),
+    transform 0.55s var(--mkt-ease-out);
+}
+
+.visible .eyebrow {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.eyebrowDash {
+  width: 1.375rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--mkt-emergency);
+}
+
+.headline {
+  margin: 0;
+  font-size: clamp(1.85rem, 4.2vw, 3rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+  color: #f5f4f2;
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.65s var(--mkt-ease-out) 0.06s,
+    transform 0.65s var(--mkt-ease-out) 0.06s;
+}
+
+.visible .headline {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.headlineAccent {
+  color: color-mix(in srgb, var(--mkt-emergency-soft) 88%, white);
+}
+
+.lines {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.line {
+  margin: 0;
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.45;
+  color: rgba(245, 244, 242, 0.86);
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.55s var(--mkt-ease-out),
+    transform 0.55s var(--mkt-ease-out);
+}
+
+.visible .line {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pivot {
+  margin: 1.25rem 0 0;
+  max-width: 36rem;
+  font-size: clamp(1.125rem, 2vw, 1.35rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  color: #f5f4f2;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(245, 244, 242, 0.18);
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.6s var(--mkt-ease-out) 0.55s,
+    transform 0.6s var(--mkt-ease-out) 0.55s;
+}
+
+.visible .pivot {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes impactKenBurns {
+  from {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(-1.5%, 0.5%, 0);
+  }
+}
+
+@media (max-width: 720px) {
+  .section {
+    min-height: min(92vh, 44rem);
+    align-items: flex-end;
+  }
+
+  .bgImage {
+    object-position: 70% 40%;
+  }
+
+  .bgScrim {
+    background: linear-gradient(
+      180deg,
+      rgba(8, 10, 12, 0.45) 0%,
+      rgba(8, 10, 12, 0.55) 28%,
+      rgba(8, 10, 12, 0.88) 58%,
+      rgba(8, 10, 12, 0.96) 100%
+    );
+  }
+
+  .inner {
+    margin-inline: auto;
+    width: min(100% - (var(--mkt-gutter) * 2), 40rem);
+    padding-bottom: clamp(2.75rem, 8vw, 4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visible .bgImage {
+    animation: none;
+  }
+
+  .eyebrow,
+  .headline,
+  .line,
+  .pivot {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Keep cinematic dark treatment in both themes — this section is intentionally dark. */
+[data-theme='light'] .section {
+  color: #f5f4f2;
+}

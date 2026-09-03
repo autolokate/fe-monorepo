@@ -32,15 +32,15 @@ export const IDG_FEATURE_COPY = {
 /** Build a youtube-nocookie embed URL with sensible defaults. */
 export function youtubeNocookieEmbedSrc(
   videoId: string,
-  opts: { autoplay: boolean; controls?: 0 | 1 },
+  opts: { autoplay: boolean; controls?: 0 | 1; mute?: boolean },
 ): string {
   const q = new URLSearchParams({
-    mute: '1',
     playsinline: '1',
     rel: '0',
     modestbranding: '1',
     iv_load_policy: '3',
   });
+  q.set('mute', opts.mute === false ? '0' : '1');
   if (opts.controls === 0) q.set('controls', '0');
   if (opts.autoplay) q.set('autoplay', '1');
   return `https://www.youtube-nocookie.com/embed/${videoId}?${q.toString()}`;

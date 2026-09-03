@@ -1,0 +1,130 @@
+.hub {
+  position: relative;
+  background: var(--mkt-warm-white);
+  color: var(--mkt-ink-primary);
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(4.5rem, 10vw, 6.5rem) var(--mkt-gutter) clamp(2rem, 4vw, 2.75rem);
+  background:
+    radial-gradient(ellipse 80% 60% at 12% 0%, rgba(45, 143, 92, 0.08), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 10%, rgba(196, 146, 58, 0.06), transparent 50%),
+    linear-gradient(180deg, var(--mkt-surface) 0%, var(--mkt-warm-white) 100%);
+  border-bottom: 1px solid var(--mkt-divider);
+}
+
+.heroInner {
+  margin-inline: auto;
+  max-width: var(--mkt-container);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0 0 0.875rem;
+  font-size: var(--mkt-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mkt-green-deep);
+}
+
+.eyebrowDash {
+  width: 1.375rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--mkt-green);
+}
+
+.title {
+  margin: 0;
+  max-width: 18ch;
+  font-size: var(--mkt-text-hero);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: var(--mkt-ink-dark);
+}
+
+.subtitle {
+  margin: 1rem 0 0;
+  max-width: 38rem;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  line-height: 1.55;
+  color: var(--mkt-ink-secondary);
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  padding: 0.25rem;
+  border: 1px solid var(--mkt-border);
+  border-radius: var(--mkt-radius-md);
+  background: var(--mkt-surface);
+  box-shadow: var(--mkt-shadow-sm);
+}
+
+.tab,
+.tabActive {
+  appearance: none;
+  border: 0;
+  border-radius: var(--mkt-radius-sm);
+  padding: 0.625rem 1.25rem;
+  min-height: 2.75rem;
+  font: inherit;
+  font-size: var(--mkt-text-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background-color var(--mkt-duration) var(--mkt-ease-out),
+    color var(--mkt-duration) var(--mkt-ease-out);
+}
+
+.tab {
+  background: transparent;
+  color: var(--mkt-ink-muted);
+}
+
+.tab:hover {
+  color: var(--mkt-ink-primary);
+  background: var(--mkt-surface-muted);
+}
+
+.tab:focus-visible,
+.tabActive:focus-visible {
+  outline: 2px solid var(--mkt-green);
+  outline-offset: 2px;
+}
+
+.tabActive {
+  background: var(--mkt-ink-dark);
+  color: var(--mkt-on-dark);
+}
+
+.panel {
+  padding-bottom: var(--mkt-space-section-sm);
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding-top: 3.75rem;
+  }
+
+  .tabs {
+    display: flex;
+    width: 100%;
+  }
+
+  .tab,
+  .tabActive {
+    flex: 1;
+    text-align: center;
+    padding-inline: 0.75rem;
+  }
+}

@@ -471,13 +471,14 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .stage {
     min-height: auto;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    padding-bottom: 0.25rem;
+    gap: 1.5rem;
+    padding-bottom: 0.5rem;
+    overflow: visible;
   }
 
   .lines {
@@ -488,36 +489,76 @@
     position: static;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem 0.625rem;
+    gap: 1.125rem 0.75rem;
     order: 2;
-    padding: 0 0.25rem;
+    padding: 0;
   }
 
-  .node {
+  .node,
+  .nodeNext,
+  .nodeConnected,
+  .nodeFamily,
+  .nodeFamily.nodeNext,
+  .nodeFamily.nodeConnected {
     position: static;
-    transform: none;
+    transform: none !important;
     width: 100%;
     opacity: 1;
   }
 
   .node:not(.nodeConnected) {
-    opacity: 0.35;
+    opacity: 0.45;
   }
 
   .nodeFamily {
     top: auto;
+    grid-column: 1 / -1;
+    width: min(100%, 11.5rem);
+    margin-inline: auto;
   }
 
+  .marker {
+    width: clamp(3.5rem, 16vw, 4.5rem);
+    height: clamp(3.5rem, 16vw, 4.5rem);
+  }
+
+  .markerRing,
+  .markerPing {
+    display: none;
+  }
+
+  .nodeLabel {
+    font-size: 0.8125rem;
+  }
+
+  .nodeSub {
+    font-size: 0.6875rem;
+    max-width: none;
+  }
+
+  /* Keep containing block on the phone so SOS ring does not frame the whole stage */
   .phoneHub {
-    position: static;
+    position: relative;
+    left: auto;
+    top: auto;
     transform: none;
     order: 1;
     width: min(100%, 13rem);
     margin-inline: auto;
   }
 
+  .sosRing,
+  .sosFlash,
+  .liveAura {
+    display: none;
+  }
+
   .phoneSos .phone {
-    animation: sosVibrate 0.12s linear infinite;
+    animation: none;
+  }
+
+  .phoneStatus {
+    font-size: 0.625rem;
   }
 }
 

@@ -54,7 +54,7 @@ export function FeatureMediaStage({
       ([entry]) => {
         setActive(entry.isIntersecting);
       },
-      { threshold: 0.28 },
+      { threshold: 0.2 },
     );
 
     observer.observe(node);

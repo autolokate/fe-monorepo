@@ -11,7 +11,14 @@ export default [
   ...baseConfig,
   ...reactConfig,
   // The ONLY rules that can't be identical: Next.js's own — scoped to the Next app alone.
-  ...nextConfig.map((c) => ({ ...c, files: ['apps/website/**/*.{ts,tsx,jsx}'] })),
+  ...nextConfig.map((c) => ({
+    ...c,
+    files: ['apps/website/**/*.{ts,tsx,jsx}'],
+    settings: {
+      ...c.settings,
+      next: { rootDir: 'apps/website' },
+    },
+  })),
   {
     languageOptions: {
       parserOptions: {

@@ -109,7 +109,7 @@ export function PartnerApps() {
           observer.disconnect();
         }
       },
-      { threshold: 0.12 },
+      { threshold: 0.2 },
     );
 
     observer.observe(node);

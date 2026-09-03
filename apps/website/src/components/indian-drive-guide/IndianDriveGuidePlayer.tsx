@@ -49,7 +49,7 @@ export function IndianDriveGuidePlayer({
       ([e]) => {
         if (e.isIntersecting) setInView(true);
       },
-      { threshold: 0.28, rootMargin: '0px 0px -8% 0px' },
+      { threshold: 0.2 },
     );
     obs.observe(el);
     return () => {

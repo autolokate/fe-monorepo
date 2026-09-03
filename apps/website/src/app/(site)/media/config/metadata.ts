@@ -3,12 +3,12 @@ import type { Metadata } from 'next';
 export const mediaMetadata: Metadata = {
   title: 'Media — Autolokate',
   description:
-    'Watch, read, and drive smarter. Videos and plain-language guides for Indian drivers — how the app, the Smart QR and your cover actually work, from the team behind the product.',
+    'Stories, insights and videos shaping safer, smarter mobility in India — editorial road-safety journalism and a curated video library from Indian Drive Guide.',
   alternates: { canonical: '/media' },
   openGraph: {
     title: 'Autolokate Media',
     description:
-      'Explainers and stories for Indian drivers. Videos and guides on safety, plans and the product.',
+      'Premium articles and videos on road safety, driving, EVs, ADAS, and connected vehicle protection for Indian drivers.',
     url: '/media',
     type: 'website',
   },

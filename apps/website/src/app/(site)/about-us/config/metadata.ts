@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 
 export const aboutMetadata: Metadata = {
-  title: 'About Autolokate — Building a Safer India. Together.',
+  title: 'About Autolokate — Protection for the moment you cannot call for help',
   description:
-    'Autolokate is an app-first vehicle safety platform. Your phone detects a serious crash on its own, then gets an ambulance moving and alerts your family, automatically, all at once.',
+    'Autolokate is India’s connected vehicle safety layer. Crash detection, family alerts, Smart QR backup, and a 24/7 Control Center—built for the missing minutes after impact.',
   alternates: { canonical: '/about-us' },
   openGraph: {
-    title: 'About Autolokate — Building a Safer India. Together.',
+    title: 'About Autolokate — Protection for the moment you cannot call for help',
     description:
-      'An app-first vehicle safety platform for India. Automatic crash detection, instant family alerts, and a Smart QR backup that works even when your phone can’t.',
+      'We close the gap between impact and help: automatic detection, family alerts, and emergency coordination for Indian roads.',
     url: '/about-us',
     type: 'website',
   },

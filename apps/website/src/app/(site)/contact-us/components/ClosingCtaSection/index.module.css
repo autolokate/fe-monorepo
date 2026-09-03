@@ -38,6 +38,25 @@
   text-align: center;
 }
 
+@media (max-width: 767px) {
+  .inner {
+    gap: 1.5rem;
+    padding-block: 3rem;
+  }
+
+  .headline {
+    font-size: clamp(1.75rem, 7.5vw, 2.25rem);
+  }
+
+  .subheading {
+    font-size: var(--mkt-text-base);
+  }
+
+  button.cta {
+    width: 100%;
+  }
+}
+
 .headingStack {
   display: flex;
   flex-direction: column;

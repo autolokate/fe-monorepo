@@ -5,8 +5,10 @@ export interface PhilosophyCopy {
   subheading: string;
 }
 
+export type BeliefId = 'automatic' | 'backup' | 'privacy' | 'record';
+
 export interface BeliefTile {
-  id: string;
+  id: BeliefId;
   title: string;
   body: string;
 }

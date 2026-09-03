@@ -44,7 +44,7 @@ export function FlagshipMoment() {
       ([entry]) => {
         setInView(entry.isIntersecting);
       },
-      { threshold: 0.18 },
+      { threshold: 0.2 },
     );
 
     observer.observe(node);
