@@ -17,7 +17,7 @@ import type {
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
-/** POST /v1/auth/login/otp — kicks off OTP delivery. */
+/** POST /v1/auth/otp/request — kicks off OTP delivery. */
 export async function requestOtp(payload: RequestOtpPayload): Promise<RequestOtpResponse> {
   const res = await ApiService.post<ApiEnvelope<RequestOtpResponse>>(
     endpoints.auth.requestOtp,
@@ -37,7 +37,7 @@ export async function requestOtp(payload: RequestOtpPayload): Promise<RequestOtp
 
   const envelope = (isRecord(data) ? data : {}) as {
     success?: boolean;
-    data?: { message?: string };
+    data?: { message?: string; channel?: string };
   };
   return {
     sent: envelope.success !== false,
@@ -46,13 +46,11 @@ export async function requestOtp(payload: RequestOtpPayload): Promise<RequestOtp
   };
 }
 
-/** POST /v1/auth/verify-otp — exchanges OTP for tokens + user. */
+/** POST /v1/auth/otp/verify — exchanges OTP for tokens + user. */
 export async function verifyOtp(payload: VerifyOtpPayload): Promise<VerifyOtpResponse> {
   const body: Record<string, unknown> = {
     phone: payload.phone,
-    otp: payload.otp,
-    consent_accepted: payload.consent_accepted,
-    consent_version: payload.consent_version,
+    code: payload.otp,
   };
   if (payload.full_name?.trim()) body.full_name = payload.full_name.trim();
 
@@ -77,6 +75,20 @@ export async function verifyOtp(payload: VerifyOtpPayload): Promise<VerifyOtpRes
       refresh_token: inner.refresh_token,
       user: isRecord(inner.user) ? inner.user : {},
       is_new_user: typeof inner.is_new_user === 'boolean' ? inner.is_new_user : false,
+    };
+  }
+
+  if (
+    isRecord(inner) &&
+    typeof inner.accessToken === 'string' &&
+    typeof inner.refreshToken === 'string'
+  ) {
+    const userId = typeof inner.userId === 'string' ? inner.userId : undefined;
+    return {
+      access_token: inner.accessToken,
+      refresh_token: inner.refreshToken,
+      user: isRecord(inner.user) ? inner.user : { id: userId },
+      is_new_user: typeof inner.isNewUser === 'boolean' ? inner.isNewUser : false,
     };
   }
 

@@ -1,11 +1,7 @@
+import { env } from '@/config/env.config';
 import { endpoints } from '@/lib/api/endpoints';
 
-/**
- * Temporary override — legal documents currently live on a separate backend,
- * so these reads bypass the shared staging base URL. Remove once
- * `/v1/legal/documents` is served from `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL`.
- */
-const LEGAL_API_BASE_URL = 'https://malisa-noninclusive-davin.ngrok-free.dev';
+const LEGAL_API_BASE_URL = env.NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL.replace(/\/$/, '');
 
 /** Cache legal docs for 5 minutes — they change rarely. */
 const LEGAL_REVALIDATE_SECONDS = 300;
@@ -31,9 +27,6 @@ export async function fetchLegalDocument(kind: LegalDocumentKind): Promise<Legal
     const res = await fetch(`${LEGAL_API_BASE_URL}${endpoints.legal.document(kind)}`, {
       headers: {
         accept: 'application/json',
-        // ngrok's free tier serves an HTML interstitial to browsers/servers
-        // without this header, which would break JSON parsing.
-        'ngrok-skip-browser-warning': 'true',
       },
       next: { revalidate: LEGAL_REVALIDATE_SECONDS },
     });

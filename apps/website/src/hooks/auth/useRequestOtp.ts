@@ -6,7 +6,7 @@ import type { RequestOtpPayload, RequestOtpResponse } from '@/services/auth/type
 import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /**
- * `POST /v1/auth/login/otp` — requests an OTP for the supplied phone.
+ * `POST /v1/auth/otp/request` — requests an OTP for the supplied phone.
  *
  * @example
  *   const { mutate, isLoading } = useRequestOtp({

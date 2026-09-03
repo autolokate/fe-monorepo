@@ -15,7 +15,7 @@ export interface VerifyOtpInput {
 }
 
 /**
- * `POST /v1/auth/verify-otp` — exchanges an OTP for tokens, then persists them
+ * `POST /v1/auth/otp/verify` — exchanges an OTP for tokens, then persists them
  * to localStorage + cookies. On success the user is fully authenticated.
  */
 export function useVerifyOtp(options?: UseApiMutationOptions<VerifyOtpResponse, VerifyOtpInput>) {

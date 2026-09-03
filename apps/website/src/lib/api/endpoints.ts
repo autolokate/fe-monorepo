@@ -1,12 +1,10 @@
 /** All backend paths the FE talks to. Centralised so refactors are one-file changes. */
 export const endpoints = {
   auth: {
-    requestOtp: '/v1/auth/login/otp',
-    /** Purchase-flow OTP request (new backend). */
+    requestOtp: '/v1/auth/otp/request',
     otpRequest: '/v1/auth/otp/request',
-    /** Purchase-flow OTP verify (new backend). */
     otpVerify: '/v1/auth/otp/verify',
-    verifyOtp: '/v1/auth/verify-otp',
+    verifyOtp: '/v1/auth/otp/verify',
     refresh: '/v1/auth/refresh',
     me: '/v1/auth/me',
     logout: '/v1/auth/logout',

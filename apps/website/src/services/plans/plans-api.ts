@@ -7,13 +7,6 @@ import { ApiService } from '@/services/api.service';
 /** Default catalogue SKU the marketing site sells. */
 export const DEFAULT_PLANS_SKU = 'SKU-B2C-RETAIL';
 
-/**
- * Temporary override — plans currently live on a separate backend, so this
- * one call bypasses the shared staging base URL. Remove once `/v1/plans` is
- * served from `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL`.
- */
-const PLANS_API_BASE_URL = 'https://malisa-noninclusive-davin.ngrok-free.dev';
-
 export type PlanTier = 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
 export type PlanPeriod = 'YEARLY' | 'MONTHLY';
 
@@ -104,10 +97,6 @@ export function getPlans(sku: string = DEFAULT_PLANS_SKU): Promise<Plan[]> {
     try {
       const res = await ApiService.get(endpoints.plans.list(sku), {
         withAuth: false,
-        baseURL: PLANS_API_BASE_URL,
-        // ngrok's free tier serves an HTML interstitial to browsers unless this
-        // header is present; without it we'd parse the warning page instead of JSON.
-        headers: { 'ngrok-skip-browser-warning': 'true' },
       });
       const rows = readArray<unknown>(unbox(res.data));
       return rows.map(normalizePlan);

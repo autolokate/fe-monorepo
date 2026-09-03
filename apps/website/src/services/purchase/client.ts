@@ -7,6 +7,7 @@ import axios, {
 } from 'axios';
 import { endpoints } from '@/lib/api/endpoints';
 import { toApiError } from '@/lib/api/error';
+import { env } from '@/config/env.config';
 import {
   clearPurchaseSession,
   getPurchaseSession,
@@ -15,13 +16,7 @@ import {
   setPurchaseSession,
 } from './session';
 
-/**
- * Temporary override — the purchase backend (plans, cart, orders, auth) lives on
- * a separate host for now, so this client targets it directly instead of the
- * shared staging base URL. Remove once these routes are served from
- * `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL`.
- */
-export const PURCHASE_API_BASE_URL = 'https://malisa-noninclusive-davin.ngrok-free.dev';
+export const PURCHASE_API_BASE_URL = env.NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL.replace(/\/$/, '');
 
 /**
  * Dedicated axios instance for the purchase flow. It's intentionally isolated
@@ -33,9 +28,6 @@ const client = axios.create({
   baseURL: PURCHASE_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    // ngrok's free tier serves an HTML interstitial without this header, which
-    // would break JSON parsing.
-    'ngrok-skip-browser-warning': 'true',
   },
   timeout: 30_000,
 });
@@ -44,7 +36,6 @@ client.interceptors.request.use((config) => {
   const headers = AxiosHeaders.from(config.headers);
   const token = getPurchaseToken();
   if (token) headers.set('Authorization', `Bearer ${token}`);
-  headers.set('ngrok-skip-browser-warning', 'true');
   config.headers = headers;
   return config;
 });
@@ -81,7 +72,6 @@ async function doRefresh(): Promise<string | null> {
       {
         headers: {
           'Content-Type': 'application/json',
-          'ngrok-skip-browser-warning': 'true',
         },
         timeout: 30_000,
       },
