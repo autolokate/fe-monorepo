@@ -29,7 +29,7 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30_000,
+  timeout: 15_000,
 });
 
 client.interceptors.request.use((config) => {
@@ -73,7 +73,7 @@ async function doRefresh(): Promise<string | null> {
         headers: {
           'Content-Type': 'application/json',
         },
-        timeout: 30_000,
+        timeout: 15_000,
       },
     );
 

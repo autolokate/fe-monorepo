@@ -1,3 +1,5 @@
+import { resolveApiBaseUrl } from '@autolokate/config';
+
 /**
  * Environment Configuration
  *
@@ -8,23 +10,23 @@
 // Environment configuration object.
 //
 // NEXT_PUBLIC_* are inlined into the bundle at BUILD time by Next.js — real staging/prod values are
-// injected as Docker build args by the deploy workflow (apps/website/Dockerfile). The defaults below are
-// obvious local-dev placeholders ONLY (never a real deployed endpoint) so a build with the vars unset —
-// e.g. the CI `pnpm build` compile check — still succeeds without silently baking a stale URL.
+// injected as Docker build args by the deploy workflow (apps/website/Dockerfile). API URLs go through
+// `resolveApiBaseUrl` so a leftover localhost `.env` cannot silently target loopback.
 export const env = {
   // Node environment
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- NODE_ENV is typed as a required union but can be undefined at runtime (e.g. plain `node`); keep the default
   NODE_ENV: process.env.NODE_ENV || 'development',
 
-  // API Configuration
-  NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL:
-    process.env.NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL || 'http://localhost:8080',
+  // API Configuration — never localhost; loopback values fall back to staging.
+  NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL: resolveApiBaseUrl(
+    process.env.NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL,
+  ),
 
   // Site Configuration — prefer the injected value, then the live origin on the client, then a
   // local-dev placeholder on the server.
   NEXT_PUBLIC_SITE_URL:
     process.env.NEXT_PUBLIC_SITE_URL ||
-    (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'),
+    (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001'),
 };
 
 // Environment checks

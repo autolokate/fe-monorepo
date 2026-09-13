@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { ApiError, extractApiErrorMessage } from '@/lib/api/error';
+import { type ApiError, toApiError } from '@/lib/api/error';
 
 export interface UseApiMutationOptions<TData, TVariables> {
   /** Runs after a successful call. Receives the resolved data + the variables you passed in. */
@@ -72,7 +72,7 @@ export function useApiMutation<TData, TVariables = void>(
         await onSuccess?.(result, variables);
         return result;
       } catch (raw) {
-        const apiErr = raw instanceof ApiError ? raw : new ApiError(extractApiErrorMessage(raw), 0);
+        const apiErr = toApiError(raw);
         setError(apiErr);
         setStatus('error');
 

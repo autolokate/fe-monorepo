@@ -52,7 +52,7 @@ export interface RefreshTokenResponse {
   user?: AuthUser;
 }
 
-/** Body for `PATCH /v1/auth/me`. All keys optional — only changed fields are sent. */
+/** Body for `PATCH /v1/profile`. UI fields map onto the backend `name` field. */
 export interface UpdateProfilePayload {
   full_name?: string;
   phone?: string;

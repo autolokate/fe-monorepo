@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { ArrowRight, ChevronDown, LogOut, MapPin, Package } from 'lucide-react';
+import { ArrowRight, ChevronDown, LogOut, MapPin, Package, User } from 'lucide-react';
 import { AlMark } from '@/layouts/Header/constants';
 import {
   getJourneyProfile,
@@ -35,7 +35,7 @@ interface JourneyHeaderProps {
  * hydration mismatch; it flips to member after mount if a session exists. The
  * member's name is read once from `GET /v1/profile` (cached across pages).
  */
-export function JourneyHeader({ userName, loginHref = '/login' }: JourneyHeaderProps) {
+export function JourneyHeader({ userName, loginHref = '/auth/login' }: JourneyHeaderProps) {
   const router = useRouter();
   const [isMember, setIsMember] = useState(false);
   const [fetchedName, setFetchedName] = useState('');
@@ -78,7 +78,11 @@ export function JourneyHeader({ userName, loginHref = '/login' }: JourneyHeaderP
         </Link>
 
         {isMember ? (
-          <DropdownMenu.Root>
+          <DropdownMenu.Root
+            onOpenChange={(open) => {
+              if (open) router.prefetch('/profile');
+            }}
+          >
             <DropdownMenu.Trigger asChild>
               <button type="button" className={styles.account}>
                 <span className={styles.avatar} aria-hidden>
@@ -99,6 +103,13 @@ export function JourneyHeader({ userName, loginHref = '/login' }: JourneyHeaderP
                 <div className={styles.menuUser}>
                   <span className={styles.menuName}>{name || 'Account'}</span>
                 </div>
+
+                <DropdownMenu.Item asChild className={styles.menuItem}>
+                  <Link href="/profile">
+                    <User className={styles.menuIcon} aria-hidden />
+                    My profile
+                  </Link>
+                </DropdownMenu.Item>
 
                 <DropdownMenu.Item asChild className={styles.menuItem}>
                   <Link href={JOURNEY_ROUTES.orders}>

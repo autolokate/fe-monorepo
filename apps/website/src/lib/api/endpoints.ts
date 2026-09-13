@@ -6,7 +6,6 @@ export const endpoints = {
     otpVerify: '/v1/auth/otp/verify',
     verifyOtp: '/v1/auth/otp/verify',
     refresh: '/v1/auth/refresh',
-    me: '/v1/auth/me',
     logout: '/v1/auth/logout',
   },
   bookings: {

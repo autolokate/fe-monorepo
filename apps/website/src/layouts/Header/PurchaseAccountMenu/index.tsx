@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { ChevronDown, LogOut, MapPin, Package } from 'lucide-react';
+import { ChevronDown, LogOut, MapPin, Package, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   getJourneyProfile,
@@ -54,7 +54,11 @@ export function PurchaseAccountMenu({ onSignOut, className }: PurchaseAccountMen
   };
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root
+      onOpenChange={(open) => {
+        if (open) router.prefetch('/profile');
+      }}
+    >
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
@@ -85,6 +89,13 @@ export function PurchaseAccountMenu({ onSignOut, className }: PurchaseAccountMen
               {trimmed || 'Account'}
             </span>
           </div>
+
+          <DropdownMenu.Item asChild className={itemClass}>
+            <Link href="/profile">
+              <User className="h-[18px] w-[18px] shrink-0 text-[#0a0a0c]" aria-hidden />
+              My profile
+            </Link>
+          </DropdownMenu.Item>
 
           <DropdownMenu.Item asChild className={itemClass}>
             <Link href={JOURNEY_ROUTES.orders}>

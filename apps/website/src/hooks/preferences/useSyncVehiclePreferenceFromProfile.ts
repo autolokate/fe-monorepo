@@ -9,7 +9,7 @@ import { fetchCurrentUser } from '@/services/auth';
  * Side-effect hook that keeps `localStorage.autolokate_vehicle_preference` in
  * lock-step with the signed-in user's `preferred_vehicle_category`:
  *
- *  - On login (auth tokens present) → fetch `/v1/auth/me` and apply the
+ *  - On login (auth tokens present) → fetch `/v1/profile` and apply the
  *    mapped category. Creates the key if missing, updates if different.
  *  - On logout (auth tokens disappear) → clear the local preference so the
  *    next visitor on this device starts fresh.
@@ -48,7 +48,7 @@ export function useSyncVehiclePreferenceFromProfile(): void {
           applyApiVehicleCategoryToStorage(user.preferred_vehicle_category);
         } catch {
           // Best-effort sync — failures are swallowed so a hiccup on
-          // /v1/auth/me never bubbles up as a user-visible error. The next
+          // /v1/profile never bubbles up as a user-visible error. The next
           // auth-change event will retry.
         }
       })();

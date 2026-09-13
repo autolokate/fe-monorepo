@@ -19,6 +19,7 @@
     "@autolokate/api-client": "workspace:*",
     "@autolokate/auth": "workspace:*",
     "@autolokate/brand": "workspace:*",
+    "@autolokate/config": "workspace:*",
     "@autolokate/design-system": "workspace:*",
     "@autolokate/icons": "workspace:*",
     "@autolokate/types": "workspace:*",

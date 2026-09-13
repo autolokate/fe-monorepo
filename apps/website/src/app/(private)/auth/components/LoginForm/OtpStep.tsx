@@ -6,6 +6,7 @@ import { type SubmitEvent, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ProcessOverlay } from '@/components/ProcessOverlay';
 import { useRequestOtp, useVerifyOtp } from '@/hooks/auth';
 import { BrandWordmark } from '../BrandWordmark';
 import { OtpField } from '../OtpField';
@@ -22,9 +23,11 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
 
   const [otp, setOtp] = useState('');
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_SECONDS);
+  const [handingOff, setHandingOff] = useState(false);
 
   const verify = useVerifyOtp({
     onSuccess: () => {
+      setHandingOff(true);
       toast.success('Logged in successfully.');
       router.push(safeNext || '/');
     },
@@ -96,9 +99,9 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
           value={otp}
           onChange={setOtp}
           onComplete={(code) => {
-            if (!verify.isLoading) void verify.mutate({ phone, otp: code });
+            if (!verify.isLoading && !handingOff) void verify.mutate({ phone, otp: code });
           }}
-          disabled={verify.isLoading}
+          disabled={verify.isLoading || handingOff}
         />
         <p className="mt-3 text-center text-xs text-muted-foreground">
           Use the OTP received on SMS to continue.
@@ -108,12 +111,12 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
           type="submit"
           className="mt-7 h-12 w-full gap-2 text-base font-semibold shadow-md [&_svg]:size-4"
           size="lg"
-          disabled={verify.isLoading || otp.length !== OTP_LENGTH}
+          disabled={verify.isLoading || handingOff || otp.length !== OTP_LENGTH}
         >
-          {verify.isLoading ? (
+          {verify.isLoading || handingOff ? (
             <>
               <Loader2 className="animate-spin" aria-hidden />
-              <span>Verifying…</span>
+              <span>{handingOff ? 'Signing you in…' : 'Verifying…'}</span>
             </>
           ) : (
             <>
@@ -129,7 +132,7 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
           type="button"
           className="font-semibold text-primary transition hover:underline disabled:pointer-events-none disabled:text-muted-foreground"
           onClick={() => void resend.mutate({ phone })}
-          disabled={resend.isLoading || cooldown > 0}
+          disabled={resend.isLoading || handingOff || cooldown > 0}
         >
           {resend.isLoading
             ? 'Resending…'
@@ -140,12 +143,20 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
         <span aria-hidden className="h-3 w-px bg-border/70" />
         <button
           type="button"
-          className="font-semibold text-primary transition hover:underline"
+          className="font-semibold text-primary transition hover:underline disabled:pointer-events-none disabled:text-muted-foreground"
           onClick={handleChangePhone}
+          disabled={handingOff || verify.isLoading}
         >
           Change phone
         </button>
       </div>
+
+      <ProcessOverlay
+        active={verify.isLoading || resend.isLoading || handingOff}
+        label={
+          handingOff ? 'Signing you in…' : resend.isLoading ? 'Resending code…' : 'Verifying code…'
+        }
+      />
     </>
   );
 }

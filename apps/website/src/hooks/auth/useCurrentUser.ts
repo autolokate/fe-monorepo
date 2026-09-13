@@ -7,7 +7,7 @@ import type { AuthUser } from '@/services/auth/types';
 import { useApiQuery, type UseApiQueryOptions } from '@/hooks/useApiQuery';
 
 /**
- * `GET /v1/auth/me` — returns the signed-in user. Skips automatically when
+ * `GET /v1/profile` — returns the signed-in user. Skips automatically when
  * no tokens are stored. Re-runs whenever the auth state changes in this tab
  * (login / logout) or in another tab (via the `storage` event).
  */

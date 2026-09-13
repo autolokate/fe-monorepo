@@ -6,6 +6,7 @@ import { type SubmitEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Phone, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ProcessOverlay } from '@/components/ProcessOverlay';
 import { useRequestOtp } from '@/hooks/auth';
 import { BrandWordmark } from '../BrandWordmark';
 import { PhoneField } from '../PhoneField';
@@ -110,6 +111,8 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
           Create an account
         </Link>
       </p>
+
+      <ProcessOverlay active={requestOtp.isLoading} label="Sending code…" />
     </>
   );
 }

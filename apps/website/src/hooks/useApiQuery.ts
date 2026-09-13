@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ApiError, extractApiErrorMessage } from '@/lib/api/error';
+import { type ApiError, toApiError } from '@/lib/api/error';
 
 export interface UseApiQueryOptions<TData> {
   /** Skip the initial fetch when false. Useful to gate on auth/state. Default: true. */
@@ -63,7 +63,7 @@ export function useApiQuery<TData>(
       cbRef.current.onSuccess?.(result);
       return result;
     } catch (raw) {
-      const apiErr = raw instanceof ApiError ? raw : new ApiError(extractApiErrorMessage(raw), 0);
+      const apiErr = toApiError(raw);
       setError(apiErr);
       setStatus('error');
       cbRef.current.onError?.(apiErr);
