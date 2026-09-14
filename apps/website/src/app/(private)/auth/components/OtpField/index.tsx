@@ -44,27 +44,33 @@ export const OtpField = forwardRef<HTMLInputElement, OtpFieldProps>(function Otp
         autoComplete="one-time-code"
         maxLength={OTP_LENGTH}
         aria-label="One-time password"
-        className="peer absolute inset-0 z-10 h-full w-full rounded-xl border-0 bg-transparent p-0 text-center text-transparent caret-transparent shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 selection:bg-transparent"
+        className="peer absolute inset-0 z-10 h-full w-full cursor-text rounded-xl border-0 bg-transparent p-0 text-center text-transparent caret-transparent shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 selection:bg-transparent"
       />
 
       <div className="pointer-events-none grid grid-cols-6 gap-2 sm:gap-2.5">
         {CELL_INDEXES.map((i) => {
           const digit = value[i] ?? '';
           const isFilled = value.length > i;
-          const isActive = value.length === i;
+          const isActive = !disabled && value.length === i;
           return (
             <div
               key={i}
               className={cn(
-                'flex h-12 items-center justify-center rounded-xl border bg-background text-lg font-semibold tabular-nums shadow-inner transition-colors sm:h-14 sm:text-xl',
+                'relative flex h-12 items-center justify-center rounded-xl border bg-background text-lg font-semibold tabular-nums shadow-inner transition-colors sm:h-14 sm:text-xl',
                 isActive
-                  ? 'border-border/80 peer-focus:border-primary peer-focus:ring-2 peer-focus:ring-primary/30'
+                  ? 'border-primary ring-2 ring-primary/30'
                   : isFilled
                     ? 'border-primary/40 text-foreground'
                     : 'border-border/80 text-muted-foreground',
               )}
             >
-              {digit}
+              {digit ||
+                (isActive ? (
+                  <span
+                    aria-hidden
+                    className="inline-block h-5 w-0.5 animate-pulse rounded-full bg-primary sm:h-6"
+                  />
+                ) : null)}
             </div>
           );
         })}

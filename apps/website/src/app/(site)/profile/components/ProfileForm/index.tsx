@@ -187,9 +187,9 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
   const saving = update.isLoading;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:py-12">
-      <header className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex gap-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:py-12">
+      <header className="mb-6 flex flex-col gap-4 sm:mb-8 sm:gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex gap-3 sm:gap-4">
           <Button
             asChild
             size="icon"
@@ -202,7 +202,7 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
             </Link>
           </Button>
           <div className="min-w-0 space-y-1">
-            <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               Edit Profile
             </h1>
             <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -224,9 +224,12 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
         </div>
       </header>
 
-      <Card className="flex flex-col overflow-hidden border-primary/30 bg-card/80 text-card-foreground shadow-[0_0_48px_-16px_rgba(15,23,42,0.18)] backdrop-blur-md sm:rounded-[1.25rem] lg:h-[min(56rem,calc(100dvh-13rem))] lg:min-h-0 lg:flex-row lg:items-stretch lg:overflow-hidden">
-        <aside className="flex shrink-0 flex-col border-b border-border/60 bg-muted/15 p-5 lg:h-full lg:w-[280px] lg:min-w-[220px] lg:flex-shrink-0 lg:justify-between lg:overflow-hidden lg:border-r lg:border-b-0 lg:p-6">
-          <nav className="space-y-1" aria-label="Profile sections">
+      <Card className="flex flex-col border-primary/30 bg-card/80 text-card-foreground shadow-[0_0_48px_-16px_rgba(15,23,42,0.18)] backdrop-blur-md sm:rounded-[1.25rem] lg:h-[min(56rem,calc(100dvh-13rem))] lg:min-h-0 lg:flex-row lg:items-stretch lg:overflow-hidden">
+        <aside className="flex shrink-0 flex-col border-b border-border/60 bg-muted/15 p-4 sm:p-5 lg:h-full lg:w-[280px] lg:min-w-[220px] lg:flex-shrink-0 lg:justify-between lg:overflow-hidden lg:border-r lg:border-b-0 lg:p-6">
+          <nav
+            className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:mx-0 lg:block lg:space-y-1 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+            aria-label="Profile sections"
+          >
             {NAV_ITEMS.map(({ id, step, label, Icon }) => {
               const active = activeSection === id;
               return (
@@ -237,7 +240,7 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                     scrollToSection(id);
                   }}
                   className={cn(
-                    'flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm transition',
+                    'flex shrink-0 items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition lg:w-full lg:gap-3 lg:py-3',
                     active
                       ? 'bg-primary/15 text-primary shadow-[inset_3px_0_0_0_var(--color-primary)]'
                       : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
@@ -245,7 +248,7 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                 >
                   <span
                     className={cn(
-                      'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border',
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border lg:h-9 lg:w-9',
                       active
                         ? 'border-primary/40 bg-primary/20'
                         : 'border-primary/30 bg-primary/10',
@@ -254,17 +257,19 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
                     <Icon className="h-4 w-4 text-primary" aria-hidden />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90">
+                    <span className="hidden text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/90 lg:block">
                       {step}
                     </span>
-                    <span className="font-medium">{label}</span>
+                    <span className="whitespace-nowrap font-medium lg:whitespace-normal">
+                      {label}
+                    </span>
                   </span>
                 </button>
               );
             })}
           </nav>
 
-          <div className="mt-8 rounded-xl border border-primary/25 bg-primary/5 p-4 text-center text-xs leading-relaxed text-muted-foreground lg:mt-0">
+          <div className="mt-4 hidden rounded-xl border border-primary/25 bg-primary/5 p-4 text-center text-xs leading-relaxed text-muted-foreground lg:mt-0 lg:block">
             <Shield className="mx-auto mb-2 block h-5 w-5 text-primary" aria-hidden />
             <p>
               Your information is safe. We never share your data with anyone.{' '}
@@ -278,11 +283,11 @@ export function ProfileForm({ user, onSaved }: ProfileFormProps) {
         <div
           ref={mainScrollRef}
           id="profile-form-scroll"
-          className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain p-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:p-8 lg:h-full lg:max-h-full lg:p-10"
+          className="min-h-0 min-w-0 flex-1 overflow-x-hidden p-5 sm:p-8 lg:h-full lg:max-h-full lg:overflow-y-auto lg:overscroll-y-contain lg:p-10 lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
           role="region"
           aria-label="Profile form fields"
         >
-          <form onSubmit={handleSubmit} className="space-y-12">
+          <form onSubmit={handleSubmit} className="space-y-10 pb-4 sm:space-y-12 sm:pb-0">
             <section id="section-account" className="scroll-mt-28 space-y-6">
               <BlockHeading
                 title="Account details"

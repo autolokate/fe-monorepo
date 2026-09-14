@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
+    ".": "./src/index.ts",
+    "./api": "./src/api-base-url.ts",
     "./typescript/base": "./typescript/base.json",
     "./typescript/library": "./typescript/library.json",
     "./typescript/vite-app": "./typescript/vite-app.json",

@@ -39,7 +39,7 @@ declare module 'axios' {
 const apiInstance = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 30_000,
+  timeout: 15_000,
 });
 
 apiInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {

@@ -33,7 +33,14 @@ export function AvatarMenu({ label = 'Account', className }: AvatarMenuProps) {
   }
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root
+      onOpenChange={(open) => {
+        if (open) {
+          router.prefetch('/profile');
+          router.prefetch('/book-session');
+        }
+      }}
+    >
       <DropdownMenu.Trigger asChild>
         <button
           type="button"

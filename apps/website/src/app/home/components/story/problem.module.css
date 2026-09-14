@@ -1,8 +1,9 @@
 .section {
   padding: var(--mkt-space-section) var(--mkt-gutter);
   background: var(--mkt-stone, #eceae6);
-  color: var(--mkt-ink-dark);
+  color: var(--mkt-ink-dark, #0c0d0f);
   border-bottom: 1px solid var(--mkt-border-subtle);
+  overflow: hidden;
 }
 
 .inner {
@@ -15,15 +16,23 @@
 
 @media (min-width: 1024px) {
   .inner {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
     gap: clamp(3rem, 6vw, 5rem);
+    align-items: center;
   }
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: clamp(1.75rem, 4vw, 2.5rem);
+  gap: clamp(1.5rem, 3.5vw, 2.25rem);
+  max-width: 36rem;
+}
+
+.headerBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
 }
 
 .eyebrow {
@@ -43,36 +52,68 @@
   background: var(--mkt-emergency-soft);
 }
 
-.lines {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.5rem, 1.2vw, 0.75rem);
-}
-
-.line {
+.headline {
   margin: 0;
   font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(1.375rem, 3.2vw, 2.125rem);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
+  font-size: clamp(2rem, 4.5vw, 3.125rem);
+  font-weight: 650;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
   color: var(--mkt-ink-dark);
+  text-wrap: balance;
 }
 
-.line:nth-child(4) {
+.pointsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pointItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: clamp(1rem, 2vw, 1.1875rem);
+  line-height: 1.5;
   color: var(--mkt-ink-secondary);
 }
 
-.line:nth-child(5) {
-  color: var(--mkt-ink-muted);
+.pointBullet {
+  flex-shrink: 0;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-top: 0.6rem;
+  border-radius: 50%;
+  background: var(--mkt-emergency, #d64545);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mkt-emergency) 18%, transparent);
+}
+
+.pivotCard {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--mkt-divider-strong);
+  box-shadow: 0 4px 16px rgba(12, 13, 15, 0.04);
 }
 
 .pivot {
   margin: 0;
-  max-width: 28rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--mkt-divider-strong);
   font-size: var(--mkt-text-base);
-  line-height: 1.65;
-  color: var(--mkt-ink-secondary);
+  font-weight: 550;
+  line-height: 1.55;
+  color: var(--mkt-ink-dark);
+}
+
+.visualWrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -7,7 +7,7 @@ import type { AuthUser, UpdateProfilePayload } from '@/services/auth/types';
 import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /**
- * `PATCH /v1/auth/me` — partial update of the signed-in user's profile.
+ * `PATCH /v1/profile` — partial update of the signed-in user's profile.
  *
  * Side-effect: whenever the server returns a new `preferred_vehicle_category`
  * we mirror it into `localStorage.autolokate_vehicle_preference` (or clear
@@ -18,7 +18,7 @@ import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutati
  *   const { mutate, isLoading } = useUpdateProfile({
  *     onSuccess: (user) => router.replace("/profile"),
  *   });
- *   await mutate({ full_name: "Ada Lovelace", city_id: "blr" });
+ *   await mutate({ full_name: "Ada Lovelace" });
  */
 export function useUpdateProfile(options?: UseApiMutationOptions<AuthUser, UpdateProfilePayload>) {
   const fn = useCallback(async (payload: UpdateProfilePayload): Promise<AuthUser> => {

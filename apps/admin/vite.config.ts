@@ -8,6 +8,10 @@ import { defineConfig } from 'vite';
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  server: {
+    host: '127.0.0.1',
+    port: 5174,
+  },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

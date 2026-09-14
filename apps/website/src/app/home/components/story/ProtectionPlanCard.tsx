@@ -6,16 +6,22 @@ import styles from './protection.module.css';
 interface ProtectionPlanCardProps {
   plan: SafetyPlan;
   highlights: readonly string[];
+  isActive?: boolean;
   onChoose: () => void;
 }
 
-export function ProtectionPlanCard({ plan, highlights, onChoose }: ProtectionPlanCardProps) {
+export function ProtectionPlanCard({
+  plan,
+  highlights,
+  isActive = false,
+  onChoose,
+}: ProtectionPlanCardProps) {
   const { tierLabel, Icon, price, pricePeriod, popular, popularBadge, summary, ctaLabel, variant } =
     plan;
 
   return (
     <li
-      className={`${styles.card} ${popular ? styles.cardFeatured : ''} ${styles[`card${variant.charAt(0).toUpperCase()}${variant.slice(1)}`]}`}
+      className={`${styles.card} ${popular ? styles.cardFeatured : ''} ${isActive ? styles.cardActive : ''} ${styles[`card${variant.charAt(0).toUpperCase()}${variant.slice(1)}`]}`}
     >
       {popular ? (
         <span className={styles.popularBadge}>

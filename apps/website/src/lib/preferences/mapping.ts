@@ -43,7 +43,7 @@ export function toApiVehicleCategory(value: VehicleCategory): 'car' | 'bike' {
  *  - Recognised category string  → write the mapped UI value.
  *  - Unrecognised / `undefined`  → leave the existing local value alone.
  *
- * Use this from any flow that receives a fresh `/v1/auth/me` payload (login
+ * Use this from any flow that receives a fresh `/v1/profile` payload (login
  * sync, profile-update success handler, etc.) so all those call sites apply
  * the same rule.
  */

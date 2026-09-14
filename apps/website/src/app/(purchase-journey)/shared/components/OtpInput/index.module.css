@@ -17,6 +17,8 @@
   border: 1.5px solid #c4c4c4;
   border-radius: 14px;
   outline: none;
+  caret-color: #0a0a0c;
+  cursor: text;
   transition: border-color 0.15s ease;
 }
 

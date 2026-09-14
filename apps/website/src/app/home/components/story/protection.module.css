@@ -131,6 +131,11 @@
 
 /* ---------- Grid / mobile carousel ---------- */
 
+.plansContainer {
+  position: relative;
+  width: 100%;
+}
+
 .grid {
   display: grid;
   gap: 1.25rem;
@@ -148,7 +153,7 @@
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--mkt-gutter);
     margin-inline: calc(-1 * var(--mkt-gutter));
-    padding: 1rem var(--mkt-gutter) 0.75rem;
+    padding: 1rem var(--mkt-gutter) 1rem;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
@@ -158,9 +163,9 @@
   }
 
   .grid > .card {
-    flex: 0 0 min(86vw, 20.5rem);
+    flex: 0 0 min(88vw, 21.5rem);
     scroll-snap-align: center;
-    max-width: 20.5rem;
+    max-width: 21.5rem;
   }
 }
 
@@ -168,8 +173,77 @@
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: stretch;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
+}
+
+/* Mobile carousel navigation controls */
+.mobileControls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .mobileControls {
+    display: none;
+  }
+}
+
+.carouselNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: var(--mkt-surface, #ffffff);
+  border: 1px solid var(--mkt-divider-strong, rgba(12, 13, 15, 0.14));
+  color: var(--mkt-ink-dark, #0c0d0f);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.carouselNavBtn:hover:not(:disabled) {
+  background: var(--mkt-stone, #eceae6);
+  border-color: var(--mkt-ink-dark, #0c0d0f);
+}
+
+.carouselNavBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.carouselDots {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.carouselDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mkt-ink-dark) 22%, transparent);
+  cursor: pointer;
+  transition:
+    width 0.25s ease,
+    background 0.25s ease;
+}
+
+.carouselDotActive {
+  width: 1.5rem;
+  background: var(--mkt-green, #2d8f5c);
 }
 
 /* ---------- Card ---------- */
@@ -179,20 +253,36 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  padding: 1.75rem;
-  border-radius: 0.875rem;
-  background: var(--mkt-surface);
-  border: 1px solid var(--mkt-divider-strong);
-  box-shadow: 0 12px 32px -20px color-mix(in srgb, var(--mkt-ink-dark) 18%, transparent);
+  padding: 1.875rem 1.75rem;
+  border-radius: 1.125rem;
+  background: var(--mkt-surface, #ffffff);
+  border: 1px solid var(--mkt-border, #ddd9d2);
+  box-shadow:
+    0 1px 3px rgba(12, 13, 15, 0.04),
+    0 12px 32px -20px color-mix(in srgb, var(--mkt-ink-dark) 14%, transparent);
   transition:
     border-color 0.25s ease,
     box-shadow 0.25s ease,
     transform 0.25s ease;
 }
 
-.cardFeatured {
-  border-color: var(--mkt-green);
+.card:hover {
+  border-color: color-mix(in srgb, var(--mkt-ink-dark) 30%, var(--mkt-border));
   box-shadow:
+    0 4px 12px rgba(12, 13, 15, 0.06),
+    0 20px 40px -20px color-mix(in srgb, var(--mkt-ink-dark) 20%, transparent);
+}
+
+@media (min-width: 900px) {
+  .card:hover {
+    transform: translateY(-0.25rem);
+  }
+}
+
+.cardFeatured {
+  border-color: var(--mkt-green, #2d8f5c);
+  box-shadow:
+    0 0 0 1px var(--mkt-green, #2d8f5c),
     0 24px 56px -24px color-mix(in srgb, var(--mkt-green) 28%, transparent),
     0 12px 32px -20px color-mix(in srgb, var(--mkt-ink-dark) 12%, transparent);
 }
@@ -201,6 +291,14 @@
   .cardFeatured {
     transform: translateY(-0.375rem);
   }
+
+  .cardFeatured:hover {
+    transform: translateY(-0.625rem);
+  }
+}
+
+.cardActive {
+  border-color: var(--mkt-green, #2d8f5c);
 }
 
 .popularBadge {
@@ -216,16 +314,17 @@
   border-radius: 9999px;
   background: var(--mkt-ink-dark);
   color: var(--mkt-on-dark);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .popularDot {
-  width: 0.375rem;
-  height: 0.375rem;
+  width: 0.4375rem;
+  height: 0.4375rem;
   border-radius: 50%;
   background: var(--mkt-green-bright);
 }
@@ -369,34 +468,39 @@
 }
 
 .chooseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  padding: 0.8125rem 1.25rem;
-  border: 1px solid var(--mkt-border);
-  border-radius: var(--mkt-radius-sm);
-  background: transparent;
+  min-height: 2.75rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--mkt-ink-dark, #0c0d0f);
+  border-radius: var(--mkt-radius-md, 0.5rem);
+  background: var(--mkt-ink-dark, #0c0d0f);
   font-size: var(--mkt-text-sm);
   font-weight: 600;
-  color: inherit;
+  color: #ffffff;
   cursor: pointer;
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease;
+    transform 0.15s ease;
 }
 
 .chooseBtn:hover {
-  background: color-mix(in srgb, var(--mkt-ink-dark) 4%, transparent);
+  background: var(--mkt-steel, #2a2d33);
+  border-color: var(--mkt-steel, #2a2d33);
 }
 
 .cardFeatured .chooseBtn {
-  border-color: var(--mkt-green);
-  background: var(--mkt-green);
-  color: var(--mkt-on-dark);
+  border-color: var(--mkt-green, #2d8f5c);
+  background: var(--mkt-green, #2d8f5c);
+  color: #ffffff;
 }
 
 .cardFeatured .chooseBtn:hover {
-  background: var(--mkt-green-deep);
-  border-color: var(--mkt-green-deep);
+  background: var(--mkt-green-deep, #1f6b44);
+  border-color: var(--mkt-green-deep, #1f6b44);
 }
 
 .detailsLink {

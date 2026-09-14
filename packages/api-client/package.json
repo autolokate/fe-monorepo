@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@autolokate/auth": "workspace:*",
+    "@autolokate/config": "workspace:*",
     "@autolokate/types": "workspace:*"
   },
   "files": [

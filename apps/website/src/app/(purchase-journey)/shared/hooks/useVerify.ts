@@ -9,6 +9,7 @@ import {
   sendJourneyOtp,
   verifyJourneyOtp,
 } from '../services/auth-api';
+import { toApiError } from '@/lib/api/error';
 
 export const MOBILE_LENGTH = 10;
 export const OTP_LENGTH = 6;
@@ -123,10 +124,11 @@ export function useVerify({ onVerified }: UseVerifyOptions): UseVerifyResult {
         otpVerifiedRef.current = false;
         setResendIn(RESEND_COOLDOWN_SECONDS);
         if (!isResend) setPhase('otp');
-      } catch {
+      } catch (err) {
         setSendStatus('error');
-        if (isResend) setOtpError('Couldn’t resend the code. Try again.');
-        else setMobileError('Couldn’t send the code. Try again.');
+        const message = toApiError(err, 'Couldn’t send the code. Try again.').message;
+        if (isResend) setOtpError(message);
+        else setMobileError(message);
       }
     },
     [mobile],
@@ -160,13 +162,14 @@ export function useVerify({ onVerified }: UseVerifyOptions): UseVerifyResult {
         setVerifyStatus('idle');
         // Number confirmed — collect the buyer's name before handing off.
         setPhase('name');
-      } catch {
+      } catch (err) {
         setVerifyStatus('error');
-        setOtpError(
-          otpVerifiedRef.current
-            ? 'Something went wrong. Try again.'
-            : 'That code didn’t match. Check and try again',
-        );
+        const apiErr = toApiError(err);
+        if (otpVerifiedRef.current || apiErr.status === 0 || apiErr.status >= 500) {
+          setOtpError(apiErr.message);
+        } else {
+          setOtpError(apiErr.message || 'That code didn’t match. Check and try again');
+        }
       }
     })();
   }, [otpValid, verifyStatus, mobile, otp]);
@@ -180,9 +183,9 @@ export function useVerify({ onVerified }: UseVerifyOptions): UseVerifyResult {
         await saveJourneyProfileName(name.trim());
         setNameStatus('idle');
         onVerified();
-      } catch {
+      } catch (err) {
         setNameStatus('error');
-        setNameError('Couldn’t save your name. Try again.');
+        setNameError(toApiError(err, 'Couldn’t save your name. Try again.').message);
       }
     })();
   }, [nameValid, nameStatus, name, onVerified]);

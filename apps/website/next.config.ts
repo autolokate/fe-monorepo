@@ -1,20 +1,17 @@
-import path from 'node:path';
 import type { NextConfig } from 'next';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const monorepoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  // Lint is enforced by the dedicated CI `lint` step (turbo → the root flat config) and the
-  // pre-commit gate, not by `next build`. Decoupling avoids double-linting and keeps the build
-  // resolving the same single config every other app uses.
-  eslint: { ignoreDuringBuilds: true },
-  // Pin the standalone tracing root to the monorepo root (this file lives at apps/website/). Without
-  // this, Next auto-detects the root by walking up for a lockfile and can land on the PARENT of the
-  // repo (sibling repos share that dir), nesting the output under an extra path segment and diverging
-  // between local and Docker builds. Pinning it keeps server.js at a deterministic apps/website/server.js.
-  outputFileTracingRoot: path.join(import.meta.dirname, '../..'),
+  turbopack: {
+    root: monorepoRoot,
+  },
   // Workspace design-system packages import their own CSS from node_modules,
   // so Next must transpile them for those stylesheet imports to resolve.
-  transpilePackages: ['@autolokate/ui', '@autolokate/design-system'],
+  transpilePackages: ['@autolokate/ui', '@autolokate/design-system', '@autolokate/config'],
   redirects() {
     return Promise.resolve([
       {
@@ -45,6 +42,16 @@ const nextConfig: NextConfig = {
       {
         source: '/shipping-policy',
         destination: '/shipping-and-delivery',
+        permanent: true,
+      },
+      {
+        source: '/login',
+        destination: '/auth/login',
+        permanent: true,
+      },
+      {
+        source: '/signup',
+        destination: '/auth/signup',
         permanent: true,
       },
     ]);

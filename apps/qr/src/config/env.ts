@@ -1,3 +1,5 @@
+import { resolveApiBaseUrl as resolveSharedApiBaseUrl } from '@autolokate/config';
+
 export type AppEnvironment = 'development' | 'production' | 'staging';
 
 export type AppEnv = {
@@ -25,15 +27,7 @@ function readRaw(key: EnvKey): string | undefined {
 }
 
 function resolveApiBaseUrl(): string {
-  const value = readRaw('VITE_API_BASE_URL');
-  if (value) {
-    return value;
-  }
-  // Fail fast in every mode rather than baking a fallback URL into the bundle. Local dev supplies this
-  // via .env.development (copy .env.example); staging/prod builds inject it at build time (CI).
-  throw new Error(
-    '[qr] Missing required environment variable: VITE_API_BASE_URL. Copy apps/qr/.env.example to .env.development',
-  );
+  return resolveSharedApiBaseUrl(readRaw('VITE_API_BASE_URL'));
 }
 
 /**

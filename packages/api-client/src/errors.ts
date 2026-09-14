@@ -52,7 +52,7 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
   if (error instanceof DOMException && error.name === 'AbortError') {
     return {
       code: 'timeout',
-      message: 'The request timed out.',
+      message: 'The request timed out. Please try again.',
       status: null,
       requestId: null,
       correlationId: null,
@@ -64,7 +64,7 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
   if (error instanceof TypeError) {
     return {
       code: 'network',
-      message: error.message || 'Network request failed.',
+      message: 'Unable to reach the server. Check your connection and try again.',
       status: null,
       requestId: null,
       correlationId: null,

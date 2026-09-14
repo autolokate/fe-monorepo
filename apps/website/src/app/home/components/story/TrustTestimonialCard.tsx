@@ -1,3 +1,4 @@
+import { Star } from 'lucide-react';
 import type { TrustTestimonial } from './constants';
 import styles from './trust-carousel.module.css';
 
@@ -17,10 +18,23 @@ function QuoteGlyph() {
   );
 }
 
+function StarRating() {
+  return (
+    <div className={styles.starRating} aria-label="5 out of 5 stars">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star key={s} className={styles.starIcon} fill="currentColor" aria-hidden="true" />
+      ))}
+    </div>
+  );
+}
+
 export function TrustTestimonialCard({ testimonial, featured }: TrustTestimonialCardProps) {
   return (
     <article className={`${styles.card} ${featured ? styles.cardFeatured : styles.cardPeek}`}>
-      <QuoteGlyph />
+      <div className={styles.cardTop}>
+        <QuoteGlyph />
+        <StarRating />
+      </div>
 
       <blockquote className={styles.quoteBlock}>
         <p className={`${styles.quote} ${featured ? styles.quoteFeatured : styles.quotePeek}`}>

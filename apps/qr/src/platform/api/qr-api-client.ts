@@ -8,6 +8,8 @@ import { getTokenManager } from '@autolokate/auth';
 
 import { env } from '@/config/env';
 
+const REQUEST_TIMEOUT_MS = 10_000;
+
 let bootstrapClient: ApiClient | null = null;
 let authenticatedClient: ApiClient | null = null;
 let authFailureHandler: (() => void) | null = null;
@@ -50,5 +52,26 @@ async function qrFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Re
   if (!headers.has('ngrok-skip-browser-warning') && env.apiBaseUrl.includes('ngrok')) {
     headers.set('ngrok-skip-browser-warning', 'true');
   }
-  return fetch(input, { ...init, headers });
+
+  const controller = new AbortController();
+  const timeoutId = globalThis.setTimeout(() => {
+    controller.abort(new DOMException('Request timed out', 'TimeoutError'));
+  }, REQUEST_TIMEOUT_MS);
+  const callerSignal = init?.signal;
+  const abortFromCaller = () => {
+    controller.abort(callerSignal?.reason);
+  };
+
+  if (callerSignal?.aborted) {
+    abortFromCaller();
+  } else {
+    callerSignal?.addEventListener('abort', abortFromCaller, { once: true });
+  }
+
+  try {
+    return await fetch(input, { ...init, headers, signal: controller.signal });
+  } finally {
+    globalThis.clearTimeout(timeoutId);
+    callerSignal?.removeEventListener('abort', abortFromCaller);
+  }
 }

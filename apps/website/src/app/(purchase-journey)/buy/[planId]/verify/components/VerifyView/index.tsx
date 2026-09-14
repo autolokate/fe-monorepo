@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { LegalDocumentDialog } from '@/components/legal/LegalDocumentDialog';
+import { ProcessOverlay } from '@/components/ProcessOverlay';
+import { toApiError } from '@/lib/api/error';
 import type { LegalDocumentKind } from '@/services/legal/legal-client-api';
 import { JourneyHeader } from '../../../../../shared/components/JourneyHeader';
 import { JourneyProgress } from '../../../../../shared/components/JourneyProgress';
@@ -38,6 +40,7 @@ export function VerifyView({ planId }: VerifyViewProps) {
 
   const [legalKind, setLegalKind] = useState<LegalDocumentKind | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [handingOff, setHandingOff] = useState(false);
 
   // Mint the cart once the buyer is authenticated, then hand off to the
   // cart-keyed address route. Guarded so StrictMode / double taps mint one cart.
@@ -46,6 +49,7 @@ export function VerifyView({ planId }: VerifyViewProps) {
     async (replace: boolean) => {
       if (startingRef.current) return;
       startingRef.current = true;
+      setHandingOff(true);
       try {
         const { riderCount } = readJourneyState();
         const cart = await createJourneyCart(planId, riderCount ?? 0);
@@ -53,9 +57,10 @@ export function VerifyView({ planId }: VerifyViewProps) {
         const dest = JOURNEY_ROUTES.address(cart.cartId);
         if (replace) router.replace(dest);
         else router.push(dest);
-      } catch {
+      } catch (err) {
         startingRef.current = false;
-        toast.error('Couldn’t start checkout. Please try again.');
+        setHandingOff(false);
+        toast.error(toApiError(err, 'Couldn’t start checkout. Please try again.').message);
         setCheckingSession(false);
       }
     },
@@ -91,6 +96,16 @@ export function VerifyView({ planId }: VerifyViewProps) {
 
   const isOtp = v.phase === 'otp';
   const isName = v.phase === 'name';
+  const busy = checkingSession || handingOff || v.sending || v.verifying || v.savingName;
+  const busyLabel = checkingSession
+    ? 'Checking your session…'
+    : handingOff
+      ? 'Starting checkout…'
+      : v.savingName
+        ? 'Saving your name…'
+        : v.verifying
+          ? 'Verifying code…'
+          : 'Sending code…';
 
   return (
     <div className={styles.page}>
@@ -174,6 +189,8 @@ export function VerifyView({ planId }: VerifyViewProps) {
           }}
         />
       ) : null}
+
+      <ProcessOverlay active={busy} label={busyLabel} />
     </div>
   );
 }

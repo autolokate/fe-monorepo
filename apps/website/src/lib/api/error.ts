@@ -6,12 +6,14 @@ import axios, { type AxiosError } from 'axios';
  */
 export class ApiError extends Error {
   status: number;
+  code: string | null;
   data?: unknown;
 
-  constructor(message: string, status: number, data?: unknown) {
+  constructor(message: string, status: number, data?: unknown, code: string | null = null) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
     this.data = data;
   }
 }
@@ -44,16 +46,24 @@ function nonBlankString(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() ? value : undefined;
 }
 
+function extractCode(payload: unknown): string | null {
+  if (!isRecord(payload)) return null;
+  if (isRecord(payload.error) && typeof payload.error.code === 'string') {
+    return payload.error.code;
+  }
+  return typeof payload.code === 'string' ? payload.code : null;
+}
+
 function extractMessage(payload: unknown): string | undefined {
   if (!isRecord(payload)) return undefined;
   const p = payload as BackendErrorShape;
 
-  const direct = nonBlankString(p.message);
-  if (direct) return direct;
-
-  // `error` is an object in the canonical envelope, a string elsewhere: handle both.
+  // Prefer the nested envelope message — that is the canonical backend shape.
   const nested = isRecord(p.error) ? nonBlankString(p.error.message) : nonBlankString(p.error);
   if (nested) return nested;
+
+  const direct = nonBlankString(p.message);
+  if (direct) return direct;
 
   const detail = nonBlankString(p.detail);
   if (detail) return detail;
@@ -77,24 +87,108 @@ function pickMessage(payload: unknown, fallback: string): string {
   }
 }
 
+const DEFAULT_FALLBACK = 'Something went wrong. Please try again.';
+
+/** True for transport / framework noise that must never be shown to buyers. */
+function isTechnicalMessage(message: string): boolean {
+  const value = message.trim();
+  return (
+    /^(network error|timeout of \d+ms exceeded|request failed with status code \d+|failed to fetch|load failed|econnrefused|err_network|err_canceled|aborted)/i.test(
+      value,
+    ) ||
+    /^cannot\s+(get|post|put|patch|delete)\s+\//i.test(value) ||
+    /^invalid\s+(profile|verify otp|refresh token|update profile)\s+response/i.test(value) ||
+    /ECONNREFUSED|ENOTFOUND|ETIMEDOUT/i.test(value)
+  );
+}
+
+function messageForHttpStatus(status: number, code: string | null, fallback: string): string {
+  if (status === 401 || code === 'unauthorized' || code === 'unauthenticated') {
+    return 'Your session expired. Please sign in again.';
+  }
+  if (status === 403 || code === 'forbidden') {
+    return 'You don’t have permission to do that.';
+  }
+  if (status === 404 || code === 'not_found') {
+    return 'We couldn’t find that information. Please try again.';
+  }
+  if (status === 409 || code === 'conflict') {
+    return 'That request conflicts with the current state. Please try again.';
+  }
+  if (status === 422 || code === 'validation') {
+    return 'Some of the details look invalid. Please check and try again.';
+  }
+  if (status === 429 || code === 'rate_limited') {
+    return 'Too many attempts. Please wait a moment and try again.';
+  }
+  if (status >= 500 || code === 'internal_error') {
+    return 'Our servers are having trouble. Please try again.';
+  }
+  return fallback;
+}
+
+function messageForTransport(code: string | undefined, raw: string, fallback: string): string {
+  if (
+    code === 'ECONNABORTED' ||
+    code === 'ETIMEDOUT' ||
+    code === 'ERR_CANCELED' ||
+    /timeout/i.test(raw)
+  ) {
+    return 'This is taking too long. Please try again.';
+  }
+  if (
+    code === 'ERR_NETWORK' ||
+    /network error|failed to fetch|load failed|econnrefused/i.test(raw)
+  ) {
+    return 'Unable to reach the server. Check your connection and try again.';
+  }
+  return fallback;
+}
+
+function humanizeMessage(
+  raw: string,
+  status: number,
+  code: string | null,
+  transportCode: string | undefined,
+  fallback: string,
+): string {
+  if (!raw || isTechnicalMessage(raw)) {
+    if (status) return messageForHttpStatus(status, code, fallback);
+    return messageForTransport(transportCode, raw, fallback);
+  }
+  return raw;
+}
+
 /**
- * Convert any thrown value into an `ApiError`.
- * Use this in catch blocks before surfacing to UI/toast.
+ * Convert any thrown value into an `ApiError` with a message safe to show in the UI.
  */
-export function toApiError(
-  err: unknown,
-  fallback = 'Something went wrong. Please try again.',
-): ApiError {
-  if (err instanceof ApiError) return err;
+export function toApiError(err: unknown, fallback = DEFAULT_FALLBACK): ApiError {
+  if (err instanceof ApiError) {
+    const code = err.code ?? extractCode(err.data);
+    const message = humanizeMessage(err.message || fallback, err.status, code, undefined, fallback);
+    return new ApiError(message, err.status, err.data, code);
+  }
 
   if (axios.isAxiosError(err)) {
     const axErr = err as AxiosError;
     const status = axErr.response?.status ?? 0;
-    const message = pickMessage(axErr.response?.data, axErr.message || fallback);
-    return new ApiError(message, status, axErr.response?.data);
+    const data = axErr.response?.data;
+    const code = extractCode(data);
+    const fromBody = pickMessage(data, '');
+    const message = humanizeMessage(
+      fromBody || axErr.message || '',
+      status,
+      code,
+      axErr.code,
+      fallback,
+    );
+    return new ApiError(message, status, data, code);
   }
 
-  if (err instanceof Error) return new ApiError(err.message || fallback, 0);
+  if (err instanceof Error) {
+    const message = humanizeMessage(err.message || fallback, 0, null, undefined, fallback);
+    return new ApiError(message, 0);
+  }
   return new ApiError(fallback, 0);
 }
 

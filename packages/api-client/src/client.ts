@@ -1,3 +1,4 @@
+import { resolveApiBaseUrl } from '@autolokate/config';
 import type { TokenManager } from '@autolokate/auth';
 
 import { endpoints } from './endpoints';
@@ -77,7 +78,7 @@ export class ApiClient {
   private correlationId: string | null = null;
 
   constructor(config: ApiClientConfig) {
-    this.baseUrl = config.baseUrl.replace(/\/$/, '');
+    this.baseUrl = resolveApiBaseUrl(config.baseUrl);
     this.getAccessToken = config.getAccessToken ?? (() => null);
     this.fetchImpl = config.fetch ?? globalThis.fetch.bind(globalThis);
     this.tokenManager = config.tokenManager;

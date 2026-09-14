@@ -6,6 +6,7 @@ import { type SubmitEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Send, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ProcessOverlay } from '@/components/ProcessOverlay';
 import { useRequestOtp } from '@/hooks/auth';
 import { AuthShell } from '../AuthShell';
 import { BrandWordmark } from '../BrandWordmark';
@@ -131,6 +132,8 @@ export function SignupForm() {
           Log in
         </Link>
       </p>
+
+      <ProcessOverlay active={requestOtp.isLoading} label="Sending code…" />
     </AuthShell>
   );
 }
