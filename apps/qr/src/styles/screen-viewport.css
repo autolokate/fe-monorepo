@@ -34,8 +34,8 @@ body,
 [data-theme='dark'] .al-screen-bg--attention .al-screen-bg__tint {
   background: radial-gradient(
     ellipse 120% 80% at 50% 0%,
-    rgba(245, 166, 35, 0.06) 0%,
-    rgba(245, 166, 35, 0) 55%
+    rgba(184, 137, 42, 0.08) 0%,
+    rgba(184, 137, 42, 0) 55%
   );
 }
 

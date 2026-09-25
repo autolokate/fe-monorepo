@@ -61,6 +61,8 @@
 
 .ob-auth-shell--purchase .ob-auth-shell__body {
   max-width: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .ob-auth-shell--purchase .ob-auth-shell__heading {

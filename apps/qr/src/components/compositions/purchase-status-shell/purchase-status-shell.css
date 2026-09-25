@@ -14,9 +14,9 @@
 .ob-purchase-status-shell--attention.al-screen-bg--protected .al-screen-bg__tint {
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(245, 166, 35, 0.04) 0%,
-    rgba(245, 166, 35, 0.01) 50%,
-    rgba(245, 166, 35, 0) 100%
+    rgba(184, 137, 42, 0.05) 0%,
+    rgba(184, 137, 42, 0.015) 50%,
+    rgba(184, 137, 42, 0) 100%
   );
 }
 

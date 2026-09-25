@@ -8,6 +8,7 @@
   border: 1px solid var(--al-color-outline);
   border-radius: 16px;
   background-color: var(--al-color-surface);
+  box-shadow: var(--al-shadow-sm);
 }
 
 .ob-partner-card__avatar {

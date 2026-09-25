@@ -1,4 +1,5 @@
 import '@autolokate/design-system/theme.css';
+import './styles/native-activation-theme.css';
 import './styles/interaction-motion.css';
 import './styles/screen-viewport.css';
 

@@ -17,6 +17,8 @@
 .ob-welcome-shell__body {
   gap: 20px;
   padding-block: 20px var(--al-space-md);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .ob-welcome-shell__heading {
