@@ -45,7 +45,7 @@
         } catch (e) {}
 
         var theme;
-        if (isNative) {
+        if (isNative || root.classList.contains('al-native-embed')) {
           theme = 'light';
         } else if (stored === 'light' || stored === 'dark') {
           theme = stored;
@@ -53,7 +53,7 @@
           var hour = new Date().getHours();
           theme = hour >= 6 && hour < 18 ? 'light' : 'dark';
         }
-        root.setAttribute('data-theme', theme);
+        if (root) root.setAttribute('data-theme', theme);
 
         // Android System WebView can resolve 100vh/100dvh to 0px. Use pixels.
         function setAppHeight() {
