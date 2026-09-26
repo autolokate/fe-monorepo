@@ -88,7 +88,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   padding: 24px 16px 32px;
   background: var(--al-color-background);
   color: var(--al-color-on-surface);

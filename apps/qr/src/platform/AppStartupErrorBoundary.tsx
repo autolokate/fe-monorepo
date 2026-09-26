@@ -46,7 +46,7 @@ export class AppStartupErrorBoundary extends Component<
     return (
       <div
         style={{
-          minHeight: '100dvh',
+          minHeight: 'var(--al-app-height)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
     />
-    <meta name="theme-color" content="#0B0C0E" />
+    <meta name="theme-color" content="#F1EFE9" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -23,19 +23,51 @@
     <title>Autolokate · QR</title>
     <script>
       (function () {
+        var root = document.documentElement;
+        var isNative = !!(
+          window.QrLocation ||
+          (window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.qrLocation)
+        );
+        if (isNative) {
+          root.classList.add('al-native-embed');
+          try {
+            localStorage.setItem('al-qr-theme', 'light');
+          } catch (e) {}
+        }
+
         var stored = null;
         try {
           stored = localStorage.getItem('al-qr-theme');
         } catch (e) {}
 
         var theme;
-        if (stored === 'light' || stored === 'dark') {
+        if (isNative) {
+          theme = 'light';
+        } else if (stored === 'light' || stored === 'dark') {
           theme = stored;
         } else {
           var hour = new Date().getHours();
           theme = hour >= 6 && hour < 18 ? 'light' : 'dark';
         }
-        document.documentElement.setAttribute('data-theme', theme);
+        root.setAttribute('data-theme', theme);
+
+        // Android System WebView can resolve 100vh/100dvh to 0px. Use pixels.
+        function setAppHeight() {
+          var height = Math.round(
+            (window.visualViewport && window.visualViewport.height) || window.innerHeight || 0,
+          );
+          if (height > 0) {
+            root.style.setProperty('--al-app-height', height + 'px');
+          }
+        }
+        setAppHeight();
+        window.addEventListener('resize', setAppHeight);
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener('resize', setAppHeight);
+          window.visualViewport.addEventListener('scroll', setAppHeight);
+        }
       })();
     </script>
     <script>

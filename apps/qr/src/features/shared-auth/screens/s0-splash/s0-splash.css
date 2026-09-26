@@ -1,7 +1,7 @@
 .ob-splash.al-screen-bg {
   box-sizing: border-box;
   width: 100%;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
 }
 
 .ob-splash.al-screen-bg .al-screen-bg__content {
@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   max-width: 24.5625rem;
   margin-inline: auto;
   position: relative;

@@ -1,7 +1,7 @@
 @import '../../../components/step-shell-chrome/touch-target-layout.css';
 
 .pwa-scan-shell {
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   background-color: var(--al-color-background);
 }
 
@@ -9,7 +9,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   width: min(100%, 393px);
   margin: 0 auto;
   padding-inline: var(--ob-shell-gutter);
@@ -70,8 +70,8 @@
 }
 
 .pwa-scan-shell__frame--sticky-footer {
-  height: 100dvh;
-  max-height: 100dvh;
+  height: var(--al-app-height);
+  max-height: var(--al-app-height);
   overflow-x: visible;
   overflow-y: hidden;
 }

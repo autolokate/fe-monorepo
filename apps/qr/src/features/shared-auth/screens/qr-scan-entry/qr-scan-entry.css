@@ -1,5 +1,5 @@
 .ob-qr-scan-entry-bg {
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
 }
 
 .ob-qr-scan-entry {
@@ -7,7 +7,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   padding: var(--al-space-xl) var(--al-space-lg);
   padding-bottom: calc(var(--al-space-xl) + env(safe-area-inset-bottom, 0px));
   text-align: center;
@@ -41,7 +41,7 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   background: var(--al-color-bg-primary);
 }
 

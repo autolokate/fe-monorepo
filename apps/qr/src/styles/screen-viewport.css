@@ -1,11 +1,15 @@
-/* Figma dark frames — full-bleed viewport, no rounded ambient shell */
+/* Full-bleed viewport. Prefer --al-app-height: Android WebView can resolve vh/dvh to 0. */
+
+:root {
+  --al-app-height: 100%;
+}
 
 html,
 body,
 #root {
   margin: 0;
-  min-height: 100%;
-  min-height: 100dvh;
+  height: var(--al-app-height);
+  min-height: var(--al-app-height);
   background-color: var(--al-color-background);
 }
 
@@ -72,4 +76,19 @@ body,
 
 [data-theme='light'] .al-activation-halo__ambient {
   display: none;
+}
+
+/* Native app WebView — match native chrome, hide PWA affordances */
+html.al-native-embed .pwa-shell-actions {
+  display: none !important;
+}
+
+html.al-native-embed .ob-welcome-shell__header,
+html.al-native-embed .ob-step-chrome__header--compact {
+  display: none;
+}
+
+html.al-native-embed .ob-welcome-shell__body,
+html.al-native-embed .ob-step-chrome__header--compact + .ob-step-chrome__body {
+  padding-block-start: 16px;
 }

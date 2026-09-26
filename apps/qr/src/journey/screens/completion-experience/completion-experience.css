@@ -17,7 +17,7 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   margin-inline: auto;
   padding-inline: 16px;
   padding-block: calc(env(safe-area-inset-top, 0px)) calc(32px + env(safe-area-inset-bottom, 0px));

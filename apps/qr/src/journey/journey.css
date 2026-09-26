@@ -1,7 +1,7 @@
 .journey-frame {
   width: min(100%, 24.5625rem);
   margin-inline: auto;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
 }
 
 .journey-home {
@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--al-space-lg);
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   padding: var(--al-space-lg);
   padding-block-end: calc(var(--al-space-lg) + env(safe-area-inset-bottom, 0px));
   color: var(--al-color-on-surface);
@@ -33,7 +33,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--al-space-lg);
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   padding: var(--al-space-lg);
   padding-block-end: calc(var(--al-space-lg) + env(safe-area-inset-bottom, 0px));
   color: var(--al-color-on-surface);
@@ -55,7 +55,7 @@
 
 /* Full-screen route bootstrap — spinner centered like splash / PWA loading */
 .qr-route-loader.al-screen-bg {
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
 }
 
 .qr-route-loader.al-screen-bg .al-screen-bg__content {
@@ -64,7 +64,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   max-width: 24.5625rem;
   margin-inline: auto;
 }

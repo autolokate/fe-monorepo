@@ -11,10 +11,13 @@ import { setThemeMode } from '@autolokate/design-system';
 import { validateEnv } from './config/env';
 import { AppStartupErrorBoundary } from './platform/AppStartupErrorBoundary';
 import { applyEffectiveTheme } from './platform/theme/theme-preference';
+import { installAppHeight, markNativeEmbed } from './platform/viewport/install-app-height';
 import { installFirebaseMessaging } from './services/device';
 import { ScreenDevApp } from './dev/ScreenDevApp';
 import { JourneyOrchestrator } from './journey/index';
 
+markNativeEmbed();
+installAppHeight();
 const initialTheme = applyEffectiveTheme();
 setThemeMode(initialTheme);
 

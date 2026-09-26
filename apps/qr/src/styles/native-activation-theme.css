@@ -88,6 +88,37 @@
   --al-glow-emergency: none;
 }
 
+/* Native embed: warm paper canvas matching AutoLokate light theme */
+html.al-native-embed,
+html.al-native-embed[data-theme='light'],
+html.al-native-embed[data-theme='dark'] {
+  --al-signal-amber: #b8892a;
+  --al-signal-green: #1fa24a;
+  --al-signal-red: #e0453a;
+  --al-color-background: #f1efe9;
+  --al-color-surface: #fffefb;
+  --al-color-surface-variant: #fffbf6;
+  --al-color-on-background: #121314;
+  --al-color-on-surface: #121314;
+  --al-color-on-surface-muted: #5a5e66;
+  --al-color-outline: #d4d0c7;
+  --al-color-outline-strong: #8a8e96;
+  --al-color-pill-surface: #e4e1da;
+  --al-color-pill-on-surface: #121314;
+  --al-color-primary: #121314;
+  --al-color-on-primary: #f5f5f3;
+  --al-color-secondary-border: #d4d0c7;
+  --al-color-warning: #b8892a;
+  --al-color-success: #1fa24a;
+  --al-color-danger: #e0453a;
+  --al-shadow-sm: 0 1px 2px rgba(18, 19, 20, 0.05);
+  --al-elevation-raised: 0 10px 28px rgba(18, 19, 20, 0.06);
+  --al-shadow-md: var(--al-elevation-raised);
+  --al-glow-attention: none;
+  --al-glow-protected: none;
+  --al-glow-emergency: none;
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --al-signal-amber: #b8892a;

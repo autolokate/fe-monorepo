@@ -7,7 +7,7 @@
   gap: 16px;
   width: 100%;
   max-width: var(--ob-shell-content-width, 24.5625rem);
-  min-height: 100dvh;
+  min-height: var(--al-app-height);
   margin-inline: auto;
   padding: calc(24px + env(safe-area-inset-top, 0px)) 16px
     calc(24px + env(safe-area-inset-bottom, 0px));
