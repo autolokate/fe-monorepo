@@ -1,3 +1,5 @@
+import { isNativeEmbed } from './is-native-embed';
+
 /** Pixel viewport height for Android WebView, where 100vh/100dvh can resolve to 0. */
 export function installAppHeight(): void {
   const root = document.documentElement;
@@ -16,22 +18,15 @@ export function installAppHeight(): void {
   window.visualViewport?.addEventListener('scroll', apply);
 }
 
-type NativeWindow = Window & {
-  QrLocation?: unknown;
-  webkit?: { messageHandlers?: { qrLocation?: unknown } };
-};
-
+/** Lock the QR shell to the native AutoLokate light canvas when embedded. */
 export function markNativeEmbed(): void {
-  const nativeWindow = window as NativeWindow;
-  const native = Boolean(
-    nativeWindow.QrLocation || nativeWindow.webkit?.messageHandlers?.qrLocation,
-  );
-  if (!native) return;
-  document.documentElement.classList.add('al-native-embed');
+  if (!isNativeEmbed()) return;
+  const root = document.documentElement;
+  root.classList.add('al-native-embed');
   try {
     window.localStorage.setItem('al-qr-theme', 'light');
   } catch {
     // private browsing
   }
-  document.documentElement.setAttribute('data-theme', 'light');
+  root.setAttribute('data-theme', 'light');
 }

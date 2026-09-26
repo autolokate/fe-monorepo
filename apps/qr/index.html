@@ -24,11 +24,13 @@
     <script>
       (function () {
         var root = document.documentElement;
+        var ua = navigator.userAgent || '';
         var isNative = !!(
           window.QrLocation ||
           (window.webkit &&
             window.webkit.messageHandlers &&
-            window.webkit.messageHandlers.qrLocation)
+            window.webkit.messageHandlers.qrLocation) ||
+          /AutolokateNative/i.test(ua)
         );
         if (isNative) {
           root.classList.add('al-native-embed');

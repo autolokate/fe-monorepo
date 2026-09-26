@@ -79,8 +79,15 @@ body,
 }
 
 /* Native app WebView — match native chrome, hide PWA affordances */
-html.al-native-embed .pwa-shell-actions {
+html.al-native-embed .pwa-shell-actions,
+html.al-native-embed .al-theme-toggle {
   display: none !important;
+}
+
+html.al-native-embed,
+html.al-native-embed body,
+html.al-native-embed #root {
+  background-color: #f1efe9 !important;
 }
 
 html.al-native-embed .ob-welcome-shell__header,

@@ -1,3 +1,4 @@
+import { isNativeEmbed } from '../viewport/is-native-embed';
 import { resolveScheduledTheme, type ThemeMode } from './resolve-scheduled-theme';
 
 export type ThemePreference = ThemeMode | 'auto';
@@ -5,6 +6,9 @@ export type ThemePreference = ThemeMode | 'auto';
 export const THEME_PREFERENCE_KEY = 'al-qr-theme';
 
 export function readThemePreference(): ThemePreference {
+  if (isNativeEmbed()) {
+    return 'light';
+  }
   try {
     const stored = window.localStorage.getItem(THEME_PREFERENCE_KEY);
     if (stored === 'light' || stored === 'dark' || stored === 'auto') {
@@ -17,6 +21,14 @@ export function readThemePreference(): ThemePreference {
 }
 
 export function writeThemePreference(preference: ThemePreference): void {
+  if (isNativeEmbed()) {
+    try {
+      window.localStorage.setItem(THEME_PREFERENCE_KEY, 'light');
+    } catch {
+      // ignore
+    }
+    return;
+  }
   try {
     window.localStorage.setItem(THEME_PREFERENCE_KEY, preference);
   } catch {
@@ -28,6 +40,9 @@ export function resolveEffectiveTheme(
   preference: ThemePreference = readThemePreference(),
   date = new Date(),
 ): ThemeMode {
+  if (isNativeEmbed()) {
+    return 'light';
+  }
   if (preference === 'light' || preference === 'dark') {
     return preference;
   }

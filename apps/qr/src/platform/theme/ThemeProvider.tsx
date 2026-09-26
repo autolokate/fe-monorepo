@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 
+import { isNativeEmbed } from '../viewport/is-native-embed';
 import {
   readThemePreference,
   resolveEffectiveTheme,
@@ -40,11 +41,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themeMode, setThemeModeState] = useState<ThemeMode>(() => resolveEffectiveTheme());
 
   const applyTheme = useCallback((next: ThemeMode) => {
-    applyDocumentTheme(next);
-    setThemeModeState(next);
+    const locked = isNativeEmbed() ? 'light' : next;
+    applyDocumentTheme(locked);
+    setThemeModeState(locked);
   }, []);
 
   const toggleTheme = useCallback(() => {
+    if (isNativeEmbed()) {
+      applyTheme('light');
+      return;
+    }
     const next: ThemeMode = themeMode === 'dark' ? 'light' : 'dark';
     writeThemePreference(next);
     setPreference(next);
@@ -52,11 +58,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [applyTheme, themeMode]);
 
   useEffect(() => {
+    if (isNativeEmbed()) {
+      applyDocumentTheme('light');
+      setThemeModeState('light');
+      setPreference('light');
+      return;
+    }
     applyDocumentTheme(themeMode);
   }, [themeMode]);
 
   useEffect(() => {
-    if (preference !== 'auto') {
+    if (isNativeEmbed() || preference !== 'auto') {
       return;
     }
 
