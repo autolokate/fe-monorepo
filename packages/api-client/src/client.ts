@@ -2,7 +2,6 @@ import { resolveApiBaseUrl } from '@autolokate/config';
 import type { TokenManager } from '@autolokate/auth';
 
 import { endpoints } from './endpoints';
-import { readEnvelopeMeta } from './envelope';
 
 export type ApiClientConfig = {
   baseUrl: string;
@@ -58,6 +57,15 @@ const AUTH_PUBLIC_PATHS = new Set<string>([
   endpoints.legal.documents,
 ]);
 
+/** A fresh id per HTTP request, so each call is traceable on its own in server logs. */
+function newCorrelationId(): string {
+  const cryptoApi = globalThis.crypto as Crypto | undefined;
+  if (cryptoApi && typeof cryptoApi.randomUUID === 'function') {
+    return cryptoApi.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
 function isAuthPublicPath(path: string): boolean {
   if (AUTH_PUBLIC_PATHS.has(path)) {
     return true;
@@ -75,7 +83,6 @@ export class ApiClient {
   private readonly fetchImpl: typeof fetch;
   private readonly tokenManager: TokenManager | undefined;
   private readonly onAuthFailure: (() => void) | undefined;
-  private correlationId: string | null = null;
 
   constructor(config: ApiClientConfig) {
     this.baseUrl = resolveApiBaseUrl(config.baseUrl);
@@ -115,7 +122,7 @@ export class ApiClient {
     const requestHeaders: Record<string, string> = {
       Accept: accept,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(this.correlationId ? { 'X-Correlation-Id': this.correlationId } : {}),
+      'X-Correlation-Id': newCorrelationId(),
       ...headers,
     };
     const requestInit: RequestInit = {
@@ -137,6 +144,9 @@ export class ApiClient {
             ...(retryToken ? { Authorization: `Bearer ${retryToken}` } : {}),
           },
         });
+        if (response.status === 401) {
+          this.onAuthFailure?.();
+        }
       } else {
         this.onAuthFailure?.();
       }
@@ -201,7 +211,7 @@ export class ApiClient {
         Accept: 'application/json',
         ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...(this.correlationId ? { 'X-Correlation-Id': this.correlationId } : {}),
+        'X-Correlation-Id': newCorrelationId(),
         ...headers,
       },
       ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
@@ -216,6 +226,9 @@ export class ApiClient {
         return this.request<T>(path, options, true);
       }
       this.onAuthFailure?.();
+    } else if (response.status === 401 && isRetry && this.shouldAttemptRefresh(path)) {
+      // Rejected even with a freshly refreshed token — the session itself is no longer valid.
+      this.onAuthFailure?.();
     }
 
     if (!response.ok) {
@@ -226,12 +239,7 @@ export class ApiClient {
       return undefined as T;
     }
 
-    const json = (await response.json()) as T;
-    const meta = readEnvelopeMeta(json);
-    if (meta?.correlationId) {
-      this.correlationId = meta.correlationId;
-    }
-    return json;
+    return (await response.json()) as T;
   }
 
   private shouldAttemptRefresh(path: string): boolean {

@@ -1,41 +1,46 @@
 import { AlBrandMark } from '@autolokate/brand';
+import { AlText } from '@autolokate/ui';
 import {
   ActivityIcon,
-  BellIcon,
+  BoxesIcon,
   CarIcon,
-  CircleUserIcon,
   CreditCardIcon,
   HouseIcon,
-  MapPinIcon,
+  LandmarkIcon,
+  LayersIcon,
+  type LucideIcon,
   ReceiptTextIcon,
-  ScanLineIcon,
   ShieldCheckIcon,
+  SirenIcon,
   StoreIcon,
-  TriangleAlertIcon,
-} from '@autolokate/icons';
-import { AlText } from '@autolokate/ui';
+  TicketIcon,
+  TicketPercentIcon,
+  TruckIcon,
+  UsersIcon,
+} from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
-import { adminNavSections } from '@/app/routes/admin-paths';
+import { adminNavSections, adminPaths } from '@/app/routes/admin-paths';
 import { useAdminAuth } from '@/providers/AdminAuthProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 
-const NAV_ICONS: Record<string, typeof HouseIcon> = {
-  '/dashboard': HouseIcon,
-  '/users': CircleUserIcon,
-  '/support': BellIcon,
-  '/orders': ReceiptTextIcon,
-  '/subscriptions': ShieldCheckIcon,
-  '/shipments': MapPinIcon,
-  '/payments': CreditCardIcon,
-  '/finance': ReceiptTextIcon,
-  '/promos': CreditCardIcon,
-  '/catalog': StoreIcon,
-  '/inventory': ScanLineIcon,
-  '/qr-batches': ScanLineIcon,
-  '/ownership-transfers': CarIcon,
-  '/audit-events': ActivityIcon,
-  '/incidents': TriangleAlertIcon,
+/** One distinct icon per destination — in the collapsed rail the icon is the only label. */
+const NAV_ICONS: Record<string, LucideIcon> = {
+  [adminPaths.dashboard]: HouseIcon,
+  [adminPaths.users]: UsersIcon,
+  [adminPaths.support]: TicketIcon,
+  [adminPaths.orders]: ReceiptTextIcon,
+  [adminPaths.subscriptions]: ShieldCheckIcon,
+  [adminPaths.shipments]: TruckIcon,
+  [adminPaths.payments]: CreditCardIcon,
+  [adminPaths.finance]: LandmarkIcon,
+  [adminPaths.promos]: TicketPercentIcon,
+  [adminPaths.catalog]: StoreIcon,
+  [adminPaths.inventory]: BoxesIcon,
+  [adminPaths.qrBatches]: LayersIcon,
+  [adminPaths.ownershipTransfers]: CarIcon,
+  [adminPaths.auditEvents]: ActivityIcon,
+  [adminPaths.incidents]: SirenIcon,
 };
 
 export type AdminSidebarProps = {

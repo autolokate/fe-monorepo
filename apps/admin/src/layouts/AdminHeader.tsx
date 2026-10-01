@@ -1,4 +1,5 @@
 import { AlButton, AlIconButton } from '@autolokate/ui';
+import { SearchIcon } from 'lucide-react';
 
 import { AdminActivityNotification } from '@/platform/components/AdminActivityNotification';
 import { ThemeToggleButton } from '@/platform/theme/ThemeToggleButton';
@@ -45,10 +46,14 @@ export function AdminHeader({ onOpenCommandPalette, onOpenMobileNav }: AdminHead
           variant="secondary"
           size="sm"
           className="admin-command-trigger al-admin-focus-ring"
+          aria-label="Search pages"
           onClick={onOpenCommandPalette}
         >
+          <SearchIcon className="admin-command-trigger__icon" size={16} aria-hidden />
           <span className="admin-command-trigger__label">Jump to…</span>
-          <span className="admin-command-trigger__kbd">⌘K</span>
+          <span className="admin-command-trigger__kbd" aria-hidden>
+            ⌘K
+          </span>
         </AlButton>
         <ThemeToggleButton />
         <AdminActivityNotification />

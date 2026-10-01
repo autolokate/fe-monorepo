@@ -13,6 +13,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -22,8 +23,10 @@ import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries';
 import {
   getAdminApiClient,
   getAdminBootstrapClient,
+  registerAdminAuthFailureHandler,
   tokenManager,
 } from '@/platform/api/admin-api-client';
+import { showInfoToast } from '@/platform/feedback/toast';
 
 export type AdminAuthState = {
   isAuthenticated: boolean;
@@ -67,6 +70,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<SessionRoles | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(() => tokenManager.hasSession());
   const [isBootstrapping, setIsBootstrapping] = useState(() => tokenManager.hasSession());
+  const sessionLiveRef = useRef(false);
 
   useEffect(() => {
     if (!tokenManager.hasSession()) {
@@ -85,6 +89,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         setProfile(next.profile);
         setSession(next.session);
         setIsAuthenticated(true);
+        sessionLiveRef.current = true;
         void prefetchAdminQueries();
       } catch {
         if (!abort.active) {
@@ -119,10 +124,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setSession(next.session);
     setIsAuthenticated(true);
     setIsBootstrapping(false);
+    sessionLiveRef.current = true;
     void prefetchAdminQueries();
   }, []);
 
   const signOut = useCallback(() => {
+    sessionLiveRef.current = false;
     tokenManager.clear();
     createSessionTokenStorage(ADMIN_TOKEN_KEY).remove();
     setProfile(null);
@@ -130,6 +137,21 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     setIsBootstrapping(false);
   }, []);
+
+  // A 401 whose refresh also failed means the session is gone: drop to /login (RequireAuth keeps
+  // the current path) instead of leaving the admin on a page of silently empty data.
+  useEffect(() => {
+    registerAdminAuthFailureHandler(() => {
+      if (sessionLiveRef.current) {
+        sessionLiveRef.current = false;
+        showInfoToast('Your session expired. Sign in again to continue.');
+      }
+      signOut();
+    });
+    return () => {
+      registerAdminAuthFailureHandler(() => undefined);
+    };
+  }, [signOut]);
 
   const adminRole = normalizeAdminRole(session?.role);
 

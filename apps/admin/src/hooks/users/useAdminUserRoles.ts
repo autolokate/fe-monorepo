@@ -15,7 +15,10 @@ import { grantRole, lookupUserByPhone, revokeRole } from '@/services/users/admin
  */
 export function describeUserRoleError(error: unknown): string {
   const normalized = normalizeApiError(error);
-  if (normalized.status === 404 || normalized.status === 409) {
+  if (normalized.status === 404) {
+    return 'No account is registered with this number. Check the digits, or ask the customer which number they sign in with.';
+  }
+  if (normalized.status === 409) {
     return normalized.message;
   }
   return mapAdminApiError(error).userMessage;
