@@ -5,7 +5,7 @@ export function normalizePlate(value: string): string {
 
 /** Compact plate for API query — uppercase alphanumeric only. */
 export function compactPlate(value: string): string {
-  return value.toUpperCase().replace(/\s+/g, '').trim();
+  return value.toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
 
 export function isPlateEntryReady(plate: string): boolean {

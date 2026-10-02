@@ -33,9 +33,13 @@ export function useAuditExplorer(filters: AuditExplorerFilters) {
 
   useEffect(() => {
     if (query.isError && query.data) {
-      reportAdminApiError(query.error, { context: 'audit-events', toast: true });
+      // An older-page failure is surfaced inline beside "Load older events", not as a toast.
+      reportAdminApiError(query.error, {
+        context: 'audit-events',
+        toast: !query.isFetchNextPageError,
+      });
     }
-  }, [query.data, query.error, query.isError]);
+  }, [query.data, query.error, query.isError, query.isFetchNextPageError]);
 
   const events = useMemo(
     () => query.data?.pages.flatMap((page) => page.events) ?? [],
@@ -48,12 +52,15 @@ export function useAuditExplorer(filters: AuditExplorerFilters) {
     ? { requestId: latestPage.requestId, correlationId: latestPage.correlationId }
     : null;
 
-  const userErrorMessage = query.isError ? mapAdminApiError(query.error).userMessage : null;
+  const errorMessage = query.isError ? mapAdminApiError(query.error).userMessage : null;
+  const userErrorMessage = query.isFetchNextPageError ? null : errorMessage;
+  const loadOlderErrorMessage = query.isFetchNextPageError ? errorMessage : null;
 
   return {
     events,
     hasMore,
     requestMeta,
+    loadOlderErrorMessage,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     isFetchingNextPage: query.isFetchingNextPage,

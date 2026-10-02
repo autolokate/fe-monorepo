@@ -26,6 +26,28 @@ export function adminQrBatchPath(batchId: string): string {
   return `${adminPaths.qrBatches}/${batchId}`;
 }
 
+/** Query params the Activity Log reads, so other screens can deep-link to a filtered view or one event. */
+export const AUDIT_LINK_PARAMS = {
+  action: 'action',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  eventId: 'event',
+} as const;
+
+export function adminAuditEventsPath(
+  link: Partial<Record<keyof typeof AUDIT_LINK_PARAMS, string | null>>,
+): string {
+  const params = new URLSearchParams();
+  for (const [key, param] of Object.entries(AUDIT_LINK_PARAMS)) {
+    const value = link[key as keyof typeof AUDIT_LINK_PARAMS];
+    if (value) {
+      params.set(param, value);
+    }
+  }
+  const query = params.toString();
+  return query ? `${adminPaths.auditEvents}?${query}` : adminPaths.auditEvents;
+}
+
 /**
  * Sidebar sections, grouped by the JOB a person is doing rather than the table behind it, and ordered
  * so the highest-frequency daily work sits at the top. One customer's whole world (their orders,

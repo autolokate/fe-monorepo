@@ -1,16 +1,14 @@
 import type { AuditEventDto } from '@autolokate/api-client';
 import { AlIconButton, AlText } from '@autolokate/ui';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths';
+import { adminAuditEventsPath, adminPaths } from '@/app/routes/admin-paths';
 import { useRecentAuditEvents } from '@/hooks/audit/useRecentAuditEvents';
-import {
-  formatActivityDetail,
-  formatRelativeTime,
-} from '@/platform/components/activity-feed-utils';
-import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
+import { useActivityReadState } from '@/platform/components/activity-read-state';
+import { formatRelativeTime } from '@/platform/components/activity-feed-utils';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
+import { auditTargetLabel, describeAuditEvent } from '@/platform/utils/audit-labels';
 
 function BellIcon() {
   return (
@@ -31,7 +29,15 @@ function BellIcon() {
   );
 }
 
-function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: boolean }) {
+type ActivityListProps = {
+  events: AuditEventDto[];
+  loading: boolean;
+  isUnread: (event: AuditEventDto) => boolean;
+  onOpen: (event: AuditEventDto) => void;
+  onDismiss: (event: AuditEventDto) => void;
+};
+
+function ActivityList({ events, loading, isUnread, onOpen, onDismiss }: ActivityListProps) {
   if (loading) {
     return (
       <div className="admin-activity-panel__loading">
@@ -45,28 +51,61 @@ function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: b
   if (events.length === 0) {
     return (
       <AlText tone="muted" variant="caption">
-        No recent admin activity yet.
+        You’re all caught up.
       </AlText>
     );
   }
 
   return (
     <ul className="admin-activity-panel__list">
-      {events.map((event) => (
-        <li key={event.id} className="admin-activity-panel__item">
-          <AuditActionBadge action={event.action} />
-          <span className="admin-activity-panel__detail">
-            {formatActivityDetail(event.targetType, event.targetId)}
-          </span>
-          <time
-            className="admin-activity-panel__time"
-            dateTime={event.at}
-            title={new Date(event.at).toLocaleString()}
-          >
-            {formatRelativeTime(event.at)}
-          </time>
-        </li>
-      ))}
+      {events.map((event) => {
+        const unread = isUnread(event);
+        const target = auditTargetLabel(event.targetType);
+        return (
+          <li key={event.id} className={`admin-activity-panel__item${unread ? ' is-unread' : ''}`}>
+            <Link
+              className="admin-activity-panel__open al-admin-focus-ring"
+              to={adminAuditEventsPath({ action: event.action, eventId: event.id })}
+              onClick={() => {
+                onOpen(event);
+              }}
+            >
+              <span className="admin-activity-panel__summary">
+                {unread ? <span className="admin-activity-panel__dot" aria-label="Unread" /> : null}
+                {describeAuditEvent(event)}
+              </span>
+              <span className="admin-activity-panel__meta">
+                {target ? <span className="admin-activity-panel__detail">{target}</span> : null}
+                <time
+                  className="admin-activity-panel__time"
+                  dateTime={event.at}
+                  title={new Date(event.at).toLocaleString()}
+                >
+                  {formatRelativeTime(event.at)}
+                </time>
+              </span>
+            </Link>
+            <button
+              type="button"
+              className="admin-activity-panel__dismiss al-admin-focus-ring"
+              aria-label="Dismiss notification"
+              title="Dismiss"
+              onClick={() => {
+                onDismiss(event);
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
+                <path
+                  d="M3 3l6 6M9 3l-6 6"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -74,8 +113,15 @@ function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: b
 export function AdminActivityNotification() {
   const canView = useAdminPermission('audit:view');
   const { data: events = [], isLoading } = useRecentAuditEvents();
+  const { isUnread, isDismissed, markRead, markAllRead, dismiss } = useActivityReadState();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  const visibleEvents = useMemo(
+    () => events.filter((event) => !isDismissed(event)),
+    [events, isDismissed],
+  );
+  const unreadCount = visibleEvents.filter(isUnread).length;
 
   const close = useCallback(() => {
     setOpen(false);
@@ -86,7 +132,7 @@ export function AdminActivityNotification() {
       return;
     }
 
-    const handlePointerDown = (event: MouseEvent) => {
+    const handlePointerDown = (event: PointerEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
         close();
       }
@@ -98,10 +144,10 @@ export function AdminActivityNotification() {
       }
     };
 
-    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [close, open]);
@@ -110,13 +156,13 @@ export function AdminActivityNotification() {
     return null;
   }
 
-  const unreadCount = events.length;
-
   return (
     <div ref={rootRef} className="admin-activity-notification">
       <AlIconButton
         icon={<BellIcon />}
-        label="Recent activity"
+        label={
+          unreadCount > 0 ? `Recent activity, ${String(unreadCount)} unread` : 'Recent activity'
+        }
         size="sm"
         className={`admin-activity-notification__trigger al-admin-focus-ring${open ? ' is-open' : ''}`}
         aria-expanded={open}
@@ -134,15 +180,52 @@ export function AdminActivityNotification() {
         <div className="admin-activity-panel" role="dialog" aria-label="Recent activity">
           <div className="admin-activity-panel__header">
             <h2 className="admin-activity-panel__title">Recent activity</h2>
-            <Link
-              className="admin-activity-panel__link al-admin-focus-ring"
-              to={adminPaths.auditEvents}
-              onClick={close}
-            >
-              See all
-            </Link>
+            <div className="admin-activity-panel__actions">
+              {unreadCount > 0 ? (
+                <button
+                  type="button"
+                  className="admin-activity-panel__link al-admin-focus-ring"
+                  onClick={() => {
+                    markAllRead(visibleEvents);
+                  }}
+                >
+                  Mark all read
+                </button>
+              ) : null}
+              {visibleEvents.length > 0 ? (
+                <button
+                  type="button"
+                  className="admin-activity-panel__link al-admin-focus-ring"
+                  onClick={() => {
+                    dismiss(visibleEvents.map((event) => event.id));
+                  }}
+                >
+                  Clear all
+                </button>
+              ) : null}
+              <Link
+                className="admin-activity-panel__link al-admin-focus-ring"
+                to={adminPaths.auditEvents}
+                onClick={close}
+              >
+                See all
+              </Link>
+            </div>
           </div>
-          <ActivityList events={events} loading={isLoading} />
+          <div className="admin-activity-panel__body">
+            <ActivityList
+              events={visibleEvents}
+              loading={isLoading}
+              isUnread={isUnread}
+              onOpen={(event) => {
+                markRead(event.id);
+                close();
+              }}
+              onDismiss={(event) => {
+                dismiss([event.id]);
+              }}
+            />
+          </div>
         </div>
       ) : null}
     </div>

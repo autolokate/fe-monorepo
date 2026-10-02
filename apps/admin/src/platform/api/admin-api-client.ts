@@ -17,6 +17,9 @@ let authFailureHandler: (() => void) | null = null;
 const tokenManager = createTokenManager(createSessionTokenStorage(ADMIN_TOKEN_KEY));
 
 function createFetchWithNgrok(): typeof fetch {
+  if (!import.meta.env.DEV) {
+    return globalThis.fetch.bind(globalThis);
+  }
   return async (input, init) => {
     const headers = new Headers(init?.headers);
     if (env.apiBaseUrl.includes('ngrok')) {

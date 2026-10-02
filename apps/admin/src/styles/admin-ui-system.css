@@ -206,6 +206,17 @@
   font-size: var(--al-text-label-size);
 }
 
+/* The shared primitive paints disabled buttons a solid dark fill, which reads as clickable here. */
+.al-page-layout .al-button:disabled:not(.is-loading),
+.al-modal .al-button:disabled:not(.is-loading) {
+  background-color: transparent;
+  border-color: var(--al-color-border-subtle);
+  color: var(--al-color-text-subtle);
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .al-page-layout .al-data-table__page-size select {
   min-height: 2rem;
   border-color: var(--al-color-outline);

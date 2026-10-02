@@ -68,7 +68,9 @@ export function formatEffectiveWindow(plan: AdminPlanDto): string {
   const from =
     plan.effectiveFrom !== null
       ? new Date(plan.effectiveFrom).toLocaleDateString()
-      : 'Not published';
+      : plan.isEffectiveNow
+        ? 'No start date'
+        : 'Not published';
   const to = plan.effectiveTo !== null ? new Date(plan.effectiveTo).toLocaleDateString() : 'Open';
   return `${from} → ${to}`;
 }
