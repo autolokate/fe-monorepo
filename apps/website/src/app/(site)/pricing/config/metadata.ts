@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_SHARE_IMAGE } from '@/lib/seo';
 
 export const pricingMetadata: Metadata = {
   title: 'Pricing — Autolokate',
@@ -6,6 +7,7 @@ export const pricingMetadata: Metadata = {
     'One payment, a full year of cover. Every plan protects one vehicle for a year with Smart QR, automatic crash detection, ambulance and roadside help. GST included, no hidden charges.',
   alternates: { canonical: '/pricing' },
   openGraph: {
+    images: [DEFAULT_SHARE_IMAGE],
     title: 'Autolokate Pricing',
     description:
       'Protect, Guardian and Guardian Plus — annual per-vehicle plans with crash detection, ambulance and roadside cover. From ₹999, GST included.',

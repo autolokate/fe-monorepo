@@ -9,12 +9,15 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
+import { AUDIT_LINK_PARAMS } from '@/app/routes/admin-paths';
 import { AuditActionFilter } from '@/features/audit/AuditActionFilter';
 import { AuditDetailSheet } from '@/features/audit/AuditDetailSheet';
 import {
   AUDIT_PAGE_SIZE_OPTIONS,
+  auditFiltersFromSearch,
   DEFAULT_AUDIT_EXPLORER_FILTERS,
   hasActiveAuditFilters,
   resolveActionFilter,
@@ -30,10 +33,23 @@ import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import './audit-events.css';
 
 export function AuditEventsPage() {
-  const [filters, setFilters] = useState<AuditExplorerFilters>(DEFAULT_AUDIT_EXPLORER_FILTERS);
-  const [appliedFilters, setAppliedFilters] = useState<AuditExplorerFilters>(
-    DEFAULT_AUDIT_EXPLORER_FILTERS,
+  const [searchParams, setSearchParams] = useSearchParams();
+  const linkedFilters = useMemo(() => auditFiltersFromSearch(searchParams), [searchParams]);
+  const linkedEventId = searchParams.get(AUDIT_LINK_PARAMS.eventId);
+
+  const [filters, setFilters] = useState<AuditExplorerFilters>(
+    linkedFilters ?? DEFAULT_AUDIT_EXPLORER_FILTERS,
   );
+  const [appliedFilters, setAppliedFilters] = useState<AuditExplorerFilters>(
+    linkedFilters ?? DEFAULT_AUDIT_EXPLORER_FILTERS,
+  );
+
+  useEffect(() => {
+    if (linkedFilters) {
+      setFilters(linkedFilters);
+      setAppliedFilters(linkedFilters);
+    }
+  }, [linkedFilters]);
   const [filterError, setFilterError] = useState<string | null>(null);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -44,6 +60,7 @@ export function AuditEventsPage() {
     isFetching,
     isFetchingNextPage,
     userErrorMessage,
+    loadOlderErrorMessage,
     refresh,
     loadOlder,
   } = useAuditExplorer(appliedFilters);
@@ -55,6 +72,27 @@ export function AuditEventsPage() {
     setSelectedEvent(event);
     setDetailOpen(true);
   }, []);
+
+  useEffect(() => {
+    if (!linkedEventId) {
+      return;
+    }
+    const linked = events.find((event) => event.id === linkedEventId);
+    if (!linked && isLoading) {
+      return;
+    }
+    if (linked) {
+      openEvent(linked);
+    }
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete(AUDIT_LINK_PARAMS.eventId);
+        return next;
+      },
+      { replace: true },
+    );
+  }, [events, isLoading, linkedEventId, openEvent, setSearchParams]);
 
   const columns = useAuditColumns();
 
@@ -72,7 +110,8 @@ export function AuditEventsPage() {
     setAppliedFilters(DEFAULT_AUDIT_EXPLORER_FILTERS);
     setFilterError(null);
     setShowAdvancedFilters(false);
-  }, []);
+    setSearchParams({}, { replace: true });
+  }, [setSearchParams]);
 
   const filtersActive = hasActiveAuditFilters(appliedFilters);
 
@@ -213,15 +252,20 @@ export function AuditEventsPage() {
           />
         </AdminDataBlock>
 
-        {hasMore ? (
+        {hasMore || loadOlderErrorMessage ? (
           <div className="audit-load-more">
+            {loadOlderErrorMessage ? (
+              <p className="audit-load-more__error" role="alert">
+                Couldn’t load older events. {loadOlderErrorMessage}
+              </p>
+            ) : null}
             <AlButton
               variant="secondary"
               loading={isFetchingNextPage}
               disabled={isFetchingNextPage}
               onClick={loadOlder}
             >
-              Load older events
+              {loadOlderErrorMessage ? 'Retry' : 'Load older events'}
             </AlButton>
           </div>
         ) : null}

@@ -8,7 +8,14 @@ export function ClosingCtaSection() {
 
   return (
     <section aria-labelledby="blog-closing-cta-heading" className={styles.section}>
-      <img src={CLOSING_SIGNAL_RINGS} alt="" aria-hidden="true" className={styles.rings} />
+      <img
+        src={CLOSING_SIGNAL_RINGS}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        className={styles.rings}
+      />
 
       <div className={styles.inner}>
         <div className={styles.headingStack}>

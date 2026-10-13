@@ -16,10 +16,9 @@ export function FeaturesHero() {
           alt=""
           fill
           priority
-          quality={100}
-          unoptimized
+          quality={85}
           className={styles.image}
-          sizes="(min-width: 1920px) 2560px, 100vw"
+          sizes="100vw"
         />
         <div className={styles.scrim} />
         <div className={styles.sheen} />

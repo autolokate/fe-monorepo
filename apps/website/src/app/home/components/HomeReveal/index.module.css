@@ -1,4 +1,7 @@
 .reveal {
+  /* Skip layout/paint (and off-screen animations) until the section nears the viewport. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
   opacity: 0;
   transform: translateY(24px);
   transition:

@@ -6,4 +6,5 @@ export const userLookupSchema = z.object({
   phone: adminPhoneE164Schema,
 });
 
-export type UserLookupFormValues = z.infer<typeof userLookupSchema>;
+export type UserLookupFormInput = z.input<typeof userLookupSchema>;
+export type UserLookupFormValues = z.output<typeof userLookupSchema>;

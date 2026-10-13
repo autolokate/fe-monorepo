@@ -4,6 +4,7 @@ import { SignupForm } from '../components/SignupForm';
 export const metadata: Metadata = {
   title: 'Sign up — Autolokate',
   description: 'Create your Autolokate account with mobile OTP verification.',
+  robots: { index: false, follow: false },
 };
 
 export default function SignupPage() {

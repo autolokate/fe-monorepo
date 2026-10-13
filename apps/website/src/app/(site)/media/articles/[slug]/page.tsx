@@ -8,6 +8,8 @@ import {
 import { ClosingCtaSection } from '../../components/ClosingCtaSection';
 import { ArticleBody } from './components/ArticleBody';
 import { RelatedArticles } from './components/RelatedArticles';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { articleJsonLd, breadcrumbJsonLd } from '@/lib/seo';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -47,8 +49,28 @@ export default async function MediaArticlePage({ params }: Props) {
 
   const related = getRelatedMediaArticles(slug);
 
+  const path = `/media/articles/${article.slug}`;
+
   return (
     <main className="relative">
+      <JsonLd
+        data={[
+          articleJsonLd({
+            path,
+            headline: article.title,
+            description: article.excerpt,
+            author: article.author,
+            image: article.coverImage,
+            datePublished: article.date,
+            section: article.category,
+          }),
+          breadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Media', path: '/media' },
+            { name: article.title, path },
+          ]),
+        ]}
+      />
       <ArticleBody article={article} />
       <RelatedArticles articles={related} />
       <ClosingCtaSection />

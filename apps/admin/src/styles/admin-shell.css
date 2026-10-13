@@ -48,6 +48,7 @@
 
 .admin-shell-sidebar__scroll {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: var(--al-space-2) var(--al-space-3);
@@ -233,6 +234,10 @@
   font-weight: var(--al-font-weight-regular) !important;
 }
 
+.admin-command-trigger__icon {
+  flex-shrink: 0;
+}
+
 .admin-command-trigger__kbd {
   display: inline-flex;
   align-items: center;
@@ -293,16 +298,35 @@
   }
 }
 
+/* ⌘K means nothing without a keyboard. */
+@media (hover: none) {
+  .admin-command-trigger__kbd {
+    display: none;
+  }
+}
+
 @media (max-width: 960px) {
   .admin-shell-mobile-nav {
     display: inline-flex;
   }
 
-  .admin-command-trigger {
-    min-width: auto;
+  .admin-shell-header {
+    gap: var(--al-space-2);
+    padding-inline: var(--al-space-3);
   }
 
-  .admin-command-trigger__label {
+  .admin-shell-header__actions {
+    flex-shrink: 1;
+    min-width: 0;
+    gap: var(--al-space-1);
+  }
+
+  .al-page-layout .admin-shell-header .admin-command-trigger {
+    min-width: 0;
+    gap: var(--al-space-2);
+  }
+
+  .admin-command-trigger__kbd {
     display: none;
   }
 
@@ -310,6 +334,25 @@
     display: none;
   }
 
+  /* The drawer is always expanded on mobile: the collapse toggle and role card only eat nav space. */
+  .admin-shell-sidebar__footer {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-command-trigger__label {
+    display: none;
+  }
+
+  .admin-shell-profile {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 960px) {
   .admin-shell-backdrop {
     display: block;
     position: fixed;

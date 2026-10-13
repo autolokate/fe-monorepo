@@ -1,5 +1,3 @@
-import { formatAuditField } from '@/platform/utils/audit-field';
-
 export function formatRelativeTime(value: string): string {
   const date = new Date(value);
   const deltaMs = Date.now() - date.getTime();
@@ -15,12 +13,4 @@ export function formatRelativeTime(value: string): string {
     return `${String(hours)}h ago`;
   }
   return date.toLocaleDateString();
-}
-
-export function formatActivityDetail(targetType: object | null, _targetId: object | null): string {
-  const target = formatAuditField(targetType);
-  if (target !== '—') {
-    return target;
-  }
-  return 'System';
 }

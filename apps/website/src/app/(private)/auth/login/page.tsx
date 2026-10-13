@@ -6,6 +6,7 @@ import { LoginForm } from '../components/LoginForm';
 export const metadata: Metadata = {
   title: 'Sign in — Autolokate',
   description: 'Sign in to Autolokate with a one-time code sent to your phone.',
+  robots: { index: false, follow: false },
 };
 
 function LoginFallback() {

@@ -99,7 +99,29 @@ jobs:
           role-to-assume: ${{ vars.AWS_FE_STAGING_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
       - name: Sync to S3
-        run: aws s3 sync apps/admin/dist "s3://${{ vars.FE_STAGING_ADMIN_BUCKET }}" --delete
+        # S3 has no object for client-side routes, so a hard load of /login answered 404 (serving
+        # index.html only as the error body). Publish index.html at every top-level route with a real
+        # 200. Keep ADMIN_SPA_ROUTES in step with apps/admin/src/app/routes/admin-paths.ts.
+        # Vite fingerprints everything under assets/, so those are cached for a year; every other
+        # file (index.html, favicons) must revalidate so a deploy shows up on the next load.
+        env:
+          BUCKET: ${{ vars.FE_STAGING_ADMIN_BUCKET }}
+          ADMIN_SPA_ROUTES: >-
+            login dashboard users support orders subscriptions shipments payments finance promos
+            catalog inventory qr-batches ownership-transfers audit-events incidents
+        run: |
+          excludes=()
+          for route in $ADMIN_SPA_ROUTES; do excludes+=(--exclude "$route"); done
+          aws s3 sync apps/admin/dist/assets "s3://$BUCKET/assets" --delete \
+            --cache-control "public, max-age=31536000, immutable"
+          aws s3 sync apps/admin/dist "s3://$BUCKET" --delete --exclude "assets/*" "${excludes[@]}" \
+            --cache-control "no-cache"
+          for route in $ADMIN_SPA_ROUTES; do
+            aws s3 cp apps/admin/dist/index.html "s3://$BUCKET/$route" \
+              --content-type "text/html; charset=utf-8" \
+              --cache-control "no-cache" \
+              --only-show-errors
+          done
 
   deploy-qr:
     needs: changes
@@ -129,7 +151,15 @@ jobs:
           role-to-assume: ${{ vars.AWS_FE_STAGING_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
       - name: Sync to S3
-        run: aws s3 sync apps/qr/dist "s3://${{ vars.FE_STAGING_QR_BUCKET }}" --delete
+        # Fingerprinted assets/ are immutable; index.html, the service worker and the manifest
+        # must revalidate or installed PWAs keep running an old build.
+        env:
+          BUCKET: ${{ vars.FE_STAGING_QR_BUCKET }}
+        run: |
+          aws s3 sync apps/qr/dist/assets "s3://$BUCKET/assets" --delete \
+            --cache-control "public, max-age=31536000, immutable"
+          aws s3 sync apps/qr/dist "s3://$BUCKET" --delete --exclude "assets/*" \
+            --cache-control "no-cache"
 
   # --- Next.js website (SSR): build+push image, then blue/green redeploy on the box ---
   build-push-website:

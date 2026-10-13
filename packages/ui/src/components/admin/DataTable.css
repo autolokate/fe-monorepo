@@ -1,6 +1,8 @@
 .al-data-table {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
   border-radius: var(--al-admin-radius-panel);
   background: var(--al-color-surface);
   box-shadow: var(--al-admin-shadow-panel);
@@ -46,6 +48,8 @@
 .al-data-table__scroll {
   overflow: auto;
   max-height: min(70vh, 42rem);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 .al-data-table__loading {

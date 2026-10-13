@@ -602,28 +602,30 @@ export function AlDataTable<TData>({
               ? ` · ${String(sorting.length)} sort${sorting.length > 1 ? 's' : ''}`
               : ''}
           </span>
-          <div className="al-data-table__pagination">
-            <AlButton
-              variant="secondary"
-              size="sm"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => {
-                table.previousPage();
-              }}
-            >
-              Previous
-            </AlButton>
-            <AlButton
-              variant="secondary"
-              size="sm"
-              disabled={!table.getCanNextPage()}
-              onClick={() => {
-                table.nextPage();
-              }}
-            >
-              Next
-            </AlButton>
-          </div>
+          {table.getPageCount() > 1 ? (
+            <div className="al-data-table__pagination">
+              <AlButton
+                variant="secondary"
+                size="sm"
+                disabled={!table.getCanPreviousPage()}
+                onClick={() => {
+                  table.previousPage();
+                }}
+              >
+                Previous
+              </AlButton>
+              <AlButton
+                variant="secondary"
+                size="sm"
+                disabled={!table.getCanNextPage()}
+                onClick={() => {
+                  table.nextPage();
+                }}
+              >
+                Next
+              </AlButton>
+            </div>
+          ) : null}
         </footer>
       ) : null}
     </div>

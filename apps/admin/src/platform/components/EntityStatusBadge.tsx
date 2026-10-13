@@ -10,6 +10,8 @@ import type {
   QrCodeStatus,
 } from '@autolokate/api-client';
 
+import { auditActionLabel } from '@/platform/utils/audit-labels';
+
 import '../../styles/entity-status-badges.css';
 
 type EntityStatusBadgeProps = {
@@ -78,7 +80,7 @@ export function IncidentStatusBadge({ status }: { status: AdminIncidentStatus })
 export function AuditActionBadge({ action }: { action: AuditAction }) {
   return (
     <EntityStatusBadge
-      label={action}
+      label={auditActionLabel(action)}
       modifier={`admin-entity-status-badge--audit admin-entity-status-badge--audit-${action}`}
     />
   );

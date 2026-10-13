@@ -7,12 +7,16 @@ import {
   SafeStarterSection,
   pricingMetadata,
 } from './';
+import { BILLING_FAQS } from './components/BillingFaqSection/constants';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { faqPageJsonLd } from '@/lib/seo';
 
 export const metadata = pricingMetadata;
 
 export default function PricingPage() {
   return (
     <main className="relative">
+      <JsonLd data={faqPageJsonLd(BILLING_FAQS)} />
       <HeroBanner />
       <PricingPlansSection />
       <ComparePlansSection />

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_SHARE_IMAGE } from '@/lib/seo';
 
 const title = 'Autolokate – Automatic Crash Detection & Vehicle Safety';
 const description =
@@ -20,6 +21,7 @@ export const homeMetadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
+    images: [DEFAULT_SHARE_IMAGE],
     title,
     description,
     url: '/',
@@ -29,5 +31,6 @@ export const homeMetadata: Metadata = {
     card: 'summary_large_image',
     title,
     description,
+    images: [DEFAULT_SHARE_IMAGE.url],
   },
 };

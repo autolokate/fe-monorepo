@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_SHARE_IMAGE } from '@/lib/seo';
 
 export const mediaMetadata: Metadata = {
   title: 'Media — Autolokate',
@@ -6,6 +7,7 @@ export const mediaMetadata: Metadata = {
     'Stories, insights and videos shaping safer, smarter mobility in India — editorial road-safety journalism and a curated video library from Indian Drive Guide.',
   alternates: { canonical: '/media' },
   openGraph: {
+    images: [DEFAULT_SHARE_IMAGE],
     title: 'Autolokate Media',
     description:
       'Premium articles and videos on road safety, driving, EVs, ADAS, and connected vehicle protection for Indian drivers.',

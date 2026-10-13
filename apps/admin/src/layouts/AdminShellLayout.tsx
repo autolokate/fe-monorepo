@@ -27,7 +27,7 @@ export function AdminShellLayout() {
         sidebarClassName={mobileOpen ? 'is-mobile-open' : undefined}
         sidebar={
           <AdminSidebar
-            collapsed={collapsed}
+            collapsed={collapsed && !mobileOpen}
             onToggleCollapse={() => {
               setCollapsed((value) => !value);
             }}

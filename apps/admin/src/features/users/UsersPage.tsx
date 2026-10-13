@@ -13,7 +13,11 @@ import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
-import { userLookupSchema, type UserLookupFormValues } from '@/features/users/user-lookup-schema';
+import {
+  userLookupSchema,
+  type UserLookupFormInput,
+  type UserLookupFormValues,
+} from '@/features/users/user-lookup-schema';
 import { describeUserRoleError, useAdminUserRoles } from '@/hooks/users/useAdminUserRoles';
 import { AdminDetailField } from '@/platform/components/AdminDetailField';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -37,7 +41,7 @@ export function UsersPage() {
 
   const { lookupMutation, grantMutation, revokeMutation } = useAdminUserRoles();
 
-  const form = useForm<UserLookupFormValues>({
+  const form = useForm<UserLookupFormInput, unknown, UserLookupFormValues>({
     resolver: zodResolver(userLookupSchema),
     defaultValues: { phone: '' },
   });
@@ -95,10 +99,11 @@ export function UsersPage() {
                 label="Phone number"
                 mono
                 autoComplete="off"
-                placeholder="+919876543210"
+                placeholder="9876543210"
+                inputMode="tel"
                 {...form.register('phone')}
                 errorText={form.formState.errors.phone?.message}
-                helperText="The number the person signs in with. Matched against an encrypted index — it is never stored by this screen."
+                helperText="The number the person signs in with — 10 digits is fine, +91 is added automatically. Matched against an encrypted index; never stored by this screen."
               />
               <div className="admin-page-actions">
                 <AlButton

@@ -3,7 +3,7 @@ import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
-import { formatAuditField } from '@/platform/utils/audit-field';
+import { auditTargetLabel } from '@/platform/utils/audit-labels';
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString();
@@ -40,7 +40,7 @@ export function useAuditColumns(): ColumnDef<AuditEventDto>[] {
       {
         accessorKey: 'targetType',
         header: 'Entity type',
-        cell: ({ row }) => formatAuditField(row.original.targetType),
+        cell: ({ row }) => auditTargetLabel(row.original.targetType) ?? '—',
       },
     ],
     [],
