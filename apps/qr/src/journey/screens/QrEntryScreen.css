@@ -1,0 +1,33 @@
+.qr-entry-screen {
+  min-height: var(--al-app-height, 100dvh);
+}
+
+.qr-entry-screen__frame {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: var(--ob-shell-content-width, 24.5625rem);
+  min-height: var(--al-app-height, 100dvh);
+  margin-inline: auto;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 16px
+    calc(24px + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.qr-entry-screen__logo {
+  width: 72px;
+  height: auto;
+}
+
+.qr-entry-screen__description {
+  max-width: 18rem;
+}
+
+.qr-entry-screen__description a {
+  color: inherit;
+  font-weight: 600;
+}

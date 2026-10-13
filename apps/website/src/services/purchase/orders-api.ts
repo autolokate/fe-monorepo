@@ -2,6 +2,7 @@
 
 import { endpoints } from '@/lib/api/endpoints';
 import { ApiError } from '@/lib/api/error';
+import { getPlanDisplayName } from '@/lib/plan-display-names';
 import { PurchaseApi, newIdempotencyKey } from './client';
 import type {
   CreateOrderPayload,
@@ -21,7 +22,10 @@ interface Enveloped<T> {
 /** GET /v1/orders — the buyer's order history, newest first (bearer). */
 export async function listOrders(limit = 20): Promise<OrderSummary[]> {
   const res = await PurchaseApi.get<Enveloped<OrderSummary[]>>(endpoints.orders.list(limit));
-  return res.data.data ?? [];
+  return (res.data.data ?? []).map((order) => ({
+    ...order,
+    planName: getPlanDisplayName(order.planName),
+  }));
 }
 
 /**

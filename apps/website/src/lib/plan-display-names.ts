@@ -33,14 +33,24 @@ export const PLAN_LEGACY_NAMES: Record<PlanTierCode, string> = {
   SHIELD_PLUS: 'Shield+',
 };
 
+const TIER_BY_COMPACT_KEY: Record<string, PlanTierCode> = {
+  SECURE: 'SECURE',
+  SHIELD: 'SHIELD',
+  SHIELDPLUS: 'SHIELD_PLUS',
+};
+
+/**
+ * Customer-facing name for a tier code, slug or legacy API name — the API spells
+ * the top tier `SHIELD_PLUS`, `shield-plus`, `Shield+` and `SHIELD +`. Anything
+ * unrecognised is returned unchanged.
+ */
 export function getPlanDisplayName(input: string): string {
-  if (input in PLAN_DISPLAY_BY_TIER) {
-    return PLAN_DISPLAY_BY_TIER[input as PlanTierCode];
-  }
-  if (input in PLAN_DISPLAY_BY_SLUG) {
-    return PLAN_DISPLAY_BY_SLUG[input as PlanSlug];
-  }
-  return input;
+  const key = input
+    .toUpperCase()
+    .replace(/\+/g, 'PLUS')
+    .replace(/[^A-Z]/g, '');
+  const tier = TIER_BY_COMPACT_KEY[key] as PlanTierCode | undefined;
+  return tier ? PLAN_DISPLAY_BY_TIER[tier] : input;
 }
 
 export function planCtaLabel(slug: PlanSlug): string {

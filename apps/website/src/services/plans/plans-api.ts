@@ -3,6 +3,7 @@
 import { dedupedRequest } from '@/lib/api/dedupe-cache';
 import { endpoints } from '@/lib/api/endpoints';
 import { readArray, readObject, unbox } from '@/lib/catalogue/normalize';
+import { getPlanDisplayName } from '@/lib/plan-display-names';
 import { ApiService } from '@/services/api.service';
 
 /** Default catalogue SKU the marketing site sells. */
@@ -59,11 +60,15 @@ function normalizeRiderOption(raw: unknown): PlanRiderOption {
 
 function normalizePlan(raw: unknown): Plan {
   const row = readObject(raw);
+  const tier = stringOr(row.tier, '').trim();
+  const apiName = stringOr(row.name, '').trim();
+  const tierDisplayName = getPlanDisplayName(tier);
   return {
     id: stringOr(row.id, ''),
-    tier: stringOr(row.tier, '').trim(),
+    tier,
     version: numeric(row.version, 1),
-    name: stringOr(row.name, '').trim(),
+    /** Customer-facing name (Protect / Guardian / Guardian Plus), never the legacy API label. */
+    name: tierDisplayName !== tier ? tierDisplayName : getPlanDisplayName(apiName),
     pricePaise: numeric(row.pricePaise),
     period: stringOr(row.period, 'YEARLY').trim(),
     riderEligible: Boolean(row.riderEligible),

@@ -32,6 +32,7 @@ import {
 import { JourneyScopeProvider } from '../routing/JourneyScopeProvider';
 import { useActiveJourneyId } from '../routing/use-active-journey-id';
 import { JourneyCompletedScreen } from '../screens/JourneyCompletedScreen';
+import { QrEntryScreen } from '../screens/QrEntryScreen';
 import { useJourney } from '../JourneyContext';
 import { B2b2cRoutes } from './B2b2cRoutes';
 import { EmergencyRoutes } from './EmergencyRoutes';
@@ -132,6 +133,7 @@ export function JourneyRoutes() {
     <div className="journey-frame">
       <Routes>
         <Route path="/" element={<PreserveSearchRedirect to={journeyPaths.entry} />} />
+        <Route path={journeyPaths.entry} element={<QrEntryScreen />} />
         <Route path={`${journeyPaths.qrDeepLinkPrefix}/:qrCode`} element={<QrEntryRoute />} />
 
         {LEGACY_JOURNEY_ENTRY_REDIRECTS.map(([from, to]) => (
