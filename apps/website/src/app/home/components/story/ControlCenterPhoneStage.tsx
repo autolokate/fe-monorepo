@@ -49,7 +49,7 @@ export function ControlCenterPhoneStage() {
 
       <div className={styles.phoneWrap}>
         {isLive ? <span className={styles.trackPulse} aria-hidden="true" /> : null}
-        <ControlCenterVisual surface="phone" priority />
+        <ControlCenterVisual surface="phone" />
       </div>
 
       <p className={styles.status} aria-live="polite">

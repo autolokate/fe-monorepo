@@ -1,5 +1,6 @@
 'use client';
 
+import { dedupedRequest } from '@/lib/api/dedupe-cache';
 import { endpoints } from '@/lib/api/endpoints';
 import { readArray, readObject, unbox } from '@/lib/catalogue/normalize';
 import { ApiService } from '@/services/api.service';
@@ -107,4 +108,16 @@ export function getPlans(sku: string = DEFAULT_PLANS_SKU): Promise<Plan[]> {
 
   plansInFlight.set(sku, request);
   return request;
+}
+
+/** Plans rarely change within a session — reuse a successful response for 10 minutes. */
+const PLANS_TTL_MS = 10 * 60_000;
+
+/**
+ * {@link getPlans} behind the shared TTL cache, so Home, Pricing and the purchase
+ * journey hit `GET /v1/plans` at most once per SKU per window. Failures are not
+ * cached and retry on the next call.
+ */
+export function getCachedPlans(sku: string = DEFAULT_PLANS_SKU): Promise<Plan[]> {
+  return dedupedRequest(`plans:${sku}`, PLANS_TTL_MS, () => getPlans(sku));
 }

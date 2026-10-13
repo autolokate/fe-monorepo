@@ -76,6 +76,7 @@ export function IndianDriveGuidePlayer({
             iframeClassName,
           )}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
         />
       </div>
@@ -100,6 +101,7 @@ export function IndianDriveGuidePlayer({
             iframeClassName,
           )}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
         />
       </div>
@@ -116,6 +118,7 @@ export function IndianDriveGuidePlayer({
         src={youtubeNocookieEmbedSrc(videoId, { autoplay, controls: 1 })}
         className={cn('absolute inset-0 h-full w-full', iframeBase, iframeClassName)}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        loading="lazy"
         referrerPolicy="strict-origin-when-cross-origin"
       />
     </div>

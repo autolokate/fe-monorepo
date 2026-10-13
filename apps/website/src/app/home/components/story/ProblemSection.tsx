@@ -34,7 +34,7 @@ export function ProblemSection() {
         </div>
 
         <div className={styles.visualWrap}>
-          <ProblemSceneVisual priority />
+          <ProblemSceneVisual />
         </div>
       </div>
     </section>

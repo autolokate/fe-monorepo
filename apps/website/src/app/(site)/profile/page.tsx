@@ -9,7 +9,7 @@ export default function ProfilePage() {
       {/* Theme-aware hero backdrops from `/public/images` */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat [background-image:url('/images/profile_bg_light.png')] dark:[background-image:url('/images/profile_bg_dark.png')]"
+        className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat [background-image:url('/images/profile_bg_light.webp')] dark:[background-image:url('/images/profile_bg_dark.webp')]"
       />
       <div
         aria-hidden

@@ -21,7 +21,7 @@ export async function fetchBrandNameForMeta(brandSlug: string): Promise<string |
   try {
     const res = await fetch(
       `${catalogueApiBase()}/v1/catalogue/brands/${encodeURIComponent(trimmed)}`,
-      { next: { revalidate: 60 } },
+      { next: { revalidate: 3600 } },
     );
     if (!res.ok) return null;
     const json = (await res.json().catch(() => null)) as { data?: unknown } | null;

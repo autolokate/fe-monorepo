@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_SHARE_IMAGE } from '@/lib/seo';
 
 export const aboutMetadata: Metadata = {
   title: 'About Autolokate — Protection for the moment you cannot call for help',
@@ -6,6 +7,7 @@ export const aboutMetadata: Metadata = {
     'Autolokate is India’s connected vehicle safety layer. Crash detection, family alerts, Smart QR backup, and a 24/7 Control Center—built for the missing minutes after impact.',
   alternates: { canonical: '/about-us' },
   openGraph: {
+    images: [DEFAULT_SHARE_IMAGE],
     title: 'About Autolokate — Protection for the moment you cannot call for help',
     description:
       'We close the gap between impact and help: automatic detection, family alerts, and emergency coordination for Indian roads.',

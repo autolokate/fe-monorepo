@@ -40,7 +40,7 @@ export function StoryCinematicVisual({
         alt={alt}
         fill
         priority={priority}
-        quality={90}
+        quality={80}
         sizes={
           surface === 'phone'
             ? '(min-width: 1024px) 18rem, 55vw'

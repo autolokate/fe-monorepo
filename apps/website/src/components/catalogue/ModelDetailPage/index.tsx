@@ -305,6 +305,7 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
               <img
                 src={activeHero}
                 alt={heroTitle}
+                decoding="async"
                 className="aspect-[16/10] w-full object-cover"
               />
               <div className="absolute bottom-3 left-3 rounded-lg border border-border/60 bg-background/90 px-2 py-1 text-[10px] font-medium backdrop-blur-sm sm:text-xs">
@@ -328,7 +329,13 @@ export function ModelDetailPage({ brandSlug, modelSlug }: ModelDetailPageProps) 
                     )}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={src}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
                   </button>
                 ))}
               </div>

@@ -23,7 +23,7 @@ export function DetectionSection() {
         </div>
 
         <div className={styles.visual}>
-          <DetectionPhoneStage priority />
+          <DetectionPhoneStage />
         </div>
       </div>
     </section>

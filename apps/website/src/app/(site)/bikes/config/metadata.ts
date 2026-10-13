@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_SHARE_IMAGE } from '@/lib/seo';
 
 export const bikesMetadata: Metadata = {
   title: 'Explore bikes by brand — Autolokate',
@@ -8,6 +9,7 @@ export const bikesMetadata: Metadata = {
     'bike brands India, two wheeler brands, Royal Enfield Bajaj TVS, motorcycle inventory by maker, Autolokate bikes',
   alternates: { canonical: '/bikes' },
   openGraph: {
+    images: [DEFAULT_SHARE_IMAGE],
     title: 'Explore bikes by brand — Autolokate',
     description:
       "Official manufacturer marks on a neutral canvas. Pick a brand to see Autolokate's filtered two-wheeler inventory.",

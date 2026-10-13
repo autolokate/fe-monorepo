@@ -34,6 +34,8 @@ export function WhyItMattersSection() {
           <img
             src={INDIA_MAP_IMAGE}
             alt="Map of India showing Autolokate coverage"
+            loading="lazy"
+            decoding="async"
             className={styles.map}
           />
           <span className={styles.coveragePill}>

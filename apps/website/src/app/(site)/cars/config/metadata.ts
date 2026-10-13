@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_SHARE_IMAGE } from '@/lib/seo';
 
 export const carsMetadata: Metadata = {
   title: 'Explore cars by brand — Autolokate',
@@ -8,6 +9,7 @@ export const carsMetadata: Metadata = {
     'car brands India, browse by brand, Maruti Hyundai Tata, car inventory by maker, Autolokate cars',
   alternates: { canonical: '/cars' },
   openGraph: {
+    images: [DEFAULT_SHARE_IMAGE],
     title: 'Explore cars by brand — Autolokate',
     description:
       "Official manufacturer marks on a neutral canvas. Pick a brand to see Autolokate's filtered inventory.",

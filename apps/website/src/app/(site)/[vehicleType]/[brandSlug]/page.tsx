@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_SHARE_IMAGE } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 
 import { BrandModelsPage } from '@/components/catalogue/BrandModelsPage';
@@ -33,6 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : `Browse catalogue models for this brand on Autolokate (${vehicleType}).`,
     alternates: { canonical: path },
     openGraph: {
+      images: [DEFAULT_SHARE_IMAGE],
       title,
       url: `${base}${path}`,
       type: 'website',

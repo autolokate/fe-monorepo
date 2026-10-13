@@ -305,7 +305,6 @@ export function ResponseNetworkAnimation() {
           alt="Autolokate app showing SOS crash alert with emergency network activating"
           width={853}
           height={1844}
-          priority
           className={styles.phone}
           sizes="(min-width: 1024px) 16rem, 42vw"
         />
