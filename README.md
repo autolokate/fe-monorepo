@@ -46,3 +46,19 @@ pnpm install
 | `pnpm build` | Build all packages and apps          |
 | `pnpm lint`  | Lint all packages and apps           |
 | `pnpm clean` | Clean build artifacts                |
+
+## Development deployment
+
+Pushing or merging to `dev` runs
+[`.github/workflows/deploy-dev.yml`](.github/workflows/deploy-dev.yml), which builds the website
+image, pushes it to the `autolokate-frontend` ECR repository, and waits for the
+`autolokate-frontend-service` ECS service to become stable.
+
+Configure these repository Actions variables before deploying:
+
+| Variable                           | Purpose                                                                     |
+| ---------------------------------- | --------------------------------------------------------------------------- |
+| `AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN` | Terraform `github_dev_frontend_deployer_role_arn` output for AWS OIDC access |
+| `AWS_DEV_SITE_URL`                 | Public website URL embedded in the website build                            |
+| `AWS_DEV_API_BASE_URL`             | Development API base URL embedded in the website build                      |
+| `AWS_DEV_RAZORPAY_KEY_ID`          | Optional publishable Razorpay key embedded in the website build             |

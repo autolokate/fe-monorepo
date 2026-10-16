@@ -1,0 +1,80 @@
+name: deploy-dev
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ap-south-1
+  CLUSTER: autolokate-cluster
+  FRONTEND_SERVICE: autolokate-frontend-service
+  FRONTEND_REPOSITORY: autolokate-frontend
+  AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN: ${{ vars.AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN }}
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Verify deployment configuration
+        env:
+          SITE_URL: ${{ vars.AWS_DEV_SITE_URL }}
+          API_BASE_URL: ${{ vars.AWS_DEV_API_BASE_URL }}
+        run: |
+          if [[ -z "$AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN" ]]; then
+            echo "::error::Repository Actions variable AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN is missing. Set it to the Terraform github_dev_frontend_deployer_role_arn output."
+            exit 1
+          fi
+          if [[ -z "$SITE_URL" || -z "$API_BASE_URL" ]]; then
+            echo "::error::Set AWS_DEV_SITE_URL and AWS_DEV_API_BASE_URL repository Actions variables."
+            exit 1
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/website/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/${{ env.FRONTEND_REPOSITORY }}:${{ github.sha }}
+            ${{ steps.ecr.outputs.registry }}/${{ env.FRONTEND_REPOSITORY }}:latest
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ vars.AWS_DEV_SITE_URL }}
+            NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL=${{ vars.AWS_DEV_API_BASE_URL }}
+            NEXT_PUBLIC_RAZORPAY_KEY_ID=${{ vars.AWS_DEV_RAZORPAY_KEY_ID }}
+          cache-from: type=gha,scope=dev-frontend
+          cache-to: type=gha,mode=max,scope=dev-frontend
+
+      - name: Deploy frontend service
+        run: |
+          aws ecs update-service \
+            --cluster "$CLUSTER" \
+            --service "$FRONTEND_SERVICE" \
+            --force-new-deployment \
+            --region "$AWS_REGION"
+          aws ecs wait services-stable \
+            --cluster "$CLUSTER" \
+            --services "$FRONTEND_SERVICE" \
+            --region "$AWS_REGION"
