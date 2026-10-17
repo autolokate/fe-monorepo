@@ -18,7 +18,11 @@ env:
   CLUSTER: autolokate-cluster
   FRONTEND_SERVICE: autolokate-frontend-service
   FRONTEND_REPOSITORY: autolokate-frontend
-  AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN: ${{ vars.AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN }}
+  AWS_DEV_DEPLOY_ROLE_ARN: ${{ vars.AWS_DEV_DEPLOY_ROLE_ARN }}
+  AWS_DEV_ADMIN_BUCKET: ${{ vars.AWS_DEV_ADMIN_BUCKET }}
+  AWS_DEV_QR_BUCKET: ${{ vars.AWS_DEV_QR_BUCKET }}
+  AWS_DEV_ADMIN_DISTRIBUTION_ID: ${{ vars.AWS_DEV_ADMIN_DISTRIBUTION_ID }}
+  AWS_DEV_QR_DISTRIBUTION_ID: ${{ vars.AWS_DEV_QR_DISTRIBUTION_ID }}
 
 jobs:
   build-push-deploy:
@@ -31,19 +35,70 @@ jobs:
           SITE_URL: ${{ vars.AWS_DEV_SITE_URL }}
           API_BASE_URL: ${{ vars.AWS_DEV_API_BASE_URL }}
         run: |
-          if [[ -z "$AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN" ]]; then
-            echo "::error::Repository Actions variable AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN is missing. Set it to the Terraform github_dev_frontend_deployer_role_arn output."
+          if [[ -z "$AWS_DEV_DEPLOY_ROLE_ARN" ]]; then
+            echo "::error::Set AWS_DEV_DEPLOY_ROLE_ARN to the Terraform github_dev_deployer_role_arn output."
             exit 1
           fi
           if [[ -z "$SITE_URL" || -z "$API_BASE_URL" ]]; then
             echo "::error::Set AWS_DEV_SITE_URL and AWS_DEV_API_BASE_URL repository Actions variables."
             exit 1
           fi
+          if [[ -z "$AWS_DEV_ADMIN_BUCKET" || -z "$AWS_DEV_QR_BUCKET" ]]; then
+            echo "::error::Set AWS_DEV_ADMIN_BUCKET and AWS_DEV_QR_BUCKET repository Actions variables."
+            exit 1
+          fi
+          if [[ -z "$AWS_DEV_ADMIN_DISTRIBUTION_ID" || -z "$AWS_DEV_QR_DISTRIBUTION_ID" ]]; then
+            echo "::error::Set AWS_DEV_ADMIN_DISTRIBUTION_ID and AWS_DEV_QR_DISTRIBUTION_ID repository Actions variables."
+            exit 1
+          fi
+
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build admin
+        run: pnpm turbo build --filter=@autolokate/admin
+        env:
+          VITE_API_BASE_URL: ${{ vars.AWS_DEV_API_BASE_URL }}
+          VITE_ENVIRONMENT: development
+          VITE_ENABLE_LOGS: 'true'
+
+      - name: Build QR
+        run: pnpm turbo build --filter=@autolokate/qr
+        env:
+          VITE_API_BASE_URL: ${{ vars.AWS_DEV_API_BASE_URL }}
+          VITE_ENVIRONMENT: development
+          VITE_ENABLE_LOGS: 'true'
+          VITE_RAZORPAY_KEY: ${{ vars.AWS_DEV_RAZORPAY_KEY_ID }}
 
       - uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ env.AWS_DEV_FRONTEND_DEPLOY_ROLE_ARN }}
+          role-to-assume: ${{ env.AWS_DEV_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync admin to S3
+        run: aws s3 sync apps/admin/dist "s3://${AWS_DEV_ADMIN_BUCKET}" --delete
+
+      - name: Sync QR to S3
+        run: aws s3 sync apps/qr/dist "s3://${AWS_DEV_QR_BUCKET}" --delete
+
+      - name: Invalidate admin and QR CloudFront distributions
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$AWS_DEV_ADMIN_DISTRIBUTION_ID" \
+            --paths '/*' \
+            --region us-east-1
+          aws cloudfront create-invalidation \
+            --distribution-id "$AWS_DEV_QR_DISTRIBUTION_ID" \
+            --paths '/*' \
+            --region us-east-1
 
       - id: ecr
         uses: aws-actions/amazon-ecr-login@v2
