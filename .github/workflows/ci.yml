@@ -78,6 +78,14 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # QR/Admin Vite hermetic servers resolve workspace packages via package.json
+      # exports → dist/. Clean CI checkouts have no dist; verify builds them, but
+      # this parallel job must build deps itself (matches apps/qr `predev`).
+      - name: Build QR and Admin workspace dependencies
+        run: |
+          pnpm --filter "@autolokate/qr^..." build
+          pnpm --filter "@autolokate/admin^..." build
+
       # QR resolves playwright@1.61.0; Admin resolves @playwright/test@1.61.1 — distinct
       # browser caches. Install Chromium (+ ubuntu system deps) for both trees.
       - name: Install Playwright Chromium
