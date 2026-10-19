@@ -175,6 +175,22 @@ export {
 } from './envelope';
 export { endpoints, type EndpointGroup } from './endpoints';
 export {
+  getGarageCommercialConfig,
+  updateGarageCommercialConfig,
+  listGarageCommercialConfigHistory,
+  grantGaragePass,
+  adjustGarageFreeBids,
+  type GarageCommercialConfigDto,
+  type GarageMonthPassDurationKind,
+  type UpdateGarageCommercialConfigBody,
+  type GarageCommercialConfigAuditDto,
+  type GrantGaragePassBody,
+  type GaragePassGrantResultDto,
+  type AdjustGarageFreeBidsBody,
+  type GarageFreeBidsBalanceDto,
+  type GaragePassKind,
+} from './garage';
+export {
   createAdminPromo,
   createQrBatch,
   findAdminUserByPhone,

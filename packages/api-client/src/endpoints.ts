@@ -127,6 +127,12 @@ export const endpoints = {
     userRoles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/roles`,
     userRole: (userId: string, role: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,
+    garageCommercialConfig: '/admin/v1/garage/commercial-config',
+    garageCommercialConfigHistory: '/admin/v1/garage/commercial-config/history',
+    garageOrgPassGrant: (orgId: string) =>
+      `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/passes/grant`,
+    garageOrgFreeBidsAdjust: (orgId: string) =>
+      `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/free-bids/adjust`,
   },
 } as const;
 
