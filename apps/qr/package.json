@@ -12,6 +12,8 @@
     "prebuild": "node scripts/generate-pwa-icons.mjs",
     "lint": "eslint .",
     "test:fid": "node e2e/fid-registration.test.mjs",
+    "test:auth-otp-hermetic": "node e2e/auth-otp.hermetic.test.mjs",
+    "test:purchase-hermetic": "node e2e/purchase-payment.test.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
