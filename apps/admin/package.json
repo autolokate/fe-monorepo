@@ -14,7 +14,9 @@
     "test:e2e:watch": "E2E_HEADED=1 E2E_PAUSE=1 E2E_SLOWMO_MS=500 E2E_STEP_MS=2000 node ./e2e/run-playwright.mjs test",
     "test:e2e:debug": "E2E_HEADED=1 E2E_PAUSE=1 node ./e2e/run-playwright.mjs test --debug",
     "test:e2e:ui": "node ./e2e/run-playwright.mjs test --ui",
-    "test:e2e:report": "pnpm exec playwright show-report"
+    "test:e2e:report": "pnpm exec playwright show-report",
+    "test:hermetic": "node ./e2e/run-hermetic.mjs",
+    "test:ownership-transfer-hermetic": "node ./e2e/run-hermetic.mjs"
   },
   "dependencies": {
     "@autolokate/api-client": "workspace:*",

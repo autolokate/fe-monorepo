@@ -9,7 +9,8 @@ export type AdminRole =
 
 /** API session role strings that map to an internal admin role. */
 function resolveApiRoleAlias(normalized: string): AdminRole | null {
-  if (normalized === 'ADMIN') {
+  // BE admin-plane Garage/promo routes use OPERATOR (+ step_up). ADMIN is a legacy alias.
+  if (normalized === 'OPERATOR' || normalized === 'ADMIN') {
     return 'SUPER_ADMIN';
   }
   return null;

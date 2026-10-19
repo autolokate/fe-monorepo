@@ -43,11 +43,16 @@ const ADMIN_TOKEN_KEY = 'al-admin-auth-tokens-v1';
 async function loadAuthenticatedSession(): Promise<{ profile: Profile; session: SessionRoles }> {
   const client = getAdminApiClient();
   const profile = await getProfile(client);
-  // Prefer the ADMIN role when granted. Login may mint CONSUMER as the default outside
-  // elevation environments; the admin console must switch onto the admin plane.
+  // Prefer OPERATOR (BE admin plane for Garage/promos). Fall back to ADMIN for legacy grants.
+  // Login may mint CONSUMER as the default outside elevation environments.
   let session = await getOrSwitchSession(client);
-  if (session.role !== 'ADMIN' && session.availableRoles.includes('ADMIN')) {
-    session = await getOrSwitchSession(client, { role: 'ADMIN' });
+  const preferredRole = session.availableRoles.includes('OPERATOR')
+    ? 'OPERATOR'
+    : session.availableRoles.includes('ADMIN')
+      ? 'ADMIN'
+      : null;
+  if (preferredRole && session.role !== preferredRole) {
+    session = await getOrSwitchSession(client, { role: preferredRole });
     if (session.accessToken && session.expiresAt) {
       const current = tokenManager.read();
       if (current) {
