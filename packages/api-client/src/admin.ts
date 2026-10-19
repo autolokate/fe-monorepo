@@ -1593,3 +1593,20 @@ export async function revokeUserRole(
   });
   return unwrapEnvelope(response) as AdminUserDto;
 }
+
+export {
+  getGarageCommercialConfig,
+  updateGarageCommercialConfig,
+  listGarageCommercialConfigHistory,
+  grantGaragePass,
+  adjustGarageFreeBids,
+  type GarageCommercialConfigDto,
+  type GarageMonthPassDurationKind,
+  type UpdateGarageCommercialConfigBody,
+  type GarageCommercialConfigAuditDto,
+  type GrantGaragePassBody,
+  type GaragePassGrantResultDto,
+  type AdjustGarageFreeBidsBody,
+  type GarageFreeBidsBalanceDto,
+  type GaragePassKind,
+} from './garage';

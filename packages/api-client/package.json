@@ -13,7 +13,10 @@
     "build": "tsc --build",
     "dev": "tsc --build --watch",
     "lint": "eslint .",
-    "clean": "rm -rf dist *.tsbuildinfo"
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "node ./scripts/garage-contract-check.mjs && pnpm exec vitest run --config vitest.config.ts",
+    "test:contract": "node ./scripts/garage-contract-check.mjs",
+    "test:unit": "pnpm exec vitest run --config vitest.config.ts"
   },
   "dependencies": {
     "@autolokate/auth": "workspace:*",
@@ -21,5 +24,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "devDependencies": {
+    "vitest": "^5.0.5"
+  }
 }

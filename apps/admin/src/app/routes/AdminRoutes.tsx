@@ -102,6 +102,12 @@ const UsersPage = lazy(() =>
   })),
 );
 
+const GarageCommercialConfigPage = lazy(() =>
+  import('@/features/garage/GarageCommercialConfigPage').then((module) => ({
+    default: module.GarageCommercialConfigPage,
+  })),
+);
+
 function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
@@ -130,6 +136,7 @@ export function AdminRoutes() {
             />
             <Route path={adminPaths.catalog} element={<CatalogPage />} />
             <Route path={adminPaths.promos} element={<PromoManagementPage />} />
+            <Route path={adminPaths.garageCommercial} element={<GarageCommercialConfigPage />} />
             <Route path={adminPaths.orders} element={<OrdersPage />} />
             <Route path={adminPaths.subscriptions} element={<SubscriptionsPage />} />
             <Route path={adminPaths.shipments} element={<ShipmentsPage />} />
