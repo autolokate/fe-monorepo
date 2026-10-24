@@ -1,127 +1,367 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { AdminUserDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlPageHeader, AlStack, AlStatusBadge, AlText } from '@autolokate/ui';
-import { useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import type { AdminUserSummaryDto } from '@autolokate/api-client';
+import {
+  AlButton,
+  AlDataTable,
+  AlErrorState,
+  AlInput,
+  AlPageHeader,
+  AlPageHeaderAction,
+  AlStack,
+  AlStatusBadge,
+  AlText,
+} from '@autolokate/ui';
+import { useMemo, useState } from 'react';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
-import { userLookupSchema, type UserLookupFormValues } from '@/features/users/user-lookup-schema';
-import { describeUserRoleError, useAdminUserRoles } from '@/hooks/users/useAdminUserRoles';
+import { useUsersColumns } from '@/features/users/users-columns';
+import { useAdminUserDetail } from '@/hooks/users/useAdminUserDetail';
+import { useAdminUsers } from '@/hooks/users/useAdminUsers';
+import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminDetailField } from '@/platform/components/AdminDetailField';
+import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './users.css';
 
+const STATUS_FILTERS = [
+  { value: 'ACTIVE', label: 'Active' },
+  { value: 'CLOSED', label: 'Closed' },
+  { value: 'ALL', label: 'All' },
+] as const;
+
+const TYPE_FILTERS = [
+  { value: 'ALL', label: 'All types' },
+  { value: 'CONSUMER', label: 'Consumer' },
+  { value: 'PARTNER', label: 'Partner' },
+  { value: 'INTERNAL', label: 'Internal' },
+] as const;
+
+function UserDetailPanel({
+  account,
+  searchPhone,
+  onClose,
+}: {
+  account: AdminUserSummaryDto;
+  searchPhone: string | null;
+  onClose: () => void;
+}) {
+  const canWrite = useAdminPermission('users:write');
+  const {
+    detail,
+    vehicles,
+    isLoading,
+    detailError,
+    vehiclesError,
+    vehiclesLoading,
+    patchMutation,
+    refresh,
+  } = useAdminUserDetail(account.id);
+
+  const [localeDraft, setLocaleDraft] = useState(account.locale);
+
+  return (
+    <section className="admin-user-account" aria-label="Account detail">
+      <AlStack gap="md">
+        <div className="admin-page-actions">
+          <AlButton type="button" size="sm" variant="secondary" onClick={onClose}>
+            Back to directory
+          </AlButton>
+          <AlButton
+            type="button"
+            size="sm"
+            variant="secondary"
+            loading={isLoading}
+            onClick={refresh}
+          >
+            Refresh
+          </AlButton>
+        </div>
+
+        {detailError ? <AlErrorState message={detailError} onRetry={refresh} /> : null}
+
+        <AdminDetailField label="Account id" value={account.id} mono />
+        {searchPhone ? (
+          <>
+            <AdminDetailField label="Phone search" value={searchPhone} mono />
+            <AlText variant="caption" tone="muted">
+              Matched via blind index — the API never returns the phone.
+            </AlText>
+          </>
+        ) : null}
+        <AdminDetailField
+          label="Display name"
+          value={detail?.name ?? (isLoading ? 'Loading…' : '—')}
+        />
+        <AdminDetailField label="Account type" value={detail?.accountType ?? account.accountType} />
+        <AdminDetailField label="Status" value={detail?.status ?? account.status} />
+        <AdminDetailField
+          label="Created"
+          value={new Date((detail ?? account).createdAt).toLocaleString()}
+        />
+
+        <AlStack gap="xs">
+          <AlText variant="caption" tone="muted">
+            Active roles
+          </AlText>
+          <div className="admin-user-account__roles">
+            {(detail?.roles ?? account.roles).length === 0 ? (
+              <AlText tone="muted">No active roles.</AlText>
+            ) : (
+              (detail?.roles ?? account.roles).map((role) => (
+                <AlStatusBadge
+                  key={`${role.role}:${role.scopeRef ?? 'platform'}`}
+                  label={role.role}
+                  status="inactive"
+                />
+              ))
+            )}
+          </div>
+        </AlStack>
+
+        {canWrite ? (
+          <AlStack gap="sm">
+            <AlText variant="caption" tone="muted">
+              Authorized edits
+            </AlText>
+            <AlInput
+              label="Locale"
+              value={localeDraft}
+              onChange={(event) => {
+                setLocaleDraft(event.target.value);
+              }}
+              helperText="Phone, identity, and subscription changes use dedicated workflows — not this form."
+              data-testid="users-edit-locale"
+            />
+            <div className="admin-page-actions">
+              <AlButton
+                type="button"
+                size="sm"
+                data-testid="users-save-locale"
+                loading={patchMutation.isPending}
+                disabled={
+                  patchMutation.isPending || localeDraft === (detail?.locale ?? account.locale)
+                }
+                onClick={() => {
+                  void patchMutation.mutateAsync({ locale: localeDraft }).then(refresh);
+                }}
+              >
+                Save locale
+              </AlButton>
+              <AlButton
+                type="button"
+                size="sm"
+                variant="secondary"
+                data-testid="users-flag-review"
+                loading={patchMutation.isPending}
+                disabled={patchMutation.isPending || (detail ?? account).fraudFlagged}
+                onClick={() => {
+                  void patchMutation.mutateAsync({ fraudFlagged: true }).then(refresh);
+                }}
+              >
+                Flag for review
+              </AlButton>
+            </div>
+            <p className="admin-inline-alert" data-testid="users-delete-unavailable">
+              Permanent delete is unavailable here. Accounts are closed only through DPDP erasure
+              (data-rights / self DELETE /v1/account) so ownership and financial evidence stay
+              intact. Use Flag for review for ops follow-up.
+            </p>
+          </AlStack>
+        ) : null}
+
+        <AlStack gap="xs">
+          <AlText variant="caption" tone="muted">
+            Vehicles (all owned, including UNPROTECTED)
+          </AlText>
+          {vehiclesError ? (
+            <AlErrorState message={vehiclesError} onRetry={refresh} />
+          ) : (
+            <AlDataTable
+              {...ADMIN_LIST_TABLE_PROPS}
+              tableId="account-vehicles"
+              columns={[
+                { id: 'plate', header: 'Plate', accessorKey: 'plate' },
+                { id: 'make', header: 'Make', accessorKey: 'make' },
+                { id: 'model', header: 'Model', accessorKey: 'model' },
+                { id: 'protection', header: 'Protection', accessorKey: 'protection' },
+              ]}
+              data={vehicles}
+              loading={vehiclesLoading}
+              emptyTitle="No vehicles"
+              emptyDescription="This account has no owned vehicles yet."
+              getRowId={(row) => row.vehicleId}
+            />
+          )}
+        </AlStack>
+
+        <CustomerDrilldown accountId={account.id} />
+      </AlStack>
+    </section>
+  );
+}
+
 /**
- * Customers phone lookup — Nest `GET /admin/v1/users?phone=` only.
- * Role grant/revoke UI is omitted: POST/DELETE …/roles* are product-blocked (absent from Nest OA).
+ * Customers directory — Nest `GET /admin/v1/users` (keyset + phone blind-index).
+ * Detail / vehicles / authorized PATCH. Role grant/revoke and permanent delete stay unavailable.
  */
 export function UsersPage() {
-  const abortRef = useRef<AbortController | null>(null);
+  const {
+    users,
+    isLoading,
+    isFetching,
+    userErrorMessage,
+    phoneInput,
+    setPhoneInput,
+    phoneApplied,
+    applyPhoneSearch,
+    clearPhoneSearch,
+    statusFilter,
+    setStatusFilter,
+    typeFilter,
+    setTypeFilter,
+    refresh,
+  } = useAdminUsers();
 
-  const [account, setAccount] = useState<AdminUserDto | null>(null);
-  const [lookupPhone, setLookupPhone] = useState<string | null>(null);
-  const [lookupError, setLookupError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<AdminUserSummaryDto | null>(null);
+  const columns = useUsersColumns();
 
-  const { lookupMutation } = useAdminUserRoles();
-
-  const form = useForm<UserLookupFormValues>({
-    resolver: zodResolver(userLookupSchema),
-    defaultValues: { phone: '' },
-  });
-
-  const onSubmit = form.handleSubmit(async (values) => {
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setAccount(null);
-    setLookupPhone(null);
-    setLookupError(null);
-    try {
-      setLookupPhone(values.phone);
-      setAccount(
-        await lookupMutation.mutateAsync({ phone: values.phone, signal: controller.signal }),
-      );
-    } catch (error) {
-      setLookupError(describeUserRoleError(error));
+  const pageDescription = useMemo(() => {
+    if (isLoading) {
+      return 'Browse accounts by phone or filters. Phone is matched on a blind index — never stored by this screen.';
     }
-  });
+    return buildPageSummary([`${users.length.toLocaleString()} accounts loaded`]);
+  }, [isLoading, users.length]);
+
+  if (userErrorMessage && users.length === 0 && !selected) {
+    return (
+      <RequirePermission permission="users:read">
+        <AlErrorState
+          message={userErrorMessage}
+          onRetry={() => {
+            refresh();
+          }}
+        />
+      </RequirePermission>
+    );
+  }
 
   return (
     <RequirePermission permission="users:read">
       <AlStack gap="md">
         <AlPageHeader
           title="Customers"
-          description="Find a customer by their verified phone number to see Nest roles, orders, and coverage. Role grant/revoke is unavailable until Nest ships that contract."
+          description={pageDescription}
+          actions={
+            <AlPageHeaderAction
+              label={isFetching ? 'Refreshing…' : 'Refresh'}
+              loading={isFetching}
+              variant="secondary"
+              onClick={refresh}
+            />
+          }
         />
 
-        <section className="admin-user-lookup" aria-label="Find an account">
-          <form
-            onSubmit={(event) => {
-              void onSubmit(event);
+        {selected ? (
+          <UserDetailPanel
+            account={selected}
+            searchPhone={phoneApplied ?? null}
+            onClose={() => {
+              setSelected(null);
             }}
-          >
-            <AlStack gap="md">
-              <AlInput
-                label="Phone number"
-                mono
-                autoComplete="off"
-                placeholder="+919876543210"
-                data-testid="users-lookup-phone"
-                {...form.register('phone')}
-                errorText={form.formState.errors.phone?.message}
-                helperText="The number the person signs in with. Matched against an encrypted index — it is never stored by this screen."
-              />
-              <div className="admin-page-actions">
-                <AlButton
-                  type="submit"
-                  size="sm"
-                  data-testid="users-lookup-submit"
-                  loading={lookupMutation.isPending}
-                  disabled={lookupMutation.isPending}
-                >
-                  Find account
-                </AlButton>
-              </div>
-              {lookupError ? (
-                <p className="admin-inline-alert" data-testid="users-lookup-error">
-                  {lookupError}
-                </p>
-              ) : null}
-            </AlStack>
-          </form>
-        </section>
-
-        {account ? (
+          />
+        ) : (
           <>
-            <section className="admin-user-account" aria-label="Account roles">
+            <section className="admin-user-lookup" aria-label="Search accounts">
               <AlStack gap="md">
-                <AdminDetailField label="Phone number" value={lookupPhone ?? '—'} mono />
-
-                <AlStack gap="xs">
-                  <AlText variant="caption" tone="muted">
-                    Active roles
-                  </AlText>
-                  <div className="admin-user-account__roles">
-                    {account.roles.length === 0 ? (
-                      <AlText tone="muted">No active roles.</AlText>
-                    ) : (
-                      account.roles.map((role) => (
-                        <AlStatusBadge
-                          key={`${role.role}:${role.scopeRef ?? 'platform'}`}
-                          label={role.role}
-                          status="inactive"
-                        />
-                      ))
-                    )}
-                  </div>
-                </AlStack>
+                <AlInput
+                  label="Phone search"
+                  mono
+                  autoComplete="off"
+                  placeholder="+919876543210 or 9876543210"
+                  data-testid="users-lookup-phone"
+                  value={phoneInput}
+                  onChange={(event) => {
+                    setPhoneInput(event.target.value);
+                  }}
+                  helperText="E.164, Indian 10-digit, or 91-prefixed. Server-side blind-index match — no download-all."
+                />
+                <div className="admin-page-actions">
+                  <AlButton
+                    type="button"
+                    size="sm"
+                    data-testid="users-lookup-submit"
+                    loading={isFetching}
+                    onClick={applyPhoneSearch}
+                  >
+                    Search phone
+                  </AlButton>
+                  {phoneApplied ? (
+                    <AlButton
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={clearPhoneSearch}
+                    >
+                      Clear phone
+                    </AlButton>
+                  ) : null}
+                </div>
               </AlStack>
             </section>
 
-            <CustomerDrilldown accountId={account.id} />
+            <AdminDataBlock
+              filters={
+                <>
+                  <AdminFilterField label="Status">
+                    <AdminFilterChips
+                      options={[...STATUS_FILTERS]}
+                      value={statusFilter}
+                      onChange={(value) => {
+                        setStatusFilter(value);
+                      }}
+                      aria-label="Account status"
+                    />
+                  </AdminFilterField>
+                  <AdminFilterField label="Type">
+                    <AdminFilterChips
+                      options={[...TYPE_FILTERS]}
+                      value={typeFilter}
+                      onChange={(value) => {
+                        setTypeFilter(value);
+                      }}
+                      aria-label="Account type family"
+                    />
+                  </AdminFilterField>
+                </>
+              }
+            >
+              <AlDataTable
+                {...ADMIN_LIST_TABLE_PROPS}
+                tableId="admin-users"
+                columns={columns}
+                data={users}
+                loading={isLoading}
+                isRefreshing={isFetching}
+                error={userErrorMessage && users.length > 0 ? userErrorMessage : null}
+                onRetry={refresh}
+                globalSearchPlaceholder="Filter this page…"
+                emptyTitle="No accounts found"
+                emptyDescription={
+                  phoneApplied
+                    ? 'No account matches that phone on the blind index.'
+                    : 'Try another status or type filter.'
+                }
+                getRowId={(row) => row.id}
+                onRowClick={(row) => {
+                  setSelected(row);
+                }}
+              />
+            </AdminDataBlock>
           </>
-        ) : null}
+        )}
       </AlStack>
     </RequirePermission>
   );

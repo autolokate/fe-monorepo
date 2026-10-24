@@ -547,10 +547,7 @@ export async function installHermeticApiRoutes(
     createdAt: '2026-10-20T11:00:00.000Z',
   };
   let ownershipClaimState = { ...HERMETIC_OWNERSHIP_CLAIM };
-  const ownershipClaimsCatalog = [
-    ownershipClaimState,
-    { ...HERMETIC_OWNERSHIP_CLAIM_APPROVED },
-  ];
+  const ownershipClaimsCatalog = [ownershipClaimState, { ...HERMETIC_OWNERSHIP_CLAIM_APPROVED }];
 
   /** Mutable Nest OA commercial-config audit list (newest first). */
   let garageConfigHistory: Array<typeof HERMETIC_GARAGE_CONFIG_AUDIT> = [
@@ -909,11 +906,7 @@ export async function installHermeticApiRoutes(
       }
       capture.qrAutoDetachSweep.push({ method, path, body });
       if (qrAutoDetachSweepStatus >= 400) {
-        await fulfillJson(
-          route,
-          qrAutoDetachSweepStatus,
-          errorEnvelope('Forbidden', 'forbidden'),
-        );
+        await fulfillJson(route, qrAutoDetachSweepStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
       await fulfillJson(
@@ -966,7 +959,9 @@ export async function installHermeticApiRoutes(
     }
     if (method === 'GET' && path === '/admin/v1/audit-events') {
       capture.auditEventsGet += 1;
-      capture.auditEventsGetQueries.push(url.search.startsWith('?') ? url.search.slice(1) : url.search);
+      capture.auditEventsGetQueries.push(
+        url.search.startsWith('?') ? url.search.slice(1) : url.search,
+      );
       if (auditEventsGetStatus >= 400) {
         await fulfillJson(route, auditEventsGetStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
@@ -1018,21 +1013,88 @@ export async function installHermeticApiRoutes(
         );
         return;
       }
-      if (phone !== HERMETIC_CUSTOMER_PHONE) {
-        await fulfillJson(
-          route,
-          404,
-          errorEnvelope('No account is registered for that phone number.', 'not_found'),
-        );
-        return;
-      }
+      const summary = {
+        id: HERMETIC_CUSTOMER_ACCOUNT_ID,
+        accountType: 'CONSUMER' as const,
+        status: 'ACTIVE' as const,
+        locale: 'en',
+        fraudFlagged: false,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        roles: [...hermeticCustomerRoles],
+      };
+      const rows =
+        !phone || phone === HERMETIC_CUSTOMER_PHONE || phone === '9876543210' ? [summary] : [];
+      await fulfillJson(route, usersLookupGetStatus, {
+        data: rows,
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: {
+            limit: Number(url.searchParams.get('limit') ?? 20),
+            cursor: null,
+            nextCursor: null,
+            hasMore: false,
+          },
+        },
+      });
+      return;
+    }
+
+    const userDetailMatch = path.match(/^\/admin\/v1\/users\/([^/]+)$/);
+    if (method === 'GET' && userDetailMatch) {
       await fulfillJson(
         route,
-        usersLookupGetStatus,
+        200,
         envelope({
-          id: HERMETIC_CUSTOMER_ACCOUNT_ID,
+          id: decodeURIComponent(userDetailMatch[1] ?? HERMETIC_CUSTOMER_ACCOUNT_ID),
+          accountType: 'CONSUMER',
+          status: 'ACTIVE',
+          locale: 'en',
+          fraudFlagged: false,
+          createdAt: '2026-01-01T00:00:00.000Z',
+          roles: [...hermeticCustomerRoles],
+          name: 'Hermetic Customer',
+        }),
+      );
+      return;
+    }
+
+    if (method === 'PATCH' && userDetailMatch) {
+      const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          id: decodeURIComponent(userDetailMatch[1] ?? HERMETIC_CUSTOMER_ACCOUNT_ID),
+          accountType: 'CONSUMER',
+          status: 'ACTIVE',
+          locale: typeof body.locale === 'string' ? body.locale : 'en',
+          fraudFlagged: typeof body.fraudFlagged === 'boolean' ? body.fraudFlagged : false,
+          createdAt: '2026-01-01T00:00:00.000Z',
           roles: [...hermeticCustomerRoles],
         }),
+      );
+      return;
+    }
+
+    const userVehiclesMatch = path.match(/^\/admin\/v1\/users\/([^/]+)\/vehicles$/);
+    if (method === 'GET' && userVehiclesMatch) {
+      await fulfillJson(
+        route,
+        200,
+        envelope([
+          {
+            vehicleId: HERMETIC_VEHICLE_ID,
+            plate: 'DL7CQ1939',
+            color: null,
+            make: 'Honda',
+            model: 'City',
+            fuelType: 'PETROL',
+            year: 2020,
+            rcValidTillLabel: null,
+            protection: 'UNPROTECTED',
+          },
+        ]),
       );
       return;
     }
@@ -1262,8 +1324,7 @@ export async function installHermeticApiRoutes(
         await fulfillJson(route, garageConfigPutStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
-      const previousAfter =
-        garageConfigHistory[0]?.after ?? { ...HERMETIC_GARAGE_CONFIG_BODY };
+      const previousAfter = garageConfigHistory[0]?.after ?? { ...HERMETIC_GARAGE_CONFIG_BODY };
       const nextAfter = {
         ...HERMETIC_GARAGE_CONFIG_BODY,
         ...previousAfter,
@@ -1377,11 +1438,7 @@ export async function installHermeticApiRoutes(
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
       capture.garageProvision.push({ method, path, body });
       if (garageProvisionStatus >= 400) {
-        await fulfillJson(
-          route,
-          garageProvisionStatus,
-          errorEnvelope('Forbidden', 'forbidden'),
-        );
+        await fulfillJson(route, garageProvisionStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
       await fulfillJson(
@@ -1482,7 +1539,9 @@ export async function installHermeticApiRoutes(
         ...breakGlassState,
         status: 'PENDING',
         justification:
-          typeof body.justification === 'string' ? body.justification : breakGlassState.justification,
+          typeof body.justification === 'string'
+            ? body.justification
+            : breakGlassState.justification,
         scopeKey:
           body.scopeKind === 'INCIDENT_DETAIL' && typeof body.incidentId === 'string'
             ? `INCIDENT_DETAIL:${body.incidentId}`
@@ -1544,7 +1603,11 @@ export async function installHermeticApiRoutes(
         await fulfillJson(route, 403, errorEnvelope('approvalId required', 'forbidden'));
         return;
       }
-      breakGlassState = { ...breakGlassState, status: 'CONSUMED', consumedAt: '2026-10-20T11:10:00.000Z' };
+      breakGlassState = {
+        ...breakGlassState,
+        status: 'CONSUMED',
+        consumedAt: '2026-10-20T11:10:00.000Z',
+      };
       // listAdminIncidentsPage unwraps envelope data as the items array.
       await fulfillJson(
         route,
@@ -1714,11 +1777,7 @@ export async function installHermeticApiRoutes(
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
       capture.clawbacksPost.push({ method, path, body });
       if (clawbacksPostStatus >= 400) {
-        await fulfillJson(
-          route,
-          clawbacksPostStatus,
-          errorEnvelope('Forbidden', 'forbidden'),
-        );
+        await fulfillJson(route, clawbacksPostStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
       const paymentRef =
@@ -1803,11 +1862,8 @@ export async function installHermeticApiRoutes(
         );
         return;
       }
-      const ticketId = decodeURIComponent(
-        supportTicketPatchMatch[1] ?? HERMETIC_SUPPORT_TICKET_ID,
-      );
-      const nextStatus =
-        typeof body.status === 'string' ? body.status : 'IN_PROGRESS';
+      const ticketId = decodeURIComponent(supportTicketPatchMatch[1] ?? HERMETIC_SUPPORT_TICKET_ID);
+      const nextStatus = typeof body.status === 'string' ? body.status : 'IN_PROGRESS';
       await fulfillJson(
         route,
         supportTicketsPatchStatus,
@@ -1867,9 +1923,7 @@ export async function installHermeticApiRoutes(
           route,
           shipmentsStatusPostStatus,
           errorEnvelope(
-            shipmentsStatusPostStatus === 409
-              ? 'Shipment state invalid'
-              : 'Forbidden',
+            shipmentsStatusPostStatus === 409 ? 'Shipment state invalid' : 'Forbidden',
             shipmentsStatusPostStatus === 409 ? 'shipment_state_invalid' : 'forbidden',
           ),
         );
@@ -1892,9 +1946,7 @@ export async function installHermeticApiRoutes(
           allocatedQrCode: HERMETIC_SHIPMENT_QR,
           allocatedAt: '2026-10-19T00:00:00.000Z',
           shippedAt:
-            nextStatus === 'SHIPPED' ||
-            nextStatus === 'IN_TRANSIT' ||
-            nextStatus === 'DELIVERED'
+            nextStatus === 'SHIPPED' || nextStatus === 'IN_TRANSIT' || nextStatus === 'DELIVERED'
               ? '2026-10-20T12:00:00.000Z'
               : null,
           inTransitAt: null,
@@ -2017,7 +2069,9 @@ export async function openCatalogPage(page: Page): Promise<void> {
 /** Land on audit Activity Log after auth bootstrap. */
 export async function openAuditEventsPage(page: Page): Promise<void> {
   await page.goto('/audit-events', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('heading', { name: 'Activity Log', exact: true }).waitFor({ timeout: 30_000 });
+  await page
+    .getByRole('heading', { name: 'Activity Log', exact: true })
+    .waitFor({ timeout: 30_000 });
   await page.getByText('Sign out').waitFor({ timeout: 15_000 });
 }
 

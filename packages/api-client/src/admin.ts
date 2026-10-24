@@ -463,10 +463,7 @@ export type AdminSubscriptionStatus = 'ACTIVE' | 'LAPSED' | 'CANCELLED' | 'REFUN
  * OpenAPI `AdminSubscriptionSummary.activatedVia` — Nest `subscription_activated_via`
  * (`CONSUMER_SELF` | `PARTNER_ATTACH` | `PARTNER_PREPAID`). FE four-label retail variants are not emitted.
  */
-export type AdminSubscriptionActivatedVia =
-  | 'CONSUMER_SELF'
-  | 'PARTNER_ATTACH'
-  | 'PARTNER_PREPAID';
+export type AdminSubscriptionActivatedVia = 'CONSUMER_SELF' | 'PARTNER_ATTACH' | 'PARTNER_PREPAID';
 
 /** OpenAPI `AdminSubscriptionSummary` — one row in the admin subscriptions list (money-free, no PII). */
 export type AdminSubscriptionSummary = {
@@ -1554,12 +1551,7 @@ export async function getAdminIncident(
 }
 
 /** OpenAPI break-glass approval status. */
-export type BreakGlassApprovalStatus =
-  | 'PENDING'
-  | 'APPROVED'
-  | 'DENIED'
-  | 'EXPIRED'
-  | 'CONSUMED';
+export type BreakGlassApprovalStatus = 'PENDING' | 'APPROVED' | 'DENIED' | 'EXPIRED' | 'CONSUMED';
 
 /** OpenAPI break-glass scope kinds. */
 export type BreakGlassScopeKind = 'INCIDENT_LIST' | 'INCIDENT_DETAIL';
@@ -1575,7 +1567,7 @@ export type RequestBreakGlassApprovalBody = {
 /** OpenAPI `BreakGlassApprovalDto`. */
 export type BreakGlassApprovalDto = {
   id: string;
-  status: BreakGlassApprovalStatus | string;
+  status: BreakGlassApprovalStatus;
   scopeKey: string;
   justification: string;
   requesterAdminId: string;
@@ -1653,7 +1645,7 @@ export type OwnershipClaimDto = {
   id: string;
   vehicleId: string;
   claimantAccountId: string;
-  status: OwnershipClaimStatus | string;
+  status: OwnershipClaimStatus;
   rcMediaAssetId: string;
   planSubscriptionId: string | null;
   notes: string | null;
@@ -1695,11 +1687,9 @@ export async function reviewOwnershipClaim(
   body: ReviewOwnershipClaimBody,
   options: { signal?: AbortSignal } = {},
 ): Promise<OwnershipClaimDto> {
-  const response = await client.post<unknown>(
-    endpoints.admin.reviewOwnershipClaim(claimId),
-    body,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.post<unknown>(endpoints.admin.reviewOwnershipClaim(claimId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as OwnershipClaimDto;
 }
 
@@ -1724,27 +1714,150 @@ export type AdminUserRoleDto = {
   grantedAt: string;
 };
 
-/** OpenAPI `AdminUserDto` — an account and its ACTIVE roles. Never carries PII. */
-export type AdminUserDto = {
+/** OpenAPI `AdminUserSummaryDto` — directory row. Never carries phone/password/tokens. */
+export type AdminUserSummaryDto = {
   id: string;
+  accountType: 'CONSUMER' | 'PARTNER';
+  status: 'ACTIVE' | 'CLOSED';
+  locale: string;
+  fraudFlagged: boolean;
+  createdAt: string;
   roles: AdminUserRoleDto[];
 };
 
+/** OpenAPI `AdminUserDetailDto` — summary + audited display name. */
+export type AdminUserDetailDto = AdminUserSummaryDto & {
+  name: string | null;
+};
+
+/** Alias for {@link AdminUserSummaryDto} (legacy callers used `{ id, roles }` only). */
+export type AdminUserDto = AdminUserSummaryDto;
+
+export type AdminUserRoleFamily = 'CONSUMER' | 'PARTNER' | 'INTERNAL';
+
+export type ListAdminUsersQuery = {
+  phone?: string;
+  status?: 'ACTIVE' | 'CLOSED';
+  type?: AdminUserRoleFamily;
+  limit?: number;
+  cursor?: string;
+};
+
+export type AdminUsersPageResult = {
+  items: AdminUserSummaryDto[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
+};
+
+/** OpenAPI vehicle detail projection used by `listAdminUserVehicles`. */
+export type AdminUserVehicleDto = {
+  vehicleId: string;
+  plate: string;
+  color: string | null;
+  make: string | null;
+  model: string | null;
+  fuelType: string | null;
+  year: number | null;
+  rcValidTillLabel: string | null;
+  protection: string;
+};
+
+export type PatchAdminUserBody = {
+  locale?: string;
+  fraudFlagged?: boolean;
+};
+
+/** GET /admin/v1/users — keyset directory (optional phone blind-index filter). */
+export async function listAdminUsersPage(
+  client: ApiClient,
+  query: ListAdminUsersQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUsersPageResult> {
+  const path = `${endpoints.admin.users}${buildQuery({
+    phone: query.phone,
+    status: query.status,
+    type: query.type,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminUserSummaryDto[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
 /**
- * GET /admin/v1/users?phone= — resolve ONE account by its OTP-verified phone.
- * The server matches on a keyed-HMAC blind index, so the number never round-trips as PII.
- * Throws `not_found` when no account carries that number.
+ * GET /admin/v1/users?phone= — resolve ONE account via the directory phone filter.
+ * Throws `not_found` when the page is empty (legacy lookup UX).
  */
 export async function findAdminUserByPhone(
   client: ApiClient,
   phone: string,
   options: { signal?: AbortSignal } = {},
-): Promise<AdminUserDto> {
-  const path = `${endpoints.admin.users}${buildQuery({ phone })}`;
-  const response = await client.get<unknown>(path, {
+): Promise<AdminUserSummaryDto> {
+  const page = await listAdminUsersPage(client, { phone, limit: 1 }, options);
+  const hit = page.items[0];
+  if (!hit) {
+    const err = new Error('No account for that phone.') as Error & {
+      status?: number;
+      code?: string;
+    };
+    err.status = 404;
+    err.code = 'not_found';
+    throw err;
+  }
+  return hit;
+}
+
+/** GET /admin/v1/users/{userId} */
+export async function getAdminUser(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserDetailDto> {
+  const response = await client.get<unknown>(endpoints.admin.user(userId), {
     ...(options.signal ? { signal: options.signal } : {}),
   });
-  return unwrapEnvelope(response) as AdminUserDto;
+  return unwrapEnvelope(response) as AdminUserDetailDto;
+}
+
+/** PATCH /admin/v1/users/{userId} — locale / fraudFlagged only. */
+export async function patchAdminUser(
+  client: ApiClient,
+  userId: string,
+  body: PatchAdminUserBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserSummaryDto> {
+  const response = await client.patch<unknown>(endpoints.admin.user(userId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserSummaryDto;
+}
+
+/** GET /admin/v1/users/{userId}/vehicles — all owned incl. UNPROTECTED. */
+export async function listAdminUserVehicles(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserVehicleDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.userVehicles(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserVehicleDto[];
 }
 
 /** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent). */
@@ -1753,13 +1866,13 @@ export async function grantUserRole(
   userId: string,
   role: GrantableUserRole,
   options: { signal?: AbortSignal } = {},
-): Promise<AdminUserDto> {
+): Promise<AdminUserSummaryDto> {
   const response = await client.post<unknown>(
     endpoints.admin.userRoles(userId),
     { role },
     { ...(options.signal ? { signal: options.signal } : {}) },
   );
-  return unwrapEnvelope(response) as AdminUserDto;
+  return unwrapEnvelope(response) as AdminUserSummaryDto;
 }
 
 /** DELETE /admin/v1/users/{userId}/roles/{role} — revoke a platform role (idempotent; `last_admin` 409 guards). */
@@ -1768,11 +1881,11 @@ export async function revokeUserRole(
   userId: string,
   role: GrantableUserRole,
   options: { signal?: AbortSignal } = {},
-): Promise<AdminUserDto> {
+): Promise<AdminUserSummaryDto> {
   const response = await client.delete<unknown>(endpoints.admin.userRole(userId, role), {
     ...(options.signal ? { signal: options.signal } : {}),
   });
-  return unwrapEnvelope(response) as AdminUserDto;
+  return unwrapEnvelope(response) as AdminUserSummaryDto;
 }
 
 export {

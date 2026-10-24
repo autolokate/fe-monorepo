@@ -160,6 +160,8 @@ export const endpoints = {
     retireQr: (code: string) => `/admin/v1/qr/${encodeURIComponent(code)}/retire`,
     settlementBatch: '/admin/v1/settlement-batch',
     users: '/admin/v1/users',
+    user: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}`,
+    userVehicles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/vehicles`,
     userRoles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/roles`,
     userRole: (userId: string, role: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,

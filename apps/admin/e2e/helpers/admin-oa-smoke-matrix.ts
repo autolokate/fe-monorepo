@@ -130,11 +130,7 @@ export const OA_UNSUPPORTED_HERMETIC_SPECS: readonly UnsupportedHermeticSpec[] =
   },
   {
     file: 'catalog-sku.hermetic.spec.ts',
-    missingContracts: [
-      'GET /admin/v1/skus',
-      'POST /admin/v1/skus',
-      'PATCH /admin/v1/skus/{skuId}',
-    ],
+    missingContracts: ['GET /admin/v1/skus', 'POST /admin/v1/skus', 'PATCH /admin/v1/skus/{skuId}'],
     skipReason:
       'Phase 11: /admin/v1/skus* absent from live Dev OA (287/337). FE catalog callers exist — BE decision to ship handlers. Hermetic mock ≠ Live Supported.',
   },
@@ -150,9 +146,14 @@ export const OA_UNSUPPORTED_HERMETIC_SPECS: readonly UnsupportedHermeticSpec[] =
   },
   {
     file: 'users-lookup.hermetic.spec.ts',
-    missingContracts: ['GET /admin/v1/users'],
+    missingContracts: [
+      'GET /admin/v1/users',
+      'GET /admin/v1/users/{userId}',
+      'PATCH /admin/v1/users/{userId}',
+      'GET /admin/v1/users/{userId}/vehicles',
+    ],
     skipReason:
-      'Phase 11: GET /admin/v1/users absent from live Dev OA (404). FE phone lookup caller exists — BE decision. Hermetic mock ≠ Live Supported.',
+      'Live Dev OA still 404 for GET /admin/v1/users* (tip BE ships listAdminUsers/get/patch/vehicles — pending deploy). Hermetic mock ≠ Live Supported.',
   },
 ] as const;
 

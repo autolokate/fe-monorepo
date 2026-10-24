@@ -30,8 +30,14 @@ export const adminReorderIdSchema = adminUuidSchema;
 /** OpenAPI ownership transfer id (uuid path param) */
 export const adminTransferIdSchema = adminUuidSchema;
 
-/** OpenAPI `AdminUserLookupQueryDto.phone`: E.164 (`^\+[1-9]\d{6,14}$`) */
+/**
+ * Admin users phone search — Nest accepts E.164, Indian 10-digit, or 91-prefixed
+ * (`ListAdminUsersQueryDto.phone`); FE normalizes before/at submit.
+ */
 export const adminPhoneE164Schema = z
   .string()
   .trim()
-  .regex(/^\+[1-9]\d{6,14}$/, 'Enter an E.164 phone number, e.g. +919876543210.');
+  .regex(
+    /^(\+[1-9]\d{6,14}|[6-9]\d{9}|91[6-9]\d{9})$/,
+    'Enter +919876543210, a 10-digit Indian mobile, or 91-prefixed.',
+  );
