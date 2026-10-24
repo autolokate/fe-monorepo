@@ -102,12 +102,26 @@ export async function updateGarageCommercialConfig(
   return unwrapEnvelope(response) as GarageCommercialConfigDto;
 }
 
-/** GET /admin/v1/garage/commercial-config/history */
+function buildGarageQuery(params: Record<string, string | number | undefined>): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== '') {
+      search.set(key, String(value));
+    }
+  }
+  const query = search.toString();
+  return query ? `?${query}` : '';
+}
+
+/** GET /admin/v1/garage/commercial-config/history — newest first; optional `limit` (OA query string). */
 export async function listGarageCommercialConfigHistory(
   client: ApiClient,
-  options: { signal?: AbortSignal } = {},
+  options: { signal?: AbortSignal; limit?: number } = {},
 ): Promise<GarageCommercialConfigAuditDto[]> {
-  const response = await client.get<unknown>(endpoints.admin.garageCommercialConfigHistory, {
+  const path = `${endpoints.admin.garageCommercialConfigHistory}${buildGarageQuery({
+    limit: options.limit,
+  })}`;
+  const response = await client.get<unknown>(path, {
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as GarageCommercialConfigAuditDto[];
@@ -141,4 +155,38 @@ export async function adjustGarageFreeBids(
     },
   );
   return unwrapEnvelope(response) as GarageFreeBidsBalanceDto;
+}
+
+/** OpenAPI `ProvisionGarageBodyDto` */
+export type ProvisionGarageBody = {
+  accountId: string;
+  orgName: string;
+  ownerName: string;
+  storeName?: string;
+  storePhone?: string;
+};
+
+/** OpenAPI `ProvisionGarageResultDto` */
+export type ProvisionGarageResultDto = {
+  orgId: string;
+  staffId: string;
+  storeId: string;
+  kycRecordId: string;
+  storeStatus: 'DRAFT' | 'PUBLISHED';
+  freeBidsGranted: boolean;
+  freeBidsRemaining: number;
+  freeBidLifetimeGranted: number;
+  converged: boolean;
+};
+
+/** POST /admin/v1/garage/provision — OPERATOR + admin-plane step_up. */
+export async function provisionGarage(
+  client: ApiClient,
+  body: ProvisionGarageBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<ProvisionGarageResultDto> {
+  const response = await client.post<unknown>(endpoints.admin.garageProvision, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as ProvisionGarageResultDto;
 }

@@ -14,8 +14,10 @@ export const adminPaths = {
   incidents: '/incidents',
   auditEvents: '/audit-events',
   garageCommercial: '/garage-commercial',
+  taxiPolicy: '/taxi-policy',
   finance: '/finance',
   ownershipTransfers: '/ownership-transfers',
+  ownershipClaims: '/ownership-claims',
   users: '/users',
 } as const;
 
@@ -159,12 +161,26 @@ export const adminRoutes: AdminRouteMeta[] = [
     group: 'products',
     nav: true,
   },
+  {
+    path: adminPaths.taxiPolicy,
+    label: 'Taxi policy',
+    description: 'Taxi advance / deposit bps draft + publish (Admin-supplied; no invented money defaults)',
+    group: 'products',
+    nav: true,
+  },
 
   // Governance — infrequent, high-trust, fully-audited admin work.
   {
     path: adminPaths.ownershipTransfers,
     label: 'Ownership',
     description: 'Initiate and approve vehicle ownership transfers',
+    group: 'governance',
+    nav: true,
+  },
+  {
+    path: adminPaths.ownershipClaims,
+    label: 'Ownership claims',
+    description: 'Review customer ownership claims (RC proof + plan entitlement)',
     group: 'governance',
     nav: true,
   },

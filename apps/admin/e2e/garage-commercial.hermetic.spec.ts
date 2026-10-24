@@ -1,9 +1,12 @@
 import { expect, test } from '@playwright/test';
 
 import {
+  HERMETIC_GARAGE_ACCOUNT_ID,
+  HERMETIC_GARAGE_AUDIT_ID,
   HERMETIC_GARAGE_IDEMPOTENCY_KEY,
   HERMETIC_GARAGE_ORG_ID,
   HERMETIC_GARAGE_PURCHASE_ID,
+  HERMETIC_GARAGE_STAFF_ID,
   installHermeticApiRoutes,
   openGarageCommercialPage,
   seedHermeticSession,
@@ -39,6 +42,73 @@ test.describe('Garage commercial (hermetic)', () => {
       freeBidLifetimeCount: 2,
       monthPassDurationKind: 'CALENDAR_MONTH_IST',
     });
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('config history — GET path + limit + seeded audit row', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
+    await seedHermeticSession(page);
+    await openGarageCommercialPage(page);
+
+    await expect(page.getByTestId('garage-config-history')).toBeVisible({ timeout: 10_000 });
+    await expect(
+      page.getByTestId(`garage-config-history-row-${HERMETIC_GARAGE_AUDIT_ID}`),
+    ).toContainText('day ₹100');
+    await expect(
+      page.getByTestId(`garage-config-history-row-${HERMETIC_GARAGE_AUDIT_ID}`),
+    ).toContainText('free bids 2');
+
+    expect(capture.garageConfigHistoryGet.length).toBeGreaterThanOrEqual(1);
+    expect(capture.garageConfigHistoryGet[0]?.method).toBe('GET');
+    expect(capture.garageConfigHistoryGet[0]?.path).toBe(
+      '/admin/v1/garage/commercial-config/history',
+    );
+    expect(capture.garageConfigHistoryGet[0]?.limit).toBe('50');
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('config history refresh after save — newest audit shows updated price', async ({
+    page,
+  }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
+    await seedHermeticSession(page);
+    await openGarageCommercialPage(page);
+
+    await expect(page.getByTestId('garage-config-history')).toBeVisible({ timeout: 10_000 });
+    const historyGetsBefore = capture.garageConfigHistoryGet.length;
+
+    await page.getByTestId('garage-day-pass-price').fill('175');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('status')).toContainText('Commercial configuration saved.', {
+      timeout: 10_000,
+    });
+
+    await expect
+      .poll(() => capture.garageConfigHistoryGet.length, { timeout: 10_000 })
+      .toBeGreaterThan(historyGetsBefore);
+    await expect(page.getByTestId('garage-config-history')).toContainText('day ₹175', {
+      timeout: 10_000,
+    });
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('error — stubbed 403 on config history surfaces inline alert', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, {
+      sessionRole: 'ADMIN',
+      garageConfigHistoryGetStatus: 403,
+    });
+    await seedHermeticSession(page);
+    await openGarageCommercialPage(page);
+
+    // Config form still loads; history fails closed with honest API error.
+    await expect(page.getByTestId('garage-day-pass-price')).toHaveValue('100', {
+      timeout: 10_000,
+    });
+    await expect(page.getByTestId('garage-config-history-error')).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(page.getByTestId('garage-config-history')).toHaveCount(0);
+    expect(capture.garageConfigHistoryGet.length).toBeGreaterThanOrEqual(1);
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -117,8 +187,10 @@ test.describe('Garage commercial (hermetic)', () => {
     await expect(page.getByText('Access denied')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByRole('button', { name: 'Save' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Grant pass' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Provision partner' })).toHaveCount(0);
     expect(capture.garageConfigPut).toEqual([]);
     expect(capture.garagePassGrant).toEqual([]);
+    expect(capture.garageProvision).toEqual([]);
   });
 
   test('error — stubbed 403 on grant surfaces form error', async ({ page }) => {
@@ -143,12 +215,73 @@ test.describe('Garage commercial (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('documents contract gaps for credits/adjust + provision', async ({ page }) => {
+  test('provision partner success — POST body + result panel', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
+    await seedHermeticSession(page);
+    await openGarageCommercialPage(page);
+
+    await page.getByRole('button', { name: 'Provision partner' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Provision garage partner' });
+    await expect(dialog).toBeVisible();
+
+    await dialog.getByTestId('garage-provision-account-id').fill(HERMETIC_GARAGE_ACCOUNT_ID);
+    await dialog.getByTestId('garage-provision-org-name').fill('Hermetic Garage Co');
+    await dialog.getByTestId('garage-provision-owner-name').fill('Hermetic Owner');
+    await dialog.getByRole('button', { name: 'Provision' }).click();
+
+    await expect(page.getByRole('status')).toContainText('Garage partner provisioned.', {
+      timeout: 10_000,
+    });
+    await expect(page.getByLabel('Garage provisioned')).toBeVisible();
+    await expect(page.getByLabel('Garage provisioned')).toContainText(HERMETIC_GARAGE_ORG_ID);
+    await expect(page.getByLabel('Garage provisioned')).toContainText(HERMETIC_GARAGE_STAFF_ID);
+    await expect(dialog).toBeHidden();
+
+    expect(capture.garageProvision).toHaveLength(1);
+    expect(capture.garageProvision[0]?.method).toBe('POST');
+    expect(capture.garageProvision[0]?.path).toBe('/admin/v1/garage/provision');
+    expect(capture.garageProvision[0]?.body).toEqual({
+      accountId: HERMETIC_GARAGE_ACCOUNT_ID,
+      orgName: 'Hermetic Garage Co',
+      ownerName: 'Hermetic Owner',
+    });
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('error — stubbed 403 on provision surfaces form error', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, {
+      sessionRole: 'ADMIN',
+      garageProvisionStatus: 403,
+    });
+    await seedHermeticSession(page);
+    await openGarageCommercialPage(page);
+
+    await page.getByRole('button', { name: 'Provision partner' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Provision garage partner' });
+    await dialog.getByTestId('garage-provision-account-id').fill(HERMETIC_GARAGE_ACCOUNT_ID);
+    await dialog.getByTestId('garage-provision-org-name').fill('Hermetic Garage Co');
+    await dialog.getByTestId('garage-provision-owner-name').fill('Hermetic Owner');
+    await dialog.getByRole('button', { name: 'Provision' }).click();
+
+    await expect(dialog.locator('.admin-form-error')).toHaveText(
+      'Something went wrong. Try again.',
+      { timeout: 10_000 },
+    );
+    await expect(page.getByLabel('Garage provisioned')).toHaveCount(0);
+    expect(capture.garageProvision).toHaveLength(1);
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('documents deferred legacy credits/adjust only', async ({ page }) => {
     await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openGarageCommercialPage(page);
 
     await expect(page.getByTestId('garage-contract-gap-note')).toContainText('credits/adjust');
-    await expect(page.getByTestId('garage-contract-gap-note')).toContainText('provision');
+    await expect(page.getByTestId('garage-contract-gap-note')).toContainText('deferred');
+    await expect(page.getByTestId('garage-contract-gap-note')).not.toContainText(
+      'provision remains',
+    );
+    await expect(page.getByRole('button', { name: 'Provision partner' })).toBeVisible();
   });
 });

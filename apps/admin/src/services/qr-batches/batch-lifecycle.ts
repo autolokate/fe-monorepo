@@ -48,9 +48,7 @@ export function getBatchLifecycleActions(batch: BatchSummaryDto): BatchLifecycle
     actions.push({ id: 'provision', ...BATCH_LIFECYCLE_ACTIONS.provision });
   }
 
-  if (batch.status === 'PROVISIONED') {
-    actions.push({ id: 'distribute', ...BATCH_LIFECYCLE_ACTIONS.distribute });
-  }
+  // POST …/qr-batches/{id}/distribute is product-blocked (absent from Nest OA) — never offer it.
 
   return actions;
 }
@@ -91,7 +89,7 @@ export function describeBatchLifecycleStatus(status: QrBatchStatus): string {
     case 'REPRINT':
       return 'Batch requires reprint before provisioning.';
     case 'PROVISIONED':
-      return 'Batch provisioned. Distribute to release codes to the field.';
+      return 'Batch provisioned. Admin distribute is unavailable until Nest ships that contract.';
     case 'ALLOCATED':
       return 'Batch allocated to partners or channels.';
     case 'IN_DISTRIBUTION':

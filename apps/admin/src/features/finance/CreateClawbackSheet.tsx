@@ -68,6 +68,7 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
             type="submit"
             form="create-clawback-form"
             size="sm"
+            data-testid="clawback-submit"
             loading={clawbackMutation.isPending}
             disabled={clawbackMutation.isPending}
           >
@@ -98,6 +99,7 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
           label="Payment reference"
           mono
           autoComplete="off"
+          data-testid="clawback-payment-ref"
           {...form.register('paymentRef')}
           errorText={form.formState.errors.paymentRef?.message}
           helperText="Opaque PaymentRef of the CAPTURED payment to reverse."

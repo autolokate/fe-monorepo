@@ -7,7 +7,6 @@ import {
   AlInput,
   AlPageHeader,
   AlStack,
-  AlText,
 } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -22,7 +21,7 @@ import {
 import { useQrBatchById } from '@/hooks/qr-batches/useQrBatchById';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
-import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
+import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
 import { useCanRunQrLifecycleMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import {
@@ -202,7 +201,12 @@ export function BatchManagementDetailPage() {
       : null;
 
   const runLifecycleAction = async (actionId: BatchLifecycleActionId) => {
-    if (!canWrite || !canRunBatchLifecycleAction(batch, actionId)) {
+    // Product-blocked: never invoke Nest-absent POST …/distribute (even via fallthrough).
+    if (
+      !canWrite ||
+      actionId === 'distribute' ||
+      !canRunBatchLifecycleAction(batch, actionId)
+    ) {
       return;
     }
 
@@ -216,10 +220,11 @@ export function BatchManagementDetailPage() {
           ? await generateMutation.mutateAsync({ batchId: batch.id, signal: controller.signal })
           : actionId === 'provision'
             ? await provisionMutation.mutateAsync({ batchId: batch.id, signal: controller.signal })
-            : await distributeMutation.mutateAsync({
-                batchId: batch.id,
-                signal: controller.signal,
-              });
+            : null;
+      if (!updated) {
+        setPendingLifecycle(null);
+        return;
+      }
       setBatchOverride(updated);
       setPendingLifecycle(null);
     } catch {
@@ -228,7 +233,7 @@ export function BatchManagementDetailPage() {
   };
 
   const runQrAction = qrForm.handleSubmit(async (values) => {
-    if (!canWrite || !pendingQrAction) {
+    if (!canWrite || !pendingQrAction || qrPending) {
       return;
     }
 
@@ -243,16 +248,19 @@ export function BatchManagementDetailPage() {
           signal: controller.signal,
         });
         setReplaceResult(result);
+        setRetireResult(null);
       } else {
         const result = await retireMutation.mutateAsync({
           code: values.code,
           signal: controller.signal,
         });
         setRetireResult(result);
+        setReplaceResult(null);
       }
       setPendingQrAction(null);
       qrForm.reset({ code: '' });
     } catch {
+      // Error via mutation state + toast; keep form for retry.
       setPendingQrAction(null);
     }
   });
@@ -354,6 +362,8 @@ export function BatchManagementDetailPage() {
                   mono
                   placeholder="Enter QR code"
                   autoComplete="off"
+                  data-testid="qr-code-action-input"
+                  helperText="Nest path pattern: 6–32 uppercase letters, numbers, or hyphens."
                   errorText={qrForm.formState.errors.code?.message}
                   {...qrForm.register('code')}
                 />
@@ -361,9 +371,15 @@ export function BatchManagementDetailPage() {
                   <AlButton
                     size="sm"
                     variant="secondary"
+                    data-testid="qr-code-replace"
                     loading={qrPending}
                     disabled={qrPending}
                     onClick={() => {
+                      if (qrPending) {
+                        return;
+                      }
+                      replaceMutation.reset();
+                      retireMutation.reset();
                       void qrForm.trigger('code').then((valid) => {
                         if (valid) {
                           setPendingQrAction('replace');
@@ -376,9 +392,15 @@ export function BatchManagementDetailPage() {
                   <AlButton
                     size="sm"
                     variant="destructive"
+                    data-testid="qr-code-retire"
                     loading={qrPending}
                     disabled={qrPending}
                     onClick={() => {
+                      if (qrPending) {
+                        return;
+                      }
+                      replaceMutation.reset();
+                      retireMutation.reset();
                       void qrForm.trigger('code').then((valid) => {
                         if (valid) {
                           setPendingQrAction('retire');
@@ -391,27 +413,18 @@ export function BatchManagementDetailPage() {
                 </div>
               </div>
             ) : (
-              <span className="qr-batch-detail-toolbar__empty">Write access required</span>
+              <span className="qr-batch-detail-toolbar__empty" data-testid="qr-code-write-required">
+                Write access required
+              </span>
             )}
           </div>
-          {qrError ? <p className="admin-inline-alert">{qrError}</p> : null}
-          {replaceResult ? (
-            <div className="admin-result-panel admin-result-panel--compact">
-              <AlText variant="label">Replacement issued</AlText>
-              <AdminDetailGrid>
-                <AdminDetailField label="Old code" value={replaceResult.oldCode} mono />
-                <AdminDetailField label="New code" value={replaceResult.newCode} mono />
-              </AdminDetailGrid>
-            </div>
+          {qrError ? (
+            <p className="admin-inline-alert" data-testid="qr-code-action-error">
+              {qrError}
+            </p>
           ) : null}
-          {retireResult ? (
-            <div className="admin-result-panel admin-result-panel--compact">
-              <AlText variant="label">Code retired</AlText>
-              <AdminDetailGrid>
-                <AdminDetailField label="Code" value={retireResult.code} mono />
-              </AdminDetailGrid>
-            </div>
-          ) : null}
+          {replaceResult ? <QrReplaceResultPanel result={replaceResult} /> : null}
+          {retireResult ? <QrRetireResultPanel result={retireResult} /> : null}
         </section>
 
         <BatchCodesSection
@@ -442,7 +455,7 @@ export function BatchManagementDetailPage() {
       <AlConfirmationDialog
         open={pendingQrAction !== null}
         onOpenChange={(nextOpen) => {
-          if (!nextOpen) {
+          if (!nextOpen && !qrPending) {
             setPendingQrAction(null);
           }
         }}
@@ -460,5 +473,34 @@ export function BatchManagementDetailPage() {
         }}
       />
     </RequirePermission>
+  );
+}
+
+export function QrReplaceResultPanel({ result }: { result: ReplacedDto }) {
+  return (
+    <AdminMutationResultPanel
+      title="Replacement issued"
+      fields={[
+        { label: 'Old code', value: result.oldCode },
+        { label: 'New code', value: result.newCode },
+        { label: 'Vehicle', value: result.vehicleId },
+        {
+          label: 'Subscription',
+          value: result.subscriptionId ?? '—',
+        },
+      ]}
+    />
+  );
+}
+
+export function QrRetireResultPanel({ result }: { result: RetiredDto }) {
+  return (
+    <AdminMutationResultPanel
+      title="Code retired"
+      fields={[
+        { label: 'Code', value: result.code },
+        { label: 'QR code ID', value: result.qrCodeId },
+      ]}
+    />
   );
 }

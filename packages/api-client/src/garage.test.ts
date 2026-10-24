@@ -6,6 +6,8 @@ import {
   adjustGarageFreeBids,
   getGarageCommercialConfig,
   grantGaragePass,
+  listGarageCommercialConfigHistory,
+  provisionGarage,
   updateGarageCommercialConfig,
 } from './garage';
 
@@ -50,6 +52,26 @@ describe('garage commercial + entitlement admin client', () => {
     expect(String(url)).toContain(endpoints.admin.garageCommercialConfig);
     expect(init.method ?? 'GET').toBe('GET');
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer token');
+  });
+
+  it('GETs commercial-config history with optional limit query', async () => {
+    const fetchImpl = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ data: [], meta: { requestId: 'r', correlationId: 'c' } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+    );
+    const client = new ApiClient({
+      baseUrl: 'https://example.test',
+      fetch: fetchImpl as unknown as typeof fetch,
+      getAccessToken: () => 'token',
+    });
+    await listGarageCommercialConfigHistory(client, { limit: 50 });
+    const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
+    expect(String(url)).toContain(endpoints.admin.garageCommercialConfigHistory);
+    expect(String(url)).toContain('limit=50');
+    expect(init.method ?? 'GET').toBe('GET');
   });
 
   it('PUTs commercial-config updates', async () => {
@@ -126,5 +148,43 @@ describe('garage commercial + entitlement admin client', () => {
     expect(String(fetchImpl.mock.calls[1]?.[0])).toContain(
       endpoints.admin.garageOrgFreeBidsAdjust('org-1'),
     );
+  });
+
+  it('POSTs garage provision with OpenAPI body shape', async () => {
+    const fetchImpl = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            data: {
+              orgId: '11111111-1111-4111-8111-111111111111',
+              staffId: '22222222-2222-4222-8222-222222222222',
+              storeId: '33333333-3333-4333-8333-333333333333',
+              kycRecordId: '44444444-4444-4444-8444-444444444444',
+              storeStatus: 'DRAFT',
+              freeBidsGranted: true,
+              freeBidsRemaining: 2,
+              freeBidLifetimeGranted: 2,
+              converged: true,
+            },
+            meta: { requestId: 'r', correlationId: 'c' },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+    );
+    const client = new ApiClient({
+      baseUrl: 'https://example.test',
+      fetch: fetchImpl as unknown as typeof fetch,
+      getAccessToken: () => 'token',
+    });
+    const result = await provisionGarage(client, {
+      accountId: '55555555-5555-4555-8555-555555555555',
+      orgName: 'Kapil Motors',
+      ownerName: 'Kapil',
+    });
+    expect(result.orgId).toBe('11111111-1111-4111-8111-111111111111');
+    expect(result.storeStatus).toBe('DRAFT');
+    const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
+    expect(String(url)).toContain(endpoints.admin.garageProvision);
+    expect(init.method).toBe('POST');
   });
 });

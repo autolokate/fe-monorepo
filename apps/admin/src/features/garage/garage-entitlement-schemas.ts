@@ -41,3 +41,25 @@ export function toAdjustFreeBidsBody(values: AdjustGarageFreeBidsFormValues) {
     ...(key ? { idempotencyKey: key } : {}),
   };
 }
+
+export const provisionGarageSchema = z.object({
+  accountId: z.string().trim().uuid('Account id must be a UUID.'),
+  orgName: z.string().trim().min(1, 'Organization name is required.'),
+  ownerName: z.string().trim().min(1, 'Owner name is required.'),
+  storeName: z.string().trim().optional(),
+  storePhone: z.string().trim().optional(),
+});
+
+export type ProvisionGarageFormValues = z.infer<typeof provisionGarageSchema>;
+
+export function toProvisionGarageBody(values: ProvisionGarageFormValues) {
+  const storeName = values.storeName?.trim();
+  const storePhone = values.storePhone?.trim();
+  return {
+    accountId: values.accountId.trim(),
+    orgName: values.orgName.trim(),
+    ownerName: values.ownerName.trim(),
+    ...(storeName ? { storeName } : {}),
+    ...(storePhone ? { storePhone } : {}),
+  };
+}

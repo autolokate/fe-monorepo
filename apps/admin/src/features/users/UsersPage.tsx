@@ -1,14 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { AdminUserDto, GrantableUserRole } from '@autolokate/api-client';
-import {
-  AlButton,
-  AlConfirmationDialog,
-  AlInput,
-  AlPageHeader,
-  AlStack,
-  AlStatusBadge,
-  AlText,
-} from '@autolokate/ui';
+import type { AdminUserDto } from '@autolokate/api-client';
+import { AlButton, AlInput, AlPageHeader, AlStack, AlStatusBadge, AlText } from '@autolokate/ui';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -17,33 +9,26 @@ import { userLookupSchema, type UserLookupFormValues } from '@/features/users/us
 import { describeUserRoleError, useAdminUserRoles } from '@/hooks/users/useAdminUserRoles';
 import { AdminDetailField } from '@/platform/components/AdminDetailField';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
-import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './users.css';
 
-/** The role the console hands out. CONSUMER is granted by signup, so ADMIN is the only useful lever here. */
-const MANAGED_ROLE: GrantableUserRole = 'ADMIN';
-
-type PendingAction = 'grant' | 'revoke' | null;
-
+/**
+ * Customers phone lookup — Nest `GET /admin/v1/users?phone=` only.
+ * Role grant/revoke UI is omitted: POST/DELETE …/roles* are product-blocked (absent from Nest OA).
+ */
 export function UsersPage() {
-  const canWrite = useAdminPermission('users:write');
   const abortRef = useRef<AbortController | null>(null);
 
   const [account, setAccount] = useState<AdminUserDto | null>(null);
   const [lookupPhone, setLookupPhone] = useState<string | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
-  const [pending, setPending] = useState<PendingAction>(null);
 
-  const { lookupMutation, grantMutation, revokeMutation } = useAdminUserRoles();
+  const { lookupMutation } = useAdminUserRoles();
 
   const form = useForm<UserLookupFormValues>({
     resolver: zodResolver(userLookupSchema),
     defaultValues: { phone: '' },
   });
-
-  const isAdmin = account?.roles.some((role) => role.role === MANAGED_ROLE) ?? false;
-  const mutating = grantMutation.isPending || revokeMutation.isPending;
 
   const onSubmit = form.handleSubmit(async (values) => {
     abortRef.current?.abort();
@@ -62,26 +47,12 @@ export function UsersPage() {
     }
   });
 
-  const runRoleChange = async (action: Exclude<PendingAction, null>) => {
-    if (!account) {
-      return;
-    }
-    const mutation = action === 'grant' ? grantMutation : revokeMutation;
-    try {
-      setAccount(await mutation.mutateAsync({ userId: account.id, role: MANAGED_ROLE }));
-    } catch {
-      // Surfaced by the mutation's toast; the account panel keeps its last good state.
-    } finally {
-      setPending(null);
-    }
-  };
-
   return (
     <RequirePermission permission="users:read">
       <AlStack gap="md">
         <AlPageHeader
           title="Customers"
-          description="Find a customer by their verified phone number to see their orders and coverage — and manage account access. Every change is written to the audit log."
+          description="Find a customer by their verified phone number to see Nest roles, orders, and coverage. Role grant/revoke is unavailable until Nest ships that contract."
         />
 
         <section className="admin-user-lookup" aria-label="Find an account">
@@ -96,6 +67,7 @@ export function UsersPage() {
                 mono
                 autoComplete="off"
                 placeholder="+919876543210"
+                data-testid="users-lookup-phone"
                 {...form.register('phone')}
                 errorText={form.formState.errors.phone?.message}
                 helperText="The number the person signs in with. Matched against an encrypted index — it is never stored by this screen."
@@ -104,13 +76,18 @@ export function UsersPage() {
                 <AlButton
                   type="submit"
                   size="sm"
+                  data-testid="users-lookup-submit"
                   loading={lookupMutation.isPending}
                   disabled={lookupMutation.isPending}
                 >
                   Find account
                 </AlButton>
               </div>
-              {lookupError ? <p className="admin-inline-alert">{lookupError}</p> : null}
+              {lookupError ? (
+                <p className="admin-inline-alert" data-testid="users-lookup-error">
+                  {lookupError}
+                </p>
+              ) : null}
             </AlStack>
           </form>
         </section>
@@ -133,82 +110,18 @@ export function UsersPage() {
                         <AlStatusBadge
                           key={`${role.role}:${role.scopeRef ?? 'platform'}`}
                           label={role.role}
-                          status={role.role === MANAGED_ROLE ? 'success' : 'inactive'}
+                          status="inactive"
                         />
                       ))
                     )}
                   </div>
                 </AlStack>
-
-                {canWrite ? (
-                  <div className="admin-page-actions">
-                    {isAdmin ? (
-                      <AlButton
-                        type="button"
-                        size="sm"
-                        variant="secondary"
-                        disabled={mutating}
-                        loading={revokeMutation.isPending}
-                        onClick={() => {
-                          setPending('revoke');
-                        }}
-                      >
-                        Revoke ADMIN
-                      </AlButton>
-                    ) : (
-                      <AlButton
-                        type="button"
-                        size="sm"
-                        disabled={mutating}
-                        loading={grantMutation.isPending}
-                        onClick={() => {
-                          setPending('grant');
-                        }}
-                      >
-                        Grant ADMIN
-                      </AlButton>
-                    )}
-                  </div>
-                ) : null}
               </AlStack>
             </section>
 
             <CustomerDrilldown accountId={account.id} />
           </>
         ) : null}
-
-        <AlConfirmationDialog
-          open={pending === 'grant'}
-          onOpenChange={(open) => {
-            if (!open) {
-              setPending(null);
-            }
-          }}
-          title="Grant ADMIN"
-          description="This account will get full access to the admin console, including the ability to grant this role to others."
-          confirmLabel="Grant ADMIN"
-          loading={grantMutation.isPending}
-          onConfirm={() => {
-            void runRoleChange('grant');
-          }}
-        />
-
-        <AlConfirmationDialog
-          open={pending === 'revoke'}
-          onOpenChange={(open) => {
-            if (!open) {
-              setPending(null);
-            }
-          }}
-          title="Revoke ADMIN"
-          description="This account loses admin access at its next sign-in refresh. You cannot revoke your own role, or the last remaining admin."
-          confirmLabel="Revoke ADMIN"
-          destructive
-          loading={revokeMutation.isPending}
-          onConfirm={() => {
-            void runRoleChange('revoke');
-          }}
-        />
       </AlStack>
     </RequirePermission>
   );

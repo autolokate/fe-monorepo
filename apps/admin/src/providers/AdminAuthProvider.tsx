@@ -22,6 +22,7 @@ import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries';
 import {
   getAdminApiClient,
   getAdminBootstrapClient,
+  registerAdminAuthFailureHandler,
   tokenManager,
 } from '@/platform/api/admin-api-client';
 
@@ -31,6 +32,8 @@ export type AdminAuthState = {
   profile: Profile | null;
   session: SessionRoles | null;
   adminRole: AdminRole;
+  /** True when JWT active role is OPERATOR or legacy ADMIN (admin-plane capable). */
+  hasAdminPlaneRole: boolean;
   requestOtp: (phone: string) => Promise<void>;
   verifyOtp: (phone: string, code: string) => Promise<void>;
   signOut: () => void;
@@ -67,11 +70,31 @@ async function loadAuthenticatedSession(): Promise<{ profile: Profile; session: 
   return { profile, session };
 }
 
+function clearLocalSession(): void {
+  tokenManager.clear();
+  createSessionTokenStorage(ADMIN_TOKEN_KEY).remove();
+}
+
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<SessionRoles | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(() => tokenManager.hasSession());
   const [isBootstrapping, setIsBootstrapping] = useState(() => tokenManager.hasSession());
+
+  const signOut = useCallback(() => {
+    clearLocalSession();
+    setProfile(null);
+    setSession(null);
+    setIsAuthenticated(false);
+    setIsBootstrapping(false);
+  }, []);
+
+  // 401 refresh failure → clear session so RequireAuth returns to login (was a no-op before).
+  useEffect(() => {
+    registerAdminAuthFailureHandler(() => {
+      signOut();
+    });
+  }, [signOut]);
 
   useEffect(() => {
     if (!tokenManager.hasSession()) {
@@ -95,8 +118,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         if (!abort.active) {
           return;
         }
-        tokenManager.clear();
-        createSessionTokenStorage(ADMIN_TOKEN_KEY).remove();
+        clearLocalSession();
         setProfile(null);
         setSession(null);
         setIsAuthenticated(false);
@@ -127,16 +149,14 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     void prefetchAdminQueries();
   }, []);
 
-  const signOut = useCallback(() => {
-    tokenManager.clear();
-    createSessionTokenStorage(ADMIN_TOKEN_KEY).remove();
-    setProfile(null);
-    setSession(null);
-    setIsAuthenticated(false);
-    setIsBootstrapping(false);
-  }, []);
-
   const adminRole = normalizeAdminRole(session?.role);
+  const hasAdminPlaneRole = Boolean(
+    session &&
+      (session.role === 'OPERATOR' ||
+        session.role === 'ADMIN' ||
+        session.availableRoles.includes('OPERATOR') ||
+        session.availableRoles.includes('ADMIN')),
+  );
 
   const value = useMemo(
     () => ({
@@ -145,12 +165,14 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       profile,
       session,
       adminRole,
+      hasAdminPlaneRole,
       requestOtp: requestAdminOtp,
       verifyOtp: verifyAdminOtp,
       signOut,
     }),
     [
       adminRole,
+      hasAdminPlaneRole,
       isAuthenticated,
       isBootstrapping,
       profile,

@@ -6,6 +6,7 @@ import { showSuccessToast } from '@/platform/feedback/toast';
 import {
   submitGarageFreeBidsAdjust,
   submitGaragePassGrant,
+  submitGarageProvision,
 } from '@/services/garage/garage-entitlement-service';
 
 export function useGarageEntitlementMutations() {
@@ -47,9 +48,27 @@ export function useGarageEntitlementMutations() {
     },
   });
 
+  const provisionGarageMutation = useMutation({
+    mutationFn: ({
+      body,
+      signal,
+    }: {
+      body: Parameters<typeof submitGarageProvision>[0];
+      signal?: AbortSignal;
+    }) => submitGarageProvision(body, signal),
+    retry: 0,
+    onSuccess: () => {
+      showSuccessToast('Garage partner provisioned.');
+    },
+    onError: (error) => {
+      reportAdminApiError(error, { context: 'garage-provision', toast: true });
+    },
+  });
+
   return {
     grantPassMutation,
     adjustFreeBidsMutation,
+    provisionGarageMutation,
     mapMutationError: mapAdminApiError,
   };
 }

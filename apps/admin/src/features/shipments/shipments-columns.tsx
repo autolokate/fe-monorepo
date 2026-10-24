@@ -76,6 +76,7 @@ export function useShipmentsColumns({
             <AlButton
               size="sm"
               variant="secondary"
+              data-testid={`shipment-update-${row.original.orderId}`}
               onClick={(event) => {
                 event.stopPropagation();
                 onUpdateStatus(row.original);

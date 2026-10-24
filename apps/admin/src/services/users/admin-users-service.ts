@@ -1,7 +1,8 @@
 import type { AdminUserDto, GrantableUserRole } from '@autolokate/api-client';
-import { findAdminUserByPhone, grantUserRole, revokeUserRole } from '@autolokate/api-client';
+import { findAdminUserByPhone } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
+import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
 
 export async function lookupUserByPhone(
   phone: string,
@@ -10,18 +11,20 @@ export async function lookupUserByPhone(
   return findAdminUserByPhone(getAdminApiClient(), phone, { signal });
 }
 
-export async function grantRole(
-  userId: string,
-  role: GrantableUserRole,
-  signal?: AbortSignal,
+/** POST …/users/{userId}/roles — G0-4 Absent. Fail closed. */
+export function grantRole(
+  _userId: string,
+  _role: GrantableUserRole,
+  _signal?: AbortSignal,
 ): Promise<AdminUserDto> {
-  return grantUserRole(getAdminApiClient(), userId, role, { signal });
+  throwAdminProductBlocked('POST /admin/v1/users/{userId}/roles');
 }
 
-export async function revokeRole(
-  userId: string,
-  role: GrantableUserRole,
-  signal?: AbortSignal,
+/** DELETE …/users/{userId}/roles/{role} — G0-4 Absent. Fail closed. */
+export function revokeRole(
+  _userId: string,
+  _role: GrantableUserRole,
+  _signal?: AbortSignal,
 ): Promise<AdminUserDto> {
-  return revokeUserRole(getAdminApiClient(), userId, role, { signal });
+  throwAdminProductBlocked('DELETE /admin/v1/users/{userId}/roles/{role}');
 }

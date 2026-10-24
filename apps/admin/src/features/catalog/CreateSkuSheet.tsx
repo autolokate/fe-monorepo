@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto, SkuSummaryDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
@@ -125,6 +125,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
             type="submit"
             form="create-sku-form"
             size="sm"
+            data-testid="sku-create-submit"
             loading={createSkuMutation.isPending}
             disabled={createSkuMutation.isPending}
           >
@@ -147,6 +148,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- form-level Enter-to-submit handler; the submit button lives in the sheet footer and is associated via the form attribute, so this keyboard handler is legitimate form interaction */}
       <form
         id="create-sku-form"
+        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
@@ -160,6 +162,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               <AlInput
                 label="SKU code"
                 mono
+                data-testid="sku-create-code"
                 value={field.value}
                 onChange={(event) => {
                   field.onChange(event.target.value.toUpperCase());
@@ -209,6 +212,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
             render={({ field, fieldState }) => (
               <AlSelect
                 label="Default plan"
+                data-testid="sku-create-default-plan"
                 placeholder={
                   offeredTiers.length === 0
                     ? 'Put a tier on the shelf first'
@@ -233,6 +237,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               <AlInput
                 label="List price (₹)"
                 inputMode="decimal"
+                data-testid="sku-create-list-price"
                 value={field.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
@@ -310,7 +315,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
             )}
           />
 
-          {submitError ? <AlText role="alert">{submitError}</AlText> : null}
+          {submitError ? <p className="admin-form-error">{submitError}</p> : null}
         </AlStack>
       </form>
     </AlModal>

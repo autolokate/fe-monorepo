@@ -378,8 +378,11 @@ export type QrBatchCodesPageResult = {
 /** OpenAPI `AdminOrderSummary.status` / `AdminOrderDetail.status` — the order lifecycle. */
 export type AdminOrderStatus = 'DRAFT' | 'PENDING_PAYMENT' | 'PAID' | 'FAILED' | 'CANCELLED';
 
-/** OpenAPI `AdminOrderSummary.orderKind` — how the order was raised. */
-export type AdminOrderKind = 'SCAN_SELF_PAY' | 'RETAIL_SHIP' | 'UPGRADE' | 'RENEWAL';
+/**
+ * OpenAPI `AdminOrderSummary.orderKind` — Nest Admin orders over `payment.orders` only
+ * (`SCAN_SELF_PAY` | `PARTNER_ATTACH`). Retail commerce kinds are not emitted here.
+ */
+export type AdminOrderKind = 'SCAN_SELF_PAY' | 'PARTNER_ATTACH';
 
 /** OpenAPI `AdminOrderDetail.paymentOutcome` — the settled result of the order's payment. */
 export type AdminPaymentOutcome = 'PAID' | 'FAILED' | 'UNCONFIRMED' | 'PENDING' | 'REFUNDED';
@@ -456,12 +459,14 @@ export type AdminOrdersPageResult = {
 /** OpenAPI `AdminSubscriptionSummary.status` / `AdminSubscriptionDetail.status` — the subscription lifecycle. */
 export type AdminSubscriptionStatus = 'ACTIVE' | 'LAPSED' | 'CANCELLED' | 'REFUNDED';
 
-/** OpenAPI `AdminSubscriptionSummary.activatedVia` — how the live subscription was activated. */
+/**
+ * OpenAPI `AdminSubscriptionSummary.activatedVia` — Nest `subscription_activated_via`
+ * (`CONSUMER_SELF` | `PARTNER_ATTACH` | `PARTNER_PREPAID`). FE four-label retail variants are not emitted.
+ */
 export type AdminSubscriptionActivatedVia =
-  | 'PARTNER_PREPAID_B2B2C'
-  | 'PARTNER_PREPAID_B2B'
-  | 'CONSUMER_PREPAID_COMMERCE'
-  | 'CONSUMER_PREPAID_RETAIL';
+  | 'CONSUMER_SELF'
+  | 'PARTNER_ATTACH'
+  | 'PARTNER_PREPAID';
 
 /** OpenAPI `AdminSubscriptionSummary` — one row in the admin subscriptions list (money-free, no PII). */
 export type AdminSubscriptionSummary = {
@@ -1006,16 +1011,11 @@ export async function getAdminSubscription(
   return unwrapEnvelope(response) as AdminSubscriptionDetail;
 }
 
-/** OpenAPI `AdminShipmentSummary.status` / `AdminShipmentDetail.status` — the logistics (fulfilment) FSM. */
-export type AdminShipmentStatus =
-  | 'PAID'
-  | 'ALLOCATED'
-  | 'SHIPPED'
-  | 'IN_TRANSIT'
-  | 'DELIVERED'
-  | 'RETURNED'
-  | 'CANCELLED'
-  | 'LOST';
+/**
+ * OpenAPI `AdminShipmentSummary.status` — Nest Admin shipment reads are grounded from retail
+ * order payment status only (`PAID`). Courier FSM statuses are not emitted until product unblocks.
+ */
+export type AdminShipmentStatus = 'PAID';
 
 /** OpenAPI `AdminShipmentSummary` — one row in the admin shipments list (no PII; pincode masked). */
 export type AdminShipmentSummary = {
@@ -1124,12 +1124,21 @@ export async function getAdminShipment(
   return unwrapEnvelope(response) as AdminShipmentDetail;
 }
 
-/** The statuses an admin may manually mark — the courier-checkpoint targets (never PAID/ALLOCATED). */
-export type ManualShipmentStatus = Exclude<AdminShipmentStatus, 'PAID' | 'ALLOCATED'>;
+/**
+ * Courier-checkpoint targets for the product-blocked `POST …/shipments/{orderId}/status`
+ * (absent from Nest OA). Kept for the typed client only — Admin UI must not offer these.
+ */
+export type ManualShipmentStatus =
+  | 'SHIPPED'
+  | 'IN_TRANSIT'
+  | 'DELIVERED'
+  | 'RETURNED'
+  | 'CANCELLED'
+  | 'LOST';
 
 /**
- * POST /admin/v1/shipments/{orderId}/status — manually mark the next milestone (rank-guarded, forward only;
- * a non-advance is `shipment_state_invalid` 409). Returns the refreshed detail.
+ * POST /admin/v1/shipments/{orderId}/status — product-blocked (absent from Nest OA).
+ * Client retained for fail-closed callers; Admin UI must not invoke this.
  */
 export async function updateAdminShipmentStatus(
   client: ApiClient,
@@ -1463,8 +1472,13 @@ export type AdminIncidentDetail = {
   media: AdminIncidentMedia[];
 };
 
-/** Query for `GET /admin/v1/incidents` — keyset-paginated; every field optional. */
+/**
+ * Query for `GET /admin/v1/incidents` — dual-control `approvalId` is required (fail-closed).
+ * Other filters remain optional (keyset-paginated).
+ */
 export type ListAdminIncidentsQuery = {
+  /** Consumed dual-control grant for scope INCIDENT_LIST — required by Nest. */
+  approvalId: string;
   status?: AdminIncidentStatus;
   source?: AdminIncidentSource;
   qrCodeId?: string;
@@ -1484,15 +1498,16 @@ export type AdminIncidentsPageResult = {
 };
 
 /**
- * GET /admin/v1/incidents — the account-wide break-glass incident list (SUPER_ADMIN · step_up).
- * Includes pagination meta from the envelope. Every call is audited server-side as `INCIDENT_PII_ACCESS`.
+ * GET /admin/v1/incidents — break-glass incident list (OPERATOR · step_up · dual-control).
+ * Every call is audited server-side as `INCIDENT_PII_ACCESS`. Requires a consumed `approvalId`.
  */
 export async function listAdminIncidentsPage(
   client: ApiClient,
-  query: ListAdminIncidentsQuery = {},
+  query: ListAdminIncidentsQuery,
   options: { signal?: AbortSignal } = {},
 ): Promise<AdminIncidentsPageResult> {
   const path = `${endpoints.admin.adminIncidents}${buildQuery({
+    approvalId: query.approvalId,
     status: query.status,
     source: query.source,
     qrCodeId: query.qrCodeId,
@@ -1521,24 +1536,190 @@ export async function listAdminIncidentsPage(
   };
 }
 
-/** GET /admin/v1/incidents/{incidentId} — the full break-glass PII view (audited `INCIDENT_PII_ACCESS`). */
+/**
+ * GET /admin/v1/incidents/{incidentId} — full break-glass PII view (audited `INCIDENT_PII_ACCESS`).
+ * Requires a consumed dual-control `approvalId` scoped to INCIDENT_DETAIL:<incidentId>.
+ */
 export async function getAdminIncident(
   client: ApiClient,
   incidentId: string,
+  approvalId: string,
   options: { signal?: AbortSignal } = {},
 ): Promise<AdminIncidentDetail> {
-  const response = await client.get<unknown>(endpoints.admin.adminIncident(incidentId), {
+  const path = `${endpoints.admin.adminIncident(incidentId)}${buildQuery({ approvalId })}`;
+  const response = await client.get<unknown>(path, {
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as AdminIncidentDetail;
 }
 
-/** The platform roles the admin role console may grant or revoke (06-api-contracts.md § Admin plane). */
+/** OpenAPI break-glass approval status. */
+export type BreakGlassApprovalStatus =
+  | 'PENDING'
+  | 'APPROVED'
+  | 'DENIED'
+  | 'EXPIRED'
+  | 'CONSUMED';
+
+/** OpenAPI break-glass scope kinds. */
+export type BreakGlassScopeKind = 'INCIDENT_LIST' | 'INCIDENT_DETAIL';
+
+/** Body for `POST /admin/v1/break-glass/approvals`. */
+export type RequestBreakGlassApprovalBody = {
+  scopeKind: BreakGlassScopeKind;
+  /** Required when scopeKind = INCIDENT_DETAIL. */
+  incidentId?: string;
+  justification: string;
+};
+
+/** OpenAPI `BreakGlassApprovalDto`. */
+export type BreakGlassApprovalDto = {
+  id: string;
+  status: BreakGlassApprovalStatus | string;
+  scopeKey: string;
+  justification: string;
+  requesterAdminId: string;
+  approverAdminId: string | null;
+  denierAdminId: string | null;
+  expiresAt: string;
+  approvedAt: string | null;
+  deniedAt: string | null;
+  consumedAt: string | null;
+  createdAt: string;
+};
+
+/** POST /admin/v1/break-glass/approvals — request dual-control grant (fail-closed without ops TTL). */
+export async function requestBreakGlassApproval(
+  client: ApiClient,
+  body: RequestBreakGlassApprovalBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<BreakGlassApprovalDto> {
+  const response = await client.post<unknown>(endpoints.admin.breakGlassApprovals, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as BreakGlassApprovalDto;
+}
+
+/** GET /admin/v1/break-glass/approvals/{approvalId} */
+export async function getBreakGlassApproval(
+  client: ApiClient,
+  approvalId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<BreakGlassApprovalDto> {
+  const response = await client.get<unknown>(endpoints.admin.breakGlassApproval(approvalId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as BreakGlassApprovalDto;
+}
+
+/** POST /admin/v1/break-glass/approvals/{approvalId}/approve — distinct admin; self-approval forbidden. */
+export async function approveBreakGlassApproval(
+  client: ApiClient,
+  approvalId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<BreakGlassApprovalDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.approveBreakGlassApproval(approvalId),
+    undefined,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as BreakGlassApprovalDto;
+}
+
+/** POST /admin/v1/break-glass/approvals/{approvalId}/deny */
+export async function denyBreakGlassApproval(
+  client: ApiClient,
+  approvalId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<BreakGlassApprovalDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.denyBreakGlassApproval(approvalId),
+    undefined,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as BreakGlassApprovalDto;
+}
+
+/** OpenAPI ownership claim status (M8). */
+export type OwnershipClaimStatus =
+  | 'SUBMITTED'
+  | 'UNDER_REVIEW'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'WITHDRAWN';
+
+/** OpenAPI `OwnershipClaimDto`. */
+export type OwnershipClaimDto = {
+  id: string;
+  vehicleId: string;
+  claimantAccountId: string;
+  status: OwnershipClaimStatus | string;
+  rcMediaAssetId: string;
+  planSubscriptionId: string | null;
+  notes: string | null;
+  rejectionReason: string | null;
+  reviewedByAdminId: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Query for `GET /admin/v1/ownership-claims`. */
+export type ListAdminOwnershipClaimsQuery = {
+  status?: OwnershipClaimStatus;
+};
+
+/** Body for `POST /admin/v1/ownership-claims/{id}/review`. */
+export type ReviewOwnershipClaimBody = {
+  decision: 'APPROVED' | 'REJECTED' | 'UNDER_REVIEW';
+  rejectionReason?: string;
+};
+
+/** GET /admin/v1/ownership-claims */
+export async function listAdminOwnershipClaims(
+  client: ApiClient,
+  query: ListAdminOwnershipClaimsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<OwnershipClaimDto[]> {
+  const path = `${endpoints.admin.adminOwnershipClaims}${buildQuery({ status: query.status })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as OwnershipClaimDto[];
+}
+
+/** POST /admin/v1/ownership-claims/{id}/review */
+export async function reviewOwnershipClaim(
+  client: ApiClient,
+  claimId: string,
+  body: ReviewOwnershipClaimBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<OwnershipClaimDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.reviewOwnershipClaim(claimId),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as OwnershipClaimDto;
+}
+
+/**
+ * FE-ahead grant body roles — Nest has no POST/DELETE `/admin/v1/users/…/roles*`.
+ * Do not enable grant/revoke UI. Nest lookup returns {@link NestAdminUserRole} names only.
+ */
 export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
+
+/** OpenAPI `AdminUserRoleDto.role` — Nest `user_roles` names from phone lookup. */
+export type NestAdminUserRole =
+  | 'CONSUMER'
+  | 'QR_PARTNER'
+  | 'GARAGE_PARTNER'
+  | 'CORPORATE_BUYER'
+  | 'OPERATOR';
 
 /** OpenAPI `AdminUserRoleDto` — one ACTIVE grant on an account. */
 export type AdminUserRoleDto = {
-  role: string;
+  role: NestAdminUserRole | (string & {});
   scopeRef: string | null;
   grantedAt: string;
 };
@@ -1610,3 +1791,12 @@ export {
   type GarageFreeBidsBalanceDto,
   type GaragePassKind,
 } from './garage';
+
+export {
+  getTaxiPolicy,
+  upsertTaxiPolicyDraft,
+  publishTaxiPolicy,
+  listTaxiPolicyHistory,
+  type TaxiPolicyDto,
+  type TaxiPolicyAuditDto,
+} from './taxi-admin';

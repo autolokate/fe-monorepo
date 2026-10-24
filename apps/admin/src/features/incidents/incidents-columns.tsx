@@ -1,5 +1,5 @@
 import type { AdminIncidentSummary } from '@autolokate/api-client';
-import type { ColumnDef } from '@autolokate/ui';
+import { AlButton, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { IncidentStatusBadge } from '@/platform/components/EntityStatusBadge';
@@ -28,7 +28,16 @@ function accountCode(incident: AdminIncidentSummary): string {
   return '—';
 }
 
-export function useIncidentsColumns(): ColumnDef<AdminIncidentSummary>[] {
+export type IncidentsColumnHandlers = {
+  /** Prefills the break-glass INCIDENT_DETAIL incident id field. */
+  onRequestDetailGrant?: (incidentId: string) => void;
+};
+
+export function useIncidentsColumns(
+  handlers: IncidentsColumnHandlers = {},
+): ColumnDef<AdminIncidentSummary>[] {
+  const { onRequestDetailGrant } = handlers;
+
   return useMemo(
     () => [
       {
@@ -56,7 +65,25 @@ export function useIncidentsColumns(): ColumnDef<AdminIncidentSummary>[] {
         header: 'Created',
         cell: ({ row }) => formatDateTime(row.original.openedAt),
       },
+      ...(onRequestDetailGrant
+        ? [
+            {
+              id: 'detailGrant',
+              header: 'Detail',
+              cell: ({ row }: { row: { original: AdminIncidentSummary } }) => (
+                <AlButton
+                  size="sm"
+                  variant="secondary"
+                  data-testid={`incident-detail-grant-${row.original.incidentId}`}
+                  onClick={() => onRequestDetailGrant(row.original.incidentId)}
+                >
+                  Prefill detail grant
+                </AlButton>
+              ),
+            } satisfies ColumnDef<AdminIncidentSummary>,
+          ]
+        : []),
     ],
-    [],
+    [onRequestDetailGrant],
   );
 }

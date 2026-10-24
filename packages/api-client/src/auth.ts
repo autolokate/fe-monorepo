@@ -127,9 +127,9 @@ export async function getOrSwitchSession(
   return unwrapEnvelope(response) as SessionRoles;
 }
 
-/** GET /v1/profile */
+/** GET /v1/profiles */
 export async function getProfile(client: ApiClient): Promise<Profile> {
-  const response = await client.get<unknown>(endpoints.auth.profile);
+  const response = await client.get<unknown>(endpoints.auth.profiles);
   return unwrapEnvelope(response) as Profile;
 }
 
@@ -140,6 +140,84 @@ export async function updateProfile(
 ): Promise<Profile> {
   const response = await client.patch<unknown>(endpoints.auth.profile, body);
   return unwrapEnvelope(response) as Profile;
+}
+
+/** Body for `POST /v1/auth/flow-a/handoff/mint` (lock §5 / §A5). */
+export type MintFlowAHandoffBody = {
+  vehicleId?: string;
+  activationContext?: Record<string, unknown>;
+};
+
+/** Response for Flow A mint — opaque code, never put tokens in the URL. */
+export type MintFlowAHandoffResult = {
+  code: string;
+  expiresAt: string;
+  ttlSeconds: number;
+};
+
+/** Body for `POST /v1/auth/flow-a/handoff/exchange`. */
+export type ExchangeFlowAHandoffBody = {
+  code: string;
+  deviceId?: string;
+};
+
+/** Exchange response — session tokens + optional vehicle/activation context. */
+export type ExchangeFlowAHandoffResult = TokenPair & {
+  accountId: string;
+  vehicleId: string | null;
+  activationContext: Record<string, unknown> | null;
+};
+
+/** POST /v1/auth/flow-a/handoff/mint — authenticated PWA→native handoff mint. */
+export async function mintFlowAHandoff(
+  client: ApiClient,
+  body: MintFlowAHandoffBody = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<MintFlowAHandoffResult> {
+  const response = await client.post<unknown>(endpoints.auth.mintFlowAHandoff, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as MintFlowAHandoffResult;
+}
+
+/**
+ * POST /v1/auth/flow-a/handoff/exchange — public single-use exchange (~60s TTL).
+ * Production ship still requires formal security sign-off (PRG-Sec-FlowA).
+ */
+export async function exchangeFlowAHandoff(
+  client: ApiClient,
+  body: ExchangeFlowAHandoffBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<ExchangeFlowAHandoffResult> {
+  const response = await client.post<unknown>(endpoints.auth.exchangeFlowAHandoff, body, {
+    skipAuth: true,
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const data = unwrapEnvelope(response);
+  const tokens = normalizeTokenPair(data);
+  const record =
+    typeof data === 'object' && data !== null ? (data as Record<string, unknown>) : {};
+  return {
+    ...tokens,
+    accountId:
+      typeof record['accountId'] === 'string'
+        ? record['accountId']
+        : typeof record['account_id'] === 'string'
+          ? record['account_id']
+          : tokens.userId,
+    vehicleId:
+      typeof record['vehicleId'] === 'string'
+        ? record['vehicleId']
+        : typeof record['vehicle_id'] === 'string'
+          ? record['vehicle_id']
+          : null,
+    activationContext:
+      record['activationContext'] && typeof record['activationContext'] === 'object'
+        ? (record['activationContext'] as Record<string, unknown>)
+        : record['activation_context'] && typeof record['activation_context'] === 'object'
+          ? (record['activation_context'] as Record<string, unknown>)
+          : null,
+  };
 }
 
 /** Format a 10-digit Indian mobile as E.164 (+91). */

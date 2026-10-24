@@ -1,5 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { GarageFreeBidsBalanceDto, GaragePassGrantResultDto } from '@autolokate/api-client';
+import type {
+  GarageFreeBidsBalanceDto,
+  GaragePassGrantResultDto,
+  ProvisionGarageResultDto,
+} from '@autolokate/api-client';
 import { AlButton, AlInput, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -7,10 +11,13 @@ import { Controller, useForm } from 'react-hook-form';
 import {
   adjustGarageFreeBidsSchema,
   grantGaragePassSchema,
+  provisionGarageSchema,
   toAdjustFreeBidsBody,
   toGrantPassBody,
+  toProvisionGarageBody,
   type AdjustGarageFreeBidsFormValues,
   type GrantGaragePassFormValues,
+  type ProvisionGarageFormValues,
 } from '@/features/garage/garage-entitlement-schemas';
 import { useGarageEntitlementMutations } from '@/hooks/garage/useGarageEntitlementMutations';
 import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
@@ -308,6 +315,164 @@ export function FreeBidsBalancePanel({ result }: { result: GarageFreeBidsBalance
         { label: 'Org', value: result.orgId },
         { label: 'Remaining', value: String(result.remaining) },
         { label: 'Lifetime granted', value: String(result.lifetimeGranted) },
+      ]}
+    />
+  );
+}
+
+export type ProvisionGarageSheetProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onProvisioned?: (result: ProvisionGarageResultDto) => void;
+};
+
+export function ProvisionGarageSheet({
+  open,
+  onOpenChange,
+  onProvisioned,
+}: ProvisionGarageSheetProps) {
+  const abortRef = useRef<AbortController | null>(null);
+  const { provisionGarageMutation, mapMutationError } = useGarageEntitlementMutations();
+
+  const form = useForm<ProvisionGarageFormValues>({
+    resolver: zodResolver(provisionGarageSchema),
+    defaultValues: {
+      accountId: '',
+      orgName: '',
+      ownerName: '',
+      storeName: '',
+      storePhone: '',
+    },
+  });
+
+  useEffect(() => {
+    if (!open) {
+      abortRef.current?.abort();
+      abortRef.current = null;
+      form.reset({
+        accountId: '',
+        orgName: '',
+        ownerName: '',
+        storeName: '',
+        storePhone: '',
+      });
+    }
+  }, [form, open]);
+
+  const submitError = provisionGarageMutation.isError
+    ? mapMutationError(provisionGarageMutation.error).userMessage
+    : null;
+
+  const onSubmit = form.handleSubmit(async (values) => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      const result = await provisionGarageMutation.mutateAsync({
+        body: toProvisionGarageBody(values),
+        signal: controller.signal,
+      });
+      onProvisioned?.(result);
+      onOpenChange(false);
+    } catch {
+      // Error surfaced via mutation state + toast.
+    }
+  });
+
+  return (
+    <AlModal
+      open={open}
+      onOpenChange={onOpenChange}
+      size="md"
+      title="Provision garage partner"
+      description="Ops provision via POST /admin/v1/garage/provision. Success only after the server confirms — requires OPERATOR + admin-plane step_up."
+      footer={
+        <div className="admin-modal-actions">
+          <AlButton
+            type="submit"
+            form="provision-garage-form"
+            size="sm"
+            loading={provisionGarageMutation.isPending}
+            disabled={provisionGarageMutation.isPending}
+          >
+            Provision
+          </AlButton>
+          <AlButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={provisionGarageMutation.isPending}
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
+            Cancel
+          </AlButton>
+        </div>
+      }
+    >
+      <form
+        id="provision-garage-form"
+        className="admin-form-stack"
+        onSubmit={(event) => {
+          void onSubmit(event);
+        }}
+      >
+        <AlInput
+          label="Account id (UUID)"
+          mono
+          autoComplete="off"
+          data-testid="garage-provision-account-id"
+          {...form.register('accountId')}
+          errorText={form.formState.errors.accountId?.message}
+          helperText="Existing GoTrue account receiving GARAGE_PARTNER enrollment."
+        />
+        <AlInput
+          label="Organization name"
+          autoComplete="off"
+          data-testid="garage-provision-org-name"
+          {...form.register('orgName')}
+          errorText={form.formState.errors.orgName?.message}
+        />
+        <AlInput
+          label="Owner name"
+          autoComplete="off"
+          data-testid="garage-provision-owner-name"
+          {...form.register('ownerName')}
+          errorText={form.formState.errors.ownerName?.message}
+        />
+        <AlInput
+          label="Store name (optional)"
+          autoComplete="off"
+          {...form.register('storeName')}
+          errorText={form.formState.errors.storeName?.message}
+        />
+        <AlInput
+          label="Store phone (optional)"
+          mono
+          autoComplete="off"
+          {...form.register('storePhone')}
+          errorText={form.formState.errors.storePhone?.message}
+        />
+        {submitError ? <p className="admin-form-error">{submitError}</p> : null}
+      </form>
+    </AlModal>
+  );
+}
+
+export function ProvisionGarageResultPanel({ result }: { result: ProvisionGarageResultDto }) {
+  return (
+    <AdminMutationResultPanel
+      title="Garage provisioned"
+      fields={[
+        { label: 'Org', value: result.orgId },
+        { label: 'Staff', value: result.staffId },
+        { label: 'Store', value: result.storeId },
+        { label: 'KYC record', value: result.kycRecordId },
+        { label: 'Store status', value: result.storeStatus },
+        { label: 'Free bids remaining', value: String(result.freeBidsRemaining) },
+        { label: 'Converged', value: result.converged ? 'yes' : 'no' },
       ]}
     />
   );

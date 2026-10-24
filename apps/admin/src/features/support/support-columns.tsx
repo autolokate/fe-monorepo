@@ -52,6 +52,7 @@ export function useSupportColumns({
             <AlButton
               size="sm"
               variant="secondary"
+              data-testid={`support-ticket-triage-${row.original.ticketId}`}
               onClick={(event) => {
                 event.stopPropagation();
                 onChangeStatus(row.original);

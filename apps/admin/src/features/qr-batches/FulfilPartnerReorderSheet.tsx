@@ -37,14 +37,26 @@ export function FulfilPartnerReorderSheet({
       abortRef.current = null;
       form.reset({ reorderId: '' });
       setConfirmOpen(false);
+      fulfilReorderMutation.reset();
+      return;
     }
+    fulfilReorderMutation.reset();
+    // Intentionally only when `open` flips — mutation identity is stable enough for reset.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset on open/close only
   }, [form, open]);
 
   const submitError = fulfilReorderMutation.isError
     ? mapMutationError(fulfilReorderMutation.error).userMessage
     : null;
 
+  const openConfirm = form.handleSubmit(() => {
+    setConfirmOpen(true);
+  });
+
   const runFulfil = form.handleSubmit(async (values) => {
+    if (fulfilReorderMutation.isPending) {
+      return;
+    }
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
@@ -57,7 +69,7 @@ export function FulfilPartnerReorderSheet({
       onFulfilled?.(result);
       onOpenChange(false);
     } catch {
-      // Error surfaced via mutation state + toast.
+      // Error surfaced via mutation state + toast; keep sheet open for retry.
     } finally {
       setConfirmOpen(false);
     }
@@ -77,6 +89,7 @@ export function FulfilPartnerReorderSheet({
               type="submit"
               form="fulfil-reorder-form"
               size="sm"
+              data-testid="partner-reorder-fulfil-review"
               loading={fulfilReorderMutation.isPending}
               disabled={fulfilReorderMutation.isPending}
             >
@@ -100,17 +113,17 @@ export function FulfilPartnerReorderSheet({
           id="fulfil-reorder-form"
           className="admin-form-stack"
           onSubmit={(event) => {
-            event.preventDefault();
-            setConfirmOpen(true);
+            void openConfirm(event);
           }}
         >
           <AlInput
             label="Reorder reference"
             mono
             autoComplete="off"
+            data-testid="partner-reorder-fulfil-id"
             {...form.register('reorderId')}
             errorText={form.formState.errors.reorderId?.message}
-            helperText="From your partner operations workflow."
+            helperText="PENDING reorder (QrDistribution) UUID from partner ops."
           />
 
           {submitError ? <p className="admin-form-error">{submitError}</p> : null}
@@ -119,7 +132,11 @@ export function FulfilPartnerReorderSheet({
 
       <AlConfirmationDialog
         open={confirmOpen}
-        onOpenChange={setConfirmOpen}
+        onOpenChange={(next) => {
+          if (!fulfilReorderMutation.isPending) {
+            setConfirmOpen(next);
+          }
+        }}
         title="Fulfil partner reorder"
         description="Allocate PROVISIONED stock and confirm this reorder?"
         confirmLabel="Fulfil reorder"
@@ -137,8 +154,10 @@ export function ReorderFulfilResultPanel({ result }: { result: ReorderFulfilResu
     <AdminMutationResultPanel
       title="Reorder fulfilled"
       fields={[
+        { label: 'Reorder ID', value: result.reorderId },
         { label: 'Status', value: result.status },
         { label: 'Allocated codes', value: result.allocated.toLocaleString() },
+        { label: 'Location', value: result.locationId },
       ]}
     />
   );

@@ -1,12 +1,12 @@
 import {
   listAdminOrdersPage,
-  refundAdminOrder,
   type AdminOrdersPageResult,
   type ListAdminOrdersQuery,
   type RefundOrderResult,
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
+import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
 
 export async function fetchOrdersPage(
   query: ListAdminOrdersQuery = {},
@@ -15,11 +15,14 @@ export async function fetchOrdersPage(
   return listAdminOrdersPage(getAdminApiClient(), query, { signal });
 }
 
-/** POST /admin/v1/orders/{orderId}/refund — initiate a full refund of a PAID order. */
-export async function refundOrder(
-  orderId: string,
-  reason: string,
-  signal?: AbortSignal,
+/**
+ * POST /admin/v1/orders/{orderId}/refund — G0-4 Absent (not on Nest Dev OA).
+ * Fail closed; do not call the network.
+ */
+export function refundOrder(
+  _orderId: string,
+  _reason: string,
+  _signal?: AbortSignal,
 ): Promise<RefundOrderResult> {
-  return refundAdminOrder(getAdminApiClient(), orderId, { reason }, { signal });
+  throwAdminProductBlocked('POST /admin/v1/orders/{orderId}/refund');
 }

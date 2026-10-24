@@ -7,17 +7,10 @@ export type ShipmentsStatusFilterOption = {
   label: string;
 };
 
-/** Status filters from OpenAPI `GET /admin/v1/shipments` `status` query parameter (the fulfilment FSM). */
+/** Nest Admin shipment reads support `PAID` only (CL-BE-11 / CL-FE-3). */
 export const SHIPMENTS_STATUS_FILTERS: ShipmentsStatusFilterOption[] = [
   { value: 'ALL', label: 'All' },
   { value: 'PAID', label: 'Paid' },
-  { value: 'ALLOCATED', label: 'Allocated' },
-  { value: 'SHIPPED', label: 'Shipped' },
-  { value: 'IN_TRANSIT', label: 'In transit' },
-  { value: 'DELIVERED', label: 'Delivered' },
-  { value: 'RETURNED', label: 'Returned' },
-  { value: 'CANCELLED', label: 'Cancelled' },
-  { value: 'LOST', label: 'Lost' },
 ];
 
 export function toShipmentsQueryStatus(

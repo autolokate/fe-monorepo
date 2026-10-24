@@ -28,6 +28,7 @@ export function AdminFilterChips<T extends string>({
             type="button"
             className="admin-filter-chip al-admin-focus-ring"
             aria-pressed={isActive}
+            data-testid={`filter-chip-${option.value}`}
             onClick={() => {
               onChange(option.value);
             }}

@@ -16,7 +16,6 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { buildPageSummary } from '@/platform/components/build-page-summary';
-import { useCanUpdateShipments } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function ShipmentsPage() {
@@ -30,7 +29,8 @@ export function ShipmentsPage() {
     refresh,
   } = useShipments();
 
-  const canUpdate = useCanUpdateShipments();
+  // Nest has no POST …/shipments/{orderId}/status (product-blocked). Keep mutate CTA off.
+  const canUpdate = false;
   const [markTarget, setMarkTarget] = useState<AdminShipmentSummary | null>(null);
 
   const columns = useShipmentsColumns({ canUpdate, onUpdateStatus: setMarkTarget });

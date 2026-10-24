@@ -8,18 +8,10 @@ import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 
 import { useUpdateShipmentStatus } from '@/hooks/shipments/useUpdateShipmentStatus';
 
-/** The fulfilment FSM rank — mirrors the backend guard: a manual mark must go strictly forward. */
-const FSM_RANK: Record<AdminShipmentStatus, number> = {
-  PAID: 0,
-  ALLOCATED: 1,
-  SHIPPED: 2,
-  IN_TRANSIT: 3,
-  DELIVERED: 4,
-  RETURNED: 4,
-  CANCELLED: 4,
-  LOST: 4,
-};
-
+/**
+ * Nest Admin shipment reads are `PAID` only; POST …/status is product-blocked.
+ * No forward milestones are offered in the UI.
+ */
 const MANUAL_STATUSES: readonly ManualShipmentStatus[] = [
   'SHIPPED',
   'IN_TRANSIT',
@@ -29,9 +21,11 @@ const MANUAL_STATUSES: readonly ManualShipmentStatus[] = [
   'LOST',
 ];
 
-/** The milestones an admin may still mark from `current` — empty on a terminal shipment. */
-export function forwardStatuses(current: AdminShipmentStatus): ManualShipmentStatus[] {
-  return MANUAL_STATUSES.filter((status) => FSM_RANK[status] > FSM_RANK[current]);
+/** Always empty while Nest exposes only `PAID` and has no status mutation. */
+export function forwardStatuses(_current: AdminShipmentStatus): ManualShipmentStatus[] {
+  void _current;
+  void MANUAL_STATUSES;
+  return [];
 }
 
 export type MarkShipmentStatusDialogProps = {
@@ -104,6 +98,7 @@ export function MarkShipmentStatusDialog({
         <div className="admin-modal-actions">
           <AlButton
             size="sm"
+            data-testid="shipment-status-submit"
             loading={updateMutation.isPending}
             disabled={updateMutation.isPending || !selected}
             onClick={() => {
@@ -131,6 +126,7 @@ export function MarkShipmentStatusDialog({
           label="New status"
           options={options.map((value) => ({ value, label: value }))}
           value={selected}
+          data-testid="shipment-status-select"
           onChange={(event: ChangeEvent<HTMLSelectElement>) => {
             setStatus(event.target.value as ManualShipmentStatus);
           }}

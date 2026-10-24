@@ -9,6 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:local-dev-api": "node ./scripts/assert-local-dev-api.mjs",
+    "test:dev-auth-matrix": "node ./scripts/run-dev-auth-matrix.mjs",
     "test:e2e": "node ./e2e/run-playwright.mjs test",
     "test:e2e:headed": "E2E_HEADED=1 node ./e2e/run-playwright.mjs test",
     "test:e2e:watch": "E2E_HEADED=1 E2E_PAUSE=1 E2E_SLOWMO_MS=500 E2E_STEP_MS=2000 node ./e2e/run-playwright.mjs test",

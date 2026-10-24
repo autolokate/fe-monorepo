@@ -1,5 +1,8 @@
 /**
- * Hermetic Admin UI regression runner (ownership-transfer + garage commercial).
+ * Hermetic Admin UI regression runner.
+ *
+ * OA smoke matrix: `./helpers/admin-oa-smoke-matrix.ts` (CL-3).
+ * Unsupported Nest-OA-absent suites use `test.describe.skip` (skipped ≠ passed).
  *
  * Intentionally does NOT load `.env.e2e.local` (unlike `run-playwright.mjs`).
  * Forces a dead API base and strips live Admin e2e credential env vars.
@@ -34,11 +37,16 @@ Object.assign(process.env, {
   E2E_HERMETIC_ADMIN_PORT: process.env.E2E_HERMETIC_ADMIN_PORT ?? '5179',
 });
 
-const child = spawn('pnpm', ['exec', 'playwright', 'test', '-c', 'playwright.hermetic.config.ts'], {
-  cwd: root,
-  stdio: 'inherit',
-  env: process.env,
-});
+const extraArgs = process.argv.slice(2);
+const child = spawn(
+  'pnpm',
+  ['exec', 'playwright', 'test', '-c', 'playwright.hermetic.config.ts', ...extraArgs],
+  {
+    cwd: root,
+    stdio: 'inherit',
+    env: process.env,
+  },
+);
 
 child.on('exit', (code, signal) => {
   if (signal) {

@@ -60,3 +60,22 @@ export async function getVehicleById(
   const response = await client.get<unknown>(endpoints.vehicles.detail(vehicleId));
   return unwrapEnvelope(response) as VehicleDetailDto;
 }
+
+/** OpenAPI `CreateVehicleDto` — required `registration` (normalized plate). */
+export type CreateVehicleDto = {
+  registration: string;
+  make?: string | null;
+  model?: string | null;
+  color?: string | null;
+  fuelType?: 'PETROL' | 'DIESEL' | 'EV' | 'CNG' | null;
+  year?: number | null;
+};
+
+/** POST /v1/vehicles — register a vehicle for the authenticated consumer. */
+export async function createVehicle(
+  client: ApiClient,
+  body: CreateVehicleDto,
+): Promise<VehicleDetailDto> {
+  const response = await client.post<unknown>(endpoints.vehicles.create, body);
+  return unwrapEnvelope(response) as VehicleDetailDto;
+}
