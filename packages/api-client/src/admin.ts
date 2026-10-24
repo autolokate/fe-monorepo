@@ -1763,6 +1763,66 @@ export type AdminUserVehicleDto = {
   protection: string;
 };
 
+/** Personal expense projection used by `listAdminUserExpenses`. */
+export type AdminUserExpenseDto = {
+  id: string;
+  vehicleId: string;
+  title: string;
+  category: string;
+  amountInr: number;
+  occurredOn: string;
+  note: string;
+  locationLabel: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Maintenance job projection used by `listAdminUserMaintenanceJobs`. */
+export type AdminUserMaintenanceJobDto = {
+  id: string;
+  vehicleId: string;
+  title: string;
+  dueOn: string;
+  status: string;
+  estimatedCostInr: number;
+  dueKm: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Maintenance schedule projection used by `listAdminUserMaintenanceSchedule`. */
+export type AdminUserMaintenanceScheduleDto = {
+  id: string;
+  vehicleId: string;
+  title: string;
+  nextDueOn: string;
+  source: string;
+  oemIntervalKm: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Vehicle document metadata used by `listAdminUserVehicleDocuments` (no download URL). */
+export type AdminUserVehicleDocumentDto = {
+  id: string;
+  vehicleId: string;
+  mediaAssetId: string;
+  documentKind: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** Emergency contact summary used by `listAdminUserEmergencyContacts`. */
+export type AdminUserEmergencyContactDto = {
+  id: string;
+  name: string;
+  relation: string | null;
+  phoneMasked: string;
+};
+
 export type PatchAdminUserBody = {
   locale?: string;
   fraudFlagged?: boolean;
@@ -1858,6 +1918,66 @@ export async function listAdminUserVehicles(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as AdminUserVehicleDto[];
+}
+
+/** GET /admin/v1/users/{userId}/expenses — personal expenses across owned vehicles. */
+export async function listAdminUserExpenses(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserExpenseDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.userExpenses(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserExpenseDto[];
+}
+
+/** GET /admin/v1/users/{userId}/maintenance-jobs — maintenance jobs across owned vehicles. */
+export async function listAdminUserMaintenanceJobs(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserMaintenanceJobDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.userMaintenanceJobs(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserMaintenanceJobDto[];
+}
+
+/** GET /admin/v1/users/{userId}/maintenance-schedule — schedules across owned vehicles. */
+export async function listAdminUserMaintenanceSchedule(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserMaintenanceScheduleDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.userMaintenanceSchedule(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserMaintenanceScheduleDto[];
+}
+
+/** GET /admin/v1/users/{userId}/vehicle-documents — document metadata only (no bytes). */
+export async function listAdminUserVehicleDocuments(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserVehicleDocumentDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.userVehicleDocuments(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserVehicleDocumentDto[];
+}
+
+/** GET /admin/v1/users/{userId}/emergency-contacts — masked contact summaries. */
+export async function listAdminUserEmergencyContacts(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserEmergencyContactDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.userEmergencyContacts(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserEmergencyContactDto[];
 }
 
 /** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent). */

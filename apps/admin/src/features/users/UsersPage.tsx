@@ -14,6 +14,7 @@ import { useMemo, useState } from 'react';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
 import { useUsersColumns } from '@/features/users/users-columns';
+import { useAdminUserCareRecords } from '@/hooks/users/useAdminUserCareRecords';
 import { useAdminUserDetail } from '@/hooks/users/useAdminUserDetail';
 import { useAdminUsers } from '@/hooks/users/useAdminUsers';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
@@ -57,8 +58,32 @@ function UserDetailPanel({
     vehiclesError,
     vehiclesLoading,
     patchMutation,
-    refresh,
+    refresh: refreshDetail,
   } = useAdminUserDetail(account.id);
+  const {
+    expenses,
+    expensesLoading,
+    expensesError,
+    maintenanceJobs,
+    maintenanceJobsLoading,
+    maintenanceJobsError,
+    maintenanceSchedule,
+    maintenanceScheduleLoading,
+    maintenanceScheduleError,
+    vehicleDocuments,
+    vehicleDocumentsLoading,
+    vehicleDocumentsError,
+    emergencyContacts,
+    emergencyContactsLoading,
+    emergencyContactsError,
+    isFetching: careFetching,
+    refresh: refreshCare,
+  } = useAdminUserCareRecords(account.id);
+
+  const refresh = () => {
+    refreshDetail();
+    refreshCare();
+  };
 
   const [localeDraft, setLocaleDraft] = useState(account.locale);
 
@@ -73,7 +98,7 @@ function UserDetailPanel({
             type="button"
             size="sm"
             variant="secondary"
-            loading={isLoading}
+            loading={isLoading || careFetching}
             onClick={refresh}
           >
             Refresh
@@ -193,6 +218,133 @@ function UserDetailPanel({
               emptyTitle="No vehicles"
               emptyDescription="This account has no owned vehicles yet."
               getRowId={(row) => row.vehicleId}
+            />
+          )}
+        </AlStack>
+
+        <AlStack gap="xs">
+          <AlText variant="caption" tone="muted">
+            Expenses
+          </AlText>
+          {expensesError ? (
+            <AlErrorState message={expensesError} onRetry={refresh} />
+          ) : (
+            <AlDataTable
+              {...ADMIN_LIST_TABLE_PROPS}
+              tableId="account-expenses"
+              columns={[
+                { id: 'title', header: 'Title', accessorKey: 'title' },
+                { id: 'category', header: 'Category', accessorKey: 'category' },
+                { id: 'amountInr', header: 'Amount (INR)', accessorKey: 'amountInr' },
+                { id: 'occurredOn', header: 'Occurred', accessorKey: 'occurredOn' },
+                { id: 'vehicleId', header: 'Vehicle', accessorKey: 'vehicleId' },
+              ]}
+              data={expenses}
+              loading={expensesLoading}
+              emptyTitle="No expenses"
+              emptyDescription="This account has no personal expenses yet."
+              getRowId={(row) => row.id}
+            />
+          )}
+        </AlStack>
+
+        <AlStack gap="xs">
+          <AlText variant="caption" tone="muted">
+            Maintenance jobs
+          </AlText>
+          {maintenanceJobsError ? (
+            <AlErrorState message={maintenanceJobsError} onRetry={refresh} />
+          ) : (
+            <AlDataTable
+              {...ADMIN_LIST_TABLE_PROPS}
+              tableId="account-maintenance-jobs"
+              columns={[
+                { id: 'title', header: 'Title', accessorKey: 'title' },
+                { id: 'status', header: 'Status', accessorKey: 'status' },
+                { id: 'dueOn', header: 'Due', accessorKey: 'dueOn' },
+                {
+                  id: 'estimatedCostInr',
+                  header: 'Est. cost (INR)',
+                  accessorKey: 'estimatedCostInr',
+                },
+              ]}
+              data={maintenanceJobs}
+              loading={maintenanceJobsLoading}
+              emptyTitle="No maintenance jobs"
+              emptyDescription="This account has no maintenance jobs yet."
+              getRowId={(row) => row.id}
+            />
+          )}
+        </AlStack>
+
+        <AlStack gap="xs">
+          <AlText variant="caption" tone="muted">
+            Maintenance schedule
+          </AlText>
+          {maintenanceScheduleError ? (
+            <AlErrorState message={maintenanceScheduleError} onRetry={refresh} />
+          ) : (
+            <AlDataTable
+              {...ADMIN_LIST_TABLE_PROPS}
+              tableId="account-maintenance-schedule"
+              columns={[
+                { id: 'title', header: 'Title', accessorKey: 'title' },
+                { id: 'nextDueOn', header: 'Next due', accessorKey: 'nextDueOn' },
+                { id: 'source', header: 'Source', accessorKey: 'source' },
+              ]}
+              data={maintenanceSchedule}
+              loading={maintenanceScheduleLoading}
+              emptyTitle="No maintenance schedule"
+              emptyDescription="This account has no maintenance schedule entries yet."
+              getRowId={(row) => row.id}
+            />
+          )}
+        </AlStack>
+
+        <AlStack gap="xs">
+          <AlText variant="caption" tone="muted">
+            Vehicle documents
+          </AlText>
+          {vehicleDocumentsError ? (
+            <AlErrorState message={vehicleDocumentsError} onRetry={refresh} />
+          ) : (
+            <AlDataTable
+              {...ADMIN_LIST_TABLE_PROPS}
+              tableId="account-vehicle-documents"
+              columns={[
+                { id: 'title', header: 'Title', accessorKey: 'title' },
+                { id: 'documentKind', header: 'Kind', accessorKey: 'documentKind' },
+                { id: 'vehicleId', header: 'Vehicle', accessorKey: 'vehicleId' },
+              ]}
+              data={vehicleDocuments}
+              loading={vehicleDocumentsLoading}
+              emptyTitle="No vehicle documents"
+              emptyDescription="This account has no vehicle document metadata yet."
+              getRowId={(row) => row.id}
+            />
+          )}
+        </AlStack>
+
+        <AlStack gap="xs">
+          <AlText variant="caption" tone="muted">
+            Emergency contacts
+          </AlText>
+          {emergencyContactsError ? (
+            <AlErrorState message={emergencyContactsError} onRetry={refresh} />
+          ) : (
+            <AlDataTable
+              {...ADMIN_LIST_TABLE_PROPS}
+              tableId="account-emergency-contacts"
+              columns={[
+                { id: 'name', header: 'Name', accessorKey: 'name' },
+                { id: 'relation', header: 'Relation', accessorKey: 'relation' },
+                { id: 'phoneMasked', header: 'Phone', accessorKey: 'phoneMasked' },
+              ]}
+              data={emergencyContacts}
+              loading={emergencyContactsLoading}
+              emptyTitle="No emergency contacts"
+              emptyDescription="This account has no emergency contacts yet."
+              getRowId={(row) => row.id}
             />
           )}
         </AlStack>

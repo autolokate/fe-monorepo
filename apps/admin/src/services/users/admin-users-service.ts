@@ -1,6 +1,11 @@
 import type {
   AdminUserDetailDto,
+  AdminUserEmergencyContactDto,
+  AdminUserExpenseDto,
+  AdminUserMaintenanceJobDto,
+  AdminUserMaintenanceScheduleDto,
   AdminUserSummaryDto,
+  AdminUserVehicleDocumentDto,
   AdminUserVehicleDto,
   AdminUsersPageResult,
   GrantableUserRole,
@@ -10,6 +15,11 @@ import type {
 import {
   findAdminUserByPhone,
   getAdminUser,
+  listAdminUserEmergencyContacts,
+  listAdminUserExpenses,
+  listAdminUserMaintenanceJobs,
+  listAdminUserMaintenanceSchedule,
+  listAdminUserVehicleDocuments,
   listAdminUserVehicles,
   listAdminUsersPage,
   patchAdminUser,
@@ -52,6 +62,41 @@ export async function fetchUserVehicles(
   signal?: AbortSignal,
 ): Promise<AdminUserVehicleDto[]> {
   return listAdminUserVehicles(getAdminApiClient(), userId, { signal });
+}
+
+export async function fetchUserExpenses(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserExpenseDto[]> {
+  return listAdminUserExpenses(getAdminApiClient(), userId, { signal });
+}
+
+export async function fetchUserMaintenanceJobs(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserMaintenanceJobDto[]> {
+  return listAdminUserMaintenanceJobs(getAdminApiClient(), userId, { signal });
+}
+
+export async function fetchUserMaintenanceSchedule(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserMaintenanceScheduleDto[]> {
+  return listAdminUserMaintenanceSchedule(getAdminApiClient(), userId, { signal });
+}
+
+export async function fetchUserVehicleDocuments(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserVehicleDocumentDto[]> {
+  return listAdminUserVehicleDocuments(getAdminApiClient(), userId, { signal });
+}
+
+export async function fetchUserEmergencyContacts(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserEmergencyContactDto[]> {
+  return listAdminUserEmergencyContacts(getAdminApiClient(), userId, { signal });
 }
 
 /** POST …/users/{userId}/roles — G0-4 Absent. Fail closed. */

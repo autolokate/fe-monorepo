@@ -1099,6 +1099,42 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    const userExpensesMatch = path.match(/^\/admin\/v1\/users\/([^/]+)\/expenses$/);
+    if (method === 'GET' && userExpensesMatch) {
+      await fulfillJson(route, 200, envelope([]));
+      return;
+    }
+
+    const userMaintenanceJobsMatch = path.match(/^\/admin\/v1\/users\/([^/]+)\/maintenance-jobs$/);
+    if (method === 'GET' && userMaintenanceJobsMatch) {
+      await fulfillJson(route, 200, envelope([]));
+      return;
+    }
+
+    const userMaintenanceScheduleMatch = path.match(
+      /^\/admin\/v1\/users\/([^/]+)\/maintenance-schedule$/,
+    );
+    if (method === 'GET' && userMaintenanceScheduleMatch) {
+      await fulfillJson(route, 200, envelope([]));
+      return;
+    }
+
+    const userVehicleDocumentsMatch = path.match(
+      /^\/admin\/v1\/users\/([^/]+)\/vehicle-documents$/,
+    );
+    if (method === 'GET' && userVehicleDocumentsMatch) {
+      await fulfillJson(route, 200, envelope([]));
+      return;
+    }
+
+    const userEmergencyContactsMatch = path.match(
+      /^\/admin\/v1\/users\/([^/]+)\/emergency-contacts$/,
+    );
+    if (method === 'GET' && userEmergencyContactsMatch) {
+      await fulfillJson(route, 200, envelope([]));
+      return;
+    }
+
     const userRolesGrantMatch = path.match(/^\/admin\/v1\/users\/([^/]+)\/roles$/);
     if (method === 'POST' && userRolesGrantMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;

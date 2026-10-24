@@ -162,6 +162,15 @@ export const endpoints = {
     users: '/admin/v1/users',
     user: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}`,
     userVehicles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/vehicles`,
+    userExpenses: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/expenses`,
+    userMaintenanceJobs: (userId: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/maintenance-jobs`,
+    userMaintenanceSchedule: (userId: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/maintenance-schedule`,
+    userVehicleDocuments: (userId: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/vehicle-documents`,
+    userEmergencyContacts: (userId: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/emergency-contacts`,
     userRoles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/roles`,
     userRole: (userId: string, role: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,
