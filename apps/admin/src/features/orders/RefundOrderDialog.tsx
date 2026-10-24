@@ -84,6 +84,7 @@ export function RefundOrderDialog({ order, onOpenChange }: RefundOrderDialogProp
             form="refund-order-form"
             variant="destructive"
             size="sm"
+            data-testid="refund-order-submit"
             loading={refundMutation.isPending}
             disabled={refundMutation.isPending}
           >
@@ -117,6 +118,7 @@ export function RefundOrderDialog({ order, onOpenChange }: RefundOrderDialogProp
           <div className="al-field__control">
             <textarea
               id="refund-order-reason"
+              data-testid="refund-order-reason"
               className="al-field__input"
               rows={4}
               autoComplete="off"

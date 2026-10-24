@@ -132,6 +132,7 @@ export function AuditEventsPage() {
               </AdminFilterField>
               <AdminFilterField label="Target type">
                 <AlInput
+                  data-testid="audit-filter-target-type"
                   value={filters.targetType}
                   placeholder="e.g. batch, promo"
                   onChange={(event) => {
@@ -140,7 +141,7 @@ export function AuditEventsPage() {
                 />
               </AdminFilterField>
               <div className="audit-filters-inline__actions">
-                <AlButton size="sm" onClick={applyFilters}>
+                <AlButton size="sm" data-testid="audit-filter-apply" onClick={applyFilters}>
                   Apply
                 </AlButton>
                 {filtersActive ? (

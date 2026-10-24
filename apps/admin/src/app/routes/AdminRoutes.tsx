@@ -96,6 +96,12 @@ const OwnershipTransfersPage = lazy(() =>
   })),
 );
 
+const OwnershipClaimsPage = lazy(() =>
+  import('@/features/ownership-claims/OwnershipClaimsPage').then((module) => ({
+    default: module.OwnershipClaimsPage,
+  })),
+);
+
 const UsersPage = lazy(() =>
   import('@/features/users/UsersPage').then((module) => ({
     default: module.UsersPage,
@@ -105,6 +111,12 @@ const UsersPage = lazy(() =>
 const GarageCommercialConfigPage = lazy(() =>
   import('@/features/garage/GarageCommercialConfigPage').then((module) => ({
     default: module.GarageCommercialConfigPage,
+  })),
+);
+
+const TaxiPolicyPage = lazy(() =>
+  import('@/features/taxi/TaxiPolicyPage').then((module) => ({
+    default: module.TaxiPolicyPage,
   })),
 );
 
@@ -137,6 +149,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.catalog} element={<CatalogPage />} />
             <Route path={adminPaths.promos} element={<PromoManagementPage />} />
             <Route path={adminPaths.garageCommercial} element={<GarageCommercialConfigPage />} />
+            <Route path={adminPaths.taxiPolicy} element={<TaxiPolicyPage />} />
             <Route path={adminPaths.orders} element={<OrdersPage />} />
             <Route path={adminPaths.subscriptions} element={<SubscriptionsPage />} />
             <Route path={adminPaths.shipments} element={<ShipmentsPage />} />
@@ -146,6 +159,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.auditEvents} element={<AuditEventsPage />} />
             <Route path={adminPaths.finance} element={<FinanceOperationsPage />} />
             <Route path={adminPaths.ownershipTransfers} element={<OwnershipTransfersPage />} />
+            <Route path={adminPaths.ownershipClaims} element={<OwnershipClaimsPage />} />
             <Route path={adminPaths.users} element={<UsersPage />} />
           </Route>
         </Route>

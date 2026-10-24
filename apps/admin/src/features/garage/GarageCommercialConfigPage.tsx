@@ -1,4 +1,8 @@
-import type { GarageFreeBidsBalanceDto, GaragePassGrantResultDto } from '@autolokate/api-client';
+import type {
+  GarageFreeBidsBalanceDto,
+  GaragePassGrantResultDto,
+  ProvisionGarageResultDto,
+} from '@autolokate/api-client';
 import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -7,6 +11,8 @@ import {
   FreeBidsBalancePanel,
   GrantPassSheet,
   PassGrantResultPanel,
+  ProvisionGarageResultPanel,
+  ProvisionGarageSheet,
 } from '@/features/garage/GarageEntitlementSheets';
 import { useGarageCommercialConfig } from '@/hooks/garage/useGarageCommercialConfig';
 import { AdminDataBlock } from '@/platform/components/AdminDataBlock';
@@ -38,8 +44,11 @@ export function GarageCommercialConfigPage() {
   const canWrite = useAdminPermission('settings:write');
   const {
     config,
+    history,
     isLoading,
     isFetching,
+    isHistoryLoading,
+    historyErrorMessage,
     userErrorMessage,
     saveErrorMessage,
     isSaving,
@@ -50,8 +59,10 @@ export function GarageCommercialConfigPage() {
   const [savedNote, setSavedNote] = useState<string | null>(null);
   const [grantOpen, setGrantOpen] = useState(false);
   const [adjustOpen, setAdjustOpen] = useState(false);
+  const [provisionOpen, setProvisionOpen] = useState(false);
   const [grantResult, setGrantResult] = useState<GaragePassGrantResultDto | null>(null);
   const [adjustResult, setAdjustResult] = useState<GarageFreeBidsBalanceDto | null>(null);
+  const [provisionResult, setProvisionResult] = useState<ProvisionGarageResultDto | null>(null);
 
   useEffect(() => {
     if (!config) return;
@@ -68,7 +79,7 @@ export function GarageCommercialConfigPage() {
 
   const pageDescription = useMemo(() => {
     if (isLoading || !config) {
-      return 'Garage commercial settings and org entitlement ops (pass grant / free-bid adjust).';
+      return 'Garage commercial settings and org entitlement ops (pass grant / free-bid adjust / partner provision).';
     }
     return buildPageSummary([
       `${String(config.freeBidLifetimeCount)} lifetime free bids`,
@@ -91,7 +102,7 @@ export function GarageCommercialConfigPage() {
   }
 
   const onSave = async () => {
-    if (!form || !config || !canWrite) return;
+    if (!form || !config || !canWrite || isSaving) return;
     setSavedNote(null);
     try {
       await save({
@@ -138,6 +149,13 @@ export function GarageCommercialConfigPage() {
                     variant="secondary"
                     onClick={() => {
                       setAdjustOpen(true);
+                    }}
+                  />
+                  <AlPageHeaderAction
+                    label="Provision partner"
+                    variant="secondary"
+                    onClick={() => {
+                      setProvisionOpen(true);
                     }}
                   />
                   {form && !isLoading ? (
@@ -241,9 +259,9 @@ export function GarageCommercialConfigPage() {
                 {form.creditsPerFirstBid}).
               </p>
               <p className="garage-commercial-config__note" data-testid="garage-contract-gap-note">
-                OpenAPI also exposes POST /admin/v1/garage/orgs/{'{orgId}'}/credits/adjust and POST
-                /admin/v1/garage/provision — not wired in Admin UI this batch (legacy credits /
-                partner provision; no invent). Blocked until product scopes them.
+                Partner provision: POST /admin/v1/garage/provision (Provision partner). Legacy
+                POST /admin/v1/garage/orgs/{'{orgId}'}/credits/adjust remains deferred (deprecated
+                welcome-credits path; no invent).
               </p>
               {saveErrorMessage ? (
                 <p className="garage-commercial-config__error" role="alert">
@@ -259,14 +277,47 @@ export function GarageCommercialConfigPage() {
           )}
         </AdminDataBlock>
 
+        <h2 className="garage-commercial-config__section-title">Configuration history</h2>
+        <AdminDataBlock>
+          {historyErrorMessage ? (
+            <p className="garage-commercial-config__error" role="alert" data-testid="garage-config-history-error">
+              {historyErrorMessage}
+            </p>
+          ) : isHistoryLoading ? (
+            <p className="garage-commercial-config__muted" data-testid="garage-config-history-loading">
+              Loading configuration history…
+            </p>
+          ) : history.length === 0 ? (
+            <p className="garage-commercial-config__muted" data-testid="garage-config-history-empty">
+              No Garage commercial configuration changes yet.
+            </p>
+          ) : (
+            <ul className="garage-commercial-config__history" data-testid="garage-config-history">
+              {history.map((row) => (
+                <li key={row.id} data-testid={`garage-config-history-row-${row.id}`}>
+                  <strong>{row.createdAt}</strong>
+                  {` · day ₹${String(row.after.dayPassPriceRupees)}`}
+                  {` · month ₹${String(row.after.monthPassPriceRupees)}`}
+                  {typeof row.after.freeBidLifetimeCount === 'number'
+                    ? ` · free bids ${String(row.after.freeBidLifetimeCount)}`
+                    : null}
+                  {` · admin ${row.adminAccountId.slice(0, 8)}`}
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminDataBlock>
+
         <div className="admin-operations-results">
           {grantResult ? <PassGrantResultPanel result={grantResult} /> : null}
           {adjustResult ? <FreeBidsBalancePanel result={adjustResult} /> : null}
+          {provisionResult ? <ProvisionGarageResultPanel result={provisionResult} /> : null}
         </div>
 
-        {!grantResult && !adjustResult ? (
+        {!grantResult && !adjustResult && !provisionResult ? (
           <p className="admin-empty-note admin-operations-empty">
-            Org pass grants and free-bid adjustments appear here after a successful server response.
+            Org pass grants, free-bid adjustments, and partner provision results appear here after a
+            successful server response.
           </p>
         ) : null}
 
@@ -275,6 +326,11 @@ export function GarageCommercialConfigPage() {
           open={adjustOpen}
           onOpenChange={setAdjustOpen}
           onAdjusted={setAdjustResult}
+        />
+        <ProvisionGarageSheet
+          open={provisionOpen}
+          onOpenChange={setProvisionOpen}
+          onProvisioned={setProvisionResult}
         />
       </AlStack>
     </RequirePermission>

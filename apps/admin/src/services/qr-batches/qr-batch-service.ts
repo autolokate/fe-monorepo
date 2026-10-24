@@ -8,7 +8,6 @@ import type {
 } from '@autolokate/api-client';
 import {
   createQrBatch,
-  distributeQrBatch,
   fulfilPartnerReorder,
   generateQrBatchCodes,
   provisionQrBatch,
@@ -18,6 +17,7 @@ import {
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
+import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
 
 export async function createBatch(
   body: CreateBatchBody,
@@ -40,11 +40,12 @@ export async function provisionBatch(
   return provisionQrBatch(getAdminApiClient(), batchId, { signal });
 }
 
-export async function distributeBatch(
-  batchId: string,
-  signal?: AbortSignal,
+/** POST …/qr-batches/{id}/distribute — G0-4 Absent. Fail closed. */
+export function distributeBatch(
+  _batchId: string,
+  _signal?: AbortSignal,
 ): Promise<BatchSummaryDto> {
-  return distributeQrBatch(getAdminApiClient(), batchId, { signal });
+  throwAdminProductBlocked('POST /admin/v1/qr-batches/{id}/distribute');
 }
 
 export async function runAutoDetachSweep(signal?: AbortSignal): Promise<QrAutoDetachResultDto> {

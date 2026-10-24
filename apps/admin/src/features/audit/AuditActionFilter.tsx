@@ -73,6 +73,7 @@ export function AuditActionFilter({
     <div ref={rootRef} className="audit-action-filter">
       <AlInput
         {...(compact ? {} : { label: 'Action' })}
+        data-testid="audit-filter-action"
         value={value}
         placeholder="Action"
         autoComplete="off"

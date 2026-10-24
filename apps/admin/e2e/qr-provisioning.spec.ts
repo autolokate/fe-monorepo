@@ -5,16 +5,18 @@ import { e2eSkuCode } from './helpers/env';
 import { pauseIfWatching, showState } from './helpers/watch';
 
 /**
- * Admin QR provisioning spine (M5c):
- * create DRAFT → generate CODES_GENERATED → provision PROVISIONED → distribute IN_DISTRIBUTION.
+ * Admin QR provisioning spine (Nest OA Present):
+ * create DRAFT → generate CODES_GENERATED → provision PROVISIONED.
  *
+ * POST …/distribute is product-blocked (absent from Nest OA) — assert CTA unavailable.
  * Auth is injected (sessionStorage) so the suite does not depend on WhatsApp OTP
  * when bearer tokens are supplied via env.
  *
  * Watch each state: `pnpm test:e2e:watch` (headed + step delays + final pause).
+ * CL-FE-4: this file is Live/env e2e — not part of hermetic; not executed in CL-FE-4.
  */
 test.describe('QR batch provisioning', () => {
-  test('create → generate → provision → distribute a small B2C batch', async ({ page }) => {
+  test('create → generate → provision; distribute unavailable', async ({ page }) => {
     const skuCode = e2eSkuCode();
     const totalCount = Number(process.env.E2E_BATCH_TOTAL_COUNT ?? '5');
 
@@ -65,18 +67,14 @@ test.describe('QR batch provisioning', () => {
     await expect(batchStatus.first()).toHaveText('PROVISIONED', { timeout: 30_000 });
     await showState(page, '8 · PROVISIONED (detail page)');
 
-    await detail.getByRole('button', { name: 'Distribute batch' }).click();
-    const distributeConfirm = page.getByRole('alertdialog', { name: 'Distribute batch' });
-    await expect(distributeConfirm).toBeVisible();
-    await showState(page, '9 · Distribute batch confirm');
-    await distributeConfirm.getByRole('button', { name: 'Distribute batch' }).click();
-
-    await expect(batchStatus.first()).toHaveText('IN_DISTRIBUTION', { timeout: 30_000 });
-    await showState(page, '10 · IN_DISTRIBUTION (detail page)');
+    // Product-blocked — Nest has no POST …/distribute; Admin UI must not offer it.
+    await expect(detail.getByRole('button', { name: 'Distribute batch' })).toHaveCount(0);
+    await expect(detail.getByRole('button', { name: 'Export for print' })).toHaveCount(0);
+    await showState(page, '9 · distribute/export unavailable (fail-closed)');
 
     await detail.getByRole('button', { name: 'QR Batch Management' }).click();
-    await expect(page.getByRole('cell', { name: 'IN_DISTRIBUTION' }).first()).toBeVisible();
-    await showState(page, '11 · list shows IN_DISTRIBUTION');
+    await expect(page.getByRole('cell', { name: 'PROVISIONED' }).first()).toBeVisible();
+    await showState(page, '10 · list shows PROVISIONED');
 
     // Stays open until you click Resume in the Playwright Inspector.
     await pauseIfWatching(page);

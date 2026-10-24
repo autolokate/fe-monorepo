@@ -6,10 +6,17 @@ import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import {
   fetchGarageCommercialConfig,
+  fetchGarageCommercialConfigHistory,
   saveGarageCommercialConfig,
 } from '@/services/garage/garage-commercial-config-service';
 
 export const garageCommercialConfigQueryKey = ['admin', 'garage', 'commercial-config'] as const;
+export const garageCommercialConfigHistoryQueryKey = [
+  'admin',
+  'garage',
+  'commercial-config',
+  'history',
+] as const;
 
 export function useGarageCommercialConfig() {
   const queryClient = useQueryClient();
@@ -18,6 +25,12 @@ export function useGarageCommercialConfig() {
     queryKey: garageCommercialConfigQueryKey,
     queryFn: ({ signal }) => fetchGarageCommercialConfig(signal),
     meta: { errorMessage: 'Unable to load Garage commercial configuration.' },
+  });
+
+  const historyQuery = useQuery({
+    queryKey: garageCommercialConfigHistoryQueryKey,
+    queryFn: ({ signal }) => fetchGarageCommercialConfigHistory(signal),
+    meta: { errorMessage: 'Unable to load Garage commercial configuration history.' },
   });
 
   useEffect(() => {
@@ -30,6 +43,7 @@ export function useGarageCommercialConfig() {
     mutationFn: (body: UpdateGarageCommercialConfigBody) => saveGarageCommercialConfig(body),
     onSuccess: (data) => {
       queryClient.setQueryData(garageCommercialConfigQueryKey, data);
+      void queryClient.invalidateQueries({ queryKey: garageCommercialConfigHistoryQueryKey });
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'garage-commercial-config-update', toast: true });
@@ -38,16 +52,24 @@ export function useGarageCommercialConfig() {
 
   const userErrorMessage = query.isError ? mapAdminApiError(query.error).userMessage : null;
   const saveErrorMessage = mutation.isError ? mapAdminApiError(mutation.error).userMessage : null;
+  const historyErrorMessage = historyQuery.isError
+    ? mapAdminApiError(historyQuery.error).userMessage
+    : null;
 
   return {
     ...query,
     config: query.data ?? null,
+    history: historyQuery.data ?? [],
+    isHistoryLoading: historyQuery.isLoading,
+    historyErrorMessage,
     userErrorMessage,
     saveErrorMessage,
     isSaving: mutation.isPending,
+    isFetching: query.isFetching || historyQuery.isFetching,
     save: (body: UpdateGarageCommercialConfigBody) => mutation.mutateAsync(body),
     refresh: () => {
       void query.refetch();
+      void historyQuery.refetch();
     },
   };
 }

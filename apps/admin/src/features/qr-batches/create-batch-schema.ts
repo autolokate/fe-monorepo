@@ -1,6 +1,8 @@
 import type { ApiPlanTier, QrBatchChannel } from '@autolokate/api-client';
 import { z } from 'zod';
 
+import { adminQrCodeSchema } from '@/platform/validation/admin-openapi-schemas';
+
 /** B2B fleet pins — SAFE is retail-only, not offered on prepaid B2B batches. */
 const b2bPlanTiers = ['SECURE', 'SHIELD', 'SHIELD_PLUS'] as const satisfies readonly ApiPlanTier[];
 
@@ -27,8 +29,9 @@ export const createBatchSchema = z
 
 export type CreateBatchFormValues = z.infer<typeof createBatchSchema>;
 
+/** Nest OA path param on POST /admin/v1/qr/{code}/replace|retire. */
 export const qrCodeActionSchema = z.object({
-  code: z.string().trim().min(1, 'Enter a QR code.'),
+  code: adminQrCodeSchema,
 });
 
 export type QrCodeActionFormValues = z.infer<typeof qrCodeActionSchema>;

@@ -16,7 +16,6 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { buildPageSummary } from '@/platform/components/build-page-summary';
-import { useCanRefundOrders } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function OrdersPage() {
@@ -30,7 +29,8 @@ export function OrdersPage() {
     refresh,
   } = useOrders();
 
-  const canRefund = useCanRefundOrders();
+  // Nest has no POST …/orders/{orderId}/refund (product-blocked). Keep CTA off regardless of RBAC.
+  const canRefund = false;
   const [refundTarget, setRefundTarget] = useState<AdminOrderSummary | null>(null);
 
   const columns = useOrdersColumns({ canRefund, onRefund: setRefundTarget });

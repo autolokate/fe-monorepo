@@ -9,21 +9,24 @@ import {
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
 
 /**
- * GET /admin/v1/incidents — the break-glass incident list. Read-only, but EVERY call is audited server-side
- * as `INCIDENT_PII_ACCESS` (14-roles §14.6 · security.md § Break-glass), so it is fetched deliberately, never
- * eagerly polled.
+ * GET /admin/v1/incidents — break-glass list. Requires a consumed dual-control `approvalId`
+ * (scope INCIDENT_LIST). Every call is audited as `INCIDENT_PII_ACCESS`.
  */
 export async function fetchIncidentsPage(
-  query: ListAdminIncidentsQuery = {},
+  query: ListAdminIncidentsQuery,
   signal?: AbortSignal,
 ): Promise<AdminIncidentsPageResult> {
   return listAdminIncidentsPage(getAdminApiClient(), query, { signal });
 }
 
-/** GET /admin/v1/incidents/{incidentId} — the full break-glass PII view (also audited `INCIDENT_PII_ACCESS`). */
+/**
+ * GET /admin/v1/incidents/{incidentId} — full break-glass PII view.
+ * Requires a consumed dual-control `approvalId` scoped to INCIDENT_DETAIL:<incidentId>.
+ */
 export async function fetchIncident(
   incidentId: string,
+  approvalId: string,
   signal?: AbortSignal,
 ): Promise<AdminIncidentDetail> {
-  return getAdminIncident(getAdminApiClient(), incidentId, { signal });
+  return getAdminIncident(getAdminApiClient(), incidentId, approvalId, { signal });
 }

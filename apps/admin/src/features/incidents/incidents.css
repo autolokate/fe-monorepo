@@ -1,0 +1,26 @@
+.incident-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.75rem 1.25rem;
+  margin: 0;
+}
+
+.incident-detail-grid dt {
+  margin: 0 0 0.2rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--al-color-text-secondary, #6b7280);
+}
+
+.incident-detail-grid dd {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--al-color-text-primary, #111827);
+  word-break: break-all;
+}
+
+.admin-muted {
+  color: var(--al-color-text-secondary, #6b7280);
+}

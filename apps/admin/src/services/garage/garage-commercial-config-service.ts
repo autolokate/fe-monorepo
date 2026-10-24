@@ -24,6 +24,7 @@ export async function saveGarageCommercialConfig(
 
 export async function fetchGarageCommercialConfigHistory(
   signal?: AbortSignal,
+  limit = 50,
 ): Promise<GarageCommercialConfigAuditDto[]> {
-  return listGarageCommercialConfigHistory(getAdminApiClient(), { signal });
+  return listGarageCommercialConfigHistory(getAdminApiClient(), { signal, limit });
 }

@@ -8,9 +8,27 @@ export type PaymentOutcome = 'PAID' | 'FAILED' | 'UNCONFIRMED' | 'PENDING' | 'RE
 
 export type PayOrderMode = 'ONLINE' | 'CASH';
 
-/** Maps to OpenAPI `CreateOrderBodyDto` — required: cartId. */
+/**
+ * @deprecated Historical cart→order body. Nest `POST /v1/orders` requires
+ * {@link CreateQrOrderBody}. Website retail uses {@link CreateRetailOrderBody}
+ * on `/v1/retail/orders` — never send `{ cartId }` alone to `/v1/orders`.
+ */
 export type CreateOrderBody = {
   cartId: string;
+};
+
+/** Canonical Nest QR create-order body (`POST /v1/orders`). */
+export type CreateQrOrderBody = {
+  code: string;
+  planTier: string;
+  riderCount: number;
+  promoCode?: string;
+};
+
+/** Website retail — `POST /v1/retail/orders` (not QR `/v1/orders`). */
+export type CreateRetailOrderBody = {
+  cartId: string;
+  addressId: string;
 };
 
 /** Maps to OpenAPI `OrderDto` — envelope `data` on POST /v1/orders. */
@@ -24,15 +42,29 @@ export type OrderDto = {
   status: OrderStatus;
 };
 
+/** Website retail detail / list row (`GET /v1/retail/orders*`). */
+export type RetailOrderDetailDto = OrderDto & {
+  cartId: string;
+  addressId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 /** Consumer commerce checkout — ONLINE-only; optional auto-renew mandate. */
 export type PayOrderBody = {
   setupMandate?: boolean;
   mandateConsent?: boolean;
 };
 
-/** GST tax invoice / receipt for a paid order. */
+/**
+ * Maps to OpenAPI `InvoiceDto` — envelope `data` on GET /v1/orders/{orderId}/invoice
+ * (and the retail twin). Field is `downloadUrl`, not a legacy `invoiceUrl`.
+ */
 export type OrderInvoiceDto = {
-  invoiceUrl: string;
+  invoiceNumber: string;
+  issuedAt: string;
+  totalPaise: number;
+  downloadUrl: string;
 };
 
 /**
@@ -53,10 +85,10 @@ export type PaymentOutcomeDto = {
   outcome: PaymentOutcome;
 };
 
-/** POST /v1/orders — create a consumer commerce order. */
+/** POST /v1/orders — QR/plan commerce (prefer {@link CreateQrOrderBody} when aligning). */
 export async function createOrder(
   client: ApiClient,
-  body: CreateOrderBody,
+  body: CreateOrderBody | CreateQrOrderBody,
   idempotencyKey: string,
 ): Promise<OrderDto> {
   const response = await client.post<unknown>(endpoints.orders.create, body, {
@@ -65,7 +97,70 @@ export async function createOrder(
   return unwrapEnvelope(response) as OrderDto;
 }
 
-/** POST /v1/orders/{orderId}/pay — open payment and receive paymentRef. */
+/** POST /v1/retail/orders — Website retail checkout (`cartId` + `addressId`). */
+export async function createRetailOrder(
+  client: ApiClient,
+  body: CreateRetailOrderBody,
+  idempotencyKey: string,
+): Promise<OrderDto> {
+  const response = await client.post<unknown>(endpoints.retailOrders.create, body, {
+    headers: { 'Idempotency-Key': idempotencyKey },
+  });
+  return unwrapEnvelope(response) as OrderDto;
+}
+
+/** GET /v1/retail/orders — caller's retail orders newest first. */
+export async function listRetailOrders(
+  client: ApiClient,
+  limit = 20,
+): Promise<RetailOrderDetailDto[]> {
+  const response = await client.get<unknown>(endpoints.retailOrders.list(limit));
+  return unwrapEnvelope(response) as RetailOrderDetailDto[];
+}
+
+/** GET /v1/retail/orders/{id} — one retail order owned by the caller. */
+export async function getRetailOrder(
+  client: ApiClient,
+  orderId: string,
+): Promise<RetailOrderDetailDto> {
+  const response = await client.get<unknown>(endpoints.retailOrders.byId(orderId));
+  return unwrapEnvelope(response) as RetailOrderDetailDto;
+}
+
+/**
+ * POST /v1/retail/orders/{id}/pay — Option A retail checkout initiate.
+ * Server returns paymentRef + optional Razorpay fields; PAID only after webhook.
+ */
+export async function payRetailOrder(
+  client: ApiClient,
+  orderId: string,
+  idempotencyKey: string,
+): Promise<PaymentRefDto> {
+  const response = await client.post<unknown>(endpoints.retailOrders.pay(orderId), {}, {
+    headers: { 'Idempotency-Key': idempotencyKey },
+  });
+  return unwrapEnvelope(response) as PaymentRefDto;
+}
+
+/** GET /v1/retail/orders/{id}/payment — poll retail payment outcome. */
+export async function getRetailOrderPayment(
+  client: ApiClient,
+  orderId: string,
+): Promise<PaymentOutcomeDto> {
+  const response = await client.get<unknown>(endpoints.retailOrders.payment(orderId));
+  return unwrapEnvelope(response) as PaymentOutcomeDto;
+}
+
+/** GET /v1/retail/orders/{id}/invoice — stub invoice metadata after paid transition. */
+export async function getRetailOrderInvoice(
+  client: ApiClient,
+  orderId: string,
+): Promise<OrderInvoiceDto> {
+  const response = await client.get<unknown>(endpoints.retailOrders.invoice(orderId));
+  return unwrapEnvelope(response) as OrderInvoiceDto;
+}
+
+/** POST /v1/orders/{orderId}/pay — QR commerce open payment and receive paymentRef. */
 export async function payOrder(
   client: ApiClient,
   orderId: string,

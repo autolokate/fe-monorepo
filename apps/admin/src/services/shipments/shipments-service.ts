@@ -1,6 +1,5 @@
 import {
   listAdminShipmentsPage,
-  updateAdminShipmentStatus,
   type AdminShipmentDetail,
   type AdminShipmentsPageResult,
   type ListAdminShipmentsQuery,
@@ -8,6 +7,7 @@ import {
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
+import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
 
 export async function fetchShipmentsPage(
   query: ListAdminShipmentsQuery = {},
@@ -16,10 +16,11 @@ export async function fetchShipmentsPage(
   return listAdminShipmentsPage(getAdminApiClient(), query, { signal });
 }
 
-export async function updateShipmentStatus(
-  orderId: string,
-  status: ManualShipmentStatus,
-  signal?: AbortSignal,
+/** POST …/shipments/{orderId}/status — G0-4 Absent. Fail closed. */
+export function updateShipmentStatus(
+  _orderId: string,
+  _status: ManualShipmentStatus,
+  _signal?: AbortSignal,
 ): Promise<AdminShipmentDetail> {
-  return updateAdminShipmentStatus(getAdminApiClient(), orderId, { status }, { signal });
+  throwAdminProductBlocked('POST /admin/v1/shipments/{orderId}/status');
 }

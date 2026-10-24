@@ -77,6 +77,7 @@ export function UpdateTicketStatusDialog({ ticket, onOpenChange }: UpdateTicketS
             form="update-ticket-status-form"
             variant="primary"
             size="sm"
+            data-testid="support-ticket-status-submit"
             loading={statusMutation.isPending}
             disabled={statusMutation.isPending || unchanged}
           >
@@ -108,6 +109,7 @@ export function UpdateTicketStatusDialog({ ticket, onOpenChange }: UpdateTicketS
           label="Status"
           options={STATUS_OPTIONS}
           value={status}
+          data-testid="support-ticket-status-select"
           onChange={(event) => {
             setStatus(event.target.value as AdminSupportTicketStatus);
           }}

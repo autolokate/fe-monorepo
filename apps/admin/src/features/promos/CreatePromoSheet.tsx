@@ -93,6 +93,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             type="submit"
             form="create-promo-form"
             size="sm"
+            data-testid="promo-create-submit"
             loading={createPromoMutation.isPending}
             disabled={createPromoMutation.isPending}
           >
@@ -126,6 +127,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             <AlInput
               label="Promo code"
               mono
+              data-testid="promo-create-code"
               value={field.value}
               onChange={field.onChange}
               onBlur={field.onBlur}
@@ -146,6 +148,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
                 type="number"
                 min={1}
                 max={100}
+                data-testid="promo-create-discount-percent"
                 value={field.value ?? ''}
                 onChange={(event) => {
                   const next = event.target.value;

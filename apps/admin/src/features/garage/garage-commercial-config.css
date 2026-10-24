@@ -68,6 +68,20 @@
   color: var(--al-color-success, #15803d);
 }
 
+.garage-commercial-config__section-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--al-color-text-primary, #111827);
+}
+
+.garage-commercial-config__history {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
 .garage-entitlement-kind {
   display: flex;
   flex-direction: column;

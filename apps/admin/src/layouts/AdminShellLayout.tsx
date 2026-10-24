@@ -1,15 +1,17 @@
-import { AlPageContent, AlPageLayout } from '@autolokate/ui';
+import { AlPageContent, AlPageLayout, AlText } from '@autolokate/ui';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { AdminCommandPalette } from '@/components/AdminCommandPalette';
 import { AdminHeader } from '@/layouts/AdminHeader';
 import { AdminSidebar } from '@/layouts/AdminSidebar';
+import { useAdminAuth } from '@/providers/AdminAuthProvider';
 
 export function AdminShellLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
+  const { isAuthenticated, hasAdminPlaneRole, session } = useAdminAuth();
 
   return (
     <>
@@ -48,6 +50,19 @@ export function AdminShellLayout() {
         }
       >
         <AlPageContent maxWidth="xl">
+          {isAuthenticated && !hasAdminPlaneRole ? (
+            <div
+              className="admin-shell-role-banner"
+              data-testid="admin-plane-role-missing"
+              role="status"
+            >
+              <AlText variant="body">
+                Signed in as <strong>{session?.role ?? 'unknown'}</strong> — Admin plane APIs need
+                JWT role <strong>OPERATOR</strong> (plus step_up). OTP login alone does not elevate.
+                Garage / incidents / claims will return 403 until an authorized role grant exists.
+              </AlText>
+            </div>
+          ) : null}
           <Outlet />
         </AlPageContent>
       </AlPageLayout>

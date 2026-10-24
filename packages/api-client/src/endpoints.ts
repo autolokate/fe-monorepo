@@ -6,7 +6,17 @@ export const endpoints = {
     refresh: '/v1/auth/refresh',
     logout: '/v1/auth/logout',
     session: '/v1/auth/session',
+    /** GET owner profile (Nest OA). */
+    profiles: '/v1/profiles',
+    /** PATCH owner profile (Nest OA). */
     profile: '/v1/profile',
+    mintFlowAHandoff: '/v1/auth/flow-a/handoff/mint',
+    exchangeFlowAHandoff: '/v1/auth/flow-a/handoff/exchange',
+  },
+  ownershipClaims: {
+    list: '/v1/ownership-claims',
+    create: '/v1/ownership-claims',
+    byId: (id: string) => `/v1/ownership-claims/${encodeURIComponent(id)}`,
   },
   consents: {
     list: '/v1/me/consents',
@@ -26,22 +36,38 @@ export const endpoints = {
     lookup: '/v1/vehicles/lookup',
     list: '/v1/vehicles',
     detail: (vehicleId: string) => `/v1/vehicles/${vehicleId}`,
-    create: '/vehicles',
+    create: '/v1/vehicles',
   },
   plans: {
     list: '/v1/plans',
-    detail: (planId: string) => `/plans/${planId}`,
+    detail: (planId: string) => `/v1/plans/${planId}`,
   },
   cart: {
     create: '/v1/cart',
     detail: (cartId: string) => `/v1/cart/${encodeURIComponent(cartId)}`,
   },
   orders: {
+    /** QR/plan commerce — body: code + planTier + riderCount. */
     create: '/v1/orders',
     pay: (orderId: string) => `/v1/orders/${orderId}/pay`,
     payment: (orderId: string) => `/v1/orders/${orderId}/payment`,
     invoice: (orderId: string) => `/v1/orders/${orderId}/invoice`,
   },
+  retailOrders: {
+    /** Website retail — body: cartId + addressId (never QR create-order). */
+    list: (limit = 20) => `/v1/retail/orders?limit=${encodeURIComponent(String(limit))}`,
+    create: '/v1/retail/orders',
+    byId: (orderId: string) => `/v1/retail/orders/${encodeURIComponent(orderId)}`,
+    pay: (orderId: string) => `/v1/retail/orders/${encodeURIComponent(orderId)}/pay`,
+    payment: (orderId: string) => `/v1/retail/orders/${encodeURIComponent(orderId)}/payment`,
+    invoice: (orderId: string) => `/v1/retail/orders/${encodeURIComponent(orderId)}/invoice`,
+  },
+  adminTaxi: {
+    policy: '/admin/v1/taxi/policy',
+    policyPublish: '/admin/v1/taxi/policy/publish',
+    policyHistory: '/admin/v1/taxi/policy/history',
+  },
+
   promos: {
     validate: '/v1/promos/validate',
   },
@@ -106,6 +132,16 @@ export const endpoints = {
       `/admin/v1/support/tickets/${encodeURIComponent(ticketId)}`,
     adminIncidents: '/admin/v1/incidents',
     adminIncident: (incidentId: string) => `/admin/v1/incidents/${encodeURIComponent(incidentId)}`,
+    breakGlassApprovals: '/admin/v1/break-glass/approvals',
+    breakGlassApproval: (approvalId: string) =>
+      `/admin/v1/break-glass/approvals/${encodeURIComponent(approvalId)}`,
+    approveBreakGlassApproval: (approvalId: string) =>
+      `/admin/v1/break-glass/approvals/${encodeURIComponent(approvalId)}/approve`,
+    denyBreakGlassApproval: (approvalId: string) =>
+      `/admin/v1/break-glass/approvals/${encodeURIComponent(approvalId)}/deny`,
+    adminOwnershipClaims: '/admin/v1/ownership-claims',
+    reviewOwnershipClaim: (id: string) =>
+      `/admin/v1/ownership-claims/${encodeURIComponent(id)}/review`,
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',
@@ -129,6 +165,7 @@ export const endpoints = {
       `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,
     garageCommercialConfig: '/admin/v1/garage/commercial-config',
     garageCommercialConfigHistory: '/admin/v1/garage/commercial-config/history',
+    garageProvision: '/admin/v1/garage/provision',
     garageOrgPassGrant: (orgId: string) =>
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/passes/grant`,
     garageOrgFreeBidsAdjust: (orgId: string) =>

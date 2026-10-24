@@ -61,6 +61,7 @@ export function useOrdersColumns({
             <AlButton
               size="sm"
               variant="destructive"
+              data-testid={`order-refund-${row.original.orderId}`}
               onClick={(event) => {
                 event.stopPropagation();
                 onRefund(row.original);

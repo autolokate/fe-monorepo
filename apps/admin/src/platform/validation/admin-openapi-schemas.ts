@@ -21,8 +21,11 @@ export const adminPaymentRefSchema = z
     'Enter a valid payment reference (6–64 letters, numbers, or underscores).',
   );
 
-/** OpenAPI partner reorder id (path string) */
-export const adminReorderIdSchema = z.string().trim().min(1, 'Reorder ID is required.');
+/**
+ * Partner reorder id path param — Nest `ParseUUIDPipe` on
+ * `POST /admin/v1/partner-reorders/{id}/fulfil` rejects non-UUIDs with 400.
+ */
+export const adminReorderIdSchema = adminUuidSchema;
 
 /** OpenAPI ownership transfer id (uuid path param) */
 export const adminTransferIdSchema = adminUuidSchema;
