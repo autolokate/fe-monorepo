@@ -330,10 +330,16 @@ async function boot(browser, appUrl, options = {}) {
     }
 
     if (method === 'GET' && /^\/v1\/orders\/[^/]+\/invoice$/.test(path)) {
+      // Nest InvoiceDto / OrderInvoiceDto — field is downloadUrl (not legacy invoiceUrl).
       await fulfillJson(
         route,
         200,
-        envelope({ invoiceUrl: 'https://127.0.0.1:9/hermetic-invoice.pdf' }),
+        envelope({
+          invoiceNumber: 'ALK/HERMETIC/000001',
+          issuedAt: '2026-10-25T00:00:00.000Z',
+          totalPaise: 99900,
+          downloadUrl: 'https://127.0.0.1:9/hermetic-invoice.pdf',
+        }),
       );
       return;
     }

@@ -6,6 +6,9 @@ import { peekOrderId } from '@/services/checkout/checkout-cache';
 import { getCheckout } from '@/storage/index';
 
 import { checkoutLogger } from './checkout-logger';
+import { invoiceDownloadUrlFromDto } from './invoice-download-url';
+
+export { invoiceDownloadUrlFromDto } from './invoice-download-url';
 
 const invoiceUrlByOrderId = new Map<string, string>();
 const inflightByOrderId = new Map<string, Promise<string | null>>();
@@ -19,24 +22,15 @@ function delay(ms: number): Promise<void> {
   });
 }
 
-function normalizeInvoiceUrl(url: string): string {
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-  const base = env.apiBaseUrl.replace(/\/$/, '');
-  return `${base}${url.startsWith('/') ? url : `/${url}`}`;
-}
-
 async function loadInvoiceUrlOnce(orderId: string): Promise<string | null> {
   try {
     const client = getQrApiClient();
     const invoice = await getOrderInvoiceApi(client, orderId);
-    const rawUrl = invoice.invoiceUrl.trim();
-    if (!rawUrl) {
+    const url = invoiceDownloadUrlFromDto(invoice, env.apiBaseUrl);
+    if (!url) {
       checkoutLogger.warn('order_invoice_missing_url', { orderId, invoice });
       return null;
     }
-    const url = normalizeInvoiceUrl(rawUrl);
     checkoutLogger.info('order_invoice_loaded', { orderId });
     return url;
   } catch (error) {
