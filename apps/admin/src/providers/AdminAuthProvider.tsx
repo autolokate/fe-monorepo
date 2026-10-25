@@ -114,6 +114,37 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         setSession(next.session);
         setIsAuthenticated(true);
         void prefetchAdminQueries();
+        // Dev-only agent handoff: ?agentExportBearer=1 downloads env (never logs token).
+        if (import.meta.env.DEV && typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('agentExportBearer') === '1') {
+            const pair = tokenManager.read();
+            if (pair?.accessToken) {
+              const body = [
+                'API_BASE=https://d1wpatcmpyt0pw.cloudfront.net',
+                `ADMIN_BEARER=${pair.accessToken}`,
+                pair.expiresAt ? `EXPIRES_AT=${pair.expiresAt}` : '',
+              ]
+                .filter(Boolean)
+                .join('\n');
+              const blob = new Blob([`${body}\n`], { type: 'text/plain' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'al-admin-bearer-a645.env';
+              a.rel = 'noopener';
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+              params.delete('agentExportBearer');
+              const nextUrl = `${window.location.pathname}${
+                params.toString() ? `?${params.toString()}` : ''
+              }${window.location.hash}`;
+              window.history.replaceState({}, '', nextUrl);
+            }
+          }
+        }
       } catch {
         if (!abort.active) {
           return;
@@ -152,10 +183,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const adminRole = normalizeAdminRole(session?.role);
   const hasAdminPlaneRole = Boolean(
     session &&
-      (session.role === 'OPERATOR' ||
-        session.role === 'ADMIN' ||
-        session.availableRoles.includes('OPERATOR') ||
-        session.availableRoles.includes('ADMIN')),
+    (session.role === 'OPERATOR' ||
+      session.role === 'ADMIN' ||
+      session.availableRoles.includes('OPERATOR') ||
+      session.availableRoles.includes('ADMIN')),
   );
 
   const value = useMemo(
