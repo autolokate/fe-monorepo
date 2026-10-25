@@ -22,6 +22,8 @@ export const adminPaths = {
   discovery: '/discovery',
   discoveryQa: '/discovery/qa',
   discoveryReels: '/discovery/reels',
+  partners: '/partners',
+  partnersRequests: '/partners/requests',
 } as const;
 
 export function adminInventoryBatchPath(batchId: string): string {
@@ -30,6 +32,10 @@ export function adminInventoryBatchPath(batchId: string): string {
 
 export function adminQrBatchPath(batchId: string): string {
   return `${adminPaths.qrBatches}/${batchId}`;
+}
+
+export function adminPartnerPath(orgId: string): string {
+  return `${adminPaths.partners}/${encodeURIComponent(orgId)}`;
 }
 
 /**
@@ -43,6 +49,7 @@ export type AdminNavGroupId =
   | 'customer-care'
   | 'finance'
   | 'products'
+  | 'partners'
   | 'discovery'
   | 'governance'
   | 'emergency';
@@ -53,6 +60,7 @@ export const ADMIN_NAV_GROUPS: { id: AdminNavGroupId; label: string }[] = [
   { id: 'customer-care', label: 'Customer Care' },
   { id: 'finance', label: 'Finance' },
   { id: 'products', label: 'Products' },
+  { id: 'partners', label: 'Partners' },
   { id: 'discovery', label: 'Discovery' },
   { id: 'governance', label: 'Governance' },
   { id: 'emergency', label: 'Emergency' },
@@ -172,6 +180,22 @@ export const adminRoutes: AdminRouteMeta[] = [
     description:
       'Taxi advance / deposit bps draft + publish (Admin-supplied; no invented money defaults)',
     group: 'products',
+    nav: true,
+  },
+
+  // Partners — org directory + marketplace RFQ / bids inbox (Garage + Taxi).
+  {
+    path: adminPaths.partners,
+    label: 'Partners',
+    description: 'Partner org directory (Garage / Store / Taxi)',
+    group: 'partners',
+    nav: true,
+  },
+  {
+    path: adminPaths.partnersRequests,
+    label: 'Requests & bids',
+    description: 'Garage and taxi request inbox with embedded bids',
+    group: 'partners',
     nav: true,
   },
 

@@ -66,6 +66,8 @@ export const endpoints = {
     policy: '/admin/v1/taxi/policy',
     policyPublish: '/admin/v1/taxi/policy/publish',
     policyHistory: '/admin/v1/taxi/policy/history',
+    requests: '/admin/v1/taxi/requests',
+    request: (id: string) => `/admin/v1/taxi/requests/${encodeURIComponent(id)}`,
   },
 
   promos: {
@@ -191,6 +193,10 @@ export const endpoints = {
       `/admin/v1/community/reels/${encodeURIComponent(id)}/unpublish`,
     archiveCommunityReel: (id: string) =>
       `/admin/v1/community/reels/${encodeURIComponent(id)}/archive`,
+    partners: '/admin/v1/partners',
+    partner: (orgId: string) => `/admin/v1/partners/${encodeURIComponent(orgId)}`,
+    partnerGarageRequests: '/admin/v1/partners/requests',
+    partnerGarageRequest: (id: string) => `/admin/v1/partners/requests/${encodeURIComponent(id)}`,
   },
   media: {
     request: '/v1/media',

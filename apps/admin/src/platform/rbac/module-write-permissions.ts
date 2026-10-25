@@ -39,3 +39,8 @@ export function useCanUpdateShipments(): boolean {
 export function useCanWriteDiscoveryMutations(): boolean {
   return useAdminAnyPermission(['discovery:write']);
 }
+
+/** Future Partners mutations (provision / entitlement ops linked from partner detail). */
+export function useCanWritePartnersMutations(): boolean {
+  return useAdminAnyPermission(['partners:write']);
+}

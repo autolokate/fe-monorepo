@@ -138,6 +138,24 @@ const DiscoveryReelsPage = lazy(() =>
   })),
 );
 
+const PartnersDirectoryPage = lazy(() =>
+  import('@/features/partners/PartnersDirectoryPage').then((module) => ({
+    default: module.PartnersDirectoryPage,
+  })),
+);
+
+const PartnerDetailPage = lazy(() =>
+  import('@/features/partners/PartnerDetailPage').then((module) => ({
+    default: module.PartnerDetailPage,
+  })),
+);
+
+const PartnerRequestsInboxPage = lazy(() =>
+  import('@/features/partners/PartnerRequestsInboxPage').then((module) => ({
+    default: module.PartnerRequestsInboxPage,
+  })),
+);
+
 function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
@@ -182,6 +200,9 @@ export function AdminRoutes() {
             <Route path={adminPaths.discovery} element={<DiscoveryOverviewPage />} />
             <Route path={adminPaths.discoveryQa} element={<DiscoveryQaPage />} />
             <Route path={adminPaths.discoveryReels} element={<DiscoveryReelsPage />} />
+            <Route path={adminPaths.partners} element={<PartnersDirectoryPage />} />
+            <Route path={adminPaths.partnersRequests} element={<PartnerRequestsInboxPage />} />
+            <Route path={`${adminPaths.partners}/:orgId`} element={<PartnerDetailPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to={adminPaths.dashboard} replace />} />

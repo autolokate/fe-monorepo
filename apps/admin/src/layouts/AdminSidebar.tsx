@@ -33,6 +33,8 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/finance': ReceiptTextIcon,
   '/promos': CreditCardIcon,
   '/catalog': StoreIcon,
+  '/partners': StoreIcon,
+  '/partners/requests': ReceiptTextIcon,
   '/discovery': CameraIcon,
   '/discovery/qa': UsersIcon,
   '/discovery/reels': CameraIcon,
@@ -79,7 +81,7 @@ export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminS
                 <NavLink
                   key={route.path}
                   to={route.path}
-                  end={route.path === adminPaths.discovery}
+                  end={route.path === adminPaths.discovery || route.path === adminPaths.partners}
                   className={({ isActive }) =>
                     `admin-shell-nav-item al-admin-focus-ring ${isActive ? 'is-active' : ''}`.trim()
                   }
