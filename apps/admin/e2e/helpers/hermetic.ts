@@ -8,6 +8,11 @@ export const HERMETIC_QR_CODE_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeabcd';
 export const HERMETIC_SUBSCRIPTION_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeabce';
 export const HERMETIC_TRANSFER_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
 export const HERMETIC_VEHICLE_ID = '11111111-2222-4333-8444-555555555555';
+/** Second owned vehicle — used to prove vehicle-care lists never leak across vehicles. */
+export const HERMETIC_VEHICLE_ID_B = '22222222-3333-4444-8555-666666666666';
+export const HERMETIC_EXPENSE_TITLE_A = 'Hermetic expense vehicle A';
+export const HERMETIC_EXPENSE_TITLE_B = 'Hermetic expense vehicle B LEAK';
+
 export const HERMETIC_TO_ACCOUNT_ID = '66666666-7777-4888-8999-aaaaaaaaaaaa';
 export const HERMETIC_USER_ID = 'hermetic-admin-user';
 export const HERMETIC_GARAGE_ORG_ID = 'hermetic-garage-org';
@@ -1094,6 +1099,17 @@ export async function installHermeticApiRoutes(
             rcValidTillLabel: null,
             protection: 'UNPROTECTED',
           },
+          {
+            vehicleId: HERMETIC_VEHICLE_ID_B,
+            plate: 'MH12AB9999',
+            color: null,
+            make: 'Hyundai',
+            model: 'i20',
+            fuelType: 'PETROL',
+            year: 2021,
+            rcValidTillLabel: null,
+            protection: 'UNPROTECTED',
+          },
         ]),
       );
       return;
@@ -1101,13 +1117,73 @@ export async function installHermeticApiRoutes(
 
     const userExpensesMatch = path.match(/^\/admin\/v1\/users\/([^/]+)\/expenses$/);
     if (method === 'GET' && userExpensesMatch) {
-      await fulfillJson(route, 200, envelope([]));
+      await fulfillJson(
+        route,
+        200,
+        envelope([
+          {
+            id: 'eeeeeeee-1111-4111-8111-111111111111',
+            vehicleId: HERMETIC_VEHICLE_ID,
+            title: HERMETIC_EXPENSE_TITLE_A,
+            category: 'FUEL',
+            amountInr: 500,
+            occurredOn: '2026-10-01',
+            note: '',
+            locationLabel: null,
+            latitude: null,
+            longitude: null,
+            createdAt: '2026-10-01T00:00:00.000Z',
+            updatedAt: '2026-10-01T00:00:00.000Z',
+          },
+          {
+            id: 'eeeeeeee-2222-4222-8222-222222222222',
+            vehicleId: HERMETIC_VEHICLE_ID_B,
+            title: HERMETIC_EXPENSE_TITLE_B,
+            category: 'SERVICE',
+            amountInr: 1200,
+            occurredOn: '2026-10-02',
+            note: '',
+            locationLabel: null,
+            latitude: null,
+            longitude: null,
+            createdAt: '2026-10-02T00:00:00.000Z',
+            updatedAt: '2026-10-02T00:00:00.000Z',
+          },
+        ]),
+      );
       return;
     }
 
     const userMaintenanceJobsMatch = path.match(/^\/admin\/v1\/users\/([^/]+)\/maintenance-jobs$/);
     if (method === 'GET' && userMaintenanceJobsMatch) {
-      await fulfillJson(route, 200, envelope([]));
+      await fulfillJson(
+        route,
+        200,
+        envelope([
+          {
+            id: 'jjjjjjjj-1111-4111-8111-111111111111',
+            vehicleId: HERMETIC_VEHICLE_ID,
+            title: 'Hermetic job vehicle A',
+            dueOn: '2026-11-01',
+            status: 'OPEN',
+            estimatedCostInr: 0,
+            dueKm: null,
+            createdAt: '2026-10-01T00:00:00.000Z',
+            updatedAt: '2026-10-01T00:00:00.000Z',
+          },
+          {
+            id: 'jjjjjjjj-2222-4222-8222-222222222222',
+            vehicleId: HERMETIC_VEHICLE_ID_B,
+            title: 'Hermetic job vehicle B LEAK',
+            dueOn: '2026-11-02',
+            status: 'OPEN',
+            estimatedCostInr: 0,
+            dueKm: null,
+            createdAt: '2026-10-02T00:00:00.000Z',
+            updatedAt: '2026-10-02T00:00:00.000Z',
+          },
+        ]),
+      );
       return;
     }
 
@@ -1123,7 +1199,30 @@ export async function installHermeticApiRoutes(
       /^\/admin\/v1\/users\/([^/]+)\/vehicle-documents$/,
     );
     if (method === 'GET' && userVehicleDocumentsMatch) {
-      await fulfillJson(route, 200, envelope([]));
+      await fulfillJson(
+        route,
+        200,
+        envelope([
+          {
+            id: 'dddddddd-1111-4111-8111-111111111111',
+            vehicleId: HERMETIC_VEHICLE_ID,
+            mediaAssetId: 'mmmmmmmm-1111-4111-8111-111111111111',
+            documentKind: 'RC',
+            title: 'Hermetic RC vehicle A',
+            createdAt: '2026-10-01T00:00:00.000Z',
+            updatedAt: '2026-10-01T00:00:00.000Z',
+          },
+          {
+            id: 'dddddddd-2222-4222-8222-222222222222',
+            vehicleId: HERMETIC_VEHICLE_ID_B,
+            mediaAssetId: 'mmmmmmmm-2222-4222-8222-222222222222',
+            documentKind: 'INSURANCE',
+            title: 'Hermetic insurance vehicle B LEAK',
+            createdAt: '2026-10-02T00:00:00.000Z',
+            updatedAt: '2026-10-02T00:00:00.000Z',
+          },
+        ]),
+      );
       return;
     }
 
@@ -1131,7 +1230,18 @@ export async function installHermeticApiRoutes(
       /^\/admin\/v1\/users\/([^/]+)\/emergency-contacts$/,
     );
     if (method === 'GET' && userEmergencyContactsMatch) {
-      await fulfillJson(route, 200, envelope([]));
+      await fulfillJson(
+        route,
+        200,
+        envelope([
+          {
+            id: 'cccccccc-1111-4111-8111-111111111111',
+            name: 'Hermetic Contact',
+            relation: 'SPOUSE',
+            phoneMasked: '+91******3210',
+          },
+        ]),
+      );
       return;
     }
 

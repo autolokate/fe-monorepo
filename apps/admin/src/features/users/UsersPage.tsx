@@ -1,4 +1,4 @@
-import type { AdminUserSummaryDto } from '@autolokate/api-client';
+import type { AdminUserSummaryDto, AdminUserVehicleDto } from '@autolokate/api-client';
 import {
   AlButton,
   AlDataTable,
@@ -13,6 +13,7 @@ import {
 import { useMemo, useState } from 'react';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
+import { filterCareByVehicleId } from '@/features/users/filter-care-by-vehicle';
 import { useUsersColumns } from '@/features/users/users-columns';
 import { useAdminUserCareRecords } from '@/hooks/users/useAdminUserCareRecords';
 import { useAdminUserDetail } from '@/hooks/users/useAdminUserDetail';
@@ -26,6 +27,10 @@ import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './users.css';
+
+/** Nest Admin care lists are GET-only today — show RO honestly (no fabricate write). */
+const CARE_RO_CAPTION =
+  'Read-only — Nest Admin exposes GET lists only for these records (no create/update on this plane).';
 
 const STATUS_FILTERS = [
   { value: 'ACTIVE', label: 'Active' },
@@ -86,14 +91,56 @@ function UserDetailPanel({
   };
 
   const [localeDraft, setLocaleDraft] = useState(account.locale);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+
+  const selectedVehicle: AdminUserVehicleDto | null = useMemo(
+    () => vehicles.find((row) => row.vehicleId === selectedVehicleId) ?? null,
+    [vehicles, selectedVehicleId],
+  );
+
+  const vehicleExpenses = useMemo(
+    () => filterCareByVehicleId(expenses, selectedVehicleId),
+    [expenses, selectedVehicleId],
+  );
+  const vehicleMaintenanceJobs = useMemo(
+    () => filterCareByVehicleId(maintenanceJobs, selectedVehicleId),
+    [maintenanceJobs, selectedVehicleId],
+  );
+  const vehicleMaintenanceSchedule = useMemo(
+    () => filterCareByVehicleId(maintenanceSchedule, selectedVehicleId),
+    [maintenanceSchedule, selectedVehicleId],
+  );
+  const vehicleDocs = useMemo(
+    () => filterCareByVehicleId(vehicleDocuments, selectedVehicleId),
+    [vehicleDocuments, selectedVehicleId],
+  );
+
+  const closeAccount = () => {
+    setSelectedVehicleId(null);
+    onClose();
+  };
 
   return (
     <section className="admin-user-account" aria-label="Account detail">
       <AlStack gap="md">
         <div className="admin-page-actions">
-          <AlButton type="button" size="sm" variant="secondary" onClick={onClose}>
-            Back to directory
-          </AlButton>
+          {selectedVehicle ? (
+            <AlButton
+              type="button"
+              size="sm"
+              variant="secondary"
+              data-testid="users-back-to-account"
+              onClick={() => {
+                setSelectedVehicleId(null);
+              }}
+            >
+              Back to account
+            </AlButton>
+          ) : (
+            <AlButton type="button" size="sm" variant="secondary" onClick={closeAccount}>
+              Back to directory
+            </AlButton>
+          )}
           <AlButton
             type="button"
             size="sm"
@@ -107,249 +154,277 @@ function UserDetailPanel({
 
         {detailError ? <AlErrorState message={detailError} onRetry={refresh} /> : null}
 
-        <AdminDetailField label="Account id" value={account.id} mono />
-        {searchPhone ? (
+        {selectedVehicle ? (
           <>
-            <AdminDetailField label="Phone search" value={searchPhone} mono />
-            <AlText variant="caption" tone="muted">
-              Matched via blind index — the API never returns the phone.
+            <AlText variant="caption" tone="muted" data-testid="users-vehicle-care-ro">
+              {CARE_RO_CAPTION}
             </AlText>
-          </>
-        ) : null}
-        <AdminDetailField
-          label="Display name"
-          value={detail?.name ?? (isLoading ? 'Loading…' : '—')}
-        />
-        <AdminDetailField label="Account type" value={detail?.accountType ?? account.accountType} />
-        <AdminDetailField label="Status" value={detail?.status ?? account.status} />
-        <AdminDetailField
-          label="Created"
-          value={new Date((detail ?? account).createdAt).toLocaleString()}
-        />
+            <AdminDetailField label="Vehicle id" value={selectedVehicle.vehicleId} mono />
+            <AdminDetailField label="Plate" value={selectedVehicle.plate} />
+            <AdminDetailField
+              label="Make / model"
+              value={[selectedVehicle.make, selectedVehicle.model].filter(Boolean).join(' ') || '—'}
+            />
+            <AdminDetailField label="Protection" value={selectedVehicle.protection} />
 
-        <AlStack gap="xs">
-          <AlText variant="caption" tone="muted">
-            Active roles
-          </AlText>
-          <div className="admin-user-account__roles">
-            {(detail?.roles ?? account.roles).length === 0 ? (
-              <AlText tone="muted">No active roles.</AlText>
-            ) : (
-              (detail?.roles ?? account.roles).map((role) => (
-                <AlStatusBadge
-                  key={`${role.role}:${role.scopeRef ?? 'platform'}`}
-                  label={role.role}
-                  status="inactive"
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Expenses (this vehicle)
+              </AlText>
+              {expensesError ? (
+                <AlErrorState message={expensesError} onRetry={refresh} />
+              ) : (
+                <AlDataTable
+                  {...ADMIN_LIST_TABLE_PROPS}
+                  tableId="vehicle-expenses"
+                  columns={[
+                    { id: 'title', header: 'Title', accessorKey: 'title' },
+                    { id: 'category', header: 'Category', accessorKey: 'category' },
+                    { id: 'amountInr', header: 'Amount (INR)', accessorKey: 'amountInr' },
+                    { id: 'occurredOn', header: 'Occurred', accessorKey: 'occurredOn' },
+                  ]}
+                  data={vehicleExpenses}
+                  loading={expensesLoading}
+                  emptyTitle="No expenses"
+                  emptyDescription="No personal expenses for this vehicle."
+                  getRowId={(row) => row.id}
                 />
-              ))
-            )}
-          </div>
-        </AlStack>
+              )}
+            </AlStack>
 
-        {canWrite ? (
-          <AlStack gap="sm">
-            <AlText variant="caption" tone="muted">
-              Authorized edits
-            </AlText>
-            <AlInput
-              label="Locale"
-              value={localeDraft}
-              onChange={(event) => {
-                setLocaleDraft(event.target.value);
-              }}
-              helperText="Phone, identity, and subscription changes use dedicated workflows — not this form."
-              data-testid="users-edit-locale"
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Maintenance jobs (this vehicle)
+              </AlText>
+              {maintenanceJobsError ? (
+                <AlErrorState message={maintenanceJobsError} onRetry={refresh} />
+              ) : (
+                <AlDataTable
+                  {...ADMIN_LIST_TABLE_PROPS}
+                  tableId="vehicle-maintenance-jobs"
+                  columns={[
+                    { id: 'title', header: 'Title', accessorKey: 'title' },
+                    { id: 'status', header: 'Status', accessorKey: 'status' },
+                    { id: 'dueOn', header: 'Due', accessorKey: 'dueOn' },
+                    {
+                      id: 'estimatedCostInr',
+                      header: 'Est. cost (INR)',
+                      accessorKey: 'estimatedCostInr',
+                    },
+                  ]}
+                  data={vehicleMaintenanceJobs}
+                  loading={maintenanceJobsLoading}
+                  emptyTitle="No maintenance jobs"
+                  emptyDescription="No maintenance jobs for this vehicle."
+                  getRowId={(row) => row.id}
+                />
+              )}
+            </AlStack>
+
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Maintenance schedule (this vehicle)
+              </AlText>
+              {maintenanceScheduleError ? (
+                <AlErrorState message={maintenanceScheduleError} onRetry={refresh} />
+              ) : (
+                <AlDataTable
+                  {...ADMIN_LIST_TABLE_PROPS}
+                  tableId="vehicle-maintenance-schedule"
+                  columns={[
+                    { id: 'title', header: 'Title', accessorKey: 'title' },
+                    { id: 'nextDueOn', header: 'Next due', accessorKey: 'nextDueOn' },
+                    { id: 'source', header: 'Source', accessorKey: 'source' },
+                  ]}
+                  data={vehicleMaintenanceSchedule}
+                  loading={maintenanceScheduleLoading}
+                  emptyTitle="No maintenance schedule"
+                  emptyDescription="No maintenance schedule entries for this vehicle."
+                  getRowId={(row) => row.id}
+                />
+              )}
+            </AlStack>
+
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Vehicle documents (this vehicle)
+              </AlText>
+              {vehicleDocumentsError ? (
+                <AlErrorState message={vehicleDocumentsError} onRetry={refresh} />
+              ) : (
+                <AlDataTable
+                  {...ADMIN_LIST_TABLE_PROPS}
+                  tableId="vehicle-documents"
+                  columns={[
+                    { id: 'title', header: 'Title', accessorKey: 'title' },
+                    { id: 'documentKind', header: 'Kind', accessorKey: 'documentKind' },
+                  ]}
+                  data={vehicleDocs}
+                  loading={vehicleDocumentsLoading}
+                  emptyTitle="No vehicle documents"
+                  emptyDescription="No document metadata for this vehicle."
+                  getRowId={(row) => row.id}
+                />
+              )}
+            </AlStack>
+          </>
+        ) : (
+          <>
+            <AdminDetailField label="Account id" value={account.id} mono />
+            {searchPhone ? (
+              <>
+                <AdminDetailField label="Phone search" value={searchPhone} mono />
+                <AlText variant="caption" tone="muted">
+                  Matched via blind index — the API never returns the phone.
+                </AlText>
+              </>
+            ) : null}
+            <AdminDetailField
+              label="Display name"
+              value={detail?.name ?? (isLoading ? 'Loading…' : '—')}
             />
-            <div className="admin-page-actions">
-              <AlButton
-                type="button"
-                size="sm"
-                data-testid="users-save-locale"
-                loading={patchMutation.isPending}
-                disabled={
-                  patchMutation.isPending || localeDraft === (detail?.locale ?? account.locale)
-                }
-                onClick={() => {
-                  void patchMutation.mutateAsync({ locale: localeDraft }).then(refresh);
-                }}
-              >
-                Save locale
-              </AlButton>
-              <AlButton
-                type="button"
-                size="sm"
-                variant="secondary"
-                data-testid="users-flag-review"
-                loading={patchMutation.isPending}
-                disabled={patchMutation.isPending || (detail ?? account).fraudFlagged}
-                onClick={() => {
-                  void patchMutation.mutateAsync({ fraudFlagged: true }).then(refresh);
-                }}
-              >
-                Flag for review
-              </AlButton>
-            </div>
-            <p className="admin-inline-alert" data-testid="users-delete-unavailable">
-              Permanent delete is unavailable here. Accounts are closed only through DPDP erasure
-              (data-rights / self DELETE /v1/account) so ownership and financial evidence stay
-              intact. Use Flag for review for ops follow-up.
-            </p>
-          </AlStack>
-        ) : null}
-
-        <AlStack gap="xs">
-          <AlText variant="caption" tone="muted">
-            Vehicles (all owned, including UNPROTECTED)
-          </AlText>
-          {vehiclesError ? (
-            <AlErrorState message={vehiclesError} onRetry={refresh} />
-          ) : (
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="account-vehicles"
-              columns={[
-                { id: 'plate', header: 'Plate', accessorKey: 'plate' },
-                { id: 'make', header: 'Make', accessorKey: 'make' },
-                { id: 'model', header: 'Model', accessorKey: 'model' },
-                { id: 'protection', header: 'Protection', accessorKey: 'protection' },
-              ]}
-              data={vehicles}
-              loading={vehiclesLoading}
-              emptyTitle="No vehicles"
-              emptyDescription="This account has no owned vehicles yet."
-              getRowId={(row) => row.vehicleId}
+            <AdminDetailField
+              label="Account type"
+              value={detail?.accountType ?? account.accountType}
             />
-          )}
-        </AlStack>
-
-        <AlStack gap="xs">
-          <AlText variant="caption" tone="muted">
-            Expenses
-          </AlText>
-          {expensesError ? (
-            <AlErrorState message={expensesError} onRetry={refresh} />
-          ) : (
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="account-expenses"
-              columns={[
-                { id: 'title', header: 'Title', accessorKey: 'title' },
-                { id: 'category', header: 'Category', accessorKey: 'category' },
-                { id: 'amountInr', header: 'Amount (INR)', accessorKey: 'amountInr' },
-                { id: 'occurredOn', header: 'Occurred', accessorKey: 'occurredOn' },
-                { id: 'vehicleId', header: 'Vehicle', accessorKey: 'vehicleId' },
-              ]}
-              data={expenses}
-              loading={expensesLoading}
-              emptyTitle="No expenses"
-              emptyDescription="This account has no personal expenses yet."
-              getRowId={(row) => row.id}
+            <AdminDetailField label="Status" value={detail?.status ?? account.status} />
+            <AdminDetailField
+              label="Created"
+              value={new Date((detail ?? account).createdAt).toLocaleString()}
             />
-          )}
-        </AlStack>
 
-        <AlStack gap="xs">
-          <AlText variant="caption" tone="muted">
-            Maintenance jobs
-          </AlText>
-          {maintenanceJobsError ? (
-            <AlErrorState message={maintenanceJobsError} onRetry={refresh} />
-          ) : (
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="account-maintenance-jobs"
-              columns={[
-                { id: 'title', header: 'Title', accessorKey: 'title' },
-                { id: 'status', header: 'Status', accessorKey: 'status' },
-                { id: 'dueOn', header: 'Due', accessorKey: 'dueOn' },
-                {
-                  id: 'estimatedCostInr',
-                  header: 'Est. cost (INR)',
-                  accessorKey: 'estimatedCostInr',
-                },
-              ]}
-              data={maintenanceJobs}
-              loading={maintenanceJobsLoading}
-              emptyTitle="No maintenance jobs"
-              emptyDescription="This account has no maintenance jobs yet."
-              getRowId={(row) => row.id}
-            />
-          )}
-        </AlStack>
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Active roles
+              </AlText>
+              <div className="admin-user-account__roles">
+                {(detail?.roles ?? account.roles).length === 0 ? (
+                  <AlText tone="muted">No active roles.</AlText>
+                ) : (
+                  (detail?.roles ?? account.roles).map((role) => (
+                    <AlStatusBadge
+                      key={`${role.role}:${role.scopeRef ?? 'platform'}`}
+                      label={role.role}
+                      status="inactive"
+                    />
+                  ))
+                )}
+              </div>
+            </AlStack>
 
-        <AlStack gap="xs">
-          <AlText variant="caption" tone="muted">
-            Maintenance schedule
-          </AlText>
-          {maintenanceScheduleError ? (
-            <AlErrorState message={maintenanceScheduleError} onRetry={refresh} />
-          ) : (
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="account-maintenance-schedule"
-              columns={[
-                { id: 'title', header: 'Title', accessorKey: 'title' },
-                { id: 'nextDueOn', header: 'Next due', accessorKey: 'nextDueOn' },
-                { id: 'source', header: 'Source', accessorKey: 'source' },
-              ]}
-              data={maintenanceSchedule}
-              loading={maintenanceScheduleLoading}
-              emptyTitle="No maintenance schedule"
-              emptyDescription="This account has no maintenance schedule entries yet."
-              getRowId={(row) => row.id}
-            />
-          )}
-        </AlStack>
+            {canWrite ? (
+              <AlStack gap="sm">
+                <AlText variant="caption" tone="muted">
+                  Authorized edits
+                </AlText>
+                <AlInput
+                  label="Locale"
+                  value={localeDraft}
+                  onChange={(event) => {
+                    setLocaleDraft(event.target.value);
+                  }}
+                  helperText="Phone, identity, and subscription changes use dedicated workflows — not this form."
+                  data-testid="users-edit-locale"
+                />
+                <div className="admin-page-actions">
+                  <AlButton
+                    type="button"
+                    size="sm"
+                    data-testid="users-save-locale"
+                    loading={patchMutation.isPending}
+                    disabled={
+                      patchMutation.isPending || localeDraft === (detail?.locale ?? account.locale)
+                    }
+                    onClick={() => {
+                      void patchMutation.mutateAsync({ locale: localeDraft }).then(refresh);
+                    }}
+                  >
+                    Save locale
+                  </AlButton>
+                  <AlButton
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    data-testid="users-flag-review"
+                    loading={patchMutation.isPending}
+                    disabled={patchMutation.isPending || (detail ?? account).fraudFlagged}
+                    onClick={() => {
+                      void patchMutation.mutateAsync({ fraudFlagged: true }).then(refresh);
+                    }}
+                  >
+                    Flag for review
+                  </AlButton>
+                </div>
+                <p className="admin-inline-alert" data-testid="users-delete-unavailable">
+                  Permanent delete is unavailable here. Accounts are closed only through DPDP
+                  erasure (data-rights / self DELETE /v1/account) so ownership and financial
+                  evidence stay intact. Use Flag for review for ops follow-up.
+                </p>
+              </AlStack>
+            ) : null}
 
-        <AlStack gap="xs">
-          <AlText variant="caption" tone="muted">
-            Vehicle documents
-          </AlText>
-          {vehicleDocumentsError ? (
-            <AlErrorState message={vehicleDocumentsError} onRetry={refresh} />
-          ) : (
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="account-vehicle-documents"
-              columns={[
-                { id: 'title', header: 'Title', accessorKey: 'title' },
-                { id: 'documentKind', header: 'Kind', accessorKey: 'documentKind' },
-                { id: 'vehicleId', header: 'Vehicle', accessorKey: 'vehicleId' },
-              ]}
-              data={vehicleDocuments}
-              loading={vehicleDocumentsLoading}
-              emptyTitle="No vehicle documents"
-              emptyDescription="This account has no vehicle document metadata yet."
-              getRowId={(row) => row.id}
-            />
-          )}
-        </AlStack>
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Emergency contacts (account)
+              </AlText>
+              <AlText variant="caption" tone="muted" data-testid="users-contacts-ro">
+                {CARE_RO_CAPTION}
+              </AlText>
+              {emergencyContactsError ? (
+                <AlErrorState message={emergencyContactsError} onRetry={refresh} />
+              ) : (
+                <AlDataTable
+                  {...ADMIN_LIST_TABLE_PROPS}
+                  tableId="account-emergency-contacts"
+                  columns={[
+                    { id: 'name', header: 'Name', accessorKey: 'name' },
+                    { id: 'relation', header: 'Relation', accessorKey: 'relation' },
+                    { id: 'phoneMasked', header: 'Phone', accessorKey: 'phoneMasked' },
+                  ]}
+                  data={emergencyContacts}
+                  loading={emergencyContactsLoading}
+                  emptyTitle="No emergency contacts"
+                  emptyDescription="This account has no emergency contacts yet."
+                  getRowId={(row) => row.id}
+                />
+              )}
+            </AlStack>
 
-        <AlStack gap="xs">
-          <AlText variant="caption" tone="muted">
-            Emergency contacts
-          </AlText>
-          {emergencyContactsError ? (
-            <AlErrorState message={emergencyContactsError} onRetry={refresh} />
-          ) : (
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="account-emergency-contacts"
-              columns={[
-                { id: 'name', header: 'Name', accessorKey: 'name' },
-                { id: 'relation', header: 'Relation', accessorKey: 'relation' },
-                { id: 'phoneMasked', header: 'Phone', accessorKey: 'phoneMasked' },
-              ]}
-              data={emergencyContacts}
-              loading={emergencyContactsLoading}
-              emptyTitle="No emergency contacts"
-              emptyDescription="This account has no emergency contacts yet."
-              getRowId={(row) => row.id}
-            />
-          )}
-        </AlStack>
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Vehicles (all owned, including UNPROTECTED)
+              </AlText>
+              <AlText variant="caption" tone="muted">
+                Open a vehicle to view its expenses, maintenance, and documents. Account-scoped
+                contacts stay on this screen.
+              </AlText>
+              {vehiclesError ? (
+                <AlErrorState message={vehiclesError} onRetry={refresh} />
+              ) : (
+                <AlDataTable
+                  {...ADMIN_LIST_TABLE_PROPS}
+                  tableId="account-vehicles"
+                  columns={[
+                    { id: 'plate', header: 'Plate', accessorKey: 'plate' },
+                    { id: 'make', header: 'Make', accessorKey: 'make' },
+                    { id: 'model', header: 'Model', accessorKey: 'model' },
+                    { id: 'protection', header: 'Protection', accessorKey: 'protection' },
+                  ]}
+                  data={vehicles}
+                  loading={vehiclesLoading}
+                  emptyTitle="No vehicles"
+                  emptyDescription="This account has no owned vehicles yet."
+                  getRowId={(row) => row.vehicleId}
+                  onRowClick={(row) => {
+                    setSelectedVehicleId(row.vehicleId);
+                  }}
+                />
+              )}
+            </AlStack>
 
-        <CustomerDrilldown accountId={account.id} />
+            <CustomerDrilldown accountId={account.id} />
+          </>
+        )}
       </AlStack>
     </section>
   );
