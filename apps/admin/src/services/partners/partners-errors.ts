@@ -9,7 +9,8 @@ const FORBIDDEN_MESSAGE =
 
 /** Nest Admin Partners routes answer 404 until the BE that ships them is deployed. */
 export function isPartnersApiUnavailable(error: unknown): boolean {
-  return error instanceof ApiError && error.status === 404 && error.code !== 'not_found';
+  // Live Nest returns HTTP 404 + code `not_found` for undeployed routes.
+  return error instanceof ApiError && error.status === 404;
 }
 
 function isForbidden(error: unknown): boolean {
