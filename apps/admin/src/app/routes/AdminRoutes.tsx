@@ -120,6 +120,24 @@ const TaxiPolicyPage = lazy(() =>
   })),
 );
 
+const DiscoveryOverviewPage = lazy(() =>
+  import('@/features/discovery/DiscoveryOverviewPage').then((module) => ({
+    default: module.DiscoveryOverviewPage,
+  })),
+);
+
+const DiscoveryQaPage = lazy(() =>
+  import('@/features/discovery/DiscoveryQaPage').then((module) => ({
+    default: module.DiscoveryQaPage,
+  })),
+);
+
+const DiscoveryReelsPage = lazy(() =>
+  import('@/features/discovery/DiscoveryReelsPage').then((module) => ({
+    default: module.DiscoveryReelsPage,
+  })),
+);
+
 function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
@@ -161,6 +179,9 @@ export function AdminRoutes() {
             <Route path={adminPaths.ownershipTransfers} element={<OwnershipTransfersPage />} />
             <Route path={adminPaths.ownershipClaims} element={<OwnershipClaimsPage />} />
             <Route path={adminPaths.users} element={<UsersPage />} />
+            <Route path={adminPaths.discovery} element={<DiscoveryOverviewPage />} />
+            <Route path={adminPaths.discoveryQa} element={<DiscoveryQaPage />} />
+            <Route path={adminPaths.discoveryReels} element={<DiscoveryReelsPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to={adminPaths.dashboard} replace />} />

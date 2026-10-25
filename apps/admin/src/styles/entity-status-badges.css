@@ -616,3 +616,40 @@
 [data-theme='dark'] .admin-entity-status-badge--audit-PARTNER_ENROLLED {
   color: #c084fc;
 }
+
+/* —— Discovery Q&A (AdminCommunityQuestionDto.status — VISIBLE is published to the consumer feed) —— */
+
+.admin-entity-status-badge--discovery-qa-VISIBLE {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
+.admin-entity-status-badge--discovery-qa-HIDDEN {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--discovery-qa-HIDDEN {
+  color: #94a3b8;
+}
+
+/* —— Discovery reels (DiscoveryReelDto.status) —— */
+
+.admin-entity-status-badge--discovery-reel-PUBLISHED {
+  background: color-mix(in srgb, var(--al-signal-green) 12%, var(--al-color-surface));
+  color: var(--al-signal-green);
+}
+
+.admin-entity-status-badge--discovery-reel-DRAFT {
+  background: color-mix(in srgb, var(--al-signal-amber) 14%, var(--al-color-surface));
+  color: var(--al-signal-amber);
+}
+
+.admin-entity-status-badge--discovery-reel-ARCHIVED {
+  background: color-mix(in srgb, #64748b 14%, var(--al-color-surface));
+  color: #64748b;
+}
+
+[data-theme='dark'] .admin-entity-status-badge--discovery-reel-ARCHIVED {
+  color: #94a3b8;
+}

@@ -19,6 +19,9 @@ export const adminPaths = {
   ownershipTransfers: '/ownership-transfers',
   ownershipClaims: '/ownership-claims',
   users: '/users',
+  discovery: '/discovery',
+  discoveryQa: '/discovery/qa',
+  discoveryReels: '/discovery/reels',
 } as const;
 
 export function adminInventoryBatchPath(batchId: string): string {
@@ -40,6 +43,7 @@ export type AdminNavGroupId =
   | 'customer-care'
   | 'finance'
   | 'products'
+  | 'discovery'
   | 'governance'
   | 'emergency';
 
@@ -49,6 +53,7 @@ export const ADMIN_NAV_GROUPS: { id: AdminNavGroupId; label: string }[] = [
   { id: 'customer-care', label: 'Customer Care' },
   { id: 'finance', label: 'Finance' },
   { id: 'products', label: 'Products' },
+  { id: 'discovery', label: 'Discovery' },
   { id: 'governance', label: 'Governance' },
   { id: 'emergency', label: 'Emergency' },
 ];
@@ -164,8 +169,32 @@ export const adminRoutes: AdminRouteMeta[] = [
   {
     path: adminPaths.taxiPolicy,
     label: 'Taxi policy',
-    description: 'Taxi advance / deposit bps draft + publish (Admin-supplied; no invented money defaults)',
+    description:
+      'Taxi advance / deposit bps draft + publish (Admin-supplied; no invented money defaults)',
     group: 'products',
+    nav: true,
+  },
+
+  // Discovery — editorial content the consumer app shows (Q&A + Reels). Plans and coverage live under Products / Customer Care.
+  {
+    path: adminPaths.discovery,
+    label: 'Discovery',
+    description: 'Discovery overview — Q&A, reels, plans and coverage at a glance',
+    group: 'discovery',
+    nav: true,
+  },
+  {
+    path: adminPaths.discoveryQa,
+    label: 'Q&A',
+    description: 'Create, edit, publish and hide community Q&A',
+    group: 'discovery',
+    nav: true,
+  },
+  {
+    path: adminPaths.discoveryReels,
+    label: 'Reels',
+    description: 'Upload, publish and archive Discovery reels',
+    group: 'discovery',
     nav: true,
   },
 

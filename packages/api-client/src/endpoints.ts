@@ -181,6 +181,21 @@ export const endpoints = {
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/passes/grant`,
     garageOrgFreeBidsAdjust: (orgId: string) =>
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/free-bids/adjust`,
+    communityQuestions: '/admin/v1/community/questions',
+    communityQuestion: (id: string) => `/admin/v1/community/questions/${encodeURIComponent(id)}`,
+    communityReels: '/admin/v1/community/reels',
+    communityReel: (id: string) => `/admin/v1/community/reels/${encodeURIComponent(id)}`,
+    publishCommunityReel: (id: string) =>
+      `/admin/v1/community/reels/${encodeURIComponent(id)}/publish`,
+    unpublishCommunityReel: (id: string) =>
+      `/admin/v1/community/reels/${encodeURIComponent(id)}/unpublish`,
+    archiveCommunityReel: (id: string) =>
+      `/admin/v1/community/reels/${encodeURIComponent(id)}/archive`,
+  },
+  media: {
+    request: '/v1/media',
+    complete: (mediaId: string) => `/v1/media/${encodeURIComponent(mediaId)}/complete`,
+    download: (mediaId: string) => `/v1/media/${encodeURIComponent(mediaId)}`,
   },
 } as const;
 

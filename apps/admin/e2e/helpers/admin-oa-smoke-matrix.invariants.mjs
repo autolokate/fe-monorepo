@@ -56,6 +56,8 @@ const mustNotBeInRoutes = [
   'GET /admin/v1/support/tickets',
   'GET /admin/v1/users',
   'GET /admin/v1/qr-batches/{id}/codes',
+  'GET /admin/v1/community/questions',
+  'GET /admin/v1/community/reels',
   'POST /admin/v1/experts/bookings/{id}/confirm',
 ];
 
@@ -96,7 +98,8 @@ if (liveMissing.length < 5) {
 }
 for (const b of expectedBlocked) {
   if (!ahead.includes(b)) errors.push(`FE_AHEAD missing blocked ${b}`);
-  if (routes.includes(b)) errors.push(`blocked op incorrectly listed in NEST_OA_ADMIN_ROUTES: ${b}`);
+  if (routes.includes(b))
+    errors.push(`blocked op incorrectly listed in NEST_OA_ADMIN_ROUTES: ${b}`);
 }
 for (const extra of ahead) {
   if (!expectedBlocked.includes(extra)) errors.push(`FE_AHEAD unexpected entry ${extra}`);
@@ -117,6 +120,7 @@ const stillSkipped = [
   'catalog-sku.hermetic.spec.ts',
   'support-tickets.hermetic.spec.ts',
   'users-lookup.hermetic.spec.ts',
+  'discovery.hermetic.spec.ts',
 ];
 for (const file of stillSkipped) {
   const body = readFileSync(join(e2eDir, file), 'utf8');

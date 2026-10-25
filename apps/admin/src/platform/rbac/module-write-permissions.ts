@@ -34,3 +34,8 @@ export function useCanWriteSupportTickets(): boolean {
 export function useCanUpdateShipments(): boolean {
   return useAdminAnyPermission(['shipments:update']);
 }
+
+/** POST/PATCH /admin/v1/community/questions|reels* — create, edit, publish, hide, archive (OPERATOR). */
+export function useCanWriteDiscoveryMutations(): boolean {
+  return useAdminAnyPermission(['discovery:write']);
+}

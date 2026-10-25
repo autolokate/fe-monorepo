@@ -145,6 +145,25 @@ export const OA_UNSUPPORTED_HERMETIC_SPECS: readonly UnsupportedHermeticSpec[] =
       'Phase 11: /admin/v1/support/tickets* absent from live Dev OA. FE support callers exist — BE decision. Hermetic mock ≠ Live Supported.',
   },
   {
+    file: 'discovery.hermetic.spec.ts',
+    missingContracts: [
+      'GET /admin/v1/community/questions',
+      'POST /admin/v1/community/questions',
+      'GET /admin/v1/community/questions/{id}',
+      'PATCH /admin/v1/community/questions/{id}',
+      'GET /admin/v1/community/reels',
+      'POST /admin/v1/community/reels',
+      'GET /admin/v1/community/reels/{id}',
+      'PATCH /admin/v1/community/reels/{id}',
+      'POST /admin/v1/community/reels/{id}/publish',
+      'POST /admin/v1/community/reels/{id}/unpublish',
+      'POST /admin/v1/community/reels/{id}/archive',
+      'POST /v1/media (kind DISCOVERY_REEL)',
+    ],
+    skipReason:
+      'Admin Discovery: /admin/v1/community/{questions,reels}* (+ POST /v1/media kind DISCOVERY_REEL) absent from live Dev OA until BE 0085 deploys. FE clients are wired — hermetic mock ≠ Live Supported.',
+  },
+  {
     file: 'users-lookup.hermetic.spec.ts',
     missingContracts: [
       'GET /admin/v1/users',
@@ -181,6 +200,17 @@ export const LIVE_DEV_MISSING_ADMIN_FE_CALLERS = [
   'GET /admin/v1/users',
   'GET /admin/v1/qr-batches/{id}/codes',
   'GET /admin/v1/qr-batches',
+  'GET /admin/v1/community/questions',
+  'POST /admin/v1/community/questions',
+  'GET /admin/v1/community/questions/{id}',
+  'PATCH /admin/v1/community/questions/{id}',
+  'GET /admin/v1/community/reels',
+  'POST /admin/v1/community/reels',
+  'GET /admin/v1/community/reels/{id}',
+  'PATCH /admin/v1/community/reels/{id}',
+  'POST /admin/v1/community/reels/{id}/publish',
+  'POST /admin/v1/community/reels/{id}/unpublish',
+  'POST /admin/v1/community/reels/{id}/archive',
 ] as const;
 
 export function unsupportedSpecSkipReason(file: string): string | undefined {

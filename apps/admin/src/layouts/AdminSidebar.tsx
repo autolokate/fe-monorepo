@@ -2,6 +2,7 @@ import { AlBrandMark } from '@autolokate/brand';
 import {
   ActivityIcon,
   BellIcon,
+  CameraIcon,
   CarIcon,
   CircleUserIcon,
   CreditCardIcon,
@@ -12,11 +13,12 @@ import {
   ShieldCheckIcon,
   StoreIcon,
   TriangleAlertIcon,
+  UsersIcon,
 } from '@autolokate/icons';
 import { AlText } from '@autolokate/ui';
 import { NavLink } from 'react-router-dom';
 
-import { adminNavSections } from '@/app/routes/admin-paths';
+import { adminNavSections, adminPaths } from '@/app/routes/admin-paths';
 import { useAdminAuth } from '@/providers/AdminAuthProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 
@@ -31,6 +33,9 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/finance': ReceiptTextIcon,
   '/promos': CreditCardIcon,
   '/catalog': StoreIcon,
+  '/discovery': CameraIcon,
+  '/discovery/qa': UsersIcon,
+  '/discovery/reels': CameraIcon,
   '/inventory': ScanLineIcon,
   '/qr-batches': ScanLineIcon,
   '/ownership-transfers': CarIcon,
@@ -74,6 +79,7 @@ export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminS
                 <NavLink
                   key={route.path}
                   to={route.path}
+                  end={route.path === adminPaths.discovery}
                   className={({ isActive }) =>
                     `admin-shell-nav-item al-admin-focus-ring ${isActive ? 'is-active' : ''}`.trim()
                   }

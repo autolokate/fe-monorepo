@@ -30,6 +30,8 @@ export type AdminPermission =
   | 'promo:write'
   | 'catalog:read'
   | 'catalog:write'
+  | 'discovery:read'
+  | 'discovery:write'
   | 'orders:view'
   | 'orders:refund'
   | 'subscriptions:view'
@@ -67,6 +69,9 @@ const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     // Catalog writes move money: a price, a shelf, a default plan. SUPER_ADMIN only.
     'catalog:read',
     'catalog:write',
+    // Discovery Q&A + Reels are OPERATOR-plane on the BE (GET/POST/PATCH /admin/v1/community/*) — SUPER_ADMIN only.
+    'discovery:read',
+    'discovery:write',
     'orders:view',
     // A full money refund — SUPER_ADMIN + FINANCE only, never the broad orders:view set.
     'orders:refund',

@@ -1,5 +1,7 @@
 import type {
   AdminIncidentStatus,
+  AdminQaStatus,
+  AdminReelStatus,
   AdminOrderStatus,
   AdminPaymentOutcome,
   AdminShipmentStatus,
@@ -80,6 +82,24 @@ export function AuditActionBadge({ action }: { action: AuditAction }) {
     <EntityStatusBadge
       label={action}
       modifier={`admin-entity-status-badge--audit admin-entity-status-badge--audit-${action}`}
+    />
+  );
+}
+
+export function DiscoveryQaStatusBadge({ status }: { status: AdminQaStatus }) {
+  return (
+    <EntityStatusBadge
+      label={status === 'VISIBLE' ? 'Published' : 'Hidden'}
+      modifier={`admin-entity-status-badge--discovery-qa-${status}`}
+    />
+  );
+}
+
+export function DiscoveryReelStatusBadge({ status }: { status: AdminReelStatus }) {
+  return (
+    <EntityStatusBadge
+      label={status === 'PUBLISHED' ? 'Published' : status === 'DRAFT' ? 'Draft' : 'Archived'}
+      modifier={`admin-entity-status-badge--discovery-reel-${status}`}
     />
   );
 }
