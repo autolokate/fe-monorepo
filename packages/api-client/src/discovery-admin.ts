@@ -98,6 +98,8 @@ export type AdminDiscoveryReelDto = {
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Garage/Store partner org attribution (0086). Null when unlinked. */
+  partnerOrgId?: string | null;
 };
 
 export type ListAdminReelsQuery = {
@@ -120,6 +122,8 @@ export type CreateAdminReelBody = {
   sortOrder?: number;
   /** Create as PUBLISHED instead of DRAFT. */
   publish?: boolean;
+  /** Garage/Store partner org to attribute (0086). */
+  partnerOrgId?: string;
 };
 
 export type UpdateAdminReelBody = {
@@ -129,6 +133,8 @@ export type UpdateAdminReelBody = {
   /** `null` removes the poster. */
   thumbMediaId?: string | null;
   sortOrder?: number;
+  /** Partner org attribution; `null` clears (0086). */
+  partnerOrgId?: string | null;
 };
 
 /** OpenAPI `PaginationDto` (`meta.pagination`). The BE only emits it when the list handler wires a cursor. */

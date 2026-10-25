@@ -10,6 +10,16 @@ export const REEL_MAX_BYTES = 40 * 1024 * 1024;
 export const REEL_VIDEO_TYPES = ['video/mp4'] as const;
 export const REEL_POSTER_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const;
 
+const uuidOrEmpty = z
+  .string()
+  .trim()
+  .refine(
+    (v) =>
+      v === '' ||
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v),
+    'Partner org id must be a UUID (or blank to leave unlinked).',
+  );
+
 export const reelFormSchema = z.object({
   stableKey: z
     .string()
@@ -23,6 +33,8 @@ export const reelFormSchema = z.object({
     .number({ message: 'Feed order must be a whole number.' })
     .int('Feed order must be a whole number.'),
   publishNow: z.boolean(),
+  /** Blank = unlinked; UUID = Garage/Store partner org (0086). */
+  partnerOrgId: uuidOrEmpty,
 });
 
 export type ReelFormValues = z.infer<typeof reelFormSchema>;
@@ -33,6 +45,7 @@ export const EMPTY_REEL_FORM: ReelFormValues = {
   caption: '',
   sortOrder: 0,
   publishNow: false,
+  partnerOrgId: '',
 };
 
 export function reelToFormValues(reel: AdminDiscoveryReelDto): ReelFormValues {
@@ -42,6 +55,7 @@ export function reelToFormValues(reel: AdminDiscoveryReelDto): ReelFormValues {
     caption: reel.caption,
     sortOrder: reel.sortOrder,
     publishNow: reel.status === 'PUBLISHED',
+    partnerOrgId: reel.partnerOrgId ?? '',
   };
 }
 
@@ -68,6 +82,7 @@ export function toCreateReelBody(
   values: ReelFormValues,
   media: { videoMediaId: string; thumbMediaId?: string },
 ): CreateAdminReelBody {
+  const partnerOrgId = values.partnerOrgId.trim();
   return {
     stableKey: values.stableKey,
     title: values.title,
@@ -76,6 +91,7 @@ export function toCreateReelBody(
     ...(media.thumbMediaId ? { thumbMediaId: media.thumbMediaId } : {}),
     sortOrder: values.sortOrder,
     publish: values.publishNow,
+    ...(partnerOrgId ? { partnerOrgId } : {}),
   };
 }
 
@@ -102,6 +118,11 @@ export function toUpdateReelBody(
     body.thumbMediaId = media.thumbMediaId;
   } else if (media.removePoster && original.thumbMediaId) {
     body.thumbMediaId = null;
+  }
+  const nextPartner = values.partnerOrgId.trim();
+  const prevPartner = original.partnerOrgId ?? '';
+  if (nextPartner !== prevPartner) {
+    body.partnerOrgId = nextPartner.length > 0 ? nextPartner : null;
   }
   return body;
 }

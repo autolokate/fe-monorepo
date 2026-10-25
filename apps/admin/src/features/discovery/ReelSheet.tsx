@@ -395,6 +395,11 @@ export function ReelSheet({
                     value={formatDiscoveryDateTime(liveReel.updatedAt)}
                   />
                   <AdminDetailField label="Reel ID" value={liveReel.reelId} mono />
+                  <AdminDetailField
+                    label="Partner org"
+                    value={liveReel.partnerOrgId ?? '— unlinked —'}
+                    mono={Boolean(liveReel.partnerOrgId)}
+                  />
                 </AdminDetailGrid>
               </div>
             </div>
@@ -514,6 +519,25 @@ export function ReelSheet({
                   onChange={field.onChange}
                   onBlur={field.onBlur}
                   errorText={fieldState.error?.message}
+                  disabled={isBusy}
+                />
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="partnerOrgId"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Partner org id (optional)"
+                  mono
+                  data-testid="discovery-reel-partner-org-id"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Garage/Store partner UUID for AutoClip attribution (0086). Blank = unlinked. Clear and save to unlink."
+                  autoComplete="off"
                   disabled={isBusy}
                 />
               )}
