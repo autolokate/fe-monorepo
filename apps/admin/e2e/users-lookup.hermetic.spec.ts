@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-import { unsupportedSpecSkipReason } from './helpers/admin-oa-smoke-matrix';
 import {
   HERMETIC_CUSTOMER_PHONE,
   HERMETIC_UNKNOWN_PHONE,
@@ -9,15 +8,11 @@ import {
   seedHermeticSession,
 } from './helpers/hermetic';
 
-const skipReason =
-  unsupportedSpecSkipReason('users-lookup.hermetic.spec.ts') ??
-  'GET /admin/v1/users absent from live Dev OA (tip has listAdminUsers; pending deploy)';
-
 /**
- * Tip BE/FE ship `listAdminUsers` + phone filter. Live Dev OA still 404 until deploy.
- * Hermetic mock ≠ Live Supported. Role grant/revoke remains G0-4 blocked. Skipped ≠ passed.
+ * `GET /admin/v1/users*` is on live Dev OA. Hermetics mock HTTP — they do not prove Live
+ * OPERATOR/step_up. Role grant/revoke remains G0-4 blocked.
  */
-test.describe.skip(`Users directory (hermetic) — ${skipReason}`, () => {
+test.describe('Users directory (hermetic)', () => {
   test('directory + phone search — Nest CONSUMER role + grant/revoke hidden', async ({ page }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);

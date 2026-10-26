@@ -29,7 +29,6 @@ const expectedBlocked = [
   'POST /admin/v1/shipments/{orderId}/status',
   'POST /admin/v1/users/{userId}/roles',
   'DELETE /admin/v1/users/{userId}/roles/{role}',
-  'POST /admin/v1/qr-batches/{id}/distribute',
   'GET /admin/v1/qr-batches/{id}/codes/export',
 ];
 
@@ -47,23 +46,28 @@ const presentMustBeInRoutes = [
   'POST /admin/v1/qr-batches',
   'POST /admin/v1/qr-batches/{id}/generate',
   'POST /admin/v1/qr-batches/{id}/provision',
+  'POST /admin/v1/qr-batches/{id}/distribute',
+  'GET /admin/v1/qr-batches/{id}/codes',
+  'GET /admin/v1/skus',
+  'POST /admin/v1/skus',
+  'PATCH /admin/v1/skus/{skuId}',
+  'GET /admin/v1/users',
+  'GET /admin/v1/users/{userId}',
+  'GET /admin/v1/community/questions',
+  'GET /admin/v1/community/reels',
 ];
 
 const mustNotBeInRoutes = [
   ...expectedBlocked,
-  'GET /admin/v1/skus',
-  'POST /admin/v1/skus',
   'GET /admin/v1/support/tickets',
-  'GET /admin/v1/users',
-  'GET /admin/v1/qr-batches/{id}/codes',
-  'GET /admin/v1/community/questions',
-  'GET /admin/v1/community/reels',
   'POST /admin/v1/experts/bookings/{id}/confirm',
 ];
 
 const expectedSupported = [
   'audit-events.hermetic.spec.ts',
   'break-glass.hermetic.spec.ts',
+  'catalog-sku.hermetic.spec.ts',
+  'discovery.hermetic.spec.ts',
   'finance.hermetic.spec.ts',
   'garage-commercial.hermetic.spec.ts',
   'orders-list.hermetic.spec.ts',
@@ -77,10 +81,11 @@ const expectedSupported = [
   'shipments-list.hermetic.spec.ts',
   'subscriptions.hermetic.spec.ts',
   'taxi-policy.hermetic.spec.ts',
+  'users-lookup.hermetic.spec.ts',
 ];
 
-if (routes.length !== 54) {
-  errors.push(`NEST_OA_ADMIN_ROUTES length ${routes.length} ≠ 54 (live Dev OA)`);
+if (routes.length !== 91) {
+  errors.push(`NEST_OA_ADMIN_ROUTES length ${routes.length} ≠ 91 (live Dev OA)`);
 }
 if (new Set(routes).size !== routes.length) {
   errors.push('NEST_OA_ADMIN_ROUTES has duplicates');
@@ -90,11 +95,15 @@ if (JSON.stringify(supported) !== JSON.stringify(expectedSupported)) {
     `OA_SUPPORTED_HERMETIC_SPECS mismatch (got ${supported.length}, expected ${expectedSupported.length})`,
   );
 }
-if (ahead.length !== 6) {
-  errors.push(`FE_AHEAD length ${ahead.length} ≠ 6`);
+if (ahead.length !== 5) {
+  errors.push(`FE_AHEAD length ${ahead.length} ≠ 5`);
 }
-if (liveMissing.length < 5) {
-  errors.push(`LIVE_DEV_MISSING_ADMIN_FE_CALLERS too short (${liveMissing.length})`);
+if (liveMissing.length === 0) {
+  errors.push('LIVE_DEV_MISSING_ADMIN_FE_CALLERS is empty');
+}
+for (const p of liveMissing) {
+  if (routes.includes(p))
+    errors.push(`Live-missing FE caller is now in NEST_OA_ADMIN_ROUTES: ${p}`);
 }
 for (const b of expectedBlocked) {
   if (!ahead.includes(b)) errors.push(`FE_AHEAD missing blocked ${b}`);
@@ -117,10 +126,7 @@ const stillSkipped = [
   'orders-refund.hermetic.spec.ts',
   'shipments.hermetic.spec.ts',
   'users-roles.hermetic.spec.ts',
-  'catalog-sku.hermetic.spec.ts',
   'support-tickets.hermetic.spec.ts',
-  'users-lookup.hermetic.spec.ts',
-  'discovery.hermetic.spec.ts',
 ];
 for (const file of stillSkipped) {
   const body = readFileSync(join(e2eDir, file), 'utf8');
@@ -133,6 +139,10 @@ const mustRun = [
   'shipments-list.hermetic.spec.ts',
   'payments.hermetic.spec.ts',
   'audit-events.hermetic.spec.ts',
+  'qr-batches.hermetic.spec.ts',
+  'catalog-sku.hermetic.spec.ts',
+  'discovery.hermetic.spec.ts',
+  'users-lookup.hermetic.spec.ts',
 ];
 for (const file of mustRun) {
   const body = readFileSync(join(e2eDir, file), 'utf8');
@@ -141,8 +151,8 @@ for (const file of mustRun) {
   }
 }
 
-if (!src.includes('pathKeys: 287') || !src.includes('adminMethodPathOps: 54')) {
-  errors.push('NEST_OA_ADMIN_SNAPSHOT must record live Dev 287 paths / 54 admin ops');
+if (!src.includes('pathKeys: 327') || !src.includes('adminMethodPathOps: 91')) {
+  errors.push('NEST_OA_ADMIN_SNAPSHOT must record live Dev 327 paths / 91 admin ops');
 }
 
 if (errors.length) {

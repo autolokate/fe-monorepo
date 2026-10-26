@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test';
 
 import type { Locator } from '@playwright/test';
 
-import { unsupportedSpecSkipReason } from './helpers/admin-oa-smoke-matrix';
 import {
   HERMETIC_PLAN_ID,
   HERMETIC_SKU_CODE,
@@ -11,9 +10,6 @@ import {
   seedHermeticSession,
 } from './helpers/hermetic';
 
-const skipReason =
-  unsupportedSpecSkipReason('catalog-sku.hermetic.spec.ts') ??
-  'GET/POST/PATCH /admin/v1/skus* absent from live Dev OA';
 /** AlCheckbox paints a visual box over the native input — toggle via label click. */
 async function checkShelfTier(dialog: Locator, tierLabel: string): Promise<void> {
   const checkbox = dialog.getByRole('checkbox', { name: tierLabel });
@@ -32,10 +28,10 @@ async function fillCreateSkuForm(dialog: Locator): Promise<void> {
 }
 
 /**
- * Live Dev OA: `/admin/v1/skus*` absent (Phase 11). Hermetic mock ≠ Live Supported.
- * Skipped ≠ passed — re-enable when Nest ships skus on Dev.
+ * `/admin/v1/skus*` are on live Dev OA. Hermetics mock HTTP — they do not prove Live
+ * OPERATOR/step_up.
  */
-test.describe.skip(`Catalog SKU create (hermetic) — ${skipReason}`, () => {
+test.describe('Catalog SKU create (hermetic)', () => {
   test('create SKU — POST body + toast', async ({ page }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);

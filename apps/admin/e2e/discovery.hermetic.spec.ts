@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-import { unsupportedSpecSkipReason } from './helpers/admin-oa-smoke-matrix';
 import { installHermeticApiRoutes, seedHermeticSession } from './helpers/hermetic';
 import {
   HERMETIC_MEDIA_POSTER_ID,
@@ -15,10 +14,6 @@ import {
   openDiscoveryReelsPage,
 } from './helpers/hermetic-discovery';
 
-const skipReason =
-  unsupportedSpecSkipReason('discovery.hermetic.spec.ts') ??
-  'GET/POST/PATCH /admin/v1/community/{questions,reels}* absent from live Dev OA';
-
 const MP4_BYTES = Buffer.from('hermetic-mp4-bytes');
 const PNG_BYTES = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
@@ -26,10 +21,10 @@ const PNG_BYTES = Buffer.from(
 );
 
 /**
- * Live Dev OA: `/admin/v1/community/{questions,reels}*` not deployed yet. Hermetic mock ≠ Live Supported.
- * Skipped ≠ passed — re-enable (move to OA_SUPPORTED_HERMETIC_SPECS) when Nest ships these routes on Dev.
+ * `/admin/v1/community/{questions,reels}*` are on live Dev OA. Hermetics mock HTTP — they do not
+ * prove Live OPERATOR/step_up.
  */
-test.describe.skip(`Admin Discovery (hermetic) — ${skipReason}`, () => {
+test.describe('Admin Discovery (hermetic)', () => {
   test('overview — counts from list endpoints + module links', async ({ page }) => {
     const base = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     const discovery = await installHermeticDiscoveryRoutes(page);
