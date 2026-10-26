@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { listUsers } from '@/services/users/admin-users-service';
 
 export type AdminUsersStatusFilter = 'ALL' | 'ACTIVE' | 'CLOSED';
@@ -26,6 +27,7 @@ function normalizePhoneSearch(raw: string): string | undefined {
 }
 
 export function useAdminUsers() {
+  const canRead = useAdminPermission('users:read');
   const [phoneInput, setPhoneInput] = useState('');
   const [phoneApplied, setPhoneApplied] = useState<string | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<AdminUsersStatusFilter>('ACTIVE');
@@ -48,6 +50,7 @@ export function useAdminUsers() {
         },
         signal,
       ),
+    enabled: canRead,
     retry: 0,
   });
 
