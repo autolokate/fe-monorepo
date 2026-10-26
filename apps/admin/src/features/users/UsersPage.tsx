@@ -75,6 +75,9 @@ function UserDetailPanel({
     maintenanceSchedule,
     maintenanceScheduleLoading,
     maintenanceScheduleError,
+    serviceLogs,
+    serviceLogsLoading,
+    serviceLogsError,
     vehicleDocuments,
     vehicleDocumentsLoading,
     vehicleDocumentsError,
@@ -109,6 +112,10 @@ function UserDetailPanel({
   const vehicleMaintenanceSchedule = useMemo(
     () => filterCareByVehicleId(maintenanceSchedule, selectedVehicleId),
     [maintenanceSchedule, selectedVehicleId],
+  );
+  const vehicleServiceLogs = useMemo(
+    () => filterCareByVehicleId(serviceLogs, selectedVehicleId),
+    [serviceLogs, selectedVehicleId],
   );
   const vehicleDocs = useMemo(
     () => filterCareByVehicleId(vehicleDocuments, selectedVehicleId),
@@ -216,6 +223,32 @@ function UserDetailPanel({
                   loading={maintenanceJobsLoading}
                   emptyTitle="No maintenance jobs"
                   emptyDescription="No maintenance jobs for this vehicle."
+                  getRowId={(row) => row.id}
+                />
+              )}
+            </AlStack>
+
+            <AlStack gap="xs">
+              <AlText variant="caption" tone="muted">
+                Service logs (this vehicle)
+              </AlText>
+              {serviceLogsError ? (
+                <AlErrorState message={serviceLogsError} onRetry={refresh} />
+              ) : (
+                <AlDataTable
+                  {...ADMIN_LIST_TABLE_PROPS}
+                  tableId="vehicle-service-logs"
+                  columns={[
+                    { id: 'title', header: 'Title', accessorKey: 'title' },
+                    { id: 'servicedOn', header: 'Serviced', accessorKey: 'servicedOn' },
+                    { id: 'workshop', header: 'Workshop', accessorKey: 'workshop' },
+                    { id: 'costInr', header: 'Cost (INR)', accessorKey: 'costInr' },
+                    { id: 'odometerKm', header: 'Odometer (km)', accessorKey: 'odometerKm' },
+                  ]}
+                  data={vehicleServiceLogs}
+                  loading={serviceLogsLoading}
+                  emptyTitle="No service logs"
+                  emptyDescription="No vehicle-service logs for this vehicle."
                   getRowId={(row) => row.id}
                 />
               )}
@@ -395,8 +428,8 @@ function UserDetailPanel({
                 Vehicles (all owned, including UNPROTECTED)
               </AlText>
               <AlText variant="caption" tone="muted">
-                Open a vehicle to view its expenses, maintenance, and documents. Account-scoped
-                contacts stay on this screen.
+                Open a vehicle to view its expenses, maintenance, service logs, and documents.
+                Account-scoped contacts stay on this screen.
               </AlText>
               {vehiclesError ? (
                 <AlErrorState message={vehiclesError} onRetry={refresh} />

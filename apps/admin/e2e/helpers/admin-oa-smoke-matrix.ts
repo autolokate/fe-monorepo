@@ -55,6 +55,7 @@ export const NEST_OA_ADMIN_ROUTES = [
   'GET /admin/v1/users/{userId}/expenses',
   'GET /admin/v1/users/{userId}/maintenance-jobs',
   'GET /admin/v1/users/{userId}/maintenance-schedule',
+  'GET /admin/v1/users/{userId}/service-logs',
   'GET /admin/v1/users/{userId}/vehicle-documents',
   'GET /admin/v1/users/{userId}/vehicles',
   'PATCH /admin/v1/community/questions/{id}',
