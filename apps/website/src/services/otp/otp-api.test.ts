@@ -2,11 +2,11 @@ import nock from 'nock';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { ApiError } from '@/lib/api/error';
+import { BASE_URL } from '@/services/api.service';
 import { clearPurchaseSession, getPurchaseSession } from '@/services/purchase/session';
 import { requestPurchaseOtp, verifyPurchaseOtp } from './otp-api';
 
-/** Same host hardcoded in otp-api.ts (purchase auth backend). */
-const OTP_HOST = 'https://malisa-noninclusive-davin.ngrok-free.dev';
+const OTP_HOST = BASE_URL;
 
 beforeEach(() => {
   nock.disableNetConnect();
@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe('requestPurchaseOtp', () => {
-  it('POSTs /v1/auth/otp/request with phone and ngrok skip header', async () => {
+  it('POSTs /v1/auth/otp/request with phone to the shared API base URL', async () => {
     let capturedBody: unknown;
 
     nock(OTP_HOST)
@@ -28,7 +28,6 @@ describe('requestPurchaseOtp', () => {
         capturedBody = body;
         return true;
       })
-      .matchHeader('ngrok-skip-browser-warning', 'true')
       .reply(200, { data: { ok: true } });
 
     await requestPurchaseOtp({ phone: '+919876543210' });
@@ -58,7 +57,6 @@ describe('verifyPurchaseOtp', () => {
         capturedBody = body;
         return true;
       })
-      .matchHeader('ngrok-skip-browser-warning', 'true')
       .reply(200, {
         data: {
           accessToken: 'access-new',

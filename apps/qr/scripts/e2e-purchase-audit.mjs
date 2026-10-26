@@ -11,10 +11,11 @@ import { chromium } from 'playwright';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const BASE = process.env.VERIFY_BASE_URL ?? 'http://localhost:5173';
-const API_BASE =
-  process.env.VERIFY_API_BASE_URL ??
-  process.env.VITE_API_BASE_URL ??
-  'https://malisa-noninclusive-davin.ngrok-free.dev';
+const API_BASE = process.env.VERIFY_API_BASE_URL ?? process.env.VITE_API_BASE_URL;
+if (!API_BASE) {
+  console.error('Set VERIFY_API_BASE_URL (or VITE_API_BASE_URL) to the backend under test.');
+  process.exit(1);
+}
 const QR_CODE = process.env.VERIFY_QR_CODE ?? 'ALK-B2C005';
 const PLATE = process.env.VERIFY_PLATE ?? 'DL7CQ1939';
 const PHONE = process.env.VERIFY_PHONE ?? '9876543210';

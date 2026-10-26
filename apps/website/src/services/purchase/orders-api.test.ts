@@ -41,7 +41,6 @@ describe('createOrder', () => {
       })
       .matchHeader('authorization', 'Bearer access-token-1')
       .matchHeader('idempotency-key', UUID_RE)
-      .matchHeader('ngrok-skip-browser-warning', 'true')
       .reply(200, {
         data: {
           orderId: 'ord_1',

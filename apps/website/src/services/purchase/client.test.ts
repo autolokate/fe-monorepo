@@ -59,7 +59,6 @@ describe('refreshPurchaseSession', () => {
         capturedBody = body;
         return true;
       })
-      .matchHeader('ngrok-skip-browser-warning', 'true')
       .reply(200, {
         data: {
           accessToken: 'access-refreshed',

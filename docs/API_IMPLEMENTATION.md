@@ -3,7 +3,11 @@
 **Single source of truth** for backend integration on the Autolokate QR PWA.  
 Update this document when each phase completes — do not create separate report files.
 
-**OpenAPI:** `https://malisa-noninclusive-davin.ngrok-free.dev/openapi.json`  
+> **Historical.** The phases below were built against a temporary ngrok-hosted backend (Srinex API) that is
+> not part of Autolokate. The live contract is `apps/api/openapi.json` in `autolokate/be-monorepo`, served by
+> the Autolokate Dev backend (`AWS_DEV_API_BASE_URL`).
+
+**OpenAPI:** `autolokate/be-monorepo` → `apps/api/openapi.json`  
 **Last updated:** QR attach (Phase 9) — June 2026
 
 ---
