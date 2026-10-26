@@ -4,6 +4,7 @@ import type {
   AdminUserExpenseDto,
   AdminUserMaintenanceJobDto,
   AdminUserMaintenanceScheduleDto,
+  AdminUserServiceLogDto,
   AdminUserSummaryDto,
   AdminUserVehicleDocumentDto,
   AdminUserVehicleDto,
@@ -19,6 +20,7 @@ import {
   listAdminUserExpenses,
   listAdminUserMaintenanceJobs,
   listAdminUserMaintenanceSchedule,
+  listAdminUserServiceLogs,
   listAdminUserVehicleDocuments,
   listAdminUserVehicles,
   listAdminUsersPage,
@@ -83,6 +85,13 @@ export async function fetchUserMaintenanceSchedule(
   signal?: AbortSignal,
 ): Promise<AdminUserMaintenanceScheduleDto[]> {
   return listAdminUserMaintenanceSchedule(getAdminApiClient(), userId, { signal });
+}
+
+export async function fetchUserServiceLogs(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserServiceLogDto[]> {
+  return listAdminUserServiceLogs(getAdminApiClient(), userId, { signal });
 }
 
 export async function fetchUserVehicleDocuments(

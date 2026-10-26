@@ -1804,6 +1804,21 @@ export type AdminUserMaintenanceScheduleDto = {
   updatedAt: string;
 };
 
+/** Service-log projection used by `listAdminUserServiceLogs` (mirrors consumer ServiceLogDto). */
+export type AdminUserServiceLogDto = {
+  id: string;
+  vehicleId: string;
+  title: string;
+  servicedOn: string;
+  odometerKm: number;
+  costInr: number;
+  workshop: string;
+  notes: string;
+  items: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
 /** Vehicle document metadata used by `listAdminUserVehicleDocuments` (no download URL). */
 export type AdminUserVehicleDocumentDto = {
   id: string;
@@ -1954,6 +1969,18 @@ export async function listAdminUserMaintenanceSchedule(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as AdminUserMaintenanceScheduleDto[];
+}
+
+/** GET /admin/v1/users/{userId}/service-logs — vehicle-service logs across owned vehicles. */
+export async function listAdminUserServiceLogs(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserServiceLogDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.userServiceLogs(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserServiceLogDto[];
 }
 
 /** GET /admin/v1/users/{userId}/vehicle-documents — document metadata only (no bytes). */

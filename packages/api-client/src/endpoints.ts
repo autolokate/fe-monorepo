@@ -167,6 +167,8 @@ export const endpoints = {
       `/admin/v1/users/${encodeURIComponent(userId)}/maintenance-jobs`,
     userMaintenanceSchedule: (userId: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/maintenance-schedule`,
+    userServiceLogs: (userId: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/service-logs`,
     userVehicleDocuments: (userId: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/vehicle-documents`,
     userEmergencyContacts: (userId: string) =>

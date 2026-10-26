@@ -12,6 +12,8 @@ export const HERMETIC_VEHICLE_ID = '11111111-2222-4333-8444-555555555555';
 export const HERMETIC_VEHICLE_ID_B = '22222222-3333-4444-8555-666666666666';
 export const HERMETIC_EXPENSE_TITLE_A = 'Hermetic expense vehicle A';
 export const HERMETIC_EXPENSE_TITLE_B = 'Hermetic expense vehicle B LEAK';
+export const HERMETIC_SERVICE_LOG_TITLE_A = 'Hermetic service log vehicle A';
+export const HERMETIC_SERVICE_LOG_TITLE_B = 'Hermetic service log vehicle B LEAK';
 
 export const HERMETIC_TO_ACCOUNT_ID = '66666666-7777-4888-8999-aaaaaaaaaaaa';
 export const HERMETIC_USER_ID = 'hermetic-admin-user';
@@ -1213,6 +1215,43 @@ export async function installHermeticApiRoutes(
     );
     if (method === 'GET' && userMaintenanceScheduleMatch) {
       await fulfillJson(route, 200, envelope([]));
+      return;
+    }
+
+    const userServiceLogsMatch = path.match(/^\/admin\/v1\/users\/([^/]+)\/service-logs$/);
+    if (method === 'GET' && userServiceLogsMatch) {
+      await fulfillJson(
+        route,
+        200,
+        envelope([
+          {
+            id: 'ssssssss-1111-4111-8111-111111111111',
+            vehicleId: HERMETIC_VEHICLE_ID,
+            title: HERMETIC_SERVICE_LOG_TITLE_A,
+            servicedOn: '2026-09-15',
+            odometerKm: 42000,
+            costInr: 3500,
+            workshop: 'Hermetic Workshop A',
+            notes: '',
+            items: ['oil'],
+            createdAt: '2026-09-15T00:00:00.000Z',
+            updatedAt: '2026-09-15T00:00:00.000Z',
+          },
+          {
+            id: 'ssssssss-2222-4222-8222-222222222222',
+            vehicleId: HERMETIC_VEHICLE_ID_B,
+            title: HERMETIC_SERVICE_LOG_TITLE_B,
+            servicedOn: '2026-09-16',
+            odometerKm: 18000,
+            costInr: 1200,
+            workshop: 'Hermetic Workshop B',
+            notes: '',
+            items: ['filter'],
+            createdAt: '2026-09-16T00:00:00.000Z',
+            updatedAt: '2026-09-16T00:00:00.000Z',
+          },
+        ]),
+      );
       return;
     }
 

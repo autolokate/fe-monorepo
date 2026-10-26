@@ -3,6 +3,7 @@ import type {
   AdminUserExpenseDto,
   AdminUserMaintenanceJobDto,
   AdminUserMaintenanceScheduleDto,
+  AdminUserServiceLogDto,
   AdminUserVehicleDocumentDto,
 } from '@autolokate/api-client';
 import { useQuery } from '@tanstack/react-query';
@@ -13,6 +14,7 @@ import {
   fetchUserExpenses,
   fetchUserMaintenanceJobs,
   fetchUserMaintenanceSchedule,
+  fetchUserServiceLogs,
   fetchUserVehicleDocuments,
 } from '@/services/users/admin-users-service';
 
@@ -60,6 +62,18 @@ export function useAdminUserCareRecords(userId: string | null) {
     retry: 0,
   });
 
+  const serviceLogsQuery = useQuery({
+    queryKey: ['admin', 'users', 'service-logs', userId],
+    queryFn: ({ signal }) => {
+      if (!userId) {
+        throw new Error('userId required');
+      }
+      return fetchUserServiceLogs(userId, signal);
+    },
+    enabled,
+    retry: 0,
+  });
+
   const vehicleDocumentsQuery = useQuery({
     queryKey: ['admin', 'users', 'vehicle-documents', userId],
     queryFn: ({ signal }) => {
@@ -88,6 +102,7 @@ export function useAdminUserCareRecords(userId: string | null) {
   const maintenanceJobs: AdminUserMaintenanceJobDto[] = maintenanceJobsQuery.data ?? [];
   const maintenanceSchedule: AdminUserMaintenanceScheduleDto[] =
     maintenanceScheduleQuery.data ?? [];
+  const serviceLogs: AdminUserServiceLogDto[] = serviceLogsQuery.data ?? [];
   const vehicleDocuments: AdminUserVehicleDocumentDto[] = vehicleDocumentsQuery.data ?? [];
   const emergencyContacts: AdminUserEmergencyContactDto[] = emergencyContactsQuery.data ?? [];
 
@@ -101,6 +116,9 @@ export function useAdminUserCareRecords(userId: string | null) {
     maintenanceSchedule,
     maintenanceScheduleLoading: maintenanceScheduleQuery.isLoading,
     maintenanceScheduleError: careErrorMessage(maintenanceScheduleQuery.error),
+    serviceLogs,
+    serviceLogsLoading: serviceLogsQuery.isLoading,
+    serviceLogsError: careErrorMessage(serviceLogsQuery.error),
     vehicleDocuments,
     vehicleDocumentsLoading: vehicleDocumentsQuery.isLoading,
     vehicleDocumentsError: careErrorMessage(vehicleDocumentsQuery.error),
@@ -111,12 +129,14 @@ export function useAdminUserCareRecords(userId: string | null) {
       expensesQuery.isFetching ||
       maintenanceJobsQuery.isFetching ||
       maintenanceScheduleQuery.isFetching ||
+      serviceLogsQuery.isFetching ||
       vehicleDocumentsQuery.isFetching ||
       emergencyContactsQuery.isFetching,
     refresh: () => {
       void expensesQuery.refetch();
       void maintenanceJobsQuery.refetch();
       void maintenanceScheduleQuery.refetch();
+      void serviceLogsQuery.refetch();
       void vehicleDocumentsQuery.refetch();
       void emergencyContactsQuery.refetch();
     },

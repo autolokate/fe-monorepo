@@ -4,6 +4,8 @@ import {
   HERMETIC_CUSTOMER_ACCOUNT_ID,
   HERMETIC_EXPENSE_TITLE_A,
   HERMETIC_EXPENSE_TITLE_B,
+  HERMETIC_SERVICE_LOG_TITLE_A,
+  HERMETIC_SERVICE_LOG_TITLE_B,
   installHermeticApiRoutes,
   openUsersPage,
   seedHermeticSession,
@@ -42,6 +44,9 @@ test.describe('Users vehicle care hierarchy (hermetic)', () => {
     await expect(page.getByText(HERMETIC_EXPENSE_TITLE_B)).toHaveCount(0);
     await expect(page.getByText('Hermetic job vehicle A')).toBeVisible();
     await expect(page.getByText('Hermetic job vehicle B LEAK')).toHaveCount(0);
+    await expect(page.getByText('Service logs (this vehicle)')).toBeVisible();
+    await expect(page.getByText(HERMETIC_SERVICE_LOG_TITLE_A)).toBeVisible();
+    await expect(page.getByText(HERMETIC_SERVICE_LOG_TITLE_B)).toHaveCount(0);
     await expect(page.getByText('Hermetic RC vehicle A')).toBeVisible();
     await expect(page.getByText('Hermetic insurance vehicle B LEAK')).toHaveCount(0);
     // Account-scoped contacts stay off the vehicle pane.
