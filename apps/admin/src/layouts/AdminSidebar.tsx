@@ -38,6 +38,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/discovery': CameraIcon,
   '/discovery/qa': UsersIcon,
   '/discovery/reels': CameraIcon,
+  '/discovery/daily-drive': CarIcon,
   '/inventory': ScanLineIcon,
   '/qr-batches': ScanLineIcon,
   '/ownership-transfers': CarIcon,

@@ -422,6 +422,19 @@ export {
   type UpdateAdminReelBody,
 } from './discovery-admin';
 export {
+  DAILY_DRIVE_CATEGORIES,
+  listAdminDailyDriveVideos,
+  createAdminDailyDriveVideo,
+  updateAdminDailyDriveVideo,
+  transitionAdminDailyDriveVideo,
+  type AdminDailyDriveStatus,
+  type AdminDailyDriveTransition,
+  type AdminDailyDriveVideoDto,
+  type CreateAdminDailyDriveVideoBody,
+  type DailyDriveCategory,
+  type UpdateAdminDailyDriveVideoBody,
+} from './daily-drive-admin';
+export {
   ADMIN_GARAGE_REQUEST_STATUSES,
   ADMIN_PARTNER_TYPES,
   ADMIN_TAXI_REQUEST_STATUSES,

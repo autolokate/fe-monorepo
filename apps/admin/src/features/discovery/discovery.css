@@ -52,6 +52,11 @@
   height: 3.25rem;
 }
 
+.discovery-thumb--wide {
+  width: 4.5rem;
+  height: 2.5rem;
+}
+
 .discovery-thumb--lg {
   width: 6rem;
   height: 10rem;

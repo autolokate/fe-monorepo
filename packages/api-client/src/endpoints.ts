@@ -191,6 +191,10 @@ export const endpoints = {
       `/admin/v1/community/reels/${encodeURIComponent(id)}/unpublish`,
     archiveCommunityReel: (id: string) =>
       `/admin/v1/community/reels/${encodeURIComponent(id)}/archive`,
+    dailyDriveVideos: '/admin/v1/daily-drive/videos',
+    dailyDriveVideo: (id: string) => `/admin/v1/daily-drive/videos/${encodeURIComponent(id)}`,
+    dailyDriveVideoTransition: (id: string, transition: 'publish' | 'unpublish' | 'archive') =>
+      `/admin/v1/daily-drive/videos/${encodeURIComponent(id)}/${transition}`,
     partners: '/admin/v1/partners',
     partner: (orgId: string) => `/admin/v1/partners/${encodeURIComponent(orgId)}`,
     partnerGarageRequests: '/admin/v1/partners/requests',
