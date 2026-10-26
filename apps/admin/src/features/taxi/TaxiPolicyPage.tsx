@@ -15,7 +15,7 @@ type FormState = {
 };
 
 function formatBps(bps: number): string {
-  return `${(bps / 100).toFixed(bps % 100 === 0 ? 0 : 2)}% (${bps} bps)`;
+  return `${(bps / 100).toFixed(bps % 100 === 0 ? 0 : 2)}% (${String(bps)} bps)`;
 }
 
 export function TaxiPolicyPage() {
@@ -66,9 +66,9 @@ export function TaxiPolicyPage() {
       return 'Taxi advance / deposit policy (bps).';
     }
     return buildPageSummary([
-      String(policy.status ?? 'UNKNOWN'),
-      `advance ${formatBps(Number(policy.customerAdvanceBps ?? 0))}`,
-      `deposit ${formatBps(Number(policy.partnerDepositBps ?? 0))}`,
+      policy.status ?? 'UNKNOWN',
+      `advance ${formatBps(policy.customerAdvanceBps ?? 0)}`,
+      `deposit ${formatBps(policy.partnerDepositBps ?? 0)}`,
     ]);
   }, [isLoading, isUnavailable, policy]);
 
@@ -242,13 +242,13 @@ export function TaxiPolicyPage() {
           ) : (
             <ul className="taxi-policy__history" data-testid="taxi-policy-history">
               {history.map((row) => (
-                <li key={String(row.id)}>
-                  <strong>{String(row.status ?? 'PUBLISHED')}</strong>
+                <li key={row.id}>
+                  <strong>{row.status ?? 'PUBLISHED'}</strong>
                   {typeof row.customerAdvanceBps === 'number'
-                    ? ` · advance ${row.customerAdvanceBps} bps`
+                    ? ` · advance ${String(row.customerAdvanceBps)} bps`
                     : null}
                   {typeof row.partnerDepositBps === 'number'
-                    ? ` · deposit ${row.partnerDepositBps} bps`
+                    ? ` · deposit ${String(row.partnerDepositBps)} bps`
                     : null}
                   {row.publishedAt ? ` · ${row.publishedAt}` : null}
                 </li>

@@ -83,7 +83,9 @@ export function BreakGlassDualControlPanel({
         <AlInput
           label="Justification (min 8 chars)"
           value={justification}
-          onChange={(e) => setJustification(e.target.value)}
+          onChange={(e) => {
+            setJustification(e.target.value);
+          }}
           disabled={busy}
           data-testid="break-glass-justification"
           style={{ minWidth: 280, flex: 1 }}
@@ -110,7 +112,9 @@ export function BreakGlassDualControlPanel({
         <AlInput
           label="Incident ID (for detail grant)"
           value={detailIncidentId}
-          onChange={(e) => setDetailIncidentId(e.target.value)}
+          onChange={(e) => {
+            setDetailIncidentId(e.target.value);
+          }}
           disabled={busy}
           data-testid="break-glass-detail-incident-id"
           style={{ minWidth: 280, flex: 1 }}
@@ -139,7 +143,9 @@ export function BreakGlassDualControlPanel({
         <AlInput
           label="Approval ID (second admin)"
           value={peerApprovalId}
-          onChange={(e) => setPeerApprovalId(e.target.value)}
+          onChange={(e) => {
+            setPeerApprovalId(e.target.value);
+          }}
           disabled={busy}
           data-testid="break-glass-peer-id"
           style={{ minWidth: 280, flex: 1 }}
@@ -176,7 +182,9 @@ export function BreakGlassDualControlPanel({
         <AlInput
           label="Approved grant ID (requester)"
           value={consumeId || approval?.id || ''}
-          onChange={(e) => setConsumeId(e.target.value)}
+          onChange={(e) => {
+            setConsumeId(e.target.value);
+          }}
           disabled={busy}
           data-testid="break-glass-consume-id"
           style={{ minWidth: 280, flex: 1 }}
@@ -198,9 +206,7 @@ export function BreakGlassDualControlPanel({
           size="sm"
           variant="secondary"
           loading={busy}
-          disabled={
-            busy || !(consumeId.trim() || approval?.id) || !effectiveDetailIncidentId
-          }
+          disabled={busy || !(consumeId.trim() || approval?.id) || !effectiveDetailIncidentId}
           data-testid="break-glass-load-detail"
           onClick={() => {
             const id = (consumeId.trim() || approval?.id || '').trim();

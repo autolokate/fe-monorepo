@@ -75,7 +75,9 @@ export function useIncidentsColumns(
                   size="sm"
                   variant="secondary"
                   data-testid={`incident-detail-grant-${row.original.incidentId}`}
-                  onClick={() => onRequestDetailGrant(row.original.incidentId)}
+                  onClick={() => {
+                    onRequestDetailGrant(row.original.incidentId);
+                  }}
                 >
                   Prefill detail grant
                 </AlButton>

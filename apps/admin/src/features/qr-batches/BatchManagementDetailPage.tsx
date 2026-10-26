@@ -201,12 +201,7 @@ export function BatchManagementDetailPage() {
       : null;
 
   const runLifecycleAction = async (actionId: BatchLifecycleActionId) => {
-    // Product-blocked: never invoke Nest-absent POST …/distribute (even via fallthrough).
-    if (
-      !canWrite ||
-      actionId === 'distribute' ||
-      !canRunBatchLifecycleAction(batch, actionId)
-    ) {
+    if (!canWrite || !canRunBatchLifecycleAction(batch, actionId)) {
       return;
     }
 
@@ -215,16 +210,13 @@ export function BatchManagementDetailPage() {
     abortRef.current = controller;
 
     try {
-      const updated =
+      const mutation =
         actionId === 'generate'
-          ? await generateMutation.mutateAsync({ batchId: batch.id, signal: controller.signal })
+          ? generateMutation
           : actionId === 'provision'
-            ? await provisionMutation.mutateAsync({ batchId: batch.id, signal: controller.signal })
-            : null;
-      if (!updated) {
-        setPendingLifecycle(null);
-        return;
-      }
+            ? provisionMutation
+            : distributeMutation;
+      const updated = await mutation.mutateAsync({ batchId: batch.id, signal: controller.signal });
       setBatchOverride(updated);
       setPendingLifecycle(null);
     } catch {

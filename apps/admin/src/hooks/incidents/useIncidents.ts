@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -28,14 +28,7 @@ export function useIncidents(
 
   const query = useQuery({
     queryKey: incidentsQueryKeys.list(approvalId ?? ''),
-    queryFn: ({ signal }) =>
-      fetchIncidentsPage(
-        {
-          approvalId: approvalId!,
-        },
-        signal,
-      ),
-    enabled: Boolean(approvalId),
+    queryFn: approvalId ? ({ signal }) => fetchIncidentsPage({ approvalId }, signal) : skipToken,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { skipToken, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
@@ -18,8 +18,10 @@ export const incidentDetailQueryKeys = {
 export function useIncidentDetail(incidentId: string | null, approvalId: string | null) {
   const query = useQuery({
     queryKey: incidentDetailQueryKeys.one(incidentId ?? '', approvalId ?? ''),
-    queryFn: ({ signal }) => fetchIncident(incidentId!, approvalId!, signal),
-    enabled: Boolean(incidentId && approvalId),
+    queryFn:
+      incidentId && approvalId
+        ? ({ signal }) => fetchIncident(incidentId, approvalId, signal)
+        : skipToken,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

@@ -6,9 +6,8 @@ import { pauseIfWatching, showState } from './helpers/watch';
 
 /**
  * Admin QR provisioning spine (Nest OA Present):
- * create DRAFT → generate CODES_GENERATED → provision PROVISIONED.
- *
- * POST …/distribute is product-blocked (absent from Nest OA) — assert CTA unavailable.
+ * create DRAFT → generate CODES_GENERATED → provision PROVISIONED → distribute IN_DISTRIBUTION
+ * (B2C only). Export-for-print stays absent from Nest OA — assert that CTA is unavailable.
  * Auth is injected (sessionStorage) so the suite does not depend on WhatsApp OTP
  * when bearer tokens are supplied via env.
  *
@@ -16,7 +15,7 @@ import { pauseIfWatching, showState } from './helpers/watch';
  * CL-FE-4: this file is Live/env e2e — not part of hermetic; not executed in CL-FE-4.
  */
 test.describe('QR batch provisioning', () => {
-  test('create → generate → provision; distribute unavailable', async ({ page }) => {
+  test('create → generate → provision → distribute (B2C)', async ({ page }) => {
     const skuCode = e2eSkuCode();
     const totalCount = Number(process.env.E2E_BATCH_TOTAL_COUNT ?? '5');
 
@@ -43,7 +42,9 @@ test.describe('QR batch provisioning', () => {
     );
     // The BATCH badge is the Overview section's direct child; each row in "Codes in batch" carries
     // its own per-code badge (inside a `td`), so an unscoped `.al-status-badge` is ambiguous.
-    const batchStatus = detail.locator('.qr-batch-detail-hero__status .al-status-badge, .admin-detail-section__body > .al-status-badge');
+    const batchStatus = detail.locator(
+      '.qr-batch-detail-hero__status .al-status-badge, .admin-detail-section__body > .al-status-badge',
+    );
     await expect(batchStatus.first()).toHaveText('DRAFT');
     await showState(page, '4 · DRAFT batch created');
 
@@ -67,14 +68,20 @@ test.describe('QR batch provisioning', () => {
     await expect(batchStatus.first()).toHaveText('PROVISIONED', { timeout: 30_000 });
     await showState(page, '8 · PROVISIONED (detail page)');
 
-    // Product-blocked — Nest has no POST …/distribute; Admin UI must not offer it.
-    await expect(detail.getByRole('button', { name: 'Distribute batch' })).toHaveCount(0);
     await expect(detail.getByRole('button', { name: 'Export for print' })).toHaveCount(0);
-    await showState(page, '9 · distribute/export unavailable (fail-closed)');
+    await detail.getByRole('button', { name: 'Distribute batch' }).click();
+    const distributeConfirm = page.getByRole('alertdialog', { name: 'Distribute batch' });
+    await expect(distributeConfirm).toBeVisible();
+    await showState(page, '9 · Distribute batch confirm');
+    await distributeConfirm.getByRole('button', { name: 'Distribute batch' }).click();
+
+    await expect(batchStatus.first()).toHaveText('IN_DISTRIBUTION', { timeout: 30_000 });
+    await expect(detail.getByRole('button', { name: 'Distribute batch' })).toHaveCount(0);
+    await showState(page, '9b · IN_DISTRIBUTION (detail page)');
 
     await detail.getByRole('button', { name: 'QR Batch Management' }).click();
-    await expect(page.getByRole('cell', { name: 'PROVISIONED' }).first()).toBeVisible();
-    await showState(page, '10 · list shows PROVISIONED');
+    await expect(page.getByRole('cell', { name: 'IN_DISTRIBUTION' }).first()).toBeVisible();
+    await showState(page, '10 · list shows IN_DISTRIBUTION');
 
     // Stays open until you click Resume in the Playwright Inspector.
     await pauseIfWatching(page);

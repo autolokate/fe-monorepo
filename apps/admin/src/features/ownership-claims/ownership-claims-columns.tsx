@@ -59,11 +59,20 @@ export function useOwnershipClaimsColumns(
                 variant="secondary"
                 disabled={busy}
                 loading={busy}
-                onClick={() => onMarkUnderReview(claim)}
+                onClick={() => {
+                  onMarkUnderReview(claim);
+                }}
               >
                 Under review
               </AlButton>
-              <AlButton size="sm" disabled={busy} loading={busy} onClick={() => onApprove(claim)}>
+              <AlButton
+                size="sm"
+                disabled={busy}
+                loading={busy}
+                onClick={() => {
+                  onApprove(claim);
+                }}
+              >
                 Approve
               </AlButton>
               <AlButton
@@ -71,7 +80,9 @@ export function useOwnershipClaimsColumns(
                 variant="secondary"
                 disabled={busy}
                 loading={busy}
-                onClick={() => onReject(claim)}
+                onClick={() => {
+                  onReject(claim);
+                }}
               >
                 Reject
               </AlButton>

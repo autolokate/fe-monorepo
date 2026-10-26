@@ -48,7 +48,10 @@ export function getBatchLifecycleActions(batch: BatchSummaryDto): BatchLifecycle
     actions.push({ id: 'provision', ...BATCH_LIFECYCLE_ACTIONS.provision });
   }
 
-  // POST …/qr-batches/{id}/distribute is product-blocked (absent from Nest OA) — never offer it.
+  // Nest releases only B2C retail stock; B2B2C / B2B reach the field via partner allotment.
+  if (batch.status === 'PROVISIONED' && batch.channel === 'B2C') {
+    actions.push({ id: 'distribute', ...BATCH_LIFECYCLE_ACTIONS.distribute });
+  }
 
   return actions;
 }
@@ -89,7 +92,7 @@ export function describeBatchLifecycleStatus(status: QrBatchStatus): string {
     case 'REPRINT':
       return 'Batch requires reprint before provisioning.';
     case 'PROVISIONED':
-      return 'Batch provisioned. Admin distribute is unavailable until Nest ships that contract.';
+      return 'Batch provisioned. B2C batches can be distributed to open the self-pay journey.';
     case 'ALLOCATED':
       return 'Batch allocated to partners or channels.';
     case 'IN_DISTRIBUTION':
