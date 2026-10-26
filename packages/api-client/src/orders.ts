@@ -1,4 +1,5 @@
 import type { ApiClient } from './client';
+import type { ApiPlanTier } from './plans';
 import { endpoints } from './endpoints';
 import { unwrapEnvelope } from './envelope';
 
@@ -9,18 +10,13 @@ export type PaymentOutcome = 'PAID' | 'FAILED' | 'UNCONFIRMED' | 'PENDING' | 'RE
 export type PayOrderMode = 'ONLINE' | 'CASH';
 
 /**
- * @deprecated Historical cart→order body. Nest `POST /v1/orders` requires
- * {@link CreateQrOrderBody}. Website retail uses {@link CreateRetailOrderBody}
- * on `/v1/retail/orders` — never send `{ cartId }` alone to `/v1/orders`.
+ * Nest QR create-order body (`POST /v1/orders`, OpenAPI `CreateOrderBodyDto`).
+ * The code must already be ATTACHED to a vehicle or Nest answers 409 `not_provisioned`.
+ * Website retail uses {@link CreateRetailOrderBody} on `/v1/retail/orders` instead.
  */
-export type CreateOrderBody = {
-  cartId: string;
-};
-
-/** Canonical Nest QR create-order body (`POST /v1/orders`). */
 export type CreateQrOrderBody = {
   code: string;
-  planTier: string;
+  planTier: ApiPlanTier;
   riderCount: number;
   promoCode?: string;
 };
@@ -50,8 +46,12 @@ export type RetailOrderDetailDto = OrderDto & {
   updatedAt: string;
 };
 
-/** Consumer commerce checkout — ONLINE-only; optional auto-renew mandate. */
+/**
+ * Maps to OpenAPI `PayOrderBodyDto` — `mode` is required by Nest. Consumer self-pay is
+ * ONLINE-only (CASH is a partner-counter channel); optional auto-renew mandate.
+ */
 export type PayOrderBody = {
+  mode: 'ONLINE';
   setupMandate?: boolean;
   mandateConsent?: boolean;
 };
@@ -85,10 +85,10 @@ export type PaymentOutcomeDto = {
   outcome: PaymentOutcome;
 };
 
-/** POST /v1/orders — QR/plan commerce (prefer {@link CreateQrOrderBody} when aligning). */
+/** POST /v1/orders — QR protection-plan commerce for a scanned, attached code. */
 export async function createOrder(
   client: ApiClient,
-  body: CreateOrderBody | CreateQrOrderBody,
+  body: CreateQrOrderBody,
   idempotencyKey: string,
 ): Promise<OrderDto> {
   const response = await client.post<unknown>(endpoints.orders.create, body, {
@@ -136,9 +136,13 @@ export async function payRetailOrder(
   orderId: string,
   idempotencyKey: string,
 ): Promise<PaymentRefDto> {
-  const response = await client.post<unknown>(endpoints.retailOrders.pay(orderId), {}, {
-    headers: { 'Idempotency-Key': idempotencyKey },
-  });
+  const response = await client.post<unknown>(
+    endpoints.retailOrders.pay(orderId),
+    {},
+    {
+      headers: { 'Idempotency-Key': idempotencyKey },
+    },
+  );
   return unwrapEnvelope(response) as PaymentRefDto;
 }
 

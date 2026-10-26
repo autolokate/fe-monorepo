@@ -3,6 +3,7 @@ import {
   getOrderPayment as getOrderPaymentApi,
   payOrder as payOrderApi,
   ApiError,
+  type PayOrderBody,
 } from '@autolokate/api-client';
 
 import type { PurchasePaymentStatus } from '@/features/qr-purchase/types-checkout';
@@ -43,7 +44,7 @@ import { isPendingPaymentOutcome } from './payment-outcome';
 import { getRazorpayPublishableKey } from './payment-gateway';
 import { patchCheckout, clearCheckout } from '@/storage/index';
 import { openRazorpayCheckout } from './razorpay-checkout';
-import { formatCreateOrderBodyForLog } from './resolve-order-qr-code';
+import { formatCreateOrderBodyForLog, resolveOrderQrCode } from './resolve-order-qr-code';
 import { priceCheckoutCart } from '@/services/cart/index';
 import { peekCartId } from './checkout-cache';
 import { clearPlansCache } from '@/services/plan/plan-cache';
@@ -104,10 +105,11 @@ async function createOrderForParams(
   }
 
   const cartId = peekCartId();
-  if (!cartId) {
+  const qrCode = resolveOrderQrCode();
+  if (!qrCode) {
     return {
       ok: false,
-      error: { code: 'unavailable', message: 'Cart was not priced.' },
+      error: { code: 'unavailable', message: 'Missing purchase QR code.' },
     };
   }
 
@@ -116,7 +118,7 @@ async function createOrderForParams(
       ? current.createIdempotencyKey
       : createIdempotencyKey();
 
-  const createBody = mapCheckoutParamsToCreateOrderBody(cartId);
+  const createBody = mapCheckoutParamsToCreateOrderBody(qrCode, params);
 
   try {
     const client = getQrApiClient();
@@ -291,7 +293,7 @@ async function initiateOrderPayment(orderId: string): Promise<InitiateOrderPayme
   }
 
   try {
-    const payBody = {};
+    const payBody: PayOrderBody = { mode: 'ONLINE' };
     checkoutLogger.info('payment_open_request', {
       orderId,
       body: payBody,

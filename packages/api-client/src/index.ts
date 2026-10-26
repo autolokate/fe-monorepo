@@ -85,8 +85,6 @@ export {
   payOrder,
   getOrderPayment,
   getOrderInvoice,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated -- re-export for legacy callers
-  type CreateOrderBody,
   type CreateRetailOrderBody,
   type CreateQrOrderBody,
   type OrderDto,

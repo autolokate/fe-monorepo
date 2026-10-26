@@ -1,12 +1,15 @@
 import {
   createCart as createCartApi,
   updateCart as updateCartApi,
+  validatePromo,
   type CartDto,
+  type CreateCartBody,
   type PatchCartBody,
 } from '@autolokate/api-client';
 
 import { getQrApiClient } from '@/platform/api/qr-api-client';
-import { getPlanVersionId } from '@/services/plan/plan-mapper';
+import { mapPricedSaleToSummary } from '@/services/checkout/priced-sale-mapper';
+import { getPlanVersionId, mapPurchasePlanIdToApiTier } from '@/services/plan/plan-mapper';
 import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
 import {
   clearCartPricingCache,
@@ -124,13 +127,22 @@ async function patchExistingCartBase(
 
     const cart = await updateCartApi(client, cartId, body);
 
-    persistCartSnapshot(cart, params, paramsKey);
+    const promoCode = desiredPromoCode(params);
+    const baseParams: CheckoutParams = { ...params, promoApplied: false, promoCode: null };
+    persistCartSnapshot(
+      cart,
+      baseParams,
+      promoCode ? buildCheckoutParamsKey(baseParams) : paramsKey,
+    );
     cartLogger.info('cart_patch_response', {
       cartId: cart.cartId,
       totalPaise: cart.totalPaise,
-      discountPaise: cart.discountPaise,
-      appliedPromoCode: cart.appliedPromoCode ?? null,
     });
+
+    const qrCode = promoCode ? resolveOrderQrCode() : null;
+    if (promoCode && qrCode) {
+      return await applyPromoPreview(qrCode, params, promoCode);
+    }
     return { ok: true, revision: getCheckoutRevision() };
   } catch (error) {
     cartLogger.warn('cart_patch_failed', { error, cartId });
@@ -212,8 +224,7 @@ async function createCartForParams(
 
   try {
     const client = getQrApiClient();
-    const body = {
-      code: purchaseQrCode,
+    const body: CreateCartBody = {
       planId: planVersionId,
       riderCount: params.riderCount,
       ...(registration ? { registration } : {}),
@@ -225,23 +236,19 @@ async function createCartForParams(
       hasRegistration: Boolean(registration),
     });
 
-    let cart = await createCartApi(client, body);
-
-    // Promo is always applied via PATCH { promoCode } — never embedded in POST.
-    if (promoCode) {
-      cartLogger.info('cart_promo_patch_after_create', { cartId: cart.cartId, promoCode });
-      cart = await updateCartApi(client, cart.cartId, { promoCode });
-    }
-
-    persistCartSnapshot(cart, params, paramsKey);
+    const cart = await createCartApi(client, body);
+    const baseParams: CheckoutParams = { ...params, promoApplied: false, promoCode: null };
+    persistCartSnapshot(cart, baseParams, buildCheckoutParamsKey(baseParams));
 
     cartLogger.info('cart_create_response', {
       cartId: cart.cartId,
       totalPaise: cart.totalPaise,
-      discountPaise: cart.discountPaise,
       expiresAt: cart.expiresAt,
     });
 
+    if (promoCode) {
+      return await applyPromoPreview(purchaseQrCode, params, promoCode);
+    }
     return { ok: true, revision: getCheckoutRevision() };
   } catch (error) {
     cartLogger.warn('cart_create_failed', { error });
@@ -276,72 +283,95 @@ export async function priceCheckoutCart(
 }
 
 /**
- * PATCH /v1/cart/{cartId} — apply or clear promo.
- * Swagger payload for promo-only edit: `{ "promoCode": "FRIEND50" }` or `{ "promoCode": null }`.
+ * POST /v1/promos/validate — Nest's QR R08b promo preview for this code + tier + riders.
+ * The website cart prices plan + riders only (its promo discount is not wired), so the
+ * discounted total shown on R08 comes from here; `POST /v1/orders` re-validates the promo.
  */
+async function applyPromoPreview(
+  qrCode: string,
+  params: CheckoutParams,
+  promoCode: string,
+): Promise<PriceCartResult> {
+  const nextParams: CheckoutParams = { ...params, promoApplied: true, promoCode };
+  const current = readCheckoutState();
+
+  try {
+    const client = getQrApiClient();
+    cartLogger.info('promo_preview_request', { promoCode, riderCount: params.riderCount });
+    const preview = await validatePromo(client, {
+      code: qrCode,
+      planTier: mapPurchasePlanIdToApiTier(params.planId),
+      riderCount: params.riderCount,
+      promoCode,
+    });
+
+    const orderSummary = mapPricedSaleToSummary(
+      {
+        planPricePaise: current.planPricePaise ?? 0,
+        riderCoverPaise: current.riderCoverPaise ?? 0,
+        discountPaise: preview.discountPaise,
+        totalPaise: preview.totalPaise,
+        appliedPromoCode: preview.promoCode,
+      },
+      nextParams,
+    );
+
+    updateCheckoutState({
+      discountPaise: preview.discountPaise,
+      appliedPromoCode: preview.promoCode,
+      orderId: null,
+      orderStatus: null,
+      paymentRef: null,
+      providerOrderId: null,
+      razorpayKeyId: null,
+      createIdempotencyKey: null,
+      payIdempotencyKey: null,
+      orderSummary,
+      totalPaise: preview.totalPaise,
+      paramsKey: buildCheckoutParamsKey(nextParams),
+    });
+
+    cartLogger.info('promo_preview_response', {
+      promoCode: preview.promoCode,
+      discountPaise: preview.discountPaise,
+      totalPaise: preview.totalPaise,
+    });
+    return { ok: true, revision: getCheckoutRevision() };
+  } catch (error) {
+    cartLogger.warn('promo_preview_failed', { error });
+    return { ok: false, error: mapCheckoutApiError(error) };
+  }
+}
+
+/** Apply a promo (Nest promo preview) or clear it (re-price the cart without a discount). */
 export async function patchCheckoutCartPromo(
   params: CheckoutParams,
   promoCode: string | null,
 ): Promise<PriceCartResult> {
   const cartId = peekCartId();
   const current = readCheckoutState();
-
-  if (!cartId || isCartExpired(current.cartExpiresAt)) {
-    return priceCheckoutCart(
-      {
-        ...params,
-        promoApplied: Boolean(promoCode),
-        promoCode,
-      },
-      { force: true },
-    );
-  }
-
-  const paramsKey = buildCheckoutParamsKey({
+  const nextParams: CheckoutParams = {
     ...params,
     promoApplied: Boolean(promoCode),
     promoCode,
-  });
+  };
 
-  try {
-    const client = getQrApiClient();
-    // Promo-only body — do not re-send planId/riderCount/registration.
-    const body: PatchCartBody = { promoCode };
-    cartLogger.info('cart_promo_patch_request', { cartId, promoCode });
-
-    const cart = await updateCartApi(client, cartId, body);
-    persistCartSnapshot(
-      cart,
-      {
-        ...params,
-        promoApplied: Boolean(promoCode),
-        promoCode,
-      },
-      paramsKey,
-    );
-
-    cartLogger.info('cart_promo_patch_response', {
-      cartId: cart.cartId,
-      totalPaise: cart.totalPaise,
-      discountPaise: cart.discountPaise,
-      appliedPromoCode: cart.appliedPromoCode ?? null,
-    });
-    return { ok: true, revision: getCheckoutRevision() };
-  } catch (error) {
-    cartLogger.warn('cart_promo_patch_failed', { error, cartId });
-    if (isRefreshableCartError(error)) {
-      clearCartPricingCache();
-      return createCartForParams(
-        {
-          ...params,
-          promoApplied: Boolean(promoCode),
-          promoCode,
-        },
-        { force: true },
-      );
-    }
-    return { ok: false, error: mapCheckoutApiError(error) };
+  if (!cartId || isCartExpired(current.cartExpiresAt)) {
+    return priceCheckoutCart(nextParams, { force: true });
   }
+
+  if (!promoCode) {
+    return patchExistingCartBase(cartId, nextParams);
+  }
+
+  const qrCode = resolveOrderQrCode();
+  if (!qrCode) {
+    return {
+      ok: false,
+      error: { code: 'unavailable', message: 'Missing purchase QR code.' },
+    };
+  }
+  return applyPromoPreview(qrCode, params, promoCode);
 }
 
 /** Re-PATCH plan/riders without touching promo (used when shelf tier changes). */

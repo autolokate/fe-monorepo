@@ -2,26 +2,27 @@ import type { ApiClient } from './client';
 import { endpoints } from './endpoints';
 import { unwrapEnvelope } from './envelope';
 
-/** Maps to OpenAPI `CartBodyDto` — POST /v1/cart. */
+/**
+ * Maps to OpenAPI `CreateWebsiteCartDto` — POST /v1/cart. Nest rejects unknown keys,
+ * so a QR `code` must never be sent here; QR promo previews use `POST /v1/promos/validate`.
+ */
 export type CreateCartBody = {
-  code?: string;
   planId: string;
   riderCount: number;
-  /** Required for upgrade carts on a DISTRIBUTED prepaid code. */
   registration?: string;
   promoCode?: string;
 };
 
-/** Maps to OpenAPI `PatchCartBodyDto` — PATCH /v1/cart/{cartId}. */
+/** Maps to OpenAPI `UpdateWebsiteCartDto` — PATCH /v1/cart/{cartId} (plan + riders required). */
 export type PatchCartBody = {
-  planId?: string;
-  riderCount?: number;
+  planId: string;
+  riderCount: number;
   registration?: string;
   /** Apply promo, or `null` to remove. */
   promoCode?: string | null;
 };
 
-/** Maps to OpenAPI `CartDto` — envelope `data` on POST/GET/PATCH /v1/cart. */
+/** Maps to OpenAPI `WebsiteCartDto` — envelope `data` on POST/GET/PATCH /v1/cart. */
 export type CartDto = {
   cartId: string;
   planPricePaise: number;
@@ -30,7 +31,7 @@ export type CartDto = {
   gstPaise: number;
   discountPaise: number;
   totalPaise: number;
-  appliedPromoCode?: string;
+  appliedPromoCode?: string | null;
   expiresAt: string;
 };
 
@@ -40,7 +41,7 @@ export async function createCart(client: ApiClient, body: CreateCartBody): Promi
   return unwrapEnvelope(response) as CartDto;
 }
 
-/** PATCH /v1/cart/{cartId} — edit promo / tier / riders in place. */
+/** PATCH /v1/cart/{cartId} — re-price plan / riders / promo in place. */
 export async function updateCart(
   client: ApiClient,
   cartId: string,

@@ -178,6 +178,7 @@ async function fulfillJson(route, status, body) {
  *   cartStatus?: number,
  *   payWithGateway?: boolean,
  *   razorpayMode?: 'dismiss' | 'none',
+ *   orderError?: { status: number, code: string, message: string },
  *   journeyOverrides?: object,
  * }} options
  */
@@ -189,6 +190,7 @@ async function boot(browser, appUrl, options = {}) {
 
   const captured = {
     cart: [],
+    promos: [],
     orders: [],
     pays: [],
     payments: [],
@@ -293,6 +295,23 @@ async function boot(browser, appUrl, options = {}) {
       return;
     }
 
+    if (method === 'POST' && path === '/v1/promos/validate') {
+      const body = JSON.parse(req.postData() ?? '{}');
+      captured.promos.push(body);
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          promoCode: body.promoCode,
+          subtotalPaise: 148305,
+          gstPaise: 26695,
+          discountPaise: 19800,
+          totalPaise: 175000,
+        }),
+      );
+      return;
+    }
+
     if (method === 'POST' && path === '/v1/orders') {
       const body = JSON.parse(req.postData() ?? '{}');
       captured.orders.push({
@@ -300,6 +319,17 @@ async function boot(browser, appUrl, options = {}) {
         authorization: req.headers().authorization ?? '',
         idempotencyKey: req.headers()['idempotency-key'] ?? '',
       });
+      if (options.orderError) {
+        await fulfillJson(route, options.orderError.status, {
+          error: {
+            code: options.orderError.code,
+            message: options.orderError.message,
+            requestId: 'hermetic-req',
+            correlationId: 'hermetic-corr',
+          },
+        });
+        return;
+      }
       await fulfillJson(route, 200, orderPayload());
       return;
     }
@@ -382,9 +412,9 @@ async function run(browser, appUrl) {
     const titleVisible = await page.getByText('Payment successful').isVisible();
 
     check(
-      'A: POST /v1/cart with QR code + plan version + riders',
+      'A: POST /v1/cart preview with plan version + riders only (CreateWebsiteCartDto)',
       captured.cart.length >= 1 &&
-        captured.cart[0].body.code === QR_CODE &&
+        !('code' in captured.cart[0].body) &&
         captured.cart[0].body.planId === PLAN_VERSION_ID &&
         captured.cart[0].body.riderCount === 1,
       JSON.stringify(captured.cart[0]?.body),
@@ -395,9 +425,10 @@ async function run(browser, appUrl) {
       captured.cart[0]?.authorization,
     );
     check(
-      'A: POST /v1/orders { cartId } + Idempotency-Key UUID',
+      'A: POST /v1/orders { code, planTier, riderCount } + Idempotency-Key UUID',
       captured.orders.length >= 1 &&
-        captured.orders[0].body.cartId === CART_ID &&
+        JSON.stringify(captured.orders[0].body) ===
+          JSON.stringify({ code: QR_CODE, planTier: 'SECURE', riderCount: 1 }) &&
         isUuid(captured.orders[0].idempotencyKey),
       JSON.stringify({
         body: captured.orders[0]?.body,
@@ -409,11 +440,11 @@ async function run(browser, appUrl) {
       captured.orders[0]?.authorization === `Bearer ${ACCESS_TOKEN}`,
     );
     check(
-      'A: POST …/pay with Idempotency-Key UUID (empty ONLINE body)',
+      'A: POST …/pay with Idempotency-Key UUID ({ mode: ONLINE } — PayOrderBodyDto)',
       captured.pays.length >= 1 &&
         captured.pays[0].path.endsWith(`/${ORDER_ID}/pay`) &&
         isUuid(captured.pays[0].idempotencyKey) &&
-        Object.keys(captured.pays[0].body).length === 0,
+        JSON.stringify(captured.pays[0].body) === JSON.stringify({ mode: 'ONLINE' }),
       JSON.stringify(captured.pays[0]),
     );
     check(
@@ -463,6 +494,61 @@ async function run(browser, appUrl) {
     check('D: cart attempted', captured.cart.length >= 1);
     check('D: no order create', captured.orders.length === 0, `${captured.orders.length} order(s)`);
     check('D: no pay', captured.pays.length === 0);
+    await close();
+  }
+
+  console.log('\n[F] Promo — Nest preview, then the order carries the promo');
+  {
+    const { page, captured, close } = await boot(browser, appUrl, {
+      paymentOutcome: 'PAID',
+      journeyOverrides: { purchase: { promoApplied: true, promoCode: 'FRIEND50' } },
+    });
+    await page.waitForURL(/\/payment-success(?:\?|$)/, { timeout: 30_000 });
+    check(
+      'F: POST /v1/promos/validate { code, planTier, riderCount, promoCode }',
+      captured.promos.length >= 1 &&
+        JSON.stringify(captured.promos[0]) ===
+          JSON.stringify({
+            code: QR_CODE,
+            planTier: 'SECURE',
+            riderCount: 1,
+            promoCode: 'FRIEND50',
+          }),
+      JSON.stringify(captured.promos[0]),
+    );
+    check(
+      'F: cart never receives the promo or the QR code',
+      captured.cart.every((c) => !('promoCode' in c.body) && !('code' in c.body)),
+      JSON.stringify(captured.cart.map((c) => c.body)),
+    );
+    check(
+      'F: order re-sends promo for server-side re-validation',
+      captured.orders[0]?.body.promoCode === 'FRIEND50' &&
+        captured.orders[0]?.body.code === QR_CODE,
+      JSON.stringify(captured.orders[0]?.body),
+    );
+    check(
+      'F: no unexpected /v1 traffic',
+      captured.unexpected.length === 0,
+      captured.unexpected.join(' | '),
+    );
+    await close();
+  }
+
+  console.log('\n[G] Attach-before-pay guard — order 409 not_provisioned → no pay');
+  {
+    const { page, captured, close } = await boot(browser, appUrl, {
+      orderError: {
+        status: 409,
+        code: 'not_provisioned',
+        message: 'Attach this code to your vehicle before paying.',
+      },
+    });
+    await page.waitForURL(/\/order-summary(?:\?|$)/, { timeout: 30_000 });
+    check('G: returned to order-summary', /\/order-summary/.test(page.url()), page.url());
+    check('G: order attempted once', captured.orders.length === 1, `${captured.orders.length}`);
+    check('G: no pay opened', captured.pays.length === 0);
+    check('G: no payment poll', captured.payments.length === 0);
     await close();
   }
 

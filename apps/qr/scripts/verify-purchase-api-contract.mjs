@@ -47,7 +47,7 @@ function assertShape(label, actual, expected) {
 
 async function probeLive(baseUrl) {
   console.log(`\n--- Live probe: ${baseUrl} ---`);
-  const headers = { 'ngrok-skip-browser-warning': 'true', Accept: 'application/json' };
+  const headers = { Accept: 'application/json' };
 
   async function request(method, path, options = {}) {
     const url = `${baseUrl}${path}`;
@@ -94,19 +94,39 @@ ok &= assertShape(
 );
 
 ok &= assertShape(
-  'CreateOrderBodyDto (api-client)',
-  { properties: { cartId: 'string' } },
+  'CreateOrderBodyDto (api-client CreateQrOrderBody)',
+  { properties: { code: 'string', planTier: 'string', riderCount: 'number', promoCode: 'string' } },
   schemaProps(spec, 'CreateOrderBodyDto'),
 );
 
 ok &= assertShape(
-  'CreateCartBodyDto (api-client)',
-  { properties: { code: 'string', planId: 'string', riderCount: 'number', promoCode: 'string' } },
-  schemaProps(spec, 'CreateCartBodyDto'),
+  'CreateWebsiteCartDto (api-client CreateCartBody)',
+  {
+    properties: {
+      planId: 'string',
+      riderCount: 'number',
+      promoCode: 'string',
+      registration: 'string',
+    },
+  },
+  schemaProps(spec, 'CreateWebsiteCartDto'),
 );
 
 ok &= assertShape(
-  'CartDto (api-client)',
+  'UpdateWebsiteCartDto (api-client PatchCartBody)',
+  {
+    properties: {
+      planId: 'string',
+      riderCount: 'number',
+      promoCode: 'object',
+      registration: 'string',
+    },
+  },
+  schemaProps(spec, 'UpdateWebsiteCartDto'),
+);
+
+ok &= assertShape(
+  'WebsiteCartDto (api-client CartDto)',
   {
     properties: {
       cartId: 'string',
@@ -120,7 +140,7 @@ ok &= assertShape(
       expiresAt: 'string',
     },
   },
-  schemaProps(spec, 'CartDto'),
+  schemaProps(spec, 'WebsiteCartDto'),
 );
 
 ok &= assertShape(
@@ -161,7 +181,7 @@ ok &= assertShape(
 
 ok &= assertShape(
   'PayOrderBodyDto (api-client)',
-  { properties: { setupMandate: 'boolean', mandateConsent: 'boolean' } },
+  { properties: { mode: 'string', setupMandate: 'boolean', mandateConsent: 'boolean' } },
   schemaProps(spec, 'PayOrderBodyDto'),
 );
 

@@ -11,10 +11,10 @@ export type TaxiPolicyDto = {
   [key: string]: unknown;
 };
 
-export type TaxiPolicyAuditDto = {
+/** Rows of GET /admin/v1/taxi/policy/history (OpenAPI `TaxiPolicyDto[]`). */
+export type TaxiPolicyAuditDto = TaxiPolicyDto & {
   id: string;
   publishedAt?: string;
-  [key: string]: unknown;
 };
 
 /** GET /admin/v1/taxi/policy */

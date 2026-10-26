@@ -1,4 +1,4 @@
-import type { CreateOrderBody, OrderDto, PaymentOutcome } from '@autolokate/api-client';
+import type { CreateQrOrderBody, OrderDto, PaymentOutcome } from '@autolokate/api-client';
 
 import type {
   OrderSummaryTotals,
@@ -6,6 +6,8 @@ import type {
   PurchasePlanId,
   PurchaseRiderCount,
 } from '@/features/qr-purchase/types-checkout';
+
+import { mapPurchasePlanIdToApiTier } from '@/services/plan/plan-mapper';
 
 import { readCheckoutState } from './checkout-cache';
 import { mapPricedSaleToSummary } from './priced-sale-mapper';
@@ -23,8 +25,18 @@ export function buildCheckoutParamsKey(params: CheckoutParams): string {
   return `${params.planId}:${String(params.riderCount)}:${params.promoApplied ? '1' : '0'}:${promoCode}`;
 }
 
-export function mapCheckoutParamsToCreateOrderBody(cartId: string): CreateOrderBody {
-  return { cartId };
+/** `POST /v1/orders` body — Nest prices the plan tier itself; the cart is only a preview. */
+export function mapCheckoutParamsToCreateOrderBody(
+  code: string,
+  params: CheckoutParams,
+): CreateQrOrderBody {
+  const promoCode = params.promoApplied ? params.promoCode?.trim().toUpperCase() : undefined;
+  return {
+    code,
+    planTier: mapPurchasePlanIdToApiTier(params.planId),
+    riderCount: params.riderCount,
+    ...(promoCode ? { promoCode } : {}),
+  };
 }
 
 /** Map authoritative order totals into the R08 summary card (plan/rider lines from cart). */
