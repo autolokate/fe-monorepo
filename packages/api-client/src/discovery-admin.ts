@@ -73,6 +73,29 @@ export type UpdateAdminCommunityQuestionBody = {
   vehicleLabel?: string | null;
 };
 
+/** `AdminCommunityReplyDto` — a one-level reply under a Q&A answer (schema 0087). */
+export type AdminCommunityReplyDto = {
+  replyId: string;
+  answerId: string;
+  questionId: string;
+  authorAccountId: string;
+  /** Null when the author has not claimed a handle. */
+  authorUsername?: string | null;
+  questionTitle?: string;
+  body: string;
+  status: AdminQaStatus;
+  createdAt: string;
+};
+
+export type ListAdminCommunityRepliesQuery = {
+  status?: AdminQaStatus;
+  questionId?: string;
+  /** Server-side body search (max 100 chars). */
+  q?: string;
+  /** 1–100, server default 50. */
+  limit?: number;
+};
+
 export type AdminReelStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 export type AdminReelSort = 'updated' | 'sort_order' | 'published' | 'likes';
 
@@ -244,6 +267,37 @@ export async function updateAdminCommunityQuestion(
     signalOption(options),
   );
   return unwrapEnvelope(response) as AdminCommunityQuestionDto;
+}
+
+/** GET /admin/v1/community/replies — newest first, all statuses unless filtered. */
+export async function listAdminCommunityReplies(
+  client: ApiClient,
+  query: ListAdminCommunityRepliesQuery = {},
+  options: RequestOptions = {},
+): Promise<AdminCommunityReplyDto[]> {
+  const path = `${endpoints.admin.communityReplies}${buildQuery({
+    status: query.status,
+    questionId: query.questionId,
+    q: query.q?.trim(),
+    limit: query.limit,
+  })}`;
+  const response = await client.get<unknown>(path, signalOption(options));
+  return unwrapEnvelope(response) as AdminCommunityReplyDto[];
+}
+
+/** PATCH /admin/v1/community/replies/{id} — hide (`HIDDEN`) or restore (`VISIBLE`); audited. */
+export async function moderateAdminCommunityReply(
+  client: ApiClient,
+  replyId: string,
+  status: AdminQaStatus,
+  options: RequestOptions = {},
+): Promise<AdminCommunityReplyDto> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.communityReply(replyId),
+    { status },
+    signalOption(options),
+  );
+  return unwrapEnvelope(response) as AdminCommunityReplyDto;
 }
 
 /** GET /admin/v1/community/reels */

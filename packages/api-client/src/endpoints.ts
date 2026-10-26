@@ -183,6 +183,8 @@ export const endpoints = {
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/free-bids/adjust`,
     communityQuestions: '/admin/v1/community/questions',
     communityQuestion: (id: string) => `/admin/v1/community/questions/${encodeURIComponent(id)}`,
+    communityReplies: '/admin/v1/community/replies',
+    communityReply: (id: string) => `/admin/v1/community/replies/${encodeURIComponent(id)}`,
     communityReels: '/admin/v1/community/reels',
     communityReel: (id: string) => `/admin/v1/community/reels/${encodeURIComponent(id)}`,
     publishCommunityReel: (id: string) =>
