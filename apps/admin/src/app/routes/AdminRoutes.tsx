@@ -143,6 +143,11 @@ const DiscoveryRepliesPage = lazy(() =>
     default: module.DiscoveryRepliesPage,
   })),
 );
+const DiscoveryAcademyPage = lazy(() =>
+  import('@/features/discovery/DiscoveryAcademyPage').then((module) => ({
+    default: module.DiscoveryAcademyPage,
+  })),
+);
 const DiscoveryDailyDrivePage = lazy(() =>
   import('@/features/discovery/DiscoveryDailyDrivePage').then((module) => ({
     default: module.DiscoveryDailyDrivePage,
@@ -213,6 +218,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.discoveryReels} element={<DiscoveryReelsPage />} />
             <Route path={adminPaths.discoveryReplies} element={<DiscoveryRepliesPage />} />
             <Route path={adminPaths.discoveryDailyDrive} element={<DiscoveryDailyDrivePage />} />
+            <Route path={adminPaths.discoveryAcademy} element={<DiscoveryAcademyPage />} />
             <Route path={adminPaths.partners} element={<PartnersDirectoryPage />} />
             <Route path={adminPaths.partnersRequests} element={<PartnerRequestsInboxPage />} />
             <Route path={`${adminPaths.partners}/:orgId`} element={<PartnerDetailPage />} />
