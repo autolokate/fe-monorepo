@@ -12,9 +12,9 @@ import {
 
 /**
  * Hermetic Admin QR manufacturing spine (Nest OA only):
- * create DRAFT → generate CODES_GENERATED → provision PROVISIONED.
+ * create DRAFT → generate CODES_GENERATED → provision PROVISIONED → distribute IN_DISTRIBUTION (B2C).
  *
- * Codes list GET is Nest Present (CL-BE-14). Distribute + CSV export stay product-blocked.
+ * Codes list GET is Nest Present (CL-BE-14). CSV export stays product-blocked.
  * Does NOT prove Live OPERATOR / step_up.
  */
 test.describe('QR batches lifecycle (hermetic)', () => {
@@ -86,12 +86,25 @@ test.describe('QR batches lifecycle (hermetic)', () => {
       `/admin/v1/qr-batches/${HERMETIC_QR_BATCH_ID}/provision`,
     );
 
-    // Distribute + print export are product-blocked — must stay unavailable.
-    await expect(page.getByRole('button', { name: 'Distribute batch' })).toHaveCount(0);
+    // Print export stays product-blocked.
     await expect(page.getByRole('button', { name: 'Export for print' })).toHaveCount(0);
     await expect(page.getByText('ALK-HERM-CODE-1')).toBeVisible({ timeout: 10_000 });
     expect(capture.qrBatchCodesGet).toBeGreaterThanOrEqual(1);
     expect(capture.qrBatchCodesExportGet).toEqual(0);
+
+    await page.getByRole('button', { name: 'Distribute batch' }).click();
+    const distributeConfirm = page.getByRole('alertdialog', { name: 'Distribute batch' });
+    await expect(distributeConfirm).toBeVisible();
+    await distributeConfirm.getByRole('button', { name: 'Distribute batch' }).click();
+
+    await expect(batchSummary).toContainText('IN_DISTRIBUTION', { timeout: 15_000 });
+    await expect(toast).toContainText(`Batch ${HERMETIC_QR_BATCH_CODE} released to distribution.`, {
+      timeout: 10_000,
+    });
+    expect(capture.qrBatchesDistribute).toEqual([
+      { method: 'POST', path: `/admin/v1/qr-batches/${HERMETIC_QR_BATCH_ID}/distribute` },
+    ]);
+    await expect(page.getByRole('button', { name: 'Distribute batch' })).toHaveCount(0);
     expect(capture.unexpected).toEqual([]);
   });
 

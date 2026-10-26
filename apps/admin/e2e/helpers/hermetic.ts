@@ -80,6 +80,7 @@ export type HermeticCapture = {
   qrBatchesCreate: Array<{ method: string; path: string; body: unknown }>;
   qrBatchesGenerate: Array<{ method: string; path: string }>;
   qrBatchesProvision: Array<{ method: string; path: string }>;
+  qrBatchesDistribute: Array<{ method: string; path: string }>;
   partnerReorderFulfil: Array<{ method: string; path: string; body: unknown }>;
   qrReplace: Array<{ method: string; path: string; body: unknown }>;
   qrRetire: Array<{ method: string; path: string; body: unknown }>;
@@ -433,6 +434,7 @@ export async function installHermeticApiRoutes(
     qrBatchesCreate: [],
     qrBatchesGenerate: [],
     qrBatchesProvision: [],
+    qrBatchesDistribute: [],
     partnerReorderFulfil: [],
     qrReplace: [],
     qrRetire: [],
@@ -733,6 +735,25 @@ export async function installHermeticApiRoutes(
       };
       inventoryBatches = inventoryBatches.map((row) => (row.id === batchId ? provisioned : row));
       await fulfillJson(route, qrBatchesProvisionStatus, envelope(provisioned));
+      return;
+    }
+
+    const qrDistributeMatch = path.match(/^\/admin\/v1\/qr-batches\/([^/]+)\/distribute$/);
+    if (method === 'POST' && qrDistributeMatch) {
+      capture.qrBatchesDistribute.push({ method, path });
+      const batchId = decodeURIComponent(qrDistributeMatch[1] ?? HERMETIC_QR_BATCH_ID);
+      const current = inventoryBatches.find((row) => row.id === batchId);
+      if (!current) {
+        await fulfillJson(route, 404, errorEnvelope('Batch not found', 'not_found'));
+        return;
+      }
+      if (current.status !== 'PROVISIONED' || current.channel !== 'B2C') {
+        await fulfillJson(route, 409, errorEnvelope('Batch state invalid', 'batch_state_invalid'));
+        return;
+      }
+      const distributed: HermeticBatchSummary = { ...current, status: 'IN_DISTRIBUTION' };
+      inventoryBatches = inventoryBatches.map((row) => (row.id === batchId ? distributed : row));
+      await fulfillJson(route, 200, envelope(distributed));
       return;
     }
 
