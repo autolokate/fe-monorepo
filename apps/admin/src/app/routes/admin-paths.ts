@@ -24,6 +24,7 @@ export const adminPaths = {
   discoveryReplies: '/discovery/replies',
   discoveryReels: '/discovery/reels',
   discoveryDailyDrive: '/discovery/daily-drive',
+  discoveryAcademy: '/discovery/academy',
   partners: '/partners',
   partnersRequests: '/partners/requests',
 } as const;
@@ -234,6 +235,13 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.discoveryDailyDrive,
     label: 'Daily Drive',
     description: 'Free Daily Drive videos from the Indian Drive Guide YouTube channel',
+    group: 'discovery',
+    nav: true,
+  },
+  {
+    path: adminPaths.discoveryAcademy,
+    label: 'Academy',
+    description: 'Courses of Indian Drive Guide lessons for members with an active plan',
     group: 'discovery',
     nav: true,
   },

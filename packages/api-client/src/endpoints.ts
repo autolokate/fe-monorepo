@@ -197,6 +197,15 @@ export const endpoints = {
     dailyDriveVideo: (id: string) => `/admin/v1/daily-drive/videos/${encodeURIComponent(id)}`,
     dailyDriveVideoTransition: (id: string, transition: 'publish' | 'unpublish' | 'archive') =>
       `/admin/v1/daily-drive/videos/${encodeURIComponent(id)}/${transition}`,
+    academyCourses: '/admin/v1/academy/courses',
+    academyCourse: (id: string) => `/admin/v1/academy/courses/${encodeURIComponent(id)}`,
+    academyCourseTransition: (id: string, transition: 'publish' | 'unpublish' | 'archive') =>
+      `/admin/v1/academy/courses/${encodeURIComponent(id)}/${transition}`,
+    academyCourseLessons: (id: string) =>
+      `/admin/v1/academy/courses/${encodeURIComponent(id)}/lessons`,
+    academyLesson: (id: string) => `/admin/v1/academy/lessons/${encodeURIComponent(id)}`,
+    academyLessonTransition: (id: string, transition: 'publish' | 'unpublish' | 'archive') =>
+      `/admin/v1/academy/lessons/${encodeURIComponent(id)}/${transition}`,
     partners: '/admin/v1/partners',
     partner: (orgId: string) => `/admin/v1/partners/${encodeURIComponent(orgId)}`,
     partnerGarageRequests: '/admin/v1/partners/requests',
