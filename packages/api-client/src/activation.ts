@@ -1,5 +1,5 @@
 import type { ApiClient } from './client';
-import type { ApiPlanTier, PlanPeriod } from './plans';
+import type { ApiPlanTier } from './plans';
 import { endpoints } from './endpoints';
 import { unwrapEnvelope } from './envelope';
 
@@ -44,59 +44,6 @@ export type ActivationRedeemedDto = {
   qrStatus: 'ACTIVATED';
 };
 
-export type FundedPlanBy = 'MARKETPLACE' | 'PURCHASE';
-
-/** Already-funded plan from GET /v1/activation/plans. */
-export type FundedPlanDto = {
-  planId: string;
-  tier: ApiPlanTier;
-  name: string;
-  pricePaise: number;
-  fundedBy: FundedPlanBy;
-  payablePaise: number;
-  /** Included / entitled rider slots for this funded plan. */
-  riderCount: number;
-  /** Max emergency contacts for this funded plan. */
-  emergencyCount?: number;
-  riderEligible: boolean;
-  features: string[];
-  badge?: string | null;
-  includesLabel?: string | null;
-};
-
-/** Rider quote on an upgrade option from GET /v1/activation/plans. */
-export type UpgradeRiderQuoteDto = {
-  riderCount: number;
-  payablePaise: number;
-  discountPercent: number;
-};
-
-/** Difference-priced upgrade option from GET /v1/activation/plans. */
-export type UpgradeOptionDto = {
-  planId: string;
-  tier: ApiPlanTier;
-  name: string;
-  pricePaise: number;
-  payablePaise: number;
-  period: PlanPeriod;
-  version: number;
-  /** Included rider slots on this upgrade tier (addon quotes are in riderOptions). */
-  riderCount?: number;
-  /** Max emergency contacts for this upgrade tier. */
-  emergencyCount?: number;
-  riderEligible: boolean;
-  riderOptions: UpgradeRiderQuoteDto[];
-  features: string[];
-  badge?: string | null;
-  includesLabel?: string | null;
-};
-
-/** Authenticated B2C prepaid plans screen payload. */
-export type ActivationPlansDto = {
-  funded: FundedPlanDto;
-  options: UpgradeOptionDto[];
-};
-
 /** GET /v1/activation/preview — anonymous entitlement preview. */
 export async function previewActivation(
   client: ApiClient,
@@ -108,18 +55,6 @@ export async function previewActivation(
     ...(options?.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as ActivationPreviewDto;
-}
-
-/** GET /v1/activation/plans — funded plan + difference-priced upgrades (authenticated). */
-export async function listActivationPlans(
-  client: ApiClient,
-  code: string,
-  options?: { signal?: AbortSignal },
-): Promise<ActivationPlansDto> {
-  const response = await client.get<unknown>(endpoints.activation.plans(code), {
-    ...(options?.signal ? { signal: options.signal } : {}),
-  });
-  return unwrapEnvelope(response) as ActivationPlansDto;
 }
 
 /** POST /v1/activation/redeem — activate partner entitlement (authenticated). */

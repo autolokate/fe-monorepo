@@ -1,36 +1,42 @@
-import {
-  getAdminSupportTicket,
-  listAdminSupportTicketsPage,
-  updateAdminSupportTicketStatus,
-  type AdminSupportTicket,
-  type AdminSupportTicketStatus,
-  type AdminSupportTicketsPageResult,
-  type ListAdminSupportTicketsQuery,
+import type {
+  AdminSupportTicket,
+  AdminSupportTicketStatus,
+  AdminSupportTicketsPageResult,
+  ListAdminSupportTicketsQuery,
 } from '@autolokate/api-client';
 
-import { getAdminApiClient } from '@/platform/api/admin-api-client';
+import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
 
-/** GET /admin/v1/support/tickets — one keyset page of the account-wide ticket queue. */
-export async function fetchSupportTicketsPage(
-  query: ListAdminSupportTicketsQuery = {},
-  signal?: AbortSignal,
+/**
+ * GET /admin/v1/support/tickets — absent from Nest Dev OA.
+ * Fail closed; do not call the network.
+ */
+export function fetchSupportTicketsPage(
+  _query: ListAdminSupportTicketsQuery = {},
+  _signal?: AbortSignal,
 ): Promise<AdminSupportTicketsPageResult> {
-  return listAdminSupportTicketsPage(getAdminApiClient(), query, { signal });
+  throwAdminProductBlocked('GET /admin/v1/support/tickets');
 }
 
-/** GET /admin/v1/support/tickets/{ticketId} — one ticket in full (subject + body + metadata). */
-export async function fetchSupportTicket(
-  ticketId: string,
-  signal?: AbortSignal,
+/**
+ * GET /admin/v1/support/tickets/{ticketId} — absent from Nest Dev OA.
+ * Fail closed; do not call the network.
+ */
+export function fetchSupportTicket(
+  _ticketId: string,
+  _signal?: AbortSignal,
 ): Promise<AdminSupportTicket> {
-  return getAdminSupportTicket(getAdminApiClient(), ticketId, { signal });
+  throwAdminProductBlocked('GET /admin/v1/support/tickets/{ticketId}');
 }
 
-/** PATCH /admin/v1/support/tickets/{ticketId} — triage a ticket by setting its status. */
-export async function updateSupportTicketStatus(
-  ticketId: string,
-  status: AdminSupportTicketStatus,
-  signal?: AbortSignal,
+/**
+ * PATCH /admin/v1/support/tickets/{ticketId} — absent from Nest Dev OA.
+ * Fail closed; do not call the network.
+ */
+export function updateSupportTicketStatus(
+  _ticketId: string,
+  _status: AdminSupportTicketStatus,
+  _signal?: AbortSignal,
 ): Promise<AdminSupportTicket> {
-  return updateAdminSupportTicketStatus(getAdminApiClient(), ticketId, status, { signal });
+  throwAdminProductBlocked('PATCH /admin/v1/support/tickets/{ticketId}');
 }

@@ -7,7 +7,6 @@ import {
 } from '@autolokate/api-client';
 
 import { getQrBootstrapClient } from '@/platform/api/qr-api-client';
-import { env } from '@/config/env';
 
 import { parseDataUrl } from './data-url';
 import {
@@ -32,9 +31,6 @@ export type ScanUploadResult =
 
 async function putToPresignedUrl(target: ScanUploadTargetDto, blob: Blob): Promise<void> {
   const headers = new Headers(target.headers);
-  if (!headers.has('ngrok-skip-browser-warning') && env.apiBaseUrl.includes('ngrok')) {
-    headers.set('ngrok-skip-browser-warning', 'true');
-  }
 
   const response = await fetch(target.url, {
     method: target.method,

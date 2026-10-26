@@ -63,7 +63,7 @@ export const endpoints = {
     submit: '/v1/contact-us',
   },
   plans: {
-    list: (sku: string) => `/v1/plans?sku=${encodeURIComponent(sku)}`,
+    list: '/v1/plans',
   },
   legal: {
     /** Legal notice list — carries the current `noticeVersion` a consent pins to. */

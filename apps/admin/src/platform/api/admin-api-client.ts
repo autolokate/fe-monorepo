@@ -16,16 +16,6 @@ let authFailureHandler: (() => void) | null = null;
 
 const tokenManager = createTokenManager(createSessionTokenStorage(ADMIN_TOKEN_KEY));
 
-function createFetchWithNgrok(): typeof fetch {
-  return async (input, init) => {
-    const headers = new Headers(init?.headers);
-    if (env.apiBaseUrl.includes('ngrok')) {
-      headers.set('ngrok-skip-browser-warning', 'true');
-    }
-    return fetch(input, { ...init, headers });
-  };
-}
-
 export function registerAdminAuthFailureHandler(handler: () => void): void {
   authFailureHandler = handler;
 }
@@ -34,7 +24,6 @@ export function getAdminBootstrapClient(): ApiClient {
   if (!bootstrapClient) {
     bootstrapClient = createApiClient({
       baseUrl: env.apiBaseUrl,
-      fetch: createFetchWithNgrok(),
     });
   }
   return bootstrapClient;
@@ -46,7 +35,6 @@ export function getAdminApiClient(): ApiClient {
     authenticatedClient = createAuthenticatedApiClient({
       baseUrl: env.apiBaseUrl,
       tokenManager,
-      fetch: createFetchWithNgrok(),
       onAuthFailure: () => {
         authFailureHandler?.();
       },

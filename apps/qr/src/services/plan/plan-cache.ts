@@ -2,8 +2,8 @@ import type { PurchasePlanDefinition } from '@/features/qr-purchase/types-checko
 
 const CACHE_TTL_MS = 5 * 60_000;
 
-/** Plans in the QR app come only from GET /v1/activation/plans. */
-export type PlansCacheSource = 'activation';
+/** Plans in the QR app come only from GET /v1/plans. */
+export type PlansCacheSource = 'catalog';
 
 type CacheState = {
   qrCode: string | null;
@@ -40,7 +40,7 @@ export function getPlansCacheSource(): PlansCacheSource | null {
 export function rememberPlansCatalog(
   plans: PurchasePlanDefinition[],
   qrCode: string | null,
-  source: PlansCacheSource = 'activation',
+  source: PlansCacheSource = 'catalog',
 ): void {
   const revision = (cache?.revision ?? 0) + 1;
   cache = {

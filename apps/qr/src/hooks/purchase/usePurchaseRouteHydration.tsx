@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import type { LoadPlansResult } from '@/services/plan/plan-service';
 
@@ -152,7 +160,7 @@ export function PurchaseRouteHydrationProvider({ children }: { children: ReactNo
   }, []);
 
   const catalog = getPurchasePlansCatalog();
-  // Activation funded plans are ready once the catalog is populated (price may be 0 / "Included").
+  // Plans are ready once the GET /v1/plans catalog is populated.
   const plansReady = catalog.length > 0;
 
   const value: PurchaseRouteHydrationState = {

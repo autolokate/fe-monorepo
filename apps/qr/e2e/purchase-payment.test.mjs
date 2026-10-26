@@ -15,7 +15,7 @@
  *   D  prepare fail → cart 503 → back to order-summary (no order create)
  *   E  cancel    → fake Razorpay ondismiss → order-summary
  *
- * Does not click R10 Continue (attach / vehicle mutation). Does not dial ngrok/staging/prod.
+ * Does not click R10 Continue (attach / vehicle mutation). Does not dial any live backend.
  */
 /* global window */
 import { chromium } from 'playwright';
@@ -65,35 +65,37 @@ function envelope(data) {
   };
 }
 
-function activationPlansPayload() {
-  return envelope({
-    funded: {
-      planId: 'plan-ver-safe-funded',
+function plansPayload() {
+  return envelope([
+    {
+      id: 'plan-ver-safe-hermetic',
       tier: 'SAFE',
+      version: 1,
       name: 'Safe',
       pricePaise: 99900,
-      fundedBy: 'MARKETPLACE',
-      payablePaise: 0,
-      riderCount: 0,
+      period: 'YEARLY',
       riderEligible: false,
-      features: ['Included'],
+      riderCount: 0,
+      features: ['Safe'],
+      badge: null,
+      includesLabel: null,
+      riderOptions: [],
     },
-    options: [
-      {
-        planId: PLAN_VERSION_ID,
-        tier: 'SECURE',
-        name: 'Secure',
-        pricePaise: 194800,
-        payablePaise: 194800,
-        period: 'YEAR',
-        version: 1,
-        riderCount: 1,
-        riderEligible: true,
-        riderOptions: [{ riderCount: 1, payablePaise: 0, discountPercent: 0 }],
-        features: ['Upgrade'],
-      },
-    ],
-  });
+    {
+      id: PLAN_VERSION_ID,
+      tier: 'SECURE',
+      version: 1,
+      name: 'Secure',
+      pricePaise: 194800,
+      period: 'YEARLY',
+      riderEligible: true,
+      riderCount: 1,
+      features: ['Secure'],
+      badge: null,
+      includesLabel: null,
+      riderOptions: [{ riderCount: 1, pricePaise: 0, originalPricePaise: 0, discountPercent: 0 }],
+    },
+  ]);
 }
 
 function cartPayload() {
@@ -194,7 +196,7 @@ async function boot(browser, appUrl, options = {}) {
     orders: [],
     pays: [],
     payments: [],
-    activationPlans: 0,
+    plans: 0,
     unexpected: [],
   };
 
@@ -254,9 +256,9 @@ async function boot(browser, appUrl, options = {}) {
       }
     }
 
-    if (method === 'GET' && path === '/v1/activation/plans') {
-      captured.activationPlans += 1;
-      await fulfillJson(route, 200, activationPlansPayload());
+    if (method === 'GET' && path === '/v1/plans') {
+      captured.plans += 1;
+      await fulfillJson(route, 200, plansPayload());
       return;
     }
 

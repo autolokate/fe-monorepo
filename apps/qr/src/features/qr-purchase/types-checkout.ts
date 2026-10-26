@@ -25,7 +25,7 @@ export type PurchaseCheckoutSession = {
   paidAmountInr?: number;
   /** Preview entitlement from GET /v1/activation/preview (B2C welcome). */
   entitlement?: LandingEntitlement;
-  /** True after Skip on R06 — proceeds to vehicle lookup with funded plan. */
+  /** True after Skip on R06 — proceeds to vehicle lookup without upgrade checkout. */
   skippedPlanUpgrade?: boolean;
   /**
    * True after Upgrade on R06 — vehicle → riders → order → pay → attach.
@@ -50,22 +50,22 @@ export type PurchasePlanDefinition = {
   priceInr: number;
   pricePaise: number;
   /**
-   * Amount due for this row (activation/plans).
-   * `0` on the funded/included plan; upgrade delta on options.
+   * Amount due for this row; the cart re-prices server-side.
+   * `0` marks an included plan.
    */
   payablePaise?: number;
-  /** True when this row is the already-funded plan from GET /v1/activation/plans. */
+  /** True when this row needs no payment on this QR. */
   included?: boolean;
   badge?: string | null;
   includesLabel?: string | null;
   features: readonly string[];
   riderEligible: boolean;
   /**
-   * Included / entitled rider slots from activation plans (`riderCount`).
+   * Included / entitled rider slots from GET /v1/plans (`riderCount`).
    * Purchase addon selection may still raise entitlement via session.purchase.riderCount.
    */
   riderCount?: number;
-  /** Max emergency contacts from activation plans (`emergencyCount`). */
+  /** Max emergency contacts from GET /v1/plans (`emergencyCount`). */
   emergencyCount?: number;
   riderOptions: readonly PurchaseRiderOption[];
   addon?: { label: string };

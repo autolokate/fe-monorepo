@@ -262,15 +262,8 @@ async function boot(browser, appUrl, options = {}) {
       }
     }
 
-    if (method === 'GET' && path === '/v1/activation/plans') {
-      await fulfillJson(
-        route,
-        200,
-        envelope({
-          funded: null,
-          options: [],
-        }),
-      );
+    if (method === 'GET' && path === '/v1/plans') {
+      await fulfillJson(route, 200, envelope([]));
       return;
     }
 

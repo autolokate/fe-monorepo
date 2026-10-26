@@ -13,7 +13,7 @@ export type EmergencyPlanLimits = {
 
 export type EmergencyFlowKind = 'purchase' | 'partner';
 
-/** Fallback only when activation/plans did not return emergencyCount. */
+/** Fallback only when GET /v1/plans did not return emergencyCount. */
 const FALLBACK_MAX_EMERGENCY_CONTACTS_BY_PLAN: Record<PurchasePlanId, number> = {
   safe: 1,
   secure: 3,
@@ -45,7 +45,7 @@ function readCatalogRiderCount(planId: PurchasePlanId): number {
   return RIDER_ADDON_PRODUCT_CAP;
 }
 
-/** Single source of truth for emergency + rider limits — prefers activation/plans counts. */
+/** Single source of truth for emergency + rider limits — prefers GET /v1/plans counts. */
 export function getEmergencyPlanLimits(planId: PurchasePlanId | undefined): EmergencyPlanLimits {
   const resolvedPlanId = resolvePurchasePlanId(planId);
   const maxEmergencyContacts =
@@ -67,7 +67,7 @@ export function getPurchasedRiderSlots(riderCount: PurchaseRiderCount | undefine
 /**
  * Entitled rider slots:
  * - partner: preview.riderCount
- * - purchase: max(plan.riderCount from activation/plans, purchased addon slots)
+ * - purchase: max(plan.riderCount from GET /v1/plans, purchased addon slots)
  */
 export function getEntitledRiderSlots(
   planId: PurchasePlanId | undefined,

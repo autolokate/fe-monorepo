@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -18,10 +18,7 @@ import {
   isIncludedActivationPlan,
   isPlanRiderEligible,
 } from '@/services/plan/plan-mapper';
-import {
-  getFundedPurchasePlanId,
-  getPurchasePlansCatalog,
-} from '@/services/plan/plan-service';
+import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
 import { useCartPricing } from '../../../hooks/checkout/index';
 import { usePreventBrowserBack } from '@/platform/navigation/use-prevent-browser-back';
 import { reportUserError } from '@/platform/feedback/index';
@@ -38,7 +35,6 @@ import {
   purchaseJourneyPaths,
   purchaseVehicleConfirmationPath,
 } from '../../purchase/purchase-paths-runtime';
-import { useJourney } from '../../JourneyContext';
 import { patchCheckoutCartPromo } from '@/services/cart/index';
 import {
   applyPromoCode,
@@ -50,20 +46,12 @@ import {
   usePurchaseCheckout,
 } from './purchase-route-shared';
 
-function resolveSkipPlanId(planId: PurchasePlanId): PurchasePlanId {
-  return getFundedPurchasePlanId() ?? planId;
-}
-
 export function ChoosePlanRoute() {
   const navigate = useNavigate();
   const { planId, patchPurchase, purchase } = usePurchaseCheckout();
-  const { session, updateSession } = useJourney();
   const { plansReady: hydratedPlansReady } = usePurchaseRouteHydration();
   const { ensurePlansLoaded } = usePlans();
   const journeyId = useActiveJourneyId();
-  const seededFundedRef = useRef(false);
-  const sessionRef = useRef(session);
-  sessionRef.current = session;
 
   const loadPlans = useCallback(
     async ({ force }: { force: boolean }) => {
@@ -78,24 +66,9 @@ export function ChoosePlanRoute() {
         );
         return { ok: false as const, message: result.error.message };
       }
-
-      const fundedPlanId = result.fundedPlanId ?? getFundedPurchasePlanId();
-      if (fundedPlanId && !seededFundedRef.current) {
-        seededFundedRef.current = true;
-        const currentSelected = sessionRef.current.purchase?.selectedPlanId;
-        if (!currentSelected) {
-          updateSession({
-            purchase: {
-              ...(sessionRef.current.purchase ?? {}),
-              selectedPlanId: fundedPlanId,
-            },
-          });
-        }
-      }
-
       return { ok: true as const };
     },
-    [ensurePlansLoaded, updateSession],
+    [ensurePlansLoaded],
   );
 
   const { loadState, retry } = useRouteLoadWithRetry({
@@ -103,27 +76,6 @@ export function ChoosePlanRoute() {
     initiallyReady: hydratedPlansReady || getPurchasePlansCatalog().length > 0,
     load: loadPlans,
   });
-
-  // When hydration already filled the catalog, seed funded plan without a second network call.
-  useEffect(() => {
-    if (loadState.status !== 'ready' || seededFundedRef.current) {
-      return;
-    }
-    const fundedPlanId = getFundedPurchasePlanId();
-    if (!fundedPlanId) {
-      return;
-    }
-    seededFundedRef.current = true;
-    const currentSelected = sessionRef.current.purchase?.selectedPlanId;
-    if (!currentSelected) {
-      updateSession({
-        purchase: {
-          ...(sessionRef.current.purchase ?? {}),
-          selectedPlanId: fundedPlanId,
-        },
-      });
-    }
-  }, [loadState.status, updateSession]);
 
   // Plans are first after auth; lock back once upgrade payment succeeds later.
   const lockBack = purchase?.paymentStatus === 'success';
@@ -135,10 +87,9 @@ export function ChoosePlanRoute() {
   }, [navigate, purchase]);
 
   const continueWithSkip = () => {
-    const selected = resolveSkipPlanId(planId);
-    persistPurchaseSelections({ selectedPlanId: selected, riderCount: 0 });
+    persistPurchaseSelections({ selectedPlanId: planId, riderCount: 0 });
     patchPurchase({
-      selectedPlanId: selected,
+      selectedPlanId: planId,
       riderCount: 0,
       skippedPlanUpgrade: true,
       upgradeCheckout: false,
@@ -205,7 +156,7 @@ export function ChoosePlanRoute() {
             }
       }
       onContinue={() => {
-        // Included / funded plan → Continue (skip payment). Paid upgrade → vehicle → checkout.
+        // Included / zero-payable plan → Continue (skip payment). Paid upgrade → vehicle → checkout.
         if (isCommercePrepaidFreePlan(planId) || isIncludedPlan) {
           continueWithSkip();
           return;
@@ -297,9 +248,7 @@ export function RiderCoverRoute() {
         showBack
         onBack={() => {
           void navigate(
-            plate
-              ? purchaseVehicleConfirmationPath(plate)
-              : purchaseJourneyPaths.vehicleDetails,
+            plate ? purchaseVehicleConfirmationPath(plate) : purchaseJourneyPaths.vehicleDetails,
           );
         }}
       />
@@ -324,9 +273,7 @@ export function RiderCoverRoute() {
       }}
       onBack={() => {
         void navigate(
-          plate
-            ? purchaseVehicleConfirmationPath(plate)
-            : purchaseJourneyPaths.vehicleDetails,
+          plate ? purchaseVehicleConfirmationPath(plate) : purchaseJourneyPaths.vehicleDetails,
         );
       }}
       onContinue={() => {
@@ -376,9 +323,11 @@ export function OrderSummaryRoute() {
           return;
         }
         setPromoApplying(true);
-        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(() => {
-          setPromoApplying(false);
-        });
+        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(
+          () => {
+            setPromoApplying(false);
+          },
+        );
       }}
       onBack={() => {
         const catalog = getPurchasePlansCatalog();
@@ -449,9 +398,11 @@ export function OrderSummaryInvalidPromoRoute() {
       }}
       onApplyPromo={() => {
         setPromoApplying(true);
-        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(() => {
-          setPromoApplying(false);
-        });
+        void applyPromoCode(promoInput, { planId, riderCount }, patchPurchase, navigate).finally(
+          () => {
+            setPromoApplying(false);
+          },
+        );
       }}
       onBack={() => {
         patchPurchase({ promoInvalid: false, promoCode: null });
@@ -489,7 +440,13 @@ export function OrderSummaryPromoAppliedRoute() {
     if (!session.purchase?.promoApplied || !session.purchase.promoCode) {
       void navigate(getOrderSummaryPath(false, session.purchase?.promoInvalid), { replace: true });
     }
-  }, [navigate, purchase, session.purchase?.promoApplied, session.purchase?.promoCode, session.purchase?.promoInvalid]);
+  }, [
+    navigate,
+    purchase,
+    session.purchase?.promoApplied,
+    session.purchase?.promoCode,
+    session.purchase?.promoInvalid,
+  ]);
 
   if (!cartReady && !cartError) {
     return <PurchaseRouteLoader label="Loading order" />;

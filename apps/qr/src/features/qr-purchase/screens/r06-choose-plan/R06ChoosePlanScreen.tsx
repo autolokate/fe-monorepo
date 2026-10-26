@@ -12,7 +12,7 @@ export type R06ChoosePlanScreenProps = {
   onSkip?: () => void;
   onBack?: () => void;
   showBack?: boolean;
-  /** Selected plan is already funded on this QR (from GET /v1/activation/plans). */
+  /** Selected plan needs no payment on this QR. */
   isIncludedPlan?: boolean;
 };
 

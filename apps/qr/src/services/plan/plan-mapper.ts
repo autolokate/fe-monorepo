@@ -1,9 +1,4 @@
-import type {
-  ActivationPlansDto,
-  ApiPlanTier,
-  FundedPlanDto,
-  UpgradeOptionDto,
-} from '@autolokate/api-client';
+import type { ApiPlanTier, PlanOptionDto, RiderOptionDto } from '@autolokate/api-client';
 import { formatInrFromPaise } from '@autolokate/utils';
 
 import type {
@@ -50,7 +45,7 @@ export function pricePaiseToInr(pricePaise: number): number {
   return Math.round(pricePaise / 100);
 }
 
-/** True when the selected plan is the already-funded row from activation/plans. */
+/** True when the selected plan row is already included on this QR (nothing payable). */
 export function isIncludedActivationPlan(
   plans: readonly PurchasePlanDefinition[],
   planId: PurchasePlanId,
@@ -72,64 +67,32 @@ function normalizePlanCount(value: unknown): number | undefined {
   return Math.max(0, Math.floor(value));
 }
 
-function mapFundedPlanToDefinition(funded: FundedPlanDto): PurchasePlanDefinition {
-  const id = mapApiTierToPurchasePlanId(funded.tier);
-  const included = funded.payablePaise <= 0;
-  return {
-    id,
-    planVersionId: funded.planId,
-    name: funded.name,
-    priceLabel: included ? 'Included' : formatYearlyPriceLabel(funded.pricePaise),
-    priceInr: pricePaiseToInr(funded.pricePaise),
-    pricePaise: funded.pricePaise,
-    payablePaise: funded.payablePaise,
-    included: true,
-    badge: funded.badge ?? null,
-    includesLabel: funded.includesLabel ?? null,
-    features: funded.features,
-    riderEligible: funded.riderEligible,
-    riderCount: normalizePlanCount(funded.riderCount),
-    emergencyCount: normalizePlanCount(funded.emergencyCount),
-    riderOptions: [],
-    tall: id === 'secure',
-  };
-}
-
-function mapUpgradeRiderOption(
-  rider: UpgradeOptionDto['riderOptions'][number],
-): PurchaseRiderOption | null {
+function mapRiderOption(rider: RiderOptionDto): PurchaseRiderOption | null {
   if (rider.riderCount !== 1 && rider.riderCount !== 2) {
     return null;
   }
-  const pricePaise = rider.payablePaise;
-  const discountPercent = rider.discountPercent;
-  // Activation quotes only expose payable + discount; derive strike when discount > 0.
-  const originalPricePaise =
-    discountPercent > 0 && discountPercent < 100
-      ? Math.round(pricePaise / (1 - discountPercent / 100))
-      : pricePaise;
   return {
     riderCount: rider.riderCount,
-    pricePaise,
-    originalPricePaise,
-    discountPercent,
+    pricePaise: rider.pricePaise,
+    originalPricePaise: rider.originalPricePaise,
+    discountPercent: rider.discountPercent,
   };
 }
 
-function mapUpgradeOptionToDefinition(option: UpgradeOptionDto): PurchasePlanDefinition {
+function mapPlanOptionToDefinition(option: PlanOptionDto): PurchasePlanDefinition {
   const id = mapApiTierToPurchasePlanId(option.tier);
-  const riderOptions: PurchaseRiderOption[] = option.riderOptions
-    .map(mapUpgradeRiderOption)
+  const riderOptions = option.riderOptions
+    .map(mapRiderOption)
     .filter((r): r is PurchaseRiderOption => r !== null);
 
   return {
     id,
-    planVersionId: option.planId,
+    planVersionId: option.id,
     name: option.name,
-    priceLabel: formatYearlyPriceLabel(option.payablePaise),
-    priceInr: pricePaiseToInr(option.payablePaise),
-    pricePaise: option.payablePaise,
-    payablePaise: option.payablePaise,
+    priceLabel: formatYearlyPriceLabel(option.pricePaise),
+    priceInr: pricePaiseToInr(option.pricePaise),
+    pricePaise: option.pricePaise,
+    payablePaise: option.pricePaise,
     included: false,
     badge: option.badge ?? null,
     includesLabel: option.includesLabel ?? null,
@@ -142,21 +105,22 @@ function mapUpgradeOptionToDefinition(option: UpgradeOptionDto): PurchasePlanDef
   };
 }
 
-/** Map GET /v1/activation/plans into the R06 carousel catalog. */
-export function mapActivationPlansToDefinitions(
-  plans: ActivationPlansDto,
+/** Map GET /v1/plans (one currently-effective plan per tier) into the R06 carousel catalog. */
+export function mapPlanOptionsToDefinitions(
+  options: readonly PlanOptionDto[],
 ): PurchasePlanDefinition[] {
-  const funded = mapFundedPlanToDefinition(plans.funded);
-  const upgrades = plans.options.map(mapUpgradeOptionToDefinition);
   const byId = new Map<PurchasePlanId, PurchasePlanDefinition>();
-  byId.set(funded.id, funded);
-  for (const upgrade of upgrades) {
-    byId.set(upgrade.id, upgrade);
+  for (const option of options) {
+    if (option.tier in PLAN_ID_BY_API_TIER) {
+      byId.set(mapApiTierToPurchasePlanId(option.tier), mapPlanOptionToDefinition(option));
+    }
   }
   return sortPlansByCarouselOrder([...byId.values()]);
 }
 
-export function sortPlansByCarouselOrder(plans: PurchasePlanDefinition[]): PurchasePlanDefinition[] {
+export function sortPlansByCarouselOrder(
+  plans: PurchasePlanDefinition[],
+): PurchasePlanDefinition[] {
   return [...plans].sort(
     (left, right) => PURCHASE_PLAN_ORDER.indexOf(left.id) - PURCHASE_PLAN_ORDER.indexOf(right.id),
   );

@@ -33,7 +33,7 @@ export function mapRiderOptionsToView(
   }));
 }
 
-/** Figma R07 layout — option cards driven by GET /v1/activation/plans riderOptions. */
+/** Figma R07 layout — option cards driven by GET /v1/plans riderOptions. */
 export function RiderCoverOptions({ options, selectedCount, onSelect }: RiderCoverOptionsProps) {
   return (
     <div className="ob-rider-cover-options" role="radiogroup" aria-label="Rider cover options">

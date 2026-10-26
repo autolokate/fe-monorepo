@@ -108,20 +108,14 @@ export {
 export { validatePromo, type PromoPreviewDto, type ValidatePromoBody } from './promos';
 export {
   previewActivation,
-  listActivationPlans,
   redeemActivation,
-  type ActivationPlansDto,
   type ActivationPreviewDto,
   type ActivationPreviewChannel,
   type ActivationPreviewPartner,
   type ActivationRedeemedDto,
-  type FundedPlanBy,
-  type FundedPlanDto,
   type RedeemActivationBody,
   type RedeemActivationB2b2cBody,
   type RedeemActivationB2bBody,
-  type UpgradeOptionDto,
-  type UpgradeRiderQuoteDto,
 } from './activation';
 export {
   listEmergencyContacts,

@@ -22,7 +22,6 @@ export function getQrBootstrapClient(): ApiClient {
   if (!bootstrapClient) {
     bootstrapClient = createApiClient({
       baseUrl: env.apiBaseUrl,
-      fetch: qrFetch,
     });
   }
   return bootstrapClient;
@@ -36,19 +35,10 @@ export function getQrApiClient(): ApiClient {
     authenticatedClient = createAuthenticatedApiClient({
       baseUrl: env.apiBaseUrl,
       tokenManager,
-      fetch: qrFetch,
       onAuthFailure: () => {
         authFailureHandler?.();
       },
     });
   }
   return authenticatedClient;
-}
-
-async function qrFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  const headers = new Headers(init?.headers);
-  if (!headers.has('ngrok-skip-browser-warning') && env.apiBaseUrl.includes('ngrok')) {
-    headers.set('ngrok-skip-browser-warning', 'true');
-  }
-  return fetch(input, { ...init, headers });
 }

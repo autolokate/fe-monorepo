@@ -1,11 +1,9 @@
 'use client';
 
 import { endpoints } from '@/lib/api/endpoints';
+import { hasAuthTokens } from '@/lib/auth/storage';
 import { readArray, readObject, unbox } from '@/lib/catalogue/normalize';
 import { ApiService } from '@/services/api.service';
-
-/** Default catalogue SKU the marketing site sells. */
-export const DEFAULT_PLANS_SKU = 'SKU-B2C-RETAIL';
 
 export type PlanTier = 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
 export type PlanPeriod = 'YEARLY' | 'MONTHLY';
@@ -78,31 +76,31 @@ function normalizePlan(raw: unknown): Plan {
 }
 
 /**
- * Shares one in-flight request per SKU across concurrent callers. React
- * StrictMode (dev) fires the query effect twice on mount, so without this we'd
- * hit `/v1/plans` twice; each entry clears once it settles so later reads are
- * fresh.
+ * Shares one in-flight request across concurrent callers. React StrictMode (dev)
+ * fires the query effect twice on mount, so without this we'd hit `/v1/plans`
+ * twice; it clears once it settles so later reads are fresh.
  */
-const plansInFlight = new Map<string, Promise<Plan[]>>();
+let plansInFlight: Promise<Plan[]> | null = null;
 
 /**
- * GET /v1/plans?sku=… — the protection plans shown on Home and Pricing.
- * Public endpoint (no auth). Prices come back in paise.
+ * GET /v1/plans — one currently-effective plan per tier. The Autolokate API serves
+ * this catalogue to signed-in buyers only (bearer), so anonymous reads fail; they
+ * go out without auth so the 401 surfaces as a load error, not a sign-out redirect.
+ * Prices come back in paise.
  */
-export function getPlans(sku: string = DEFAULT_PLANS_SKU): Promise<Plan[]> {
-  const existing = plansInFlight.get(sku);
-  if (existing) return existing;
+export function getPlans(): Promise<Plan[]> {
+  if (plansInFlight) return plansInFlight;
 
   const request = (async () => {
     try {
-      const res = await ApiService.get(endpoints.plans.list(sku), { withAuth: false });
+      const res = await ApiService.get(endpoints.plans.list, { withAuth: hasAuthTokens() });
       const rows = readArray<unknown>(unbox(res.data));
       return rows.map(normalizePlan);
     } finally {
-      plansInFlight.delete(sku);
+      plansInFlight = null;
     }
   })();
 
-  plansInFlight.set(sku, request);
+  plansInFlight = request;
   return request;
 }

@@ -1,1 +1,6 @@
 .vercel
+
+# Live-run outputs of scripts/e2e-purchase-audit.mjs and scripts/e2e-payment-evidence.mjs
+scripts/e2e-audit-report.json
+scripts/e2e-payment-evidence.json
+scripts/e2e-network-screenshot.png

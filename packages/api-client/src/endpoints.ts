@@ -40,7 +40,6 @@ export const endpoints = {
   },
   plans: {
     list: '/v1/plans',
-    detail: (planId: string) => `/v1/plans/${planId}`,
   },
   cart: {
     create: '/v1/cart',
@@ -75,7 +74,6 @@ export const endpoints = {
   },
   activation: {
     preview: (code: string) => `/v1/activation/preview?code=${encodeURIComponent(code)}`,
-    plans: (code: string) => `/v1/activation/plans?code=${encodeURIComponent(code)}`,
     redeem: '/v1/activation/redeem',
   },
   emergencyContacts: {

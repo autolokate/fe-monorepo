@@ -1,7 +1,4 @@
-import {
-  listActivationPlans as listActivationPlansApi,
-  type ActivationPlansDto,
-} from '@autolokate/api-client';
+import { listPlans as listPlansApi } from '@autolokate/api-client';
 
 import type { PurchasePlanDefinition, PurchasePlanId } from '@/features/qr-purchase/types-checkout';
 import { getQrApiClient } from '@/platform/api/qr-api-client';
@@ -21,14 +18,11 @@ import {
   setInflightPlansLoad,
 } from './plan-cache';
 import { mapPlanApiError, type PlanLoadError } from './plan-errors';
-import {
-  mapActivationPlansToDefinitions,
-  mapApiTierToPurchasePlanId,
-} from './plan-mapper';
+import { mapPlanOptionsToDefinitions } from './plan-mapper';
 import { planLogger } from './plan-logger';
 
 export type LoadPlansResult =
-  | { ok: true; plans: PurchasePlanDefinition[]; fundedPlanId?: PurchasePlanId }
+  | { ok: true; plans: PurchasePlanDefinition[] }
   | { ok: false; error: PlanLoadError };
 
 export type LoadPlansOptions = {
@@ -37,9 +31,6 @@ export type LoadPlansOptions = {
 };
 
 export const DEFAULT_PURCHASE_PLAN_ID: PurchasePlanId = 'secure';
-
-let lastActivationPlans: ActivationPlansDto | null = null;
-let lastFundedPlanId: PurchasePlanId | null = null;
 
 /** Coalesce concurrent loadPlans callers (hydration + route + StrictMode). */
 let inflightLoadResult: Promise<LoadPlansResult> | null = null;
@@ -70,34 +61,14 @@ async function ensureQrResolved(qrCode: string | null): Promise<void> {
   await resolveQrCode(qrCode);
 }
 
-async function fetchActivationPlans(
-  qrCode: string,
-): Promise<{ plans: PurchasePlanDefinition[]; fundedPlanId: PurchasePlanId }> {
-  const client = getQrApiClient();
-  const activationPlans = await listActivationPlansApi(client, qrCode);
-  lastActivationPlans = activationPlans;
-  const fundedPlanId = mapApiTierToPurchasePlanId(activationPlans.funded.tier);
-  lastFundedPlanId = fundedPlanId;
-  return {
-    plans: mapActivationPlansToDefinitions(activationPlans),
-    fundedPlanId,
-  };
-}
-
-function toLoadPlansResult(
-  plans: PurchasePlanDefinition[],
-  fundedPlanId?: PurchasePlanId,
-): LoadPlansResult {
-  const resolvedFundedId = fundedPlanId ?? lastFundedPlanId;
-  return resolvedFundedId
-    ? { ok: true, plans, fundedPlanId: resolvedFundedId }
-    : { ok: true, plans };
+async function fetchPlanCatalog(): Promise<PurchasePlanDefinition[]> {
+  const options = await listPlansApi(getQrApiClient());
+  return mapPlanOptionsToDefinitions(options);
 }
 
 /**
- * Load plan catalog for purchase via GET /v1/activation/plans only.
+ * Load the plan catalog for purchase via GET /v1/plans (one effective plan per tier).
  * Concurrent callers (hydration, rider-cover, StrictMode) share one in-flight request.
- * No GET /v1/plans fallback.
  */
 export async function loadPlans(options: LoadPlansOptions = {}): Promise<LoadPlansResult> {
   const qrCode = resolvePurchaseQrCode();
@@ -115,7 +86,7 @@ export async function loadPlans(options: LoadPlansOptions = {}): Promise<LoadPla
     const cached = peekPlansCatalog(qrCode);
     if (cached) {
       planLogger.debug('plans_cache_hit', { count: cached.length, qrCode });
-      return toLoadPlansResult(cached);
+      return { ok: true, plans: cached };
     }
   } else {
     invalidatePlansCache();
@@ -130,7 +101,7 @@ export async function loadPlans(options: LoadPlansOptions = {}): Promise<LoadPla
   if (existingPlansInflight) {
     planLogger.debug('plans_load_deduped');
     inflightLoadResult = existingPlansInflight
-      .then((plans) => toLoadPlansResult(plans))
+      .then((plans): LoadPlansResult => ({ ok: true, plans }))
       .catch((error: unknown) => ({ ok: false as const, error: mapPlanApiError(error) }))
       .finally(() => {
         inflightLoadResult = null;
@@ -139,24 +110,20 @@ export async function loadPlans(options: LoadPlansOptions = {}): Promise<LoadPla
   }
 
   const fetchPromise = (async () => {
-    const result = await fetchActivationPlans(qrCode);
-    rememberPlansCatalog(result.plans, qrCode, 'activation');
-    planLogger.info('activation_plans_loaded', {
-      count: result.plans.length,
-      fundedPlanId: result.fundedPlanId,
-      qrCode,
-    });
-    return result;
+    const plans = await fetchPlanCatalog();
+    rememberPlansCatalog(plans, qrCode, 'catalog');
+    planLogger.info('plans_loaded', { count: plans.length, qrCode });
+    return plans;
   })();
 
-  setInflightPlansLoad(fetchPromise.then((result) => result.plans));
+  setInflightPlansLoad(fetchPromise);
 
   inflightLoadResult = (async (): Promise<LoadPlansResult> => {
     try {
-      const { plans, fundedPlanId } = await fetchPromise;
-      return toLoadPlansResult(plans, fundedPlanId);
+      const plans = await fetchPromise;
+      return { ok: true, plans };
     } catch (error) {
-      planLogger.warn('activation_plans_load_failed', { error, qrCode });
+      planLogger.warn('plans_load_failed', { error, qrCode });
       return { ok: false, error: mapPlanApiError(error) };
     } finally {
       clearInflightPlansLoad();
@@ -176,22 +143,7 @@ export function getPurchasePlansCatalog(): readonly PurchasePlanDefinition[] {
   return peekPlansCatalog(resolvePurchaseQrCode()) ?? purchasePlansCatalog;
 }
 
-export function getFundedPurchasePlanId(): PurchasePlanId | null {
-  return lastFundedPlanId;
-}
-
-export function peekActivationPlans(): ActivationPlansDto | null {
-  return lastActivationPlans;
-}
-
-/** Always true for QR purchase once a journey code is present — plans come from activation/plans. */
-export function prefersActivationPlansCatalog(): boolean {
-  return Boolean(resolvePurchaseQrCode());
-}
-
 export function clearPurchasePlansState(): void {
-  lastActivationPlans = null;
-  lastFundedPlanId = null;
   inflightLoadResult = null;
   clearPlansCacheInternal();
 }
@@ -201,13 +153,6 @@ export function getPurchasePlanById(planId: PurchasePlanId): PurchasePlanDefinit
   const plan = catalog.find((entry) => entry.id === planId);
   if (plan) {
     return plan;
-  }
-  const fundedId = lastFundedPlanId;
-  if (fundedId) {
-    const funded = catalog.find((entry) => entry.id === fundedId);
-    if (funded) {
-      return funded;
-    }
   }
   const fallback = catalog[0];
   if (fallback) {

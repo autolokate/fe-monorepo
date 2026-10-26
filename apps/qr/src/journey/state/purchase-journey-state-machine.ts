@@ -11,7 +11,7 @@ import {
   isDistributedQrLifecycleStatus,
 } from '@/platform/qr/qr-status';
 import { qrStorageRepository } from '@/platform/storage/repositories/qr-storage-repository';
-import { getFundedPurchasePlanId, getPurchasePlansCatalog } from '@/services/plan/plan-service';
+import { getPurchasePlansCatalog } from '@/services/plan/plan-service';
 
 export const PURCHASE_JOURNEY_KIND = {
   FULL_ACTIVATION: 'full_activation',
@@ -203,14 +203,14 @@ export function isConsumerPurchaseQrStatus(status: QrResolution['qrStatus']): bo
 }
 
 /**
- * True when the selected plan is already funded on this QR (activation/plans.funded).
+ * True when the selected plan needs no payment (included or zero payable).
  * Derived from API catalog flags — never hardcoded tier names.
  */
 export function isCommercePrepaidFreePlan(planId: string): boolean {
   const catalog = getPurchasePlansCatalog();
   const plan = catalog.find((entry) => entry.id === planId);
   if (!plan) {
-    return getFundedPurchasePlanId() === planId;
+    return false;
   }
   if (plan.included === true) {
     return true;

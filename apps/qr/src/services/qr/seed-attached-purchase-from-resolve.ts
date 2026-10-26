@@ -4,7 +4,6 @@ import type { QrResolution } from '@autolokate/api-client';
 import type { JourneySession } from '@/journey/types';
 import { purchaseStorageRepository } from '@/platform/storage/repositories/purchase-storage-repository';
 import { normalizePlate } from '@/services/vehicle/index';
-import { getFundedPurchasePlanId } from '@/services/plan/plan-service';
 
 import { mapQrPublicVehicleToFields } from './map-qr-public-vehicle-fields';
 
@@ -30,11 +29,9 @@ export function seedAttachedPurchaseFromResolve(code: string, resolution: QrReso
 
   const fields = mapQrPublicVehicleToFields(vehicle);
 
-  const fundedPlanId = getFundedPurchasePlanId() ?? undefined;
   purchaseStorageRepository.writeVehicle({
     registration: normalizePlate(plate),
     fields,
-    ...(fundedPlanId ? { selectedPlanId: fundedPlanId } : {}),
     riderCount: 0,
     confirmedAt: new Date().toISOString(),
   });
@@ -62,7 +59,6 @@ export function buildAttachedPurchaseSessionPatch(
   const vehicle = resolved.vehicle;
   const plate = vehicle?.plate.trim();
   const fields = vehicle ? mapQrPublicVehicleToFields(vehicle) : undefined;
-  const fundedPlanId = getFundedPurchasePlanId();
 
   return {
     vehicle: {
@@ -72,7 +68,6 @@ export function buildAttachedPurchaseSessionPatch(
       confirmed: true,
     },
     purchase: {
-      ...(fundedPlanId ? { selectedPlanId: fundedPlanId } : {}),
       riderCount: 0,
       promoApplied: false,
       promoCode: null,
