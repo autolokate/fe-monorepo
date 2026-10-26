@@ -42,7 +42,7 @@ function OrderRow({
         onClick={() => {
           onSelect(order);
         }}
-        aria-label={`View details for ${order.planName} order`}
+        aria-label={`View details for ${order.planName ?? 'Autolokate plan'} order`}
       >
         <div className={styles.cardHead}>
           <div className={styles.plan}>
@@ -50,7 +50,7 @@ function OrderRow({
               <Package className="h-4 w-4" />
             </span>
             <div>
-              <p className={styles.planName}>{order.planName}</p>
+              <p className={styles.planName}>{order.planName ?? 'Autolokate plan'}</p>
               {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- backend OrderKind can outrun the FE union; fall back to the raw code */}
               <p className={styles.kind}>{ORDER_KIND_LABELS[order.orderKind] ?? order.orderKind}</p>
             </div>

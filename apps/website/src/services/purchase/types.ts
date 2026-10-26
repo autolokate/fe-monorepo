@@ -71,19 +71,15 @@ export interface PaymentRef {
 export type PaymentOutcome = 'PENDING' | 'UNCONFIRMED' | 'PAID' | 'FAILED' | 'REFUNDED';
 
 /**
- * `GET /v1/retail/orders/:id/payment` in full. The backend returns `orderNumber` on
- * EVERY outcome, failures included, because that is exactly when a buyer rings
- * support. Note the two references are not interchangeable: `transactionRef` is
- * the gateway's (`pay_XXXX`, what a bank recognises), while `paymentRef` on
- * {@link PaymentRef} is ours.
+ * `GET /v1/retail/orders/:id/payment`. Nest answers `{ outcome }` only — it has no buyer
+ * order number or gateway transaction ref for retail orders yet, so those stay optional and
+ * the UI falls back to the order id (what Admin looks orders up by). Never fabricate them.
  */
 export interface PaymentOutcomeResult {
   outcome: PaymentOutcome;
-  /** The buyer-facing order number, e.g. `ALK-2627-000123`. */
-  orderNumber: string;
-  /** What was charged, GST-inclusive paise. */
-  totalPaise: number;
-  /** The gateway's transaction number. Absent until the gateway reports the attempt. */
+  orderNumber?: string | null;
+  totalPaise?: number | null;
+  /** The gateway's transaction number (`pay_XXXX`), when a backend reports it. */
   transactionRef?: string | null;
 }
 
@@ -119,34 +115,29 @@ export interface OrderFulfillment {
   events?: FulfillmentEvent[];
 }
 
+/** `GET /v1/retail/orders/:id` (`WebsiteRetailOrderDetailDto`). */
 export interface OrderTracking {
   orderId: string;
   orderKind: OrderKind;
   status: OrderStatus;
   totalPaise: number;
+  /** Plan the cart priced; null if that plan row no longer exists. */
+  planName?: string | null;
   /** Rider covers pinned on the order at checkout (0–2). */
   riderCount?: number;
   /** GST-inclusive rider cover pinned at checkout, already inside `totalPaise`. */
   riderCoverPaise?: number;
   paymentOutcome?: PaymentOutcome;
+  /** Null until a shipment ledger exists on the backend — no stage is invented. */
   fulfillment?: OrderFulfillment | null;
+  createdAt?: string;
 }
 
-/** A row in the buyer's order history (`GET /v1/retail/orders`). */
-export interface OrderSummary {
-  orderId: string;
-  /** The buyer-facing `ALK-2627-000123` — what support asks for, never the uuid. */
-  orderNumber: string;
-  orderKind: OrderKind;
-  status: OrderStatus;
-  totalPaise: number;
+/** A row in the buyer's order history (`GET /v1/retail/orders`, same shape as the detail). */
+export interface OrderSummary extends OrderTracking {
+  /** A buyer-facing number, when a backend issues one. Nest retail does not yet. */
+  orderNumber?: string | null;
   createdAt: string;
-  planName: string;
-  /** Rider covers pinned on the order at checkout (0–2). */
-  riderCount?: number;
-  /** GST-inclusive rider cover pinned at checkout, already inside `totalPaise`. */
-  riderCoverPaise?: number;
-  fulfillment?: OrderFulfillment | null;
 }
 
 export interface Invoice {

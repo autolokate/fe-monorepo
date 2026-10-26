@@ -1,7 +1,7 @@
 import nock from 'nock';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { createOrder, payOrder } from './orders-api';
+import { createOrder, getOrder, getOrderPayment, listOrders, payOrder } from './orders-api';
 import { PURCHASE_API_BASE_URL } from './client';
 import { clearPurchaseSession, setPurchaseSession } from './session';
 
@@ -123,5 +123,62 @@ describe('payOrder', () => {
       message: 'Invalid payment response',
       status: 0,
     });
+  });
+});
+
+describe('retail order reads (Nest WebsiteRetailOrderDetailDto)', () => {
+  const detail = {
+    orderId: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+    subtotalPaise: 1000,
+    gstPaise: 180,
+    discountPaise: 0,
+    totalPaise: 1180,
+    appliedPromoCode: null,
+    status: 'PAID',
+    orderKind: 'RETAIL_SHIP',
+    planName: 'AUTOLOKATE BASE',
+    riderCount: 1,
+    riderCoverPaise: 180,
+    paymentOutcome: 'PAID',
+    fulfillment: null,
+    cartId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+    addressId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+    createdAt: '2026-10-26T00:00:00.000Z',
+    updatedAt: '2026-10-26T00:00:00.000Z',
+  };
+
+  it('reads detail with real plan/rider fields and no invented shipping or order number', async () => {
+    nock(HOST).get(`/v1/retail/orders/${detail.orderId}`).reply(200, { data: detail });
+
+    const order = await getOrder(detail.orderId);
+
+    expect(order).toMatchObject({
+      orderKind: 'RETAIL_SHIP',
+      planName: 'AUTOLOKATE BASE',
+      riderCount: 1,
+      fulfillment: null,
+    });
+    expect(order).not.toHaveProperty('orderNumber');
+  });
+
+  it('lists history rows in the same shape', async () => {
+    nock(HOST)
+      .get('/v1/retail/orders')
+      .query({ limit: '20' })
+      .reply(200, { data: [detail] });
+
+    const rows = await listOrders();
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ planName: 'AUTOLOKATE BASE', orderKind: 'RETAIL_SHIP' });
+    expect(rows[0]).not.toHaveProperty('orderNumber');
+  });
+
+  it('accepts the coarse { outcome } payment poll', async () => {
+    nock(HOST)
+      .get(`/v1/retail/orders/${detail.orderId}/payment`)
+      .reply(200, { data: { outcome: 'FAILED' } });
+
+    await expect(getOrderPayment(detail.orderId)).resolves.toEqual({ outcome: 'FAILED' });
   });
 });

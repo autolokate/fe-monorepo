@@ -155,12 +155,12 @@ export function OrderCard({
         </div>
 
         <div className={styles.plan}>
-          <span className={styles.planName}>{order.planName}</span>
+          <span className={styles.planName}>{order.planName ?? 'Autolokate plan'}</span>
           <span className={styles.planSub}>Smart QR kit</span>
         </div>
 
         <div className={styles.meta}>
-          <span className={styles.metaRef}>Order {order.orderNumber}</span>
+          <span className={styles.metaRef}>Order {order.orderNumber ?? order.orderId}</span>
           {dateLine ? (
             <span className={styles.metaDate}>
               {state === 'failed' ? 'Tried' : 'Placed'} {dateLine}

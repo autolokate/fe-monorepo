@@ -16,10 +16,7 @@ const MAX_POLL_MS = 120_000;
 
 export interface UseOrderPaymentResult {
   outcome: PaymentOutcome | null;
-  /**
-   * The buyer-facing order number (`ALK-2627-000123`), present on every outcome
-   * once the first poll lands. Null before that, never a UUID stand-in.
-   */
+  /** A buyer-facing order number, only when the backend reports one (Nest retail does not). */
   orderNumber: string | null;
   /** The gateway's transaction number. Null until the gateway reports the attempt. */
   transactionRef: string | null;
@@ -77,8 +74,8 @@ export function useOrderPayment(
         const next = await getOrderPayment(orderId);
         if (!active) return;
         setOutcome(next.outcome);
-        setOrderNumber(next.orderNumber);
-        setTotalPaise(next.totalPaise);
+        if (next.orderNumber) setOrderNumber(next.orderNumber);
+        if (typeof next.totalPaise === 'number') setTotalPaise(next.totalPaise);
         // The gateway ref only appears once the attempt is reported; never let a
         // later poll blank one we already showed.
         if (next.transactionRef) setTransactionRef(next.transactionRef);

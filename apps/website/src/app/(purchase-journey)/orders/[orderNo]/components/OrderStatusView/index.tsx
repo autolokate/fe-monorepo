@@ -91,10 +91,9 @@ export function OrderStatusView({ orderNo }: OrderStatusViewProps) {
   const address = addresses.find((a) => a.id === snapshot.addressId) ?? null;
   const amountPaise = tracking?.totalPaise;
 
-  // The buyer-facing order number from the payment read. It lands on the first
-  // poll and is present on every outcome; until then we show nothing rather
-  // than a slice of the UUID, which support cannot look anything up by.
-  const orderRef = orderNumber;
+  // Nest retail has no buyer order number yet; the full order id is what Admin
+  // looks orders up by (a UUID slice is not).
+  const orderRef = orderNumber ?? orderNo;
   const planLine = `${plan?.name ?? 'Autolokate plan'}${
     riderCount > 0 ? ` + ${String(riderCount)} rider${riderCount > 1 ? 's' : ''}` : ''
   }`;
