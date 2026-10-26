@@ -11,7 +11,7 @@ import {
 } from '@/services/purchase';
 import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
-/** `POST /v1/orders` — creates the order from the latest cart + address. */
+/** `POST /v1/retail/orders` — creates the order from the latest cart + address. */
 export function useCreateOrder(options?: UseApiMutationOptions<Order, CreateOrderPayload>) {
   const fn = useMemo(() => (payload: CreateOrderPayload) => createOrder(payload), []);
   return useApiMutation(fn, options);
@@ -22,7 +22,7 @@ interface PayVariables {
   payload: PayOrderPayload;
 }
 
-/** `POST /v1/orders/:id/pay` — starts payment + optional auto-renew mandate. */
+/** `POST /v1/retail/orders/:id/pay` — starts payment + optional auto-renew mandate. */
 export function usePayOrder(options?: UseApiMutationOptions<PaymentRef, PayVariables>) {
   const fn = useMemo(
     () =>

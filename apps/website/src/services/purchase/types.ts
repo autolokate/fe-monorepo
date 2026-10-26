@@ -71,7 +71,7 @@ export interface PaymentRef {
 export type PaymentOutcome = 'PENDING' | 'UNCONFIRMED' | 'PAID' | 'FAILED' | 'REFUNDED';
 
 /**
- * `GET /v1/orders/:id/payment` in full. The backend returns `orderNumber` on
+ * `GET /v1/retail/orders/:id/payment` in full. The backend returns `orderNumber` on
  * EVERY outcome, failures included, because that is exactly when a buyer rings
  * support. Note the two references are not interchangeable: `transactionRef` is
  * the gateway's (`pay_XXXX`, what a bank recognises), while `paymentRef` on
@@ -132,7 +132,7 @@ export interface OrderTracking {
   fulfillment?: OrderFulfillment | null;
 }
 
-/** A row in the buyer's order history (`GET /v1/orders`). */
+/** A row in the buyer's order history (`GET /v1/retail/orders`). */
 export interface OrderSummary {
   orderId: string;
   /** The buyer-facing `ALK-2627-000123` — what support asks for, never the uuid. */

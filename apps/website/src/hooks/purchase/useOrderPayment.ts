@@ -32,7 +32,7 @@ export interface UseOrderPaymentResult {
 }
 
 /**
- * Polls `GET /v1/orders/:id/payment` until the payment reaches a terminal
+ * Polls `GET /v1/retail/orders/:id/payment` until the payment reaches a terminal
  * state (PAID / FAILED / REFUNDED). Razorpay captures via webhook, so the
  * outcome lands here a beat after the buyer finishes at the gateway. Polling is
  * bounded by `maxWaitMs`; past that `timedOut` goes true so the caller can stop

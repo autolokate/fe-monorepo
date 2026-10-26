@@ -18,14 +18,14 @@ interface Enveloped<T> {
   data?: T;
 }
 
-/** GET /v1/orders — the buyer's order history, newest first (bearer). */
+/** GET /v1/retail/orders — the buyer's order history, newest first (bearer). */
 export async function listOrders(limit = 20): Promise<OrderSummary[]> {
   const res = await PurchaseApi.get<Enveloped<OrderSummary[]>>(endpoints.orders.list(limit));
   return res.data.data ?? [];
 }
 
 /**
- * POST /v1/orders — creates the order from the latest cart + a saved address id
+ * POST /v1/retail/orders — creates the order from the latest cart + a saved address id
  * (bearer + a fresh `Idempotency-Key`). The backend snapshots the address at
  * sale, so we only send its id — never the inline lines.
  */
@@ -41,7 +41,7 @@ export async function createOrder(payload: CreateOrderPayload): Promise<Order> {
 }
 
 /**
- * POST /v1/orders/:id/pay — kicks off payment + (optionally) the auto-renew
+ * POST /v1/retail/orders/:id/pay — kicks off payment + (optionally) the auto-renew
  * mandate (bearer + a fresh `Idempotency-Key`). Returns the Razorpay handles.
  */
 export async function payOrder(orderId: string, payload: PayOrderPayload): Promise<PaymentRef> {
@@ -56,7 +56,7 @@ export async function payOrder(orderId: string, payload: PayOrderPayload): Promi
 }
 
 /**
- * GET /v1/orders/:id/payment — poll for the payment outcome (bearer). Carries
+ * GET /v1/retail/orders/:id/payment — poll for the payment outcome (bearer). Carries
  * the buyer-facing `orderNumber` on every outcome (failures included) and the
  * gateway's `transactionRef` once the attempt is reported, so a buyer on the
  * phone to support always has a reference we can look up.
@@ -70,7 +70,7 @@ export async function getOrderPayment(orderId: string): Promise<PaymentOutcomeRe
   return payment;
 }
 
-/** GET /v1/orders/:id — order status + shipping fulfillment (bearer). */
+/** GET /v1/retail/orders/:id — order status + shipping fulfillment (bearer). */
 export async function getOrder(orderId: string): Promise<OrderTracking> {
   const res = await PurchaseApi.get<Enveloped<OrderTracking>>(endpoints.orders.byId(orderId));
   const order = res.data.data;
@@ -78,7 +78,7 @@ export async function getOrder(orderId: string): Promise<OrderTracking> {
   return order;
 }
 
-/** GET /v1/orders/:id/invoice — the GST invoice for a paid order (bearer). */
+/** GET /v1/retail/orders/:id/invoice — the GST invoice for a paid order (bearer). */
 export async function getOrderInvoice(orderId: string): Promise<Invoice> {
   const res = await PurchaseApi.get<Enveloped<Invoice>>(endpoints.orders.invoice(orderId));
   const invoice = res.data.data;

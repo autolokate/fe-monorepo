@@ -154,7 +154,7 @@ export function ReviewView({ cartId }: ReviewViewProps) {
       return;
     }
 
-    // `POST /v1/orders` is not idempotent per cart, and a RETAIL_SHIP order has
+    // `POST /v1/retail/orders` is not idempotent per cart, and a RETAIL_SHIP order has
     // no backend duplicate guard (its qr_code_id is null), so every re-create
     // mints another order number and another fulfillment row. Re-paying an
     // order that is still PENDING_PAYMENT is free and returns the same live

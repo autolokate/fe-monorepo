@@ -59,7 +59,7 @@ export interface PurchaseState {
   cartId: string | null;
   /** Chosen saved-address id (`/v1/addresses`) — sent as `addressId` on order create. */
   addressId: string | null;
-  /** Created order id from `POST /v1/orders` — feeds pay + polling. */
+  /** Created order id from `POST /v1/retail/orders` — feeds pay + polling. */
   orderId: string | null;
   autoRenew: boolean;
   payMethod: PayMethod;

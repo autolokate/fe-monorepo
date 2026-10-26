@@ -6,7 +6,7 @@ import { ApiError } from '@/lib/api/error';
 import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
 /**
- * `GET /v1/orders/:id/invoice` — fetches the GST invoice and opens the
+ * `GET /v1/retail/orders/:id/invoice` — fetches the GST invoice and opens the
  * pre-signed PDF (`downloadUrl`) in a new tab.
  */
 export function useDownloadInvoice(options?: UseApiMutationOptions<Invoice, string>) {

@@ -35,7 +35,7 @@ describe('createOrder', () => {
     let capturedBody: unknown;
 
     nock(HOST)
-      .post('/v1/orders', (body) => {
+      .post('/v1/retail/orders', (body) => {
         capturedBody = body;
         return true;
       })
@@ -61,7 +61,7 @@ describe('createOrder', () => {
 
   it('throws ApiError when the envelope lacks orderId', async () => {
     nock(HOST)
-      .post('/v1/orders')
+      .post('/v1/retail/orders')
       .reply(200, { data: { totalPaise: 100 } });
 
     await expect(createOrder({ cartId: 'cart_1', addressId: 'addr_1' })).rejects.toMatchObject({
@@ -72,7 +72,7 @@ describe('createOrder', () => {
 
   it('surfaces HTTP errors as ApiError', async () => {
     nock(HOST)
-      .post('/v1/orders')
+      .post('/v1/retail/orders')
       .reply(400, { error: { code: 'BAD_REQUEST', message: 'cart expired' } });
 
     await expect(createOrder({ cartId: 'cart_x', addressId: 'addr_1' })).rejects.toMatchObject({
@@ -87,7 +87,7 @@ describe('payOrder', () => {
     let capturedBody: unknown;
 
     nock(HOST)
-      .post('/v1/orders/ord_1/pay', (body) => {
+      .post('/v1/retail/orders/ord_1/pay', (body) => {
         capturedBody = body;
         return true;
       })
@@ -114,7 +114,7 @@ describe('payOrder', () => {
 
   it('throws ApiError when paymentRef is missing', async () => {
     nock(HOST)
-      .post('/v1/orders/ord_1/pay')
+      .post('/v1/retail/orders/ord_1/pay')
       .reply(200, { data: { razorpayKeyId: 'rzp_test' } });
 
     await expect(

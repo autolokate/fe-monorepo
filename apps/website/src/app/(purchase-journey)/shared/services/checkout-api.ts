@@ -56,13 +56,13 @@ export function updateJourneyCart(payload: UpdateCartPayload): Promise<Cart> {
   return updateCart(payload);
 }
 
-/** `POST /v1/orders` — turn the priced cart + chosen address into an order. */
+/** `POST /v1/retail/orders` — turn the priced cart + chosen address into an order. */
 export function createJourneyOrder(cartId: string, addressId: string): Promise<Order> {
   return createOrder({ cartId, addressId });
 }
 
 /**
- * `POST /v1/orders/:id/pay` — start payment for an order. Auto-renew is always
+ * `POST /v1/retail/orders/:id/pay` — start payment for an order. Auto-renew is always
  * set up for the retail journey, so the mandate + consent are sent as `true`.
  * The response carries the Razorpay key + provider order id for checkout.
  */
@@ -71,7 +71,7 @@ export function payJourneyOrder(orderId: string): Promise<PaymentRef> {
 }
 
 /**
- * `GET /v1/orders/:id/payment` — the authoritative payment outcome
+ * `GET /v1/retail/orders/:id/payment` — the authoritative payment outcome
  * (webhook-driven). The read also carries the buyer-facing order number and the
  * gateway's transaction ref; callers that need those take the whole
  * `getOrderPayment` response instead of this outcome-only narrowing.

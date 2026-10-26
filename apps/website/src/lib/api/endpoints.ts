@@ -92,13 +92,14 @@ export const endpoints = {
     /** Re-price an existing cart in place (same flow) instead of minting a new one. */
     update: (id: string) => `/v1/cart/${encodeURIComponent(id)}`,
   },
+  /** Website retail (cart + address) orders. `/v1/orders` is the QR plan-commerce surface. */
   orders: {
-    create: '/v1/orders',
+    create: '/v1/retail/orders',
     /** The buyer's own orders, newest first (bearer). */
-    list: (limit = 20) => `/v1/orders?limit=${encodeURIComponent(String(limit))}`,
-    byId: (id: string) => `/v1/orders/${encodeURIComponent(id)}`,
-    pay: (id: string) => `/v1/orders/${encodeURIComponent(id)}/pay`,
-    payment: (id: string) => `/v1/orders/${encodeURIComponent(id)}/payment`,
-    invoice: (id: string) => `/v1/orders/${encodeURIComponent(id)}/invoice`,
+    list: (limit = 20) => `/v1/retail/orders?limit=${encodeURIComponent(String(limit))}`,
+    byId: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}`,
+    pay: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}/pay`,
+    payment: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}/payment`,
+    invoice: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}/invoice`,
   },
 } as const;

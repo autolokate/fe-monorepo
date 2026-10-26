@@ -69,7 +69,7 @@ interface Enveloped<T> {
  * identity vault, is never logged, and is purged by the erasure cascade.
  */
 export interface SavedAddress {
-  /** Send this as `addressId` on `POST /v1/orders`. */
+  /** Send this as `addressId` on `POST /v1/retail/orders`. */
   id: string;
   /** The buyer's own label ("Home", "Office"), or null. */
   label: string | null;
