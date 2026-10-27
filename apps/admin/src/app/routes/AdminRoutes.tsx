@@ -120,6 +120,12 @@ const TaxiPolicyPage = lazy(() =>
   })),
 );
 
+const ServicesCataloguePage = lazy(() =>
+  import('@/features/services/ServicesCataloguePage').then((module) => ({
+    default: module.ServicesCataloguePage,
+  })),
+);
+
 const DiscoveryOverviewPage = lazy(() =>
   import('@/features/discovery/DiscoveryOverviewPage').then((module) => ({
     default: module.DiscoveryOverviewPage,
@@ -202,6 +208,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.promos} element={<PromoManagementPage />} />
             <Route path={adminPaths.garageCommercial} element={<GarageCommercialConfigPage />} />
             <Route path={adminPaths.taxiPolicy} element={<TaxiPolicyPage />} />
+            <Route path={adminPaths.servicesCatalogue} element={<ServicesCataloguePage />} />
             <Route path={adminPaths.orders} element={<OrdersPage />} />
             <Route path={adminPaths.subscriptions} element={<SubscriptionsPage />} />
             <Route path={adminPaths.shipments} element={<ShipmentsPage />} />

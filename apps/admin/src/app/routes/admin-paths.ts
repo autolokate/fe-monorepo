@@ -15,6 +15,7 @@ export const adminPaths = {
   auditEvents: '/audit-events',
   garageCommercial: '/garage-commercial',
   taxiPolicy: '/taxi-policy',
+  servicesCatalogue: '/services-catalogue',
   finance: '/finance',
   ownershipTransfers: '/ownership-transfers',
   ownershipClaims: '/ownership-claims',
@@ -182,6 +183,14 @@ export const adminRoutes: AdminRouteMeta[] = [
     label: 'Taxi policy',
     description:
       'Taxi advance / deposit bps draft + publish (Admin-supplied; no invented money defaults)',
+    group: 'products',
+    nav: true,
+  },
+  {
+    path: adminPaths.servicesCatalogue,
+    label: 'Services catalogue',
+    description:
+      'Upsert / deactivate consumer Services hub providers (ACTIVE list + category filter)',
     group: 'products',
     nav: true,
   },

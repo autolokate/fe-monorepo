@@ -140,8 +140,15 @@ export const endpoints = {
     denyBreakGlassApproval: (approvalId: string) =>
       `/admin/v1/break-glass/approvals/${encodeURIComponent(approvalId)}/deny`,
     adminOwnershipClaims: '/admin/v1/ownership-claims',
+    ownershipClaimRcProof: (id: string) =>
+      `/admin/v1/ownership-claims/${encodeURIComponent(id)}/rc-proof`,
     reviewOwnershipClaim: (id: string) =>
       `/admin/v1/ownership-claims/${encodeURIComponent(id)}/review`,
+    listServiceProviders: '/admin/v1/services/providers',
+    upsertServiceProvider: '/admin/v1/services/providers',
+    deactivateServiceProvider: (id: string) =>
+      `/admin/v1/services/providers/${encodeURIComponent(id)}`,
+    serviceHubCategories: '/admin/v1/services/hub-categories',
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',
@@ -217,6 +224,11 @@ export const endpoints = {
     request: '/v1/media',
     complete: (mediaId: string) => `/v1/media/${encodeURIComponent(mediaId)}/complete`,
     download: (mediaId: string) => `/v1/media/${encodeURIComponent(mediaId)}`,
+  },
+  services: {
+    categories: '/v1/services/categories',
+    providers: '/v1/services/providers',
+    provider: (id: string) => `/v1/services/providers/${encodeURIComponent(id)}`,
   },
 } as const;
 

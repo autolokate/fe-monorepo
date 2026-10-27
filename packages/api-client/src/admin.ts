@@ -1694,6 +1694,27 @@ export async function reviewOwnershipClaim(
 }
 
 /**
+ * OpenAPI `OwnershipClaimRcProofDto` — same wire shape as `MediaDownloadDto`.
+ * `GET /admin/v1/ownership-claims/{id}/rc-proof` (OPERATOR; audited RCRECORD_ACCESS).
+ */
+export type OwnershipClaimRcProofDto = {
+  url: string;
+  expiresInSeconds: number;
+};
+
+/** GET /admin/v1/ownership-claims/{id}/rc-proof */
+export async function getAdminOwnershipClaimRcProof(
+  client: ApiClient,
+  claimId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<OwnershipClaimRcProofDto> {
+  const response = await client.get<unknown>(endpoints.admin.ownershipClaimRcProof(claimId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as OwnershipClaimRcProofDto;
+}
+
+/**
  * FE-ahead grant body roles — Nest has no POST/DELETE `/admin/v1/users/…/roles*`.
  * Do not enable grant/revoke UI. Nest lookup returns {@link NestAdminUserRole} names only.
  */

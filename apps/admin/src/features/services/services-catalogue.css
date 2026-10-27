@@ -1,0 +1,13 @@
+.services-catalogue__note {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--al-color-text-secondary, #6b7280);
+  line-height: 1.45;
+  max-width: 52rem;
+}
+
+.services-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem 1.25rem;
+}

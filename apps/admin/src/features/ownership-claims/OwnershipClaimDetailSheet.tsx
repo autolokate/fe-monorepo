@@ -88,9 +88,9 @@ export function OwnershipClaimDetailSheet({
 
         <AdminDetailSection
           title="RC proof"
-          description="Signed download uses GET /v1/media/{id}; Admin may be blocked by owner ACL."
+          description="Signed download prefers GET /admin/v1/ownership-claims/{id}/rc-proof (OPERATOR). 403/404 surfaces an honest ACL / endpoint blocker."
         >
-          <RcMediaPreview rcMediaAssetId={claim.rcMediaAssetId} />
+          <RcMediaPreview claimId={claim.id} rcMediaAssetId={claim.rcMediaAssetId} />
         </AdminDetailSection>
 
         <AdminDetailSection title="Review audit">

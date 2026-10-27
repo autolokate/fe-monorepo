@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
-import { fetchRcMediaDownloadUrl } from '@/services/ownership-claims/ownership-claims-service';
+import { fetchRcClaimProofDownloadUrl } from '@/services/ownership-claims/ownership-claims-service';
 
 export type RcMediaPreviewProps = {
+  claimId: string;
   rcMediaAssetId: string;
 };
 
@@ -18,14 +19,14 @@ function inferPreviewKind(url: string): 'pdf' | 'image' {
 }
 
 /**
- * Attempts `GET /v1/media/{id}` with the Admin token. Customer RC assets are owner-scoped,
- * so Admin often gets 403/404 — show asset id + honest ACL blocker, never a fake image.
+ * Prefers `GET /admin/v1/ownership-claims/{claimId}/rc-proof` (OPERATOR).
+ * On 403/404 (or any fetch failure) show asset id + honest ACL / endpoint blocker — never a fake image.
  */
-export function RcMediaPreview({ rcMediaAssetId }: RcMediaPreviewProps) {
+export function RcMediaPreview({ claimId, rcMediaAssetId }: RcMediaPreviewProps) {
   const query = useQuery({
-    queryKey: ['admin', 'ownership-claims', 'rc-media', rcMediaAssetId],
-    queryFn: ({ signal }) => fetchRcMediaDownloadUrl(rcMediaAssetId, signal),
-    enabled: Boolean(rcMediaAssetId),
+    queryKey: ['admin', 'ownership-claims', 'rc-proof', claimId],
+    queryFn: ({ signal }) => fetchRcClaimProofDownloadUrl(claimId, signal),
+    enabled: Boolean(claimId),
     retry: false,
     staleTime: 60_000,
   });
@@ -54,9 +55,10 @@ export function RcMediaPreview({ rcMediaAssetId }: RcMediaPreviewProps) {
           {rcMediaAssetId}
         </p>
         <p className="admin-muted" data-testid="ownership-claim-rc-blocker">
-          Preview unavailable until media ACL allows Admin to fetch claimant-owned RC proof
-          {apiMessage ? ` (${apiMessage})` : ''}. Use the asset id above with a privileged media
-          path when one exists.
+          Preview unavailable — Admin RC-proof download returned no signed URL (endpoint missing or
+          ACL denied for this claim)
+          {apiMessage ? ` (${apiMessage})` : ''}. Claim id{' '}
+          <span className="admin-detail-field__value--mono">{claimId}</span>.
         </p>
       </div>
     );
