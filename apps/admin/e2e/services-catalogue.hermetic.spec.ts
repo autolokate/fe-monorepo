@@ -25,7 +25,7 @@ test.describe('Services catalogue (hermetic)', () => {
     });
     expect(capture.servicesCategoriesGet).toBeGreaterThanOrEqual(1);
     expect(capture.servicesProvidersGet.length).toBeGreaterThanOrEqual(1);
-    expect(capture.servicesProvidersGet[0]?.category).toBe('ras');
+    expect(capture.servicesProvidersGet[0]?.path).toBe('/admin/v1/services/providers');
 
     await page.getByRole('button', { name: 'Add provider' }).click();
     await page.getByTestId('services-upsert-name').fill('Hermetic Hospital Desk');
@@ -33,7 +33,7 @@ test.describe('Services catalogue (hermetic)', () => {
     await page.getByTestId('services-upsert-city').fill('Chennai');
     await page.getByTestId('services-upsert-lat').fill('13.0827');
     await page.getByTestId('services-upsert-lng').fill('80.2707');
-    await page.getByLabel('Verified partner').click();
+    await page.getByTestId('services-upsert-verified').check({ force: true });
     await page.getByTestId('services-upsert-submit').click();
 
     await expect.poll(() => capture.servicesProvidersPut.length, { timeout: 10_000 }).toBe(1);

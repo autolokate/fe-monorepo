@@ -611,9 +611,9 @@ export async function installHermeticApiRoutes(
   };
   let ownershipClaimState = { ...HERMETIC_OWNERSHIP_CLAIM };
   const ownershipClaimsCatalog = [ownershipClaimState, { ...HERMETIC_OWNERSHIP_CLAIM_APPROVED }];
-  let serviceProvidersState: Array<typeof HERMETIC_SERVICE_PROVIDER> = [
-    { ...HERMETIC_SERVICE_PROVIDER },
-  ];
+  let serviceProvidersState: Array<
+    Omit<typeof HERMETIC_SERVICE_PROVIDER, 'status'> & { status: 'ACTIVE' | 'INACTIVE' }
+  > = [{ ...HERMETIC_SERVICE_PROVIDER }];
 
   /** Mutable Nest OA commercial-config audit list (newest first). */
   let garageConfigHistory: Array<typeof HERMETIC_GARAGE_CONFIG_AUDIT> = [
@@ -708,6 +708,7 @@ export async function installHermeticApiRoutes(
       }
       // Consumer ACTIVE projection — Admin UI prefers /admin/v1/services/providers.
       const rows = serviceProvidersState
+        .filter((row) => row.status === 'ACTIVE')
         .filter((row) => !category || row.category === category)
         .map(({ status: _status, ...rest }) => rest);
       await fulfillJson(route, servicesProvidersGetStatus, envelope(rows));
@@ -2032,6 +2033,38 @@ export async function installHermeticApiRoutes(
       };
       ownershipClaimsCatalog[0] = ownershipClaimState;
       await fulfillJson(route, 200, envelope(ownershipClaimState));
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/services/hub-categories') {
+      capture.servicesCategoriesGet += 1;
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          items: [
+            { category: 'ras', label: 'Roadside', sortOrder: 10, visible: true },
+            { category: 'hospitals', label: 'Hospitals', sortOrder: 20, visible: true },
+            { category: 'garages', label: 'Garages', sortOrder: 30, visible: true },
+            { category: 'emergency', label: 'Emergency', sortOrder: 40, visible: true },
+            { category: 'maintenance', label: 'Maintenance', sortOrder: 50, visible: true },
+          ],
+        }),
+      );
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/services/providers') {
+      capture.servicesProvidersGet.push({ method, path, category: null });
+      if (servicesProvidersGetStatus >= 400) {
+        await fulfillJson(
+          route,
+          servicesProvidersGetStatus,
+          errorEnvelope('Unable to load service providers', 'forbidden'),
+        );
+        return;
+      }
+      await fulfillJson(route, servicesProvidersGetStatus, envelope(serviceProvidersState));
       return;
     }
 
