@@ -1761,6 +1761,11 @@ export type AdminUserVehicleDto = {
   year: number | null;
   rcValidTillLabel: string | null;
   protection: string;
+  /**
+   * Set when Admin APPROVES an ownership claim; null for provisional / free-driver vehicles.
+   * Nest `VehicleDetailDto.ownershipVerifiedAt` — may be absent on older responses.
+   */
+  ownershipVerifiedAt?: string | null;
 };
 
 /** Personal expense projection used by `listAdminUserExpenses`. */

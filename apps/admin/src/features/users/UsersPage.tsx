@@ -173,6 +173,19 @@ function UserDetailPanel({
               value={[selectedVehicle.make, selectedVehicle.model].filter(Boolean).join(' ') || '—'}
             />
             <AdminDetailField label="Protection" value={selectedVehicle.protection} />
+            <AdminDetailField
+              label="Ownership verified at"
+              value={
+                selectedVehicle.ownershipVerifiedAt
+                  ? new Date(selectedVehicle.ownershipVerifiedAt).toLocaleString()
+                  : 'Not verified (provisional / free-driver)'
+              }
+            />
+            <AdminDetailField
+              label="Owner account"
+              value={`${account.id} (listAdminUserVehicles scopes this list to the viewed account; DTO has no ownerAccountId field)`}
+              mono
+            />
 
             <AlStack gap="xs">
               <AlText variant="caption" tone="muted">
@@ -442,6 +455,15 @@ function UserDetailPanel({
                     { id: 'make', header: 'Make', accessorKey: 'make' },
                     { id: 'model', header: 'Model', accessorKey: 'model' },
                     { id: 'protection', header: 'Protection', accessorKey: 'protection' },
+                    {
+                      id: 'ownershipVerifiedAt',
+                      header: 'Ownership verified',
+                      accessorFn: (row) => row.ownershipVerifiedAt ?? '',
+                      cell: ({ row }) =>
+                        row.original.ownershipVerifiedAt
+                          ? row.original.ownershipVerifiedAt.slice(0, 10)
+                          : '—',
+                    },
                   ]}
                   data={vehicles}
                   loading={vehiclesLoading}

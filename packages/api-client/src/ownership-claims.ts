@@ -3,6 +3,11 @@ import { endpoints } from './endpoints';
 import { unwrapEnvelope } from './envelope';
 import type { OwnershipClaimDto, OwnershipClaimStatus } from './admin';
 
+/**
+ * Customer ownership-claim client (`/v1/ownership-claims`).
+ * Admin list/review + `OwnershipClaimDto` (incl. `rcMediaAssetId`, `reviewedByAdminId`,
+ * `reviewedAt`, `planSubscriptionId`, `notes`) live in `./admin`.
+ */
 export type { OwnershipClaimDto, OwnershipClaimStatus };
 
 /** Body for `POST /v1/ownership-claims` (M8). */

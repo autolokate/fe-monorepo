@@ -185,12 +185,21 @@ export const HERMETIC_PLAN = {
   isEffectiveNow: true,
 };
 
+export const HERMETIC_RC_MEDIA_ASSET_ID = 'dddddddd-eeee-4fff-8000-111111111111';
+
 export const HERMETIC_OWNERSHIP_CLAIM = {
   id: HERMETIC_OWNERSHIP_CLAIM_ID,
   status: 'SUBMITTED' as const,
   vehicleId: HERMETIC_VEHICLE_ID,
   claimantAccountId: HERMETIC_USER_ID,
+  rcMediaAssetId: HERMETIC_RC_MEDIA_ASSET_ID,
+  planSubscriptionId: 'eeeeeeee-ffff-4000-8000-222222222222',
+  notes: 'Hermetic RC claim notes',
+  rejectionReason: null as string | null,
+  reviewedByAdminId: null as string | null,
+  reviewedAt: null as string | null,
   createdAt: '2026-10-19T00:00:00.000Z',
+  updatedAt: '2026-10-19T00:00:00.000Z',
 };
 
 export const HERMETIC_OWNERSHIP_CLAIM_APPROVED = {
@@ -198,7 +207,14 @@ export const HERMETIC_OWNERSHIP_CLAIM_APPROVED = {
   status: 'APPROVED' as const,
   vehicleId: HERMETIC_VEHICLE_ID,
   claimantAccountId: HERMETIC_USER_ID,
+  rcMediaAssetId: HERMETIC_RC_MEDIA_ASSET_ID,
+  planSubscriptionId: null as string | null,
+  notes: null as string | null,
+  rejectionReason: null as string | null,
+  reviewedByAdminId: HERMETIC_USER_ID,
+  reviewedAt: '2026-10-18T12:00:00.000Z',
   createdAt: '2026-10-18T00:00:00.000Z',
+  updatedAt: '2026-10-18T12:00:00.000Z',
 };
 
 export const HERMETIC_GARAGE_CONFIG = {
@@ -614,6 +630,16 @@ export async function installHermeticApiRoutes(
         }),
       );
       return;
+    }
+
+    const mediaDownloadMatch = path.match(/^\/v1\/media\/([^/]+)$/);
+    if (method === 'GET' && mediaDownloadMatch) {
+      const mediaId = decodeURIComponent(mediaDownloadMatch[1] ?? '');
+      if (mediaId === HERMETIC_RC_MEDIA_ASSET_ID) {
+        // Claimant-owned RC proof — Admin OPERATOR token fails owner ACL (honest blocker in UI).
+        await fulfillJson(route, 403, errorEnvelope('Media asset not found.', 'forbidden'));
+        return;
+      }
     }
 
     capture.unexpected.push(`${method} ${path}`);
@@ -1121,6 +1147,7 @@ export async function installHermeticApiRoutes(
             year: 2020,
             rcValidTillLabel: null,
             protection: 'UNPROTECTED',
+            ownershipVerifiedAt: null,
           },
           {
             vehicleId: HERMETIC_VEHICLE_ID_B,
@@ -1132,6 +1159,7 @@ export async function installHermeticApiRoutes(
             year: 2021,
             rcValidTillLabel: null,
             protection: 'UNPROTECTED',
+            ownershipVerifiedAt: '2026-10-18T12:00:00.000Z',
           },
         ]),
       );
@@ -1897,10 +1925,16 @@ export async function installHermeticApiRoutes(
       capture.ownershipClaimsReview.push({ method, path, body });
       const decision =
         typeof body.decision === 'string' ? body.decision : ownershipClaimState.status;
+      const rejectionReason =
+        typeof body.rejectionReason === 'string' ? body.rejectionReason : null;
       ownershipClaimState = {
         ...ownershipClaimState,
         id: decodeURIComponent(claimReviewMatch[1] ?? HERMETIC_OWNERSHIP_CLAIM_ID),
         status: decision as typeof ownershipClaimState.status,
+        rejectionReason: decision === 'REJECTED' ? rejectionReason : null,
+        reviewedByAdminId: HERMETIC_USER_ID,
+        reviewedAt: '2026-10-20T12:00:00.000Z',
+        updatedAt: '2026-10-20T12:00:00.000Z',
       };
       ownershipClaimsCatalog[0] = ownershipClaimState;
       await fulfillJson(route, 200, envelope(ownershipClaimState));
