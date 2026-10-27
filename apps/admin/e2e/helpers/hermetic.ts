@@ -193,25 +193,46 @@ export const HERMETIC_PLAN = {
 export const HERMETIC_RC_MEDIA_ASSET_ID = 'dddddddd-eeee-4fff-8000-111111111111';
 export const HERMETIC_SERVICE_PROVIDER_ID = 'bbbbbbbb-cccc-4ddd-8eee-111111111111';
 
-export const HERMETIC_SERVICE_PROVIDER = {
+export type HermeticServiceProvider = {
+  id: string;
+  name: string;
+  category: string;
+  subtitle: string;
+  distanceKm: number | null;
+  rating: number;
+  openNow: boolean;
+  city: string;
+  phone: string;
+  services: string[];
+  verifiedPartner: boolean;
+  note: string | null;
+  etaMinutes: number;
+  latitude: number;
+  longitude: number;
+  address: string;
+  reviewCount: number;
+  status: 'ACTIVE' | 'INACTIVE';
+};
+
+export const HERMETIC_SERVICE_PROVIDER: HermeticServiceProvider = {
   id: HERMETIC_SERVICE_PROVIDER_ID,
   name: 'Hermetic RAS Partner',
   category: 'ras',
   subtitle: 'Hermetic roadside',
-  distanceKm: null as number | null,
+  distanceKm: null,
   rating: 4.5,
   openNow: true,
   city: 'Bengaluru',
   phone: '+919999990001',
   services: ['flatTyre'],
   verifiedPartner: true,
-  note: null as string | null,
+  note: null,
   etaMinutes: 25,
   latitude: 12.9716,
   longitude: 77.5946,
   address: 'MG Road',
   reviewCount: 12,
-  status: 'ACTIVE' as const,
+  status: 'ACTIVE',
 };
 
 export const HERMETIC_OWNERSHIP_CLAIM = {
@@ -2075,7 +2096,8 @@ export async function installHermeticApiRoutes(
         typeof body.id === 'string' && body.id.trim()
           ? body.id
           : 'cccccccc-dddd-4eee-8fff-333333333333';
-      const next = {
+      const status: 'ACTIVE' | 'INACTIVE' = body.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE';
+      const next: HermeticServiceProvider = {
         ...HERMETIC_SERVICE_PROVIDER,
         id,
         name: typeof body.name === 'string' ? body.name : HERMETIC_SERVICE_PROVIDER.name,
@@ -2087,10 +2109,7 @@ export async function installHermeticApiRoutes(
           typeof body.latitude === 'number' ? body.latitude : HERMETIC_SERVICE_PROVIDER.latitude,
         longitude:
           typeof body.longitude === 'number' ? body.longitude : HERMETIC_SERVICE_PROVIDER.longitude,
-        status:
-          body.status === 'INACTIVE' || body.status === 'ACTIVE'
-            ? body.status
-            : ('ACTIVE' as const),
+        status,
       };
       const existingIdx = serviceProvidersState.findIndex((row) => row.id === id);
       if (existingIdx >= 0) {
