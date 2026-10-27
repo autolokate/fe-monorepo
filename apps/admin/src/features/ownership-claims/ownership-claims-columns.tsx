@@ -1,8 +1,9 @@
 import type { OwnershipClaimDto } from '@autolokate/api-client';
 import { AlButton, type ColumnDef } from '@autolokate/ui';
-import { useMemo } from 'react';
+import { useMemo, type MouseEvent } from 'react';
 
 export type OwnershipClaimsColumnHandlers = {
+  onOpenDetail: (claim: OwnershipClaimDto) => void;
   onApprove: (claim: OwnershipClaimDto) => void;
   onReject: (claim: OwnershipClaimDto) => void;
   onMarkUnderReview: (claim: OwnershipClaimDto) => void;
@@ -12,7 +13,7 @@ export type OwnershipClaimsColumnHandlers = {
 export function useOwnershipClaimsColumns(
   handlers: OwnershipClaimsColumnHandlers,
 ): ColumnDef<OwnershipClaimDto>[] {
-  const { onApprove, onReject, onMarkUnderReview, busyClaimId } = handlers;
+  const { onOpenDetail, onApprove, onReject, onMarkUnderReview, busyClaimId } = handlers;
 
   return useMemo(
     () => [
@@ -40,6 +41,12 @@ export function useOwnershipClaimsColumns(
         accessorFn: (row) => row.status,
       },
       {
+        id: 'reviewedAt',
+        header: 'Reviewed',
+        accessorFn: (row) => row.reviewedAt ?? '',
+        cell: ({ row }) => row.original.reviewedAt?.slice(0, 10) ?? '—',
+      },
+      {
         id: 'createdAt',
         header: 'Submitted',
         accessorFn: (row) => row.createdAt,
@@ -50,47 +57,67 @@ export function useOwnershipClaimsColumns(
         cell: ({ row }) => {
           const claim = row.original;
           const open = claim.status === 'SUBMITTED' || claim.status === 'UNDER_REVIEW';
-          if (!open) return null;
           const busy = busyClaimId === claim.id;
+          const stopRowClick = (event: MouseEvent) => {
+            event.stopPropagation();
+          };
           return (
             <div className="admin-inline-actions">
               <AlButton
                 size="sm"
                 variant="secondary"
-                disabled={busy}
-                loading={busy}
-                onClick={() => {
-                  onMarkUnderReview(claim);
+                data-testid={`ownership-claim-details-${claim.id}`}
+                onClick={(event) => {
+                  stopRowClick(event);
+                  onOpenDetail(claim);
                 }}
               >
-                Under review
+                Details
               </AlButton>
-              <AlButton
-                size="sm"
-                disabled={busy}
-                loading={busy}
-                onClick={() => {
-                  onApprove(claim);
-                }}
-              >
-                Approve
-              </AlButton>
-              <AlButton
-                size="sm"
-                variant="secondary"
-                disabled={busy}
-                loading={busy}
-                onClick={() => {
-                  onReject(claim);
-                }}
-              >
-                Reject
-              </AlButton>
+              {open ? (
+                <>
+                  <AlButton
+                    size="sm"
+                    variant="secondary"
+                    disabled={busy}
+                    loading={busy}
+                    onClick={(event) => {
+                      stopRowClick(event);
+                      onMarkUnderReview(claim);
+                    }}
+                  >
+                    Under review
+                  </AlButton>
+                  <AlButton
+                    size="sm"
+                    disabled={busy}
+                    loading={busy}
+                    onClick={(event) => {
+                      stopRowClick(event);
+                      onApprove(claim);
+                    }}
+                  >
+                    Approve
+                  </AlButton>
+                  <AlButton
+                    size="sm"
+                    variant="secondary"
+                    disabled={busy}
+                    loading={busy}
+                    onClick={(event) => {
+                      stopRowClick(event);
+                      onReject(claim);
+                    }}
+                  >
+                    Reject
+                  </AlButton>
+                </>
+              ) : null}
             </div>
           );
         },
       },
     ],
-    [busyClaimId, onApprove, onMarkUnderReview, onReject],
+    [busyClaimId, onApprove, onMarkUnderReview, onOpenDetail, onReject],
   );
 }

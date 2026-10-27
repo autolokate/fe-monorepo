@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 import {
   HERMETIC_OWNERSHIP_CLAIM_ID,
+  HERMETIC_RC_MEDIA_ASSET_ID,
   installHermeticApiRoutes,
   openOwnershipClaimsPage,
   seedHermeticSession,
@@ -9,10 +10,10 @@ import {
 
 /**
  * Hermetic ownership-claims list + review wiring.
- * Does NOT prove Live OPERATOR / migrate 0072.
+ * Does NOT prove Live OPERATOR / migrate 0072 / Admin media ACL.
  */
 test.describe('Ownership claims (hermetic)', () => {
-  test('ALL filter + approve — GET/POST review wiring', async ({ page }) => {
+  test('ALL filter + approve confirm — GET/POST review wiring', async ({ page }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openOwnershipClaimsPage(page);
@@ -24,9 +25,10 @@ test.describe('Ownership claims (hermetic)', () => {
     expect(capture.ownershipClaimsGetStatusParams[0]).toBeNull();
 
     await page.getByRole('button', { name: 'Approve', exact: true }).click();
-    await expect
-      .poll(() => capture.ownershipClaimsReview.length, { timeout: 10_000 })
-      .toBe(1);
+    await expect(page.getByRole('alertdialog')).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByRole('alertdialog')).toContainText('atomically transfers');
+    await page.getByRole('button', { name: 'Approve and transfer ownership' }).click();
+    await expect.poll(() => capture.ownershipClaimsReview.length, { timeout: 10_000 }).toBe(1);
     expect(capture.ownershipClaimsReview[0]?.path).toBe(
       `/admin/v1/ownership-claims/${HERMETIC_OWNERSHIP_CLAIM_ID}/review`,
     );
@@ -43,6 +45,43 @@ test.describe('Ownership claims (hermetic)', () => {
     await expect(page.getByTestId('filter-chip-ALL')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByRole('cell', { name: 'cccccccc' })).toHaveCount(2, { timeout: 10_000 });
     expect(capture.ownershipClaimsGetStatusParams).toContain(null);
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('detail sheet — full IDs + RC ACL blocker + reject with editable reason', async ({
+    page,
+  }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
+    await seedHermeticSession(page);
+    await openOwnershipClaimsPage(page);
+
+    await page.getByTestId(`ownership-claim-details-${HERMETIC_OWNERSHIP_CLAIM_ID}`).click();
+    await expect(page.getByTestId('ownership-claim-detail-sheet')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('ownership-claim-detail-sheet')).toContainText(
+      HERMETIC_OWNERSHIP_CLAIM_ID,
+    );
+    await expect(page.getByTestId('ownership-claim-notes')).toContainText(
+      'Hermetic RC claim notes',
+    );
+    await expect(page.getByTestId('ownership-claim-audit-hint')).toContainText(
+      'OWNERSHIP_CLAIM_APPROVED',
+    );
+    await expect(page.getByTestId('ownership-claim-rc-asset-id')).toContainText(
+      HERMETIC_RC_MEDIA_ASSET_ID,
+    );
+    await expect(page.getByTestId('ownership-claim-rc-blocker')).toContainText(
+      'Preview unavailable until media ACL',
+    );
+
+    await page.getByTestId('ownership-claim-detail-reject').click();
+    await expect(page.getByTestId('ownership-claim-reject-reason')).toBeVisible();
+    await page.getByTestId('ownership-claim-reject-reason').fill('RC plate mismatch');
+    await page.getByTestId('ownership-claim-reject-confirm').click();
+    await expect.poll(() => capture.ownershipClaimsReview.length, { timeout: 10_000 }).toBe(1);
+    expect(capture.ownershipClaimsReview[0]?.body).toMatchObject({
+      decision: 'REJECTED',
+      rejectionReason: 'RC plate mismatch',
+    });
     expect(capture.unexpected).toEqual([]);
   });
 

@@ -4,6 +4,9 @@ import type { AuditAction } from '@autolokate/api-client';
 export const AUDIT_ACTION_OPTIONS: { value: AuditAction; label: string }[] = [
   { value: 'PAYOUT_ISSUED', label: 'Payout issued' },
   { value: 'TRANSFER_APPROVED', label: 'Transfer approved' },
+  { value: 'OWNERSHIP_CLAIM_APPROVED', label: 'Ownership claim approved' },
+  { value: 'OWNERSHIP_CLAIM_REJECTED', label: 'Ownership claim rejected' },
+  { value: 'OWNERSHIP_CLAIM_UNDER_REVIEW', label: 'Ownership claim under review' },
   { value: 'REFUND_OR_CLAWBACK', label: 'Refund or clawback' },
   { value: 'QR_CODE_DEACTIVATED', label: 'QR code deactivated' },
   { value: 'BATCH_PROVISIONED', label: 'Batch provisioned' },
