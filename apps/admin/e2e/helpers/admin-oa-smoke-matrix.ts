@@ -130,6 +130,7 @@ export const OA_SUPPORTED_HERMETIC_SPECS = [
   'promos.hermetic.spec.ts',
   'qr-batches.hermetic.spec.ts',
   'qr-replace-retire.hermetic.spec.ts',
+  'services-catalogue.hermetic.spec.ts',
   'shipments-list.hermetic.spec.ts',
   'subscriptions.hermetic.spec.ts',
   'taxi-policy.hermetic.spec.ts',

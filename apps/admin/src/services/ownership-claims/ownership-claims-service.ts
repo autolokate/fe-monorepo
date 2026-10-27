@@ -1,10 +1,10 @@
 import {
-  getMediaDownloadUrl,
+  getAdminOwnershipClaimRcProof,
   listAdminOwnershipClaims,
   reviewOwnershipClaim,
   type ListAdminOwnershipClaimsQuery,
-  type MediaDownloadDto,
   type OwnershipClaimDto,
+  type OwnershipClaimRcProofDto,
   type ReviewOwnershipClaimBody,
 } from '@autolokate/api-client';
 
@@ -28,13 +28,13 @@ export async function reviewClaim(
 }
 
 /**
- * Attempt signed download for RC proof via customer media GET `/v1/media/{id}`.
- * Admin OPERATOR token often fails ACL (asset owned by claimant) — callers must
- * surface that honestly; never invent a placeholder image.
+ * Signed download for claim RC_PROOF via Admin
+ * `GET /admin/v1/ownership-claims/{claimId}/rc-proof` (OPERATOR).
+ * Callers must surface 403/404 as an honest ACL / endpoint blocker — never invent a preview.
  */
-export async function fetchRcMediaDownloadUrl(
-  mediaAssetId: string,
+export async function fetchRcClaimProofDownloadUrl(
+  claimId: string,
   signal?: AbortSignal,
-): Promise<MediaDownloadDto> {
-  return getMediaDownloadUrl(getAdminApiClient(), mediaAssetId, { signal });
+): Promise<OwnershipClaimRcProofDto> {
+  return getAdminOwnershipClaimRcProof(getAdminApiClient(), claimId, { signal });
 }

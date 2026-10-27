@@ -70,7 +70,11 @@ test.describe('Ownership claims (hermetic)', () => {
       HERMETIC_RC_MEDIA_ASSET_ID,
     );
     await expect(page.getByTestId('ownership-claim-rc-blocker')).toContainText(
-      'Preview unavailable until media ACL',
+      'Preview unavailable — Admin RC-proof download',
+    );
+    expect(capture.ownershipClaimsRcProofGet.length).toBeGreaterThanOrEqual(1);
+    expect(capture.ownershipClaimsRcProofGet[0]?.path).toBe(
+      `/admin/v1/ownership-claims/${HERMETIC_OWNERSHIP_CLAIM_ID}/rc-proof`,
     );
 
     await page.getByTestId('ownership-claim-detail-reject').click();

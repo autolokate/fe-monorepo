@@ -63,6 +63,11 @@ export type HermeticCapture = {
   /** Captured `status` query values (`null` when ALL / omitted). */
   ownershipClaimsGetStatusParams: Array<string | null>;
   ownershipClaimsReview: Array<{ method: string; path: string; body: unknown }>;
+  ownershipClaimsRcProofGet: Array<{ method: string; path: string }>;
+  servicesCategoriesGet: number;
+  servicesProvidersGet: Array<{ method: string; path: string; category: string | null }>;
+  servicesProvidersPut: Array<{ method: string; path: string; body: unknown }>;
+  servicesProvidersDelete: Array<{ method: string; path: string }>;
   incidentsGet: number;
   incidentsDetailGet: number;
   ordersGet: number;
@@ -186,6 +191,49 @@ export const HERMETIC_PLAN = {
 };
 
 export const HERMETIC_RC_MEDIA_ASSET_ID = 'dddddddd-eeee-4fff-8000-111111111111';
+export const HERMETIC_SERVICE_PROVIDER_ID = 'bbbbbbbb-cccc-4ddd-8eee-111111111111';
+
+export type HermeticServiceProvider = {
+  id: string;
+  name: string;
+  category: string;
+  subtitle: string;
+  distanceKm: number | null;
+  rating: number;
+  openNow: boolean;
+  city: string;
+  phone: string;
+  services: string[];
+  verifiedPartner: boolean;
+  note: string | null;
+  etaMinutes: number;
+  latitude: number;
+  longitude: number;
+  address: string;
+  reviewCount: number;
+  status: 'ACTIVE' | 'INACTIVE';
+};
+
+export const HERMETIC_SERVICE_PROVIDER: HermeticServiceProvider = {
+  id: HERMETIC_SERVICE_PROVIDER_ID,
+  name: 'Hermetic RAS Partner',
+  category: 'ras',
+  subtitle: 'Hermetic roadside',
+  distanceKm: null,
+  rating: 4.5,
+  openNow: true,
+  city: 'Bengaluru',
+  phone: '+919999990001',
+  services: ['flatTyre'],
+  verifiedPartner: true,
+  note: null,
+  etaMinutes: 25,
+  latitude: 12.9716,
+  longitude: 77.5946,
+  address: 'MG Road',
+  reviewCount: 12,
+  status: 'ACTIVE',
+};
 
 export const HERMETIC_OWNERSHIP_CLAIM = {
   id: HERMETIC_OWNERSHIP_CLAIM_ID,
@@ -310,6 +358,10 @@ export type InstallHermeticRoutesOptions = {
   breakGlassRequestStatus?: number;
   /** When set, ownership-claims GET returns this status instead of 200. */
   ownershipClaimsGetStatus?: number;
+  /** When set, claim RC-proof GET returns this status (default 403 ACL blocker). */
+  ownershipClaimsRcProofGetStatus?: number;
+  /** When set, services providers GET returns this status instead of 200. */
+  servicesProvidersGetStatus?: number;
   /** When set, orders GET returns this status instead of 200. */
   ordersGetStatus?: number;
   /** When set, order refund POST returns this status instead of 200. */
@@ -389,6 +441,8 @@ export async function installHermeticApiRoutes(
   const taxiPolicyPublishStatus = options.taxiPolicyPublishStatus ?? 200;
   const breakGlassRequestStatus = options.breakGlassRequestStatus ?? 200;
   const ownershipClaimsGetStatus = options.ownershipClaimsGetStatus ?? 200;
+  const ownershipClaimsRcProofGetStatus = options.ownershipClaimsRcProofGetStatus ?? 403;
+  const servicesProvidersGetStatus = options.servicesProvidersGetStatus ?? 200;
   const ordersGetStatus = options.ordersGetStatus ?? 200;
   const ordersRefundStatus = options.ordersRefundStatus ?? 200;
   const clawbacksPostStatus = options.clawbacksPostStatus ?? 200;
@@ -433,6 +487,11 @@ export async function installHermeticApiRoutes(
     ownershipClaimsGet: 0,
     ownershipClaimsGetStatusParams: [],
     ownershipClaimsReview: [],
+    ownershipClaimsRcProofGet: [],
+    servicesCategoriesGet: 0,
+    servicesProvidersGet: [],
+    servicesProvidersPut: [],
+    servicesProvidersDelete: [],
     incidentsGet: 0,
     incidentsDetailGet: 0,
     ordersGet: 0,
@@ -573,6 +632,9 @@ export async function installHermeticApiRoutes(
   };
   let ownershipClaimState = { ...HERMETIC_OWNERSHIP_CLAIM };
   const ownershipClaimsCatalog = [ownershipClaimState, { ...HERMETIC_OWNERSHIP_CLAIM_APPROVED }];
+  let serviceProvidersState: Array<
+    Omit<typeof HERMETIC_SERVICE_PROVIDER, 'status'> & { status: 'ACTIVE' | 'INACTIVE' }
+  > = [{ ...HERMETIC_SERVICE_PROVIDER }];
 
   /** Mutable Nest OA commercial-config audit list (newest first). */
   let garageConfigHistory: Array<typeof HERMETIC_GARAGE_CONFIG_AUDIT> = [
@@ -640,6 +702,38 @@ export async function installHermeticApiRoutes(
         await fulfillJson(route, 403, errorEnvelope('Media asset not found.', 'forbidden'));
         return;
       }
+    }
+
+    if (method === 'GET' && path === '/v1/services/categories') {
+      capture.servicesCategoriesGet += 1;
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          categories: ['ras', 'hospitals', 'garages', 'emergency', 'maintenance'],
+        }),
+      );
+      return;
+    }
+
+    if (method === 'GET' && path === '/v1/services/providers') {
+      const category = url.searchParams.get('category');
+      capture.servicesProvidersGet.push({ method, path, category });
+      if (servicesProvidersGetStatus >= 400) {
+        await fulfillJson(
+          route,
+          servicesProvidersGetStatus,
+          errorEnvelope('Unable to load service providers', 'forbidden'),
+        );
+        return;
+      }
+      // Consumer ACTIVE projection — Admin UI prefers /admin/v1/services/providers.
+      const rows = serviceProvidersState
+        .filter((row) => row.status === 'ACTIVE')
+        .filter((row) => !category || row.category === category)
+        .map(({ status: _status, ...rest }) => rest);
+      await fulfillJson(route, servicesProvidersGetStatus, envelope(rows));
+      return;
     }
 
     capture.unexpected.push(`${method} ${path}`);
@@ -1919,6 +2013,28 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    const claimRcProofMatch = path.match(/^\/admin\/v1\/ownership-claims\/([^/]+)\/rc-proof$/);
+    if (method === 'GET' && claimRcProofMatch) {
+      capture.ownershipClaimsRcProofGet.push({ method, path });
+      if (ownershipClaimsRcProofGetStatus >= 400) {
+        await fulfillJson(
+          route,
+          ownershipClaimsRcProofGetStatus,
+          errorEnvelope('RC proof download denied.', 'forbidden'),
+        );
+        return;
+      }
+      await fulfillJson(
+        route,
+        ownershipClaimsRcProofGetStatus,
+        envelope({
+          url: 'https://hermetic-storage.invalid/rc-proof.pdf',
+          expiresInSeconds: 300,
+        }),
+      );
+      return;
+    }
+
     const claimReviewMatch = path.match(/^\/admin\/v1\/ownership-claims\/([^/]+)\/review$/);
     if (method === 'POST' && claimReviewMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
@@ -1938,6 +2054,85 @@ export async function installHermeticApiRoutes(
       };
       ownershipClaimsCatalog[0] = ownershipClaimState;
       await fulfillJson(route, 200, envelope(ownershipClaimState));
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/services/hub-categories') {
+      capture.servicesCategoriesGet += 1;
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          items: [
+            { category: 'ras', label: 'Roadside', sortOrder: 10, visible: true },
+            { category: 'hospitals', label: 'Hospitals', sortOrder: 20, visible: true },
+            { category: 'garages', label: 'Garages', sortOrder: 30, visible: true },
+            { category: 'emergency', label: 'Emergency', sortOrder: 40, visible: true },
+            { category: 'maintenance', label: 'Maintenance', sortOrder: 50, visible: true },
+          ],
+        }),
+      );
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/services/providers') {
+      capture.servicesProvidersGet.push({ method, path, category: null });
+      if (servicesProvidersGetStatus >= 400) {
+        await fulfillJson(
+          route,
+          servicesProvidersGetStatus,
+          errorEnvelope('Unable to load service providers', 'forbidden'),
+        );
+        return;
+      }
+      await fulfillJson(route, servicesProvidersGetStatus, envelope(serviceProvidersState));
+      return;
+    }
+
+    if (method === 'PUT' && path === '/admin/v1/services/providers') {
+      const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
+      capture.servicesProvidersPut.push({ method, path, body });
+      const id =
+        typeof body.id === 'string' && body.id.trim()
+          ? body.id
+          : 'cccccccc-dddd-4eee-8fff-333333333333';
+      const status: 'ACTIVE' | 'INACTIVE' = body.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE';
+      const next: HermeticServiceProvider = {
+        ...HERMETIC_SERVICE_PROVIDER,
+        id,
+        name: typeof body.name === 'string' ? body.name : HERMETIC_SERVICE_PROVIDER.name,
+        category:
+          typeof body.category === 'string' ? body.category : HERMETIC_SERVICE_PROVIDER.category,
+        city: typeof body.city === 'string' ? body.city : HERMETIC_SERVICE_PROVIDER.city,
+        verifiedPartner: Boolean(body.verifiedPartner),
+        latitude:
+          typeof body.latitude === 'number' ? body.latitude : HERMETIC_SERVICE_PROVIDER.latitude,
+        longitude:
+          typeof body.longitude === 'number' ? body.longitude : HERMETIC_SERVICE_PROVIDER.longitude,
+        status,
+      };
+      const existingIdx = serviceProvidersState.findIndex((row) => row.id === id);
+      if (existingIdx >= 0) {
+        serviceProvidersState[existingIdx] = next;
+      } else {
+        serviceProvidersState = [...serviceProvidersState, next];
+      }
+      await fulfillJson(route, 200, envelope(next));
+      return;
+    }
+
+    const deactivateProviderMatch = path.match(/^\/admin\/v1\/services\/providers\/([^/]+)$/);
+    if (method === 'DELETE' && deactivateProviderMatch) {
+      capture.servicesProvidersDelete.push({ method, path });
+      const id = decodeURIComponent(deactivateProviderMatch[1] ?? '');
+      const existing = serviceProvidersState.find((row) => row.id === id);
+      if (!existing) {
+        await fulfillJson(route, 404, errorEnvelope('Service provider not found.', 'not_found'));
+        return;
+      }
+      const next = { ...existing, status: 'INACTIVE' as const };
+      serviceProvidersState = serviceProvidersState.map((row) => (row.id === id ? next : row));
+      await fulfillJson(route, 200, envelope(next));
       return;
     }
 
@@ -2247,6 +2442,13 @@ export async function openGarageCommercialPage(page: Page): Promise<void> {
 export async function openTaxiPolicyPage(page: Page): Promise<void> {
   await page.goto('/taxi-policy', { waitUntil: 'domcontentloaded' });
   await page.getByRole('heading', { name: 'Taxi policy' }).waitFor({ timeout: 30_000 });
+  await page.getByText('Sign out').waitFor({ timeout: 15_000 });
+}
+
+/** Land on Services catalogue after auth bootstrap. */
+export async function openServicesCataloguePage(page: Page): Promise<void> {
+  await page.goto('/services-catalogue', { waitUntil: 'domcontentloaded' });
+  await page.getByTestId('services-catalogue-page').waitFor({ timeout: 30_000 });
   await page.getByText('Sign out').waitFor({ timeout: 15_000 });
 }
 
