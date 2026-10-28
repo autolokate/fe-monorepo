@@ -8,7 +8,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { BreakGlassDualControlPanel } from '@/features/incidents/BreakGlassDualControlPanel';
 import { IncidentDetailPanel } from '@/features/incidents/IncidentDetailPanel';
@@ -19,7 +19,6 @@ import { useIncidents } from '@/hooks/incidents/useIncidents';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './incidents.css';
@@ -57,24 +56,7 @@ export function IncidentsPage() {
     setDetailTarget(null);
   };
 
-  const pageDescription = useMemo(() => {
-    if (!listApprovalId && !detailTarget) {
-      return 'Dual-control approval required before any incident PII is loaded.';
-    }
-    if (detailTarget && detailLoading) {
-      return 'Loading break-glass incident detail…';
-    }
-    if (detailTarget && detail) {
-      return `Detail loaded for ${detail.incidentId}`;
-    }
-    if (listApprovalId && isLoading) {
-      return 'Emergency incidents across every account (break-glass, read-only).';
-    }
-    if (listApprovalId) {
-      return buildPageSummary([`${incidents.length.toLocaleString()} incidents loaded`]);
-    }
-    return 'Dual-control approval required before any incident PII is loaded.';
-  }, [listApprovalId, detailTarget, detailLoading, detail, isLoading, incidents.length]);
+  const pageDescription = 'Emergency incidents — dual-control approval required before viewing.';
 
   const breakGlassNotice = (
     <AlStack direction="row" gap="sm" align="center">
@@ -145,8 +127,8 @@ export function IncidentsPage() {
 
         {!listApprovalId ? (
           <AlText variant="body" tone="muted">
-            Incident list stays empty until the requester loads an APPROVED INCIDENT_LIST grant.
-            For a single incident, request INCIDENT_DETAIL, get peer approval, then Load detail.
+            Incident list stays empty until the requester loads an APPROVED INCIDENT_LIST grant. For
+            a single incident, request INCIDENT_DETAIL, get peer approval, then Load detail.
           </AlText>
         ) : (
           <AdminDataBlock

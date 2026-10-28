@@ -73,7 +73,7 @@ export function GrantPassSheet({ open, onOpenChange, onGranted }: GrantPassSheet
       onOpenChange={onOpenChange}
       size="md"
       title="Grant garage pass"
-      description="Ops grant via POST /admin/v1/garage/orgs/{orgId}/passes/grant. Success only after the server confirms — not partner Razorpay checkout."
+      description="Grant a garage pass for a partner org. Confirms after the server accepts."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -201,7 +201,7 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
       onOpenChange={onOpenChange}
       size="md"
       title="Adjust free bids"
-      description="Ops adjust via POST /admin/v1/garage/orgs/{orgId}/free-bids/adjust. Remaining balance appears only after the server confirms."
+      description="Adjust free bids for a partner org. Balance updates after the server confirms."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -386,7 +386,7 @@ export function ProvisionGarageSheet({
       onOpenChange={onOpenChange}
       size="md"
       title="Provision garage partner"
-      description="Ops provision via POST /admin/v1/garage/provision. Success only after the server confirms — requires OPERATOR + admin-plane step_up."
+      description="Provision a Garage partner org. Confirms after the server accepts."
       footer={
         <div className="admin-modal-actions">
           <AlButton

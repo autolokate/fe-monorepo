@@ -11,14 +11,10 @@ export function SupportTicketsPage() {
   return (
     <RequirePermission permission="support:view">
       <AlStack gap="md">
-        <AlPageHeader
-          title="Tickets"
-          description="Support triage is not available on Live Dev Nest yet."
-        />
+        <AlPageHeader title="Tickets" description="Support tickets are not available yet." />
         <AdminUnavailableState
-          title="Tickets API not on Nest Dev"
-          operation="GET /admin/v1/support/tickets"
-          description="This console stays empty until Nest ships support tickets. Status changes are disabled."
+          title="Support tickets unavailable"
+          description="Support tickets are not available yet. Status changes are disabled."
         />
       </AlStack>
     </RequirePermission>

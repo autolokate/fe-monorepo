@@ -5,15 +5,12 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo } from 'react';
-
 import { SUBSCRIPTIONS_STATUS_FILTERS } from '@/features/subscriptions/subscriptions-filters';
 import { useSubscriptionsColumns } from '@/features/subscriptions/subscriptions-columns';
 import { useSubscriptions } from '@/hooks/subscriptions/useSubscriptions';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function SubscriptionsPage() {
@@ -29,12 +26,7 @@ export function SubscriptionsPage() {
 
   const columns = useSubscriptionsColumns();
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Active protection per vehicle.';
-    }
-    return buildPageSummary([`${subscriptions.length.toLocaleString()} subscriptions loaded`]);
-  }, [isLoading, subscriptions.length]);
+  const pageDescription = 'Active protection per vehicle.';
 
   if (userErrorMessage && subscriptions.length === 0) {
     return (

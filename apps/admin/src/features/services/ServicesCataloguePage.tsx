@@ -15,7 +15,6 @@ import { useServicesCatalogue } from '@/hooks/services/useServicesCatalogue';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
@@ -74,16 +73,7 @@ export function ServicesCataloguePage() {
     [categories],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading && !data) {
-      return 'Author consumer Services hub providers (no demo seed).';
-    }
-    return buildPageSummary([
-      `${providers.length.toLocaleString()} providers in ${category}`,
-      'INACTIVE via deactivate',
-      'hub order/visibility via /admin/v1/services/hub-categories',
-    ]);
-  }, [category, data, isLoading, providers.length]);
+  const pageDescription = 'Service providers shown in the consumer Services hub.';
 
   if (userErrorMessage && !data) {
     return (
@@ -120,11 +110,9 @@ export function ServicesCataloguePage() {
         />
 
         <p className="services-catalogue__note" data-testid="services-category-config-stub">
-          Providers are Admin-authored only (no demo seed). Hub category order/visibility uses
-          GET/PUT /admin/v1/services/hub-categories after migrate 0092; until then the API falls
-          back to hardcoded hub tiles. Provider ACTIVE/INACTIVE still gates consumer visibility.
+          Providers appear in the consumer hub when Active. Deactivate to hide them from customers.
           {categoriesErrorMessage
-            ? ` Hub categories GET failed (${categoriesErrorMessage}) — using defaults.`
+            ? ` Hub categories could not be loaded (${categoriesErrorMessage}) — using defaults.`
             : null}
         </p>
 
@@ -153,7 +141,7 @@ export function ServicesCataloguePage() {
             onRetry={refresh}
             globalSearchPlaceholder="Search provider…"
             emptyTitle="No providers in this category"
-            emptyDescription="Add a provider with PUT /admin/v1/services/providers. Consumer list stays empty until authored."
+            emptyDescription="Add a provider to show it in the consumer Services hub."
             getRowId={(row) => row.id}
             onRowClick={canWrite ? openEdit : undefined}
           />
@@ -180,8 +168,8 @@ export function ServicesCataloguePage() {
           title="Deactivate provider?"
           description={
             deactivateTarget
-              ? `Soft-deactivate “${deactivateTarget.name}” via DELETE /admin/v1/services/providers/{id}. It leaves the consumer ACTIVE list.`
-              : 'Soft-deactivate this provider.'
+              ? `Deactivate “${deactivateTarget.name}”? It will leave the consumer Active list.`
+              : 'Deactivate this provider?'
           }
           confirmLabel="Deactivate"
           destructive

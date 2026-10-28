@@ -25,7 +25,6 @@ import {
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { DiscoveryReelStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -222,17 +221,7 @@ export function DiscoveryDailyDrivePage() {
     [canWrite, openVideo, pendingId, requestTransition, transitionMutation.variables],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Free Daily Drive videos from the Indian Drive Guide channel.';
-    }
-    const published = videos.filter((video) => video.status === 'PUBLISHED').length;
-    return buildPageSummary([
-      `${videos.length.toLocaleString()} videos`,
-      `${published.toLocaleString()} published`,
-      'Indian Drive Guide channel only',
-    ]);
-  }, [isLoading, videos]);
+  const pageDescription = 'Free Daily Drive videos from the Indian Drive Guide channel.';
 
   if (userErrorMessage && !data) {
     return (

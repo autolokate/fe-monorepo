@@ -9,7 +9,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { AuditActionFilter } from '@/features/audit/AuditActionFilter';
 import { AuditDetailSheet } from '@/features/audit/AuditDetailSheet';
@@ -24,7 +24,6 @@ import { useAuditColumns } from '@/features/audit/audit-columns';
 import { useAuditExplorer } from '@/hooks/audit/useAuditExplorer';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './audit-events.css';
@@ -76,16 +75,7 @@ export function AuditEventsPage() {
 
   const filtersActive = hasActiveAuditFilters(appliedFilters);
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Search and review administrative actions.';
-    }
-    const parts = [`${events.length.toLocaleString()} events loaded`];
-    if (filtersActive) {
-      parts.push('filters active');
-    }
-    return buildPageSummary(parts);
-  }, [events.length, filtersActive, isLoading]);
+  const pageDescription = 'Search and review administrative actions.';
 
   if (userErrorMessage && events.length === 0 && !isLoading) {
     return (

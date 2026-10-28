@@ -10,7 +10,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
+import { useCallback, useState, type ChangeEvent } from 'react';
 
 import {
   QA_CATEGORY_FILTERS,
@@ -24,7 +24,6 @@ import { useDiscoveryQuestions } from '@/hooks/discovery/useDiscoveryQuestions';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
@@ -94,17 +93,7 @@ export function DiscoveryQaPage() {
     onEdit: openEdit,
   });
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Create, edit, publish and hide community Q&A.';
-    }
-    const published = questions.filter((question) => question.status === 'VISIBLE').length;
-    return buildPageSummary([
-      `${questions.length.toLocaleString()}${mayBeTruncated || hasNextPage ? '+' : ''} questions loaded`,
-      `${published.toLocaleString()} published`,
-      `${(questions.length - published).toLocaleString()} hidden`,
-    ]);
-  }, [hasNextPage, isLoading, mayBeTruncated, questions]);
+  const pageDescription = 'Create, edit, publish and hide community Q&A.';
 
   if (userErrorMessage && !data) {
     return (

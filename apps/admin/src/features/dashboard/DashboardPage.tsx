@@ -144,7 +144,7 @@ export function DashboardPage() {
       <AlStack gap="lg">
         <AlPageHeader
           title="Dashboard"
-          description="Live Nest counts only — modules without a count endpoint appear as links."
+          description="Operations snapshot and shortcuts across Admin."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}

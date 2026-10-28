@@ -20,7 +20,6 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { AdminMoreActions } from '@/platform/components/AdminMoreActions';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import {
   useCanRunQrLifecycleMutations,
   useCanWriteInventoryMutations,
@@ -31,16 +30,8 @@ import './inventory.css';
 
 export function QrInventoryPage() {
   const navigate = useNavigate();
-  const {
-    data,
-    metrics,
-    isLoading,
-    isFetching,
-    userErrorMessage,
-    stateFilter,
-    setStateFilter,
-    refresh,
-  } = useQrInventory();
+  const { data, isLoading, isFetching, userErrorMessage, stateFilter, setStateFilter, refresh } =
+    useQrInventory();
 
   const canWriteBatches = useCanWriteInventoryMutations();
   const canRunLifecycle = useCanRunQrLifecycleMutations();
@@ -66,16 +57,7 @@ export function QrInventoryPage() {
     [openBatch],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading || !metrics) {
-      return 'Browse QR batches and open a row to manage codes.';
-    }
-    return buildPageSummary([
-      `${metrics.totalBatches.toLocaleString()} batches`,
-      `${metrics.provisionedBatches.toLocaleString()} provisioned`,
-      `${metrics.inDistributionBatches.toLocaleString()} in distribution`,
-    ]);
-  }, [isLoading, metrics]);
+  const pageDescription = 'Browse QR batches and open a row to manage codes.';
 
   const moreActions = useMemo(
     () =>

@@ -55,8 +55,7 @@ export function RcMediaPreview({ claimId, rcMediaAssetId }: RcMediaPreviewProps)
           {rcMediaAssetId}
         </p>
         <p className="admin-muted" data-testid="ownership-claim-rc-blocker">
-          Preview unavailable — Admin RC-proof download returned no signed URL (endpoint missing or
-          ACL denied for this claim)
+          Preview unavailable for this claim
           {apiMessage ? ` (${apiMessage})` : ''}. Claim id{' '}
           <span className="admin-detail-field__value--mono">{claimId}</span>.
         </p>

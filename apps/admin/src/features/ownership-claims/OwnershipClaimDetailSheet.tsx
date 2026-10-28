@@ -88,7 +88,7 @@ export function OwnershipClaimDetailSheet({
 
         <AdminDetailSection
           title="RC proof"
-          description="Signed download prefers GET /admin/v1/ownership-claims/{id}/rc-proof (OPERATOR). 403/404 surfaces an honest ACL / endpoint blocker."
+          description="Registration certificate proof submitted with this claim."
         >
           <RcMediaPreview claimId={claim.id} rcMediaAssetId={claim.rcMediaAssetId} />
         </AdminDetailSection>

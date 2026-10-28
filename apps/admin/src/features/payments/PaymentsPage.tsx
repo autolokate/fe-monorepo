@@ -5,15 +5,12 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo } from 'react';
-
 import { PAYMENTS_OUTCOME_FILTERS } from '@/features/payments/payments-filters';
 import { usePaymentsColumns } from '@/features/payments/payments-columns';
 import { usePayments } from '@/hooks/payments/usePayments';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function PaymentsPage() {
@@ -29,12 +26,7 @@ export function PaymentsPage() {
 
   const columns = usePaymentsColumns();
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Browse payment attempts and their settled outcome.';
-    }
-    return buildPageSummary([`${payments.length.toLocaleString()} payments loaded`]);
-  }, [isLoading, payments.length]);
+  const pageDescription = 'Browse payment attempts and outcomes.';
 
   if (userErrorMessage && payments.length === 0) {
     return (

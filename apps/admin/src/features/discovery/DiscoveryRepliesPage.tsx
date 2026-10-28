@@ -18,7 +18,6 @@ import { useDiscoveryReplies, useModerateReply } from '@/hooks/discovery/useDisc
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { DiscoveryQaStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -126,17 +125,7 @@ export function DiscoveryRepliesPage() {
     [canWrite, pendingId, restore],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Replies members post under Q&A answers.';
-    }
-    const hidden = replies.filter((reply) => reply.status === 'HIDDEN').length;
-    return buildPageSummary([
-      `${replies.length.toLocaleString()} replies`,
-      status === 'ALL' ? `${hidden.toLocaleString()} hidden` : null,
-      'Hide and restore are audited',
-    ]);
-  }, [isLoading, replies, status]);
+  const pageDescription = 'Moderate member replies under Q&A answers.';
 
   if (userErrorMessage && !data) {
     return (

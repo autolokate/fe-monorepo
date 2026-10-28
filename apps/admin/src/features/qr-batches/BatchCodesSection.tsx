@@ -69,7 +69,7 @@ export function BatchCodesSection({
           onRetry={refresh}
           pageSize={20}
           pageSizeOptions={[10, 20, 50, 100]}
-          globalSearchPlaceholder="Search loaded codes…"
+          globalSearchPlaceholder="Search codes…"
           emptyTitle="No codes found"
           emptyDescription={
             statusFilter === 'ALL'

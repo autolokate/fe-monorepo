@@ -150,7 +150,7 @@ export function UpsertServiceProviderSheet({
       onOpenChange={onOpenChange}
       size="lg"
       title={initial ? 'Edit service provider' : 'Add service provider'}
-      description="PUT /admin/v1/services/providers — no demo seed; catalogue stays empty until authored."
+      description="Add or update a provider for the consumer Services hub."
       footer={
         <div className="admin-modal-actions">
           <AlButton

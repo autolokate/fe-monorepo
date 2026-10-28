@@ -7,7 +7,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { OwnershipClaimDetailSheet } from '@/features/ownership-claims/OwnershipClaimDetailSheet';
 import { RejectOwnershipClaimDialog } from '@/features/ownership-claims/RejectOwnershipClaimDialog';
@@ -17,7 +17,6 @@ import { useOwnershipClaims } from '@/hooks/ownership-claims/useOwnershipClaims'
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './ownership-claims.css';
@@ -94,13 +93,7 @@ export function OwnershipClaimsPage() {
     },
   });
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) return 'Customer ownership claims for Admin review (M8).';
-    const filterLabel =
-      OWNERSHIP_CLAIMS_STATUS_FILTERS.find((option) => option.value === statusFilter)?.label ??
-      statusFilter;
-    return buildPageSummary([`${claims.length.toLocaleString()} claims`, `filter ${filterLabel}`]);
-  }, [isLoading, claims.length, statusFilter]);
+  const pageDescription = 'Customer ownership claims awaiting review.';
 
   if (userErrorMessage && claims.length === 0) {
     return (

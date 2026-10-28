@@ -6,7 +6,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { MarkShipmentStatusDialog } from '@/features/shipments/MarkShipmentStatusDialog';
 import { SHIPMENTS_STATUS_FILTERS } from '@/features/shipments/shipments-filters';
@@ -15,7 +15,6 @@ import { useShipments } from '@/hooks/shipments/useShipments';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function ShipmentsPage() {
@@ -35,12 +34,7 @@ export function ShipmentsPage() {
 
   const columns = useShipmentsColumns({ canUpdate, onUpdateStatus: setMarkTarget });
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Track retail shipments and their delivery status.';
-    }
-    return buildPageSummary([`${shipments.length.toLocaleString()} shipments loaded`]);
-  }, [isLoading, shipments.length]);
+  const pageDescription = 'Track retail shipments and delivery status.';
 
   if (userErrorMessage && shipments.length === 0) {
     return (

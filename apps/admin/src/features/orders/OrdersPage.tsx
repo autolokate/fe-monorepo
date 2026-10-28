@@ -54,7 +54,7 @@ export function OrdersPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Orders"
-          description="Customer QR commerce orders from Nest. Open a row for money and partner detail."
+          description="Customer QR commerce orders."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}

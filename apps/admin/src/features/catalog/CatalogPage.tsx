@@ -1,6 +1,6 @@
 import type { ApiPlanTier } from '@autolokate/api-client';
 import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack, AlTabs } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { CatalogPlansTab } from '@/features/catalog/CatalogPlansTab';
 import { CatalogSkusTab } from '@/features/catalog/CatalogSkusTab';
@@ -8,10 +8,8 @@ import { CreatePlanVersionSheet } from '@/features/catalog/CreatePlanVersionShee
 import { CreateSkuSheet } from '@/features/catalog/CreateSkuSheet';
 import { useCatalogPlans } from '@/hooks/catalog/useCatalogPlans';
 import { useCatalogSkus } from '@/hooks/catalog/useCatalogSkus';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { useCanWriteCatalogMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
-import { computeCatalogMetrics } from '@/services/catalog/catalog-model';
 
 import './catalog.css';
 
@@ -36,25 +34,9 @@ export function CatalogPage() {
     setCreatePlanOpen(true);
   }, []);
 
-  const metrics = useMemo(
-    () => computeCatalogMetrics(plansState.plans, skusState.skus),
-    [plansState.plans, skusState.skus],
-  );
-
-  const isLoading = plansState.isLoading || skusState.isLoading;
   const isFetching = plansState.isFetching || skusState.isFetching;
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Plans and the SKU shelves that sell them.';
-    }
-    return buildPageSummary([
-      `${metrics.planVersions.toLocaleString()} plan versions`,
-      `${metrics.livePlans.toLocaleString()} live`,
-      `${metrics.skus.toLocaleString()} SKUs`,
-      metrics.emptyShelves > 0 ? `${metrics.emptyShelves.toLocaleString()} empty shelves` : null,
-    ]);
-  }, [isLoading, metrics]);
+  const pageDescription = 'Plans and the SKU shelves that sell them.';
 
   const refreshAll = useCallback(() => {
     plansState.refresh();

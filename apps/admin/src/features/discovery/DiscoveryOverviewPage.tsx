@@ -121,7 +121,7 @@ export function DiscoveryOverviewPage() {
       <AlStack gap="lg">
         <AlPageHeader
           title="Discovery"
-          description="Editorial surfaces in the consumer Discovery tab. Counts are from the first Nest list page (capped when marked +)."
+          description="Editorial surfaces in the consumer Discovery tab."
           actions={
             <AlPageHeaderAction
               label={overview.isFetching ? 'Refreshing…' : 'Refresh'}
@@ -210,10 +210,9 @@ export function DiscoveryOverviewPage() {
 
         {engagement && !overview.reelsError ? (
           <AlText tone="muted" variant="caption" data-testid="discovery-overview-engagement-note">
-            Across loaded reels: {formatCount(engagement.views)} views ·{' '}
+            Reels engagement: {formatCount(engagement.views)} views ·{' '}
             {formatCount(engagement.likes)} likes · {formatCount(engagement.comments)} comments ·{' '}
-            {formatCount(engagement.saves)} saves
-            {reels?.capped ? ' (page capped)' : ''}.
+            {formatCount(engagement.saves)} saves.
           </AlText>
         ) : null}
 

@@ -34,7 +34,7 @@ export function OrderDetailSheet({
       onOpenChange={onOpenChange}
       size="lg"
       title={order?.orderNumber ?? orderNumber ?? 'Order'}
-      description="Live Nest order detail. Refund is product-blocked on Dev."
+      description="Order detail."
     >
       {isLoading ? <AdminPageLoader label="Loading order…" /> : null}
       {!isLoading && userErrorMessage ? (

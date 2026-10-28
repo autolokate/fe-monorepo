@@ -90,7 +90,7 @@ export function PartnerReelsSection({ reels }: PartnerReelsSectionProps) {
       </h2>
       {!showEngagement && reels.length > 0 ? (
         <AlText tone="muted" variant="caption">
-          Engagement counters are shown only when the partner detail DTO includes them.
+          Engagement counts are not available for these reels.
         </AlText>
       ) : null}
       <AlDataTable
@@ -100,7 +100,7 @@ export function PartnerReelsSection({ reels }: PartnerReelsSectionProps) {
         data={reels}
         enableGlobalSearch={false}
         emptyTitle="No reels linked to this partner"
-        emptyDescription="Reel inventory comes from the partner detail response — nothing is invented client-side."
+        emptyDescription="This partner has no AutoClip reels yet."
         getRowId={(row) => row.reelId}
       />
     </section>

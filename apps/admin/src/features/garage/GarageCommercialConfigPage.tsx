@@ -4,7 +4,7 @@ import type {
   ProvisionGarageResultDto,
 } from '@autolokate/api-client';
 import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   AdjustFreeBidsSheet,
@@ -16,19 +16,10 @@ import {
 } from '@/features/garage/GarageEntitlementSheets';
 import { useGarageCommercialConfig } from '@/hooks/garage/useGarageCommercialConfig';
 import { AdminDataBlock } from '@/platform/components/AdminDataBlock';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './garage-commercial-config.css';
-
-function formatRupees(value: number): string {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(value);
-}
 
 type FormState = {
   freeBidLifetimeCount: number;
@@ -77,17 +68,6 @@ export function GarageCommercialConfigPage() {
     });
   }, [config]);
 
-  const pageDescription = useMemo(() => {
-    if (isLoading || !config) {
-      return 'Garage commercial settings and org entitlement ops (pass grant / free-bid adjust / partner provision).';
-    }
-    return buildPageSummary([
-      `${String(config.freeBidLifetimeCount)} lifetime free bids`,
-      `day pass ${formatRupees(config.dayPassPriceRupees)}`,
-      `month pass ${formatRupees(config.monthPassPriceRupees)}`,
-    ]);
-  }, [config, isLoading]);
-
   if (userErrorMessage && !config && !isLoading) {
     return (
       <RequirePermission permission="settings:read">
@@ -126,7 +106,7 @@ export function GarageCommercialConfigPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Garage commercial"
-          description={pageDescription}
+          description="Pass pricing, free bids, and partner provisioning for Garage."
           actions={
             <>
               <AlPageHeaderAction
@@ -236,7 +216,7 @@ export function GarageCommercialConfigPage() {
                 />
               </label>
               <label>
-                GST rate (bps)
+                GST rate (basis points)
                 <input
                   type="number"
                   min={0}
@@ -246,22 +226,12 @@ export function GarageCommercialConfigPage() {
                     setForm({ ...form, gstRateBps: Number(e.target.value) });
                   }}
                 />
+                <span className="garage-commercial-config__muted">
+                  100 bps = 1%. Example: 1800 = 18%.
+                </span>
               </label>
               <p className="garage-commercial-config__muted">
-                Month duration: {config?.monthPassDurationKind ?? 'CALENDAR_MONTH_IST'} (contract
-                fixed)
-              </p>
-              <p className="garage-commercial-config__note">
-                Pass grants and free-bid adjustments use dedicated admin org endpoints via
-                `@autolokate/api-client` (`passes/grant`, `free-bids/adjust`). Success panels appear
-                only after the server confirms. Garage passes are not `/v1/orders`. Legacy welcome
-                credits / credits-per-bid remain audit-only ({form.welcomeCredits}/
-                {form.creditsPerFirstBid}).
-              </p>
-              <p className="garage-commercial-config__note" data-testid="garage-contract-gap-note">
-                Partner provision: POST /admin/v1/garage/provision (Provision partner). Legacy
-                POST /admin/v1/garage/orgs/{'{orgId}'}/credits/adjust remains deferred (deprecated
-                welcome-credits path; no invent).
+                Month duration: {config?.monthPassDurationKind ?? 'CALENDAR_MONTH_IST'}
               </p>
               {saveErrorMessage ? (
                 <p className="garage-commercial-config__error" role="alert">
@@ -280,15 +250,25 @@ export function GarageCommercialConfigPage() {
         <h2 className="garage-commercial-config__section-title">Configuration history</h2>
         <AdminDataBlock>
           {historyErrorMessage ? (
-            <p className="garage-commercial-config__error" role="alert" data-testid="garage-config-history-error">
+            <p
+              className="garage-commercial-config__error"
+              role="alert"
+              data-testid="garage-config-history-error"
+            >
               {historyErrorMessage}
             </p>
           ) : isHistoryLoading ? (
-            <p className="garage-commercial-config__muted" data-testid="garage-config-history-loading">
+            <p
+              className="garage-commercial-config__muted"
+              data-testid="garage-config-history-loading"
+            >
               Loading configuration history…
             </p>
           ) : history.length === 0 ? (
-            <p className="garage-commercial-config__muted" data-testid="garage-config-history-empty">
+            <p
+              className="garage-commercial-config__muted"
+              data-testid="garage-config-history-empty"
+            >
               No Garage commercial configuration changes yet.
             </p>
           ) : (
@@ -316,8 +296,8 @@ export function GarageCommercialConfigPage() {
 
         {!grantResult && !adjustResult && !provisionResult ? (
           <p className="admin-empty-note admin-operations-empty">
-            Org pass grants, free-bid adjustments, and partner provision results appear here after a
-            successful server response.
+            Pass grants, free-bid adjustments, and partner provision results appear here after
+            success.
           </p>
         ) : null}
 

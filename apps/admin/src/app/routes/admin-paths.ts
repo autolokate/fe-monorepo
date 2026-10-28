@@ -100,7 +100,7 @@ export const adminRoutes: AdminRouteMeta[] = [
   {
     path: adminPaths.support,
     label: 'Tickets',
-    description: 'Unavailable on Nest Dev (G0-4 Absent) — kept for deep links only',
+    description: 'Support tickets are not available yet',
     group: 'customer-care',
     nav: false,
   },
@@ -174,23 +174,21 @@ export const adminRoutes: AdminRouteMeta[] = [
   {
     path: adminPaths.garageCommercial,
     label: 'Garage commercial',
-    description: 'Garage free-bid / pass commercial config, ops pass grant, free-bid adjust',
+    description: 'Pass pricing, free bids, and partner provisioning for Garage',
     group: 'products',
     nav: true,
   },
   {
     path: adminPaths.taxiPolicy,
     label: 'Taxi policy',
-    description:
-      'Taxi advance / deposit bps draft + publish (Admin-supplied; no invented money defaults)',
+    description: 'Taxi advance and deposit policy',
     group: 'products',
     nav: true,
   },
   {
     path: adminPaths.servicesCatalogue,
     label: 'Services catalogue',
-    description:
-      'Upsert / deactivate consumer Services hub providers (ACTIVE list + category filter)',
+    description: 'Service providers for the consumer Services hub',
     group: 'products',
     nav: true,
   },

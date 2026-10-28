@@ -24,7 +24,6 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { AdminMoreActions } from '@/platform/components/AdminMoreActions';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import {
   useCanRunQrLifecycleMutations,
   useCanWriteInventoryMutations,
@@ -35,16 +34,8 @@ import './qr-batches.css';
 
 export function QrBatchManagementPage() {
   const navigate = useNavigate();
-  const {
-    data,
-    metrics,
-    isLoading,
-    isFetching,
-    userErrorMessage,
-    stateFilter,
-    setStateFilter,
-    refresh,
-  } = useQrBatches();
+  const { data, isLoading, isFetching, userErrorMessage, stateFilter, setStateFilter, refresh } =
+    useQrBatches();
 
   const canWriteBatches = useCanWriteInventoryMutations();
   const canRunLifecycle = useCanRunQrLifecycleMutations();
@@ -74,16 +65,7 @@ export function QrBatchManagementPage() {
     [openBatch],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading || !metrics) {
-      return 'Create batches, generate codes, and provision stock.';
-    }
-    return buildPageSummary([
-      `${metrics.totalBatches.toLocaleString()} batches`,
-      `${metrics.draftBatches.toLocaleString()} draft`,
-      `${metrics.provisionedBatches.toLocaleString()} provisioned`,
-    ]);
-  }, [isLoading, metrics]);
+  const pageDescription = 'Create batches, generate codes, and provision stock.';
 
   const moreActions = useMemo(
     () =>

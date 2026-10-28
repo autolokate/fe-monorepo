@@ -51,8 +51,7 @@ export function PartnersDirectoryPage() {
     [navigate],
   );
 
-  const pageDescription =
-    'Garage, store, and taxi partner orgs from Nest. Open a row for store publish and ops links.';
+  const pageDescription = 'Partner organizations for Garage, Store, and Taxi.';
 
   if (userErrorMessage && !data) {
     return (

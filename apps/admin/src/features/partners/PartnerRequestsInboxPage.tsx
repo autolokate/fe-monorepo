@@ -8,7 +8,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   useGarageBidColumns,
@@ -25,7 +25,6 @@ import { useTaxiRequestsInbox } from '@/hooks/partners/useTaxiRequestsInbox';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './partners.css';
@@ -63,32 +62,10 @@ export function PartnerRequestsInboxPage() {
     setSelectedGarage(null);
   }, []);
 
-  const pageDescription = useMemo(() => {
-    if (tab === 'garage') {
-      if (garage.isLoading) {
-        return 'Garage service requests with embedded bids.';
-      }
-      return buildPageSummary([
-        `${garage.requests.length.toLocaleString()}${garage.hasNextPage ? '+' : ''} garage requests`,
-        `${garage.requests.reduce((sum, row) => sum + row.bids.length, 0).toLocaleString()} bids loaded`,
-      ]);
-    }
-    if (taxi.isLoading) {
-      return 'Taxi trip RFQs with embedded bids.';
-    }
-    return buildPageSummary([
-      `${taxi.requests.length.toLocaleString()}${taxi.hasNextPage ? '+' : ''} taxi requests`,
-      `${taxi.requests.reduce((sum, row) => sum + row.bids.length, 0).toLocaleString()} bids loaded`,
-    ]);
-  }, [
-    garage.hasNextPage,
-    garage.isLoading,
-    garage.requests,
-    tab,
-    taxi.hasNextPage,
-    taxi.isLoading,
-    taxi.requests,
-  ]);
+  const pageDescription =
+    tab === 'garage'
+      ? 'Garage service requests and partner bids.'
+      : 'Taxi trip requests and partner bids.';
 
   if (active.userErrorMessage && !active.data) {
     return (
@@ -232,7 +209,7 @@ export function PartnerRequestsInboxPage() {
                 data={selectedGarage?.bids ?? []}
                 enableGlobalSearch={false}
                 emptyTitle="No bids on this request"
-                emptyDescription="Bids are embedded on the inbox DTO — nothing is invented client-side."
+                emptyDescription="No bids have been submitted for this request yet."
                 getRowId={(row) => row.id}
               />
             ) : (
@@ -243,7 +220,7 @@ export function PartnerRequestsInboxPage() {
                 data={selectedTaxi?.bids ?? []}
                 enableGlobalSearch={false}
                 emptyTitle="No bids on this request"
-                emptyDescription="Bids are embedded on the inbox DTO — nothing is invented client-side."
+                emptyDescription="No bids have been submitted for this request yet."
                 getRowId={(row) => row.id}
               />
             )}

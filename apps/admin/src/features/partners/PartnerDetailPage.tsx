@@ -20,11 +20,29 @@ import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './partners.css';
 
-function DetailField({ label, value }: { label: string; value: string }) {
+function humanLabel(value: string): string {
+  return value
+    .toLowerCase()
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function DetailField({
+  label,
+  value,
+  mono = false,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
   return (
-    <div className="partners-detail-field">
-      <span className="partners-detail-field__label">{label}</span>
-      <span className="partners-detail-field__value">{value}</span>
+    <div className="admin-detail-card">
+      <span className="admin-detail-card__label">{label}</span>
+      <span className={`admin-detail-card__value${mono ? ' admin-detail-card__value--mono' : ''}`}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -62,12 +80,16 @@ export function PartnerDetailPage() {
     ? mapMutationError(publishStoreMutation.error).userMessage
     : null;
 
+  const pageDescription = partner.storeStatus
+    ? `${humanLabel(partner.partnerKind)} · ${humanLabel(partner.storeStatus)}`
+    : humanLabel(partner.partnerKind);
+
   return (
     <RequirePermission permission="partners:read">
       <AlStack gap="md">
         <AlPageHeader
           title={partner.name}
-          description={`${partner.partnerKind}${partner.storeStatus ? ` · store ${partner.storeStatus}` : ''}`}
+          description={pageDescription}
           breadcrumbs={
             <AlBreadcrumb
               items={[
@@ -92,14 +114,18 @@ export function PartnerDetailPage() {
         />
 
         <section className="partners-section" data-testid="partners-detail-summary">
-          <h2 className="partners-section__heading">Org summary</h2>
-          <div className="partners-detail-grid">
-            <DetailField label="Org ID" value={partner.orgId} />
+          <h2 className="partners-section__heading">Overview</h2>
+          <div className="admin-detail-card-grid">
+            <DetailField label="Org ID" value={partner.orgId} mono />
             <DetailField label="Partner kind" value={partner.partnerKind} />
             <DetailField label="Org kind" value={partner.orgKind ?? '—'} />
-            <DetailField label="Owner account" value={shortId(partner.ownerAccountId)} />
+            <DetailField label="Owner account" value={shortId(partner.ownerAccountId)} mono />
             <DetailField label="Created" value={formatPartnersDateTime(partner.createdAt)} />
-            <DetailField label="Store ID" value={partner.storeId ?? '—'} />
+            <DetailField
+              label="Store ID"
+              value={partner.storeId ?? '—'}
+              mono={Boolean(partner.storeId)}
+            />
             <DetailField label="Store name" value={partner.storeName ?? '—'} />
             <DetailField label="Store status" value={partner.storeStatus ?? '—'} />
             <DetailField
@@ -107,13 +133,10 @@ export function PartnerDetailPage() {
               value={partner.cities?.length ? partner.cities.join(', ') : '—'}
             />
           </div>
-          <AlText tone="muted" variant="caption">
-            Server fields only — no client-side KYC status.
-          </AlText>
         </section>
 
         <section className="partners-section" data-testid="partners-detail-ops">
-          <h2 className="partners-section__heading">Live Nest actions</h2>
+          <h2 className="partners-section__heading">Actions</h2>
           <div className="partners-links">
             {canPublishStore ? (
               <AlButton
@@ -142,7 +165,7 @@ export function PartnerDetailPage() {
                 void navigate(adminPaths.garageCommercial);
               }}
             >
-              Garage commercial / entitlement
+              Garage commercial
             </AlButton>
             <AlButton
               variant="secondary"
@@ -151,7 +174,7 @@ export function PartnerDetailPage() {
                 void navigate(adminPaths.taxiPolicy);
               }}
             >
-              Taxi policy / provision
+              Taxi policy
             </AlButton>
             <AlButton
               variant="secondary"

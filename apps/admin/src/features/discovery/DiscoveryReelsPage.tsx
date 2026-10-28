@@ -11,7 +11,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
+import { useCallback, useState, type ChangeEvent } from 'react';
 
 import { REEL_SORT_OPTIONS, REEL_STATUS_FILTERS } from '@/features/discovery/discovery-filters';
 import { useReelColumns } from '@/features/discovery/reel-columns';
@@ -21,7 +21,6 @@ import { useDiscoveryReels } from '@/hooks/discovery/useDiscoveryReels';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
@@ -121,18 +120,7 @@ export function DiscoveryReelsPage() {
     onOpen: openReel,
   });
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Upload, publish and archive Discovery reels.';
-    }
-    const published = reels.filter((reel) => reel.status === 'PUBLISHED').length;
-    const drafts = reels.filter((reel) => reel.status === 'DRAFT').length;
-    return buildPageSummary([
-      `${reels.length.toLocaleString()}${mayBeTruncated || hasNextPage ? '+' : ''} reels loaded`,
-      `${published.toLocaleString()} published`,
-      `${drafts.toLocaleString()} draft`,
-    ]);
-  }, [hasNextPage, isLoading, mayBeTruncated, reels]);
+  const pageDescription = 'Upload, publish and archive Discovery reels.';
 
   if (userErrorMessage && !data) {
     return (

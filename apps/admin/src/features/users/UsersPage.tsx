@@ -22,15 +22,13 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminDetailField } from '@/platform/components/AdminDetailField';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './users.css';
 
 /** Nest Admin care lists are GET-only today — show RO honestly (no fabricate write). */
-const CARE_RO_CAPTION =
-  'Read-only — Nest Admin exposes GET lists only for these records (no create/update on this plane).';
+const CARE_RO_CAPTION = 'Care records are view-only.';
 
 const STATUS_FILTERS = [
   { value: 'ACTIVE', label: 'Active' },
@@ -181,11 +179,7 @@ function UserDetailPanel({
                   : 'Not verified (provisional / free-driver)'
               }
             />
-            <AdminDetailField
-              label="Owner account"
-              value={`${account.id} (listAdminUserVehicles scopes this list to the viewed account; DTO has no ownerAccountId field)`}
-              mono
-            />
+            <AdminDetailField label="Owner account" value={account.id} mono />
 
             <AlStack gap="xs">
               <AlText variant="caption" tone="muted">
@@ -321,7 +315,7 @@ function UserDetailPanel({
               <>
                 <AdminDetailField label="Phone search" value={searchPhone} mono />
                 <AlText variant="caption" tone="muted">
-                  Matched via blind index — the API never returns the phone.
+                  Matched by phone search — the full number is not shown here.
                 </AlText>
               </>
             ) : null}
@@ -510,12 +504,7 @@ export function UsersPage() {
   const [selected, setSelected] = useState<AdminUserSummaryDto | null>(null);
   const columns = useUsersColumns();
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Browse accounts by phone or filters. Phone is matched on a blind index — never stored by this screen.';
-    }
-    return buildPageSummary([`${users.length.toLocaleString()} accounts loaded`]);
-  }, [isLoading, users.length]);
+  const pageDescription = 'Browse customer accounts.';
 
   if (userErrorMessage && users.length === 0 && !selected) {
     return (
@@ -568,7 +557,7 @@ export function UsersPage() {
                   onChange={(event) => {
                     setPhoneInput(event.target.value);
                   }}
-                  helperText="E.164, Indian 10-digit, or 91-prefixed. Server-side blind-index match — no download-all."
+                  helperText="E.164, Indian 10-digit, or 91-prefixed."
                 />
                 <div className="admin-page-actions">
                   <AlButton
@@ -633,7 +622,7 @@ export function UsersPage() {
                 emptyTitle="No accounts found"
                 emptyDescription={
                   phoneApplied
-                    ? 'No account matches that phone on the blind index.'
+                    ? 'No account matches that phone.'
                     : 'Try another status or type filter.'
                 }
                 getRowId={(row) => row.id}

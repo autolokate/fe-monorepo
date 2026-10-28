@@ -18,7 +18,7 @@ test.describe('Services catalogue (hermetic)', () => {
     await openServicesCataloguePage(page);
 
     await expect(page.getByTestId('services-category-config-stub')).toContainText(
-      'Hub category order/visibility',
+      'Providers appear in the consumer hub when Active',
     );
     await expect(page.getByRole('cell', { name: 'Hermetic RAS Partner' })).toBeVisible({
       timeout: 10_000,

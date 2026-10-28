@@ -355,7 +355,7 @@ export function BatchManagementDetailPage() {
                   placeholder="Enter QR code"
                   autoComplete="off"
                   data-testid="qr-code-action-input"
-                  helperText="Nest path pattern: 6–32 uppercase letters, numbers, or hyphens."
+                  helperText="6–32 uppercase letters, numbers, or hyphens."
                   errorText={qrForm.formState.errors.code?.message}
                   {...qrForm.register('code')}
                 />

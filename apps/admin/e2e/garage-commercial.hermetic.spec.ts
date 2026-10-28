@@ -67,9 +67,7 @@ test.describe('Garage commercial (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('config history refresh after save — newest audit shows updated price', async ({
-    page,
-  }) => {
+  test('config history refresh after save — newest audit shows updated price', async ({ page }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openGarageCommercialPage(page);
@@ -272,16 +270,15 @@ test.describe('Garage commercial (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('documents deferred legacy credits/adjust only', async ({ page }) => {
+  test('shows product commercial copy and provision action', async ({ page }) => {
     await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openGarageCommercialPage(page);
 
-    await expect(page.getByTestId('garage-contract-gap-note')).toContainText('credits/adjust');
-    await expect(page.getByTestId('garage-contract-gap-note')).toContainText('deferred');
-    await expect(page.getByTestId('garage-contract-gap-note')).not.toContainText(
-      'provision remains',
-    );
+    await expect(
+      page.getByText('Pass pricing, free bids, and partner provisioning for Garage.'),
+    ).toBeVisible();
+    await expect(page.getByTestId('garage-contract-gap-note')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Provision partner' })).toBeVisible();
   });
 });

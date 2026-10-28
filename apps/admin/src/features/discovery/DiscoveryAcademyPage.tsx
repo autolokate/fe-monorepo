@@ -33,7 +33,6 @@ import {
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { DiscoveryReelStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -353,17 +352,7 @@ export function DiscoveryAcademyPage() {
     [canWrite, pendingId, requestLesson, transitionLesson.variables],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Courses of Indian Drive Guide lessons for members with an active plan.';
-    }
-    const published = courses.filter((course) => course.status === 'PUBLISHED').length;
-    return buildPageSummary([
-      `${courses.length.toLocaleString()} courses`,
-      `${published.toLocaleString()} published`,
-      'Lessons need an active plan to play',
-    ]);
-  }, [isLoading, courses]);
+  const pageDescription = 'Courses of Indian Drive Guide lessons for members with an active plan.';
 
   if (userErrorMessage && !data) {
     return (

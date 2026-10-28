@@ -6,7 +6,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { CreatePromoSheet } from '@/features/promos/CreatePromoSheet';
 import { PromoDetailSheet } from '@/features/promos/PromoDetailSheet';
@@ -16,7 +16,6 @@ import { usePromoManagement } from '@/hooks/promos/usePromoManagement';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { useCanWritePromoMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
@@ -25,7 +24,6 @@ import './promos.css';
 export function PromoManagementPage() {
   const {
     promos,
-    metrics,
     isLoading,
     isFetching,
     userErrorMessage,
@@ -54,16 +52,7 @@ export function PromoManagementPage() {
     [openPromo],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading || !metrics) {
-      return 'Create and manage promotional campaigns.';
-    }
-    return buildPageSummary([
-      `${metrics.totalPromos.toLocaleString()} promos`,
-      `${metrics.activePromos.toLocaleString()} active`,
-      `${metrics.upcomingPromos.toLocaleString()} upcoming`,
-    ]);
-  }, [isLoading, metrics]);
+  const pageDescription = 'Create and manage promotional campaigns.';
 
   if (userErrorMessage && !data) {
     return (
