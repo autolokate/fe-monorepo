@@ -56,10 +56,9 @@ export function AdminShellLayout() {
               data-testid="admin-plane-role-missing"
               role="status"
             >
-              <AlText variant="body">
-                Signed in as <strong>{session?.role ?? 'unknown'}</strong> — Admin plane APIs need
-                JWT role <strong>OPERATOR</strong> (plus step_up). OTP login alone does not elevate.
-                Garage / incidents / claims will return 403 until an authorized role grant exists.
+              <AlText variant="caption" tone="muted">
+                Session role <strong>{session?.role ?? 'unknown'}</strong> — Admin APIs need{' '}
+                <strong>OPERATOR</strong> + step_up. Reads that require elevation will return 403.
               </AlText>
             </div>
           ) : null}

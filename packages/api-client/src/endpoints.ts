@@ -65,6 +65,7 @@ export const endpoints = {
     policy: '/admin/v1/taxi/policy',
     policyPublish: '/admin/v1/taxi/policy/publish',
     policyHistory: '/admin/v1/taxi/policy/history',
+    provision: '/admin/v1/taxi/provision',
     requests: '/admin/v1/taxi/requests',
     request: (id: string) => `/admin/v1/taxi/requests/${encodeURIComponent(id)}`,
   },
@@ -190,6 +191,8 @@ export const endpoints = {
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/passes/grant`,
     garageOrgFreeBidsAdjust: (orgId: string) =>
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/free-bids/adjust`,
+    garageOrgPublishStore: (orgId: string) =>
+      `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/publish-store`,
     communityQuestions: '/admin/v1/community/questions',
     communityQuestion: (id: string) => `/admin/v1/community/questions/${encodeURIComponent(id)}`,
     communityReplies: '/admin/v1/community/replies',

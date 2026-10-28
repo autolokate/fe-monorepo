@@ -100,9 +100,9 @@ export const adminRoutes: AdminRouteMeta[] = [
   {
     path: adminPaths.support,
     label: 'Tickets',
-    description: 'Support tickets and status triage',
+    description: 'Unavailable on Nest Dev (G0-4 Absent) — kept for deep links only',
     group: 'customer-care',
-    nav: true,
+    nav: false,
   },
   {
     path: adminPaths.orders,

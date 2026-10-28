@@ -1,9 +1,9 @@
 import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { TaxiProvisionSheet } from '@/features/taxi/TaxiProvisionSheet';
 import { useTaxiPolicy } from '@/hooks/taxi/useTaxiPolicy';
 import { AdminDataBlock } from '@/platform/components/AdminDataBlock';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
@@ -13,10 +13,6 @@ type FormState = {
   customerAdvanceBps: number;
   partnerDepositBps: number;
 };
-
-function formatBps(bps: number): string {
-  return `${(bps / 100).toFixed(bps % 100 === 0 ? 0 : 2)}% (${String(bps)} bps)`;
-}
 
 export function TaxiPolicyPage() {
   const canWrite = useAdminPermission('settings:write');
@@ -39,6 +35,7 @@ export function TaxiPolicyPage() {
   const [form, setForm] = useState<FormState | null>(null);
   const [savedNote, setSavedNote] = useState<string | null>(null);
   const [publishedNote, setPublishedNote] = useState<string | null>(null);
+  const [provisionOpen, setProvisionOpen] = useState(false);
 
   useEffect(() => {
     if (!policy) {
@@ -55,22 +52,9 @@ export function TaxiPolicyPage() {
     });
   }, [isUnavailable, policy]);
 
-  const pageDescription = useMemo(() => {
-    if (isLoading && !policy && !isUnavailable) {
-      return 'Taxi advance / deposit policy (bps). Live Nest /admin/v1/taxi/policy*.';
-    }
-    if (isUnavailable && !policy) {
-      return 'No Taxi policy on the API yet — save a DRAFT (requires Taxi migrate on target).';
-    }
-    if (!policy) {
-      return 'Taxi advance / deposit policy (bps).';
-    }
-    return buildPageSummary([
-      policy.status ?? 'UNKNOWN',
-      `advance ${formatBps(policy.customerAdvanceBps ?? 0)}`,
-      `deposit ${formatBps(policy.partnerDepositBps ?? 0)}`,
-    ]);
-  }, [isLoading, isUnavailable, policy]);
+  const pageDescription = isUnavailable
+    ? 'No Taxi policy yet — save a DRAFT (Admin-supplied bps; no invented defaults).'
+    : 'Advance / deposit bps from Nest. Provision creates a Taxi fixture org without QR.';
 
   const onSave = async () => {
     if (!form || !canWrite) return;
@@ -128,6 +112,13 @@ export function TaxiPolicyPage() {
               />
               {canWrite ? (
                 <>
+                  <AlPageHeaderAction
+                    label="Provision Taxi"
+                    variant="secondary"
+                    onClick={() => {
+                      setProvisionOpen(true);
+                    }}
+                  />
                   {form && !isLoading ? (
                     <AlPageHeaderAction
                       label={isSaving ? 'Saving…' : 'Save draft'}
@@ -256,6 +247,8 @@ export function TaxiPolicyPage() {
             </ul>
           )}
         </AdminDataBlock>
+
+        <TaxiProvisionSheet open={provisionOpen} onOpenChange={setProvisionOpen} />
       </AlStack>
     </RequirePermission>
   );

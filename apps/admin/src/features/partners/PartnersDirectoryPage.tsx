@@ -9,7 +9,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { adminPartnerPath } from '@/app/routes/admin-paths';
@@ -19,7 +19,6 @@ import { usePartnersDirectory } from '@/hooks/partners/usePartnersDirectory';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './partners.css';
@@ -52,17 +51,8 @@ export function PartnersDirectoryPage() {
     [navigate],
   );
 
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Partner org directory (Garage / Store / Taxi).';
-    }
-    const withStore = partners.filter((partner) => partner.storeId).length;
-    return buildPageSummary([
-      `${partners.length.toLocaleString()}${mayBeTruncated || hasNextPage ? '+' : ''} partners loaded`,
-      `${withStore.toLocaleString()} with store`,
-      `filter ${type}`,
-    ]);
-  }, [hasNextPage, isLoading, mayBeTruncated, partners, type]);
+  const pageDescription =
+    'Garage, store, and taxi partner orgs from Nest. Open a row for store publish and ops links.';
 
   if (userErrorMessage && !data) {
     return (

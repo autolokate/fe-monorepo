@@ -33,6 +33,9 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/finance': ReceiptTextIcon,
   '/promos': CreditCardIcon,
   '/catalog': StoreIcon,
+  '/services-catalogue': StoreIcon,
+  '/garage-commercial': StoreIcon,
+  '/taxi-policy': CarIcon,
   '/partners': StoreIcon,
   '/partners/requests': ReceiptTextIcon,
   '/discovery': CameraIcon,
@@ -44,6 +47,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/inventory': ScanLineIcon,
   '/qr-batches': ScanLineIcon,
   '/ownership-transfers': CarIcon,
+  '/ownership-claims': ShieldCheckIcon,
   '/audit-events': ActivityIcon,
   '/incidents': TriangleAlertIcon,
 };

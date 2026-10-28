@@ -6,8 +6,9 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
+import { OrderDetailSheet } from '@/features/orders/OrderDetailSheet';
 import { ORDERS_STATUS_FILTERS } from '@/features/orders/orders-filters';
 import { useOrdersColumns } from '@/features/orders/orders-columns';
 import { RefundOrderDialog } from '@/features/orders/RefundOrderDialog';
@@ -15,7 +16,6 @@ import { useOrders } from '@/hooks/orders/useOrders';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
-import { buildPageSummary } from '@/platform/components/build-page-summary';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 export function OrdersPage() {
@@ -32,15 +32,9 @@ export function OrdersPage() {
   // Nest has no POST …/orders/{orderId}/refund (product-blocked). Keep CTA off regardless of RBAC.
   const canRefund = false;
   const [refundTarget, setRefundTarget] = useState<AdminOrderSummary | null>(null);
+  const [detailOrder, setDetailOrder] = useState<AdminOrderSummary | null>(null);
 
   const columns = useOrdersColumns({ canRefund, onRefund: setRefundTarget });
-
-  const pageDescription = useMemo(() => {
-    if (isLoading) {
-      return 'Browse customer orders and their fulfilment status.';
-    }
-    return buildPageSummary([`${orders.length.toLocaleString()} orders loaded`]);
-  }, [isLoading, orders.length]);
 
   if (userErrorMessage && orders.length === 0) {
     return (
@@ -60,7 +54,7 @@ export function OrdersPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Orders"
-          description={pageDescription}
+          description="Customer QR commerce orders from Nest. Open a row for money and partner detail."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -96,8 +90,22 @@ export function OrdersPage() {
             emptyTitle="No orders found"
             emptyDescription="Try another status filter."
             getRowId={(row) => row.orderId}
+            onRowClick={(row) => {
+              setDetailOrder(row);
+            }}
           />
         </AdminDataBlock>
+
+        <OrderDetailSheet
+          orderId={detailOrder?.orderId ?? null}
+          orderNumber={detailOrder?.orderNumber ?? null}
+          open={Boolean(detailOrder)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setDetailOrder(null);
+            }
+          }}
+        />
 
         <RefundOrderDialog
           order={refundTarget}

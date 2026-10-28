@@ -12,9 +12,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { adminPaths } from '@/app/routes/admin-paths';
 import { PartnerReelsSection } from '@/features/partners/PartnerReelsSection';
 import { formatPartnersDateTime, shortId } from '@/features/partners/partners-filters';
+import { useGarageEntitlementMutations } from '@/hooks/garage/useGarageEntitlementMutations';
 import { usePartnerDetail } from '@/hooks/partners/usePartnerDetail';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './partners.css';
 
@@ -30,7 +32,9 @@ function DetailField({ label, value }: { label: string; value: string }) {
 export function PartnerDetailPage() {
   const { orgId } = useParams<{ orgId: string }>();
   const navigate = useNavigate();
+  const canWrite = useAdminPermission('partners:write');
   const { partner, isLoading, isFetching, userErrorMessage, refresh } = usePartnerDetail(orgId);
+  const { publishStoreMutation, mapMutationError } = useGarageEntitlementMutations();
 
   if (userErrorMessage && !partner) {
     return (
@@ -47,6 +51,16 @@ export function PartnerDetailPage() {
       </RequirePermission>
     );
   }
+
+  const canPublishStore =
+    canWrite &&
+    Boolean(partner.storeId) &&
+    partner.storeStatus !== 'PUBLISHED' &&
+    (partner.partnerKind === 'GARAGE' || partner.partnerKind === 'STORE');
+
+  const publishError = publishStoreMutation.isError
+    ? mapMutationError(publishStoreMutation.error).userMessage
+    : null;
 
   return (
     <RequirePermission permission="partners:read">
@@ -98,35 +112,68 @@ export function PartnerDetailPage() {
           </AlText>
         </section>
 
-        <div className="partners-links">
-          <AlButton
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              void navigate(adminPaths.garageCommercial);
-            }}
-          >
-            Garage commercial / entitlement
-          </AlButton>
-          <AlButton
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              void navigate(adminPaths.taxiPolicy);
-            }}
-          >
-            Taxi policy
-          </AlButton>
-          <AlButton
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              void navigate(adminPaths.partnersRequests);
-            }}
-          >
-            Requests & bids
-          </AlButton>
-        </div>
+        <section className="partners-section" data-testid="partners-detail-ops">
+          <h2 className="partners-section__heading">Live Nest actions</h2>
+          <div className="partners-links">
+            {canPublishStore ? (
+              <AlButton
+                variant="primary"
+                size="sm"
+                data-testid="partners-publish-store"
+                loading={publishStoreMutation.isPending}
+                onClick={() => {
+                  publishStoreMutation.mutate(
+                    { orgId: partner.orgId },
+                    {
+                      onSuccess: () => {
+                        refresh();
+                      },
+                    },
+                  );
+                }}
+              >
+                Publish store
+              </AlButton>
+            ) : null}
+            <AlButton
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                void navigate(adminPaths.garageCommercial);
+              }}
+            >
+              Garage commercial / entitlement
+            </AlButton>
+            <AlButton
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                void navigate(adminPaths.taxiPolicy);
+              }}
+            >
+              Taxi policy / provision
+            </AlButton>
+            <AlButton
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                void navigate(adminPaths.partnersRequests);
+              }}
+            >
+              Requests & bids
+            </AlButton>
+          </div>
+          {publishError ? (
+            <AlText tone="muted" role="alert">
+              {publishError}
+            </AlText>
+          ) : null}
+          {partner.storeStatus === 'PUBLISHED' ? (
+            <AlText tone="muted" variant="caption">
+              Storefront already published for Nearby / bidding.
+            </AlText>
+          ) : null}
+        </section>
 
         <PartnerReelsSection reels={partner.reels} />
       </AlStack>

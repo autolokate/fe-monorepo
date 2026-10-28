@@ -33,8 +33,8 @@
 
 .admin-shell-nav-item {
   min-height: 2.5rem;
-  padding: var(--al-space-2) var(--al-space-4);
-  border-radius: var(--al-radius-pill);
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-admin-radius-control, var(--al-radius-sm));
   font-weight: var(--al-font-weight-regular);
 }
 

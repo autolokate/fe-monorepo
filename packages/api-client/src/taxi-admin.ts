@@ -63,3 +63,34 @@ export async function listTaxiPolicyHistory(
   });
   return unwrapEnvelope(response) as TaxiPolicyAuditDto[];
 }
+
+/** OpenAPI `ProvisionTaxiBodyDto` */
+export type ProvisionTaxiBody = {
+  accountId: string;
+  orgName: string;
+  ownerName: string;
+  city?: string;
+  area?: string;
+};
+
+/** OpenAPI `ProvisionTaxiResultDto` */
+export type ProvisionTaxiResultDto = {
+  orgId: string;
+  staffId: string;
+  enrollmentId: string;
+  enrollmentStatus: string;
+  locationId: string | null;
+  converged: boolean;
+};
+
+/** POST /admin/v1/taxi/provision — Taxi fixture org + enrollment (never QR). */
+export async function provisionTaxi(
+  client: ApiClient,
+  body: ProvisionTaxiBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<ProvisionTaxiResultDto> {
+  const response = await client.post<unknown>(endpoints.adminTaxi.provision, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as ProvisionTaxiResultDto;
+}

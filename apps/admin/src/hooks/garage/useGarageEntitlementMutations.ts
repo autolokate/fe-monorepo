@@ -7,6 +7,7 @@ import {
   submitGarageFreeBidsAdjust,
   submitGaragePassGrant,
   submitGarageProvision,
+  submitGaragePublishStore,
 } from '@/services/garage/garage-entitlement-service';
 
 export function useGarageEntitlementMutations() {
@@ -65,10 +66,23 @@ export function useGarageEntitlementMutations() {
     },
   });
 
+  const publishStoreMutation = useMutation({
+    mutationFn: ({ orgId, signal }: { orgId: string; signal?: AbortSignal }) =>
+      submitGaragePublishStore(orgId, signal),
+    retry: 0,
+    onSuccess: (result) => {
+      showSuccessToast(`Store ${result.status === 'PUBLISHED' ? 'published' : 'updated'}.`);
+    },
+    onError: (error) => {
+      reportAdminApiError(error, { context: 'garage-publish-store', toast: true });
+    },
+  });
+
   return {
     grantPassMutation,
     adjustFreeBidsMutation,
     provisionGarageMutation,
+    publishStoreMutation,
     mapMutationError: mapAdminApiError,
   };
 }

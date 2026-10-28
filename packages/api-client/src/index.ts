@@ -208,14 +208,19 @@ export {
   type GaragePassKind,
   type ProvisionGarageBody,
   type ProvisionGarageResultDto,
+  publishGarageStore,
+  type PublishGarageStoreResultDto,
 } from './garage';
 export {
   getTaxiPolicy,
   upsertTaxiPolicyDraft,
   publishTaxiPolicy,
   listTaxiPolicyHistory,
+  provisionTaxi,
   type TaxiPolicyDto,
   type TaxiPolicyAuditDto,
+  type ProvisionTaxiBody,
+  type ProvisionTaxiResultDto,
 } from './taxi-admin';
 export {
   createAdminPromo,

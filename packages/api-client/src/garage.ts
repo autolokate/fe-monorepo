@@ -190,3 +190,26 @@ export async function provisionGarage(
   });
   return unwrapEnvelope(response) as ProvisionGarageResultDto;
 }
+
+/** OpenAPI `PublishStoreResultDto` */
+export type PublishGarageStoreResultDto = {
+  orgId: string;
+  storeId: string;
+  status: 'DRAFT' | 'PUBLISHED';
+};
+
+/** POST /admin/v1/garage/orgs/{orgId}/publish-store — OPERATOR; Nearby / bidding. */
+export async function publishGarageStore(
+  client: ApiClient,
+  orgId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<PublishGarageStoreResultDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.garageOrgPublishStore(orgId),
+    {},
+    {
+      ...(options.signal ? { signal: options.signal } : {}),
+    },
+  );
+  return unwrapEnvelope(response) as PublishGarageStoreResultDto;
+}

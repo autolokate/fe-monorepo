@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react';
 import {
+  CameraIcon,
   CreditCardIcon,
   ReceiptTextIcon,
   ScanLineIcon,
   ShieldCheckIcon,
   StoreIcon,
-  UserIcon,
   UsersIcon,
 } from '@autolokate/icons';
-import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
+import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack, AlText } from '@autolokate/ui';
 import { useNavigate } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
@@ -88,8 +88,6 @@ function DashboardPageCard({
           ))}
         </div>
       ) : null}
-
-      <span className="dashboard-page-card__cta">Open module</span>
     </button>
   );
 }
@@ -115,7 +113,6 @@ function DashboardLinkCard({ title, description, icon, onClick }: DashboardLinkC
           <span className="dashboard-page-card__description">{description}</span>
         </div>
       </div>
-      <span className="dashboard-page-card__cta">Open module</span>
     </button>
   );
 }
@@ -147,7 +144,7 @@ export function DashboardPage() {
       <AlStack gap="lg">
         <AlPageHeader
           title="Dashboard"
-          description="Live counts from each module."
+          description="Live Nest counts only — modules without a count endpoint appear as links."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -160,169 +157,160 @@ export function DashboardPage() {
 
         {isLoading || !metrics || !inventory || !batchManagement || !promos ? (
           <div className="dashboard-page-grid dashboard-page-grid--loading">
-            {Array.from({ length: 8 }, (_, index) => (
+            {Array.from({ length: 6 }, (_, index) => (
               <MetricSkeleton key={index} />
             ))}
           </div>
         ) : (
-          <div className="dashboard-page-grid">
-            <DashboardPageCard
-              title="Stock"
-              description="Sticker stock by batch"
-              icon={<ScanLineIcon size={20} aria-hidden />}
-              primaryValue={inventory.totalBatches.toLocaleString()}
-              primaryLabel="batches"
-              stats={[
-                {
-                  label: 'Provisioned batches',
-                  value: inventory.provisionedBatches.toLocaleString(),
-                  tone: toneWhenPositive(inventory.provisionedBatches),
-                },
-                {
-                  label: 'In distribution',
-                  value: inventory.inDistributionBatches.toLocaleString(),
-                  tone: toneWhenPositive(inventory.inDistributionBatches),
-                },
-                {
-                  label: 'Sticker codes',
-                  value: inventory.totalProvisionedCodes.toLocaleString(),
-                  tone: 'neutral',
-                },
-              ]}
-              onClick={() => {
-                void navigate(adminPaths.inventory);
-              }}
-            />
-            <DashboardPageCard
-              title="Batches"
-              description="Create batches and run lifecycle"
-              icon={<ScanLineIcon size={20} aria-hidden />}
-              primaryValue={batchManagement.draftBatches.toLocaleString()}
-              primaryLabel="draft batches"
-              primaryTone={toneWhenPendingWork(batchManagement.draftBatches)}
-              stats={[
-                {
-                  label: 'In pipeline',
-                  value: batchManagement.pipelineBatches.toLocaleString(),
-                  tone: toneWhenPendingWork(batchManagement.pipelineBatches),
-                },
-                {
-                  label: 'Provisioned',
-                  value: batchManagement.provisionedBatches.toLocaleString(),
-                  tone: toneWhenPositive(batchManagement.provisionedBatches),
-                },
-                {
-                  label: 'Total batches',
-                  value: batchManagement.totalBatches.toLocaleString(),
-                  tone: 'neutral',
-                },
-              ]}
-              onClick={() => {
-                void navigate(adminPaths.qrBatches);
-              }}
-            />
-            {catalog ? (
-              <DashboardPageCard
-                title="Catalog"
-                description="Plan versions and SKU shelves"
-                icon={<StoreIcon size={20} aria-hidden />}
-                primaryValue={catalog.skus.toLocaleString()}
-                primaryLabel="SKUs"
-                primaryTone={toneForCatalogSkus(catalog.skus, catalog.emptyShelves)}
-                stats={[
-                  {
-                    label: 'Plan versions',
-                    value: catalog.planVersions.toLocaleString(),
-                    tone: 'neutral',
-                  },
-                  {
-                    label: 'Live plans',
-                    value: catalog.livePlans.toLocaleString(),
-                    tone: catalog.livePlans > 0 ? 'success' : 'warning',
-                  },
-                  {
-                    label: 'Empty shelves',
-                    value: catalog.emptyShelves.toLocaleString(),
-                    tone: toneWhenIssue(catalog.emptyShelves),
-                  },
-                ]}
-                onClick={() => {
-                  void navigate(adminPaths.catalog);
-                }}
-              />
-            ) : (
-              <DashboardLinkCard
-                title="Catalog"
-                description="Plan versions and SKU shelves"
-                icon={<StoreIcon size={20} aria-hidden />}
-                onClick={() => {
-                  void navigate(adminPaths.catalog);
-                }}
-              />
-            )}
-            <DashboardPageCard
-              title="Promos"
-              description="Campaigns and discount codes"
-              icon={<CreditCardIcon size={20} aria-hidden />}
-              primaryValue={promos.activePromos.toLocaleString()}
-              primaryLabel="active promos"
-              primaryTone={toneForActivePromos(promos.activePromos)}
-              stats={[
-                {
-                  label: 'Total promos',
-                  value: promos.totalPromos.toLocaleString(),
-                  tone: 'neutral',
-                },
-                {
-                  label: 'Upcoming',
-                  value: promos.upcomingPromos.toLocaleString(),
-                  tone: promos.upcomingPromos > 0 ? 'warning' : 'neutral',
-                },
-                {
-                  label: 'Expired',
-                  value: promos.expiredPromos.toLocaleString(),
-                  tone: toneWhenIssue(promos.expiredPromos),
-                },
-              ]}
-              onClick={() => {
-                void navigate(adminPaths.promos);
-              }}
-            />
-            <DashboardPageCard
-              title="Activity Log"
-              description="Administrative activity timeline"
-              icon={<ReceiptTextIcon size={20} aria-hidden />}
-              primaryValue={metrics.auditLatestCount.toLocaleString()}
-              primaryLabel="events in latest feed"
-              onClick={() => {
-                void navigate(adminPaths.auditEvents);
-              }}
-            />
-            <DashboardLinkCard
-              title="Settlements"
-              description="Clawbacks and settlement batches"
-              icon={<ShieldCheckIcon size={20} aria-hidden />}
-              onClick={() => {
-                void navigate(adminPaths.finance);
-              }}
-            />
-            <DashboardLinkCard
-              title="Ownership"
-              description="Initiate and approve transfers"
-              icon={<UserIcon size={20} aria-hidden />}
-              onClick={() => {
-                void navigate(adminPaths.ownershipTransfers);
-              }}
-            />
-            <DashboardLinkCard
-              title="Customers"
-              description="Find a customer; manage account access"
-              icon={<UsersIcon size={20} aria-hidden />}
-              onClick={() => {
-                void navigate(adminPaths.users);
-              }}
-            />
-          </div>
+          <>
+            <AlStack gap="sm">
+              <AlText variant="label">Operations</AlText>
+              <div className="dashboard-page-grid">
+                <DashboardPageCard
+                  title="QR stickers"
+                  description="Stock and batch lifecycle"
+                  icon={<ScanLineIcon size={20} aria-hidden />}
+                  primaryValue={inventory.totalBatches.toLocaleString()}
+                  primaryLabel="batches"
+                  stats={[
+                    {
+                      label: 'Draft',
+                      value: batchManagement.draftBatches.toLocaleString(),
+                      tone: toneWhenPendingWork(batchManagement.draftBatches),
+                    },
+                    {
+                      label: 'Provisioned',
+                      value: inventory.provisionedBatches.toLocaleString(),
+                      tone: toneWhenPositive(inventory.provisionedBatches),
+                    },
+                    {
+                      label: 'Codes',
+                      value: inventory.totalProvisionedCodes.toLocaleString(),
+                      tone: 'neutral',
+                    },
+                  ]}
+                  onClick={() => {
+                    void navigate(adminPaths.qrBatches);
+                  }}
+                />
+                {catalog ? (
+                  <DashboardPageCard
+                    title="Catalog"
+                    description="Plan versions and SKU shelves"
+                    icon={<StoreIcon size={20} aria-hidden />}
+                    primaryValue={catalog.skus.toLocaleString()}
+                    primaryLabel="SKUs"
+                    primaryTone={toneForCatalogSkus(catalog.skus, catalog.emptyShelves)}
+                    stats={[
+                      {
+                        label: 'Plan versions',
+                        value: catalog.planVersions.toLocaleString(),
+                        tone: 'neutral',
+                      },
+                      {
+                        label: 'Live plans',
+                        value: catalog.livePlans.toLocaleString(),
+                        tone: catalog.livePlans > 0 ? 'success' : 'warning',
+                      },
+                      {
+                        label: 'Empty shelves',
+                        value: catalog.emptyShelves.toLocaleString(),
+                        tone: toneWhenIssue(catalog.emptyShelves),
+                      },
+                    ]}
+                    onClick={() => {
+                      void navigate(adminPaths.catalog);
+                    }}
+                  />
+                ) : (
+                  <DashboardLinkCard
+                    title="Catalog"
+                    description="Plan versions and SKU shelves"
+                    icon={<StoreIcon size={20} aria-hidden />}
+                    onClick={() => {
+                      void navigate(adminPaths.catalog);
+                    }}
+                  />
+                )}
+                <DashboardPageCard
+                  title="Promos"
+                  description="Campaigns and discount codes"
+                  icon={<CreditCardIcon size={20} aria-hidden />}
+                  primaryValue={promos.activePromos.toLocaleString()}
+                  primaryLabel="active"
+                  primaryTone={toneForActivePromos(promos.activePromos)}
+                  stats={[
+                    {
+                      label: 'Total',
+                      value: promos.totalPromos.toLocaleString(),
+                      tone: 'neutral',
+                    },
+                    {
+                      label: 'Upcoming',
+                      value: promos.upcomingPromos.toLocaleString(),
+                      tone: promos.upcomingPromos > 0 ? 'warning' : 'neutral',
+                    },
+                    {
+                      label: 'Expired',
+                      value: promos.expiredPromos.toLocaleString(),
+                      tone: toneWhenIssue(promos.expiredPromos),
+                    },
+                  ]}
+                  onClick={() => {
+                    void navigate(adminPaths.promos);
+                  }}
+                />
+                <DashboardPageCard
+                  title="Activity"
+                  description="Latest audit feed page"
+                  icon={<ReceiptTextIcon size={20} aria-hidden />}
+                  primaryValue={metrics.auditLatestCount.toLocaleString()}
+                  primaryLabel="events on latest page"
+                  onClick={() => {
+                    void navigate(adminPaths.auditEvents);
+                  }}
+                />
+              </div>
+            </AlStack>
+
+            <AlStack gap="sm">
+              <AlText variant="label">Jump to</AlText>
+              <div className="dashboard-page-grid">
+                <DashboardLinkCard
+                  title="Customers"
+                  description="Phone lookup and vehicle care"
+                  icon={<UsersIcon size={20} aria-hidden />}
+                  onClick={() => {
+                    void navigate(adminPaths.users);
+                  }}
+                />
+                <DashboardLinkCard
+                  title="Partners"
+                  description="Garage, store, and taxi orgs"
+                  icon={<StoreIcon size={20} aria-hidden />}
+                  onClick={() => {
+                    void navigate(adminPaths.partners);
+                  }}
+                />
+                <DashboardLinkCard
+                  title="Discovery"
+                  description="Q&A, reels, Daily Drive, Academy"
+                  icon={<CameraIcon size={20} aria-hidden />}
+                  onClick={() => {
+                    void navigate(adminPaths.discovery);
+                  }}
+                />
+                <DashboardLinkCard
+                  title="Settlements"
+                  description="Clawbacks and settlement batches"
+                  icon={<ShieldCheckIcon size={20} aria-hidden />}
+                  onClick={() => {
+                    void navigate(adminPaths.finance);
+                  }}
+                />
+              </div>
+            </AlStack>
+          </>
         )}
       </AlStack>
     </RequirePermission>

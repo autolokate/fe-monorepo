@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { CameraIcon, ShieldCheckIcon, StoreIcon, UsersIcon } from '@autolokate/icons';
+import { ActivityIcon, CameraIcon, CarIcon, ShieldCheckIcon, UsersIcon } from '@autolokate/icons';
 import { AlPageHeader, AlPageHeaderAction, AlStack, AlText } from '@autolokate/ui';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import {
   useDiscoveryOverview,
   type DiscoveryOverviewCounts,
 } from '@/hooks/discovery/useDiscoveryOverview';
+import { MetricSkeleton } from '@/platform/components/MetricSkeleton';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import '@/features/dashboard/dashboard.css';
@@ -22,7 +23,6 @@ type OverviewCardProps = {
   primaryLabel: string;
   stats?: { label: string; value: string }[];
   errorMessage?: string | null;
-  cta: string;
   testId: string;
   onClick: () => void;
 };
@@ -35,7 +35,6 @@ function OverviewCard({
   primaryLabel,
   stats,
   errorMessage,
-  cta,
   testId,
   onClick,
 }: OverviewCardProps) {
@@ -71,8 +70,33 @@ function OverviewCard({
           ) : null}
         </>
       )}
+    </button>
+  );
+}
 
-      <span className="dashboard-page-card__cta">{cta}</span>
+type OverviewLinkCardProps = {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  testId: string;
+  onClick: () => void;
+};
+
+function OverviewLinkCard({ title, description, icon, testId, onClick }: OverviewLinkCardProps) {
+  return (
+    <button
+      type="button"
+      className="dashboard-page-card dashboard-page-card--link"
+      data-testid={testId}
+      onClick={onClick}
+    >
+      <div className="dashboard-page-card__head">
+        <div className="dashboard-page-card__icon">{icon}</div>
+        <div className="dashboard-page-card__titles">
+          <span className="dashboard-page-card__title">{title}</span>
+          <span className="dashboard-page-card__description">{description}</span>
+        </div>
+      </div>
     </button>
   );
 }
@@ -90,14 +114,14 @@ function countValue(
 export function DiscoveryOverviewPage() {
   const navigate = useNavigate();
   const overview = useDiscoveryOverview();
-  const { questions, reels, engagement } = overview;
+  const { questions, reels, dailyDrive, academy, engagement } = overview;
 
   return (
     <RequirePermission permission="discovery:read">
       <AlStack gap="lg">
         <AlPageHeader
           title="Discovery"
-          description="Editorial content shown in the consumer Discovery tab — Q&A and reels — plus the plans and coverage it sells."
+          description="Editorial surfaces in the consumer Discovery tab. Counts are from the first Nest list page (capped when marked +)."
           actions={
             <AlPageHeaderAction
               label={overview.isFetching ? 'Refreshing…' : 'Refresh'}
@@ -108,105 +132,114 @@ export function DiscoveryOverviewPage() {
           }
         />
 
-        <div className="dashboard-page-grid">
-          <OverviewCard
-            title="Q&A"
-            description="Community questions and answers"
-            icon={<UsersIcon size={20} aria-hidden />}
-            primaryValue={countValue(questions, (c) => c.total)}
-            primaryLabel="questions"
-            stats={[
-              { label: 'Published', value: countValue(questions, (c) => c.published) },
-              { label: 'Hidden', value: countValue(questions, (c) => c.unpublished) },
-            ]}
-            errorMessage={overview.questionsError}
-            cta="Manage Q&A"
-            testId="discovery-overview-qa"
-            onClick={() => {
-              void navigate(adminPaths.discoveryQa);
-            }}
-          />
-          <OverviewCard
-            title="Reels"
-            description="Short videos in the Discovery feed"
-            icon={<CameraIcon size={20} aria-hidden />}
-            primaryValue={countValue(reels, (c) => c.total)}
-            primaryLabel="reels"
-            stats={[
-              { label: 'Published', value: countValue(reels, (c) => c.published) },
-              { label: 'Draft', value: countValue(reels, (c) => c.unpublished) },
-              { label: 'Archived', value: countValue(reels, (c) => c.archived) },
-            ]}
-            errorMessage={overview.reelsError}
-            cta="Manage reels"
-            testId="discovery-overview-reels"
-            onClick={() => {
-              void navigate(adminPaths.discoveryReels);
-            }}
-          />
-          <OverviewCard
-            title="Reel engagement"
-            description="Across loaded reels"
-            icon={<CameraIcon size={20} aria-hidden />}
-            primaryValue={engagement ? formatCount(engagement.views) : '…'}
-            primaryLabel="views"
-            stats={
-              engagement
-                ? [
-                    { label: 'Likes', value: formatCount(engagement.likes) },
-                    { label: 'Comments', value: formatCount(engagement.comments) },
-                    { label: 'Saves', value: formatCount(engagement.saves) },
-                  ]
-                : undefined
-            }
-            errorMessage={overview.reelsError}
-            cta="Open reels"
-            testId="discovery-overview-engagement"
-            onClick={() => {
-              void navigate(adminPaths.discoveryReels);
-            }}
-          />
-        </div>
+        {overview.isLoading ? (
+          <div className="dashboard-page-grid dashboard-page-grid--loading">
+            {Array.from({ length: 4 }, (_, index) => (
+              <MetricSkeleton key={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="dashboard-page-grid">
+            <OverviewCard
+              title="Q&A"
+              description="Community questions"
+              icon={<UsersIcon size={20} aria-hidden />}
+              primaryValue={countValue(questions, (c) => c.total)}
+              primaryLabel="questions"
+              stats={[
+                { label: 'Published', value: countValue(questions, (c) => c.published) },
+                { label: 'Hidden', value: countValue(questions, (c) => c.unpublished) },
+              ]}
+              errorMessage={overview.questionsError}
+              testId="discovery-overview-qa"
+              onClick={() => {
+                void navigate(adminPaths.discoveryQa);
+              }}
+            />
+            <OverviewCard
+              title="Reels"
+              description="Short videos in the feed"
+              icon={<CameraIcon size={20} aria-hidden />}
+              primaryValue={countValue(reels, (c) => c.total)}
+              primaryLabel="reels"
+              stats={[
+                { label: 'Published', value: countValue(reels, (c) => c.published) },
+                { label: 'Draft', value: countValue(reels, (c) => c.unpublished) },
+                { label: 'Archived', value: countValue(reels, (c) => c.archived) },
+              ]}
+              errorMessage={overview.reelsError}
+              testId="discovery-overview-reels"
+              onClick={() => {
+                void navigate(adminPaths.discoveryReels);
+              }}
+            />
+            <OverviewCard
+              title="Daily Drive"
+              description="IDG YouTube catalogue"
+              icon={<CarIcon size={20} aria-hidden />}
+              primaryValue={countValue(dailyDrive, (c) => c.total)}
+              primaryLabel="videos"
+              stats={[
+                { label: 'Published', value: countValue(dailyDrive, (c) => c.published) },
+                { label: 'Draft', value: countValue(dailyDrive, (c) => c.unpublished) },
+              ]}
+              errorMessage={overview.dailyDriveError}
+              testId="discovery-overview-daily-drive"
+              onClick={() => {
+                void navigate(adminPaths.discoveryDailyDrive);
+              }}
+            />
+            <OverviewCard
+              title="Academy"
+              description="Member courses and lessons"
+              icon={<ActivityIcon size={20} aria-hidden />}
+              primaryValue={countValue(academy, (c) => c.total)}
+              primaryLabel="courses"
+              stats={[
+                { label: 'Published', value: countValue(academy, (c) => c.published) },
+                { label: 'Draft', value: countValue(academy, (c) => c.unpublished) },
+              ]}
+              errorMessage={overview.academyError}
+              testId="discovery-overview-academy"
+              onClick={() => {
+                void navigate(adminPaths.discoveryAcademy);
+              }}
+            />
+          </div>
+        )}
+
+        {engagement && !overview.reelsError ? (
+          <AlText tone="muted" variant="caption" data-testid="discovery-overview-engagement-note">
+            Across loaded reels: {formatCount(engagement.views)} views ·{' '}
+            {formatCount(engagement.likes)} likes · {formatCount(engagement.comments)} comments ·{' '}
+            {formatCount(engagement.saves)} saves
+            {reels?.capped ? ' (page capped)' : ''}.
+          </AlText>
+        ) : null}
 
         <AlStack gap="sm">
-          <AlText variant="label">Plans and coverage</AlText>
-          <AlText tone="muted" variant="caption">
-            Read-through links to the existing Catalog and Coverage consoles — plans and
-            subscriptions are managed there, not here.
-          </AlText>
+          <AlText variant="label">Related</AlText>
+          <div className="dashboard-page-grid">
+            <OverviewLinkCard
+              title="Q&A replies"
+              description="Moderate member replies"
+              icon={<UsersIcon size={20} aria-hidden />}
+              testId="discovery-overview-replies"
+              onClick={() => {
+                void navigate(adminPaths.discoveryReplies);
+              }}
+            />
+            <OverviewLinkCard
+              title="Coverage"
+              description="Subscriptions live under Customer Care"
+              icon={<ShieldCheckIcon size={20} aria-hidden />}
+              testId="discovery-overview-subscriptions"
+              onClick={() => {
+                void navigate(adminPaths.subscriptions);
+              }}
+            />
+          </div>
         </AlStack>
-        <div className="dashboard-page-grid">
-          <OverviewCard
-            title="Catalog"
-            description="Plan versions and SKU shelves"
-            icon={<StoreIcon size={20} aria-hidden />}
-            primaryValue={overview.livePlans === null ? '…' : formatCount(overview.livePlans)}
-            primaryLabel="live plans"
-            stats={
-              overview.planVersions === null
-                ? undefined
-                : [{ label: 'Plan versions', value: formatCount(overview.planVersions) }]
-            }
-            errorMessage={overview.plansError ? 'Unable to load plans.' : null}
-            cta="Open catalog"
-            testId="discovery-overview-catalog"
-            onClick={() => {
-              void navigate(adminPaths.catalog);
-            }}
-          />
-          <OverviewCard
-            title="Coverage"
-            description="Active protection per vehicle"
-            icon={<ShieldCheckIcon size={20} aria-hidden />}
-            primaryValue="Subscriptions"
-            primaryLabel="view and filter by status"
-            cta="Open coverage"
-            testId="discovery-overview-subscriptions"
-            onClick={() => {
-              void navigate(adminPaths.subscriptions);
-            }}
-          />
-        </div>
       </AlStack>
     </RequirePermission>
   );

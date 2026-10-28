@@ -1,10 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { catalogQueryKeys } from '@/hooks/catalog/catalog-query-keys';
 import { DISCOVERY_LIST_LIMIT, discoveryQueryKeys } from '@/hooks/discovery/discovery-query-keys';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
-import { fetchAdminPlans } from '@/services/catalog/admin-catalog-service';
+import {
+  describeAcademyReadError,
+  fetchAcademyCourses,
+} from '@/services/discovery/admin-academy-service';
+import {
+  describeDailyDriveReadError,
+  fetchDailyDriveVideos,
+} from '@/services/discovery/admin-daily-drive-service';
 import {
   fetchDiscoveryQuestionsPage,
   fetchDiscoveryReelsPage,
@@ -14,7 +20,7 @@ import { describeDiscoveryReadError } from '@/services/discovery/discovery-error
 export type DiscoveryOverviewCounts = {
   total: number;
   published: number;
-  /** HIDDEN questions / DRAFT reels. */
+  /** HIDDEN questions / DRAFT reels / unpublished daily-drive. */
   unpublished: number;
   archived: number;
   /** True when the list hit the page cap, so the counts are a lower bound. */
@@ -27,7 +33,7 @@ export type DiscoveryOverviewCounts = {
  */
 export function useDiscoveryOverview() {
   const canRead = useAdminPermission('discovery:read');
-  const canReadCatalog = useAdminPermission('catalog:read');
+
   const questionsQuery = useQuery({
     queryKey: [...discoveryQueryKeys.overview(), 'questions'],
     queryFn: ({ signal }) => fetchDiscoveryQuestionsPage({ limit: DISCOVERY_LIST_LIMIT }, signal),
@@ -44,11 +50,20 @@ export function useDiscoveryOverview() {
     meta: { errorMessage: 'Unable to load reels.' },
   });
 
-  const plansQuery = useQuery({
-    queryKey: catalogQueryKeys.plansList('ALL'),
-    queryFn: ({ signal }) => fetchAdminPlans({}, signal),
-    enabled: canRead && canReadCatalog,
-    meta: { errorMessage: 'Unable to load plans.' },
+  const dailyDriveQuery = useQuery({
+    queryKey: [...discoveryQueryKeys.overview(), 'daily-drive'],
+    queryFn: ({ signal }) => fetchDailyDriveVideos(undefined, signal),
+    enabled: canRead,
+    retry: false,
+    meta: { errorMessage: 'Unable to load Daily Drive.' },
+  });
+
+  const academyQuery = useQuery({
+    queryKey: [...discoveryQueryKeys.overview(), 'academy'],
+    queryFn: ({ signal }) => fetchAcademyCourses(undefined, signal),
+    enabled: canRead,
+    retry: false,
+    meta: { errorMessage: 'Unable to load Academy.' },
   });
 
   const questions = useMemo<DiscoveryOverviewCounts | null>(() => {
@@ -81,6 +96,36 @@ export function useDiscoveryOverview() {
     };
   }, [reelsQuery.data]);
 
+  const dailyDrive = useMemo<DiscoveryOverviewCounts | null>(() => {
+    const items = dailyDriveQuery.data;
+    if (!items) {
+      return null;
+    }
+    const count = (status: string) => items.filter((item) => item.status === status).length;
+    return {
+      total: items.length,
+      published: count('PUBLISHED'),
+      unpublished: count('DRAFT'),
+      archived: count('ARCHIVED'),
+      capped: false,
+    };
+  }, [dailyDriveQuery.data]);
+
+  const academy = useMemo<DiscoveryOverviewCounts | null>(() => {
+    const items = academyQuery.data;
+    if (!items) {
+      return null;
+    }
+    const count = (status: string) => items.filter((item) => item.status === status).length;
+    return {
+      total: items.length,
+      published: count('PUBLISHED'),
+      unpublished: count('DRAFT'),
+      archived: count('ARCHIVED'),
+      capped: false,
+    };
+  }, [academyQuery.data]);
+
   const engagement = useMemo(() => {
     const items = reelsQuery.data?.items;
     if (!items) {
@@ -97,25 +142,31 @@ export function useDiscoveryOverview() {
     );
   }, [reelsQuery.data]);
 
-  const livePlans = plansQuery.data?.filter((plan) => plan.isEffectiveNow).length ?? null;
-
   return {
     questions,
     reels,
+    dailyDrive,
+    academy,
     engagement,
-    livePlans,
-    planVersions: plansQuery.data?.length ?? null,
     questionsError: questionsQuery.isError
       ? describeDiscoveryReadError(questionsQuery.error)
       : null,
     reelsError: reelsQuery.isError ? describeDiscoveryReadError(reelsQuery.error) : null,
-    plansError: plansQuery.isError,
+    dailyDriveError: dailyDriveQuery.isError
+      ? describeDailyDriveReadError(dailyDriveQuery.error)
+      : null,
+    academyError: academyQuery.isError ? describeAcademyReadError(academyQuery.error) : null,
     isLoading: questionsQuery.isLoading || reelsQuery.isLoading,
-    isFetching: questionsQuery.isFetching || reelsQuery.isFetching || plansQuery.isFetching,
+    isFetching:
+      questionsQuery.isFetching ||
+      reelsQuery.isFetching ||
+      dailyDriveQuery.isFetching ||
+      academyQuery.isFetching,
     refresh: () => {
       void questionsQuery.refetch();
       void reelsQuery.refetch();
-      void plansQuery.refetch();
+      void dailyDriveQuery.refetch();
+      void academyQuery.refetch();
     },
   };
 }

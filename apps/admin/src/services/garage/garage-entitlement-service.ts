@@ -2,12 +2,14 @@ import {
   adjustGarageFreeBids,
   grantGaragePass,
   provisionGarage,
+  publishGarageStore,
   type AdjustGarageFreeBidsBody,
   type GarageFreeBidsBalanceDto,
   type GaragePassGrantResultDto,
   type GrantGaragePassBody,
   type ProvisionGarageBody,
   type ProvisionGarageResultDto,
+  type PublishGarageStoreResultDto,
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
@@ -36,4 +38,12 @@ export async function submitGarageProvision(
   signal?: AbortSignal,
 ): Promise<ProvisionGarageResultDto> {
   return provisionGarage(getAdminApiClient(), body, { signal });
+}
+
+/** POST /admin/v1/garage/orgs/{orgId}/publish-store — Nearby / bidding storefront. */
+export async function submitGaragePublishStore(
+  orgId: string,
+  signal?: AbortSignal,
+): Promise<PublishGarageStoreResultDto> {
+  return publishGarageStore(getAdminApiClient(), orgId, { signal });
 }

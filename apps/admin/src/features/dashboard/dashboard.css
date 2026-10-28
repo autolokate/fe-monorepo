@@ -212,19 +212,6 @@
   color: var(--al-admin-hint-color, var(--al-color-text-muted));
 }
 
-.dashboard-page-card__cta {
-  margin-top: auto;
-  font-family: var(--al-text-ui-family);
-  font-size: var(--al-text-label-size);
-  font-weight: var(--al-font-weight-medium);
-  line-height: var(--al-text-label-line-height);
-  color: color-mix(in srgb, var(--al-color-primary) 78%, var(--al-color-text));
-}
-
-.dashboard-page-card:hover .dashboard-page-card__cta {
-  color: var(--al-color-primary);
-}
-
 @media (max-width: 960px) {
   .dashboard-page-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
