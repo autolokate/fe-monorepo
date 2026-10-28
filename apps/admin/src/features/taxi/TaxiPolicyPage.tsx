@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 
 import { TaxiProvisionSheet } from '@/features/taxi/TaxiProvisionSheet';
 import { useTaxiPolicy } from '@/hooks/taxi/useTaxiPolicy';
-import { AdminDataBlock } from '@/platform/components/AdminDataBlock';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
@@ -13,6 +12,16 @@ type FormState = {
   customerAdvanceBps: number;
   partnerDepositBps: number;
 };
+
+function bpsToPercent(bps: number): string {
+  return `${(bps / 100).toFixed(bps % 100 === 0 ? 0 : 2)}%`;
+}
+
+function statusChipClass(status: string | undefined): string {
+  if (status === 'PUBLISHED') return 'admin-status-chip admin-status-chip--published';
+  if (status === 'DRAFT') return 'admin-status-chip admin-status-chip--draft';
+  return 'admin-status-chip admin-status-chip--none';
+}
 
 export function TaxiPolicyPage() {
   const canWrite = useAdminPermission('settings:write');
@@ -53,8 +62,8 @@ export function TaxiPolicyPage() {
   }, [isUnavailable, policy]);
 
   const pageDescription = isUnavailable
-    ? 'No Taxi policy yet — save a DRAFT (Admin-supplied bps; no invented defaults).'
-    : 'Advance / deposit bps from Nest. Provision creates a Taxi fixture org without QR.';
+    ? 'Set customer advance and partner deposit rates, then publish when ready.'
+    : 'Customer advance and partner deposit rates for Taxi. Save a draft, then publish.';
 
   const onSave = async () => {
     if (!form || !canWrite) return;
@@ -65,7 +74,7 @@ export function TaxiPolicyPage() {
         customerAdvanceBps: form.customerAdvanceBps,
         partnerDepositBps: form.partnerDepositBps,
       });
-      setSavedNote('Taxi policy draft saved.');
+      setSavedNote('Draft saved.');
     } catch {
       // Error surfaced via saveErrorMessage + toast.
     }
@@ -77,7 +86,7 @@ export function TaxiPolicyPage() {
     setPublishedNote(null);
     try {
       await publish();
-      setPublishedNote('Taxi policy published.');
+      setPublishedNote('Policy published.');
     } catch {
       // Error surfaced via publishErrorMessage + toast.
     }
@@ -95,6 +104,8 @@ export function TaxiPolicyPage() {
       </RequirePermission>
     );
   }
+
+  const statusLabel = policy?.status ?? (isUnavailable ? 'None' : '…');
 
   return (
     <RequirePermission permission="settings:read">
@@ -130,7 +141,7 @@ export function TaxiPolicyPage() {
                   ) : null}
                   {policy?.status === 'DRAFT' ? (
                     <AlPageHeaderAction
-                      label={isPublishing ? 'Publishing…' : 'Publish draft'}
+                      label={isPublishing ? 'Publishing…' : 'Publish'}
                       loading={isPublishing}
                       onClick={() => {
                         void onPublish();
@@ -143,7 +154,19 @@ export function TaxiPolicyPage() {
           }
         />
 
-        <AdminDataBlock>
+        <section className="admin-panel" data-testid="taxi-policy-panel">
+          <div className="admin-panel__header">
+            <div>
+              <h2 className="admin-panel__title">Current rates</h2>
+              <p className="admin-panel__subtitle">Values are stored as basis points (100 = 1%).</p>
+            </div>
+            <div className="admin-panel__meta">
+              <span className={statusChipClass(policy?.status)} data-testid="taxi-policy-status">
+                {statusLabel}
+              </span>
+            </div>
+          </div>
+
           {isLoading && !form ? (
             <p className="taxi-policy__muted">Loading Taxi policy…</p>
           ) : form ? (
@@ -153,8 +176,8 @@ export function TaxiPolicyPage() {
                 event.preventDefault();
               }}
             >
-              <label>
-                Customer advance (bps)
+              <label className="admin-field">
+                Customer advance
                 <input
                   data-testid="taxi-customer-advance-bps"
                   type="number"
@@ -170,9 +193,12 @@ export function TaxiPolicyPage() {
                     });
                   }}
                 />
+                <span className="taxi-policy__pct admin-field__hint">
+                  {bpsToPercent(form.customerAdvanceBps)} of fare held as advance
+                </span>
               </label>
-              <label>
-                Partner deposit (bps)
+              <label className="admin-field">
+                Partner deposit
                 <input
                   data-testid="taxi-partner-deposit-bps"
                   type="number"
@@ -188,18 +214,10 @@ export function TaxiPolicyPage() {
                     });
                   }}
                 />
+                <span className="taxi-policy__pct admin-field__hint">
+                  {bpsToPercent(form.partnerDepositBps)} partner deposit rate
+                </span>
               </label>
-              {policy?.status ? (
-                <p className="taxi-policy__note" data-testid="taxi-policy-status">
-                  Status: <strong>{policy.status}</strong>
-                  {policy.id ? ` · id ${policy.id}` : null}
-                </p>
-              ) : (
-                <p className="taxi-policy__note" data-testid="taxi-policy-status">
-                  Status: <strong>none</strong> — save creates DRAFT (Admin-supplied bps; no
-                  invented money defaults).
-                </p>
-              )}
               {saveErrorMessage ? (
                 <p className="taxi-policy__error" role="alert">
                   {saveErrorMessage}
@@ -222,31 +240,38 @@ export function TaxiPolicyPage() {
               ) : null}
             </form>
           ) : null}
-        </AdminDataBlock>
+        </section>
 
-        <h2 className="taxi-policy__section-title">Published history</h2>
-        <AdminDataBlock>
+        <section className="admin-panel">
+          <div className="admin-panel__header">
+            <div>
+              <h2 className="admin-panel__title">Published history</h2>
+              <p className="admin-panel__subtitle">Previous published versions of this policy.</p>
+            </div>
+          </div>
           {history.length === 0 ? (
             <p className="taxi-policy__muted" data-testid="taxi-policy-history-empty">
-              No published Taxi policy versions yet.
+              No published versions yet.
             </p>
           ) : (
-            <ul className="taxi-policy__history" data-testid="taxi-policy-history">
+            <ul className="admin-history-list" data-testid="taxi-policy-history">
               {history.map((row) => (
                 <li key={row.id}>
-                  <strong>{row.status ?? 'PUBLISHED'}</strong>
-                  {typeof row.customerAdvanceBps === 'number'
-                    ? ` · advance ${String(row.customerAdvanceBps)} bps`
-                    : null}
-                  {typeof row.partnerDepositBps === 'number'
-                    ? ` · deposit ${String(row.partnerDepositBps)} bps`
-                    : null}
-                  {row.publishedAt ? ` · ${row.publishedAt}` : null}
+                  <strong>{row.status ?? 'Published'}</strong>
+                  <span className="admin-history-list__meta">
+                    {typeof row.customerAdvanceBps === 'number'
+                      ? `Advance ${bpsToPercent(row.customerAdvanceBps)}`
+                      : null}
+                    {typeof row.partnerDepositBps === 'number'
+                      ? ` · Deposit ${bpsToPercent(row.partnerDepositBps)}`
+                      : null}
+                    {row.publishedAt ? ` · ${row.publishedAt}` : null}
+                  </span>
                 </li>
               ))}
             </ul>
           )}
-        </AdminDataBlock>
+        </section>
 
         <TaxiProvisionSheet open={provisionOpen} onOpenChange={setProvisionOpen} />
       </AlStack>

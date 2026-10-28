@@ -1,111 +1,96 @@
-.garage-commercial-config__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1rem 1.5rem;
-  margin: 0;
-}
-
-.garage-commercial-config__grid dt {
-  margin: 0 0 0.25rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--al-color-text-secondary, #6b7280);
-}
-
-.garage-commercial-config__grid dd {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--al-color-text-primary, #111827);
-}
-
-.garage-commercial-config__muted {
-  color: var(--al-color-text-secondary, #6b7280);
-  font-weight: 500;
-}
-
-.garage-commercial-config__note {
-  margin: 1.25rem 0 0;
-  font-size: 0.875rem;
-  color: var(--al-color-text-secondary, #6b7280);
-}
-
 .garage-commercial-config__form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1rem 1.5rem;
+  gap: var(--al-space-4) var(--al-space-5);
 }
 
 .garage-commercial-config__form label {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--al-color-text-secondary, #6b7280);
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .garage-commercial-config__form input {
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid var(--al-color-border, #d1d5db);
-  border-radius: 0.375rem;
-  color: var(--al-color-text-primary, #111827);
+  min-height: 2.375rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--al-admin-control-border, var(--al-color-outline));
+  border-radius: var(--al-radius-sm);
+  background: var(--al-admin-control-bg, var(--al-color-surface));
+  color: var(--al-admin-control-text, var(--al-color-text));
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.garage-commercial-config__muted {
+  margin: 0;
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+}
+
+.garage-commercial-config__note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
 }
 
 .garage-commercial-config__error {
   grid-column: 1 / -1;
   margin: 0;
-  color: var(--al-color-danger, #b91c1c);
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  color: var(--al-color-danger);
+  background: color-mix(in srgb, var(--al-color-danger) 10%, var(--al-color-surface));
+  border: 1px solid color-mix(in srgb, var(--al-color-danger) 26%, transparent);
+  font-size: var(--al-text-label-size);
 }
 
 .garage-commercial-config__ok {
   grid-column: 1 / -1;
   margin: 0;
-  color: var(--al-color-success, #15803d);
-}
-
-.garage-commercial-config__section-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--al-color-text-primary, #111827);
-}
-
-.garage-commercial-config__history {
-  margin: 0;
-  padding-left: 1.25rem;
-  display: grid;
-  gap: 0.5rem;
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  color: color-mix(in srgb, #2f9e6b 90%, var(--al-color-on-surface));
+  background: color-mix(in srgb, #2f9e6b 12%, var(--al-color-surface));
+  border: 1px solid color-mix(in srgb, #2f9e6b 28%, transparent);
+  font-size: var(--al-text-label-size);
 }
 
 .garage-entitlement-kind {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--al-color-text-secondary, #6b7280);
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .garage-entitlement-kind select {
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid var(--al-color-border, #d1d5db);
-  border-radius: 0.375rem;
+  min-height: 2.375rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--al-admin-control-border, var(--al-color-outline));
+  border-radius: var(--al-radius-sm);
+  background: var(--al-admin-control-bg, var(--al-color-surface));
+  color: var(--al-admin-control-text, var(--al-color-text));
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
 }
 
 .garage-entitlement-checkbox {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--al-text-label-size);
   text-transform: none;
   letter-spacing: normal;
-  color: var(--al-color-text-primary, #111827);
+  color: var(--al-color-text);
 }

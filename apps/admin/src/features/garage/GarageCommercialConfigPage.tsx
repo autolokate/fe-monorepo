@@ -15,7 +15,6 @@ import {
   ProvisionGarageSheet,
 } from '@/features/garage/GarageEntitlementSheets';
 import { useGarageCommercialConfig } from '@/hooks/garage/useGarageCommercialConfig';
-import { AdminDataBlock } from '@/platform/components/AdminDataBlock';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
@@ -30,6 +29,27 @@ type FormState = {
   welcomeCredits: number;
   creditsPerFirstBid: number;
 };
+
+function formatRupees(value: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function bpsToPercent(bps: number): string {
+  return `${(bps / 100).toFixed(bps % 100 === 0 ? 0 : 2)}%`;
+}
+
+function monthDurationLabel(kind: string | undefined): string {
+  if (kind === 'CALENDAR_MONTH_IST' || !kind) return 'Calendar month (IST)';
+  return kind
+    .toLowerCase()
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
 
 export function GarageCommercialConfigPage() {
   const canWrite = useAdminPermission('settings:write');
@@ -153,7 +173,37 @@ export function GarageCommercialConfigPage() {
           }
         />
 
-        <AdminDataBlock>
+        {form && !isLoading ? (
+          <div className="admin-kpi-strip" data-testid="garage-commercial-kpi">
+            <div className="admin-kpi">
+              <span className="admin-kpi__value">{form.freeBidLifetimeCount}</span>
+              <span className="admin-kpi__label">Lifetime free bids</span>
+            </div>
+            <div className="admin-kpi">
+              <span className="admin-kpi__value">{formatRupees(form.dayPassPriceRupees)}</span>
+              <span className="admin-kpi__label">Day pass</span>
+            </div>
+            <div className="admin-kpi">
+              <span className="admin-kpi__value">{formatRupees(form.monthPassPriceRupees)}</span>
+              <span className="admin-kpi__label">Month pass</span>
+            </div>
+            <div className="admin-kpi">
+              <span className="admin-kpi__value">{bpsToPercent(form.gstRateBps)}</span>
+              <span className="admin-kpi__label">GST</span>
+            </div>
+          </div>
+        ) : null}
+
+        <section className="admin-panel" data-testid="garage-commercial-panel">
+          <div className="admin-panel__header">
+            <div>
+              <h2 className="admin-panel__title">Pricing & bids</h2>
+              <p className="admin-panel__subtitle">
+                Live commercial settings applied to Garage partner orgs.
+              </p>
+            </div>
+          </div>
+
           {isLoading || !form ? (
             <p className="garage-commercial-config__muted">Loading commercial configuration…</p>
           ) : (
@@ -164,7 +214,7 @@ export function GarageCommercialConfigPage() {
                 void onSave();
               }}
             >
-              <label>
+              <label className="admin-field">
                 Lifetime free bids
                 <input
                   data-testid="garage-free-bid-lifetime-count"
@@ -177,7 +227,7 @@ export function GarageCommercialConfigPage() {
                   }}
                 />
               </label>
-              <label>
+              <label className="admin-field">
                 Day pass price (₹)
                 <input
                   data-testid="garage-day-pass-price"
@@ -190,7 +240,7 @@ export function GarageCommercialConfigPage() {
                   }}
                 />
               </label>
-              <label>
+              <label className="admin-field">
                 Day pass duration (hours)
                 <input
                   type="number"
@@ -202,7 +252,7 @@ export function GarageCommercialConfigPage() {
                   }}
                 />
               </label>
-              <label>
+              <label className="admin-field">
                 Month pass price (₹)
                 <input
                   data-testid="garage-month-pass-price"
@@ -215,8 +265,8 @@ export function GarageCommercialConfigPage() {
                   }}
                 />
               </label>
-              <label>
-                GST rate (basis points)
+              <label className="admin-field">
+                GST rate
                 <input
                   type="number"
                   min={0}
@@ -226,12 +276,12 @@ export function GarageCommercialConfigPage() {
                     setForm({ ...form, gstRateBps: Number(e.target.value) });
                   }}
                 />
-                <span className="garage-commercial-config__muted">
-                  100 bps = 1%. Example: 1800 = 18%.
+                <span className="admin-field__hint">
+                  Basis points · {bpsToPercent(form.gstRateBps)} (100 = 1%)
                 </span>
               </label>
-              <p className="garage-commercial-config__muted">
-                Month duration: {config?.monthPassDurationKind ?? 'CALENDAR_MONTH_IST'}
+              <p className="garage-commercial-config__muted admin-form-span">
+                Month duration: {monthDurationLabel(config?.monthPassDurationKind)}
               </p>
               {saveErrorMessage ? (
                 <p className="garage-commercial-config__error" role="alert">
@@ -245,10 +295,15 @@ export function GarageCommercialConfigPage() {
               ) : null}
             </form>
           )}
-        </AdminDataBlock>
+        </section>
 
-        <h2 className="garage-commercial-config__section-title">Configuration history</h2>
-        <AdminDataBlock>
+        <section className="admin-panel">
+          <div className="admin-panel__header">
+            <div>
+              <h2 className="admin-panel__title">Configuration history</h2>
+              <p className="admin-panel__subtitle">Recent saved commercial settings.</p>
+            </div>
+          </div>
           {historyErrorMessage ? (
             <p
               className="garage-commercial-config__error"
@@ -269,24 +324,24 @@ export function GarageCommercialConfigPage() {
               className="garage-commercial-config__muted"
               data-testid="garage-config-history-empty"
             >
-              No Garage commercial configuration changes yet.
+              No configuration changes yet.
             </p>
           ) : (
-            <ul className="garage-commercial-config__history" data-testid="garage-config-history">
+            <ul className="admin-history-list" data-testid="garage-config-history">
               {history.map((row) => (
                 <li key={row.id} data-testid={`garage-config-history-row-${row.id}`}>
                   <strong>{row.createdAt}</strong>
-                  {` · day ₹${String(row.after.dayPassPriceRupees)}`}
-                  {` · month ₹${String(row.after.monthPassPriceRupees)}`}
-                  {typeof row.after.freeBidLifetimeCount === 'number'
-                    ? ` · free bids ${String(row.after.freeBidLifetimeCount)}`
-                    : null}
-                  {` · admin ${row.adminAccountId.slice(0, 8)}`}
+                  <span className="admin-history-list__meta">
+                    {`Day ${formatRupees(row.after.dayPassPriceRupees)} · Month ${formatRupees(row.after.monthPassPriceRupees)}`}
+                    {typeof row.after.freeBidLifetimeCount === 'number'
+                      ? ` · Free bids ${String(row.after.freeBidLifetimeCount)}`
+                      : null}
+                  </span>
                 </li>
               ))}
             </ul>
           )}
-        </AdminDataBlock>
+        </section>
 
         <div className="admin-operations-results">
           {grantResult ? <PassGrantResultPanel result={grantResult} /> : null}

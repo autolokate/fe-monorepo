@@ -1,7 +1,7 @@
 .dashboard-page-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--al-space-4);
+  gap: var(--al-space-3);
 
   /* Theme-aligned tones — softened for dark panels */
   --dash-tone-success: var(--al-signal-green);
@@ -29,10 +29,10 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--al-space-4);
+  gap: var(--al-space-3);
   width: 100%;
-  min-height: 11rem;
-  padding: var(--al-space-5);
+  min-height: 9.5rem;
+  padding: var(--al-space-4);
   border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
   border-radius: var(--al-radius-sm);
   background: var(--al-color-surface);

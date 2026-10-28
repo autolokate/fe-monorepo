@@ -7,6 +7,8 @@ import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { showSuccessToast } from '@/platform/feedback/toast';
 import { submitTaxiProvision } from '@/services/taxi/taxi-policy-service';
 
+import './taxi-policy.css';
+
 export type TaxiProvisionSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -34,7 +36,7 @@ export function TaxiProvisionSheet({ open, onOpenChange }: TaxiProvisionSheetPro
       }),
     retry: 0,
     onSuccess: (result) => {
-      showSuccessToast(`Taxi partner provisioned (${result.orgId}).`);
+      showSuccessToast(`Taxi partner created (${result.orgId}).`);
       setForm(EMPTY);
       onOpenChange(false);
     },
@@ -62,69 +64,84 @@ export function TaxiProvisionSheet({ open, onOpenChange }: TaxiProvisionSheetPro
       }}
       size="md"
       title="Provision Taxi partner"
-      description="POST /admin/v1/taxi/provision — creates GARAGE-kind org + taxi enrollment (never QR)."
+      description="Create a Taxi partner organization enrolled for deposit and advance flows."
       footer={
-        <AlButton
-          data-testid="taxi-provision-submit"
-          disabled={!canSubmit}
-          loading={mutation.isPending}
-          onClick={() => {
-            mutation.mutate();
-          }}
-        >
-          Provision
-        </AlButton>
+        <div className="admin-modal-actions">
+          <AlButton
+            variant="secondary"
+            onClick={() => {
+              onOpenChange(false);
+            }}
+          >
+            Cancel
+          </AlButton>
+          <AlButton
+            data-testid="taxi-provision-submit"
+            disabled={!canSubmit}
+            loading={mutation.isPending}
+            onClick={() => {
+              mutation.mutate();
+            }}
+          >
+            Provision
+          </AlButton>
+        </div>
       }
     >
       <AlStack gap="md">
-        <label className="taxi-policy__field">
-          Account ID (UUID)
-          <input
-            data-testid="taxi-provision-account-id"
-            value={form.accountId}
-            onChange={(event) => {
-              setForm({ ...form, accountId: event.target.value });
-            }}
-          />
-        </label>
-        <label className="taxi-policy__field">
-          Org name
-          <input
-            data-testid="taxi-provision-org-name"
-            value={form.orgName}
-            onChange={(event) => {
-              setForm({ ...form, orgName: event.target.value });
-            }}
-          />
-        </label>
-        <label className="taxi-policy__field">
-          Owner name
-          <input
-            data-testid="taxi-provision-owner-name"
-            value={form.ownerName}
-            onChange={(event) => {
-              setForm({ ...form, ownerName: event.target.value });
-            }}
-          />
-        </label>
-        <label className="taxi-policy__field">
-          City (optional)
-          <input
-            value={form.city}
-            onChange={(event) => {
-              setForm({ ...form, city: event.target.value });
-            }}
-          />
-        </label>
-        <label className="taxi-policy__field">
-          Area (optional)
-          <input
-            value={form.area}
-            onChange={(event) => {
-              setForm({ ...form, area: event.target.value });
-            }}
-          />
-        </label>
+        <div className="admin-form-grid">
+          <label className="admin-field taxi-policy__field admin-form-span">
+            Owner account ID
+            <input
+              data-testid="taxi-provision-account-id"
+              value={form.accountId}
+              placeholder="Account UUID"
+              onChange={(event) => {
+                setForm({ ...form, accountId: event.target.value });
+              }}
+            />
+          </label>
+          <label className="admin-field taxi-policy__field">
+            Organization name
+            <input
+              data-testid="taxi-provision-org-name"
+              value={form.orgName}
+              onChange={(event) => {
+                setForm({ ...form, orgName: event.target.value });
+              }}
+            />
+          </label>
+          <label className="admin-field taxi-policy__field">
+            Owner name
+            <input
+              data-testid="taxi-provision-owner-name"
+              value={form.ownerName}
+              onChange={(event) => {
+                setForm({ ...form, ownerName: event.target.value });
+              }}
+            />
+          </label>
+          <label className="admin-field taxi-policy__field">
+            City
+            <input
+              value={form.city}
+              placeholder="Optional"
+              onChange={(event) => {
+                setForm({ ...form, city: event.target.value });
+              }}
+            />
+          </label>
+          <label className="admin-field taxi-policy__field">
+            Area
+            <input
+              value={form.area}
+              placeholder="Optional"
+              onChange={(event) => {
+                setForm({ ...form, area: event.target.value });
+              }}
+            />
+          </label>
+        </div>
         {errorMessage ? (
           <AlText tone="muted" role="alert">
             {errorMessage}

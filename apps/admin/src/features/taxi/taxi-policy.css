@@ -1,14 +1,7 @@
-.taxi-policy__section-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--al-color-text-primary, #111827);
-}
-
 .taxi-policy__form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1rem 1.5rem;
+  gap: var(--al-space-4) var(--al-space-5);
 }
 
 .taxi-policy__form label,
@@ -16,49 +9,63 @@
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  font-size: 0.875rem;
-  color: var(--al-color-text-secondary, #6b7280);
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
 }
 
 .taxi-policy__form input,
 .taxi-policy__field input {
-  padding: 0.5rem 0.65rem;
-  border: 1px solid var(--al-color-border, #d1d5db);
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  color: var(--al-color-text-primary, #111827);
-  background: var(--al-color-surface, #fff);
+  /* Themed by admin-wow.css — keep local fallbacks theme-safe */
+  min-height: 2.375rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--al-admin-control-border, var(--al-color-outline));
+  border-radius: var(--al-radius-sm);
+  background: var(--al-admin-control-bg, var(--al-color-surface));
+  color: var(--al-admin-control-text, var(--al-color-text));
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  font-variant-numeric: tabular-nums;
 }
 
 .taxi-policy__muted {
-  color: var(--al-color-text-secondary, #6b7280);
-  font-weight: 500;
+  margin: 0;
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+  font-size: var(--al-text-label-size);
 }
 
 .taxi-policy__note {
   grid-column: 1 / -1;
   margin: 0;
-  font-size: 0.875rem;
-  color: var(--al-color-text-secondary, #6b7280);
+  font-size: var(--al-text-label-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
 }
 
 .taxi-policy__error {
   grid-column: 1 / -1;
   margin: 0;
-  color: var(--al-color-danger, #b91c1c);
-  font-size: 0.875rem;
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  color: var(--al-color-danger);
+  background: color-mix(in srgb, var(--al-color-danger) 10%, var(--al-color-surface));
+  border: 1px solid color-mix(in srgb, var(--al-color-danger) 26%, transparent);
+  font-size: var(--al-text-label-size);
 }
 
 .taxi-policy__ok {
   grid-column: 1 / -1;
   margin: 0;
-  color: var(--al-color-success, #15803d);
-  font-size: 0.875rem;
+  padding: var(--al-space-2) var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  color: color-mix(in srgb, #2f9e6b 90%, var(--al-color-on-surface));
+  background: color-mix(in srgb, #2f9e6b 12%, var(--al-color-surface));
+  border: 1px solid color-mix(in srgb, #2f9e6b 28%, transparent);
+  font-size: var(--al-text-label-size);
 }
 
-.taxi-policy__history {
-  margin: 0;
-  padding-left: 1.25rem;
-  display: grid;
-  gap: 0.5rem;
+.taxi-policy__pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+  font-size: var(--al-text-caption-size);
+  font-weight: var(--al-font-weight-regular, 400);
 }

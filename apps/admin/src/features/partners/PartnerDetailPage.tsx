@@ -28,6 +28,12 @@ function humanLabel(value: string): string {
     .join(' ');
 }
 
+function storeChipClass(status: string | null | undefined): string {
+  if (status === 'PUBLISHED') return 'admin-status-chip admin-status-chip--published';
+  if (status === 'DRAFT') return 'admin-status-chip admin-status-chip--draft';
+  return 'admin-status-chip admin-status-chip--neutral';
+}
+
 function DetailField({
   label,
   value,
@@ -81,7 +87,7 @@ export function PartnerDetailPage() {
     : null;
 
   const pageDescription = partner.storeStatus
-    ? `${humanLabel(partner.partnerKind)} · ${humanLabel(partner.storeStatus)}`
+    ? `${humanLabel(partner.partnerKind)} · Store ${humanLabel(partner.storeStatus)}`
     : humanLabel(partner.partnerKind);
 
   return (
@@ -113,12 +119,30 @@ export function PartnerDetailPage() {
           }
         />
 
-        <section className="partners-section" data-testid="partners-detail-summary">
-          <h2 className="partners-section__heading">Overview</h2>
+        <section className="admin-panel" data-testid="partners-detail-summary">
+          <div className="admin-panel__header">
+            <div>
+              <h2 className="admin-panel__title">Overview</h2>
+              <p className="admin-panel__subtitle">Organization and storefront details.</p>
+            </div>
+            <div className="admin-panel__meta">
+              <span className="admin-status-chip admin-status-chip--neutral">
+                {humanLabel(partner.partnerKind)}
+              </span>
+              {partner.storeStatus ? (
+                <span className={storeChipClass(partner.storeStatus)}>
+                  {humanLabel(partner.storeStatus)}
+                </span>
+              ) : null}
+            </div>
+          </div>
           <div className="admin-detail-card-grid">
             <DetailField label="Org ID" value={partner.orgId} mono />
-            <DetailField label="Partner kind" value={partner.partnerKind} />
-            <DetailField label="Org kind" value={partner.orgKind ?? '—'} />
+            <DetailField label="Partner kind" value={humanLabel(partner.partnerKind)} />
+            <DetailField
+              label="Org kind"
+              value={partner.orgKind ? humanLabel(partner.orgKind) : '—'}
+            />
             <DetailField label="Owner account" value={shortId(partner.ownerAccountId)} mono />
             <DetailField label="Created" value={formatPartnersDateTime(partner.createdAt)} />
             <DetailField
@@ -127,7 +151,10 @@ export function PartnerDetailPage() {
               mono={Boolean(partner.storeId)}
             />
             <DetailField label="Store name" value={partner.storeName ?? '—'} />
-            <DetailField label="Store status" value={partner.storeStatus ?? '—'} />
+            <DetailField
+              label="Store status"
+              value={partner.storeStatus ? humanLabel(partner.storeStatus) : '—'}
+            />
             <DetailField
               label="Cities"
               value={partner.cities?.length ? partner.cities.join(', ') : '—'}
@@ -135,8 +162,13 @@ export function PartnerDetailPage() {
           </div>
         </section>
 
-        <section className="partners-section" data-testid="partners-detail-ops">
-          <h2 className="partners-section__heading">Actions</h2>
+        <section className="admin-panel" data-testid="partners-detail-ops">
+          <div className="admin-panel__header">
+            <div>
+              <h2 className="admin-panel__title">Actions</h2>
+              <p className="admin-panel__subtitle">Publish storefront or jump to related ops.</p>
+            </div>
+          </div>
           <div className="partners-links">
             {canPublishStore ? (
               <AlButton
@@ -193,7 +225,7 @@ export function PartnerDetailPage() {
           ) : null}
           {partner.storeStatus === 'PUBLISHED' ? (
             <AlText tone="muted" variant="caption">
-              Storefront already published for Nearby / bidding.
+              Storefront is live for Nearby and bidding.
             </AlText>
           ) : null}
         </section>

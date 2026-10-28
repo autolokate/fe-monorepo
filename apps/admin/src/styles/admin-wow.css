@@ -1,0 +1,377 @@
+/**
+ * Admin wow surface — premium density, contrast, native-control theming.
+ * Scoped to .al-page-layout / .al-modal so QR/website are untouched.
+ */
+
+.al-page-layout,
+.al-modal {
+  --al-admin-panel-bg: var(--al-color-surface);
+  --al-admin-panel-border: color-mix(in srgb, var(--al-color-outline) 72%, transparent);
+  --al-admin-control-bg: color-mix(in srgb, var(--al-color-on-surface) 4%, var(--al-color-surface));
+  --al-admin-control-border: color-mix(in srgb, var(--al-color-outline) 88%, transparent);
+  --al-admin-control-text: var(--al-color-on-surface);
+  --al-admin-control-placeholder: color-mix(in srgb, var(--al-color-on-surface) 48%, transparent);
+  --al-admin-section-gap: var(--al-space-4);
+}
+
+[data-theme='dark'] .al-page-layout,
+[data-theme='dark'] .al-modal {
+  --al-admin-panel-border: color-mix(in srgb, var(--al-color-outline) 55%, transparent);
+  --al-admin-control-bg: color-mix(in srgb, var(--al-color-on-surface) 7%, var(--al-color-surface));
+  --al-admin-control-border: color-mix(in srgb, var(--al-color-outline) 70%, transparent);
+  --al-admin-control-placeholder: color-mix(in srgb, var(--al-color-on-surface) 42%, transparent);
+}
+
+[data-theme='light'] .al-page-layout,
+[data-theme='light'] .al-modal {
+  --al-admin-control-bg: #fff;
+  --al-admin-control-border: color-mix(in srgb, var(--al-color-outline) 92%, transparent);
+  --al-admin-control-placeholder: color-mix(in srgb, var(--al-color-on-surface) 46%, transparent);
+}
+
+/* Dense page rhythm */
+.al-page-layout .al-page-header {
+  margin-bottom: var(--al-space-3);
+}
+
+.al-page-layout .al-page-header .al-heading {
+  font-size: 1.375rem;
+  font-weight: var(--al-font-weight-semibold);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.al-page-layout .al-page-header .al-text--muted {
+  max-width: 42rem;
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+/* Operator panels */
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-4);
+  padding: var(--al-space-4) var(--al-space-5);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-admin-panel-bg);
+  border: 1px solid var(--al-admin-panel-border);
+}
+
+.admin-panel__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--al-space-3);
+}
+
+.admin-panel__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-semibold);
+  color: var(--al-color-text);
+  letter-spacing: -0.005em;
+}
+
+.admin-panel__subtitle {
+  margin: var(--al-space-1) 0 0;
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.admin-panel__meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--al-space-2);
+}
+
+.admin-status-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--al-space-2);
+}
+
+.admin-status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0 0.55rem;
+  border-radius: var(--al-radius-sm);
+  font-size: 0.6875rem;
+  font-weight: var(--al-font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.admin-status-chip--draft {
+  color: color-mix(in srgb, #c9851a 88%, var(--al-color-on-surface));
+  background: color-mix(in srgb, #c9851a 14%, var(--al-color-surface));
+  border-color: color-mix(in srgb, #c9851a 34%, transparent);
+}
+
+.admin-status-chip--published,
+.admin-status-chip--active {
+  color: color-mix(in srgb, #2f9e6b 90%, var(--al-color-on-surface));
+  background: color-mix(in srgb, #2f9e6b 14%, var(--al-color-surface));
+  border-color: color-mix(in srgb, #2f9e6b 34%, transparent);
+}
+
+.admin-status-chip--none,
+.admin-status-chip--neutral {
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+  background: var(--al-color-surface-variant);
+  border-color: var(--al-admin-panel-border);
+}
+
+/* Native form controls — dark+light readable (fixes #111827-on-dark bug) */
+.al-page-layout .admin-field,
+.al-modal .admin-field,
+.al-page-layout .taxi-policy__form label,
+.al-page-layout .taxi-policy__field,
+.al-modal .taxi-policy__field,
+.al-page-layout .garage-commercial-config__form label,
+.al-modal .garage-entitlement-kind {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.al-page-layout .admin-field__hint,
+.al-modal .admin-field__hint {
+  margin: 0;
+  font-size: var(--al-text-caption-size);
+  font-weight: var(--al-font-weight-regular, 400);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.al-page-layout .admin-field input,
+.al-page-layout .admin-field select,
+.al-page-layout .admin-field textarea,
+.al-modal .admin-field input,
+.al-modal .admin-field select,
+.al-modal .admin-field textarea,
+.al-page-layout .taxi-policy__form input,
+.al-page-layout .taxi-policy__field input,
+.al-modal .taxi-policy__field input,
+.al-page-layout .garage-commercial-config__form input,
+.al-modal .garage-entitlement-kind select,
+.al-page-layout .admin-data-block input:not([type='checkbox']):not([type='radio']),
+.al-page-layout .admin-data-block select,
+.al-page-layout .admin-data-block textarea,
+.al-modal input:not([type='checkbox']):not([type='radio']):not(.al-field__input),
+.al-modal select:not(.al-select),
+.al-modal textarea:not(.al-field__input) {
+  width: 100%;
+  min-height: 2.375rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--al-admin-control-border);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-admin-control-bg);
+  color: var(--al-admin-control-text);
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color-scheme: inherit;
+  box-shadow: none;
+}
+
+.al-page-layout .admin-field input::placeholder,
+.al-modal .admin-field input::placeholder,
+.al-page-layout .taxi-policy__form input::placeholder,
+.al-modal .taxi-policy__field input::placeholder,
+.al-page-layout .garage-commercial-config__form input::placeholder,
+.al-modal input::placeholder {
+  color: var(--al-admin-control-placeholder);
+  opacity: 1;
+}
+
+.al-page-layout .admin-field input:focus,
+.al-page-layout .admin-field select:focus,
+.al-page-layout .admin-field textarea:focus,
+.al-modal .admin-field input:focus,
+.al-modal .admin-field select:focus,
+.al-modal .admin-field textarea:focus,
+.al-page-layout .taxi-policy__form input:focus,
+.al-page-layout .taxi-policy__field input:focus,
+.al-modal .taxi-policy__field input:focus,
+.al-page-layout .garage-commercial-config__form input:focus,
+.al-modal .garage-entitlement-kind select:focus,
+.al-page-layout .admin-data-block input:focus,
+.al-page-layout .admin-data-block select:focus,
+.al-page-layout .admin-data-block textarea:focus,
+.al-modal input:not(.al-field__input):focus,
+.al-modal select:not(.al-select):focus,
+.al-modal textarea:not(.al-field__input):focus {
+  outline: 2px solid color-mix(in srgb, var(--al-color-focus) 28%, transparent);
+  outline-offset: 0;
+  border-color: var(--al-color-focus);
+}
+
+.al-page-layout .admin-field input:disabled,
+.al-modal .admin-field input:disabled,
+.al-page-layout .taxi-policy__form input:disabled,
+.al-page-layout .garage-commercial-config__form input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--al-space-4) var(--al-space-5);
+}
+
+.admin-form-grid--dense {
+  gap: var(--al-space-3) var(--al-space-4);
+}
+
+.admin-form-span {
+  grid-column: 1 / -1;
+}
+
+.admin-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: var(--al-space-3);
+}
+
+.admin-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: var(--al-space-3) var(--al-space-4);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface-variant);
+  border: 1px solid var(--al-admin-panel-border);
+  min-width: 0;
+}
+
+.admin-kpi__value {
+  font-size: 1.25rem;
+  font-weight: var(--al-font-weight-semibold);
+  line-height: 1.25;
+  color: var(--al-color-text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.admin-kpi__label {
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.admin-history-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-2);
+}
+
+.admin-history-list li {
+  display: grid;
+  gap: 0.15rem;
+  padding: var(--al-space-3) var(--al-space-4);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface-variant);
+  border: 1px solid var(--al-admin-panel-border);
+  font-size: var(--al-text-label-size);
+  color: var(--al-color-text);
+}
+
+.admin-history-list__meta {
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+  font-size: var(--al-text-caption-size);
+}
+
+/* Action bars never clip / never full-bleed */
+.al-page-layout .al-page-header__actions,
+.admin-page-actions,
+.admin-sheet-actions,
+.al-modal__footer .admin-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--al-space-2);
+  max-width: 100%;
+}
+
+.al-page-layout .al-page-header__actions .al-button,
+.admin-page-actions .al-button,
+.admin-sheet-actions .al-button,
+.al-modal__footer .admin-modal-actions .al-button {
+  width: auto;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Detail field grid polish */
+.admin-detail-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: var(--al-space-3);
+}
+
+.admin-detail-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: var(--al-space-3);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-color-surface-variant);
+  border: 1px solid var(--al-admin-panel-border);
+}
+
+.admin-detail-card__label {
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.admin-detail-card__value {
+  font-size: var(--al-text-body-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-color-text);
+  word-break: break-word;
+}
+
+.admin-detail-card__value--mono {
+  font-family: var(--al-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: var(--al-text-caption-size);
+  font-weight: var(--al-font-weight-regular, 400);
+}
+
+/* Data block denser */
+.al-page-layout .admin-data-block__filters {
+  padding: var(--al-space-3) var(--al-space-4);
+  gap: var(--al-space-3) var(--al-space-4);
+}
+
+.al-page-layout .admin-empty-note {
+  padding: var(--al-space-6) var(--al-space-4);
+}
+
+@media (max-width: 768px) {
+  .admin-panel {
+    padding: var(--al-space-3) var(--al-space-4);
+  }
+
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .al-page-layout .al-page-header__actions {
+    width: 100%;
+  }
+}
