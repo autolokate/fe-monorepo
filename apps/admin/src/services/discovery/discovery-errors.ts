@@ -2,7 +2,7 @@ import { ApiError } from '@autolokate/api-client';
 
 import { mapAdminApiError, resolveSubmitErrorMessage } from '@/platform/errors/admin-api-errors';
 
-const UNAVAILABLE_MESSAGE = 'Discovery admin is not available yet on this environment.';
+const UNAVAILABLE_MESSAGE = 'Discovery admin is not available on this environment yet.';
 const FORBIDDEN_MESSAGE =
   'Your account is not allowed to manage Discovery. It needs an OPERATOR session with step-up.';
 
