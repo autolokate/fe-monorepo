@@ -51,6 +51,18 @@ function monthDurationLabel(kind: string | undefined): string {
     .join(' ');
 }
 
+function formatHistoryWhen(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
 export function GarageCommercialConfigPage() {
   const canWrite = useAdminPermission('settings:write');
   const {
@@ -277,7 +289,7 @@ export function GarageCommercialConfigPage() {
                   }}
                 />
                 <span className="admin-field__hint">
-                  Basis points · {bpsToPercent(form.gstRateBps)} (100 = 1%)
+                  {bpsToPercent(form.gstRateBps)} · 100 equals 1%
                 </span>
               </label>
               <p className="garage-commercial-config__muted admin-form-span">
@@ -330,7 +342,7 @@ export function GarageCommercialConfigPage() {
             <ul className="admin-history-list" data-testid="garage-config-history">
               {history.map((row) => (
                 <li key={row.id} data-testid={`garage-config-history-row-${row.id}`}>
-                  <strong>{row.createdAt}</strong>
+                  <strong>{formatHistoryWhen(row.createdAt)}</strong>
                   <span className="admin-history-list__meta">
                     {`Day ${formatRupees(row.after.dayPassPriceRupees)} · Month ${formatRupees(row.after.monthPassPriceRupees)}`}
                     {typeof row.after.freeBidLifetimeCount === 'number'

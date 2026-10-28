@@ -1,14 +1,19 @@
 .admin-user-lookup,
 .admin-user-account,
 .admin-user-activity {
-  padding: var(--al-space-5);
+  padding: var(--al-space-4) var(--al-space-5);
   border-radius: var(--al-radius-sm);
   background: var(--al-color-surface);
-  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  border: var(--al-border-width-thin) solid
+    var(--al-admin-panel-border, var(--al-color-border-subtle));
 }
 
 .admin-user-lookup form {
   max-width: 28rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--al-space-3);
 }
 
 .admin-user-account__roles {

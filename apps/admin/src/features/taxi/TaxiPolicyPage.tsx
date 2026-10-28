@@ -158,7 +158,7 @@ export function TaxiPolicyPage() {
           <div className="admin-panel__header">
             <div>
               <h2 className="admin-panel__title">Current rates</h2>
-              <p className="admin-panel__subtitle">Values are stored as basis points (100 = 1%).</p>
+              <p className="admin-panel__subtitle">Enter whole numbers — 100 equals 1%.</p>
             </div>
             <div className="admin-panel__meta">
               <span className={statusChipClass(policy?.status)} data-testid="taxi-policy-status">

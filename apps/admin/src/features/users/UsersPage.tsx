@@ -557,7 +557,7 @@ export function UsersPage() {
                   onChange={(event) => {
                     setPhoneInput(event.target.value);
                   }}
-                  helperText="E.164, Indian 10-digit, or 91-prefixed."
+                  helperText="Indian mobile or +91 format."
                 />
                 <div className="admin-page-actions">
                   <AlButton

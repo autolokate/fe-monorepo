@@ -24,7 +24,7 @@ test.describe('Taxi policy (hermetic)', () => {
     await page.getByTestId('taxi-customer-advance-bps').fill('750');
     await page.getByRole('button', { name: 'Save draft' }).click();
 
-    await expect(page.getByRole('status')).toContainText('Taxi policy draft saved.', {
+    await expect(page.getByRole('status')).toContainText('Draft saved.', {
       timeout: 10_000,
     });
     expect(capture.taxiPolicyPut).toHaveLength(1);
@@ -42,8 +42,8 @@ test.describe('Taxi policy (hermetic)', () => {
     await seedHermeticSession(page);
     await openTaxiPolicyPage(page);
 
-    await page.getByRole('button', { name: 'Publish draft' }).click();
-    await expect(page.getByRole('status')).toContainText('Taxi policy published.', {
+    await page.getByRole('button', { name: 'Publish', exact: true }).click();
+    await expect(page.getByRole('status')).toContainText('Policy published.', {
       timeout: 10_000,
     });
     await expect(page.getByTestId('taxi-policy-status')).toContainText('PUBLISHED');
@@ -59,11 +59,11 @@ test.describe('Taxi policy (hermetic)', () => {
     await seedHermeticSession(page);
     await openTaxiPolicyPage(page);
 
-    await expect(page.getByTestId('taxi-policy-status')).toContainText('none');
+    await expect(page.getByTestId('taxi-policy-status')).toContainText('None');
     await page.getByTestId('taxi-customer-advance-bps').fill('500');
     await page.getByTestId('taxi-partner-deposit-bps').fill('1000');
     await page.getByRole('button', { name: 'Save draft' }).click();
-    await expect(page.getByRole('status')).toContainText('Taxi policy draft saved.', {
+    await expect(page.getByRole('status')).toContainText('Draft saved.', {
       timeout: 10_000,
     });
     expect(capture.taxiPolicyPut).toHaveLength(1);

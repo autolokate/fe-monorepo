@@ -46,7 +46,8 @@ test.describe.skip(`Admin Partners directory (hermetic) — ${skipReason}`, () =
     await openPartnerDetailPage(page);
 
     await expect(page.getByRole('heading', { name: 'Hermetic Garage Partner' })).toBeVisible();
-    await expect(page.getByText('Server fields only')).toBeVisible();
+    await expect(page.getByTestId('partners-detail-summary')).toBeVisible();
+    await expect(page.getByText('Overview')).toBeVisible();
     expect(partners.partnerDetail).toContain(HERMETIC_PARTNER_ORG_ID);
   });
 });
