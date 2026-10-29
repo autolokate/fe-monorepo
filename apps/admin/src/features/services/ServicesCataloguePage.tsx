@@ -1,11 +1,13 @@
 import type { AdminServiceProviderDto } from '@autolokate/api-client';
 import {
+  AlButton,
   AlConfirmationDialog,
   AlDataTable,
   AlErrorState,
   AlPageHeader,
   AlPageHeaderAction,
   AlStack,
+  AlText,
 } from '@autolokate/ui';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -27,6 +29,11 @@ export function ServicesCataloguePage() {
     category,
     setCategory,
     categories,
+    hubDraft,
+    moveHubItem,
+    toggleHubVisible,
+    saveHubMutation,
+    hubSaveError,
     providers,
     isLoading,
     isFetching,
@@ -117,16 +124,86 @@ export function ServicesCataloguePage() {
         />
 
         <AdminPanel
-          title="Hub visibility"
-          subtitle="Providers appear in the consumer hub when Active. Deactivate to hide them."
+          title="Hub categories"
+          subtitle="Reorder hub tiles and toggle visibility for the consumer Services hub."
+          meta={
+            canWrite ? (
+              <AlButton
+                variant="primary"
+                size="sm"
+                data-testid="services-hub-categories-save"
+                loading={saveHubMutation.isPending}
+                onClick={() => {
+                  saveHubMutation.mutate(hubDraft);
+                }}
+              >
+                Save
+              </AlButton>
+            ) : null
+          }
         >
           {categoriesErrorMessage ? (
             <p className="admin-empty-note" data-testid="services-category-config-stub">
-              Hub categories could not be loaded — using defaults. ({categoriesErrorMessage})
+              Hub categories could not be loaded — editing defaults. ({categoriesErrorMessage})
             </p>
+          ) : null}
+
+          <ul className="services-hub-list" data-testid="services-hub-categories">
+            {hubDraft.map((item, index) => (
+              <li key={item.category} className="services-hub-row">
+                <div className="services-hub-row__main">
+                  <span className="services-hub-row__label">
+                    {item.label?.trim() || item.category}
+                  </span>
+                  <span className="services-hub-row__meta">{item.category}</span>
+                </div>
+                <div className="services-hub-row__actions">
+                  <label className="services-hub-visible">
+                    <input
+                      type="checkbox"
+                      checked={item.visible}
+                      disabled={!canWrite}
+                      data-testid={`services-hub-visible-${item.category}`}
+                      onChange={() => {
+                        toggleHubVisible(index);
+                      }}
+                    />
+                    Visible
+                  </label>
+                  <AlButton
+                    variant="secondary"
+                    size="sm"
+                    disabled={!canWrite || index === 0}
+                    data-testid={`services-hub-up-${item.category}`}
+                    onClick={() => {
+                      moveHubItem(index, -1);
+                    }}
+                  >
+                    Up
+                  </AlButton>
+                  <AlButton
+                    variant="secondary"
+                    size="sm"
+                    disabled={!canWrite || index === hubDraft.length - 1}
+                    data-testid={`services-hub-down-${item.category}`}
+                    onClick={() => {
+                      moveHubItem(index, 1);
+                    }}
+                  >
+                    Down
+                  </AlButton>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {hubSaveError ? (
+            <AlText tone="muted" role="alert" data-testid="services-hub-categories-error">
+              {hubSaveError}
+            </AlText>
           ) : (
-            <p className="admin-empty-note" data-testid="services-category-config-stub">
-              Filter by category, then add or edit providers for that list.
+            <p className="admin-empty-note">
+              Filter providers by category below after saving hub order and visibility.
             </p>
           )}
         </AdminPanel>

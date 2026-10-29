@@ -48,6 +48,8 @@ export type AdminPartnerOrgDto = {
   storeId?: string | null;
   storeName?: string | null;
   storeStatus?: string | null;
+  /** Present when BE partner detail includes store GST; optional until DTO ships. */
+  gstVerification?: string | null;
   cities?: string[];
 };
 

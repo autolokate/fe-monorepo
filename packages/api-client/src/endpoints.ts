@@ -193,6 +193,8 @@ export const endpoints = {
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/free-bids/adjust`,
     garageOrgPublishStore: (orgId: string) =>
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/publish-store`,
+    garageOrgGstVerification: (orgId: string) =>
+      `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/gst-verification`,
     communityQuestions: '/admin/v1/community/questions',
     communityQuestion: (id: string) => `/admin/v1/community/questions/${encodeURIComponent(id)}`,
     communityReplies: '/admin/v1/community/replies',

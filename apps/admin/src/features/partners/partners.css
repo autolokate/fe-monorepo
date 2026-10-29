@@ -55,3 +55,11 @@
   flex-wrap: wrap;
   gap: var(--al-space-2);
 }
+
+.partners-gst-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--al-space-3);
+  max-width: 28rem;
+}
