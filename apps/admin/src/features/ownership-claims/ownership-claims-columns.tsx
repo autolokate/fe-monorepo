@@ -1,6 +1,26 @@
 import type { OwnershipClaimDto } from '@autolokate/api-client';
-import { AlButton, type ColumnDef } from '@autolokate/ui';
+import { AlButton, AlText, type ColumnDef } from '@autolokate/ui';
 import { useMemo, type MouseEvent } from 'react';
+
+import {
+  AdminStatusChip,
+  humanizeAdminLabel,
+  shortAdminId,
+  type AdminStatusChipTone,
+} from '@/platform/components/AdminWowSurface';
+
+function claimStatusTone(status: OwnershipClaimDto['status']): AdminStatusChipTone {
+  if (status === 'APPROVED') return 'active';
+  if (status === 'REJECTED' || status === 'WITHDRAWN') return 'none';
+  if (status === 'UNDER_REVIEW') return 'draft';
+  return 'neutral';
+}
+
+function formatDate(value: string | null | undefined): string {
+  if (!value) return '—';
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? value.slice(0, 10) : parsed.toLocaleDateString();
+}
 
 export type OwnershipClaimsColumnHandlers = {
   onOpenDetail: (claim: OwnershipClaimDto) => void;
@@ -18,38 +38,62 @@ export function useOwnershipClaimsColumns(
   return useMemo(
     () => [
       {
-        id: 'id',
+        id: 'claim',
         header: 'Claim',
-        accessorFn: (row) => row.id,
-        cell: ({ row }) => row.original.id.slice(0, 8),
+        accessorFn: (row) => row.status,
+        cell: ({ row }) => {
+          const claim = row.original;
+          return (
+            <div className="admin-primary-cell">
+              <span className="admin-primary-cell__title">
+                <AdminStatusChip
+                  label={humanizeAdminLabel(claim.status)}
+                  tone={claimStatusTone(claim.status)}
+                />
+              </span>
+              <AlText
+                className="admin-primary-cell__meta"
+                variant="mono"
+                tone="muted"
+                title={claim.id}
+              >
+                {shortAdminId(claim.id)}
+              </AlText>
+            </div>
+          );
+        },
       },
       {
         id: 'vehicleId',
         header: 'Vehicle',
         accessorFn: (row) => row.vehicleId,
-        cell: ({ row }) => row.original.vehicleId.slice(0, 8),
+        cell: ({ row }) => (
+          <AlText variant="mono" tone="muted" title={row.original.vehicleId}>
+            {shortAdminId(row.original.vehicleId)}
+          </AlText>
+        ),
       },
       {
         id: 'claimant',
         header: 'Claimant',
         accessorFn: (row) => row.claimantAccountId,
-        cell: ({ row }) => row.original.claimantAccountId.slice(0, 8),
-      },
-      {
-        id: 'status',
-        header: 'Status',
-        accessorFn: (row) => row.status,
+        cell: ({ row }) => (
+          <AlText variant="mono" tone="muted" title={row.original.claimantAccountId}>
+            {shortAdminId(row.original.claimantAccountId)}
+          </AlText>
+        ),
       },
       {
         id: 'reviewedAt',
         header: 'Reviewed',
         accessorFn: (row) => row.reviewedAt ?? '',
-        cell: ({ row }) => row.original.reviewedAt?.slice(0, 10) ?? '—',
+        cell: ({ row }) => formatDate(row.original.reviewedAt),
       },
       {
         id: 'createdAt',
         header: 'Submitted',
         accessorFn: (row) => row.createdAt,
+        cell: ({ row }) => formatDate(row.original.createdAt),
       },
       {
         id: 'actions',

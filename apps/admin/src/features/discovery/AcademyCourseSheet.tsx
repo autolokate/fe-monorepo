@@ -223,28 +223,30 @@ export function AcademyCourseSheet({
       }
     >
       <form id="academy-course-form" className="admin-form-stack" noValidate onSubmit={onSubmit}>
-        <AlInput
-          label="Title"
-          value={values.title}
-          data-testid="academy-course-title"
-          errorText={shownErrors.title}
-          maxLength={200}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('title')(event.target.value);
-          }}
-        />
-        <AlInput
-          label="Tagline"
-          value={values.tagline}
-          data-testid="academy-course-tagline"
-          helperText="One line shown under the title."
-          maxLength={200}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('tagline')(event.target.value);
-          }}
-        />
+        <div className="admin-form-grid">
+          <AlInput
+            label="Title"
+            value={values.title}
+            data-testid="academy-course-title"
+            errorText={shownErrors.title}
+            maxLength={200}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('title')(event.target.value);
+            }}
+          />
+          <AlInput
+            label="Tagline"
+            value={values.tagline}
+            data-testid="academy-course-tagline"
+            helperText="One line shown under the title."
+            maxLength={200}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('tagline')(event.target.value);
+            }}
+          />
+        </div>
         <DiscoveryTextArea
           label="Description"
           value={values.description}
@@ -255,38 +257,40 @@ export function AcademyCourseSheet({
             set('description')(event.target.value);
           }}
         />
-        <AlSelect
-          label="Level"
-          options={LEVEL_OPTIONS}
-          value={values.level}
-          data-testid="academy-course-level"
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-            set('level')(event.target.value as AcademyLevel);
-          }}
-        />
-        <AlSelect
-          label="Language"
-          options={LANGUAGE_OPTIONS}
-          value={values.language}
-          data-testid="academy-course-language"
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-            set('language')(event.target.value as AcademyLanguage);
-          }}
-        />
-        <AlInput
-          label="Sort order"
-          inputMode="numeric"
-          value={values.sortOrder}
-          data-testid="academy-course-sort-order"
-          helperText="Lower numbers appear first in the consumer Academy."
-          errorText={shownErrors.sortOrder}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('sortOrder')(event.target.value);
-          }}
-        />
+        <div className="admin-form-grid">
+          <AlSelect
+            label="Level"
+            options={LEVEL_OPTIONS}
+            value={values.level}
+            data-testid="academy-course-level"
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              set('level')(event.target.value as AcademyLevel);
+            }}
+          />
+          <AlSelect
+            label="Language"
+            options={LANGUAGE_OPTIONS}
+            value={values.language}
+            data-testid="academy-course-language"
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              set('language')(event.target.value as AcademyLanguage);
+            }}
+          />
+          <AlInput
+            label="Sort order"
+            inputMode="numeric"
+            value={values.sortOrder}
+            data-testid="academy-course-sort-order"
+            helperText="Lower numbers appear first in the consumer Academy."
+            errorText={shownErrors.sortOrder}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('sortOrder')(event.target.value);
+            }}
+          />
+        </div>
         <AlCheckbox
           label="Featured"
           checked={values.featured}

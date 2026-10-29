@@ -2,6 +2,8 @@ import type { OwnershipClaimDto } from '@autolokate/api-client';
 import { AlButton, AlModal } from '@autolokate/ui';
 import { useEffect, useState } from 'react';
 
+import { shortAdminId } from '@/platform/components/AdminWowSurface';
+
 export type RejectOwnershipClaimDialogProps = {
   claim: OwnershipClaimDto | null;
   busy: boolean;
@@ -35,7 +37,7 @@ export function RejectOwnershipClaimDialog({
       title="Reject ownership claim"
       description={
         claim
-          ? `Reject claim ${claim.id}. The claimant keeps no ownership change.`
+          ? `Reject claim ${shortAdminId(claim.id)}. Ownership stays with the current owner.`
           : 'Reject this ownership claim.'
       }
       footer={
@@ -78,8 +80,11 @@ export function RejectOwnershipClaimDialog({
         </div>
       }
     >
-      <div className={error ? 'al-field al-field--error' : 'al-field'}>
-        <label className="al-field__label" htmlFor="ownership-claim-reject-reason">
+      <div className={error ? 'admin-field al-field--error' : 'admin-field'}>
+        <label
+          className="admin-field__label al-field__label"
+          htmlFor="ownership-claim-reject-reason"
+        >
           Rejection reason
         </label>
         <div className="al-field__control">
@@ -96,7 +101,7 @@ export function RejectOwnershipClaimDialog({
               setReason(event.target.value);
               if (error) setError(null);
             }}
-            placeholder="Explain why this claim is rejected (stored on the claim)."
+            placeholder="Explain why this claim is rejected."
             aria-invalid={error ? true : undefined}
           />
         </div>
@@ -105,7 +110,7 @@ export function RejectOwnershipClaimDialog({
             {error}
           </span>
         ) : (
-          <span className="al-field__hint">Required. Max 2000 characters.</span>
+          <span className="admin-field__hint">Required. Max 2000 characters.</span>
         )}
       </div>
     </AlModal>

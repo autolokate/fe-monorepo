@@ -23,10 +23,10 @@ test.describe('Break-glass incidents (hermetic)', () => {
     await page.getByTestId('break-glass-request').click();
 
     await expect(page.getByTestId('break-glass-latest')).toContainText(
-      HERMETIC_BREAK_GLASS_APPROVAL_ID,
+      HERMETIC_BREAK_GLASS_APPROVAL_ID.slice(0, 8),
       { timeout: 10_000 },
     );
-    await expect(page.getByTestId('break-glass-latest')).toContainText('PENDING');
+    await expect(page.getByTestId('break-glass-latest')).toContainText('Pending');
     expect(capture.breakGlassRequest).toHaveLength(1);
     expect(capture.breakGlassRequest[0]?.body).toMatchObject({
       scopeKind: 'INCIDENT_LIST',
@@ -35,7 +35,7 @@ test.describe('Break-glass incidents (hermetic)', () => {
 
     await page.getByTestId('break-glass-peer-id').fill(HERMETIC_BREAK_GLASS_APPROVAL_ID);
     await page.getByTestId('break-glass-approve').click();
-    await expect(page.getByTestId('break-glass-latest')).toContainText('APPROVED', {
+    await expect(page.getByTestId('break-glass-latest')).toContainText('Approved', {
       timeout: 10_000,
     });
     expect(capture.breakGlassApprove).toEqual([HERMETIC_BREAK_GLASS_APPROVAL_ID]);
@@ -72,7 +72,7 @@ test.describe('Break-glass incidents (hermetic)', () => {
     await page.getByTestId('break-glass-detail-incident-id').fill(HERMETIC_INCIDENT_ID);
     await page.getByTestId('break-glass-request-detail').click();
 
-    await expect(page.getByTestId('break-glass-latest')).toContainText('INCIDENT_DETAIL', {
+    await expect(page.getByTestId('break-glass-latest')).toContainText('Incident detail', {
       timeout: 10_000,
     });
     expect(capture.breakGlassRequest.at(-1)?.body).toMatchObject({
@@ -82,14 +82,16 @@ test.describe('Break-glass incidents (hermetic)', () => {
 
     await page.getByTestId('break-glass-peer-id').fill(HERMETIC_BREAK_GLASS_APPROVAL_ID);
     await page.getByTestId('break-glass-approve').click();
-    await expect(page.getByTestId('break-glass-latest')).toContainText('APPROVED', {
+    await expect(page.getByTestId('break-glass-latest')).toContainText('Approved', {
       timeout: 10_000,
     });
 
     await page.getByTestId('break-glass-load-detail').click();
     await expect(page.getByTestId('incident-detail-panel')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('incident-detail-id')).toHaveText(HERMETIC_INCIDENT_ID);
-    await expect(page.getByTestId('incident-detail-status')).toHaveText('OPEN');
+    await expect(page.getByTestId('incident-detail-id')).toHaveText(
+      HERMETIC_INCIDENT_ID.slice(0, 8),
+    );
+    await expect(page.getByTestId('incident-detail-status')).toHaveText('Open');
     await expect(page.getByTestId('incident-detail-alerts')).toHaveText('1');
     expect(capture.incidentsDetailGet).toBeGreaterThanOrEqual(1);
     expect(capture.unexpected).toEqual([]);
@@ -103,12 +105,12 @@ test.describe('Break-glass incidents (hermetic)', () => {
     await page.getByTestId('break-glass-justification').fill('Need list then row detail');
     await page.getByTestId('break-glass-request').click();
     await expect(page.getByTestId('break-glass-latest')).toContainText(
-      HERMETIC_BREAK_GLASS_APPROVAL_ID,
+      HERMETIC_BREAK_GLASS_APPROVAL_ID.slice(0, 8),
       { timeout: 10_000 },
     );
     await page.getByTestId('break-glass-peer-id').fill(HERMETIC_BREAK_GLASS_APPROVAL_ID);
     await page.getByTestId('break-glass-approve').click();
-    await expect(page.getByTestId('break-glass-latest')).toContainText('APPROVED', {
+    await expect(page.getByTestId('break-glass-latest')).toContainText('Approved', {
       timeout: 10_000,
     });
     await page.getByTestId('break-glass-load-incidents').click();
@@ -123,7 +125,7 @@ test.describe('Break-glass incidents (hermetic)', () => {
 
     await page.getByTestId('break-glass-justification').fill('Need detail from list row');
     await page.getByTestId('break-glass-request-detail').click();
-    await expect(page.getByTestId('break-glass-latest')).toContainText('INCIDENT_DETAIL', {
+    await expect(page.getByTestId('break-glass-latest')).toContainText('Incident detail', {
       timeout: 10_000,
     });
     expect(capture.breakGlassRequest.at(-1)?.body).toMatchObject({
@@ -133,12 +135,14 @@ test.describe('Break-glass incidents (hermetic)', () => {
 
     await page.getByTestId('break-glass-peer-id').fill(HERMETIC_BREAK_GLASS_APPROVAL_ID);
     await page.getByTestId('break-glass-approve').click();
-    await expect(page.getByTestId('break-glass-latest')).toContainText('APPROVED', {
+    await expect(page.getByTestId('break-glass-latest')).toContainText('Approved', {
       timeout: 10_000,
     });
     await page.getByTestId('break-glass-load-detail').click();
     await expect(page.getByTestId('incident-detail-panel')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('incident-detail-id')).toHaveText(HERMETIC_INCIDENT_ID);
+    await expect(page.getByTestId('incident-detail-id')).toHaveText(
+      HERMETIC_INCIDENT_ID.slice(0, 8),
+    );
     expect(capture.incidentsDetailGet).toBeGreaterThanOrEqual(1);
     expect(capture.unexpected).toEqual([]);
   });

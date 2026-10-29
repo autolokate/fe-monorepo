@@ -11,7 +11,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useCallback, useState, type ChangeEvent } from 'react';
+import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
 
 import { REEL_SORT_OPTIONS, REEL_STATUS_FILTERS } from '@/features/discovery/discovery-filters';
 import { useReelColumns } from '@/features/discovery/reel-columns';
@@ -21,12 +21,29 @@ import { useDiscoveryReels } from '@/hooks/discovery/useDiscoveryReels';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './discovery.css';
 
 type TransitionTarget = { reel: AdminDiscoveryReelDto; transition: AdminReelTransition };
+
+function reelKpisFromPage(reels: AdminDiscoveryReelDto[]) {
+  const counts = new Map<string, number>();
+  for (const reel of reels) {
+    counts.set(reel.status, (counts.get(reel.status) ?? 0) + 1);
+  }
+  return [
+    { label: 'On this page', value: String(reels.length) },
+    ...[...counts.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([status, count]) => ({
+        label: humanizeAdminLabel(status),
+        value: String(count),
+      })),
+  ];
+}
 
 const CONFIRM_COPY: Record<
   Exclude<AdminReelTransition, 'publish'>,
@@ -119,6 +136,7 @@ export function DiscoveryReelsPage() {
     onTransition: requestTransition,
     onOpen: openReel,
   });
+  const kpiItems = useMemo(() => (reels.length > 0 ? reelKpisFromPage(reels) : []), [reels]);
 
   const pageDescription = 'Upload, publish and archive Discovery reels.';
 
@@ -153,6 +171,8 @@ export function DiscoveryReelsPage() {
             </>
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

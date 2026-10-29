@@ -87,14 +87,17 @@ export function SupportTicketStatusBadge({ status }: { status: AdminSupportTicke
 
 export function IncidentStatusBadge({ status }: { status: AdminIncidentStatus }) {
   return (
-    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--incident-${status}`} />
+    <EntityStatusBadge
+      label={humanizeAdminLabel(status)}
+      modifier={`admin-entity-status-badge--incident-${status}`}
+    />
   );
 }
 
 export function AuditActionBadge({ action }: { action: AuditAction }) {
   return (
     <EntityStatusBadge
-      label={action}
+      label={humanizeAdminLabel(action)}
       modifier={`admin-entity-status-badge--audit admin-entity-status-badge--audit-${action}`}
     />
   );

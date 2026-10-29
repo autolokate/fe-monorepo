@@ -3,6 +3,7 @@ import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { formatPartnersDateTime, shortId } from '@/features/partners/partners-filters';
+import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 export function usePartnersColumns(): ColumnDef<AdminPartnerOrgDto>[] {
   return useMemo(
@@ -22,11 +23,14 @@ export function usePartnersColumns(): ColumnDef<AdminPartnerOrgDto>[] {
       {
         accessorKey: 'partnerKind',
         header: 'Kind',
+        cell: ({ row }) => humanizeAdminLabel(row.original.partnerKind),
       },
       {
         id: 'storeStatus',
         header: 'Store',
-        accessorFn: (row) => row.storeStatus ?? '—',
+        accessorFn: (row) => row.storeStatus ?? '',
+        cell: ({ row }) =>
+          row.original.storeStatus ? humanizeAdminLabel(row.original.storeStatus) : '—',
       },
       {
         id: 'cities',

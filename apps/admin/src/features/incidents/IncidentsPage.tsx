@@ -8,7 +8,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { BreakGlassDualControlPanel } from '@/features/incidents/BreakGlassDualControlPanel';
 import { IncidentDetailPanel } from '@/features/incidents/IncidentDetailPanel';
@@ -19,6 +19,11 @@ import { useIncidents } from '@/hooks/incidents/useIncidents';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import {
+  AdminKpiStrip,
+  AdminPanel,
+  humanizeAdminLabel,
+} from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './incidents.css';
@@ -47,6 +52,20 @@ export function IncidentsPage() {
     },
   });
 
+  const kpiItems = useMemo(() => {
+    if (incidents.length === 0) return [];
+    const counts = new Map<string, number>();
+    for (const incident of incidents) {
+      counts.set(incident.status, (counts.get(incident.status) ?? 0) + 1);
+    }
+    return [...counts.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([status, count]) => ({
+        label: `${humanizeAdminLabel(status)} (this page)`,
+        value: String(count),
+      }));
+  }, [incidents]);
+
   const clearListGrant = () => {
     setListApprovalId(null);
     setApproval(null);
@@ -55,18 +74,6 @@ export function IncidentsPage() {
   const clearDetailGrant = () => {
     setDetailTarget(null);
   };
-
-  const pageDescription = 'Emergency incidents — dual-control approval required before viewing.';
-
-  const breakGlassNotice = (
-    <AlStack direction="row" gap="sm" align="center">
-      <TriangleAlertIcon size={16} aria-hidden />
-      <AlText variant="caption" tone="muted">
-        Break-glass — this console exposes emergency-incident PII across all accounts. Every view
-        (list and detail) is audited. Dual-control approval is consumed once per call.
-      </AlText>
-    </AlStack>
-  );
 
   if (userErrorMessage && incidents.length === 0 && listApprovalId) {
     return (
@@ -84,7 +91,7 @@ export function IncidentsPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Incidents"
-          description={pageDescription}
+          description="Emergency incidents — dual-control approval required before viewing."
           actions={
             listApprovalId || detailTarget ? (
               <AlPageHeaderAction
@@ -100,7 +107,15 @@ export function IncidentsPage() {
           }
         />
 
-        {breakGlassNotice}
+        <AdminPanel>
+          <AlStack direction="row" gap="sm" align="center">
+            <TriangleAlertIcon size={16} aria-hidden />
+            <AlText variant="caption" tone="muted">
+              This console can expose emergency-incident personal data across accounts. Every view
+              is audited. Approvals are consumed once when you load the list or a detail.
+            </AlText>
+          </AlStack>
+        </AdminPanel>
 
         <BreakGlassDualControlPanel
           approval={approval}
@@ -126,37 +141,42 @@ export function IncidentsPage() {
         ) : null}
 
         {!listApprovalId ? (
-          <AlText variant="body" tone="muted">
-            Incident list stays empty until the requester loads an APPROVED INCIDENT_LIST grant. For
-            a single incident, request INCIDENT_DETAIL, get peer approval, then Load detail.
-          </AlText>
+          <AdminPanel title="Incident list">
+            <AlText variant="body" tone="muted">
+              The list stays empty until you load an approved list-access grant. For a single
+              incident, request detail access, get peer approval, then Load detail.
+            </AlText>
+          </AdminPanel>
         ) : (
-          <AdminDataBlock
-            filters={
-              <AdminFilterField label="Status">
-                <AdminFilterChips
-                  options={INCIDENTS_STATUS_FILTERS}
-                  value={statusFilter}
-                  onChange={setStatusFilter}
-                  aria-label="Incident status"
-                />
-              </AdminFilterField>
-            }
-          >
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="incidents"
-              columns={columns}
-              data={incidents}
-              loading={isLoading}
-              error={userErrorMessage && incidents.length > 0 ? userErrorMessage : null}
-              onRetry={clearListGrant}
-              globalSearchPlaceholder="Search incident…"
-              emptyTitle="No incidents found"
-              emptyDescription="Try another status filter."
-              getRowId={(row) => row.incidentId}
-            />
-          </AdminDataBlock>
+          <>
+            {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
+            <AdminDataBlock
+              filters={
+                <AdminFilterField label="Status">
+                  <AdminFilterChips
+                    options={INCIDENTS_STATUS_FILTERS}
+                    value={statusFilter}
+                    onChange={setStatusFilter}
+                    aria-label="Incident status"
+                  />
+                </AdminFilterField>
+              }
+            >
+              <AlDataTable
+                {...ADMIN_LIST_TABLE_PROPS}
+                tableId="incidents"
+                columns={columns}
+                data={incidents}
+                loading={isLoading}
+                error={userErrorMessage && incidents.length > 0 ? userErrorMessage : null}
+                onRetry={clearListGrant}
+                globalSearchPlaceholder="Search incident…"
+                emptyTitle="No incidents found"
+                emptyDescription="Try another status filter."
+                getRowId={(row) => row.incidentId}
+              />
+            </AdminDataBlock>
+          </>
         )}
       </AlStack>
     </RequirePermission>

@@ -24,6 +24,7 @@ import {
   AdminDetailGrid,
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
+import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
 import { DiscoveryQaStatusBadge } from '@/platform/components/EntityStatusBadge';
 
 export type QuestionSheetProps = {
@@ -211,7 +212,11 @@ export function QuestionSheet({ question, open, onOpenChange, canWrite }: Questi
                 label="Updated"
                 value={formatDiscoveryDateTime(question.updatedAt)}
               />
-              <AdminDetailField label="Question ID" value={question.questionId} mono />
+              <AdminDetailField
+                label="Question ID"
+                value={shortAdminId(question.questionId)}
+                mono
+              />
             </AdminDetailGrid>
           </AdminDetailSection>
         ) : null}
@@ -337,8 +342,8 @@ export function QuestionSheet({ question, open, onOpenChange, canWrite }: Questi
           <AdminDetailSection title="Content">
             <AdminDetailGrid>
               <AdminDetailField label="Title" value={question.title} />
-              <AdminDetailField label="Category" value={question.category} />
-              <AdminDetailField label="Kind" value={question.kind} />
+              <AdminDetailField label="Category" value={humanizeAdminLabel(question.category)} />
+              <AdminDetailField label="Kind" value={humanizeAdminLabel(question.kind)} />
               <AdminDetailField label="Vehicle" value={question.vehicleLabel ?? '—'} />
               <AdminDetailField label="Body" value={question.body || '—'} />
             </AdminDetailGrid>

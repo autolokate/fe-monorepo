@@ -44,37 +44,10 @@
   word-break: break-word;
 }
 
-.partners-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--al-space-3);
-  padding: var(--al-space-4) var(--al-space-5);
-  border-radius: var(--al-radius-sm);
-  background: var(--al-color-surface);
-  border: 1px solid var(--al-admin-panel-border, var(--al-color-border-subtle));
-}
-
-.partners-section__heading {
-  margin: 0;
-  font-size: 0.9375rem;
-  font-weight: var(--al-font-weight-semibold);
-  color: var(--al-color-text);
-}
-
 .partners-inbox-tabs {
   display: flex;
   gap: var(--al-space-2);
   flex-wrap: wrap;
-}
-
-.partners-bid-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--al-space-3);
-  padding: var(--al-space-4);
-  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
-  border-radius: var(--al-radius-md);
-  background: var(--al-color-surface);
 }
 
 .partners-links {

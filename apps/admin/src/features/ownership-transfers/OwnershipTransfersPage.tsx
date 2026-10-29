@@ -8,6 +8,7 @@ import {
   TransferCompletedPanel,
   TransferInitiatedPanel,
 } from '@/features/ownership-transfers/OwnershipTransferSheets';
+import { AdminPanel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
@@ -47,16 +48,22 @@ export function OwnershipTransfersPage() {
           }
         />
 
-        <div className="admin-operations-results">
-          {initiatedResult ? <TransferInitiatedPanel result={initiatedResult} /> : null}
-          {approvedResult ? <TransferCompletedPanel result={approvedResult} /> : null}
-        </div>
-
-        {!initiatedResult && !approvedResult ? (
-          <p className="admin-empty-note admin-operations-empty">
-            Transfer status appears here after you initiate or approve a transfer.
-          </p>
-        ) : null}
+        <AdminPanel
+          title="Transfer results"
+          subtitle="Status appears here after you initiate or approve a transfer."
+        >
+          {initiatedResult || approvedResult ? (
+            <div className="admin-operations-results">
+              {initiatedResult ? <TransferInitiatedPanel result={initiatedResult} /> : null}
+              {approvedResult ? <TransferCompletedPanel result={approvedResult} /> : null}
+            </div>
+          ) : (
+            <p className="admin-empty-note admin-operations-empty">
+              No transfers yet this session. Start with Initiate transfer when a QR needs a new
+              owner.
+            </p>
+          )}
+        </AdminPanel>
 
         <InitiateTransferSheet
           open={initiateOpen}

@@ -1,5 +1,5 @@
 import type { OwnershipClaimDto } from '@autolokate/api-client';
-import { AlButton, AlModal, AlStack, AlStatusBadge, AlText } from '@autolokate/ui';
+import { AlButton, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { Link } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
@@ -9,6 +9,12 @@ import {
   AdminDetailGrid,
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
+import {
+  AdminStatusChip,
+  humanizeAdminLabel,
+  shortAdminId,
+  type AdminStatusChipTone,
+} from '@/platform/components/AdminWowSurface';
 
 export type OwnershipClaimDetailSheetProps = {
   claim: OwnershipClaimDto | null;
@@ -28,6 +34,13 @@ function formatWhen(value: string | null): string {
 
 function displayOrDash(value: string | null | undefined): string {
   return value && value.trim() ? value : '—';
+}
+
+function claimStatusTone(status: OwnershipClaimDto['status']): AdminStatusChipTone {
+  if (status === 'APPROVED') return 'active';
+  if (status === 'REJECTED' || status === 'WITHDRAWN') return 'none';
+  if (status === 'UNDER_REVIEW') return 'draft';
+  return 'neutral';
 }
 
 export function OwnershipClaimDetailSheet({
@@ -51,30 +64,23 @@ export function OwnershipClaimDetailSheet({
       onOpenChange={onOpenChange}
       size="lg"
       title="Ownership claim"
-      description={`Status ${claim.status}`}
+      description={`${humanizeAdminLabel(claim.status)} · ${shortAdminId(claim.id)}`}
     >
       <AlStack gap="md" data-testid="ownership-claim-detail-sheet">
-        <AdminDetailSection title="Claim">
-          <div className="admin-modal-actions">
-            <AlStatusBadge
-              label={claim.status}
-              status={
-                claim.status === 'APPROVED'
-                  ? 'active'
-                  : claim.status === 'REJECTED' || claim.status === 'WITHDRAWN'
-                    ? 'inactive'
-                    : 'pending'
-              }
+        <AdminDetailSection title="Claim" description="Who is claiming this vehicle.">
+          <div className="admin-status-row">
+            <AdminStatusChip
+              label={humanizeAdminLabel(claim.status)}
+              tone={claimStatusTone(claim.status)}
             />
           </div>
           <AdminDetailGrid>
-            <AdminDetailField label="Claim id" value={claim.id} mono />
-            <AdminDetailField label="Status" value={claim.status} />
-            <AdminDetailField label="Vehicle id" value={claim.vehicleId} mono />
-            <AdminDetailField label="Claimant account id" value={claim.claimantAccountId} mono />
+            <AdminDetailField label="Claim" value={shortAdminId(claim.id)} mono />
+            <AdminDetailField label="Vehicle" value={shortAdminId(claim.vehicleId)} mono />
+            <AdminDetailField label="Claimant" value={shortAdminId(claim.claimantAccountId)} mono />
             <AdminDetailField
-              label="Plan subscription id"
-              value={displayOrDash(claim.planSubscriptionId)}
+              label="Coverage"
+              value={claim.planSubscriptionId ? shortAdminId(claim.planSubscriptionId) : '—'}
               mono
             />
             <AdminDetailField label="Submitted" value={formatWhen(claim.createdAt)} />
@@ -82,22 +88,22 @@ export function OwnershipClaimDetailSheet({
           </AdminDetailGrid>
         </AdminDetailSection>
 
-        <AdminDetailSection title="Notes">
+        <AdminDetailSection title="Notes" description="Claimant notes submitted with the claim.">
           <AlText data-testid="ownership-claim-notes">{displayOrDash(claim.notes)}</AlText>
         </AdminDetailSection>
 
         <AdminDetailSection
-          title="RC proof"
-          description="Registration certificate proof submitted with this claim."
+          title="Registration proof"
+          description="Registration certificate submitted with this claim."
         >
           <RcMediaPreview claimId={claim.id} rcMediaAssetId={claim.rcMediaAssetId} />
         </AdminDetailSection>
 
-        <AdminDetailSection title="Review audit">
+        <AdminDetailSection title="Review" description="Decision recorded for this claim.">
           <AdminDetailGrid>
             <AdminDetailField
-              label="Reviewed by admin id"
-              value={displayOrDash(claim.reviewedByAdminId)}
+              label="Reviewed by"
+              value={claim.reviewedByAdminId ? shortAdminId(claim.reviewedByAdminId) : '—'}
               mono
             />
             <AdminDetailField label="Reviewed at" value={formatWhen(claim.reviewedAt)} />
@@ -107,9 +113,7 @@ export function OwnershipClaimDetailSheet({
             />
           </AdminDetailGrid>
           <AlText variant="caption" tone="muted" data-testid="ownership-claim-audit-hint">
-            Claim review also writes <code>OWNERSHIP_CLAIM_APPROVED</code> /{' '}
-            <code>OWNERSHIP_CLAIM_REJECTED</code> / <code>OWNERSHIP_CLAIM_UNDER_REVIEW</code> to the
-            activity log. Filter those actions on{' '}
+            Approve, reject, and under-review decisions also appear in the{' '}
             <Link to={adminPaths.auditEvents}>Activity Log</Link>.
           </AlText>
         </AdminDetailSection>

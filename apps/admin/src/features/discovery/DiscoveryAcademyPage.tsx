@@ -12,7 +12,6 @@ import {
   AlPageHeader,
   AlPageHeaderAction,
   AlStack,
-  AlText,
   type ColumnDef,
 } from '@autolokate/ui';
 import { useCallback, useMemo, useState } from 'react';
@@ -33,11 +32,32 @@ import {
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import {
+  AdminKpiStrip,
+  AdminPanel,
+  humanizeAdminLabel,
+} from '@/platform/components/AdminWowSurface';
 import { DiscoveryReelStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './discovery.css';
+
+function academyKpisFromPage(courses: AdminAcademyCourseDto[]) {
+  const counts = new Map<string, number>();
+  for (const course of courses) {
+    counts.set(course.status, (counts.get(course.status) ?? 0) + 1);
+  }
+  return [
+    { label: 'On this page', value: String(courses.length) },
+    ...[...counts.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([status, count]) => ({
+        label: humanizeAdminLabel(status),
+        value: String(count),
+      })),
+  ];
+}
 
 const STATUS_FILTERS: FilterOption<AcademyStatusFilter>[] = [
   { value: 'ALL', label: 'All' },
@@ -352,6 +372,11 @@ export function DiscoveryAcademyPage() {
     [canWrite, pendingId, requestLesson, transitionLesson.variables],
   );
 
+  const kpiItems = useMemo(
+    () => (courses.length > 0 ? academyKpisFromPage(courses) : []),
+    [courses],
+  );
+
   const pageDescription = 'Courses of Indian Drive Guide lessons for members with an active plan.';
 
   if (userErrorMessage && !data) {
@@ -390,6 +415,8 @@ export function DiscoveryAcademyPage() {
           }
         />
 
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
+
         <AdminDataBlock
           filters={
             <AdminFilterField label="Status">
@@ -426,51 +453,47 @@ export function DiscoveryAcademyPage() {
         </AdminDataBlock>
 
         {selectedId ? (
-          <AlStack gap="sm">
-            <AlStack direction="row" gap="sm" align="center" justify="between">
-              <AlStack gap="xs">
-                <AlText variant="label" data-testid="academy-lessons-heading">
-                  {selected ? `Lessons in "${selected.title}"` : 'Lessons'}
-                </AlText>
-                <AlText tone="muted" variant="caption">
-                  Members see published lessons in position order. Draft and archived lessons stay
-                  hidden.
-                </AlText>
-              </AlStack>
-              {canWrite && selected ? (
-                <AlButton
-                  size="sm"
-                  data-testid="academy-lesson-add"
-                  onClick={() => {
-                    setLessonSheet({ open: true, lesson: null });
-                  }}
-                >
-                  Add lesson
-                </AlButton>
-              ) : null}
-            </AlStack>
-            <AlDataTable
-              {...ADMIN_LIST_TABLE_PROPS}
-              tableId="discovery-academy-lessons"
-              columns={lessonColumns}
-              data={selected?.lessons ?? []}
-              loading={detail.isLoading}
-              isRefreshing={detail.isFetching}
-              error={detail.userErrorMessage}
-              onRetry={detail.refresh}
-              enableGlobalSearch={false}
-              emptyTitle="No lessons yet"
-              emptyDescription={
-                canWrite
-                  ? 'Add a lesson from the Indian Drive Guide channel.'
-                  : 'This course has no lessons.'
+          <div data-testid="academy-lessons-heading">
+            <AdminPanel
+              title={selected ? `Lessons in "${selected.title}"` : 'Lessons'}
+              subtitle="Members see published lessons in position order. Draft and archived lessons stay hidden."
+              meta={
+                canWrite && selected ? (
+                  <AlButton
+                    size="sm"
+                    data-testid="academy-lesson-add"
+                    onClick={() => {
+                      setLessonSheet({ open: true, lesson: null });
+                    }}
+                  >
+                    Add lesson
+                  </AlButton>
+                ) : null
               }
-              getRowId={(row) => row.lessonId}
-              onRowClick={(lesson) => {
-                setLessonSheet({ open: true, lesson });
-              }}
-            />
-          </AlStack>
+            >
+              <AlDataTable
+                {...ADMIN_LIST_TABLE_PROPS}
+                tableId="discovery-academy-lessons"
+                columns={lessonColumns}
+                data={selected?.lessons ?? []}
+                loading={detail.isLoading}
+                isRefreshing={detail.isFetching}
+                error={detail.userErrorMessage}
+                onRetry={detail.refresh}
+                enableGlobalSearch={false}
+                emptyTitle="No lessons yet"
+                emptyDescription={
+                  canWrite
+                    ? 'Add a lesson from the Indian Drive Guide channel.'
+                    : 'This course has no lessons.'
+                }
+                getRowId={(row) => row.lessonId}
+                onRowClick={(lesson) => {
+                  setLessonSheet({ open: true, lesson });
+                }}
+              />
+            </AdminPanel>
+          </div>
         ) : null}
 
         <AcademyCourseSheet

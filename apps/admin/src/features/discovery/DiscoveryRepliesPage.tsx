@@ -18,12 +18,27 @@ import { useDiscoveryReplies, useModerateReply } from '@/hooks/discovery/useDisc
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { DiscoveryQaStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { REPLIES_LIST_LIMIT } from '@/services/discovery/admin-replies-service';
 
 import './discovery.css';
+
+function replyKpisFromPage(replies: AdminCommunityReplyDto[]) {
+  let published = 0;
+  let hidden = 0;
+  for (const reply of replies) {
+    if (reply.status === 'VISIBLE') published += 1;
+    else hidden += 1;
+  }
+  return [
+    { label: 'On this page', value: String(replies.length) },
+    { label: 'Published', value: String(published) },
+    { label: 'Hidden', value: String(hidden) },
+  ];
+}
 
 function excerpt(body: string, max = 140): string {
   const flat = body.replace(/\s+/g, ' ').trim();
@@ -125,6 +140,8 @@ export function DiscoveryRepliesPage() {
     [canWrite, pendingId, restore],
   );
 
+  const kpiItems = useMemo(() => (replies.length > 0 ? replyKpisFromPage(replies) : []), [replies]);
+
   const pageDescription = 'Moderate member replies under Q&A answers.';
 
   if (userErrorMessage && !data) {
@@ -150,6 +167,8 @@ export function DiscoveryRepliesPage() {
             />
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

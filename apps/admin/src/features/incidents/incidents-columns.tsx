@@ -1,35 +1,27 @@
 import type { AdminIncidentSummary } from '@autolokate/api-client';
-import { AlButton, type ColumnDef } from '@autolokate/ui';
+import { AlButton, AlText, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { IncidentStatusBadge } from '@/platform/components/EntityStatusBadge';
-
-/** Show only the leading segment of a uuid — enough to eyeball a row without dumping the full id. */
-function shortId(id: string): string {
-  return id.split('-')[0] ?? id;
-}
-
-function formatSource(value: string): string {
-  return value.replace(/_/g, ' ');
-}
+import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString();
 }
 
-/** The QR code or vehicle the incident coalesced on — whichever is bound (both are cross-domain refs). */
+/** QR or vehicle bound to the incident — short secondary refs only. */
 function accountCode(incident: AdminIncidentSummary): string {
   if (incident.qrCodeId) {
-    return `QR ${shortId(incident.qrCodeId)}`;
+    return `QR ${shortAdminId(incident.qrCodeId)}`;
   }
   if (incident.vehicleId) {
-    return `Vehicle ${shortId(incident.vehicleId)}`;
+    return `Vehicle ${shortAdminId(incident.vehicleId)}`;
   }
   return '—';
 }
 
 export type IncidentsColumnHandlers = {
-  /** Prefills the break-glass INCIDENT_DETAIL incident id field. */
+  /** Prefills the break-glass detail incident field. */
   onRequestDetailGrant?: (incidentId: string) => void;
 };
 
@@ -41,9 +33,24 @@ export function useIncidentsColumns(
   return useMemo(
     () => [
       {
-        accessorKey: 'incidentId',
+        id: 'incident',
         header: 'Incident',
-        cell: ({ row }) => shortId(row.original.incidentId),
+        accessorFn: (row) => row.source,
+        cell: ({ row }) => (
+          <div className="admin-primary-cell">
+            <span className="admin-primary-cell__title">
+              {humanizeAdminLabel(row.original.source)}
+            </span>
+            <AlText
+              className="admin-primary-cell__meta"
+              variant="mono"
+              tone="muted"
+              title={row.original.incidentId}
+            >
+              {shortAdminId(row.original.incidentId)}
+            </AlText>
+          </div>
+        ),
       },
       {
         accessorKey: 'status',
@@ -56,13 +63,8 @@ export function useIncidentsColumns(
         cell: ({ row }) => accountCode(row.original),
       },
       {
-        accessorKey: 'source',
-        header: 'Kind',
-        cell: ({ row }) => formatSource(row.original.source),
-      },
-      {
         accessorKey: 'openedAt',
-        header: 'Created',
+        header: 'Opened',
         cell: ({ row }) => formatDateTime(row.original.openedAt),
       },
       ...(onRequestDetailGrant

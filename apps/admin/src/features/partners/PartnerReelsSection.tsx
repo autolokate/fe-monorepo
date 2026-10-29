@@ -4,6 +4,12 @@ import { useMemo } from 'react';
 
 import { formatPartnersDateTime } from '@/features/partners/partners-filters';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import {
+  AdminPanel,
+  AdminStatusChip,
+  humanizeAdminLabel,
+  type AdminStatusChipTone,
+} from '@/platform/components/AdminWowSurface';
 
 function hasEngagement(reel: AdminPartnerReelSummaryDto): boolean {
   return (
@@ -12,6 +18,13 @@ function hasEngagement(reel: AdminPartnerReelSummaryDto): boolean {
     reel.bookmarkCount != null ||
     reel.viewCount != null
   );
+}
+
+function reelStatusTone(status: string): AdminStatusChipTone {
+  if (status === 'PUBLISHED') return 'published';
+  if (status === 'DRAFT') return 'draft';
+  if (status === 'ARCHIVED') return 'none';
+  return 'neutral';
 }
 
 type PartnerReelsSectionProps = {
@@ -36,6 +49,12 @@ export function PartnerReelsSection({ reels }: PartnerReelsSectionProps) {
       {
         accessorKey: 'status',
         header: 'Status',
+        cell: ({ row }) => (
+          <AdminStatusChip
+            label={humanizeAdminLabel(row.original.status)}
+            tone={reelStatusTone(row.original.status)}
+          />
+        ),
       },
       {
         accessorKey: 'publishedAt',
@@ -81,28 +100,32 @@ export function PartnerReelsSection({ reels }: PartnerReelsSectionProps) {
   }, [showEngagement]);
 
   const published = reels.filter((reel) => reel.status === 'PUBLISHED').length;
+  const subtitle =
+    reels.length === 0
+      ? 'AutoClip inventory linked to this partner.'
+      : `${reels.length.toLocaleString()} reel${reels.length === 1 ? '' : 's'}${
+          published ? ` · ${published.toLocaleString()} published` : ''
+        }`;
 
   return (
-    <section className="partners-section" data-testid="partners-reels-section">
-      <h2 className="partners-section__heading">
-        AutoClip inventory ({reels.length.toLocaleString()}
-        {published ? ` · ${published.toLocaleString()} published` : ''})
-      </h2>
-      {!showEngagement && reels.length > 0 ? (
-        <AlText tone="muted" variant="caption">
-          Engagement counts are not available for these reels.
-        </AlText>
-      ) : null}
-      <AlDataTable
-        {...ADMIN_LIST_TABLE_PROPS}
-        tableId="partner-reels"
-        columns={columns}
-        data={reels}
-        enableGlobalSearch={false}
-        emptyTitle="No reels linked to this partner"
-        emptyDescription="This partner has no AutoClip reels yet."
-        getRowId={(row) => row.reelId}
-      />
-    </section>
+    <div data-testid="partners-reels-section">
+      <AdminPanel title="AutoClip inventory" subtitle={subtitle}>
+        {!showEngagement && reels.length > 0 ? (
+          <AlText tone="muted" variant="caption">
+            Engagement counts are not available for these reels.
+          </AlText>
+        ) : null}
+        <AlDataTable
+          {...ADMIN_LIST_TABLE_PROPS}
+          tableId="partner-reels"
+          columns={columns}
+          data={reels}
+          enableGlobalSearch={false}
+          emptyTitle="No reels linked to this partner"
+          emptyDescription="This partner has no AutoClip reels yet."
+          getRowId={(row) => row.reelId}
+        />
+      </AdminPanel>
+    </div>
   );
 }

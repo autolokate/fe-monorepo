@@ -25,11 +25,28 @@ import {
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { DiscoveryReelStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './discovery.css';
+
+function dailyDriveKpisFromPage(videos: AdminDailyDriveVideoDto[]) {
+  const counts = new Map<string, number>();
+  for (const video of videos) {
+    counts.set(video.status, (counts.get(video.status) ?? 0) + 1);
+  }
+  return [
+    { label: 'On this page', value: String(videos.length) },
+    ...[...counts.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([status, count]) => ({
+        label: humanizeAdminLabel(status),
+        value: String(count),
+      })),
+  ];
+}
 
 const STATUS_FILTERS: FilterOption<DailyDriveStatusFilter>[] = [
   { value: 'ALL', label: 'All' },
@@ -221,6 +238,11 @@ export function DiscoveryDailyDrivePage() {
     [canWrite, openVideo, pendingId, requestTransition, transitionMutation.variables],
   );
 
+  const kpiItems = useMemo(
+    () => (videos.length > 0 ? dailyDriveKpisFromPage(videos) : []),
+    [videos],
+  );
+
   const pageDescription = 'Free Daily Drive videos from the Indian Drive Guide channel.';
 
   if (userErrorMessage && !data) {
@@ -254,6 +276,8 @@ export function DiscoveryDailyDrivePage() {
             </>
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

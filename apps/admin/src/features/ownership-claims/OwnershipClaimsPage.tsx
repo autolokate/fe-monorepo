@@ -7,7 +7,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { OwnershipClaimDetailSheet } from '@/features/ownership-claims/OwnershipClaimDetailSheet';
 import { RejectOwnershipClaimDialog } from '@/features/ownership-claims/RejectOwnershipClaimDialog';
@@ -17,13 +17,31 @@ import { useOwnershipClaims } from '@/hooks/ownership-claims/useOwnershipClaims'
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import {
+  AdminKpiStrip,
+  humanizeAdminLabel,
+  shortAdminId,
+} from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './ownership-claims.css';
 
+function statusCountsFromPage(claims: OwnershipClaimDto[]) {
+  const counts = new Map<string, number>();
+  for (const claim of claims) {
+    counts.set(claim.status, (counts.get(claim.status) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([status, count]) => ({
+      label: `${humanizeAdminLabel(status)} (this page)`,
+      value: String(count),
+    }));
+}
+
 /**
- * Admin M8 ownership-claim review — distinct from lost-QR ownership-transfers.
- * Approve atomically transfers vehicle ownership on BE (after migrate+deploy).
+ * Admin ownership-claim review — distinct from lost-QR ownership transfers.
+ * Approve transfers vehicle ownership to the claimant.
  */
 export function OwnershipClaimsPage() {
   const {
@@ -93,7 +111,7 @@ export function OwnershipClaimsPage() {
     },
   });
 
-  const pageDescription = 'Customer ownership claims awaiting review.';
+  const kpiItems = useMemo(() => (claims.length > 0 ? statusCountsFromPage(claims) : []), [claims]);
 
   if (userErrorMessage && claims.length === 0) {
     return (
@@ -110,7 +128,7 @@ export function OwnershipClaimsPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Ownership claims"
-          description={pageDescription}
+          description="Customer ownership claims awaiting review."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -120,6 +138,8 @@ export function OwnershipClaimsPage() {
             />
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={
@@ -145,9 +165,7 @@ export function OwnershipClaimsPage() {
             globalSearchPlaceholder="Search claim…"
             emptyTitle="No ownership claims"
             emptyDescription={
-              statusFilter === 'ALL'
-                ? 'No claims on the Admin plane yet.'
-                : 'Try the All filter or another status.'
+              statusFilter === 'ALL' ? 'No claims yet.' : 'Try the All filter or another status.'
             }
             getRowId={(row) => row.id}
             onRowClick={(row) => {
@@ -183,8 +201,8 @@ export function OwnershipClaimsPage() {
           title="Approve ownership claim"
           description={
             approveClaim
-              ? `Approving claim ${approveClaim.id} atomically transfers vehicle ${approveClaim.vehicleId} ownership to claimant ${approveClaim.claimantAccountId} and sets ownershipVerifiedAt on the vehicle. This cannot be undone from this screen.`
-              : 'Approving atomically transfers vehicle ownership to the claimant.'
+              ? `Approving claim ${shortAdminId(approveClaim.id)} transfers this vehicle to the claimant. This cannot be undone from this screen.`
+              : 'Approving transfers vehicle ownership to the claimant.'
           }
           confirmLabel="Approve and transfer ownership"
           loading={busy && approveClaim !== null && busyClaimId === approveClaim.id}

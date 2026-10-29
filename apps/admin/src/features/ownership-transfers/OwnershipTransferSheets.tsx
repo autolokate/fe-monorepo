@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { TransferCompletedDto, TransferInitiatedDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlModal } from '@autolokate/ui';
+import { AlButton, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -11,7 +11,16 @@ import {
   type InitiateTransferFormValues,
 } from '@/features/ownership-transfers/ownership-transfer-schemas';
 import { useOwnershipTransferMutations } from '@/hooks/ownership-transfers/useOwnershipTransferMutations';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
+import {
+  AdminDetailField,
+  AdminDetailGrid,
+  AdminDetailSection,
+} from '@/platform/components/AdminDetailField';
+import {
+  AdminStatusChip,
+  humanizeAdminLabel,
+  shortAdminId,
+} from '@/platform/components/AdminWowSurface';
 
 export type InitiateTransferSheetProps = {
   open: boolean;
@@ -67,7 +76,7 @@ export function InitiateTransferSheet({
       onOpenChange={onOpenChange}
       size="md"
       title="Initiate ownership transfer"
-      description="Start an ownership transfer for a vehicle QR code."
+      description="Start a transfer for a vehicle QR code."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -95,19 +104,24 @@ export function InitiateTransferSheet({
     >
       <form
         id="initiate-transfer-form"
-        className="admin-form-stack"
+        className="admin-form-grid"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlInput
-          label="QR code"
-          mono
-          autoComplete="off"
-          {...form.register('code')}
-          errorText={form.formState.errors.code?.message}
-          helperText="Code to open an ownership-transfer case for."
-        />
+        <label className="admin-field admin-form-span">
+          QR code
+          <input
+            autoComplete="off"
+            {...form.register('code')}
+            disabled={initiateMutation.isPending}
+          />
+          {form.formState.errors.code?.message ? (
+            <span className="admin-form-error">{form.formState.errors.code.message}</span>
+          ) : (
+            <span className="admin-field__hint">Code that opens the ownership-transfer case.</span>
+          )}
+        </label>
 
         {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
@@ -117,10 +131,18 @@ export function InitiateTransferSheet({
 
 export function TransferInitiatedPanel({ result }: { result: TransferInitiatedDto }) {
   return (
-    <AdminMutationResultPanel
+    <AdminDetailSection
       title="Transfer initiated"
-      fields={[{ label: 'Status', value: result.status }]}
-    />
+      description="Peer can approve once the new owner account is ready."
+    >
+      <div className="admin-status-row">
+        <AdminStatusChip label={humanizeAdminLabel(result.status)} tone="draft" />
+      </div>
+      <AdminDetailGrid>
+        <AdminDetailField label="Transfer" value={shortAdminId(result.transferId)} mono />
+        <AdminDetailField label="Vehicle" value={shortAdminId(result.vehicleId)} mono />
+      </AdminDetailGrid>
+    </AdminDetailSection>
   );
 }
 
@@ -211,30 +233,42 @@ export function ApproveTransferSheet({
     >
       <form
         id="approve-transfer-form"
-        className="admin-form-stack"
+        className="admin-form-grid"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlInput
-          label="Transfer reference"
-          mono
-          autoComplete="off"
-          {...form.register('transferId')}
-          errorText={form.formState.errors.transferId?.message}
-          helperText="From the initiate-transfer result or your operations workflow."
-        />
+        <label className="admin-field">
+          Transfer reference
+          <input
+            autoComplete="off"
+            {...form.register('transferId')}
+            disabled={approveMutation.isPending}
+          />
+          {form.formState.errors.transferId?.message ? (
+            <span className="admin-form-error">{form.formState.errors.transferId.message}</span>
+          ) : (
+            <span className="admin-field__hint">
+              From the initiate result or your ops workflow.
+            </span>
+          )}
+        </label>
 
-        <AlInput
-          label="New owner account"
-          mono
-          autoComplete="off"
-          {...form.register('toAccountId')}
-          errorText={form.formState.errors.toAccountId?.message}
-          helperText="Account for the new owner (OTP-verified login)."
-        />
+        <label className="admin-field">
+          New owner account
+          <input
+            autoComplete="off"
+            {...form.register('toAccountId')}
+            disabled={approveMutation.isPending}
+          />
+          {form.formState.errors.toAccountId?.message ? (
+            <span className="admin-form-error">{form.formState.errors.toAccountId.message}</span>
+          ) : (
+            <span className="admin-field__hint">Account for the new owner.</span>
+          )}
+        </label>
 
-        {submitError ? <p className="admin-form-error">{submitError}</p> : null}
+        {submitError ? <p className="admin-form-error admin-form-span">{submitError}</p> : null}
       </form>
     </AlModal>
   );
@@ -242,9 +276,18 @@ export function ApproveTransferSheet({
 
 export function TransferCompletedPanel({ result }: { result: TransferCompletedDto }) {
   return (
-    <AdminMutationResultPanel
+    <AdminDetailSection
       title="Transfer completed"
-      fields={[{ label: 'Status', value: result.status }]}
-    />
+      description="Vehicle ownership now points at the new owner."
+    >
+      <div className="admin-status-row">
+        <AdminStatusChip label={humanizeAdminLabel(result.status)} tone="active" />
+      </div>
+      <AdminDetailGrid>
+        <AdminDetailField label="Transfer" value={shortAdminId(result.transferId)} mono />
+        <AdminDetailField label="Vehicle" value={shortAdminId(result.vehicleId)} mono />
+        <AdminDetailField label="New owner" value={shortAdminId(result.toAccountId)} mono />
+      </AdminDetailGrid>
+    </AdminDetailSection>
   );
 }

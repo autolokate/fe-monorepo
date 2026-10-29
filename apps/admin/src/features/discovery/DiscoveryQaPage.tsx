@@ -10,7 +10,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useCallback, useState, type ChangeEvent } from 'react';
+import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
 
 import {
   QA_CATEGORY_FILTERS,
@@ -24,10 +24,25 @@ import { useDiscoveryQuestions } from '@/hooks/discovery/useDiscoveryQuestions';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { useCanWriteDiscoveryMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './discovery.css';
+
+function qaKpisFromPage(questions: AdminCommunityQuestionDto[]) {
+  let published = 0;
+  let hidden = 0;
+  for (const question of questions) {
+    if (question.status === 'VISIBLE') published += 1;
+    else hidden += 1;
+  }
+  return [
+    { label: 'On this page', value: String(questions.length) },
+    { label: 'Published', value: String(published) },
+    { label: 'Hidden', value: String(hidden) },
+  ];
+}
 
 export function DiscoveryQaPage() {
   const {
@@ -92,6 +107,10 @@ export function DiscoveryQaPage() {
     onToggleVisibility: toggleVisibility,
     onEdit: openEdit,
   });
+  const kpiItems = useMemo(
+    () => (questions.length > 0 ? qaKpisFromPage(questions) : []),
+    [questions],
+  );
 
   const pageDescription = 'Create, edit, publish and hide community Q&A.';
 
@@ -121,6 +140,8 @@ export function DiscoveryQaPage() {
             </>
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

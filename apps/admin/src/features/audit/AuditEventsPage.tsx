@@ -9,7 +9,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { AuditActionFilter } from '@/features/audit/AuditActionFilter';
 import { AuditDetailSheet } from '@/features/audit/AuditDetailSheet';
@@ -24,9 +24,24 @@ import { useAuditColumns } from '@/features/audit/audit-columns';
 import { useAuditExplorer } from '@/hooks/audit/useAuditExplorer';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
+import { AdminKpiStrip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './audit-events.css';
+
+function actionCountsFromPage(events: AuditEventDto[]) {
+  const counts = new Map<string, number>();
+  for (const event of events) {
+    counts.set(event.action, (counts.get(event.action) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 4)
+    .map(([action, count]) => ({
+      label: `${humanizeAdminLabel(action)} (loaded)`,
+      value: String(count),
+    }));
+}
 
 export function AuditEventsPage() {
   const [filters, setFilters] = useState<AuditExplorerFilters>(DEFAULT_AUDIT_EXPLORER_FILTERS);
@@ -56,6 +71,7 @@ export function AuditEventsPage() {
   }, []);
 
   const columns = useAuditColumns();
+  const kpiItems = useMemo(() => (events.length > 0 ? actionCountsFromPage(events) : []), [events]);
 
   const applyFilters = useCallback(() => {
     if (filters.action.trim() && !resolveActionFilter(filters.action)) {
@@ -75,8 +91,6 @@ export function AuditEventsPage() {
 
   const filtersActive = hasActiveAuditFilters(appliedFilters);
 
-  const pageDescription = 'Search and review administrative actions.';
-
   if (userErrorMessage && events.length === 0 && !isLoading) {
     return (
       <RequirePermission permission="audit:view">
@@ -95,7 +109,7 @@ export function AuditEventsPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Activity Log"
-          description={pageDescription}
+          description="Search and review administrative actions."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -105,6 +119,8 @@ export function AuditEventsPage() {
             />
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={
@@ -197,8 +213,8 @@ export function AuditEventsPage() {
             pageSize={appliedFilters.limit}
             pageSizeOptions={[...AUDIT_PAGE_SIZE_OPTIONS]}
             globalSearchPlaceholder="Search loaded events…"
-            emptyTitle="No audit events found"
-            emptyDescription="Adjust filters or refresh the audit log."
+            emptyTitle="No activity found"
+            emptyDescription="Adjust filters or refresh."
             getRowId={(row) => row.id}
             onRowClick={openEvent}
           />

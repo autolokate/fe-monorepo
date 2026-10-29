@@ -12,6 +12,7 @@ import {
   formatRupees,
   shortId,
 } from '@/features/partners/partners-filters';
+import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 export function useGarageRequestColumns(): ColumnDef<AdminGarageRequestInboxDto>[] {
   return useMemo(
@@ -33,10 +34,12 @@ export function useGarageRequestColumns(): ColumnDef<AdminGarageRequestInboxDto>
       {
         accessorKey: 'status',
         header: 'Status',
+        cell: ({ row }) => humanizeAdminLabel(row.original.status),
       },
       {
         accessorKey: 'urgency',
         header: 'Urgency',
+        cell: ({ row }) => humanizeAdminLabel(row.original.urgency),
       },
       {
         id: 'location',
@@ -80,6 +83,7 @@ export function useGarageBidColumns(): ColumnDef<AdminGarageBidDto>[] {
       {
         accessorKey: 'status',
         header: 'Status',
+        cell: ({ row }) => humanizeAdminLabel(row.original.status),
       },
       {
         accessorKey: 'startsOn',
@@ -119,6 +123,7 @@ export function useTaxiRequestColumns(): ColumnDef<AdminTaxiRequestInboxDto>[] {
       {
         accessorKey: 'status',
         header: 'Status',
+        cell: ({ row }) => humanizeAdminLabel(row.original.status),
       },
       {
         accessorKey: 'pickupAt',
@@ -167,6 +172,7 @@ export function useTaxiBidColumns(): ColumnDef<AdminTaxiBidDto>[] {
       {
         accessorKey: 'status',
         header: 'Status',
+        cell: ({ row }) => humanizeAdminLabel(row.original.status),
       },
       {
         id: 'vehicle',

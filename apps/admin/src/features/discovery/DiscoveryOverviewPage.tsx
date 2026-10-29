@@ -1,5 +1,12 @@
 import type { ReactNode } from 'react';
-import { ActivityIcon, CameraIcon, CarIcon, ShieldCheckIcon, UsersIcon } from '@autolokate/icons';
+import {
+  ActivityIcon,
+  CameraIcon,
+  CarIcon,
+  ShieldCheckIcon,
+  StoreIcon,
+  UsersIcon,
+} from '@autolokate/icons';
 import { AlPageHeader, AlPageHeaderAction, AlStack, AlText } from '@autolokate/ui';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,9 +17,9 @@ import {
   type DiscoveryOverviewCounts,
 } from '@/hooks/discovery/useDiscoveryOverview';
 import { MetricSkeleton } from '@/platform/components/MetricSkeleton';
+import { AdminKpiStrip, AdminPanel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
-import '@/features/dashboard/dashboard.css';
 import './discovery.css';
 
 type OverviewCardProps = {
@@ -39,14 +46,23 @@ function OverviewCard({
   onClick,
 }: OverviewCardProps) {
   return (
-    <button type="button" className="dashboard-page-card" data-testid={testId} onClick={onClick}>
-      <div className="dashboard-page-card__head">
-        <div className="dashboard-page-card__icon">{icon}</div>
-        <div className="dashboard-page-card__titles">
-          <span className="dashboard-page-card__title">{title}</span>
-          <span className="dashboard-page-card__description">{description}</span>
+    <button
+      type="button"
+      className="admin-panel discovery-overview-card"
+      data-testid={testId}
+      onClick={onClick}
+    >
+      <header className="admin-panel__header">
+        <div className="discovery-overview-card__titles">
+          <span className="discovery-overview-card__icon" aria-hidden>
+            {icon}
+          </span>
+          <div>
+            <h2 className="admin-panel__title">{title}</h2>
+            <p className="admin-panel__subtitle">{description}</p>
+          </div>
         </div>
-      </div>
+      </header>
 
       {errorMessage ? (
         <p className="discovery-card-error" role="alert">
@@ -54,16 +70,16 @@ function OverviewCard({
         </p>
       ) : (
         <>
-          <div className="dashboard-page-card__hero">
-            <span className="dashboard-page-card__hero-value">{primaryValue}</span>
-            <span className="dashboard-page-card__hero-label">{primaryLabel}</span>
+          <div className="admin-kpi discovery-overview-card__hero">
+            <span className="admin-kpi__value">{primaryValue}</span>
+            <span className="admin-kpi__label">{primaryLabel}</span>
           </div>
           {stats && stats.length > 0 ? (
-            <div className="dashboard-page-card__tiles">
+            <div className="admin-kpi-strip discovery-overview-card__stats">
               {stats.map((stat) => (
-                <div key={stat.label} className="dashboard-page-card__tile">
-                  <span className="dashboard-page-card__tile-value">{stat.value}</span>
-                  <span className="dashboard-page-card__tile-label">{stat.label}</span>
+                <div key={stat.label} className="admin-kpi">
+                  <span className="admin-kpi__value">{stat.value}</span>
+                  <span className="admin-kpi__label">{stat.label}</span>
                 </div>
               ))}
             </div>
@@ -86,17 +102,21 @@ function OverviewLinkCard({ title, description, icon, testId, onClick }: Overvie
   return (
     <button
       type="button"
-      className="dashboard-page-card dashboard-page-card--link"
+      className="admin-panel discovery-overview-card discovery-overview-card--link"
       data-testid={testId}
       onClick={onClick}
     >
-      <div className="dashboard-page-card__head">
-        <div className="dashboard-page-card__icon">{icon}</div>
-        <div className="dashboard-page-card__titles">
-          <span className="dashboard-page-card__title">{title}</span>
-          <span className="dashboard-page-card__description">{description}</span>
+      <header className="admin-panel__header">
+        <div className="discovery-overview-card__titles">
+          <span className="discovery-overview-card__icon" aria-hidden>
+            {icon}
+          </span>
+          <div>
+            <h2 className="admin-panel__title">{title}</h2>
+            <p className="admin-panel__subtitle">{description}</p>
+          </div>
         </div>
-      </div>
+      </header>
     </button>
   );
 }
@@ -116,9 +136,19 @@ export function DiscoveryOverviewPage() {
   const overview = useDiscoveryOverview();
   const { questions, reels, dailyDrive, academy, engagement } = overview;
 
+  const engagementItems =
+    engagement && !overview.reelsError
+      ? [
+          { label: 'Views', value: formatCount(engagement.views) },
+          { label: 'Likes', value: formatCount(engagement.likes) },
+          { label: 'Comments', value: formatCount(engagement.comments) },
+          { label: 'Saves', value: formatCount(engagement.saves) },
+        ]
+      : [];
+
   return (
     <RequirePermission permission="discovery:read">
-      <AlStack gap="lg">
+      <AlStack gap="md">
         <AlPageHeader
           title="Discovery"
           description="Editorial surfaces in the consumer Discovery tab."
@@ -133,17 +163,17 @@ export function DiscoveryOverviewPage() {
         />
 
         {overview.isLoading ? (
-          <div className="dashboard-page-grid dashboard-page-grid--loading">
+          <div className="discovery-overview-grid discovery-overview-grid--loading">
             {Array.from({ length: 4 }, (_, index) => (
               <MetricSkeleton key={index} />
             ))}
           </div>
         ) : (
-          <div className="dashboard-page-grid">
+          <div className="discovery-overview-grid">
             <OverviewCard
               title="Q&A"
               description="Community questions"
-              icon={<UsersIcon size={20} aria-hidden />}
+              icon={<UsersIcon size={18} aria-hidden />}
               primaryValue={countValue(questions, (c) => c.total)}
               primaryLabel="questions"
               stats={[
@@ -159,7 +189,7 @@ export function DiscoveryOverviewPage() {
             <OverviewCard
               title="Reels"
               description="Short videos in the feed"
-              icon={<CameraIcon size={20} aria-hidden />}
+              icon={<CameraIcon size={18} aria-hidden />}
               primaryValue={countValue(reels, (c) => c.total)}
               primaryLabel="reels"
               stats={[
@@ -176,7 +206,7 @@ export function DiscoveryOverviewPage() {
             <OverviewCard
               title="Daily Drive"
               description="IDG YouTube catalogue"
-              icon={<CarIcon size={20} aria-hidden />}
+              icon={<CarIcon size={18} aria-hidden />}
               primaryValue={countValue(dailyDrive, (c) => c.total)}
               primaryLabel="videos"
               stats={[
@@ -192,7 +222,7 @@ export function DiscoveryOverviewPage() {
             <OverviewCard
               title="Academy"
               description="Member courses and lessons"
-              icon={<ActivityIcon size={20} aria-hidden />}
+              icon={<ActivityIcon size={18} aria-hidden />}
               primaryValue={countValue(academy, (c) => c.total)}
               primaryLabel="courses"
               stats={[
@@ -208,37 +238,51 @@ export function DiscoveryOverviewPage() {
           </div>
         )}
 
-        {engagement && !overview.reelsError ? (
-          <AlText tone="muted" variant="caption" data-testid="discovery-overview-engagement-note">
-            Reels engagement: {formatCount(engagement.views)} views ·{' '}
-            {formatCount(engagement.likes)} likes · {formatCount(engagement.comments)} comments ·{' '}
-            {formatCount(engagement.saves)} saves.
-          </AlText>
+        {engagementItems.length > 0 ? (
+          <div data-testid="discovery-overview-engagement">
+            <AdminPanel
+              title="Reels engagement"
+              subtitle="Totals across Discovery reels on this environment."
+            >
+              <AdminKpiStrip items={engagementItems} />
+              <AlText tone="muted" variant="caption">
+                Open Reels to publish, unpublish, or archive individual clips.
+              </AlText>
+            </AdminPanel>
+          </div>
         ) : null}
 
-        <AlStack gap="sm">
-          <AlText variant="label">Related</AlText>
-          <div className="dashboard-page-grid">
+        <AdminPanel title="Related" subtitle="Moderation and coverage shortcuts.">
+          <div className="discovery-overview-grid">
             <OverviewLinkCard
               title="Q&A replies"
               description="Moderate member replies"
-              icon={<UsersIcon size={20} aria-hidden />}
+              icon={<UsersIcon size={18} aria-hidden />}
               testId="discovery-overview-replies"
               onClick={() => {
                 void navigate(adminPaths.discoveryReplies);
               }}
             />
             <OverviewLinkCard
+              title="Catalog"
+              description="Plan versions and SKU shelves"
+              icon={<StoreIcon size={18} aria-hidden />}
+              testId="discovery-overview-catalog"
+              onClick={() => {
+                void navigate(adminPaths.catalog);
+              }}
+            />
+            <OverviewLinkCard
               title="Coverage"
               description="Subscriptions live under Customer Care"
-              icon={<ShieldCheckIcon size={20} aria-hidden />}
+              icon={<ShieldCheckIcon size={18} aria-hidden />}
               testId="discovery-overview-subscriptions"
               onClick={() => {
                 void navigate(adminPaths.subscriptions);
               }}
             />
           </div>
-        </AlStack>
+        </AdminPanel>
       </AlStack>
     </RequirePermission>
   );

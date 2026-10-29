@@ -216,36 +216,38 @@ export function AcademyLessonSheet({
       }
     >
       <form id="academy-lesson-form" className="admin-form-stack" noValidate onSubmit={onSubmit}>
-        <AlInput
-          label="YouTube link"
-          mono
-          value={values.youtube}
-          data-testid="academy-lesson-youtube"
-          placeholder="https://www.youtube.com/watch?v=…"
-          helperText={
-            isEdit
-              ? 'Fixed after creation.'
-              : 'watch, youtu.be, shorts or embed link, or the bare id.'
-          }
-          errorText={shownErrors.youtube}
-          disabled={isEdit || readOnly}
-          autoComplete="off"
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('youtube')(event.target.value);
-          }}
-        />
-        <AlInput
-          label="Title"
-          value={values.title}
-          data-testid="academy-lesson-title"
-          helperText={isEdit ? undefined : 'Leave blank to use the YouTube title.'}
-          errorText={shownErrors.title}
-          maxLength={200}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('title')(event.target.value);
-          }}
-        />
+        <div className="admin-form-grid">
+          <AlInput
+            label="YouTube link"
+            mono
+            value={values.youtube}
+            data-testid="academy-lesson-youtube"
+            placeholder="https://www.youtube.com/watch?v=…"
+            helperText={
+              isEdit
+                ? 'Fixed after creation.'
+                : 'watch, youtu.be, shorts or embed link, or the bare id.'
+            }
+            errorText={shownErrors.youtube}
+            disabled={isEdit || readOnly}
+            autoComplete="off"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('youtube')(event.target.value);
+            }}
+          />
+          <AlInput
+            label="Title"
+            value={values.title}
+            data-testid="academy-lesson-title"
+            helperText={isEdit ? undefined : 'Leave blank to use the YouTube title.'}
+            errorText={shownErrors.title}
+            maxLength={200}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('title')(event.target.value);
+            }}
+          />
+        </div>
         <DiscoveryTextArea
           label="Description"
           value={values.description}
@@ -268,30 +270,32 @@ export function AcademyLessonSheet({
             set('takeaways')(event.target.value);
           }}
         />
-        <AlInput
-          label="Duration (minutes)"
-          inputMode="numeric"
-          value={values.durationMinutes}
-          data-testid="academy-lesson-duration"
-          helperText="Optional. Leave blank if you have not checked the video length."
-          errorText={shownErrors.durationMinutes}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('durationMinutes')(event.target.value);
-          }}
-        />
-        <AlInput
-          label="Position"
-          inputMode="numeric"
-          value={values.sortOrder}
-          data-testid="academy-lesson-sort-order"
-          helperText="Lessons play in ascending order."
-          errorText={shownErrors.sortOrder}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('sortOrder')(event.target.value);
-          }}
-        />
+        <div className="admin-form-grid">
+          <AlInput
+            label="Duration (minutes)"
+            inputMode="numeric"
+            value={values.durationMinutes}
+            data-testid="academy-lesson-duration"
+            helperText="Optional. Leave blank if you have not checked the video length."
+            errorText={shownErrors.durationMinutes}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('durationMinutes')(event.target.value);
+            }}
+          />
+          <AlInput
+            label="Position"
+            inputMode="numeric"
+            value={values.sortOrder}
+            data-testid="academy-lesson-sort-order"
+            helperText="Lessons play in ascending order."
+            errorText={shownErrors.sortOrder}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('sortOrder')(event.target.value);
+            }}
+          />
+        </div>
         {!isEdit ? (
           <AlCheckbox
             label="Publish immediately"

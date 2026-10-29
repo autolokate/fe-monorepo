@@ -24,7 +24,7 @@ export function useAuditColumns(): ColumnDef<AuditEventDto>[] {
     () => [
       {
         accessorKey: 'at',
-        header: 'Timestamp',
+        header: 'When',
         cell: ({ row }) => formatDateTime(row.original.at),
       },
       {
@@ -39,7 +39,7 @@ export function useAuditColumns(): ColumnDef<AuditEventDto>[] {
       },
       {
         accessorKey: 'targetType',
-        header: 'Entity type',
+        header: 'Entity',
         cell: ({ row }) => formatAuditField(row.original.targetType),
       },
     ],

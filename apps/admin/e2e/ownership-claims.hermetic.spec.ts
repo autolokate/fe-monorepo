@@ -26,7 +26,7 @@ test.describe('Ownership claims (hermetic)', () => {
 
     await page.getByRole('button', { name: 'Approve', exact: true }).click();
     await expect(page.getByRole('alertdialog')).toBeVisible({ timeout: 5_000 });
-    await expect(page.getByRole('alertdialog')).toContainText('atomically transfers');
+    await expect(page.getByRole('alertdialog')).toContainText('transfers this vehicle');
     await page.getByRole('button', { name: 'Approve and transfer ownership' }).click();
     await expect.poll(() => capture.ownershipClaimsReview.length, { timeout: 10_000 }).toBe(1);
     expect(capture.ownershipClaimsReview[0]?.path).toBe(
@@ -48,7 +48,7 @@ test.describe('Ownership claims (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('detail sheet — full IDs + RC ACL blocker + reject with editable reason', async ({
+  test('detail sheet — short IDs + RC ACL blocker + reject with editable reason', async ({
     page,
   }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
@@ -58,19 +58,17 @@ test.describe('Ownership claims (hermetic)', () => {
     await page.getByTestId(`ownership-claim-details-${HERMETIC_OWNERSHIP_CLAIM_ID}`).click();
     await expect(page.getByTestId('ownership-claim-detail-sheet')).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('ownership-claim-detail-sheet')).toContainText(
-      HERMETIC_OWNERSHIP_CLAIM_ID,
+      HERMETIC_OWNERSHIP_CLAIM_ID.slice(0, 8),
     );
     await expect(page.getByTestId('ownership-claim-notes')).toContainText(
       'Hermetic RC claim notes',
     );
-    await expect(page.getByTestId('ownership-claim-audit-hint')).toContainText(
-      'OWNERSHIP_CLAIM_APPROVED',
-    );
+    await expect(page.getByTestId('ownership-claim-audit-hint')).toContainText('Activity Log');
     await expect(page.getByTestId('ownership-claim-rc-asset-id')).toContainText(
-      HERMETIC_RC_MEDIA_ASSET_ID,
+      HERMETIC_RC_MEDIA_ASSET_ID.slice(0, 8),
     );
     await expect(page.getByTestId('ownership-claim-rc-blocker')).toContainText(
-      'Preview unavailable — Admin RC-proof download',
+      'Preview unavailable for this claim',
     );
     expect(capture.ownershipClaimsRcProofGet.length).toBeGreaterThanOrEqual(1);
     expect(capture.ownershipClaimsRcProofGet[0]?.path).toBe(

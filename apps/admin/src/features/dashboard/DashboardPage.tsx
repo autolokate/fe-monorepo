@@ -8,12 +8,14 @@ import {
   StoreIcon,
   UsersIcon,
 } from '@autolokate/icons';
-import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack, AlText } from '@autolokate/ui';
+import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
 import { useDashboard } from '@/hooks/dashboard/useDashboard';
 import { MetricSkeleton } from '@/platform/components/MetricSkeleton';
+import { AdminKpiStrip, AdminPanel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './dashboard.css';
@@ -121,6 +123,28 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const { metrics, isLoading, isFetching, userErrorMessage, refresh } = useDashboard();
 
+  const inventory = metrics?.inventory;
+  const batchManagement = metrics?.batchManagement;
+  const promos = metrics?.promos;
+  const catalog = metrics?.catalog;
+
+  const snapshotKpis = useMemo(() => {
+    if (!inventory || !batchManagement || !promos) return [];
+    const items = [
+      { label: 'QR batches', value: inventory.totalBatches.toLocaleString() },
+      { label: 'Draft batches', value: batchManagement.draftBatches.toLocaleString() },
+      { label: 'Active promos', value: promos.activePromos.toLocaleString() },
+      {
+        label: 'Audit page',
+        value: metrics.auditLatestCount.toLocaleString(),
+      },
+    ];
+    if (catalog) {
+      items.splice(2, 0, { label: 'Catalog SKUs', value: catalog.skus.toLocaleString() });
+    }
+    return items;
+  }, [batchManagement, catalog, inventory, metrics?.auditLatestCount, promos]);
+
   if (userErrorMessage && !metrics) {
     return (
       <RequirePermission permission="dashboard:view">
@@ -134,14 +158,9 @@ export function DashboardPage() {
     );
   }
 
-  const inventory = metrics?.inventory;
-  const batchManagement = metrics?.batchManagement;
-  const promos = metrics?.promos;
-  const catalog = metrics?.catalog;
-
   return (
     <RequirePermission permission="dashboard:view">
-      <AlStack gap="lg">
+      <AlStack gap="md">
         <AlPageHeader
           title="Dashboard"
           description="Operations snapshot and shortcuts across Admin."
@@ -163,13 +182,17 @@ export function DashboardPage() {
           </div>
         ) : (
           <>
-            <AlStack gap="sm">
-              <AlText variant="label">Operations</AlText>
+            {snapshotKpis.length > 0 ? <AdminKpiStrip items={snapshotKpis} /> : null}
+
+            <AdminPanel
+              title="Operations"
+              subtitle="Stock, catalog, promos, and recent audit activity."
+            >
               <div className="dashboard-page-grid">
                 <DashboardPageCard
                   title="QR stickers"
                   description="Stock and batch lifecycle"
-                  icon={<ScanLineIcon size={20} aria-hidden />}
+                  icon={<ScanLineIcon size={18} aria-hidden />}
                   primaryValue={inventory.totalBatches.toLocaleString()}
                   primaryLabel="batches"
                   stats={[
@@ -197,7 +220,7 @@ export function DashboardPage() {
                   <DashboardPageCard
                     title="Catalog"
                     description="Plan versions and SKU shelves"
-                    icon={<StoreIcon size={20} aria-hidden />}
+                    icon={<StoreIcon size={18} aria-hidden />}
                     primaryValue={catalog.skus.toLocaleString()}
                     primaryLabel="SKUs"
                     primaryTone={toneForCatalogSkus(catalog.skus, catalog.emptyShelves)}
@@ -226,7 +249,7 @@ export function DashboardPage() {
                   <DashboardLinkCard
                     title="Catalog"
                     description="Plan versions and SKU shelves"
-                    icon={<StoreIcon size={20} aria-hidden />}
+                    icon={<StoreIcon size={18} aria-hidden />}
                     onClick={() => {
                       void navigate(adminPaths.catalog);
                     }}
@@ -235,7 +258,7 @@ export function DashboardPage() {
                 <DashboardPageCard
                   title="Promos"
                   description="Campaigns and discount codes"
-                  icon={<CreditCardIcon size={20} aria-hidden />}
+                  icon={<CreditCardIcon size={18} aria-hidden />}
                   primaryValue={promos.activePromos.toLocaleString()}
                   primaryLabel="active"
                   primaryTone={toneForActivePromos(promos.activePromos)}
@@ -263,7 +286,7 @@ export function DashboardPage() {
                 <DashboardPageCard
                   title="Activity"
                   description="Latest audit feed page"
-                  icon={<ReceiptTextIcon size={20} aria-hidden />}
+                  icon={<ReceiptTextIcon size={18} aria-hidden />}
                   primaryValue={metrics.auditLatestCount.toLocaleString()}
                   primaryLabel="events on latest page"
                   onClick={() => {
@@ -271,15 +294,14 @@ export function DashboardPage() {
                   }}
                 />
               </div>
-            </AlStack>
+            </AdminPanel>
 
-            <AlStack gap="sm">
-              <AlText variant="label">Jump to</AlText>
+            <AdminPanel title="Jump to" subtitle="Common operator destinations.">
               <div className="dashboard-page-grid">
                 <DashboardLinkCard
                   title="Customers"
                   description="Phone lookup and vehicle care"
-                  icon={<UsersIcon size={20} aria-hidden />}
+                  icon={<UsersIcon size={18} aria-hidden />}
                   onClick={() => {
                     void navigate(adminPaths.users);
                   }}
@@ -287,7 +309,7 @@ export function DashboardPage() {
                 <DashboardLinkCard
                   title="Partners"
                   description="Garage, store, and taxi orgs"
-                  icon={<StoreIcon size={20} aria-hidden />}
+                  icon={<StoreIcon size={18} aria-hidden />}
                   onClick={() => {
                     void navigate(adminPaths.partners);
                   }}
@@ -295,7 +317,7 @@ export function DashboardPage() {
                 <DashboardLinkCard
                   title="Discovery"
                   description="Q&A, reels, Daily Drive, Academy"
-                  icon={<CameraIcon size={20} aria-hidden />}
+                  icon={<CameraIcon size={18} aria-hidden />}
                   onClick={() => {
                     void navigate(adminPaths.discovery);
                   }}
@@ -303,13 +325,13 @@ export function DashboardPage() {
                 <DashboardLinkCard
                   title="Settlements"
                   description="Clawbacks and settlement batches"
-                  icon={<ShieldCheckIcon size={20} aria-hidden />}
+                  icon={<ShieldCheckIcon size={18} aria-hidden />}
                   onClick={() => {
                     void navigate(adminPaths.finance);
                   }}
                 />
               </div>
-            </AlStack>
+            </AdminPanel>
           </>
         )}
       </AlStack>

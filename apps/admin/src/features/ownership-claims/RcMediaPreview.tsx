@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { shortAdminId } from '@/platform/components/AdminWowSurface';
 import { fetchRcClaimProofDownloadUrl } from '@/services/ownership-claims/ownership-claims-service';
 
 export type RcMediaPreviewProps = {
@@ -19,8 +20,8 @@ function inferPreviewKind(url: string): 'pdf' | 'image' {
 }
 
 /**
- * Prefers `GET /admin/v1/ownership-claims/{claimId}/rc-proof` (OPERATOR).
- * On 403/404 (or any fetch failure) show asset id + honest ACL / endpoint blocker — never a fake image.
+ * Prefers the claim RC-proof download URL. On failure show a short asset ref —
+ * never dump full ids as the primary message.
  */
 export function RcMediaPreview({ claimId, rcMediaAssetId }: RcMediaPreviewProps) {
   const query = useQuery({
@@ -39,7 +40,7 @@ export function RcMediaPreview({ claimId, rcMediaAssetId }: RcMediaPreviewProps)
   if (query.isLoading) {
     return (
       <p className="admin-muted" data-testid="ownership-claim-rc-loading">
-        Loading RC document preview…
+        Loading registration document…
       </p>
     );
   }
@@ -48,32 +49,39 @@ export function RcMediaPreview({ claimId, rcMediaAssetId }: RcMediaPreviewProps)
     const apiMessage = query.error ? mapAdminApiError(query.error).userMessage : null;
     return (
       <div data-testid="ownership-claim-rc-unavailable">
-        <AlText variant="caption" tone="muted">
-          RC media asset id
-        </AlText>
-        <p className="admin-detail-field__value--mono" data-testid="ownership-claim-rc-asset-id">
-          {rcMediaAssetId}
-        </p>
         <p className="admin-muted" data-testid="ownership-claim-rc-blocker">
           Preview unavailable for this claim
-          {apiMessage ? ` (${apiMessage})` : ''}. Claim id{' '}
-          <span className="admin-detail-field__value--mono">{claimId}</span>.
+          {apiMessage ? ` — ${apiMessage}` : ''}.
         </p>
+        <AlText variant="caption" tone="muted">
+          Document ref{' '}
+          <span
+            className="admin-detail-field__value--mono"
+            data-testid="ownership-claim-rc-asset-id"
+            title={rcMediaAssetId}
+          >
+            {shortAdminId(rcMediaAssetId)}
+          </span>
+        </AlText>
       </div>
     );
   }
 
   return (
     <div className="ownership-claim-rc-preview" data-testid="ownership-claim-rc-preview">
-      <p className="admin-muted">
-        RC media asset id:{' '}
-        <span className="admin-detail-field__value--mono" data-testid="ownership-claim-rc-asset-id">
-          {rcMediaAssetId}
+      <AlText variant="caption" tone="muted">
+        Document ref{' '}
+        <span
+          className="admin-detail-field__value--mono"
+          data-testid="ownership-claim-rc-asset-id"
+          title={rcMediaAssetId}
+        >
+          {shortAdminId(rcMediaAssetId)}
         </span>
-      </p>
+      </AlText>
       {kind === 'pdf' ? (
         <iframe
-          title="RC document PDF"
+          title="Registration document PDF"
           src={query.data.url}
           className="ownership-claim-rc-preview__frame"
           data-testid="ownership-claim-rc-pdf"
@@ -81,16 +89,16 @@ export function RcMediaPreview({ claimId, rcMediaAssetId }: RcMediaPreviewProps)
       ) : (
         <img
           src={query.data.url}
-          alt="RC proof document"
+          alt="Registration proof document"
           className="ownership-claim-rc-preview__img"
           data-testid="ownership-claim-rc-image"
         />
       )}
       <p className="admin-muted">
         <a href={query.data.url} target="_blank" rel="noreferrer">
-          Open signed URL in new tab
+          Open in new tab
         </a>{' '}
-        (expires in ~{query.data.expiresInSeconds}s)
+        (link expires in ~{query.data.expiresInSeconds}s)
       </p>
     </div>
   );

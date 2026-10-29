@@ -9,7 +9,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { adminPartnerPath } from '@/app/routes/admin-paths';
@@ -19,9 +19,37 @@ import { usePartnersDirectory } from '@/hooks/partners/usePartnersDirectory';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './partners.css';
+
+function partnerKpisFromPage(partners: AdminPartnerOrgDto[]) {
+  const kindCounts = new Map<string, number>();
+  let withStore = 0;
+  let published = 0;
+  for (const partner of partners) {
+    kindCounts.set(partner.partnerKind, (kindCounts.get(partner.partnerKind) ?? 0) + 1);
+    if (partner.storeId) withStore += 1;
+    if (partner.storeStatus === 'PUBLISHED') published += 1;
+  }
+  const items = [
+    { label: 'On this page', value: String(partners.length) },
+    ...[...kindCounts.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([kind, count]) => ({
+        label: humanizeAdminLabel(kind),
+        value: String(count),
+      })),
+  ];
+  if (withStore > 0) {
+    items.push({ label: 'With storefront', value: String(withStore) });
+  }
+  if (published > 0) {
+    items.push({ label: 'Store published', value: String(published) });
+  }
+  return items;
+}
 
 export function PartnersDirectoryPage() {
   const navigate = useNavigate();
@@ -43,6 +71,10 @@ export function PartnersDirectoryPage() {
   } = usePartnersDirectory();
 
   const columns = usePartnersColumns();
+  const kpiItems = useMemo(
+    () => (partners.length > 0 ? partnerKpisFromPage(partners) : []),
+    [partners],
+  );
 
   const openDetail = useCallback(
     (partner: AdminPartnerOrgDto) => {
@@ -76,6 +108,8 @@ export function PartnersDirectoryPage() {
             />
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={
@@ -113,7 +147,7 @@ export function PartnersDirectoryPage() {
             emptyTitle={type === 'TAXI' ? 'No taxi partners yet' : 'No partners found'}
             emptyDescription={
               type === 'TAXI'
-                ? 'Taxi org directory returns empty until the backend ships a taxi partner directory.'
+                ? 'Taxi org directory returns empty until partners are provisioned.'
                 : 'Change the type filter or search to find partners.'
             }
             getRowId={(row) => row.orgId}

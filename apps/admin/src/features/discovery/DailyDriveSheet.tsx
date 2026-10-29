@@ -222,34 +222,36 @@ export function DailyDriveSheet({ video, open, onOpenChange, canWrite }: DailyDr
       }
     >
       <form id="daily-drive-form" className="admin-form-stack" noValidate onSubmit={onSubmit}>
-        <AlInput
-          label="YouTube link"
-          mono
-          value={values.youtube}
-          data-testid="daily-drive-youtube"
-          placeholder="https://www.youtube.com/watch?v=…"
-          helperText={
-            isEdit
-              ? 'Fixed after creation.'
-              : 'watch, youtu.be, shorts or embed link, or the bare id.'
-          }
-          errorText={shownErrors.youtube}
-          disabled={isEdit || readOnly}
-          autoComplete="off"
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('youtube')(event.target.value);
-          }}
-        />
-        <AlSelect
-          label="Category"
-          options={CATEGORY_OPTIONS}
-          value={values.category}
-          data-testid="daily-drive-category"
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-            set('category')(event.target.value as DailyDriveCategory);
-          }}
-        />
+        <div className="admin-form-grid">
+          <AlInput
+            label="YouTube link"
+            mono
+            value={values.youtube}
+            data-testid="daily-drive-youtube"
+            placeholder="https://www.youtube.com/watch?v=…"
+            helperText={
+              isEdit
+                ? 'Fixed after creation.'
+                : 'watch, youtu.be, shorts or embed link, or the bare id.'
+            }
+            errorText={shownErrors.youtube}
+            disabled={isEdit || readOnly}
+            autoComplete="off"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('youtube')(event.target.value);
+            }}
+          />
+          <AlSelect
+            label="Category"
+            options={CATEGORY_OPTIONS}
+            value={values.category}
+            data-testid="daily-drive-category"
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              set('category')(event.target.value as DailyDriveCategory);
+            }}
+          />
+        </div>
         <AlInput
           label="Title"
           value={values.title}
@@ -272,30 +274,32 @@ export function DailyDriveSheet({ video, open, onOpenChange, canWrite }: DailyDr
             set('description')(event.target.value);
           }}
         />
-        <AlInput
-          label="Duration (minutes)"
-          inputMode="numeric"
-          value={values.durationMinutes}
-          data-testid="daily-drive-duration"
-          helperText="Optional."
-          errorText={shownErrors.durationMinutes}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('durationMinutes')(event.target.value);
-          }}
-        />
-        <AlInput
-          label="Sort order"
-          inputMode="numeric"
-          value={values.sortOrder}
-          data-testid="daily-drive-sort-order"
-          helperText="Lower numbers appear first in the consumer library."
-          errorText={shownErrors.sortOrder}
-          disabled={readOnly}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            set('sortOrder')(event.target.value);
-          }}
-        />
+        <div className="admin-form-grid">
+          <AlInput
+            label="Duration (minutes)"
+            inputMode="numeric"
+            value={values.durationMinutes}
+            data-testid="daily-drive-duration"
+            helperText="Optional."
+            errorText={shownErrors.durationMinutes}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('durationMinutes')(event.target.value);
+            }}
+          />
+          <AlInput
+            label="Sort order"
+            inputMode="numeric"
+            value={values.sortOrder}
+            data-testid="daily-drive-sort-order"
+            helperText="Lower numbers appear first in the consumer library."
+            errorText={shownErrors.sortOrder}
+            disabled={readOnly}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              set('sortOrder')(event.target.value);
+            }}
+          />
+        </div>
         <AlCheckbox
           label="Featured"
           checked={values.featured}

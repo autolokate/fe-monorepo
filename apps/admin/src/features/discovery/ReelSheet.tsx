@@ -25,6 +25,7 @@ import {
   AdminDetailGrid,
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
+import { shortAdminId } from '@/platform/components/AdminWowSurface';
 import { DiscoveryReelStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { uploadDiscoveryReelMedia } from '@/services/discovery/admin-discovery-service';
 import { describeDiscoverySubmitError } from '@/services/discovery/discovery-errors';
@@ -394,10 +395,12 @@ export function ReelSheet({
                     label="Updated"
                     value={formatDiscoveryDateTime(liveReel.updatedAt)}
                   />
-                  <AdminDetailField label="Reel ID" value={liveReel.reelId} mono />
+                  <AdminDetailField label="Reel ID" value={shortAdminId(liveReel.reelId)} mono />
                   <AdminDetailField
-                    label="Partner org"
-                    value={liveReel.partnerOrgId ?? '— unlinked —'}
+                    label="Linked partner"
+                    value={
+                      liveReel.partnerOrgId ? shortAdminId(liveReel.partnerOrgId) : 'Not linked'
+                    }
                     mono={Boolean(liveReel.partnerOrgId)}
                   />
                 </AdminDetailGrid>
@@ -407,10 +410,7 @@ export function ReelSheet({
         ) : null}
 
         {liveReel ? (
-          <AdminDetailSection
-            title="Engagement"
-            description="Server-maintained counters — read-only."
-          >
+          <AdminDetailSection title="Engagement" description="Live totals — read-only.">
             <div className="discovery-metrics" data-testid="discovery-reel-metrics">
               <div className="discovery-metric">
                 <span className="discovery-metric__value">{formatCount(liveReel.viewCount)}</span>
@@ -460,7 +460,7 @@ export function ReelSheet({
                     helperText={
                       isEdit
                         ? 'Fixed after creation.'
-                        : 'Unique, idempotent identifier — e.g. al-reel-11.'
+                        : 'Unique key used across environments — e.g. al-reel-11.'
                     }
                     autoComplete="off"
                     disabled={isBusy || isEdit}
@@ -524,29 +524,28 @@ export function ReelSheet({
               )}
             />
 
-            <Controller
-              control={form.control}
-              name="partnerOrgId"
-              render={({ field, fieldState }) => (
-                <AlInput
-                  label="Partner org id (optional)"
-                  mono
-                  data-testid="discovery-reel-partner-org-id"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Garage/Store partner UUID for AutoClip attribution (0086). Blank = unlinked. Clear and save to unlink."
-                  autoComplete="off"
-                  disabled={isBusy}
-                />
-              )}
-            />
-
             <div className="admin-form-grid">
+              <Controller
+                control={form.control}
+                name="partnerOrgId"
+                render={({ field, fieldState }) => (
+                  <AlInput
+                    label="Linked partner (optional)"
+                    mono
+                    data-testid="discovery-reel-partner-org-id"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    errorText={fieldState.error?.message}
+                    helperText="Garage or Store org id for AutoClip attribution. Leave blank if unlinked; clear and save to unlink."
+                    autoComplete="off"
+                    disabled={isBusy}
+                  />
+                )}
+              />
               <FileField
                 label={isEdit ? 'Replace video (MP4)' : 'Video (MP4)'}
-                helperText={`MP4 only, up to ${String(REEL_MAX_BYTES / (1024 * 1024))} MB. Uploaded through the media pipeline (DISCOVERY_REEL).`}
+                helperText={`MP4 only, up to ${String(REEL_MAX_BYTES / (1024 * 1024))} MB.`}
                 accept="video/mp4"
                 file={videoFile}
                 errorText={videoError}

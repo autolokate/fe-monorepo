@@ -18,16 +18,15 @@ test.describe('Audit explorer (hermetic)', () => {
     await openAuditEventsPage(page);
 
     expect(capture.auditEventsGet).toBeGreaterThanOrEqual(1);
-    await expect(page.getByText('BATCH_PROVISIONED', { exact: true })).toBeVisible({
+    await expect(page.getByText('Batch Provisioned', { exact: true })).toBeVisible({
       timeout: 10_000,
     });
     await expect(page.getByText('batch', { exact: true }).first()).toBeVisible();
 
-    await page.getByRole('row').filter({ hasText: 'BATCH_PROVISIONED' }).click();
+    await page.getByRole('row').filter({ hasText: 'Batch Provisioned' }).click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 10_000 });
-    // Detail title replaces underscores with spaces.
-    await expect(dialog).toContainText('BATCH PROVISIONED');
+    await expect(dialog).toContainText('Batch Provisioned');
     await expect(dialog).toContainText('batch');
     expect(capture.unexpected).toEqual([]);
   });
@@ -42,11 +41,11 @@ test.describe('Audit explorer (hermetic)', () => {
     await page.getByTestId('audit-filter-target-type').fill('batch');
     await page.getByTestId('audit-filter-apply').click();
 
-    await expect(page.getByText('BATCH_PROVISIONED', { exact: true })).toBeVisible({
+    await expect(page.getByText('Batch Provisioned', { exact: true })).toBeVisible({
       timeout: 10_000,
     });
     // Refund row filtered out.
-    await expect(page.getByText('REFUND_OR_CLAWBACK', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('Refund Or Clawback', { exact: true })).toHaveCount(0);
 
     const filtered = capture.auditEventsGetQueries.filter(
       (query) => query.includes('action=BATCH_PROVISIONED') && query.includes('targetType=batch'),
@@ -64,11 +63,13 @@ test.describe('Audit explorer (hermetic)', () => {
     await page.getByPlaceholder('Filter by entity').fill(HERMETIC_AUDIT_BATCH_ID);
     await page.getByTestId('audit-filter-apply').click();
 
-    await expect.poll(() =>
-      capture.auditEventsGetQueries.some((query) =>
-        query.includes(`targetId=${encodeURIComponent(HERMETIC_AUDIT_BATCH_ID)}`),
-      ),
-    ).toBe(true);
+    await expect
+      .poll(() =>
+        capture.auditEventsGetQueries.some((query) =>
+          query.includes(`targetId=${encodeURIComponent(HERMETIC_AUDIT_BATCH_ID)}`),
+        ),
+      )
+      .toBe(true);
     expect(capture.unexpected).toEqual([]);
   });
 
