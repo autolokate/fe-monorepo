@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminDiscoveryReelDto, AdminReelTransition } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlModal, AlText } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlModal, AlText } from '@autolokate/ui';
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -71,8 +71,8 @@ function FileField({
   onChange: (file: File | null) => void;
 }) {
   return (
-    <div className={`al-field${errorText ? ' al-field--error' : ''}`}>
-      <span className="al-field__label">{label}</span>
+    <label className="admin-field">
+      {label}
       <input
         type="file"
         className="discovery-file-input"
@@ -84,19 +84,18 @@ function FileField({
           onChange(event.target.files?.[0] ?? null);
         }}
       />
-      {file ? (
-        <span className="al-field__hint">
+      {errorText ? (
+        <span className="admin-form-error" role="alert">
+          {errorText}
+        </span>
+      ) : file ? (
+        <span className="admin-field__hint">
           {file.name} · {(file.size / (1024 * 1024)).toFixed(1)} MB
         </span>
       ) : (
-        <span className="al-field__hint">{helperText}</span>
+        <span className="admin-field__hint">{helperText}</span>
       )}
-      {errorText ? (
-        <span className="al-field__error" role="alert">
-          {errorText}
-        </span>
-      ) : null}
-    </div>
+    </label>
   );
 }
 
@@ -449,43 +448,56 @@ export function ReelSheet({
                 control={form.control}
                 name="stableKey"
                 render={({ field, fieldState }) => (
-                  <AlInput
-                    label="Stable key"
-                    mono
-                    data-testid="discovery-reel-stable-key"
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    errorText={fieldState.error?.message}
-                    helperText={
-                      isEdit
-                        ? 'Fixed after creation.'
-                        : 'Unique key used across environments — e.g. al-reel-11.'
-                    }
-                    autoComplete="off"
-                    disabled={isBusy || isEdit}
-                  />
+                  <label className="admin-field">
+                    Stable key
+                    <input
+                      data-testid="discovery-reel-stable-key"
+                      autoComplete="off"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      disabled={isBusy || isEdit}
+                    />
+                    {fieldState.error?.message ? (
+                      <span className="admin-form-error">{fieldState.error.message}</span>
+                    ) : (
+                      <span className="admin-field__hint">
+                        {isEdit
+                          ? 'Fixed after creation.'
+                          : 'Unique key used across environments — e.g. al-reel-11.'}
+                      </span>
+                    )}
+                  </label>
                 )}
               />
               <Controller
                 control={form.control}
                 name="sortOrder"
                 render={({ field, fieldState }) => (
-                  <AlInput
-                    label="Feed order"
-                    type="number"
-                    data-testid="discovery-reel-sort-order"
-                    value={Number.isNaN(field.value) ? '' : field.value}
-                    onChange={(event) => {
-                      field.onChange(
-                        event.target.value === '' ? Number.NaN : event.target.valueAsNumber,
-                      );
-                    }}
-                    onBlur={field.onBlur}
-                    errorText={fieldState.error?.message}
-                    helperText="Position in the feed ordering."
-                    disabled={isBusy}
-                  />
+                  <label className="admin-field">
+                    Feed order
+                    <input
+                      type="number"
+                      data-testid="discovery-reel-sort-order"
+                      value={Number.isNaN(field.value) ? '' : field.value}
+                      onChange={(event) => {
+                        field.onChange(
+                          event.target.value === '' ? Number.NaN : event.target.valueAsNumber,
+                        );
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      disabled={isBusy}
+                    />
+                    {fieldState.error?.message ? (
+                      <span className="admin-form-error">{fieldState.error.message}</span>
+                    ) : (
+                      <span className="admin-field__hint">Position in the feed ordering.</span>
+                    )}
+                  </label>
                 )}
               />
             </div>
@@ -494,16 +506,22 @@ export function ReelSheet({
               control={form.control}
               name="title"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Title"
-                  data-testid="discovery-reel-title"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  autoComplete="off"
-                  disabled={isBusy}
-                />
+                <label className="admin-field admin-form-span">
+                  Title
+                  <input
+                    data-testid="discovery-reel-title"
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={isBusy}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : null}
+                </label>
               )}
             />
 
@@ -512,6 +530,7 @@ export function ReelSheet({
               name="caption"
               render={({ field, fieldState }) => (
                 <DiscoveryTextArea
+                  className="admin-form-span"
                   label="Caption"
                   data-testid="discovery-reel-caption"
                   rows={4}
@@ -529,18 +548,27 @@ export function ReelSheet({
                 control={form.control}
                 name="partnerOrgId"
                 render={({ field, fieldState }) => (
-                  <AlInput
-                    label="Linked partner (optional)"
-                    mono
-                    data-testid="discovery-reel-partner-org-id"
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    errorText={fieldState.error?.message}
-                    helperText="Garage or Store org id for AutoClip attribution. Leave blank if unlinked; clear and save to unlink."
-                    autoComplete="off"
-                    disabled={isBusy}
-                  />
+                  <label className="admin-field">
+                    Linked partner (optional)
+                    <input
+                      data-testid="discovery-reel-partner-org-id"
+                      autoComplete="off"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      disabled={isBusy}
+                    />
+                    {fieldState.error?.message ? (
+                      <span className="admin-form-error">{fieldState.error.message}</span>
+                    ) : (
+                      <span className="admin-field__hint">
+                        Optional Garage or Store partner for AutoClip attribution. Leave blank if
+                        unlinked; clear and save to unlink.
+                      </span>
+                    )}
+                  </label>
                 )}
               />
               <FileField

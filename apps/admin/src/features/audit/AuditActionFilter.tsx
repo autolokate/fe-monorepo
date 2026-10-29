@@ -1,4 +1,3 @@
-import { AlInput } from '@autolokate/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { AUDIT_ACTION_OPTIONS } from '@/features/audit/audit-filters';
@@ -69,14 +68,14 @@ export function AuditActionFilter({
     [close, onChange],
   );
 
-  return (
-    <div ref={rootRef} className="audit-action-filter">
-      <AlInput
-        {...(compact ? {} : { label: 'Action' })}
+  const control = (
+    <>
+      <input
         data-testid="audit-filter-action"
         value={value}
         placeholder="Action"
         autoComplete="off"
+        aria-invalid={errorText ? true : undefined}
         onChange={(event) => {
           onChange(event.target.value);
           setOpen(true);
@@ -84,9 +83,20 @@ export function AuditActionFilter({
         onFocus={() => {
           setOpen(true);
         }}
-        errorText={errorText ?? undefined}
-        {...(compact ? {} : { helperText: 'Search or pick an audit action' })}
       />
+      {errorText ? (
+        <span className="admin-form-error" role="alert">
+          {errorText}
+        </span>
+      ) : !compact ? (
+        <span className="admin-field__hint">Search or pick an audit action</span>
+      ) : null}
+    </>
+  );
+
+  return (
+    <div ref={rootRef} className="audit-action-filter">
+      {compact ? control : <label className="admin-field">Action{control}</label>}
 
       {open ? (
         <div className="audit-action-filter__menu" role="listbox" aria-label="Audit actions">

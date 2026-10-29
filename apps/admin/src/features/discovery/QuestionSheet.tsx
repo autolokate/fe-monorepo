@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminCommunityQuestionDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlModal, AlSelect } from '@autolokate/ui';
-import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
+import { AlButton, AlCheckbox, AlModal } from '@autolokate/ui';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { DiscoveryTextArea } from '@/features/discovery/DiscoveryTextArea';
@@ -234,34 +234,58 @@ export function QuestionSheet({ question, open, onOpenChange, canWrite }: Questi
                 control={form.control}
                 name="category"
                 render={({ field, fieldState }) => (
-                  <AlSelect
-                    label="Category"
-                    options={QA_CATEGORY_OPTIONS}
-                    value={field.value}
-                    data-testid="discovery-qa-category"
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                      field.onChange(event.target.value);
-                    }}
-                    errorText={fieldState.error?.message}
-                    disabled={isBusy}
-                  />
+                  <label className="admin-field">
+                    Category
+                    <select
+                      data-testid="discovery-qa-category"
+                      value={field.value}
+                      onChange={(event) => {
+                        field.onChange(event.target.value);
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      disabled={isBusy}
+                    >
+                      {QA_CATEGORY_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {fieldState.error?.message ? (
+                      <span className="admin-form-error">{fieldState.error.message}</span>
+                    ) : null}
+                  </label>
                 )}
               />
               <Controller
                 control={form.control}
                 name="kind"
                 render={({ field, fieldState }) => (
-                  <AlSelect
-                    label="Kind"
-                    options={QA_KIND_OPTIONS}
-                    value={field.value}
-                    data-testid="discovery-qa-kind"
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                      field.onChange(event.target.value);
-                    }}
-                    errorText={fieldState.error?.message}
-                    disabled={isBusy}
-                  />
+                  <label className="admin-field">
+                    Kind
+                    <select
+                      data-testid="discovery-qa-kind"
+                      value={field.value}
+                      onChange={(event) => {
+                        field.onChange(event.target.value);
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      disabled={isBusy}
+                    >
+                      {QA_KIND_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {fieldState.error?.message ? (
+                      <span className="admin-form-error">{fieldState.error.message}</span>
+                    ) : null}
+                  </label>
                 )}
               />
             </div>
@@ -270,16 +294,22 @@ export function QuestionSheet({ question, open, onOpenChange, canWrite }: Questi
               control={form.control}
               name="title"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Title"
-                  data-testid="discovery-qa-title"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  autoComplete="off"
-                  disabled={isBusy}
-                />
+                <label className="admin-field admin-form-span">
+                  Title
+                  <input
+                    data-testid="discovery-qa-title"
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={isBusy}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : null}
+                </label>
               )}
             />
 
@@ -288,6 +318,7 @@ export function QuestionSheet({ question, open, onOpenChange, canWrite }: Questi
               name="body"
               render={({ field, fieldState }) => (
                 <DiscoveryTextArea
+                  className="admin-form-span"
                   label="Body"
                   data-testid="discovery-qa-body"
                   rows={6}
@@ -305,17 +336,24 @@ export function QuestionSheet({ question, open, onOpenChange, canWrite }: Questi
               control={form.control}
               name="vehicleLabel"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Vehicle label"
-                  data-testid="discovery-qa-vehicle"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Optional — e.g. “Maruti Swift 2019”."
-                  autoComplete="off"
-                  disabled={isBusy}
-                />
+                <label className="admin-field admin-form-span">
+                  Vehicle label
+                  <input
+                    data-testid="discovery-qa-vehicle"
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={isBusy}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">Optional — e.g. “Maruti Swift 2019”.</span>
+                  )}
+                </label>
               )}
             />
 

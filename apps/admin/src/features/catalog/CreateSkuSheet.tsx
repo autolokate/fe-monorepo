@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto, SkuSummaryDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack } from '@autolokate/ui';
-import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
+import { AlButton, AlCheckbox, AlModal, AlStack } from '@autolokate/ui';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { toCreateSkuBody } from '@/features/catalog/catalog-form-mapper';
@@ -159,19 +159,27 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               control={form.control}
               name="skuCode"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Product code"
-                  mono
-                  data-testid="sku-create-code"
-                  value={field.value}
-                  onChange={(event) => {
-                    field.onChange(event.target.value.toUpperCase());
-                  }}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Locked after create — e.g. SKU-B2C-SHIELD."
-                  autoComplete="off"
-                />
+                <label className="admin-field">
+                  Product code
+                  <input
+                    data-testid="sku-create-code"
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value.toUpperCase());
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      Locked after create — e.g. SKU-B2C-SHIELD.
+                    </span>
+                  )}
+                </label>
               )}
             />
 
@@ -179,16 +187,31 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               control={form.control}
               name="channel"
               render={({ field, fieldState }) => (
-                <AlSelect
-                  label="Channel"
-                  options={CHANNEL_OPTIONS}
-                  value={field.value}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    field.onChange(event.target.value);
-                  }}
-                  errorText={fieldState.error?.message}
-                  helperText="Locked after create — batches keep this channel."
-                />
+                <label className="admin-field">
+                  Channel
+                  <select
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  >
+                    {CHANNEL_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      Locked after create — batches keep this channel.
+                    </span>
+                  )}
+                </label>
               )}
             />
 
@@ -212,23 +235,38 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               control={form.control}
               name="defaultPlanId"
               render={({ field, fieldState }) => (
-                <AlSelect
-                  label="Default plan"
-                  data-testid="sku-create-default-plan"
-                  placeholder={
-                    offeredTiers.length === 0
-                      ? 'Put a tier on the shelf first'
-                      : 'Select default plan'
-                  }
-                  options={defaultPlanOptions}
-                  value={field.value}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    field.onChange(event.target.value);
-                  }}
-                  disabled={defaultPlanOptions.length === 0}
-                  errorText={fieldState.error?.message}
-                  helperText="Only live plans whose tier is on this shelf."
-                />
+                <label className="admin-field">
+                  Default plan
+                  <select
+                    data-testid="sku-create-default-plan"
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={defaultPlanOptions.length === 0}
+                  >
+                    <option value="">
+                      {offeredTiers.length === 0
+                        ? 'Put a tier on the shelf first'
+                        : 'Select default plan'}
+                    </option>
+                    {defaultPlanOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      Only live plans whose tier is on this shelf.
+                    </span>
+                  )}
+                </label>
               )}
             />
 
@@ -236,17 +274,26 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               control={form.control}
               name="listPriceRupees"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="List price (₹)"
-                  inputMode="decimal"
-                  data-testid="sku-create-list-price"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="What the sticker costs. Up to 2 decimal places."
-                  autoComplete="off"
-                />
+                <label className="admin-field">
+                  List price (₹)
+                  <input
+                    inputMode="decimal"
+                    data-testid="sku-create-list-price"
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      What the sticker costs. Up to 2 decimal places.
+                    </span>
+                  )}
+                </label>
               )}
             />
 
@@ -254,19 +301,28 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               control={form.control}
               name="riderDefault"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Rider default"
-                  type="number"
-                  min={0}
-                  max={10}
-                  value={field.value}
-                  onChange={(event) => {
-                    field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
-                  }}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Riders bundled with the plan by default."
-                />
+                <label className="admin-field">
+                  Rider default
+                  <input
+                    type="number"
+                    min={0}
+                    max={10}
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      Riders bundled with the plan by default.
+                    </span>
+                  )}
+                </label>
               )}
             />
 
@@ -274,17 +330,24 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
               control={form.control}
               name="sponsorOrgId"
               render={({ field, fieldState }) => (
-                <AlInput
-                  className="admin-form-span"
-                  label="Sponsor organization"
-                  mono
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Optional. Locked after create. Leave empty if unsponsored."
-                  autoComplete="off"
-                />
+                <label className="admin-field admin-form-span">
+                  Sponsor organization
+                  <input
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      Optional. Locked after create. Leave empty if unsponsored.
+                    </span>
+                  )}
+                </label>
               )}
             />
 

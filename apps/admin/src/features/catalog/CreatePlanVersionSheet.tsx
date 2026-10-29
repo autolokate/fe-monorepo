@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto, ApiPlanTier } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
-import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
+import { AlButton, AlCheckbox, AlModal, AlStack, AlText } from '@autolokate/ui';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { toCreatePlanBody } from '@/features/catalog/catalog-form-mapper';
@@ -148,20 +148,33 @@ export function CreatePlanVersionSheet({
               control={form.control}
               name="tier"
               render={({ field, fieldState }) => (
-                <AlSelect
-                  label="Tier"
-                  options={TIER_OPTIONS}
-                  value={field.value}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    field.onChange(event.target.value);
-                  }}
-                  errorText={fieldState.error?.message}
-                  helperText={
-                    outgoing
-                      ? `Currently live: ${formatPlanRef(outgoing)} at ${formatPaiseAsRupees(outgoing.pricePaise)}.`
-                      : 'No live version on this tier yet.'
-                  }
-                />
+                <label className="admin-field">
+                  Tier
+                  <select
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  >
+                    {TIER_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      {outgoing
+                        ? `Currently live: ${formatPlanRef(outgoing)} at ${formatPaiseAsRupees(outgoing.pricePaise)}.`
+                        : 'No live version on this tier yet.'}
+                    </span>
+                  )}
+                </label>
               )}
             />
 
@@ -169,15 +182,22 @@ export function CreatePlanVersionSheet({
               control={form.control}
               name="name"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Name"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Shown on the plan card."
-                  autoComplete="off"
-                />
+                <label className="admin-field">
+                  Name
+                  <input
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">Shown on the plan card.</span>
+                  )}
+                </label>
               )}
             />
 
@@ -185,16 +205,23 @@ export function CreatePlanVersionSheet({
               control={form.control}
               name="priceRupees"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Price (₹)"
-                  inputMode="decimal"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Up to 2 decimal places."
-                  autoComplete="off"
-                />
+                <label className="admin-field">
+                  Price (₹)
+                  <input
+                    inputMode="decimal"
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">Up to 2 decimal places.</span>
+                  )}
+                </label>
               )}
             />
 
@@ -202,15 +229,22 @@ export function CreatePlanVersionSheet({
               control={form.control}
               name="effectiveFrom"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Effective from"
-                  type="datetime-local"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Leave empty to publish immediately."
-                />
+                <label className="admin-field">
+                  Effective from
+                  <input
+                    type="datetime-local"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">Leave empty to publish immediately.</span>
+                  )}
+                </label>
               )}
             />
 

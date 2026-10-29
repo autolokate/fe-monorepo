@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlModal, AlStack, AlText } from '@autolokate/ui';
+import { AlButton, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -167,14 +167,20 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
                   // String(index) keeps the template lint-clean; the cast restores the exact path type.
                   name={`features.${String(index)}.value` as `features.${number}.value`}
                   render={({ field: inputField, fieldState }) => (
-                    <AlInput
-                      label={`Bullet ${String(index + 1)}`}
-                      value={inputField.value}
-                      onChange={inputField.onChange}
-                      onBlur={inputField.onBlur}
-                      errorText={fieldState.error?.message}
-                      autoComplete="off"
-                    />
+                    <label className="admin-field">
+                      {`Bullet ${String(index + 1)}`}
+                      <input
+                        autoComplete="off"
+                        value={inputField.value}
+                        onChange={inputField.onChange}
+                        onBlur={inputField.onBlur}
+                        name={inputField.name}
+                        ref={inputField.ref}
+                      />
+                      {fieldState.error?.message ? (
+                        <span className="admin-form-error">{fieldState.error.message}</span>
+                      ) : null}
+                    </label>
                   )}
                 />
                 <AlButton
@@ -213,15 +219,22 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
               control={form.control}
               name="badge"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Badge"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Optional ribbon — e.g. Most popular."
-                  autoComplete="off"
-                />
+                <label className="admin-field">
+                  Badge
+                  <input
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">Optional ribbon — e.g. Most popular.</span>
+                  )}
+                </label>
               )}
             />
 
@@ -229,15 +242,22 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
               control={form.control}
               name="includesLabel"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Includes label"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="Optional heading above the bullets."
-                  autoComplete="off"
-                />
+                <label className="admin-field">
+                  Includes label
+                  <input
+                    autoComplete="off"
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">Optional heading above the bullets.</span>
+                  )}
+                </label>
               )}
             />
           </div>

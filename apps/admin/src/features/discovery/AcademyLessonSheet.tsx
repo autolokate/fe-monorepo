@@ -1,6 +1,6 @@
 import type { AdminAcademyLessonDto, UpdateAdminAcademyLessonBody } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlModal } from '@autolokate/ui';
-import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'react';
+import { AlButton, AlCheckbox, AlModal } from '@autolokate/ui';
+import { useEffect, useState, type SyntheticEvent } from 'react';
 
 import { DiscoveryTextArea } from '@/features/discovery/DiscoveryTextArea';
 import { useAcademyMutations } from '@/hooks/discovery/useAcademy';
@@ -217,38 +217,48 @@ export function AcademyLessonSheet({
     >
       <form id="academy-lesson-form" className="admin-form-stack" noValidate onSubmit={onSubmit}>
         <div className="admin-form-grid">
-          <AlInput
-            label="YouTube link"
-            mono
-            value={values.youtube}
-            data-testid="academy-lesson-youtube"
-            placeholder="https://www.youtube.com/watch?v=…"
-            helperText={
-              isEdit
-                ? 'Fixed after creation.'
-                : 'watch, youtu.be, shorts or embed link, or the bare id.'
-            }
-            errorText={shownErrors.youtube}
-            disabled={isEdit || readOnly}
-            autoComplete="off"
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              set('youtube')(event.target.value);
-            }}
-          />
-          <AlInput
-            label="Title"
-            value={values.title}
-            data-testid="academy-lesson-title"
-            helperText={isEdit ? undefined : 'Leave blank to use the YouTube title.'}
-            errorText={shownErrors.title}
-            maxLength={200}
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              set('title')(event.target.value);
-            }}
-          />
+          <label className="admin-field">
+            YouTube link
+            <input
+              value={values.youtube}
+              data-testid="academy-lesson-youtube"
+              placeholder="https://www.youtube.com/watch?v=…"
+              disabled={isEdit || readOnly}
+              autoComplete="off"
+              onChange={(event) => {
+                set('youtube')(event.target.value);
+              }}
+            />
+            {shownErrors.youtube ? (
+              <span className="admin-form-error">{shownErrors.youtube}</span>
+            ) : (
+              <span className="admin-field__hint">
+                {isEdit
+                  ? 'Fixed after creation.'
+                  : 'watch, youtu.be, shorts or embed link, or the bare id.'}
+              </span>
+            )}
+          </label>
+          <label className="admin-field">
+            Title
+            <input
+              value={values.title}
+              data-testid="academy-lesson-title"
+              maxLength={200}
+              disabled={readOnly}
+              onChange={(event) => {
+                set('title')(event.target.value);
+              }}
+            />
+            {shownErrors.title ? (
+              <span className="admin-form-error">{shownErrors.title}</span>
+            ) : !isEdit ? (
+              <span className="admin-field__hint">Leave blank to use the YouTube title.</span>
+            ) : null}
+          </label>
         </div>
         <DiscoveryTextArea
+          className="admin-form-span"
           label="Description"
           value={values.description}
           rows={3}
@@ -259,6 +269,7 @@ export function AcademyLessonSheet({
           }}
         />
         <DiscoveryTextArea
+          className="admin-form-span"
           label="Key takeaways"
           value={values.takeaways}
           rows={4}
@@ -271,30 +282,42 @@ export function AcademyLessonSheet({
           }}
         />
         <div className="admin-form-grid">
-          <AlInput
-            label="Duration (minutes)"
-            inputMode="numeric"
-            value={values.durationMinutes}
-            data-testid="academy-lesson-duration"
-            helperText="Optional. Leave blank if you have not checked the video length."
-            errorText={shownErrors.durationMinutes}
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              set('durationMinutes')(event.target.value);
-            }}
-          />
-          <AlInput
-            label="Position"
-            inputMode="numeric"
-            value={values.sortOrder}
-            data-testid="academy-lesson-sort-order"
-            helperText="Lessons play in ascending order."
-            errorText={shownErrors.sortOrder}
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              set('sortOrder')(event.target.value);
-            }}
-          />
+          <label className="admin-field">
+            Duration (minutes)
+            <input
+              inputMode="numeric"
+              value={values.durationMinutes}
+              data-testid="academy-lesson-duration"
+              disabled={readOnly}
+              onChange={(event) => {
+                set('durationMinutes')(event.target.value);
+              }}
+            />
+            {shownErrors.durationMinutes ? (
+              <span className="admin-form-error">{shownErrors.durationMinutes}</span>
+            ) : (
+              <span className="admin-field__hint">
+                Optional. Leave blank if you have not checked the video length.
+              </span>
+            )}
+          </label>
+          <label className="admin-field">
+            Position
+            <input
+              inputMode="numeric"
+              value={values.sortOrder}
+              data-testid="academy-lesson-sort-order"
+              disabled={readOnly}
+              onChange={(event) => {
+                set('sortOrder')(event.target.value);
+              }}
+            />
+            {shownErrors.sortOrder ? (
+              <span className="admin-form-error">{shownErrors.sortOrder}</span>
+            ) : (
+              <span className="admin-field__hint">Lessons play in ascending order.</span>
+            )}
+          </label>
         </div>
         {!isEdit ? (
           <AlCheckbox

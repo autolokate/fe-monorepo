@@ -80,39 +80,35 @@ export function RejectOwnershipClaimDialog({
         </div>
       }
     >
-      <div className={error ? 'admin-field al-field--error' : 'admin-field'}>
-        <label
-          className="admin-field__label al-field__label"
-          htmlFor="ownership-claim-reject-reason"
-        >
-          Rejection reason
-        </label>
-        <div className="al-field__control">
-          <textarea
-            id="ownership-claim-reject-reason"
-            className="al-field__input"
-            data-testid="ownership-claim-reject-reason"
-            rows={4}
-            maxLength={2000}
-            value={reason}
-            disabled={busy}
-            autoComplete="off"
-            onChange={(event) => {
-              setReason(event.target.value);
-              if (error) setError(null);
-            }}
-            placeholder="Explain why this claim is rejected."
-            aria-invalid={error ? true : undefined}
-          />
-        </div>
+      <label className="admin-field">
+        Rejection reason
+        <textarea
+          id="ownership-claim-reject-reason"
+          data-testid="ownership-claim-reject-reason"
+          rows={4}
+          maxLength={2000}
+          value={reason}
+          disabled={busy}
+          autoComplete="off"
+          onChange={(event) => {
+            setReason(event.target.value);
+            if (error) setError(null);
+          }}
+          placeholder="Explain why this claim is rejected."
+          aria-invalid={error ? true : undefined}
+        />
         {error ? (
-          <span className="al-field__error" role="alert" data-testid="ownership-claim-reject-error">
+          <span
+            className="admin-form-error"
+            role="alert"
+            data-testid="ownership-claim-reject-error"
+          >
             {error}
           </span>
         ) : (
           <span className="admin-field__hint">Required. Max 2000 characters.</span>
         )}
-      </div>
+      </label>
     </AlModal>
   );
 }

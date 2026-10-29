@@ -1,12 +1,13 @@
-import { useId, type TextareaHTMLAttributes } from 'react';
+import type { TextareaHTMLAttributes } from 'react';
 
 export type DiscoveryTextAreaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id'> & {
   label: string;
   helperText?: string;
   errorText?: string;
+  className?: string;
 };
 
-/** The design system has no textarea primitive yet — this reuses `al-field` chrome so it matches AlInput. */
+/** Native wow textarea control matching `admin-field` sheets. */
 export function DiscoveryTextArea({
   label,
   helperText,
@@ -14,35 +15,21 @@ export function DiscoveryTextArea({
   className,
   ...props
 }: DiscoveryTextAreaProps) {
-  const id = useId();
-  const hintId = `${id}-hint`;
-  const errorId = `${id}-error`;
-  const isError = Boolean(errorText);
-
   return (
-    <div className={`al-field${isError ? ' al-field--error' : ''}`}>
-      <label className="al-field__label" htmlFor={id}>
-        {label}
-      </label>
-      <div className="al-field__control">
-        <textarea
-          id={id}
-          className={`al-field__input discovery-textarea${className ? ` ${className}` : ''}`}
-          aria-invalid={isError || undefined}
-          aria-describedby={isError ? errorId : helperText ? hintId : undefined}
-          {...props}
-        />
-      </div>
-      {helperText && !isError ? (
-        <span className="al-field__hint" id={hintId}>
-          {helperText}
-        </span>
-      ) : null}
-      {isError ? (
-        <span className="al-field__error" id={errorId} role="alert">
+    <label className={`admin-field${className ? ` ${className}` : ''}`}>
+      {label}
+      <textarea
+        className="discovery-textarea"
+        aria-invalid={errorText ? true : undefined}
+        {...props}
+      />
+      {errorText ? (
+        <span className="admin-form-error" role="alert">
           {errorText}
         </span>
+      ) : helperText ? (
+        <span className="admin-field__hint">{helperText}</span>
       ) : null}
-    </div>
+    </label>
   );
 }

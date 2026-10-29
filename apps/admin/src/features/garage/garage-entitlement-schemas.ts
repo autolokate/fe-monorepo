@@ -43,7 +43,7 @@ export function toAdjustFreeBidsBody(values: AdjustGarageFreeBidsFormValues) {
 }
 
 export const provisionGarageSchema = z.object({
-  accountId: z.string().trim().pipe(z.uuid('Account id must be a UUID.')),
+  accountId: z.string().trim().pipe(z.uuid('Enter a valid owner account reference.')),
   orgName: z.string().trim().min(1, 'Organization name is required.'),
   ownerName: z.string().trim().min(1, 'Owner name is required.'),
   storeName: z.string().trim().optional(),

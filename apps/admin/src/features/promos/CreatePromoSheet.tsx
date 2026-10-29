@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPromoDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlModal } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -124,18 +124,25 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             control={form.control}
             name="code"
             render={({ field, fieldState }) => (
-              <AlInput
-                className="admin-form-span"
-                label="Promo code"
-                mono
-                data-testid="promo-create-code"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Unique code customers enter at checkout."
-                autoComplete="off"
-              />
+              <label className="admin-field admin-form-span">
+                Promo code
+                <input
+                  data-testid="promo-create-code"
+                  autoComplete="off"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+                {fieldState.error?.message ? (
+                  <span className="admin-form-error">{fieldState.error.message}</span>
+                ) : (
+                  <span className="admin-field__hint">
+                    Unique code customers enter at checkout.
+                  </span>
+                )}
+              </label>
             )}
           />
 
@@ -143,21 +150,30 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             control={form.control}
             name="discountPercent"
             render={({ field, fieldState }) => (
-              <AlInput
-                label="Discount percent"
-                type="number"
-                min={1}
-                max={100}
-                data-testid="promo-create-discount-percent"
-                value={field.value ?? ''}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  field.onChange(next === '' ? undefined : event.target.valueAsNumber);
-                }}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="1–100. Flat rupee amount wins when both are set."
-              />
+              <label className="admin-field">
+                Discount percent
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  data-testid="promo-create-discount-percent"
+                  value={field.value ?? ''}
+                  onChange={(event) => {
+                    const next = event.target.value;
+                    field.onChange(next === '' ? undefined : event.target.valueAsNumber);
+                  }}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+                {fieldState.error?.message ? (
+                  <span className="admin-form-error">{fieldState.error.message}</span>
+                ) : (
+                  <span className="admin-field__hint">
+                    1–100. Flat rupee amount wins when both are set.
+                  </span>
+                )}
+              </label>
             )}
           />
 
@@ -165,16 +181,25 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             control={form.control}
             name="discountRupees"
             render={({ field, fieldState }) => (
-              <AlInput
-                label="Discount (₹)"
-                inputMode="decimal"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Flat discount in rupees. Up to 2 decimals."
-                autoComplete="off"
-              />
+              <label className="admin-field">
+                Discount (₹)
+                <input
+                  inputMode="decimal"
+                  autoComplete="off"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+                {fieldState.error?.message ? (
+                  <span className="admin-form-error">{fieldState.error.message}</span>
+                ) : (
+                  <span className="admin-field__hint">
+                    Flat discount in rupees. Up to 2 decimals.
+                  </span>
+                )}
+              </label>
             )}
           />
 
@@ -182,14 +207,20 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             control={form.control}
             name="validFrom"
             render={({ field, fieldState }) => (
-              <AlInput
-                label="Valid from"
-                type="datetime-local"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-              />
+              <label className="admin-field">
+                Valid from
+                <input
+                  type="datetime-local"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+                {fieldState.error?.message ? (
+                  <span className="admin-form-error">{fieldState.error.message}</span>
+                ) : null}
+              </label>
             )}
           />
 
@@ -197,14 +228,20 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             control={form.control}
             name="validTo"
             render={({ field, fieldState }) => (
-              <AlInput
-                label="Valid to"
-                type="datetime-local"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-              />
+              <label className="admin-field">
+                Valid to
+                <input
+                  type="datetime-local"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+                {fieldState.error?.message ? (
+                  <span className="admin-form-error">{fieldState.error.message}</span>
+                ) : null}
+              </label>
             )}
           />
 
@@ -212,19 +249,26 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             control={form.control}
             name="maxRedemptions"
             render={({ field, fieldState }) => (
-              <AlInput
-                label="Max redemptions"
-                type="number"
-                min={1}
-                value={field.value ?? ''}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  field.onChange(next === '' ? undefined : event.target.valueAsNumber);
-                }}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Global cap. Leave empty for unlimited."
-              />
+              <label className="admin-field">
+                Max redemptions
+                <input
+                  type="number"
+                  min={1}
+                  value={field.value ?? ''}
+                  onChange={(event) => {
+                    const next = event.target.value;
+                    field.onChange(next === '' ? undefined : event.target.valueAsNumber);
+                  }}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+                {fieldState.error?.message ? (
+                  <span className="admin-form-error">{fieldState.error.message}</span>
+                ) : (
+                  <span className="admin-field__hint">Global cap. Leave empty for unlimited.</span>
+                )}
+              </label>
             )}
           />
 
@@ -232,19 +276,28 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
             control={form.control}
             name="maxPerAccount"
             render={({ field, fieldState }) => (
-              <AlInput
-                label="Max per account"
-                type="number"
-                min={1}
-                value={field.value ?? ''}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  field.onChange(next === '' ? undefined : event.target.valueAsNumber);
-                }}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Per-account cap. Leave empty for unlimited."
-              />
+              <label className="admin-field">
+                Max per account
+                <input
+                  type="number"
+                  min={1}
+                  value={field.value ?? ''}
+                  onChange={(event) => {
+                    const next = event.target.value;
+                    field.onChange(next === '' ? undefined : event.target.valueAsNumber);
+                  }}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
+                />
+                {fieldState.error?.message ? (
+                  <span className="admin-form-error">{fieldState.error.message}</span>
+                ) : (
+                  <span className="admin-field__hint">
+                    Per-account cap. Leave empty for unlimited.
+                  </span>
+                )}
+              </label>
             )}
           />
 

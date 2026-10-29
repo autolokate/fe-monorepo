@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { BatchSummaryDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
-import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
+import { AlButton, AlModal, AlStack, AlText } from '@autolokate/ui';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import {
@@ -198,16 +198,31 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
               control={form.control}
               name="channel"
               render={({ field, fieldState }) => (
-                <AlSelect
-                  label="Channel"
-                  options={[...CHANNEL_OPTIONS]}
-                  value={field.value}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    field.onChange(event.target.value);
-                  }}
-                  errorText={fieldState.error?.message}
-                  helperText="Sales channel — locked once the batch is frozen."
-                />
+                <label className="admin-field">
+                  Channel
+                  <select
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  >
+                    {CHANNEL_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      Sales channel — locked once the batch is frozen.
+                    </span>
+                  )}
+                </label>
               )}
             />
 
@@ -216,17 +231,30 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
                 control={form.control}
                 name="planTier"
                 render={({ field, fieldState }) => (
-                  <AlSelect
-                    label="Plan tier"
-                    placeholder="Select plan tier"
-                    options={[...PLAN_TIER_OPTIONS]}
-                    value={field.value ?? ''}
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                      field.onChange(event.target.value || undefined);
-                    }}
-                    errorText={fieldState.error?.message}
-                    helperText="Included in the batch code name."
-                  />
+                  <label className="admin-field">
+                    Plan tier
+                    <select
+                      value={field.value ?? ''}
+                      onChange={(event) => {
+                        field.onChange(event.target.value || undefined);
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    >
+                      <option value="">Select plan tier</option>
+                      {PLAN_TIER_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {fieldState.error?.message ? (
+                      <span className="admin-form-error">{fieldState.error.message}</span>
+                    ) : (
+                      <span className="admin-field__hint">Included in the batch code name.</span>
+                    )}
+                  </label>
                 )}
               />
             ) : null}
@@ -235,24 +263,37 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
               control={form.control}
               name="skuId"
               render={({ field, fieldState }) => (
-                <AlSelect
-                  label="SKU"
-                  placeholder={
-                    channel === 'B2B' && !planTier ? 'Select plan tier first' : 'Select SKU'
-                  }
-                  options={skuOptions}
-                  value={field.value}
-                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    field.onChange(event.target.value);
-                  }}
-                  disabled={
-                    skusQuery.isFetching ||
-                    skuOptions.length === 0 ||
-                    (channel === 'B2B' && !planTier)
-                  }
-                  errorText={fieldState.error?.message}
-                  helperText={skuHelper}
-                />
+                <label className="admin-field">
+                  SKU
+                  <select
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.value);
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                    disabled={
+                      skusQuery.isFetching ||
+                      skuOptions.length === 0 ||
+                      (channel === 'B2B' && !planTier)
+                    }
+                  >
+                    <option value="">
+                      {channel === 'B2B' && !planTier ? 'Select plan tier first' : 'Select SKU'}
+                    </option>
+                    {skuOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">{skuHelper}</span>
+                  )}
+                </label>
               )}
             />
 
@@ -260,19 +301,28 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
               control={form.control}
               name="totalCount"
               render={({ field, fieldState }) => (
-                <AlInput
-                  label="Total count"
-                  type="number"
-                  min={1}
-                  max={100_000}
-                  value={field.value}
-                  onChange={(event) => {
-                    field.onChange(event.target.valueAsNumber);
-                  }}
-                  onBlur={field.onBlur}
-                  errorText={fieldState.error?.message}
-                  helperText="How many codes to generate (1–100,000)."
-                />
+                <label className="admin-field">
+                  Total count
+                  <input
+                    type="number"
+                    min={1}
+                    max={100_000}
+                    value={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.valueAsNumber);
+                    }}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
+                  />
+                  {fieldState.error?.message ? (
+                    <span className="admin-form-error">{fieldState.error.message}</span>
+                  ) : (
+                    <span className="admin-field__hint">
+                      How many codes to generate (1–100,000).
+                    </span>
+                  )}
+                </label>
               )}
             />
           </div>

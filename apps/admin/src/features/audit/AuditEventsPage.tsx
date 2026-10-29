@@ -4,7 +4,6 @@ import {
   AlButton,
   AlDataTable,
   AlErrorState,
-  AlInput,
   AlPageHeader,
   AlPageHeaderAction,
   AlStack,
@@ -137,7 +136,7 @@ export function AuditEventsPage() {
                 />
               </AdminFilterField>
               <AdminFilterField label="Target type">
-                <AlInput
+                <input
                   data-testid="audit-filter-target-type"
                   value={filters.targetType}
                   placeholder="e.g. batch, promo"
@@ -169,17 +168,16 @@ export function AuditEventsPage() {
               {showAdvancedFilters ? (
                 <div className="audit-filters-advanced">
                   <AdminFilterField label="Entity reference">
-                    <AlInput
+                    <input
                       value={filters.targetId}
                       placeholder="Filter by entity"
-                      mono
                       onChange={(event) => {
                         setFilters((current) => ({ ...current, targetId: event.target.value }));
                       }}
                     />
                   </AdminFilterField>
                   <AdminFilterField label="From">
-                    <AlInput
+                    <input
                       type="datetime-local"
                       value={filters.from}
                       onChange={(event) => {
@@ -188,7 +186,7 @@ export function AuditEventsPage() {
                     />
                   </AdminFilterField>
                   <AdminFilterField label="To">
-                    <AlInput
+                    <input
                       type="datetime-local"
                       value={filters.to}
                       onChange={(event) => {

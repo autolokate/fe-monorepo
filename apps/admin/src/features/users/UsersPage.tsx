@@ -3,7 +3,6 @@ import {
   AlButton,
   AlDataTable,
   AlErrorState,
-  AlInput,
   AlPageHeader,
   AlPageHeaderAction,
   AlStack,
@@ -392,15 +391,19 @@ function UserDetailPanel({
               subtitle="Locale and review flag only. Identity and billing use dedicated workflows."
             >
               <div className="admin-form-grid">
-                <AlInput
-                  label="Locale"
-                  value={localeDraft}
-                  onChange={(event) => {
-                    setLocaleDraft(event.target.value);
-                  }}
-                  helperText="Phone and subscription changes use dedicated workflows."
-                  data-testid="users-edit-locale"
-                />
+                <label className="admin-field">
+                  Locale
+                  <input
+                    value={localeDraft}
+                    onChange={(event) => {
+                      setLocaleDraft(event.target.value);
+                    }}
+                    data-testid="users-edit-locale"
+                  />
+                  <span className="admin-field__hint">
+                    Phone and subscription changes use dedicated workflows.
+                  </span>
+                </label>
               </div>
               <div className="admin-user-account__actions">
                 <AlButton
@@ -587,18 +590,19 @@ export function UsersPage() {
               subtitle="Find an account by Indian mobile or +91 format."
             >
               <div className="admin-form-grid admin-user-lookup">
-                <AlInput
-                  label="Phone search"
-                  mono
-                  autoComplete="off"
-                  placeholder="+919876543210 or 9876543210"
-                  data-testid="users-lookup-phone"
-                  value={phoneInput}
-                  onChange={(event) => {
-                    setPhoneInput(event.target.value);
-                  }}
-                  helperText="Indian mobile or +91 format."
-                />
+                <label className="admin-field">
+                  Phone search
+                  <input
+                    autoComplete="off"
+                    placeholder="+919876543210 or 9876543210"
+                    data-testid="users-lookup-phone"
+                    value={phoneInput}
+                    onChange={(event) => {
+                      setPhoneInput(event.target.value);
+                    }}
+                  />
+                  <span className="admin-field__hint">Indian mobile or +91 format.</span>
+                </label>
               </div>
               <div className="admin-user-account__actions">
                 <AlButton

@@ -6,8 +6,8 @@ import {
   type AdminAcademyCourseDto,
   type UpdateAdminAcademyCourseBody,
 } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlModal, AlSelect } from '@autolokate/ui';
-import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'react';
+import { AlButton, AlCheckbox, AlModal } from '@autolokate/ui';
+import { useEffect, useState, type SyntheticEvent } from 'react';
 
 import { DiscoveryTextArea } from '@/features/discovery/DiscoveryTextArea';
 import { useAcademyMutations } from '@/hooks/discovery/useAcademy';
@@ -224,30 +224,37 @@ export function AcademyCourseSheet({
     >
       <form id="academy-course-form" className="admin-form-stack" noValidate onSubmit={onSubmit}>
         <div className="admin-form-grid">
-          <AlInput
-            label="Title"
-            value={values.title}
-            data-testid="academy-course-title"
-            errorText={shownErrors.title}
-            maxLength={200}
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              set('title')(event.target.value);
-            }}
-          />
-          <AlInput
-            label="Tagline"
-            value={values.tagline}
-            data-testid="academy-course-tagline"
-            helperText="One line shown under the title."
-            maxLength={200}
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              set('tagline')(event.target.value);
-            }}
-          />
+          <label className="admin-field">
+            Title
+            <input
+              value={values.title}
+              data-testid="academy-course-title"
+              maxLength={200}
+              disabled={readOnly}
+              onChange={(event) => {
+                set('title')(event.target.value);
+              }}
+            />
+            {shownErrors.title ? (
+              <span className="admin-form-error">{shownErrors.title}</span>
+            ) : null}
+          </label>
+          <label className="admin-field">
+            Tagline
+            <input
+              value={values.tagline}
+              data-testid="academy-course-tagline"
+              maxLength={200}
+              disabled={readOnly}
+              onChange={(event) => {
+                set('tagline')(event.target.value);
+              }}
+            />
+            <span className="admin-field__hint">One line shown under the title.</span>
+          </label>
         </div>
         <DiscoveryTextArea
+          className="admin-form-span"
           label="Description"
           value={values.description}
           rows={3}
@@ -258,38 +265,59 @@ export function AcademyCourseSheet({
           }}
         />
         <div className="admin-form-grid">
-          <AlSelect
-            label="Level"
-            options={LEVEL_OPTIONS}
-            value={values.level}
-            data-testid="academy-course-level"
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              set('level')(event.target.value as AcademyLevel);
-            }}
-          />
-          <AlSelect
-            label="Language"
-            options={LANGUAGE_OPTIONS}
-            value={values.language}
-            data-testid="academy-course-language"
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              set('language')(event.target.value as AcademyLanguage);
-            }}
-          />
-          <AlInput
-            label="Sort order"
-            inputMode="numeric"
-            value={values.sortOrder}
-            data-testid="academy-course-sort-order"
-            helperText="Lower numbers appear first in the consumer Academy."
-            errorText={shownErrors.sortOrder}
-            disabled={readOnly}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              set('sortOrder')(event.target.value);
-            }}
-          />
+          <label className="admin-field">
+            Level
+            <select
+              value={values.level}
+              data-testid="academy-course-level"
+              disabled={readOnly}
+              onChange={(event) => {
+                set('level')(event.target.value as AcademyLevel);
+              }}
+            >
+              {LEVEL_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="admin-field">
+            Language
+            <select
+              value={values.language}
+              data-testid="academy-course-language"
+              disabled={readOnly}
+              onChange={(event) => {
+                set('language')(event.target.value as AcademyLanguage);
+              }}
+            >
+              {LANGUAGE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="admin-field">
+            Sort order
+            <input
+              inputMode="numeric"
+              value={values.sortOrder}
+              data-testid="academy-course-sort-order"
+              disabled={readOnly}
+              onChange={(event) => {
+                set('sortOrder')(event.target.value);
+              }}
+            />
+            {shownErrors.sortOrder ? (
+              <span className="admin-form-error">{shownErrors.sortOrder}</span>
+            ) : (
+              <span className="admin-field__hint">
+                Lower numbers appear first in the consumer Academy.
+              </span>
+            )}
+          </label>
         </div>
         <AlCheckbox
           label="Featured"

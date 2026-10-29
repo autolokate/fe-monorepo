@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AdminPlanDto, SkuSummaryDto } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlSelect, AlModal, AlStack, AlText } from '@autolokate/ui';
-import { useEffect, useMemo, useRef, type ChangeEvent } from 'react';
+import { AlButton, AlCheckbox, AlModal, AlStack, AlText } from '@autolokate/ui';
+import { useEffect, useMemo, useRef } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { toUpdateSkuBody } from '@/features/catalog/catalog-form-mapper';
@@ -209,22 +209,37 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
                   control={form.control}
                   name="defaultPlanId"
                   render={({ field, fieldState }) => (
-                    <AlSelect
-                      label="Default plan"
-                      placeholder={
-                        offeredTiers.length === 0
-                          ? 'Put a tier on the shelf first'
-                          : 'Select default plan'
-                      }
-                      options={defaultPlanOptions}
-                      value={field.value}
-                      onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                        field.onChange(event.target.value);
-                      }}
-                      disabled={isBusy || defaultPlanOptions.length === 0}
-                      errorText={fieldState.error?.message}
-                      helperText="Must be a plan whose tier is on this shelf."
-                    />
+                    <label className="admin-field">
+                      Default plan
+                      <select
+                        value={field.value}
+                        onChange={(event) => {
+                          field.onChange(event.target.value);
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                        disabled={isBusy || defaultPlanOptions.length === 0}
+                      >
+                        <option value="">
+                          {offeredTiers.length === 0
+                            ? 'Put a tier on the shelf first'
+                            : 'Select default plan'}
+                        </option>
+                        {defaultPlanOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {fieldState.error?.message ? (
+                        <span className="admin-form-error">{fieldState.error.message}</span>
+                      ) : (
+                        <span className="admin-field__hint">
+                          Must be a plan whose tier is on this shelf.
+                        </span>
+                      )}
+                    </label>
                   )}
                 />
 
@@ -232,16 +247,25 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
                   control={form.control}
                   name="listPriceRupees"
                   render={({ field, fieldState }) => (
-                    <AlInput
-                      label="List price (₹)"
-                      inputMode="decimal"
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      errorText={fieldState.error?.message}
-                      helperText="What the sticker costs. Up to 2 decimal places."
-                      autoComplete="off"
-                    />
+                    <label className="admin-field">
+                      List price (₹)
+                      <input
+                        inputMode="decimal"
+                        autoComplete="off"
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
+                      {fieldState.error?.message ? (
+                        <span className="admin-form-error">{fieldState.error.message}</span>
+                      ) : (
+                        <span className="admin-field__hint">
+                          What the sticker costs. Up to 2 decimal places.
+                        </span>
+                      )}
+                    </label>
                   )}
                 />
 
@@ -249,19 +273,30 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
                   control={form.control}
                   name="riderDefault"
                   render={({ field, fieldState }) => (
-                    <AlInput
-                      label="Rider default"
-                      type="number"
-                      min={0}
-                      max={10}
-                      value={field.value}
-                      onChange={(event) => {
-                        field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
-                      }}
-                      onBlur={field.onBlur}
-                      errorText={fieldState.error?.message}
-                      helperText="Riders bundled with the plan by default."
-                    />
+                    <label className="admin-field">
+                      Rider default
+                      <input
+                        type="number"
+                        min={0}
+                        max={10}
+                        value={field.value}
+                        onChange={(event) => {
+                          field.onChange(
+                            event.target.value === '' ? 0 : event.target.valueAsNumber,
+                          );
+                        }}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
+                      />
+                      {fieldState.error?.message ? (
+                        <span className="admin-form-error">{fieldState.error.message}</span>
+                      ) : (
+                        <span className="admin-field__hint">
+                          Riders bundled with the plan by default.
+                        </span>
+                      )}
+                    </label>
                   )}
                 />
 
