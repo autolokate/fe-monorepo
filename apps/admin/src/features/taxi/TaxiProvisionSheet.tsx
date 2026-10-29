@@ -91,11 +91,11 @@ export function TaxiProvisionSheet({ open, onOpenChange }: TaxiProvisionSheetPro
       <AlStack gap="md">
         <div className="admin-form-grid">
           <label className="admin-field taxi-policy__field admin-form-span">
-            Owner account ID
+            Owner account
             <input
               data-testid="taxi-provision-account-id"
               value={form.accountId}
-              placeholder="Customer account id"
+              placeholder="Customer account receiving Taxi access"
               onChange={(event) => {
                 setForm({ ...form, accountId: event.target.value });
               }}

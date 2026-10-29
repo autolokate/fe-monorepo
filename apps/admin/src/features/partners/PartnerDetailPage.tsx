@@ -137,7 +137,7 @@ export function PartnerDetailPage() {
             </div>
           </div>
           <div className="admin-detail-card-grid">
-            <DetailField label="Org ID" value={partner.orgId} mono />
+            <DetailField label="Organization" value={shortId(partner.orgId)} mono />
             <DetailField label="Partner kind" value={humanLabel(partner.partnerKind)} />
             <DetailField
               label="Org kind"
@@ -146,8 +146,8 @@ export function PartnerDetailPage() {
             <DetailField label="Owner account" value={shortId(partner.ownerAccountId)} mono />
             <DetailField label="Created" value={formatPartnersDateTime(partner.createdAt)} />
             <DetailField
-              label="Store ID"
-              value={partner.storeId ?? '—'}
+              label="Store"
+              value={partner.storeId ? shortId(partner.storeId) : '—'}
               mono={Boolean(partner.storeId)}
             />
             <DetailField label="Store name" value={partner.storeName ?? '—'} />

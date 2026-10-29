@@ -57,8 +57,8 @@ export function AdminShellLayout() {
               role="status"
             >
               <AlText variant="caption" tone="muted">
-                Session role <strong>{session?.role ?? 'unknown'}</strong> — Admin APIs need{' '}
-                <strong>OPERATOR</strong> + step_up. Reads that require elevation will return 403.
+                Signed in as <strong>{session?.role ?? 'unknown'}</strong>. Some Admin tools need an
+                elevated operator session — ask for a step-up if a page won’t load.
               </AlText>
             </div>
           ) : null}

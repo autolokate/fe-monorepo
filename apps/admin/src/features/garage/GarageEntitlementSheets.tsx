@@ -113,7 +113,7 @@ export function GrantPassSheet({ open, onOpenChange, onGranted }: GrantPassSheet
       >
         <div className="admin-form-grid">
           <label className="admin-field admin-form-span">
-            Organization id
+            Organization
             <input
               data-testid="garage-grant-org-id"
               autoComplete="off"
@@ -252,7 +252,7 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
       >
         <div className="admin-form-grid">
           <label className="admin-field admin-form-span">
-            Organization id
+            Organization
             <input
               data-testid="garage-adjust-org-id"
               autoComplete="off"
@@ -465,7 +465,7 @@ export function ProvisionGarageSheet({
             <input
               data-testid="garage-provision-account-id"
               autoComplete="off"
-              placeholder="Customer account id"
+              placeholder="Customer account receiving Garage access"
               {...form.register('accountId')}
             />
             <span className="admin-field__hint">

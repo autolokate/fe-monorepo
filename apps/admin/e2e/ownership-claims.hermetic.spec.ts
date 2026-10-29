@@ -107,7 +107,7 @@ test.describe('Admin plane role banner (hermetic)', () => {
     await seedHermeticSession(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('admin-plane-role-missing')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('admin-plane-role-missing')).toContainText('OPERATOR');
+    await expect(page.getByTestId('admin-plane-role-missing')).toContainText('elevated operator');
   });
 
   test('ADMIN session does not show missing-role banner', async ({ page }) => {

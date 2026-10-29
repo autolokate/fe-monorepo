@@ -10,7 +10,7 @@ export const adminQrCodeSchema = z
   );
 
 /** OpenAPI UUID fields */
-export const adminUuidSchema = z.uuid('Enter a valid UUID.');
+export const adminUuidSchema = z.uuid('Enter a valid account or record id.');
 
 /** OpenAPI `ClawbackBodyDto.paymentRef`: `^[A-Za-z0-9_]{6,64}$` */
 export const adminPaymentRefSchema = z

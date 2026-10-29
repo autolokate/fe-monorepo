@@ -119,7 +119,7 @@ test.describe('Garage commercial (hermetic)', () => {
     const dialog = page.getByRole('dialog', { name: 'Grant garage pass' });
     await expect(dialog).toBeVisible();
 
-    await dialog.getByLabel('Organization id').fill(HERMETIC_GARAGE_ORG_ID);
+    await dialog.getByLabel('Organization').fill(HERMETIC_GARAGE_ORG_ID);
     await dialog.getByTestId('garage-grant-kind').selectOption('DAY');
     await dialog.getByLabel('Optional request key').fill(HERMETIC_GARAGE_IDEMPOTENCY_KEY);
     await dialog.getByRole('button', { name: 'Grant pass' }).click();
@@ -152,7 +152,7 @@ test.describe('Garage commercial (hermetic)', () => {
     const dialog = page.getByRole('dialog', { name: 'Adjust free bids' });
     await expect(dialog).toBeVisible();
 
-    await dialog.getByLabel('Organization id').fill(HERMETIC_GARAGE_ORG_ID);
+    await dialog.getByLabel('Organization').fill(HERMETIC_GARAGE_ORG_ID);
     await dialog.getByTestId('garage-adjust-delta').fill('1');
     await dialog.getByTestId('garage-adjust-raise-lifetime').check();
     await dialog.getByRole('button', { name: 'Adjust free bids' }).click();
@@ -199,7 +199,7 @@ test.describe('Garage commercial (hermetic)', () => {
 
     await page.getByRole('button', { name: 'Grant pass' }).click();
     const dialog = page.getByRole('dialog', { name: 'Grant garage pass' });
-    await dialog.getByLabel('Organization id').fill(HERMETIC_GARAGE_ORG_ID);
+    await dialog.getByLabel('Organization').fill(HERMETIC_GARAGE_ORG_ID);
     await dialog.getByRole('button', { name: 'Grant pass' }).click();
 
     const expectedMessage = 'Something went wrong. Try again.';

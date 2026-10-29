@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const grantGaragePassSchema = z.object({
-  orgId: z.string().trim().min(1, 'Organization id is required.'),
+  orgId: z.string().trim().min(1, 'Organization is required.'),
   kind: z.enum(['DAY', 'MONTH']),
   idempotencyKey: z.string().trim().optional(),
 });
@@ -9,7 +9,7 @@ export const grantGaragePassSchema = z.object({
 export type GrantGaragePassFormValues = z.infer<typeof grantGaragePassSchema>;
 
 export const adjustGarageFreeBidsSchema = z.object({
-  orgId: z.string().trim().min(1, 'Organization id is required.'),
+  orgId: z.string().trim().min(1, 'Organization is required.'),
   delta: z
     .string()
     .trim()

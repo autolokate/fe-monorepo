@@ -111,30 +111,25 @@ export function RefundOrderDialog({ order, onOpenChange }: RefundOrderDialogProp
           void onSubmit(event);
         }}
       >
-        <div className={reasonError ? 'al-field al-field--error' : 'al-field'}>
-          <label className="al-field__label" htmlFor="refund-order-reason">
-            Reason
-          </label>
-          <div className="al-field__control">
-            <textarea
-              id="refund-order-reason"
-              data-testid="refund-order-reason"
-              className="al-field__input"
-              rows={4}
-              autoComplete="off"
-              placeholder="Why is this order being refunded?"
-              aria-invalid={reasonError ? true : undefined}
-              {...form.register('reason')}
-            />
-          </div>
+        <label className="admin-field admin-form-span" htmlFor="refund-order-reason">
+          Reason
+          <textarea
+            id="refund-order-reason"
+            data-testid="refund-order-reason"
+            rows={4}
+            autoComplete="off"
+            placeholder="Why is this order being refunded?"
+            aria-invalid={reasonError ? true : undefined}
+            {...form.register('reason')}
+          />
           {reasonError ? (
-            <span className="al-field__error" role="alert">
+            <span className="admin-field__hint" role="alert">
               {reasonError}
             </span>
           ) : (
-            <span className="al-field__hint">Saved with the refund. 3–500 characters.</span>
+            <span className="admin-field__hint">Saved with the refund. 3–500 characters.</span>
           )}
-        </div>
+        </label>
 
         {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>

@@ -4,7 +4,7 @@ import { mapAdminApiError, resolveSubmitErrorMessage } from '@/platform/errors/a
 
 const UNAVAILABLE_MESSAGE = 'Discovery admin is not available on this environment yet.';
 const FORBIDDEN_MESSAGE =
-  'Your account is not allowed to manage Discovery. It needs an OPERATOR session with step-up.';
+  'Your account is not allowed to manage Discovery. Ask for an elevated operator session.';
 
 /** The Nest admin Discovery routes answer 404 until the BE that ships them is deployed. */
 export function isDiscoveryApiUnavailable(error: unknown): boolean {

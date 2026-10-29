@@ -4,7 +4,7 @@ import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 
 const UNAVAILABLE_MESSAGE = 'Partners admin is not available on this environment yet.';
 const FORBIDDEN_MESSAGE =
-  'Your account is not allowed to view Partners. It needs partners:read (OPERATOR / PARTNER_MANAGER / OPS / SUPPORT / READ_ONLY).';
+  'Your account is not allowed to view Partners. Ask for partner-read access or an elevated operator session.';
 
 /** Nest Admin Partners routes answer 404 until the BE that ships them is deployed. */
 export function isPartnersApiUnavailable(error: unknown): boolean {
