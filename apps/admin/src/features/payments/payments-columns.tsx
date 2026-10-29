@@ -3,6 +3,7 @@ import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { PaymentOutcomeBadge } from '@/platform/components/EntityStatusBadge';
+import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 function formatInr(paise: number): string {
   return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
@@ -27,6 +28,7 @@ export function usePaymentsColumns(): ColumnDef<AdminPaymentSummary>[] {
       {
         accessorKey: 'mode',
         header: 'Mode',
+        cell: ({ row }) => humanizeAdminLabel(row.original.mode),
       },
       {
         accessorKey: 'outcome',

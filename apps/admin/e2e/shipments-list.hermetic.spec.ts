@@ -21,7 +21,7 @@ test.describe('Shipments list (hermetic)', () => {
     await expect(page.getByText(HERMETIC_SHIPMENT_ORDER_NUMBER)).toBeVisible({
       timeout: 10_000,
     });
-    await expect(page.getByText('PAID', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Paid', { exact: true }).first()).toBeVisible();
     expect(capture.shipmentsGet).toBeGreaterThanOrEqual(1);
 
     await expect(page.getByTestId(`shipment-update-${HERMETIC_SHIPMENT_ORDER_ID}`)).toHaveCount(0);

@@ -7,9 +7,10 @@ import { AlButton, AlModal, AlSelect } from '@autolokate/ui';
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 
 import { useUpdateShipmentStatus } from '@/hooks/shipments/useUpdateShipmentStatus';
+import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 /**
- * Nest Admin shipment reads are `PAID` only; POST …/status is product-blocked.
+ * Shipment reads are paid-only today; status mutation is product-blocked.
  * No forward milestones are offered in the UI.
  */
 const MANUAL_STATUSES: readonly ManualShipmentStatus[] = [
@@ -21,7 +22,7 @@ const MANUAL_STATUSES: readonly ManualShipmentStatus[] = [
   'LOST',
 ];
 
-/** Always empty while Nest exposes only `PAID` and has no status mutation. */
+/** Always empty while status mutation is unavailable. */
 export function forwardStatuses(_current: AdminShipmentStatus): ManualShipmentStatus[] {
   void _current;
   void MANUAL_STATUSES;
@@ -35,8 +36,8 @@ export type MarkShipmentStatusDialogProps = {
 };
 
 /**
- * Manually advance a shipment one milestone — the ops override for parcels the courier webhook doesn't
- * drive. DELIVERED is the consequential one (it makes the sticker scannable), so the copy says so.
+ * Manually advance a shipment one milestone when courier updates don't land.
+ * Delivered is consequential (sticker becomes scannable) — copy says so when available.
  */
 export function MarkShipmentStatusDialog({
   shipment,
@@ -47,6 +48,7 @@ export function MarkShipmentStatusDialog({
   const { updateMutation, mapMutationError } = useUpdateShipmentStatus();
 
   const options = shipment ? forwardStatuses(shipment.status) : [];
+  const blocked = options.length === 0;
   const [status, setStatus] = useState<ManualShipmentStatus | ''>('');
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export function MarkShipmentStatusDialog({
     : null;
 
   const onConfirm = async () => {
-    if (!shipment || !selected) {
+    if (!shipment || !selected || blocked) {
       return;
     }
     abortRef.current?.abort();
@@ -90,23 +92,27 @@ export function MarkShipmentStatusDialog({
       size="md"
       title="Update delivery status"
       description={
-        shipment
-          ? `Order ${shipment.orderNumber} is currently ${shipment.status}. Marking a milestone here does what the courier webhook would — DELIVERED makes the sticker scannable for the buyer.`
-          : 'Manually advance this shipment.'
+        blocked
+          ? 'Delivery status updates are not available yet.'
+          : shipment
+            ? `Order ${shipment.orderNumber} is currently ${humanizeAdminLabel(shipment.status)}. Marking Delivered makes the sticker scannable for the buyer.`
+            : 'Manually advance this shipment.'
       }
       footer={
         <div className="admin-modal-actions">
-          <AlButton
-            size="sm"
-            data-testid="shipment-status-submit"
-            loading={updateMutation.isPending}
-            disabled={updateMutation.isPending || !selected}
-            onClick={() => {
-              void onConfirm();
-            }}
-          >
-            Mark {selected || 'status'}
-          </AlButton>
+          {blocked ? null : (
+            <AlButton
+              size="sm"
+              data-testid="shipment-status-submit"
+              loading={updateMutation.isPending}
+              disabled={updateMutation.isPending || !selected}
+              onClick={() => {
+                void onConfirm();
+              }}
+            >
+              Mark {selected ? humanizeAdminLabel(selected) : 'status'}
+            </AlButton>
+          )}
           <AlButton
             type="button"
             variant="secondary"
@@ -116,24 +122,34 @@ export function MarkShipmentStatusDialog({
               onOpenChange(false);
             }}
           >
-            Cancel
+            {blocked ? 'Close' : 'Cancel'}
           </AlButton>
         </div>
       }
     >
-      <div className="admin-form-stack">
-        <AlSelect
-          label="New status"
-          options={options.map((value) => ({ value, label: value }))}
-          value={selected}
-          data-testid="shipment-status-select"
-          onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-            setStatus(event.target.value as ManualShipmentStatus);
-          }}
-          helperText="Only forward milestones are offered — a shipment never moves backwards."
-        />
-        {submitError ? <p className="admin-form-error">{submitError}</p> : null}
-      </div>
+      {blocked ? (
+        <p className="admin-panel__subtitle" role="status" data-testid="shipment-status-blocked">
+          Manual milestones stay off until delivery tracking is enabled. Current status
+          {shipment ? ` is ${humanizeAdminLabel(shipment.status)}` : ''} for this order.
+        </p>
+      ) : (
+        <div className="admin-form-stack">
+          <AlSelect
+            label="New status"
+            options={options.map((value) => ({
+              value,
+              label: humanizeAdminLabel(value),
+            }))}
+            value={selected}
+            data-testid="shipment-status-select"
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              setStatus(event.target.value as ManualShipmentStatus);
+            }}
+            helperText="Only forward milestones are offered — a shipment never moves backwards."
+          />
+          {submitError ? <p className="admin-form-error">{submitError}</p> : null}
+        </div>
+      )}
     </AlModal>
   );
 }

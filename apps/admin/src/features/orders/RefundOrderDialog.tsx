@@ -20,7 +20,7 @@ export type RefundOrderDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Confirmation-gated full refund for a PAID order — a money mutation, so the reason is required. */
+/** Confirmation-gated full refund for a paid order — reason is required. */
 export function RefundOrderDialog({ order, onOpenChange }: RefundOrderDialogProps) {
   const open = order !== null;
   const abortRef = useRef<AbortController | null>(null);
@@ -74,8 +74,8 @@ export function RefundOrderDialog({ order, onOpenChange }: RefundOrderDialogProp
       title="Refund order"
       description={
         order
-          ? `This issues a full refund of ${formatInr(order.totalPaise)} for order ${order.orderNumber}.`
-          : 'This issues a full refund.'
+          ? `Refund the full ${formatInr(order.totalPaise)} for order ${order.orderNumber}.`
+          : 'Refund this order in full.'
       }
       footer={
         <div className="admin-modal-actions">
@@ -132,7 +132,7 @@ export function RefundOrderDialog({ order, onOpenChange }: RefundOrderDialogProp
               {reasonError}
             </span>
           ) : (
-            <span className="al-field__hint">Recorded against the refund. 3–500 characters.</span>
+            <span className="al-field__hint">Saved with the refund. 3–500 characters.</span>
           )}
         </div>
 

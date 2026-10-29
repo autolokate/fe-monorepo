@@ -13,7 +13,7 @@ import {
  * OPERATOR/step_up. Role grant/revoke remains G0-4 blocked.
  */
 test.describe('Users directory (hermetic)', () => {
-  test('directory + phone search — Nest CONSUMER role + grant/revoke hidden', async ({ page }) => {
+  test('directory + phone search — Consumer type + grant/revoke hidden', async ({ page }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openUsersPage(page);
@@ -21,7 +21,7 @@ test.describe('Users directory (hermetic)', () => {
     await page.getByTestId('users-lookup-phone').fill(HERMETIC_CUSTOMER_PHONE);
     await page.getByTestId('users-lookup-submit').click();
 
-    await expect(page.getByText('CONSUMER').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Consumer').first()).toBeVisible({ timeout: 10_000 });
     expect(capture.usersLookupGet.some((entry) => entry.phone === HERMETIC_CUSTOMER_PHONE)).toBe(
       true,
     );

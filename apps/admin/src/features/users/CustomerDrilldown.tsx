@@ -1,10 +1,11 @@
-import { AlDataTable, AlErrorState, AlStack, AlText } from '@autolokate/ui';
+import { AlDataTable, AlErrorState, AlStack } from '@autolokate/ui';
 
 import { useOrdersColumns } from '@/features/orders/orders-columns';
 import { useSubscriptionsColumns } from '@/features/subscriptions/subscriptions-columns';
 import { useAccountOrders } from '@/hooks/users/useAccountOrders';
 import { useAccountSubscriptions } from '@/hooks/users/useAccountSubscriptions';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminPanel } from '@/platform/components/AdminWowSurface';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 /** The resolved customer's orders — reuses the orders console columns, scoped by `accountId`. */
@@ -13,10 +14,7 @@ function AccountOrdersSection({ accountId }: { accountId: string }) {
   const columns = useOrdersColumns();
 
   return (
-    <AlStack gap="xs">
-      <AlText variant="caption" tone="muted">
-        Orders
-      </AlText>
+    <AdminPanel title="Orders" subtitle="Orders placed by this customer.">
       {userErrorMessage && orders.length === 0 ? (
         <AlErrorState message={userErrorMessage} onRetry={refresh} />
       ) : (
@@ -35,7 +33,7 @@ function AccountOrdersSection({ accountId }: { accountId: string }) {
           getRowId={(row) => row.orderId}
         />
       )}
-    </AlStack>
+    </AdminPanel>
   );
 }
 
@@ -46,10 +44,7 @@ function AccountSubscriptionsSection({ accountId }: { accountId: string }) {
   const columns = useSubscriptionsColumns();
 
   return (
-    <AlStack gap="xs">
-      <AlText variant="caption" tone="muted">
-        Coverage
-      </AlText>
+    <AdminPanel title="Coverage" subtitle="Protection plans on this customer's vehicles.">
       {userErrorMessage && subscriptions.length === 0 ? (
         <AlErrorState message={userErrorMessage} onRetry={refresh} />
       ) : (
@@ -62,13 +57,13 @@ function AccountSubscriptionsSection({ accountId }: { accountId: string }) {
           isRefreshing={isFetching}
           error={userErrorMessage && subscriptions.length > 0 ? userErrorMessage : null}
           onRetry={refresh}
-          globalSearchPlaceholder="Search subscriptions…"
-          emptyTitle="No subscriptions"
-          emptyDescription="This customer has no subscriptions yet."
+          globalSearchPlaceholder="Search coverage…"
+          emptyTitle="No coverage"
+          emptyDescription="This customer has no active coverage yet."
           getRowId={(row) => row.subscriptionId}
         />
       )}
-    </AlStack>
+    </AdminPanel>
   );
 }
 
@@ -77,10 +72,9 @@ export type CustomerDrilldownProps = {
 };
 
 /**
- * Once an account resolves, show that customer's Orders and Subscriptions by composing the existing
- * admin-list endpoints with their `accountId` filter — no new routes. Each sub-table renders only if
- * the operator already holds the matching console permission (`orders:view` / `subscriptions:view`),
- * so a missing grant hides the block rather than throwing an access-denied panel inside this page.
+ * Once an account resolves, show that customer's Orders and Coverage scoped by accountId.
+ * Each sub-table renders only when the operator holds the matching permission
+ * (`orders:view` / `subscriptions:view`); a missing grant hides the block.
  */
 export function CustomerDrilldown({ accountId }: CustomerDrilldownProps) {
   const canViewOrders = useAdminPermission('orders:view');
@@ -91,14 +85,9 @@ export function CustomerDrilldown({ accountId }: CustomerDrilldownProps) {
   }
 
   return (
-    <section className="admin-user-activity" aria-label="Customer activity">
-      <AlStack gap="lg">
-        <AlText variant="caption" tone="muted">
-          Customer activity
-        </AlText>
-        {canViewOrders ? <AccountOrdersSection accountId={accountId} /> : null}
-        {canViewSubscriptions ? <AccountSubscriptionsSection accountId={accountId} /> : null}
-      </AlStack>
-    </section>
+    <AlStack gap="md" aria-label="Customer activity">
+      {canViewOrders ? <AccountOrdersSection accountId={accountId} /> : null}
+      {canViewSubscriptions ? <AccountSubscriptionsSection accountId={accountId} /> : null}
+    </AlStack>
   );
 }

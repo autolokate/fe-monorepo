@@ -3,18 +3,25 @@ import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { SubscriptionStatusBadge } from '@/platform/components/EntityStatusBadge';
-
-/** Show only the leading segment of a uuid — enough to eyeball a row without dumping the full id. */
-function shortId(id: string): string {
-  return id.split('-')[0] ?? id;
-}
-
-function formatActivatedVia(value: string): string {
-  return value.replace(/_/g, ' ');
-}
+import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
 
 function formatDateTime(value: string | null): string {
   return value ? new Date(value).toLocaleString() : '—';
+}
+
+/**
+ * Coverage list has vehicle id only (no plate/display on the summary row).
+ * Product title primary; short id mono secondary.
+ */
+function VehicleCell({ vehicleId }: { vehicleId: string }) {
+  return (
+    <div className="admin-primary-cell">
+      <span className="admin-primary-cell__title">Vehicle</span>
+      <span className="admin-id-secondary" title={vehicleId}>
+        {shortAdminId(vehicleId)}
+      </span>
+    </div>
+  );
 }
 
 export function useSubscriptionsColumns(): ColumnDef<AdminSubscriptionSummary>[] {
@@ -23,6 +30,7 @@ export function useSubscriptionsColumns(): ColumnDef<AdminSubscriptionSummary>[]
       {
         accessorKey: 'planTier',
         header: 'Plan',
+        cell: ({ row }) => humanizeAdminLabel(row.original.planTier),
       },
       {
         accessorKey: 'status',
@@ -32,12 +40,12 @@ export function useSubscriptionsColumns(): ColumnDef<AdminSubscriptionSummary>[]
       {
         accessorKey: 'vehicleId',
         header: 'Vehicle',
-        cell: ({ row }) => shortId(row.original.vehicleId),
+        cell: ({ row }) => <VehicleCell vehicleId={row.original.vehicleId} />,
       },
       {
         accessorKey: 'activatedVia',
         header: 'Activated via',
-        cell: ({ row }) => formatActivatedVia(row.original.activatedVia),
+        cell: ({ row }) => humanizeAdminLabel(row.original.activatedVia),
       },
       {
         accessorKey: 'autoRenew',

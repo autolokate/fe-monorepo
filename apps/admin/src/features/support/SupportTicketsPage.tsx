@@ -4,14 +4,14 @@ import { AdminUnavailableState } from '@/platform/components/AdminUnavailableSta
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 /**
- * Nest Dev OA has no `/admin/v1/support/tickets*` (G0-4 Absent).
+ * Support tickets are unavailable on Dev Admin today.
  * Fail closed in the UI — no filter chrome, no triage CTAs, no fabricated rows.
  */
 export function SupportTicketsPage() {
   return (
     <RequirePermission permission="support:view">
       <AlStack gap="md">
-        <AlPageHeader title="Tickets" description="Support tickets are not available yet." />
+        <AlPageHeader title="Tickets" description="Customer support tickets." />
         <AdminUnavailableState
           title="Support tickets unavailable"
           description="Support tickets are not available yet. Status changes are disabled."

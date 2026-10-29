@@ -12,6 +12,8 @@ import type {
   QrCodeStatus,
 } from '@autolokate/api-client';
 
+import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
+
 import '../../styles/entity-status-badges.css';
 
 type EntityStatusBadgeProps = {
@@ -40,14 +42,17 @@ export function BatchStatusBadge({ status }: { status: QrBatchStatus }) {
 
 export function OrderStatusBadge({ status }: { status: AdminOrderStatus }) {
   return (
-    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--order-${status}`} />
+    <EntityStatusBadge
+      label={humanizeAdminLabel(status)}
+      modifier={`admin-entity-status-badge--order-${status}`}
+    />
   );
 }
 
 export function SubscriptionStatusBadge({ status }: { status: AdminSubscriptionStatus }) {
   return (
     <EntityStatusBadge
-      label={status}
+      label={humanizeAdminLabel(status)}
       modifier={`admin-entity-status-badge--subscription-${status}`}
     />
   );
@@ -55,19 +60,28 @@ export function SubscriptionStatusBadge({ status }: { status: AdminSubscriptionS
 
 export function ShipmentStatusBadge({ status }: { status: AdminShipmentStatus }) {
   return (
-    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--shipment-${status}`} />
+    <EntityStatusBadge
+      label={humanizeAdminLabel(status)}
+      modifier={`admin-entity-status-badge--shipment-${status}`}
+    />
   );
 }
 
 export function PaymentOutcomeBadge({ outcome }: { outcome: AdminPaymentOutcome }) {
   return (
-    <EntityStatusBadge label={outcome} modifier={`admin-entity-status-badge--payment-${outcome}`} />
+    <EntityStatusBadge
+      label={humanizeAdminLabel(outcome)}
+      modifier={`admin-entity-status-badge--payment-${outcome}`}
+    />
   );
 }
 
 export function SupportTicketStatusBadge({ status }: { status: AdminSupportTicketStatus }) {
   return (
-    <EntityStatusBadge label={status} modifier={`admin-entity-status-badge--support-${status}`} />
+    <EntityStatusBadge
+      label={humanizeAdminLabel(status)}
+      modifier={`admin-entity-status-badge--support-${status}`}
+    />
   );
 }
 

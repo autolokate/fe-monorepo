@@ -6,7 +6,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { OrderDetailSheet } from '@/features/orders/OrderDetailSheet';
 import { ORDERS_STATUS_FILTERS } from '@/features/orders/orders-filters';
@@ -16,7 +16,23 @@ import { useOrders } from '@/hooks/orders/useOrders';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
+
+/** Honest KPIs from the loaded page only — not catalog-wide totals. */
+function pageOrderKpis(orders: AdminOrderSummary[]) {
+  let paid = 0;
+  let pending = 0;
+  for (const order of orders) {
+    if (order.status === 'PAID') paid += 1;
+    else if (order.status === 'PENDING_PAYMENT') pending += 1;
+  }
+  return [
+    { label: 'Paid', value: String(paid) },
+    { label: 'Pending', value: String(pending) },
+    { label: 'Total', value: String(orders.length) },
+  ];
+}
 
 export function OrdersPage() {
   const {
@@ -29,12 +45,13 @@ export function OrdersPage() {
     refresh,
   } = useOrders();
 
-  // Nest has no POST …/orders/{orderId}/refund (product-blocked). Keep CTA off regardless of RBAC.
+  // Refund mutation is product-blocked. Keep CTA off regardless of RBAC.
   const canRefund = false;
   const [refundTarget, setRefundTarget] = useState<AdminOrderSummary | null>(null);
   const [detailOrder, setDetailOrder] = useState<AdminOrderSummary | null>(null);
 
   const columns = useOrdersColumns({ canRefund, onRefund: setRefundTarget });
+  const kpiItems = useMemo(() => (orders.length > 0 ? pageOrderKpis(orders) : []), [orders]);
 
   if (userErrorMessage && orders.length === 0) {
     return (
@@ -54,7 +71,7 @@ export function OrdersPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Orders"
-          description="Customer QR commerce orders."
+          description="Customer orders and payment status."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -64,6 +81,8 @@ export function OrdersPage() {
             />
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

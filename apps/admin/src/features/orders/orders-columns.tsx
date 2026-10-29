@@ -3,6 +3,7 @@ import { AlButton, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { OrderStatusBadge } from '@/platform/components/EntityStatusBadge';
+import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 function formatInr(paise: number): string {
   return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
@@ -32,6 +33,7 @@ export function useOrdersColumns({
       {
         accessorKey: 'orderKind',
         header: 'Kind',
+        cell: ({ row }) => humanizeAdminLabel(row.original.orderKind),
       },
       {
         accessorKey: 'status',

@@ -57,6 +57,79 @@
   border: 1px solid var(--al-admin-panel-border);
 }
 
+.admin-panel--nested {
+  gap: var(--al-space-3);
+  padding: var(--al-space-3) var(--al-space-4);
+  background: color-mix(in srgb, var(--al-color-surface-variant) 55%, var(--al-admin-panel-bg));
+}
+
+.admin-panel--table {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.admin-panel--table .admin-data-block__filters {
+  padding: var(--al-space-3) var(--al-space-4);
+  border-bottom: 1px solid var(--al-admin-panel-border);
+  background: color-mix(in srgb, var(--al-color-surface-variant) 40%, var(--al-admin-panel-bg));
+}
+
+.admin-panel--empty {
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 12rem;
+  padding: var(--al-space-6) var(--al-space-5);
+}
+
+.admin-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-3);
+  min-width: 0;
+}
+
+.al-modal .admin-panel--nested {
+  background: var(--al-color-surface-variant);
+}
+
+.al-modal .admin-panel + .admin-panel {
+  margin-top: var(--al-space-3);
+}
+
+.admin-panel--nested {
+  gap: var(--al-space-3);
+  padding: var(--al-space-3) var(--al-space-4);
+}
+
+.admin-panel--table {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.admin-panel--table .admin-data-block__filters {
+  border-bottom: 1px solid var(--al-admin-panel-border);
+}
+
+.admin-panel--empty {
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 12rem;
+  padding: var(--al-space-6) var(--al-space-5);
+}
+
+.admin-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-3);
+  min-width: 0;
+}
+
+.al-modal .admin-panel--nested {
+  background: var(--al-color-surface-variant);
+}
+
 .admin-panel__header {
   display: flex;
   flex-wrap: wrap;
@@ -353,6 +426,10 @@
 }
 
 /* Data block denser */
+.al-page-layout .admin-data-block.admin-panel--table {
+  box-shadow: none;
+}
+
 .al-page-layout .admin-data-block__filters {
   padding: var(--al-space-3) var(--al-space-4);
   gap: var(--al-space-3) var(--al-space-4);
@@ -360,6 +437,48 @@
 
 .al-page-layout .admin-empty-note {
   padding: var(--al-space-6) var(--al-space-4);
+  border-radius: var(--al-radius-sm);
+  border: 1px dashed var(--al-admin-panel-border);
+  background: color-mix(in srgb, var(--al-color-surface-variant) 50%, transparent);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+/* Modal form rhythm */
+.al-modal .admin-form-grid {
+  margin-top: var(--al-space-1);
+}
+
+.al-modal .admin-sheet-actions {
+  margin-top: var(--al-space-4);
+}
+
+/* Id-secondary cells in tables */
+.admin-id-secondary {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--al-font-family-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+}
+
+.admin-primary-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.admin-primary-cell__title {
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-color-text);
+  word-break: break-word;
+}
+
+.admin-primary-cell__meta {
+  font-size: var(--al-text-caption-size);
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
 }
 
 @media (max-width: 768px) {
@@ -367,7 +486,15 @@
     padding: var(--al-space-3) var(--al-space-4);
   }
 
+  .admin-panel--table {
+    padding: 0;
+  }
+
   .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-detail-card-grid {
     grid-template-columns: 1fr;
   }
 

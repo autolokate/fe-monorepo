@@ -1,4 +1,3 @@
-import { AlText } from '@autolokate/ui';
 import type { ReactNode } from 'react';
 
 export type AdminDetailFieldProps = {
@@ -7,13 +6,14 @@ export type AdminDetailFieldProps = {
   mono?: boolean;
 };
 
+/** Detail cell — wow card language used by sheets and RO panels. */
 export function AdminDetailField({ label, value, mono = false }: AdminDetailFieldProps) {
   return (
-    <div className="admin-detail-field">
-      <AlText variant="caption" tone="muted">
-        {label}
-      </AlText>
-      <AlText className={mono ? 'admin-detail-field__value--mono' : undefined}>{value}</AlText>
+    <div className="admin-detail-card">
+      <span className="admin-detail-card__label">{label}</span>
+      <span className={`admin-detail-card__value${mono ? ' admin-detail-card__value--mono' : ''}`}>
+        {value ?? '—'}
+      </span>
     </div>
   );
 }
@@ -26,18 +26,20 @@ export type AdminDetailSectionProps = {
 
 export function AdminDetailSection({ title, description, children }: AdminDetailSectionProps) {
   return (
-    <section className="admin-detail-section">
-      <div className="admin-detail-section__header">
-        <h3 className="admin-detail-section__title">{title}</h3>
-        {description ? <p className="admin-detail-section__description">{description}</p> : null}
-      </div>
-      <div className="admin-detail-section__body">{children}</div>
+    <section className="admin-panel admin-panel--nested">
+      <header className="admin-panel__header">
+        <div>
+          <h3 className="admin-panel__title">{title}</h3>
+          {description ? <p className="admin-panel__subtitle">{description}</p> : null}
+        </div>
+      </header>
+      <div className="admin-panel__body">{children}</div>
     </section>
   );
 }
 
 export function AdminDetailGrid({ children }: { children: ReactNode }) {
-  return <div className="admin-detail-grid">{children}</div>;
+  return <div className="admin-detail-card-grid">{children}</div>;
 }
 
 function isIdLikeMetadataKey(key: string): boolean {

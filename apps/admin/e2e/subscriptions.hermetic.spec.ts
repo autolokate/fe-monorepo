@@ -16,8 +16,8 @@ test.describe('Subscriptions list (hermetic)', () => {
     await seedHermeticSession(page);
     await openSubscriptionsPage(page);
 
-    await expect(page.getByText('CONSUMER SELF')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByText('SHIELD', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Consumer Self')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Shield', { exact: true }).first()).toBeVisible();
     expect(capture.subscriptionsGet).toBeGreaterThanOrEqual(1);
     expect(capture.unexpected).toEqual([]);
   });

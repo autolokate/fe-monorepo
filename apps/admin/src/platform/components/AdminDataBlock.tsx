@@ -5,10 +5,10 @@ export type AdminDataBlockProps = {
   children: ReactNode;
 };
 
-/** Groups filters and a data table into one cohesive panel. */
+/** Groups filters and a data table into one cohesive wow panel. */
 export function AdminDataBlock({ filters, children }: AdminDataBlockProps) {
   return (
-    <div className="admin-data-block">
+    <div className="admin-data-block admin-panel admin-panel--table">
       {filters ? <div className="admin-data-block__filters">{filters}</div> : null}
       <div className="admin-data-block__content">{children}</div>
     </div>

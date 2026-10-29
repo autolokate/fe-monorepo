@@ -1,3 +1,4 @@
+import type { AdminSubscriptionSummary } from '@autolokate/api-client';
 import {
   AlDataTable,
   AlErrorState,
@@ -5,13 +6,28 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
+import { useMemo } from 'react';
+
 import { SUBSCRIPTIONS_STATUS_FILTERS } from '@/features/subscriptions/subscriptions-filters';
 import { useSubscriptionsColumns } from '@/features/subscriptions/subscriptions-columns';
 import { useSubscriptions } from '@/hooks/subscriptions/useSubscriptions';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
+
+/** Honest KPIs from the loaded page only — not catalog-wide totals. */
+function pageCoverageKpis(subscriptions: AdminSubscriptionSummary[]) {
+  let active = 0;
+  for (const row of subscriptions) {
+    if (row.status === 'ACTIVE') active += 1;
+  }
+  return [
+    { label: 'Active', value: String(active) },
+    { label: 'Total', value: String(subscriptions.length) },
+  ];
+}
 
 export function SubscriptionsPage() {
   const {
@@ -25,8 +41,10 @@ export function SubscriptionsPage() {
   } = useSubscriptions();
 
   const columns = useSubscriptionsColumns();
-
-  const pageDescription = 'Active protection per vehicle.';
+  const kpiItems = useMemo(
+    () => (subscriptions.length > 0 ? pageCoverageKpis(subscriptions) : []),
+    [subscriptions],
+  );
 
   if (userErrorMessage && subscriptions.length === 0) {
     return (
@@ -46,7 +64,7 @@ export function SubscriptionsPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Coverage"
-          description={pageDescription}
+          description="Active protection plans per vehicle."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -56,6 +74,8 @@ export function SubscriptionsPage() {
             />
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={
@@ -78,8 +98,8 @@ export function SubscriptionsPage() {
             isRefreshing={isFetching}
             error={userErrorMessage && subscriptions.length > 0 ? userErrorMessage : null}
             onRetry={refresh}
-            globalSearchPlaceholder="Search subscriptions…"
-            emptyTitle="No subscriptions found"
+            globalSearchPlaceholder="Search coverage…"
+            emptyTitle="No coverage found"
             emptyDescription="Try another status filter."
             getRowId={(row) => row.subscriptionId}
           />

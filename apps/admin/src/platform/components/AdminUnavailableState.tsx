@@ -1,5 +1,3 @@
-import { AlEmptyState } from '@autolokate/ui';
-
 import { ADMIN_PRODUCT_BLOCKED_MESSAGE } from '@/platform/api/product-blocked';
 
 export type AdminUnavailableStateProps = {
@@ -10,15 +8,14 @@ export type AdminUnavailableStateProps = {
 };
 
 /**
- * Honest empty surface for G0-4 Absents and other Nest-missing Admin modules.
+ * Honest empty surface for product-blocked Admin modules.
  * Never fabricates rows or success states.
  */
 export function AdminUnavailableState({ title, description }: AdminUnavailableStateProps) {
   return (
-    <AlEmptyState
-      title={title}
-      description={description ?? ADMIN_PRODUCT_BLOCKED_MESSAGE}
-      compact
-    />
+    <div className="admin-panel admin-panel--empty" role="status">
+      <h2 className="admin-panel__title">{title}</h2>
+      <p className="admin-panel__subtitle">{description ?? ADMIN_PRODUCT_BLOCKED_MESSAGE}</p>
+    </div>
   );
 }

@@ -6,7 +6,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { MarkShipmentStatusDialog } from '@/features/shipments/MarkShipmentStatusDialog';
 import { SHIPMENTS_STATUS_FILTERS } from '@/features/shipments/shipments-filters';
@@ -15,7 +15,16 @@ import { useShipments } from '@/hooks/shipments/useShipments';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
+
+/** Honest KPIs from the loaded page only (reads are paid-only today). */
+function pageShipmentKpis(shipments: AdminShipmentSummary[]) {
+  return [
+    { label: 'Paid', value: String(shipments.length) },
+    { label: 'Total', value: String(shipments.length) },
+  ];
+}
 
 export function ShipmentsPage() {
   const {
@@ -28,13 +37,15 @@ export function ShipmentsPage() {
     refresh,
   } = useShipments();
 
-  // Nest has no POST …/shipments/{orderId}/status (product-blocked). Keep mutate CTA off.
+  // Status mutation is product-blocked. Keep mutate CTA off.
   const canUpdate = false;
   const [markTarget, setMarkTarget] = useState<AdminShipmentSummary | null>(null);
 
   const columns = useShipmentsColumns({ canUpdate, onUpdateStatus: setMarkTarget });
-
-  const pageDescription = 'Track retail shipments and delivery status.';
+  const kpiItems = useMemo(
+    () => (shipments.length > 0 ? pageShipmentKpis(shipments) : []),
+    [shipments],
+  );
 
   if (userErrorMessage && shipments.length === 0) {
     return (
@@ -54,7 +65,7 @@ export function ShipmentsPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Deliveries"
-          description={pageDescription}
+          description="Track retail shipments and delivery status."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -64,6 +75,8 @@ export function ShipmentsPage() {
             />
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

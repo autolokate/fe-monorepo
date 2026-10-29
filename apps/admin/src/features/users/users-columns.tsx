@@ -1,7 +1,33 @@
 import type { AdminUserSummaryDto } from '@autolokate/api-client';
-import { AlStatusBadge, AlText } from '@autolokate/ui';
+import { AlText } from '@autolokate/ui';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
+
+import {
+  AdminStatusChip,
+  humanizeAdminLabel,
+  shortAdminId,
+} from '@/platform/components/AdminWowSurface';
+
+function statusTone(status: AdminUserSummaryDto['status']) {
+  return status === 'ACTIVE' ? 'active' : 'none';
+}
+
+/**
+ * Directory identity cell. No phone on the summary row — Type · Status is primary,
+ * short account id is mono secondary (never the full id as the primary label).
+ */
+function AccountCell({ account }: { account: AdminUserSummaryDto }) {
+  const title = `${humanizeAdminLabel(account.accountType)} · ${humanizeAdminLabel(account.status)}`;
+  return (
+    <div className="admin-primary-cell">
+      <span className="admin-primary-cell__title">{title}</span>
+      <span className="admin-id-secondary" title={account.id}>
+        {shortAdminId(account.id)}
+      </span>
+    </div>
+  );
+}
 
 export function useUsersColumns(): ColumnDef<AdminUserSummaryDto>[] {
   return useMemo(
@@ -10,24 +36,15 @@ export function useUsersColumns(): ColumnDef<AdminUserSummaryDto>[] {
         id: 'id',
         header: 'Account',
         accessorFn: (row) => row.id,
-        cell: ({ row }) => (
-          <AlText variant="caption" tone="muted">
-            {row.original.id}
-          </AlText>
-        ),
-      },
-      {
-        id: 'accountType',
-        header: 'Type',
-        accessorKey: 'accountType',
+        cell: ({ row }) => <AccountCell account={row.original} />,
       },
       {
         id: 'status',
         header: 'Status',
         cell: ({ row }) => (
-          <AlStatusBadge
-            label={row.original.status}
-            status={row.original.status === 'ACTIVE' ? 'success' : 'inactive'}
+          <AdminStatusChip
+            label={humanizeAdminLabel(row.original.status)}
+            tone={statusTone(row.original.status)}
           />
         ),
       },
@@ -42,10 +59,10 @@ export function useUsersColumns(): ColumnDef<AdminUserSummaryDto>[] {
           return (
             <span className="admin-user-account__roles">
               {roles.map((role) => (
-                <AlStatusBadge
+                <AdminStatusChip
                   key={`${role.role}:${role.scopeRef ?? 'platform'}`}
-                  label={role.role}
-                  status="inactive"
+                  label={humanizeAdminLabel(role.role)}
+                  tone="neutral"
                 />
               ))}
             </span>
@@ -62,7 +79,7 @@ export function useUsersColumns(): ColumnDef<AdminUserSummaryDto>[] {
         header: 'Flagged',
         cell: ({ row }) =>
           row.original.fraudFlagged ? (
-            <AlStatusBadge label="Review" status="pending" />
+            <AdminStatusChip label="Review" tone="draft" />
           ) : (
             <AlText tone="muted">—</AlText>
           ),

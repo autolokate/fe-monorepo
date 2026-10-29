@@ -19,7 +19,7 @@ test.describe('Orders list (hermetic)', () => {
     await openOrdersPage(page);
 
     await expect(page.getByText(HERMETIC_ORDER_NUMBER)).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByText('PARTNER_ATTACH', { exact: true })).toBeVisible();
+    await expect(page.getByText('Partner Attach', { exact: true })).toBeVisible();
     expect(capture.ordersGet).toBeGreaterThanOrEqual(1);
 
     await expect(page.getByTestId(`order-refund-${HERMETIC_ORDER_ID}`)).toHaveCount(0);
