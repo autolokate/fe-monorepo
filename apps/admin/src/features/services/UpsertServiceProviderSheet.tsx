@@ -4,7 +4,7 @@ import type {
   ServiceProviderStatus,
   UpsertServiceProviderBody,
 } from '@autolokate/api-client';
-import { AlButton, AlCheckbox, AlInput, AlModal, AlSelect, AlStack } from '@autolokate/ui';
+import { AlButton, AlCheckbox, AlModal } from '@autolokate/ui';
 import { useEffect, useState, type ChangeEvent, type SyntheticEvent } from 'react';
 
 import { resolveSubmitErrorMessage } from '@/platform/errors/admin-api-errors';
@@ -89,11 +89,6 @@ export function UpsertServiceProviderSheet({
     }
   }, [defaultCategory, initial, open]);
 
-  const categoryOptions = categories.map((value) => ({
-    value,
-    label: value,
-  }));
-
   const submitError = error ? resolveSubmitErrorMessage(error) : null;
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
@@ -150,7 +145,7 @@ export function UpsertServiceProviderSheet({
       onOpenChange={onOpenChange}
       size="lg"
       title={initial ? 'Edit service provider' : 'Add service provider'}
-      description="Add or update a provider for the consumer Services hub."
+      description="Providers shown as Active appear in the consumer Services hub."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -179,118 +174,149 @@ export function UpsertServiceProviderSheet({
     >
       <form
         id="upsert-service-provider-form"
-        className="admin-form-stack"
         onSubmit={(event) => {
           void handleSubmit(event);
         }}
       >
-        <AlStack gap="md">
-          <AlInput
-            label="Name"
-            data-testid="services-upsert-name"
-            value={form.name}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setForm((prev) => ({ ...prev, name: event.target.value }));
-            }}
-            autoComplete="off"
-          />
-          <AlSelect
-            label="Category"
-            data-testid="services-upsert-category"
-            options={categoryOptions}
-            value={form.category}
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              setForm((prev) => ({ ...prev, category: event.target.value }));
-            }}
-          />
-          <AlInput
-            label="City"
-            data-testid="services-upsert-city"
-            value={form.city}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setForm((prev) => ({ ...prev, city: event.target.value }));
-            }}
-            autoComplete="off"
-          />
-          <div className="services-form-grid">
-            <AlInput
-              label="Latitude"
+        <div className="admin-form-grid">
+          <label className="admin-field">
+            Name
+            <input
+              data-testid="services-upsert-name"
+              value={form.name}
+              autoComplete="off"
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, name: event.target.value }));
+              }}
+            />
+          </label>
+
+          <label className="admin-field">
+            Category
+            <select
+              data-testid="services-upsert-category"
+              value={form.category}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, category: event.target.value }));
+              }}
+            >
+              {categories.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="admin-field">
+            City
+            <input
+              data-testid="services-upsert-city"
+              value={form.city}
+              autoComplete="off"
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, city: event.target.value }));
+              }}
+            />
+          </label>
+
+          <label className="admin-field">
+            Status
+            <select
+              data-testid="services-upsert-status"
+              value={form.status}
+              onChange={(event) => {
+                setForm((prev) => ({
+                  ...prev,
+                  status: event.target.value as ServiceProviderStatus,
+                }));
+              }}
+            >
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+            <span className="admin-field__hint">Only Active providers appear to customers.</span>
+          </label>
+
+          <label className="admin-field">
+            Latitude
+            <input
               data-testid="services-upsert-lat"
               value={form.latitude}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              autoComplete="off"
+              onChange={(event) => {
                 setForm((prev) => ({ ...prev, latitude: event.target.value }));
               }}
-              helperText="Optional (−90…90)."
-              autoComplete="off"
             />
-            <AlInput
-              label="Longitude"
+            <span className="admin-field__hint">Optional (−90…90).</span>
+          </label>
+
+          <label className="admin-field">
+            Longitude
+            <input
               data-testid="services-upsert-lng"
               value={form.longitude}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              autoComplete="off"
+              onChange={(event) => {
                 setForm((prev) => ({ ...prev, longitude: event.target.value }));
               }}
-              helperText="Optional (−180…180)."
-              autoComplete="off"
+            />
+            <span className="admin-field__hint">Optional (−180…180).</span>
+          </label>
+
+          <div className="admin-form-span">
+            <AlCheckbox
+              label="Verified partner"
+              data-testid="services-upsert-verified"
+              checked={form.verifiedPartner}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                setForm((prev) => ({ ...prev, verifiedPartner: event.target.checked }));
+              }}
             />
           </div>
-          <AlSelect
-            label="Status"
-            data-testid="services-upsert-status"
-            options={[
-              { value: 'ACTIVE', label: 'ACTIVE' },
-              { value: 'INACTIVE', label: 'INACTIVE' },
-            ]}
-            value={form.status}
-            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-              setForm((prev) => ({
-                ...prev,
-                status: event.target.value as ServiceProviderStatus,
-              }));
-            }}
-            helperText="Consumer list only returns ACTIVE. Category order/visibility is not BE-configurable yet."
-          />
-          <AlCheckbox
-            label="Verified partner"
-            data-testid="services-upsert-verified"
-            checked={form.verifiedPartner}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setForm((prev) => ({ ...prev, verifiedPartner: event.target.checked }));
-            }}
-          />
-          <AlInput
-            label="Subtitle"
-            data-testid="services-upsert-subtitle"
-            value={form.subtitle}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setForm((prev) => ({ ...prev, subtitle: event.target.value }));
-            }}
-            autoComplete="off"
-          />
-          <AlInput
-            label="Phone"
-            data-testid="services-upsert-phone"
-            value={form.phone}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setForm((prev) => ({ ...prev, phone: event.target.value }));
-            }}
-            autoComplete="off"
-          />
-          <AlInput
-            label="Address"
-            data-testid="services-upsert-address"
-            value={form.address}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setForm((prev) => ({ ...prev, address: event.target.value }));
-            }}
-            autoComplete="off"
-          />
-          {localError || submitError ? (
-            <p className="admin-form-error" data-testid="services-upsert-error">
-              {localError ?? submitError}
-            </p>
-          ) : null}
-        </AlStack>
+
+          <label className="admin-field admin-form-span">
+            Subtitle
+            <input
+              data-testid="services-upsert-subtitle"
+              value={form.subtitle}
+              autoComplete="off"
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, subtitle: event.target.value }));
+              }}
+            />
+          </label>
+
+          <label className="admin-field">
+            Phone
+            <input
+              data-testid="services-upsert-phone"
+              value={form.phone}
+              autoComplete="off"
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, phone: event.target.value }));
+              }}
+            />
+          </label>
+
+          <label className="admin-field">
+            Address
+            <input
+              data-testid="services-upsert-address"
+              value={form.address}
+              autoComplete="off"
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, address: event.target.value }));
+              }}
+            />
+          </label>
+        </div>
+
+        {localError || submitError ? (
+          <p className="admin-form-error" data-testid="services-upsert-error">
+            {localError ?? submitError}
+          </p>
+        ) : null}
       </form>
     </AlModal>
   );

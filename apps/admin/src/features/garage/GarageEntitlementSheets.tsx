@@ -4,7 +4,7 @@ import type {
   GaragePassGrantResultDto,
   ProvisionGarageResultDto,
 } from '@autolokate/api-client';
-import { AlButton, AlInput, AlModal } from '@autolokate/ui';
+import { AlButton, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -20,7 +20,13 @@ import {
   type ProvisionGarageFormValues,
 } from '@/features/garage/garage-entitlement-schemas';
 import { useGarageEntitlementMutations } from '@/hooks/garage/useGarageEntitlementMutations';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
+import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
+import {
+  AdminKpiStrip,
+  AdminPanel,
+  AdminStatusChip,
+  humanizeAdminLabel,
+} from '@/platform/components/AdminWowSurface';
 
 export type GrantPassSheetProps = {
   open: boolean;
@@ -73,7 +79,7 @@ export function GrantPassSheet({ open, onOpenChange, onGranted }: GrantPassSheet
       onOpenChange={onOpenChange}
       size="md"
       title="Grant garage pass"
-      description="Grant a garage pass for a partner org. Confirms after the server accepts."
+      description="Give a partner org a day or month garage pass."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -101,36 +107,47 @@ export function GrantPassSheet({ open, onOpenChange, onGranted }: GrantPassSheet
     >
       <form
         id="grant-garage-pass-form"
-        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlInput
-          label="Organization id"
-          mono
-          autoComplete="off"
-          data-testid="garage-grant-org-id"
-          {...form.register('orgId')}
-          errorText={form.formState.errors.orgId?.message}
-          helperText="Partner org id receiving the pass entitlement."
-        />
+        <div className="admin-form-grid">
+          <label className="admin-field admin-form-span">
+            Organization id
+            <input
+              data-testid="garage-grant-org-id"
+              autoComplete="off"
+              {...form.register('orgId')}
+            />
+            <span className="admin-field__hint">Partner organization receiving the pass.</span>
+            {form.formState.errors.orgId?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.orgId.message}
+              </span>
+            ) : null}
+          </label>
 
-        <label className="garage-entitlement-kind">
-          Pass kind
-          <select data-testid="garage-grant-kind" {...form.register('kind')}>
-            <option value="DAY">DAY</option>
-            <option value="MONTH">MONTH</option>
-          </select>
-        </label>
+          <label className="admin-field">
+            Pass length
+            <select data-testid="garage-grant-kind" {...form.register('kind')}>
+              <option value="DAY">Day</option>
+              <option value="MONTH">Month</option>
+            </select>
+          </label>
 
-        <AlInput
-          label="Idempotency key (optional UUID)"
-          mono
-          autoComplete="off"
-          {...form.register('idempotencyKey')}
-          errorText={form.formState.errors.idempotencyKey?.message}
-        />
+          <label className="admin-field">
+            Optional request key
+            <input autoComplete="off" {...form.register('idempotencyKey')} />
+            <span className="admin-field__hint">
+              Reuse the same key to safely retry without double-granting.
+            </span>
+            {form.formState.errors.idempotencyKey?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.idempotencyKey.message}
+              </span>
+            ) : null}
+          </label>
+        </div>
 
         {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
@@ -201,7 +218,7 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
       onOpenChange={onOpenChange}
       size="md"
       title="Adjust free bids"
-      description="Adjust free bids for a partner org. Balance updates after the server confirms."
+      description="Add or remove free bids for a partner org."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -229,61 +246,81 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
     >
       <form
         id="adjust-garage-free-bids-form"
-        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlInput
-          label="Organization id"
-          mono
-          autoComplete="off"
-          data-testid="garage-adjust-org-id"
-          {...form.register('orgId')}
-          errorText={form.formState.errors.orgId?.message}
-        />
+        <div className="admin-form-grid">
+          <label className="admin-field admin-form-span">
+            Organization id
+            <input
+              data-testid="garage-adjust-org-id"
+              autoComplete="off"
+              {...form.register('orgId')}
+            />
+            {form.formState.errors.orgId?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.orgId.message}
+              </span>
+            ) : null}
+          </label>
 
-        <AlInput
-          label="Delta (signed)"
-          type="number"
-          data-testid="garage-adjust-delta"
-          {...form.register('delta')}
-          errorText={form.formState.errors.delta?.message}
-          helperText="Non-zero integer. Positive adds remaining free bids."
-        />
+          <label className="admin-field">
+            Change amount
+            <input type="number" data-testid="garage-adjust-delta" {...form.register('delta')} />
+            <span className="admin-field__hint">
+              Non-zero whole number. Positive adds remaining free bids.
+            </span>
+            {form.formState.errors.delta?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.delta.message}
+              </span>
+            ) : null}
+          </label>
 
-        <AlInput
-          label="Note (optional)"
-          autoComplete="off"
-          {...form.register('note')}
-          errorText={form.formState.errors.note?.message}
-        />
+          <label className="admin-field">
+            Note (optional)
+            <input autoComplete="off" {...form.register('note')} />
+            {form.formState.errors.note?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.note.message}
+              </span>
+            ) : null}
+          </label>
 
-        <Controller
-          name="raiseLifetime"
-          control={form.control}
-          render={({ field }) => (
-            <label className="garage-entitlement-checkbox">
-              <input
-                type="checkbox"
-                data-testid="garage-adjust-raise-lifetime"
-                checked={Boolean(field.value)}
-                onChange={(event) => {
-                  field.onChange(event.target.checked);
-                }}
-              />
-              Raise lifetime granted when remaining would exceed it
-            </label>
-          )}
-        />
+          <div className="admin-field admin-form-span garage-entitlement-checkbox">
+            <Controller
+              name="raiseLifetime"
+              control={form.control}
+              render={({ field }) => (
+                <label className="garage-entitlement-checkbox">
+                  <input
+                    type="checkbox"
+                    data-testid="garage-adjust-raise-lifetime"
+                    checked={Boolean(field.value)}
+                    onChange={(event) => {
+                      field.onChange(event.target.checked);
+                    }}
+                  />
+                  Raise lifetime granted when remaining would exceed it
+                </label>
+              )}
+            />
+          </div>
 
-        <AlInput
-          label="Idempotency key (optional UUID)"
-          mono
-          autoComplete="off"
-          {...form.register('idempotencyKey')}
-          errorText={form.formState.errors.idempotencyKey?.message}
-        />
+          <label className="admin-field admin-form-span">
+            Optional request key
+            <input autoComplete="off" {...form.register('idempotencyKey')} />
+            <span className="admin-field__hint">
+              Reuse the same key to safely retry without double-adjusting.
+            </span>
+            {form.formState.errors.idempotencyKey?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.idempotencyKey.message}
+              </span>
+            ) : null}
+          </label>
+        </div>
 
         {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
@@ -293,30 +330,34 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
 
 export function PassGrantResultPanel({ result }: { result: GaragePassGrantResultDto }) {
   return (
-    <AdminMutationResultPanel
-      title="Pass granted"
-      fields={[
-        { label: 'Org', value: result.orgId },
-        { label: 'Kind', value: result.kind },
-        { label: 'Starts', value: result.startsAt },
-        { label: 'Ends', value: result.endsAt },
-        { label: 'Amount ₹', value: String(result.amountRupees) },
-        { label: 'Purchase id', value: result.purchaseId },
-      ]}
-    />
+    <AdminPanel title="Pass granted" subtitle="Garage pass entitlement for this partner.">
+      <div className="admin-status-row">
+        <AdminStatusChip label={humanizeAdminLabel(result.kind)} tone="active" />
+      </div>
+      <AdminKpiStrip items={[{ label: 'Amount ₹', value: String(result.amountRupees) }]} />
+      <AdminDetailGrid>
+        <AdminDetailField label="Organization" value={result.orgId} mono />
+        <AdminDetailField label="Starts" value={result.startsAt} />
+        <AdminDetailField label="Ends" value={result.endsAt} />
+        <AdminDetailField label="Purchase" value={result.purchaseId} mono />
+      </AdminDetailGrid>
+    </AdminPanel>
   );
 }
 
 export function FreeBidsBalancePanel({ result }: { result: GarageFreeBidsBalanceDto }) {
   return (
-    <AdminMutationResultPanel
-      title="Free bids balance"
-      fields={[
-        { label: 'Org', value: result.orgId },
-        { label: 'Remaining', value: String(result.remaining) },
-        { label: 'Lifetime granted', value: String(result.lifetimeGranted) },
-      ]}
-    />
+    <AdminPanel title="Free bids balance" subtitle="Updated free-bid counts for this partner.">
+      <AdminKpiStrip
+        items={[
+          { label: 'Remaining', value: String(result.remaining) },
+          { label: 'Lifetime granted', value: String(result.lifetimeGranted) },
+        ]}
+      />
+      <AdminDetailGrid>
+        <AdminDetailField label="Organization" value={result.orgId} mono />
+      </AdminDetailGrid>
+    </AdminPanel>
   );
 }
 
@@ -386,7 +427,7 @@ export function ProvisionGarageSheet({
       onOpenChange={onOpenChange}
       size="md"
       title="Provision garage partner"
-      description="Provision a Garage partner org. Confirms after the server accepts."
+      description="Create a Garage partner organization for an existing customer account."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -414,47 +455,77 @@ export function ProvisionGarageSheet({
     >
       <form
         id="provision-garage-form"
-        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlInput
-          label="Account id (UUID)"
-          mono
-          autoComplete="off"
-          data-testid="garage-provision-account-id"
-          {...form.register('accountId')}
-          errorText={form.formState.errors.accountId?.message}
-          helperText="Existing GoTrue account receiving GARAGE_PARTNER enrollment."
-        />
-        <AlInput
-          label="Organization name"
-          autoComplete="off"
-          data-testid="garage-provision-org-name"
-          {...form.register('orgName')}
-          errorText={form.formState.errors.orgName?.message}
-        />
-        <AlInput
-          label="Owner name"
-          autoComplete="off"
-          data-testid="garage-provision-owner-name"
-          {...form.register('ownerName')}
-          errorText={form.formState.errors.ownerName?.message}
-        />
-        <AlInput
-          label="Store name (optional)"
-          autoComplete="off"
-          {...form.register('storeName')}
-          errorText={form.formState.errors.storeName?.message}
-        />
-        <AlInput
-          label="Store phone (optional)"
-          mono
-          autoComplete="off"
-          {...form.register('storePhone')}
-          errorText={form.formState.errors.storePhone?.message}
-        />
+        <div className="admin-form-grid">
+          <label className="admin-field admin-form-span">
+            Account receiving Garage partner access
+            <input
+              data-testid="garage-provision-account-id"
+              autoComplete="off"
+              placeholder="Customer account id"
+              {...form.register('accountId')}
+            />
+            <span className="admin-field__hint">
+              Existing customer account that will own the Garage partner org.
+            </span>
+            {form.formState.errors.accountId?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.accountId.message}
+              </span>
+            ) : null}
+          </label>
+
+          <label className="admin-field">
+            Organization name
+            <input
+              data-testid="garage-provision-org-name"
+              autoComplete="off"
+              {...form.register('orgName')}
+            />
+            {form.formState.errors.orgName?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.orgName.message}
+              </span>
+            ) : null}
+          </label>
+
+          <label className="admin-field">
+            Owner name
+            <input
+              data-testid="garage-provision-owner-name"
+              autoComplete="off"
+              {...form.register('ownerName')}
+            />
+            {form.formState.errors.ownerName?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.ownerName.message}
+              </span>
+            ) : null}
+          </label>
+
+          <label className="admin-field">
+            Store name (optional)
+            <input autoComplete="off" {...form.register('storeName')} />
+            {form.formState.errors.storeName?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.storeName.message}
+              </span>
+            ) : null}
+          </label>
+
+          <label className="admin-field">
+            Store phone (optional)
+            <input autoComplete="off" {...form.register('storePhone')} />
+            {form.formState.errors.storePhone?.message ? (
+              <span className="admin-form-error" role="alert">
+                {form.formState.errors.storePhone.message}
+              </span>
+            ) : null}
+          </label>
+        </div>
         {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
     </AlModal>
@@ -463,17 +534,22 @@ export function ProvisionGarageSheet({
 
 export function ProvisionGarageResultPanel({ result }: { result: ProvisionGarageResultDto }) {
   return (
-    <AdminMutationResultPanel
-      title="Garage provisioned"
-      fields={[
-        { label: 'Org', value: result.orgId },
-        { label: 'Staff', value: result.staffId },
-        { label: 'Store', value: result.storeId },
-        { label: 'KYC record', value: result.kycRecordId },
-        { label: 'Store status', value: result.storeStatus },
-        { label: 'Free bids remaining', value: String(result.freeBidsRemaining) },
-        { label: 'Converged', value: result.converged ? 'yes' : 'no' },
-      ]}
-    />
+    <AdminPanel title="Garage provisioned" subtitle="Organization and storefront are ready.">
+      <div className="admin-status-row">
+        <AdminStatusChip
+          label={humanizeAdminLabel(result.storeStatus)}
+          tone={result.converged ? 'active' : 'draft'}
+        />
+      </div>
+      <AdminKpiStrip
+        items={[{ label: 'Free bids remaining', value: String(result.freeBidsRemaining) }]}
+      />
+      <AdminDetailGrid>
+        <AdminDetailField label="Organization" value={result.orgId} mono />
+        <AdminDetailField label="Staff" value={result.staffId} mono />
+        <AdminDetailField label="Store" value={result.storeId} mono />
+        <AdminDetailField label="KYC record" value={result.kycRecordId} mono />
+      </AdminDetailGrid>
+    </AdminPanel>
   );
 }

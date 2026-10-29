@@ -1,11 +1,12 @@
 import type { AdminPromoDto } from '@autolokate/api-client';
-import { AlButton, AlModal, AlStack, AlStatusBadge } from '@autolokate/ui';
+import { AlButton, AlModal, AlStack } from '@autolokate/ui';
 
 import {
   AdminDetailField,
   AdminDetailGrid,
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
+import { AdminStatusChip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
 import { formatPromoDiscount, getPromoLifecycleStatus } from '@/services/promos/promo-metrics';
 
@@ -31,6 +32,12 @@ function formatLimit(value: number | null): string {
   return value.toLocaleString();
 }
 
+function lifecycleTone(lifecycle: string) {
+  if (lifecycle === 'ACTIVE') return 'active' as const;
+  if (lifecycle === 'UPCOMING') return 'draft' as const;
+  return 'none' as const;
+}
+
 export function PromoDetailSheet({
   promo,
   open,
@@ -53,26 +60,20 @@ export function PromoDetailSheet({
       description={formatPromoDiscount(promo)}
     >
       <AlStack gap="md">
-        <AdminDetailSection title="Status">
-          <div className="admin-modal-actions">
-            <AlStatusBadge
-              label={lifecycle}
-              status={
-                lifecycle === 'ACTIVE'
-                  ? 'active'
-                  : lifecycle === 'UPCOMING'
-                    ? 'pending'
-                    : 'inactive'
-              }
+        <AdminDetailSection title="Status" description="Whether this promo can be redeemed.">
+          <div className="admin-status-row">
+            <AdminStatusChip
+              label={humanizeAdminLabel(lifecycle)}
+              tone={lifecycleTone(lifecycle)}
             />
-            <AlStatusBadge
+            <AdminStatusChip
               label={promo.active ? 'Enabled' : 'Disabled'}
-              status={promo.active ? 'active' : 'inactive'}
+              tone={promo.active ? 'active' : 'none'}
             />
           </div>
         </AdminDetailSection>
 
-        <AdminDetailSection title="Discount">
+        <AdminDetailSection title="Discount" description="Offer shown at checkout.">
           <AdminDetailGrid>
             <AdminDetailField label="Offer" value={formatPromoDiscount(promo)} />
             <AdminDetailField
@@ -86,14 +87,14 @@ export function PromoDetailSheet({
           </AdminDetailGrid>
         </AdminDetailSection>
 
-        <AdminDetailSection title="Validity">
+        <AdminDetailSection title="Validity" description="When customers can use this code.">
           <AdminDetailGrid>
             <AdminDetailField label="Starts" value={formatDateTime(promo.validFrom)} />
             <AdminDetailField label="Ends" value={formatDateTime(promo.validTo)} />
           </AdminDetailGrid>
         </AdminDetailSection>
 
-        <AdminDetailSection title="Limits">
+        <AdminDetailSection title="Limits" description="How many times this code can be used.">
           <AdminDetailGrid>
             <AdminDetailField label="Max redemptions" value={formatLimit(promo.maxRedemptions)} />
             <AdminDetailField label="Max per account" value={formatLimit(promo.maxPerAccount)} />

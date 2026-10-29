@@ -4,7 +4,6 @@ import {
   AlButton,
   AlConfirmationDialog,
   AlErrorState,
-  AlInput,
   AlPageHeader,
   AlStack,
 } from '@autolokate/ui';
@@ -20,8 +19,14 @@ import {
 } from '@/features/qr-batches/create-batch-schema';
 import { useQrBatchById } from '@/hooks/qr-batches/useQrBatchById';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
+import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
+import {
+  AdminKpiStrip,
+  AdminPanel,
+  AdminStatusChip,
+  humanizeAdminLabel,
+} from '@/platform/components/AdminWowSurface';
 import { useCanRunQrLifecycleMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import {
@@ -30,7 +35,6 @@ import {
   getBatchLifecycleActions,
   type BatchLifecycleActionId,
 } from '@/services/qr-batches/batch-lifecycle';
-import { BatchStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { adminPaths } from '@/app/routes/admin-paths';
 
 import './qr-batches.css';
@@ -44,15 +48,6 @@ function formatDateTime(value: string | null): string {
     return '—';
   }
   return new Date(value).toLocaleString();
-}
-
-function StatInline({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="qr-batch-stat-inline">
-      <span className="qr-batch-stat-inline__value">{value}</span>
-      <span className="qr-batch-stat-inline__label">{label}</span>
-    </div>
-  );
 }
 
 type PendingLifecycleAction = {
@@ -278,138 +273,136 @@ export function BatchManagementDetailPage() {
           }
         />
 
-        <section className="qr-batch-detail-hero" aria-label="Batch summary">
-          <div className="qr-batch-detail-hero__top">
-            <div className="qr-batch-detail-hero__status">
-              <BatchStatusBadge status={batch.status} />
-              <span className="qr-batch-detail-hero__channel">{batch.channel}</span>
+        <AdminPanel
+          title="Overview"
+          subtitle="Channel, status, and code counts for this batch."
+          meta={
+            <div className="admin-status-row">
+              <AdminStatusChip label={humanizeAdminLabel(batch.status)} tone="neutral" />
+              <AdminStatusChip label={batch.channel} tone="neutral" />
             </div>
-            <span className="qr-batch-detail-hero__created">{formatDateTime(batch.createdAt)}</span>
-          </div>
+          }
+        >
+          <AdminKpiStrip
+            items={[
+              { label: 'Total', value: batch.totalCount.toLocaleString() },
+              { label: 'Generated', value: batch.generatedCount.toLocaleString() },
+              { label: 'Provisioned', value: batch.provisionedCount.toLocaleString() },
+            ]}
+          />
+          <AdminDetailGrid>
+            <AdminDetailField label="Created" value={formatDateTime(batch.createdAt)} />
+            <AdminDetailField label="Provisioned at" value={formatDateTime(batch.provisionedAt)} />
+          </AdminDetailGrid>
+        </AdminPanel>
 
-          <div className="qr-batch-detail-hero__stats">
-            <StatInline label="Total" value={batch.totalCount.toLocaleString()} />
-            <StatInline label="Generated" value={batch.generatedCount.toLocaleString()} />
-            <StatInline label="Provisioned" value={batch.provisionedCount.toLocaleString()} />
-            {batch.provisionedAt ? (
-              <StatInline label="Provisioned at" value={formatDateTime(batch.provisionedAt)} />
-            ) : null}
-          </div>
-        </section>
-
-        <section className="qr-batch-detail-toolbar" aria-label="Batch actions">
-          <div className="qr-batch-detail-toolbar__row">
-            <div className="qr-batch-detail-toolbar__copy">
-              <h3 className="qr-batch-detail-toolbar__title">Batch lifecycle</h3>
-              <p className="qr-batch-detail-toolbar__hint">
-                {describeBatchLifecycleStatus(batch.status)}
-              </p>
-            </div>
-            <div className="qr-batch-detail-toolbar__controls">
-              {canWrite ? (
-                lifecycleActions.length > 0 ? (
-                  <div className="admin-page-actions">
-                    {lifecycleActions.map((action) => (
-                      <AlButton
-                        key={action.id}
-                        size="sm"
-                        variant={action.id === 'generate' ? 'secondary' : 'primary'}
-                        loading={lifecyclePending}
-                        disabled={lifecyclePending}
-                        onClick={() => {
-                          setPendingLifecycle({
-                            actionId: action.id,
-                            label: action.label,
-                            description: action.description,
-                          });
-                        }}
-                      >
-                        {action.label}
-                      </AlButton>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="qr-batch-detail-toolbar__empty">No actions for this status</span>
-                )
+        <AdminPanel
+          title="Batch lifecycle"
+          subtitle={describeBatchLifecycleStatus(batch.status)}
+          meta={
+            canWrite ? (
+              lifecycleActions.length > 0 ? (
+                <div className="admin-page-actions">
+                  {lifecycleActions.map((action) => (
+                    <AlButton
+                      key={action.id}
+                      size="sm"
+                      variant={action.id === 'generate' ? 'secondary' : 'primary'}
+                      loading={lifecyclePending}
+                      disabled={lifecyclePending}
+                      onClick={() => {
+                        setPendingLifecycle({
+                          actionId: action.id,
+                          label: action.label,
+                          description: action.description,
+                        });
+                      }}
+                    >
+                      {action.label}
+                    </AlButton>
+                  ))}
+                </div>
               ) : (
-                <span className="qr-batch-detail-toolbar__empty">Write access required</span>
-              )}
-            </div>
-          </div>
+                <span className="admin-empty-note">No actions for this status</span>
+              )
+            ) : (
+              <span className="admin-empty-note">Write access required</span>
+            )
+          }
+        >
           {lifecycleError ? <p className="admin-inline-alert">{lifecycleError}</p> : null}
+        </AdminPanel>
 
-          <div className="qr-batch-detail-toolbar__divider" role="presentation" />
-
-          <div className="qr-batch-detail-toolbar__row qr-batch-detail-toolbar__row--qr">
-            <div className="qr-batch-detail-toolbar__copy">
-              <h3 className="qr-batch-detail-toolbar__title">QR code actions</h3>
-              <p className="qr-batch-detail-toolbar__hint">
-                Replace or retire a code in this batch
-              </p>
-            </div>
-            {canWrite ? (
-              <div className="qr-batch-detail-toolbar__qr-form">
-                <AlInput
-                  label="QR code"
-                  mono
+        <AdminPanel title="QR code actions" subtitle="Replace or retire a code in this batch.">
+          {canWrite ? (
+            <div className="admin-form-grid">
+              <label className="admin-field">
+                QR code
+                <input
+                  data-testid="qr-code-action-input"
                   placeholder="Enter QR code"
                   autoComplete="off"
-                  data-testid="qr-code-action-input"
-                  helperText="6–32 uppercase letters, numbers, or hyphens."
-                  errorText={qrForm.formState.errors.code?.message}
                   {...qrForm.register('code')}
                 />
-                <div className="admin-page-actions">
-                  <AlButton
-                    size="sm"
-                    variant="secondary"
-                    data-testid="qr-code-replace"
-                    loading={qrPending}
-                    disabled={qrPending}
-                    onClick={() => {
-                      if (qrPending) {
-                        return;
+                <span className="admin-field__hint">
+                  6–32 uppercase letters, numbers, or hyphens.
+                </span>
+                {qrForm.formState.errors.code?.message ? (
+                  <span className="admin-form-error" role="alert">
+                    {qrForm.formState.errors.code.message}
+                  </span>
+                ) : null}
+              </label>
+              <div className="admin-page-actions admin-form-span">
+                <AlButton
+                  size="sm"
+                  variant="secondary"
+                  data-testid="qr-code-replace"
+                  loading={qrPending}
+                  disabled={qrPending}
+                  onClick={() => {
+                    if (qrPending) {
+                      return;
+                    }
+                    replaceMutation.reset();
+                    retireMutation.reset();
+                    void qrForm.trigger('code').then((valid) => {
+                      if (valid) {
+                        setPendingQrAction('replace');
                       }
-                      replaceMutation.reset();
-                      retireMutation.reset();
-                      void qrForm.trigger('code').then((valid) => {
-                        if (valid) {
-                          setPendingQrAction('replace');
-                        }
-                      });
-                    }}
-                  >
-                    Replace
-                  </AlButton>
-                  <AlButton
-                    size="sm"
-                    variant="destructive"
-                    data-testid="qr-code-retire"
-                    loading={qrPending}
-                    disabled={qrPending}
-                    onClick={() => {
-                      if (qrPending) {
-                        return;
+                    });
+                  }}
+                >
+                  Replace
+                </AlButton>
+                <AlButton
+                  size="sm"
+                  variant="destructive"
+                  data-testid="qr-code-retire"
+                  loading={qrPending}
+                  disabled={qrPending}
+                  onClick={() => {
+                    if (qrPending) {
+                      return;
+                    }
+                    replaceMutation.reset();
+                    retireMutation.reset();
+                    void qrForm.trigger('code').then((valid) => {
+                      if (valid) {
+                        setPendingQrAction('retire');
                       }
-                      replaceMutation.reset();
-                      retireMutation.reset();
-                      void qrForm.trigger('code').then((valid) => {
-                        if (valid) {
-                          setPendingQrAction('retire');
-                        }
-                      });
-                    }}
-                  >
-                    Retire
-                  </AlButton>
-                </div>
+                    });
+                  }}
+                >
+                  Retire
+                </AlButton>
               </div>
-            ) : (
-              <span className="qr-batch-detail-toolbar__empty" data-testid="qr-code-write-required">
-                Write access required
-              </span>
-            )}
-          </div>
+            </div>
+          ) : (
+            <p className="admin-empty-note" data-testid="qr-code-write-required">
+              Write access required
+            </p>
+          )}
           {qrError ? (
             <p className="admin-inline-alert" data-testid="qr-code-action-error">
               {qrError}
@@ -417,7 +410,7 @@ export function BatchManagementDetailPage() {
           ) : null}
           {replaceResult ? <QrReplaceResultPanel result={replaceResult} /> : null}
           {retireResult ? <QrRetireResultPanel result={retireResult} /> : null}
-        </section>
+        </AdminPanel>
 
         <BatchCodesSection
           batchId={batch.id}
@@ -470,29 +463,24 @@ export function BatchManagementDetailPage() {
 
 export function QrReplaceResultPanel({ result }: { result: ReplacedDto }) {
   return (
-    <AdminMutationResultPanel
-      title="Replacement issued"
-      fields={[
-        { label: 'Old code', value: result.oldCode },
-        { label: 'New code', value: result.newCode },
-        { label: 'Vehicle', value: result.vehicleId },
-        {
-          label: 'Subscription',
-          value: result.subscriptionId ?? '—',
-        },
-      ]}
-    />
+    <AdminPanel title="Replacement issued" subtitle="New sticker code for this vehicle.">
+      <AdminDetailGrid>
+        <AdminDetailField label="Old code" value={result.oldCode} mono />
+        <AdminDetailField label="New code" value={result.newCode} mono />
+        <AdminDetailField label="Vehicle" value={result.vehicleId} mono />
+        <AdminDetailField label="Coverage" value={result.subscriptionId ?? '—'} mono />
+      </AdminDetailGrid>
+    </AdminPanel>
   );
 }
 
 export function QrRetireResultPanel({ result }: { result: RetiredDto }) {
   return (
-    <AdminMutationResultPanel
-      title="Code retired"
-      fields={[
-        { label: 'Code', value: result.code },
-        { label: 'QR code ID', value: result.qrCodeId },
-      ]}
-    />
+    <AdminPanel title="Code retired" subtitle="This sticker can no longer be used.">
+      <AdminDetailGrid>
+        <AdminDetailField label="Code" value={result.code} mono />
+        <AdminDetailField label="Code id" value={result.qrCodeId} mono />
+      </AdminDetailGrid>
+    </AdminPanel>
   );
 }

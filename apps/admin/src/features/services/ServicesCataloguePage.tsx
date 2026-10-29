@@ -15,16 +15,12 @@ import { useServicesCatalogue } from '@/hooks/services/useServicesCatalogue';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip, AdminPanel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './services-catalogue.css';
 
-/**
- * Admin Services catalogue authorship.
- * List: GET /admin/v1/services/providers. Hub: GET/PUT /admin/v1/services/hub-categories (0092).
- * Mutates: PUT /admin/v1/services/providers, DELETE /admin/v1/services/providers/{id}.
- */
 export function ServicesCataloguePage() {
   const canWrite = useAdminPermission('settings:write');
   const {
@@ -75,6 +71,17 @@ export function ServicesCataloguePage() {
 
   const pageDescription = 'Service providers shown in the consumer Services hub.';
 
+  const kpiItems = useMemo(() => {
+    if (providers.length === 0) return [];
+    const active = providers.filter((row) => row.status === 'ACTIVE').length;
+    const verified = providers.filter((row) => row.verifiedPartner).length;
+    return [
+      { label: 'On this page', value: String(providers.length) },
+      { label: 'Active', value: String(active) },
+      { label: 'Verified', value: String(verified) },
+    ];
+  }, [providers]);
+
   if (userErrorMessage && !data) {
     return (
       <RequirePermission permission="settings:read">
@@ -109,12 +116,22 @@ export function ServicesCataloguePage() {
           }
         />
 
-        <p className="services-catalogue__note" data-testid="services-category-config-stub">
-          Providers appear in the consumer hub when Active. Deactivate to hide them from customers.
-          {categoriesErrorMessage
-            ? ` Hub categories could not be loaded (${categoriesErrorMessage}) — using defaults.`
-            : null}
-        </p>
+        <AdminPanel
+          title="Hub visibility"
+          subtitle="Providers appear in the consumer hub when Active. Deactivate to hide them."
+        >
+          {categoriesErrorMessage ? (
+            <p className="admin-empty-note" data-testid="services-category-config-stub">
+              Hub categories could not be loaded — using defaults. ({categoriesErrorMessage})
+            </p>
+          ) : (
+            <p className="admin-empty-note" data-testid="services-category-config-stub">
+              Filter by category, then add or edit providers for that list.
+            </p>
+          )}
+        </AdminPanel>
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

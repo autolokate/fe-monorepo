@@ -6,7 +6,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { CreatePromoSheet } from '@/features/promos/CreatePromoSheet';
 import { PromoDetailSheet } from '@/features/promos/PromoDetailSheet';
@@ -16,6 +16,7 @@ import { usePromoManagement } from '@/hooks/promos/usePromoManagement';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { useCanWritePromoMutations } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
@@ -52,7 +53,15 @@ export function PromoManagementPage() {
     [openPromo],
   );
 
-  const pageDescription = 'Create and manage promotional campaigns.';
+  const kpiItems = useMemo(() => {
+    if (promos.length === 0) return [];
+    const active = promos.filter((promo) => promo.active).length;
+    return [
+      { label: 'On this page', value: String(promos.length) },
+      { label: 'Enabled', value: String(active) },
+      { label: 'Disabled', value: String(promos.length - active) },
+    ];
+  }, [promos]);
 
   if (userErrorMessage && !data) {
     return (
@@ -72,7 +81,7 @@ export function PromoManagementPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Promos"
-          description={pageDescription}
+          description="Create and manage promotional campaigns customers redeem at checkout."
           actions={
             <>
               {canWrite ? (
@@ -92,6 +101,8 @@ export function PromoManagementPage() {
             </>
           }
         />
+
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 
         <AdminDataBlock
           filters={

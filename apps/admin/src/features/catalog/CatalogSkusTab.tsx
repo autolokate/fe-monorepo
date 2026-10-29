@@ -1,5 +1,5 @@
 import type { AdminPlanDto, SkuSummaryDto } from '@autolokate/api-client';
-import { AlDataTable, AlStack, AlText } from '@autolokate/ui';
+import { AlDataTable, AlStack } from '@autolokate/ui';
 import { useCallback, useMemo, useState } from 'react';
 
 import {
@@ -63,11 +63,11 @@ export function CatalogSkusTab({
   return (
     <AlStack gap="md">
       {emptyShelfCount > 0 ? (
-        <AlText role="alert">
+        <p className="admin-empty-note" role="alert">
           {emptyShelfCount === 1
-            ? '1 SKU has an empty shelf and can sell nothing.'
-            : `${String(emptyShelfCount)} SKUs have an empty shelf and can sell nothing.`}
-        </AlText>
+            ? '1 product has no plans on its shelf and cannot sell.'
+            : `${String(emptyShelfCount)} products have empty shelves and cannot sell.`}
+        </p>
       ) : null}
 
       <AdminDataBlock

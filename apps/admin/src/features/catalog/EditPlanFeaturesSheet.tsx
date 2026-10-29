@@ -116,7 +116,7 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
       onOpenChange={onOpenChange}
       size="md"
       title={`Features — ${formatPlanRef(plan)}`}
-      description={`Card copy for ${plan.name}. Features belong to this version; editing them does not reprice anyone.`}
+      description={`Card copy for ${plan.name}. Editing bullets does not change anyone’s price.`}
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -156,9 +156,9 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
 
           <AlStack gap="sm">
             <AlText variant="label">Feature bullets</AlText>
-            <AlText variant="caption" tone="muted">
-              At least one is required — an empty list renders a blank plan card in the app.
-            </AlText>
+            <p className="admin-empty-note">
+              At least one is required — an empty list shows a blank plan card.
+            </p>
 
             {fields.map((field, index) => (
               <div key={field.id} className="catalog-feature-row">
@@ -208,37 +208,39 @@ export function EditPlanFeaturesSheet({ plan, open, onOpenChange }: EditPlanFeat
             </div>
           </AlStack>
 
-          <Controller
-            control={form.control}
-            name="badge"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Badge"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Optional ribbon on the card — e.g. Most popular. Leave empty for none."
-                autoComplete="off"
-              />
-            )}
-          />
+          <div className="admin-form-grid">
+            <Controller
+              control={form.control}
+              name="badge"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Badge"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Optional ribbon — e.g. Most popular."
+                  autoComplete="off"
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="includesLabel"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Includes label"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Optional heading above the bullets — e.g. Everything in SECURE, plus."
-                autoComplete="off"
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="includesLabel"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Includes label"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Optional heading above the bullets."
+                  autoComplete="off"
+                />
+              )}
+            />
+          </div>
 
           {submitError ? <AlText role="alert">{submitError}</AlText> : null}
         </AlStack>

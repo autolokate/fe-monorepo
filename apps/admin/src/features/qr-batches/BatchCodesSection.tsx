@@ -1,4 +1,4 @@
-import { AlButton, AlDataTable, AlErrorState, AlSectionHeader, AlText } from '@autolokate/ui';
+import { AlButton, AlDataTable, AlErrorState } from '@autolokate/ui';
 import { useState } from 'react';
 
 import { useBatchCodeColumns } from '@/features/qr-batches/batch-code-columns';
@@ -11,6 +11,7 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminDetailSection } from '@/platform/components/AdminDetailField';
+import { AdminPanel } from '@/platform/components/AdminWowSurface';
 
 export type BatchCodesSectionProps = {
   batchId: string;
@@ -98,50 +99,42 @@ export function BatchCodesSection({
   if (!enabled) {
     if (layout === 'page') {
       return (
-        <section className="qr-batch-codes-page">
-          <AlSectionHeader
-            title="Codes in batch"
-            description="Opaque sticker codes appear after generate."
-          />
-          <AlText tone="muted" className="admin-empty-note">
-            Generate codes to list stickers in this batch.
-          </AlText>
-        </section>
+        <AdminPanel
+          title="Codes in batch"
+          subtitle="Sticker codes appear after you generate this batch."
+        >
+          <p className="admin-empty-note">Generate codes to list stickers in this batch.</p>
+        </AdminPanel>
       );
     }
 
     return (
       <AdminDetailSection
         title="Codes in batch"
-        description="Opaque sticker codes appear after generate."
+        description="Sticker codes appear after you generate this batch."
       >
-        <AlText tone="muted" className="admin-empty-note">
-          Generate codes to list stickers in this batch.
-        </AlText>
+        <p className="admin-empty-note">Generate codes to list stickers in this batch.</p>
       </AdminDetailSection>
     );
   }
 
   if (layout === 'page') {
     return (
-      <section className="qr-batch-codes-page">
-        <AlSectionHeader
-          title="Codes in batch"
-          description="Opaque sticker ids for this batch (newest first). Print-house CSV export is unavailable."
-        />
+      <>
+        <AdminPanel title="Codes in batch" subtitle="Sticker codes in this batch, newest first." />
         <AdminDataBlock
           filters={<AdminFilterField label="Status">{statusFilters}</AdminFilterField>}
         >
           {codesTable}
         </AdminDataBlock>
-      </section>
+      </>
     );
   }
 
   return (
     <AdminDetailSection
       title="Codes in batch"
-      description="Opaque sticker ids for this batch (newest first). Print-house CSV export is unavailable."
+      description="Sticker codes in this batch, newest first."
     >
       {statusFilters}
       {codesTable}

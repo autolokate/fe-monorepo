@@ -1,11 +1,12 @@
 import type { AdminPlanDto } from '@autolokate/api-client';
-import { AlButton, AlModal, AlStack, AlStatusBadge, AlText } from '@autolokate/ui';
+import { AlButton, AlModal, AlStack } from '@autolokate/ui';
 
 import {
   AdminDetailField,
   AdminDetailGrid,
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
+import { AdminStatusChip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
 import {
   formatEffectiveWindow,
@@ -43,6 +44,7 @@ export function PlanVersionDetailSheet({
   }
 
   const lifecycle = getPlanLifecycle(plan);
+  const statusLabel = plan.isEffectiveNow ? 'Live' : humanizeAdminLabel(lifecycle);
 
   return (
     <AlModal
@@ -53,27 +55,19 @@ export function PlanVersionDetailSheet({
       description={plan.name}
     >
       <AlStack gap="md">
-        <AdminDetailSection title="Status">
-          <div className="admin-modal-actions">
-            <AlStatusBadge
-              label={
-                plan.isEffectiveNow
-                  ? 'Live'
-                  : lifecycle.charAt(0) + lifecycle.slice(1).toLowerCase()
-              }
-              status={
-                plan.isEffectiveNow ? 'active' : lifecycle === 'RETIRED' ? 'inactive' : 'pending'
-              }
+        <AdminDetailSection title="Status" description="Whether this version is sellable.">
+          <div className="admin-status-row">
+            <AdminStatusChip
+              label={statusLabel}
+              tone={plan.isEffectiveNow ? 'active' : lifecycle === 'RETIRED' ? 'none' : 'draft'}
             />
-            {featureCount === 0 ? (
-              <AlStatusBadge label="No features — blank card" status="error" />
-            ) : null}
+            {featureCount === 0 ? <AdminStatusChip label="No features" tone="none" /> : null}
           </div>
         </AdminDetailSection>
 
         <AdminDetailSection
           title="Pricing"
-          description="Immutable. A price, tier or name change mints a NEW version — there is no edit."
+          description="Price and name are locked. Create a new version to change them."
         >
           <AdminDetailGrid>
             <AdminDetailField label="Price" value={formatPaiseAsRupees(plan.pricePaise)} />
@@ -87,14 +81,9 @@ export function PlanVersionDetailSheet({
               value={featureCount === null ? '—' : `${String(featureCount)} bullets`}
             />
           </AdminDetailGrid>
-          <AlText variant="caption" tone="muted">
-            A Subscription pins the plan version it was sold on. Editing this price in place would
-            retro-reprice everyone who already paid, so the API rejects it — mint a new version
-            instead.
-          </AlText>
         </AdminDetailSection>
 
-        <AdminDetailSection title="Lifecycle">
+        <AdminDetailSection title="Lifecycle" description="When this version is effective.">
           <AdminDetailGrid>
             <AdminDetailField label="Effective window" value={formatEffectiveWindow(plan)} />
             <AdminDetailField
@@ -107,7 +96,7 @@ export function PlanVersionDetailSheet({
         {canWrite ? (
           <AdminDetailSection
             title="Actions"
-            description="Feature bullets are editable in place. Price and name are not."
+            description="Feature bullets can be edited. Price and name cannot."
           >
             <div className="admin-modal-actions">
               <AlButton size="sm" onClick={onEditFeatures}>

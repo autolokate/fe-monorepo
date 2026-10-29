@@ -36,7 +36,7 @@ export function CatalogPage() {
 
   const isFetching = plansState.isFetching || skusState.isFetching;
 
-  const pageDescription = 'Plans and the SKU shelves that sell them.';
+  const pageDescription = 'Coverage plans and the product shelves that sell them.';
 
   const refreshAll = useCallback(() => {
     plansState.refresh();

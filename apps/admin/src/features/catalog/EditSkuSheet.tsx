@@ -168,11 +168,11 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
     >
       <AlStack gap="md">
         <AdminDetailSection
-          title="Immutable"
-          description="Frozen at create — a batch pins its (channel, sku) when codes are generated."
+          title="Locked at create"
+          description="Channel and product code stay fixed so printed stock stays consistent."
         >
           <AdminDetailGrid>
-            <AdminDetailField label="SKU code" value={sku.skuCode} mono />
+            <AdminDetailField label="Product code" value={sku.skuCode} mono />
             <AdminDetailField label="Channel" value={sku.channel} />
             <AdminDetailField label="Prepaid" value={sku.prepaid ? 'Yes' : 'No'} />
           </AdminDetailGrid>
@@ -188,94 +188,100 @@ export function EditSkuSheet({ sku, open, onOpenChange, plans, canWrite }: EditS
             onKeyDown={handleFormKeyDown}
           >
             <AlStack gap="md">
-              <Controller
-                control={form.control}
-                name="offeredTiers"
-                render={({ field, fieldState }) => (
-                  <ShelfTierPicker
-                    selectableTiers={selectableTiers}
-                    value={field.value}
-                    onChange={field.onChange}
-                    errorText={fieldState.error?.message}
-                    disabled={isBusy}
+              <div className="admin-form-grid">
+                <div className="admin-form-span">
+                  <Controller
+                    control={form.control}
+                    name="offeredTiers"
+                    render={({ field, fieldState }) => (
+                      <ShelfTierPicker
+                        selectableTiers={selectableTiers}
+                        value={field.value}
+                        onChange={field.onChange}
+                        errorText={fieldState.error?.message}
+                        disabled={isBusy}
+                      />
+                    )}
                   />
-                )}
-              />
+                </div>
 
-              <Controller
-                control={form.control}
-                name="defaultPlanId"
-                render={({ field, fieldState }) => (
-                  <AlSelect
-                    label="Default plan"
-                    placeholder={
-                      offeredTiers.length === 0
-                        ? 'Put a tier on the shelf first'
-                        : 'Select default plan'
-                    }
-                    options={defaultPlanOptions}
-                    value={field.value}
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                      field.onChange(event.target.value);
-                    }}
-                    disabled={isBusy || defaultPlanOptions.length === 0}
-                    errorText={fieldState.error?.message}
-                    helperText="Must be a plan whose tier is on this SKU's own shelf. The server derives the version."
-                  />
-                )}
-              />
+                <Controller
+                  control={form.control}
+                  name="defaultPlanId"
+                  render={({ field, fieldState }) => (
+                    <AlSelect
+                      label="Default plan"
+                      placeholder={
+                        offeredTiers.length === 0
+                          ? 'Put a tier on the shelf first'
+                          : 'Select default plan'
+                      }
+                      options={defaultPlanOptions}
+                      value={field.value}
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                        field.onChange(event.target.value);
+                      }}
+                      disabled={isBusy || defaultPlanOptions.length === 0}
+                      errorText={fieldState.error?.message}
+                      helperText="Must be a plan whose tier is on this shelf."
+                    />
+                  )}
+                />
 
-              <Controller
-                control={form.control}
-                name="listPriceRupees"
-                render={({ field, fieldState }) => (
-                  <AlInput
-                    label="List price (₹)"
-                    inputMode="decimal"
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    errorText={fieldState.error?.message}
-                    helperText="What the sticker costs. Up to 2 decimal places."
-                    autoComplete="off"
-                  />
-                )}
-              />
+                <Controller
+                  control={form.control}
+                  name="listPriceRupees"
+                  render={({ field, fieldState }) => (
+                    <AlInput
+                      label="List price (₹)"
+                      inputMode="decimal"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      errorText={fieldState.error?.message}
+                      helperText="What the sticker costs. Up to 2 decimal places."
+                      autoComplete="off"
+                    />
+                  )}
+                />
 
-              <Controller
-                control={form.control}
-                name="riderDefault"
-                render={({ field, fieldState }) => (
-                  <AlInput
-                    label="Rider default"
-                    type="number"
-                    min={0}
-                    max={10}
-                    value={field.value}
-                    onChange={(event) => {
-                      field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
-                    }}
-                    onBlur={field.onBlur}
-                    errorText={fieldState.error?.message}
-                    helperText="Riders bundled with the plan by default."
-                  />
-                )}
-              />
+                <Controller
+                  control={form.control}
+                  name="riderDefault"
+                  render={({ field, fieldState }) => (
+                    <AlInput
+                      label="Rider default"
+                      type="number"
+                      min={0}
+                      max={10}
+                      value={field.value}
+                      onChange={(event) => {
+                        field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
+                      }}
+                      onBlur={field.onBlur}
+                      errorText={fieldState.error?.message}
+                      helperText="Riders bundled with the plan by default."
+                    />
+                  )}
+                />
 
-              <Controller
-                control={form.control}
-                name="active"
-                render={({ field }) => (
-                  <AlCheckbox
-                    label="Accepting new batches"
-                    helperText="Controls whether NEW batches may be manufactured against this SKU. Turning it off does NOT stop stock already printed from selling."
-                    checked={field.value}
-                    onChange={(event) => {
-                      field.onChange(event.target.checked);
-                    }}
-                  />
-                )}
-              />
+                <Controller
+                  control={form.control}
+                  name="active"
+                  render={({ field }) => (
+                    <div className="admin-form-span">
+                      <AlCheckbox
+                        label="Accepting new batches"
+                        helperText="Turn off to stop new batches. Printed stock can still sell."
+                        checked={field.value}
+                        onChange={(event) => {
+                          field.onChange(event.target.checked);
+                        }}
+                      />
+                    </div>
+                  )}
+                />
+              </div>
 
               {submitError ? <AlText role="alert">{submitError}</AlText> : null}
             </AlStack>

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ReorderFulfilResultDto } from '@autolokate/api-client';
-import { AlButton, AlConfirmationDialog, AlInput, AlModal } from '@autolokate/ui';
+import { AlButton, AlConfirmationDialog, AlModal } from '@autolokate/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -9,7 +9,13 @@ import {
   type FulfilPartnerReorderFormValues,
 } from '@/features/qr-batches/fulfil-reorder-schema';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
+import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
+import {
+  AdminKpiStrip,
+  AdminPanel,
+  AdminStatusChip,
+  humanizeAdminLabel,
+} from '@/platform/components/AdminWowSurface';
 
 export type FulfilPartnerReorderSheetProps = {
   open: boolean;
@@ -75,6 +81,8 @@ export function FulfilPartnerReorderSheet({
     }
   });
 
+  const reorderError = form.formState.errors.reorderId?.message;
+
   return (
     <>
       <AlModal
@@ -82,7 +90,7 @@ export function FulfilPartnerReorderSheet({
         onOpenChange={onOpenChange}
         size="md"
         title="Fulfil partner reorder"
-        description="Allocate provisioned stock to a partner reorder."
+        description="Allocate ready stock to a partner reorder request."
         footer={
           <div className="admin-modal-actions">
             <AlButton
@@ -111,20 +119,28 @@ export function FulfilPartnerReorderSheet({
       >
         <form
           id="fulfil-reorder-form"
-          className="admin-form-stack"
           onSubmit={(event) => {
             void openConfirm(event);
           }}
         >
-          <AlInput
-            label="Reorder reference"
-            mono
-            autoComplete="off"
-            data-testid="partner-reorder-fulfil-id"
-            {...form.register('reorderId')}
-            errorText={form.formState.errors.reorderId?.message}
-            helperText="PENDING reorder (QrDistribution) UUID from partner ops."
-          />
+          <div className="admin-form-grid">
+            <label className="admin-field admin-form-span">
+              Reorder reference
+              <input
+                data-testid="partner-reorder-fulfil-id"
+                autoComplete="off"
+                {...form.register('reorderId')}
+              />
+              <span className="admin-field__hint">
+                Reference of the pending partner reorder from partner ops.
+              </span>
+              {reorderError ? (
+                <span className="admin-form-error" role="alert">
+                  {reorderError}
+                </span>
+              ) : null}
+            </label>
+          </div>
 
           {submitError ? <p className="admin-form-error">{submitError}</p> : null}
         </form>
@@ -138,7 +154,7 @@ export function FulfilPartnerReorderSheet({
           }
         }}
         title="Fulfil partner reorder"
-        description="Allocate PROVISIONED stock and confirm this reorder?"
+        description="Allocate ready stock and confirm this reorder?"
         confirmLabel="Fulfil reorder"
         loading={fulfilReorderMutation.isPending}
         onConfirm={() => {
@@ -151,14 +167,18 @@ export function FulfilPartnerReorderSheet({
 
 export function ReorderFulfilResultPanel({ result }: { result: ReorderFulfilResultDto }) {
   return (
-    <AdminMutationResultPanel
-      title="Reorder fulfilled"
-      fields={[
-        { label: 'Reorder ID', value: result.reorderId },
-        { label: 'Status', value: result.status },
-        { label: 'Allocated codes', value: result.allocated.toLocaleString() },
-        { label: 'Location', value: result.locationId },
-      ]}
-    />
+    <AdminPanel title="Reorder fulfilled" subtitle="Stock allocated to the partner request.">
+      <div className="admin-status-row">
+        <AdminStatusChip label={humanizeAdminLabel(result.status)} tone="active" />
+      </div>
+      <AdminKpiStrip
+        items={[{ label: 'Codes allocated', value: result.allocated.toLocaleString() }]}
+      />
+      <AdminDetailGrid>
+        <AdminDetailField label="Reorder" value={result.reorderId} mono />
+        <AdminDetailField label="Location" value={result.locationId} mono />
+        <AdminDetailField label="Status" value={result.status} mono />
+      </AdminDetailGrid>
+    </AdminPanel>
   );
 }

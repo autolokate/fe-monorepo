@@ -4,7 +4,7 @@ export type AdminPanelProps = {
   title?: string;
   subtitle?: string;
   meta?: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
 };
 
@@ -12,7 +12,10 @@ export type AdminPanelProps = {
 export function AdminPanel({ title, subtitle, meta, children, className }: AdminPanelProps) {
   const hasHeader = Boolean(title || subtitle || meta);
   return (
-    <section className={['admin-panel', className].filter(Boolean).join(' ')}>
+    <section
+      className={['admin-panel', className].filter(Boolean).join(' ')}
+      aria-label={title || undefined}
+    >
       {hasHeader ? (
         <header className="admin-panel__header">
           <div>

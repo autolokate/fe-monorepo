@@ -118,7 +118,7 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
       onOpenChange={onOpenChange}
       size="xl"
       title="New SKU"
-      description="A SKU is a shelf: the tiers you list here are the only ones sellable against its stock."
+      description="A product shelf lists which plan tiers can sell against its stock."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -148,172 +148,180 @@ export function CreateSkuSheet({ open, onOpenChange, plans, onCreated }: CreateS
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- form-level Enter-to-submit handler; the submit button lives in the sheet footer and is associated via the form attribute, so this keyboard handler is legitimate form interaction */}
       <form
         id="create-sku-form"
-        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
         onKeyDown={handleFormKeyDown}
       >
         <AlStack gap="md">
-          <Controller
-            control={form.control}
-            name="skuCode"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="SKU code"
-                mono
-                data-testid="sku-create-code"
-                value={field.value}
-                onChange={(event) => {
-                  field.onChange(event.target.value.toUpperCase());
-                }}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Immutable after create — e.g. SKU-B2C-SHIELD."
-                autoComplete="off"
-              />
-            )}
-          />
+          <div className="admin-form-grid">
+            <Controller
+              control={form.control}
+              name="skuCode"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Product code"
+                  mono
+                  data-testid="sku-create-code"
+                  value={field.value}
+                  onChange={(event) => {
+                    field.onChange(event.target.value.toUpperCase());
+                  }}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Locked after create — e.g. SKU-B2C-SHIELD."
+                  autoComplete="off"
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="channel"
-            render={({ field, fieldState }) => (
-              <AlSelect
-                label="Channel"
-                options={CHANNEL_OPTIONS}
-                value={field.value}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                  field.onChange(event.target.value);
-                }}
-                errorText={fieldState.error?.message}
-                helperText="Immutable after create — a batch freezes its channel at generate."
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="channel"
+              render={({ field, fieldState }) => (
+                <AlSelect
+                  label="Channel"
+                  options={CHANNEL_OPTIONS}
+                  value={field.value}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                    field.onChange(event.target.value);
+                  }}
+                  errorText={fieldState.error?.message}
+                  helperText="Locked after create — batches keep this channel."
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="offeredTiers"
-            render={({ field, fieldState }) => (
-              <ShelfTierPicker
-                selectableTiers={selectableTiers}
-                value={field.value}
-                onChange={field.onChange}
-                errorText={fieldState.error?.message}
-                disabled={createSkuMutation.isPending}
+            <div className="admin-form-span">
+              <Controller
+                control={form.control}
+                name="offeredTiers"
+                render={({ field, fieldState }) => (
+                  <ShelfTierPicker
+                    selectableTiers={selectableTiers}
+                    value={field.value}
+                    onChange={field.onChange}
+                    errorText={fieldState.error?.message}
+                    disabled={createSkuMutation.isPending}
+                  />
+                )}
               />
-            )}
-          />
+            </div>
 
-          <Controller
-            control={form.control}
-            name="defaultPlanId"
-            render={({ field, fieldState }) => (
-              <AlSelect
-                label="Default plan"
-                data-testid="sku-create-default-plan"
-                placeholder={
-                  offeredTiers.length === 0
-                    ? 'Put a tier on the shelf first'
-                    : 'Select default plan'
-                }
-                options={defaultPlanOptions}
-                value={field.value}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                  field.onChange(event.target.value);
-                }}
-                disabled={defaultPlanOptions.length === 0}
-                errorText={fieldState.error?.message}
-                helperText="Only live plans whose tier is on this shelf. The server derives the plan version — never send it."
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="defaultPlanId"
+              render={({ field, fieldState }) => (
+                <AlSelect
+                  label="Default plan"
+                  data-testid="sku-create-default-plan"
+                  placeholder={
+                    offeredTiers.length === 0
+                      ? 'Put a tier on the shelf first'
+                      : 'Select default plan'
+                  }
+                  options={defaultPlanOptions}
+                  value={field.value}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                    field.onChange(event.target.value);
+                  }}
+                  disabled={defaultPlanOptions.length === 0}
+                  errorText={fieldState.error?.message}
+                  helperText="Only live plans whose tier is on this shelf."
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="listPriceRupees"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="List price (₹)"
-                inputMode="decimal"
-                data-testid="sku-create-list-price"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="What the sticker costs. Up to 2 decimal places."
-                autoComplete="off"
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="listPriceRupees"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="List price (₹)"
+                  inputMode="decimal"
+                  data-testid="sku-create-list-price"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="What the sticker costs. Up to 2 decimal places."
+                  autoComplete="off"
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="riderDefault"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Rider default"
-                type="number"
-                min={0}
-                max={10}
-                value={field.value}
-                onChange={(event) => {
-                  field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
-                }}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Riders bundled with the plan by default."
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="riderDefault"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Rider default"
+                  type="number"
+                  min={0}
+                  max={10}
+                  value={field.value}
+                  onChange={(event) => {
+                    field.onChange(event.target.value === '' ? 0 : event.target.valueAsNumber);
+                  }}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Riders bundled with the plan by default."
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="sponsorOrgId"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Sponsor organization"
-                mono
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Optional. Immutable after create. Leave empty for an unsponsored SKU."
-                autoComplete="off"
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="sponsorOrgId"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  className="admin-form-span"
+                  label="Sponsor organization"
+                  mono
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Optional. Locked after create. Leave empty if unsponsored."
+                  autoComplete="off"
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="prepaid"
-            render={({ field }) => (
-              <AlCheckbox
-                label="Prepaid"
-                helperText="Stock is paid for up front (B2B fleet). Immutable after create."
-                checked={field.value}
-                onChange={(event) => {
-                  field.onChange(event.target.checked);
-                }}
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="prepaid"
+              render={({ field }) => (
+                <div className="admin-form-span">
+                  <AlCheckbox
+                    label="Prepaid"
+                    helperText="Stock is paid for up front (fleet). Locked after create."
+                    checked={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.checked);
+                    }}
+                  />
+                </div>
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="active"
-            render={({ field }) => (
-              <AlCheckbox
-                label="Accepting new batches"
-                helperText="Controls whether NEW batches may be manufactured against this SKU. It does not stop stock already printed from selling."
-                checked={field.value}
-                onChange={(event) => {
-                  field.onChange(event.target.checked);
-                }}
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="active"
+              render={({ field }) => (
+                <div className="admin-form-span">
+                  <AlCheckbox
+                    label="Accepting new batches"
+                    helperText="Turn off to stop new batches. Printed stock can still sell."
+                    checked={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.checked);
+                    }}
+                  />
+                </div>
+              )}
+            />
+          </div>
 
           {submitError ? <p className="admin-form-error">{submitError}</p> : null}
         </AlStack>

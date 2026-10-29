@@ -108,18 +108,18 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
 
   const pinnedSkuCode = b2bSkuCodeForPlan(planTier);
   const skuHelper = skusQuery.isError
-    ? 'Could not load SKUs. Retry by reopening this sheet.'
+    ? 'Could not load products. Retry by reopening this sheet.'
     : skusQuery.isFetching
-      ? `Loading ${channel} SKUs…`
+      ? `Loading ${channel} products…`
       : channel === 'B2B'
         ? !planTier
-          ? 'Select a plan tier — the matching B2B SKU is applied automatically.'
+          ? 'Select a plan tier — the matching product is applied automatically.'
           : skuOptions.length === 0
-            ? `No ${pinnedSkuCode ?? 'matching B2B SKU'} in catalog. Run scripts/seed-skus.sql.`
-            : 'Pinned to the selected plan tier (ops catalog).'
+            ? `No ${pinnedSkuCode ?? 'matching product'} in catalog for this plan.`
+            : 'Pinned to the selected plan tier.'
         : skuOptions.length === 0
-          ? `No active ${channel} SKUs. Seed the catalog first.`
-          : `Only ${channel} SKUs — changes when you switch channel.`;
+          ? `No active ${channel} products. Add them in Catalog first.`
+          : `Only ${channel} products — changes when you switch channel.`;
 
   const canSubmit =
     !createBatchMutation.isPending &&
@@ -158,7 +158,7 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
       onOpenChange={onOpenChange}
       size="xl"
       title="Create batch"
-      description="Set up a new QR batch in draft status. The server mints the batch code; sticker codes stay short and opaque."
+      description="Start a draft QR batch. The batch code is assigned for you; sticker codes stay short."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -193,87 +193,89 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
         onKeyDown={handleFormKeyDown}
       >
         <AlStack gap="md">
-          <Controller
-            control={form.control}
-            name="channel"
-            render={({ field, fieldState }) => (
-              <AlSelect
-                label="Channel"
-                options={[...CHANNEL_OPTIONS]}
-                value={field.value}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                  field.onChange(event.target.value);
-                }}
-                errorText={fieldState.error?.message}
-                helperText="Go-to-market channel (immutable once frozen)."
-              />
-            )}
-          />
-
-          {channel === 'B2B' ? (
+          <div className="admin-form-grid">
             <Controller
               control={form.control}
-              name="planTier"
+              name="channel"
               render={({ field, fieldState }) => (
                 <AlSelect
-                  label="Plan tier"
-                  placeholder="Select plan tier"
-                  options={[...PLAN_TIER_OPTIONS]}
-                  value={field.value ?? ''}
+                  label="Channel"
+                  options={[...CHANNEL_OPTIONS]}
+                  value={field.value}
                   onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                    field.onChange(event.target.value || undefined);
+                    field.onChange(event.target.value);
                   }}
                   errorText={fieldState.error?.message}
-                  helperText="Embedded in the ops batch code (e.g. B2B-500-10072026-SECURE)."
+                  helperText="Sales channel — locked once the batch is frozen."
                 />
               )}
             />
-          ) : null}
 
-          <Controller
-            control={form.control}
-            name="skuId"
-            render={({ field, fieldState }) => (
-              <AlSelect
-                label="SKU"
-                placeholder={
-                  channel === 'B2B' && !planTier ? 'Select plan tier first' : 'Select SKU'
-                }
-                options={skuOptions}
-                value={field.value}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                  field.onChange(event.target.value);
-                }}
-                disabled={
-                  skusQuery.isFetching ||
-                  skuOptions.length === 0 ||
-                  (channel === 'B2B' && !planTier)
-                }
-                errorText={fieldState.error?.message}
-                helperText={skuHelper}
+            {channel === 'B2B' ? (
+              <Controller
+                control={form.control}
+                name="planTier"
+                render={({ field, fieldState }) => (
+                  <AlSelect
+                    label="Plan tier"
+                    placeholder="Select plan tier"
+                    options={[...PLAN_TIER_OPTIONS]}
+                    value={field.value ?? ''}
+                    onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                      field.onChange(event.target.value || undefined);
+                    }}
+                    errorText={fieldState.error?.message}
+                    helperText="Included in the batch code name."
+                  />
+                )}
               />
-            )}
-          />
+            ) : null}
 
-          <Controller
-            control={form.control}
-            name="totalCount"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Total count"
-                type="number"
-                min={1}
-                max={100_000}
-                value={field.value}
-                onChange={(event) => {
-                  field.onChange(event.target.valueAsNumber);
-                }}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="How many codes to generate (1–100,000)."
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="skuId"
+              render={({ field, fieldState }) => (
+                <AlSelect
+                  label="SKU"
+                  placeholder={
+                    channel === 'B2B' && !planTier ? 'Select plan tier first' : 'Select SKU'
+                  }
+                  options={skuOptions}
+                  value={field.value}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                    field.onChange(event.target.value);
+                  }}
+                  disabled={
+                    skusQuery.isFetching ||
+                    skuOptions.length === 0 ||
+                    (channel === 'B2B' && !planTier)
+                  }
+                  errorText={fieldState.error?.message}
+                  helperText={skuHelper}
+                />
+              )}
+            />
+
+            <Controller
+              control={form.control}
+              name="totalCount"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Total count"
+                  type="number"
+                  min={1}
+                  max={100_000}
+                  value={field.value}
+                  onChange={(event) => {
+                    field.onChange(event.target.valueAsNumber);
+                  }}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="How many codes to generate (1–100,000)."
+                />
+              )}
+            />
+          </div>
 
           {submitError ? <AlText role="alert">{submitError}</AlText> : null}
         </AlStack>

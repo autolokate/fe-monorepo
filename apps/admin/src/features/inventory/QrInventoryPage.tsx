@@ -20,6 +20,7 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { AdminMoreActions } from '@/platform/components/AdminMoreActions';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import {
   useCanRunQrLifecycleMutations,
   useCanWriteInventoryMutations,
@@ -48,7 +49,7 @@ export function QrInventoryPage() {
   );
 
   const columns = useInventoryColumns();
-  const batches = data ?? [];
+  const batches = useMemo(() => data ?? [], [data]);
 
   const handleBatchCreated = useCallback(
     (batch: BatchSummaryDto) => {
@@ -57,7 +58,18 @@ export function QrInventoryPage() {
     [openBatch],
   );
 
-  const pageDescription = 'Browse QR batches and open a row to manage codes.';
+  const pageDescription = 'Browse QR stock batches and open a row to manage codes.';
+
+  const kpiItems = useMemo(() => {
+    if (batches.length === 0) return [];
+    const totalCodes = batches.reduce((sum, batch) => sum + batch.totalCount, 0);
+    const generated = batches.reduce((sum, batch) => sum + batch.generatedCount, 0);
+    return [
+      { label: 'Batches (page)', value: String(batches.length) },
+      { label: 'Codes', value: totalCodes.toLocaleString() },
+      { label: 'Generated', value: generated.toLocaleString() },
+    ];
+  }, [batches]);
 
   const moreActions = useMemo(
     () =>
@@ -116,6 +128,8 @@ export function QrInventoryPage() {
           }
         />
 
+        {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
+
         <AdminDataBlock
           filters={
             <AdminFilterField label="Status">
@@ -155,7 +169,7 @@ export function QrInventoryPage() {
           open={sweepConfirmOpen}
           onOpenChange={setSweepConfirmOpen}
           title="Run auto detach sweep"
-          description="Reclaim unclaimed or unpaid attaches past the TTL and void provisional commission."
+          description="Reclaim QR attaches that were never claimed or paid after the wait window, and cancel any pending commission."
           confirmLabel="Run sweep"
           loading={sweepMutation.isPending}
           onConfirm={() => {

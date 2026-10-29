@@ -95,7 +95,7 @@ export function TaxiProvisionSheet({ open, onOpenChange }: TaxiProvisionSheetPro
             <input
               data-testid="taxi-provision-account-id"
               value={form.accountId}
-              placeholder="Account UUID"
+              placeholder="Customer account id"
               onChange={(event) => {
                 setForm({ ...form, accountId: event.target.value });
               }}

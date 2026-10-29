@@ -121,9 +121,7 @@ test.describe('Garage commercial (hermetic)', () => {
 
     await dialog.getByLabel('Organization id').fill(HERMETIC_GARAGE_ORG_ID);
     await dialog.getByTestId('garage-grant-kind').selectOption('DAY');
-    await dialog
-      .getByLabel('Idempotency key (optional UUID)')
-      .fill(HERMETIC_GARAGE_IDEMPOTENCY_KEY);
+    await dialog.getByLabel('Optional request key').fill(HERMETIC_GARAGE_IDEMPOTENCY_KEY);
     await dialog.getByRole('button', { name: 'Grant pass' }).click();
 
     await expect(page.getByRole('status')).toContainText('Garage pass granted.', {

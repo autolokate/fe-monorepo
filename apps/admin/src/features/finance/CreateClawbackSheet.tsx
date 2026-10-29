@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ClawbackResultDto } from '@autolokate/api-client';
-import { AlButton, AlInput, AlModal } from '@autolokate/ui';
+import { AlButton, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -9,7 +9,12 @@ import {
   type CreateClawbackFormValues,
 } from '@/features/finance/create-clawback-schema';
 import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations';
-import { AdminMutationResultPanel } from '@/platform/components/AdminMutationResultPanel';
+import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
+import {
+  AdminPanel,
+  AdminStatusChip,
+  humanizeAdminLabel,
+} from '@/platform/components/AdminWowSurface';
 
 export type CreateClawbackSheetProps = {
   open: boolean;
@@ -55,13 +60,15 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
     }
   });
 
+  const paymentRefError = form.formState.errors.paymentRef?.message;
+
   return (
     <AlModal
       open={open}
       onOpenChange={onOpenChange}
       size="md"
       title="Create clawback"
-      description="Reverse a captured payment and claw back its commission."
+      description="Reverse a captured payment and recover its commission."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -90,20 +97,26 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
     >
       <form
         id="create-clawback-form"
-        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <AlInput
-          label="Payment reference"
-          mono
-          autoComplete="off"
-          data-testid="clawback-payment-ref"
-          {...form.register('paymentRef')}
-          errorText={form.formState.errors.paymentRef?.message}
-          helperText="Opaque PaymentRef of the CAPTURED payment to reverse."
-        />
+        <div className="admin-form-grid">
+          <label className="admin-field admin-form-span">
+            Payment reference
+            <input
+              data-testid="clawback-payment-ref"
+              autoComplete="off"
+              {...form.register('paymentRef')}
+            />
+            <span className="admin-field__hint">Reference of the captured payment to reverse.</span>
+            {paymentRefError ? (
+              <span className="admin-form-error" role="alert">
+                {paymentRefError}
+              </span>
+            ) : null}
+          </label>
+        </div>
 
         {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>
@@ -113,13 +126,18 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
 
 export function ClawbackResultPanel({ result }: { result: ClawbackResultDto }) {
   return (
-    <AdminMutationResultPanel
-      title="Clawback result"
-      fields={[
-        { label: 'Payment reference', value: result.paymentRef },
-        { label: 'Payment state', value: result.paymentState },
-        { label: 'Commission status', value: result.commissionStatus ?? '—' },
-      ]}
-    />
+    <AdminPanel title="Clawback result" subtitle="Outcome of the clawback you just ran.">
+      <div className="admin-status-row">
+        <AdminStatusChip label={humanizeAdminLabel(result.paymentState)} tone="neutral" />
+        {result.commissionStatus ? (
+          <AdminStatusChip label={humanizeAdminLabel(result.commissionStatus)} tone="neutral" />
+        ) : null}
+      </div>
+      <AdminDetailGrid>
+        <AdminDetailField label="Payment reference" value={result.paymentRef} mono />
+        <AdminDetailField label="Payment state" value={result.paymentState} mono />
+        <AdminDetailField label="Commission" value={result.commissionStatus ?? '—'} mono />
+      </AdminDetailGrid>
+    </AdminPanel>
   );
 }

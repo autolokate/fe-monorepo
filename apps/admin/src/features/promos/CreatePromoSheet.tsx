@@ -86,7 +86,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
       onOpenChange={onOpenChange}
       size="xl"
       title="Create promo"
-      description="Configure a new promotional campaign."
+      description="Set the code, discount, and limits customers see at checkout."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -115,30 +115,30 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
     >
       <form
         id="create-promo-form"
-        className="admin-form-stack"
         onSubmit={(event) => {
           void onSubmit(event);
         }}
       >
-        <Controller
-          control={form.control}
-          name="code"
-          render={({ field, fieldState }) => (
-            <AlInput
-              label="Promo code"
-              mono
-              data-testid="promo-create-code"
-              value={field.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              errorText={fieldState.error?.message}
-              helperText="Unique code customers enter at checkout."
-              autoComplete="off"
-            />
-          )}
-        />
+        <div className="admin-form-grid">
+          <Controller
+            control={form.control}
+            name="code"
+            render={({ field, fieldState }) => (
+              <AlInput
+                className="admin-form-span"
+                label="Promo code"
+                mono
+                data-testid="promo-create-code"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                errorText={fieldState.error?.message}
+                helperText="Unique code customers enter at checkout."
+                autoComplete="off"
+              />
+            )}
+          />
 
-        <div className="promo-form-grid">
           <Controller
             control={form.control}
             name="discountPercent"
@@ -156,7 +156,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
                 }}
                 onBlur={field.onBlur}
                 errorText={fieldState.error?.message}
-                helperText="1–100. Flat rupee amount takes precedence when both are set."
+                helperText="1–100. Flat rupee amount wins when both are set."
               />
             )}
           />
@@ -177,9 +177,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
               />
             )}
           />
-        </div>
 
-        <div className="promo-form-grid">
           <Controller
             control={form.control}
             name="validFrom"
@@ -209,9 +207,7 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
               />
             )}
           />
-        </div>
 
-        <div className="promo-form-grid">
           <Controller
             control={form.control}
             name="maxRedemptions"
@@ -251,21 +247,23 @@ export function CreatePromoSheet({ open, onOpenChange, onCreated }: CreatePromoS
               />
             )}
           />
-        </div>
 
-        <Controller
-          control={form.control}
-          name="active"
-          render={({ field }) => (
-            <AlCheckbox
-              label="Active on creation"
-              checked={field.value}
-              onChange={(event) => {
-                field.onChange(event.target.checked);
-              }}
-            />
-          )}
-        />
+          <Controller
+            control={form.control}
+            name="active"
+            render={({ field }) => (
+              <div className="admin-form-span">
+                <AlCheckbox
+                  label="Active on creation"
+                  checked={field.value}
+                  onChange={(event) => {
+                    field.onChange(event.target.checked);
+                  }}
+                />
+              </div>
+            )}
+          />
+        </div>
 
         {submitError ? <p className="admin-form-error">{submitError}</p> : null}
       </form>

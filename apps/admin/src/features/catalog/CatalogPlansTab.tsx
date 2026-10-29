@@ -1,5 +1,5 @@
 import type { AdminPlanDto } from '@autolokate/api-client';
-import { AlConfirmationDialog, AlDataTable, AlStack, AlText } from '@autolokate/ui';
+import { AlConfirmationDialog, AlDataTable, AlStack } from '@autolokate/ui';
 import { useCallback, useState } from 'react';
 
 import { PLAN_TIER_FILTERS } from '@/features/catalog/catalog-filters';
@@ -73,13 +73,10 @@ export function CatalogPlansTab({
 
   return (
     <AlStack gap="md">
-      <AlText variant="caption" tone="muted">
-        Plan versions are immutable — there is no price or name edit, by design. A Subscription pins
-        the version it was sold on, so changing a live price in place would retro-reprice customers
-        who already paid. To change a price, mint a new version; the outgoing one stays here, still
-        pricing its subscribers. Feature bullets are the exception: they belong to a version and are
-        editable in place.
-      </AlText>
+      <p className="admin-empty-note">
+        Prices and names are locked once live — create a new version to change them. Feature bullets
+        on a version can still be edited.
+      </p>
 
       <AdminDataBlock
         filters={

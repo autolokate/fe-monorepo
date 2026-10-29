@@ -103,7 +103,7 @@ export function CreatePlanVersionSheet({
       onOpenChange={onOpenChange}
       size="xl"
       title="New plan version"
-      description="Plans are immutable. Changing a price or a name mints a new version — this is the only way to do it."
+      description="Create a new priced version of a plan. Existing customers stay on the version they bought."
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -113,7 +113,7 @@ export function CreatePlanVersionSheet({
             loading={createPlanVersionMutation.isPending}
             disabled={createPlanVersionMutation.isPending}
           >
-            Mint version
+            Create version
           </AlButton>
           <AlButton
             type="button"
@@ -138,116 +138,120 @@ export function CreatePlanVersionSheet({
         onKeyDown={handleFormKeyDown}
       >
         <AlStack gap="md">
-          <AlText variant="caption" tone="muted">
-            A live Subscription pins the plan version it was sold on, so an existing version can
-            never be repriced — customers who already paid would be retro-repriced. Minting{' '}
-            {planTierLabel(tier)} v{String(nextVersion)} leaves every current subscriber on their
-            own version, and copies the outgoing version&apos;s feature bullets forward.
-          </AlText>
+          <p className="admin-empty-note">
+            Creating {planTierLabel(tier)} v{String(nextVersion)} keeps current subscribers on their
+            existing price and carries feature bullets forward.
+          </p>
 
-          <Controller
-            control={form.control}
-            name="tier"
-            render={({ field, fieldState }) => (
-              <AlSelect
-                label="Tier"
-                options={TIER_OPTIONS}
-                value={field.value}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) => {
-                  field.onChange(event.target.value);
-                }}
-                errorText={fieldState.error?.message}
-                helperText={
-                  outgoing
-                    ? `Currently live: ${formatPlanRef(outgoing)} at ${formatPaiseAsRupees(outgoing.pricePaise)}.`
-                    : 'No live version on this tier yet.'
-                }
-              />
-            )}
-          />
+          <div className="admin-form-grid">
+            <Controller
+              control={form.control}
+              name="tier"
+              render={({ field, fieldState }) => (
+                <AlSelect
+                  label="Tier"
+                  options={TIER_OPTIONS}
+                  value={field.value}
+                  onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+                    field.onChange(event.target.value);
+                  }}
+                  errorText={fieldState.error?.message}
+                  helperText={
+                    outgoing
+                      ? `Currently live: ${formatPlanRef(outgoing)} at ${formatPaiseAsRupees(outgoing.pricePaise)}.`
+                      : 'No live version on this tier yet.'
+                  }
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="name"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Name"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Shown on the plan card."
-                autoComplete="off"
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="name"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Name"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Shown on the plan card."
+                  autoComplete="off"
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="priceRupees"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Price (₹)"
-                inputMode="decimal"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Up to 2 decimal places."
-                autoComplete="off"
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="priceRupees"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Price (₹)"
+                  inputMode="decimal"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Up to 2 decimal places."
+                  autoComplete="off"
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="effectiveFrom"
-            render={({ field, fieldState }) => (
-              <AlInput
-                label="Effective from"
-                type="datetime-local"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                errorText={fieldState.error?.message}
-                helperText="Leave empty to let the server publish it immediately."
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="effectiveFrom"
+              render={({ field, fieldState }) => (
+                <AlInput
+                  label="Effective from"
+                  type="datetime-local"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  errorText={fieldState.error?.message}
+                  helperText="Leave empty to publish immediately."
+                />
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="riderEligible"
-            render={({ field }) => (
-              <AlCheckbox
-                label="Rider eligible"
-                checked={field.value}
-                onChange={(event) => {
-                  field.onChange(event.target.checked);
-                }}
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="riderEligible"
+              render={({ field }) => (
+                <div className="admin-form-span">
+                  <AlCheckbox
+                    label="Rider eligible"
+                    checked={field.value}
+                    onChange={(event) => {
+                      field.onChange(event.target.checked);
+                    }}
+                  />
+                </div>
+              )}
+            />
 
-          <Controller
-            control={form.control}
-            name="retireCurrent"
-            render={({ field }) => (
-              <AlCheckbox
-                label="Retire the currently live version"
-                helperText={
-                  outgoing
-                    ? `Stamps ${formatPlanRef(outgoing)} with an end date in the same transaction. Existing subscribers keep their pinned version and price.`
-                    : 'Nothing to retire on this tier yet.'
-                }
-                checked={field.value}
-                disabled={!outgoing}
-                onChange={(event) => {
-                  field.onChange(event.target.checked);
-                }}
-              />
-            )}
-          />
+            <Controller
+              control={form.control}
+              name="retireCurrent"
+              render={({ field }) => (
+                <div className="admin-form-span">
+                  <AlCheckbox
+                    label="Retire the currently live version"
+                    helperText={
+                      outgoing
+                        ? `Ends ${formatPlanRef(outgoing)} when this version goes live. Existing customers keep their price.`
+                        : 'Nothing to retire on this tier yet.'
+                    }
+                    checked={field.value}
+                    disabled={!outgoing}
+                    onChange={(event) => {
+                      field.onChange(event.target.checked);
+                    }}
+                  />
+                </div>
+              )}
+            />
+          </div>
 
           {submitError ? <AlText role="alert">{submitError}</AlText> : null}
         </AlStack>
