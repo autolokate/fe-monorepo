@@ -210,6 +210,10 @@ export {
   type ProvisionGarageResultDto,
   publishGarageStore,
   type PublishGarageStoreResultDto,
+  setGarageGstVerification,
+  type GarageGstVerification,
+  type SetGarageGstVerificationBody,
+  type GarageStoreDto,
 } from './garage';
 export {
   getTaxiPolicy,

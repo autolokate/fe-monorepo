@@ -3,13 +3,16 @@ import {
   grantGaragePass,
   provisionGarage,
   publishGarageStore,
+  setGarageGstVerification,
   type AdjustGarageFreeBidsBody,
   type GarageFreeBidsBalanceDto,
   type GaragePassGrantResultDto,
+  type GarageStoreDto,
   type GrantGaragePassBody,
   type ProvisionGarageBody,
   type ProvisionGarageResultDto,
   type PublishGarageStoreResultDto,
+  type SetGarageGstVerificationBody,
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
@@ -46,4 +49,13 @@ export async function submitGaragePublishStore(
   signal?: AbortSignal,
 ): Promise<PublishGarageStoreResultDto> {
   return publishGarageStore(getAdminApiClient(), orgId, { signal });
+}
+
+/** POST /admin/v1/garage/orgs/{orgId}/gst-verification — set store GST status. */
+export async function submitGarageGstVerification(
+  orgId: string,
+  body: SetGarageGstVerificationBody,
+  signal?: AbortSignal,
+): Promise<GarageStoreDto> {
+  return setGarageGstVerification(getAdminApiClient(), orgId, body, { signal });
 }

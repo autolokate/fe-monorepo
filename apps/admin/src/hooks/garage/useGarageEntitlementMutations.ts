@@ -5,6 +5,7 @@ import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { showSuccessToast } from '@/platform/feedback/toast';
 import {
   submitGarageFreeBidsAdjust,
+  submitGarageGstVerification,
   submitGaragePassGrant,
   submitGarageProvision,
   submitGaragePublishStore,
@@ -78,11 +79,31 @@ export function useGarageEntitlementMutations() {
     },
   });
 
+  const setGstVerificationMutation = useMutation({
+    mutationFn: ({
+      orgId,
+      body,
+      signal,
+    }: {
+      orgId: string;
+      body: Parameters<typeof submitGarageGstVerification>[1];
+      signal?: AbortSignal;
+    }) => submitGarageGstVerification(orgId, body, signal),
+    retry: 0,
+    onSuccess: (result) => {
+      showSuccessToast(`GST verification set to ${result.gstVerification}.`);
+    },
+    onError: (error) => {
+      reportAdminApiError(error, { context: 'garage-gst-verification', toast: true });
+    },
+  });
+
   return {
     grantPassMutation,
     adjustFreeBidsMutation,
     provisionGarageMutation,
     publishStoreMutation,
+    setGstVerificationMutation,
     mapMutationError: mapAdminApiError,
   };
 }

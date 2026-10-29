@@ -2075,6 +2075,18 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    if (method === 'PUT' && path === '/admin/v1/services/hub-categories') {
+      const body = JSON.parse(req.postData() ?? '{}') as { items?: unknown };
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          items: Array.isArray(body.items) ? body.items : [],
+        }),
+      );
+      return;
+    }
+
     if (method === 'GET' && path === '/admin/v1/services/providers') {
       capture.servicesProvidersGet.push({ method, path, category: null });
       if (servicesProvidersGetStatus >= 400) {

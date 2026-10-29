@@ -8,6 +8,7 @@ import {
   grantGaragePass,
   listGarageCommercialConfigHistory,
   provisionGarage,
+  setGarageGstVerification,
   updateGarageCommercialConfig,
 } from './garage';
 
@@ -186,5 +187,40 @@ describe('garage commercial + entitlement admin client', () => {
     const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
     expect(String(url)).toContain(endpoints.admin.garageProvision);
     expect(init.method).toBe('POST');
+  });
+
+  it('POSTs garage GST verification with OpenAPI body shape', async () => {
+    const fetchImpl = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            data: {
+              id: '33333333-3333-4333-8333-333333333333',
+              orgId: 'org-1',
+              name: 'Kapil Motors',
+              phone: null,
+              status: 'DRAFT',
+              businessSubmitted: false,
+              gstVerification: 'VERIFIED',
+              onboarded: false,
+            },
+            meta: { requestId: 'r', correlationId: 'c' },
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+    );
+    const client = new ApiClient({
+      baseUrl: 'https://example.test',
+      fetch: fetchImpl as unknown as typeof fetch,
+      getAccessToken: () => 'token',
+    });
+    const result = await setGarageGstVerification(client, 'org-1', {
+      gstVerification: 'VERIFIED',
+    });
+    expect(result.gstVerification).toBe('VERIFIED');
+    const [url, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
+    expect(String(url)).toContain(endpoints.admin.garageOrgGstVerification('org-1'));
+    expect(init.method).toBe('POST');
+    expect(JSON.parse(String(init.body))).toEqual({ gstVerification: 'VERIFIED' });
   });
 });

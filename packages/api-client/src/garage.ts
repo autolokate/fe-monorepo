@@ -213,3 +213,40 @@ export async function publishGarageStore(
   );
   return unwrapEnvelope(response) as PublishGarageStoreResultDto;
 }
+
+/** OpenAPI `GarageStoreDto.gstVerification` */
+export type GarageGstVerification = 'NOT_SUBMITTED' | 'PENDING' | 'VERIFIED' | 'NEEDS_ATTENTION';
+
+/** OpenAPI `AdminSetGarageGstVerificationDto` */
+export type SetGarageGstVerificationBody = {
+  gstVerification: GarageGstVerification;
+};
+
+/** OpenAPI `GarageStoreDto` (admin GST / store entitlement subset). */
+export type GarageStoreDto = {
+  id: string;
+  orgId: string;
+  name: string | null;
+  phone: string | null;
+  status: 'DRAFT' | 'PUBLISHED';
+  businessSubmitted: boolean;
+  gstVerification: GarageGstVerification;
+  onboarded: boolean;
+};
+
+/** POST /admin/v1/garage/orgs/{orgId}/gst-verification — OPERATOR. */
+export async function setGarageGstVerification(
+  client: ApiClient,
+  orgId: string,
+  body: SetGarageGstVerificationBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageStoreDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.garageOrgGstVerification(orgId),
+    body,
+    {
+      ...(options.signal ? { signal: options.signal } : {}),
+    },
+  );
+  return unwrapEnvelope(response) as GarageStoreDto;
+}

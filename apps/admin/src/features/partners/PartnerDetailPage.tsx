@@ -1,12 +1,15 @@
+import type { GarageGstVerification } from '@autolokate/api-client';
 import {
   AlBreadcrumb,
   AlButton,
   AlErrorState,
   AlPageHeader,
   AlPageHeaderAction,
+  AlSelect,
   AlStack,
   AlText,
 } from '@autolokate/ui';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
@@ -19,6 +22,22 @@ import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './partners.css';
+
+const GST_OPTIONS: { value: GarageGstVerification; label: string }[] = [
+  { value: 'NOT_SUBMITTED', label: 'Not submitted' },
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'VERIFIED', label: 'Verified' },
+  { value: 'NEEDS_ATTENTION', label: 'Needs attention' },
+];
+
+function isGarageGstVerification(value: string | null | undefined): value is GarageGstVerification {
+  return (
+    value === 'NOT_SUBMITTED' ||
+    value === 'PENDING' ||
+    value === 'VERIFIED' ||
+    value === 'NEEDS_ATTENTION'
+  );
+}
 
 function humanLabel(value: string): string {
   return value
@@ -58,7 +77,20 @@ export function PartnerDetailPage() {
   const navigate = useNavigate();
   const canWrite = useAdminPermission('partners:write');
   const { partner, isLoading, isFetching, userErrorMessage, refresh } = usePartnerDetail(orgId);
-  const { publishStoreMutation, mapMutationError } = useGarageEntitlementMutations();
+  const { publishStoreMutation, setGstVerificationMutation, mapMutationError } =
+    useGarageEntitlementMutations();
+
+  const [gstDraft, setGstDraft] = useState<GarageGstVerification>('NOT_SUBMITTED');
+  const [gstApplied, setGstApplied] = useState<GarageGstVerification | null>(null);
+
+  useEffect(() => {
+    if (!partner) return;
+    const fromDto = isGarageGstVerification(partner.gstVerification)
+      ? partner.gstVerification
+      : null;
+    const next = gstApplied ?? fromDto ?? 'NOT_SUBMITTED';
+    setGstDraft(next);
+  }, [partner, gstApplied]);
 
   if (userErrorMessage && !partner) {
     return (
@@ -76,14 +108,23 @@ export function PartnerDetailPage() {
     );
   }
 
+  const isGarageStorePartner = partner.partnerKind === 'GARAGE' || partner.partnerKind === 'STORE';
   const canPublishStore =
     canWrite &&
     Boolean(partner.storeId) &&
     partner.storeStatus !== 'PUBLISHED' &&
-    (partner.partnerKind === 'GARAGE' || partner.partnerKind === 'STORE');
+    isGarageStorePartner;
+  const showGstPanel = isGarageStorePartner && Boolean(partner.storeId);
+
+  const currentGst =
+    gstApplied ??
+    (isGarageGstVerification(partner.gstVerification) ? partner.gstVerification : null);
 
   const publishError = publishStoreMutation.isError
     ? mapMutationError(publishStoreMutation.error).userMessage
+    : null;
+  const gstError = setGstVerificationMutation.isError
+    ? mapMutationError(setGstVerificationMutation.error).userMessage
     : null;
 
   const pageDescription = partner.storeStatus
@@ -156,11 +197,77 @@ export function PartnerDetailPage() {
               value={partner.storeStatus ? humanLabel(partner.storeStatus) : '—'}
             />
             <DetailField
+              label="GST verification"
+              value={currentGst ? humanLabel(currentGst) : '—'}
+            />
+            <DetailField
               label="Cities"
               value={partner.cities?.length ? partner.cities.join(', ') : '—'}
             />
           </div>
         </section>
+
+        {showGstPanel ? (
+          <section className="admin-panel" data-testid="partners-gst-verification">
+            <div className="admin-panel__header">
+              <div>
+                <h2 className="admin-panel__title">GST verification</h2>
+                <p className="admin-panel__subtitle">
+                  Set store GST status for Nearby eligibility and ops review.
+                </p>
+              </div>
+              {currentGst ? (
+                <div className="admin-panel__meta">
+                  <span className="admin-status-chip admin-status-chip--neutral">
+                    {humanLabel(currentGst)}
+                  </span>
+                </div>
+              ) : null}
+            </div>
+            {canWrite ? (
+              <div className="partners-gst-row">
+                <AlSelect
+                  label="Status"
+                  options={GST_OPTIONS}
+                  value={gstDraft}
+                  data-testid="partners-gst-verification-select"
+                  onChange={(event) => {
+                    setGstDraft(event.target.value as GarageGstVerification);
+                  }}
+                />
+                <AlButton
+                  variant="primary"
+                  size="sm"
+                  data-testid="partners-gst-verification-apply"
+                  loading={setGstVerificationMutation.isPending}
+                  disabled={gstDraft === currentGst}
+                  onClick={() => {
+                    setGstVerificationMutation.mutate(
+                      { orgId: partner.orgId, body: { gstVerification: gstDraft } },
+                      {
+                        onSuccess: (result) => {
+                          setGstApplied(result.gstVerification);
+                          refresh();
+                        },
+                      },
+                    );
+                  }}
+                >
+                  Apply
+                </AlButton>
+              </div>
+            ) : (
+              <AlText tone="muted" variant="caption">
+                Requires partners:write to change GST status.
+              </AlText>
+            )}
+            {gstError ? (
+              <AlText tone="muted" role="alert">
+                {gstError}
+              </AlText>
+            ) : null}
+          </section>
+        ) : null}
 
         <section className="admin-panel" data-testid="partners-detail-ops">
           <div className="admin-panel__header">
