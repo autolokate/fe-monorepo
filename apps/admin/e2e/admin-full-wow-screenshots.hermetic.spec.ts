@@ -57,6 +57,12 @@ test.describe('Admin full wow screenshots (hermetic)', () => {
     await installHermeticRepliesRoutes(page);
     await installHermeticDailyDriveRoutes(page);
     await installHermeticAcademyRoutes(page);
+
+    // Login is unauthenticated — capture before seeding session.
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await page.getByText('Autolokate').first().waitFor({ timeout: 30_000 });
+    await shot(page, 'login');
+
     await seedHermeticSession(page);
 
     await gotoHeading(page, '/dashboard', 'Dashboard');

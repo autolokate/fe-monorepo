@@ -1,32 +1,165 @@
 .admin-login-page {
+  --al-admin-panel-bg: var(--al-color-surface);
+  --al-admin-panel-border: color-mix(in srgb, var(--al-color-outline) 72%, transparent);
+  --al-admin-control-bg: color-mix(in srgb, var(--al-color-on-surface) 4%, var(--al-color-surface));
+  --al-admin-control-border: color-mix(in srgb, var(--al-color-outline) 88%, transparent);
+  --al-admin-control-text: var(--al-color-on-surface);
+  --al-admin-control-placeholder: color-mix(in srgb, var(--al-color-on-surface) 48%, transparent);
+  --al-admin-hint-color: color-mix(in srgb, var(--al-color-on-surface) 58%, transparent);
+  --al-admin-label-color: color-mix(in srgb, var(--al-color-on-surface) 68%, transparent);
+
+  position: relative;
   display: flex;
   min-height: 100dvh;
   align-items: center;
   justify-content: center;
   padding: var(--al-space-6);
-  background: var(--al-color-canvas);
+  overflow: hidden;
+  background:
+    radial-gradient(
+      120% 80% at 12% 8%,
+      color-mix(in srgb, #1f6b4a 22%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      90% 70% at 88% 12%,
+      color-mix(in srgb, #2a4a6b 18%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--al-color-surface-variant) 70%, var(--al-color-canvas)) 0%,
+      var(--al-color-canvas) 48%,
+      color-mix(in srgb, var(--al-color-surface) 55%, var(--al-color-canvas)) 100%
+    );
+}
+
+[data-theme='dark'] .admin-login-page {
+  --al-admin-panel-border: color-mix(in srgb, var(--al-color-outline) 55%, transparent);
+  --al-admin-control-bg: color-mix(in srgb, var(--al-color-on-surface) 7%, var(--al-color-surface));
+  --al-admin-control-border: color-mix(in srgb, var(--al-color-outline) 70%, transparent);
+  --al-admin-control-placeholder: color-mix(in srgb, var(--al-color-on-surface) 42%, transparent);
+}
+
+[data-theme='light'] .admin-login-page {
+  --al-admin-control-bg: #fff;
+  --al-admin-control-border: color-mix(in srgb, var(--al-color-outline) 92%, transparent);
+  --al-admin-control-placeholder: color-mix(in srgb, var(--al-color-on-surface) 46%, transparent);
+}
+
+.admin-login-atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 40%,
+      color-mix(in srgb, var(--al-color-on-surface) 3%, transparent) 40.5%,
+      transparent 41%
+    ),
+    linear-gradient(
+      300deg,
+      transparent 62%,
+      color-mix(in srgb, var(--al-color-on-surface) 2.5%, transparent) 62.5%,
+      transparent 63%
+    );
+  opacity: 0.9;
 }
 
 .admin-login-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 24rem;
-  padding: var(--al-space-6);
-  border-radius: var(--al-admin-radius-panel);
-  background: var(--al-color-surface);
-  box-shadow: var(--al-admin-shadow-panel);
-  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
+  max-width: 26rem;
+  gap: var(--al-space-5);
+  padding: var(--al-space-6) var(--al-space-5);
+  box-shadow: none;
 }
 
-.admin-login-card .al-field__input {
+.admin-login-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-2);
+}
+
+.admin-login-brand__name {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: var(--al-font-weight-semibold);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--al-color-text);
+}
+
+.admin-login-brand__title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: var(--al-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--al-admin-label-color);
+}
+
+.admin-login-brand__subtitle {
+  margin: var(--al-space-1) 0 0;
+  max-width: 22rem;
+  font-size: var(--al-text-label-size);
+  line-height: var(--al-text-label-line-height);
+  color: var(--al-admin-hint-color);
+}
+
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-4);
+}
+
+.admin-login-page .admin-field input {
+  width: 100%;
   min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--al-admin-control-border);
+  border-radius: var(--al-radius-sm);
+  background: var(--al-admin-control-bg);
+  color: var(--al-admin-control-text);
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color-scheme: inherit;
+  box-shadow: none;
 }
 
-.admin-login-card .al-button {
+.admin-login-page .admin-field input::placeholder {
+  color: var(--al-admin-control-placeholder);
+  opacity: 1;
+}
+
+.admin-login-page .admin-field input:focus {
+  outline: 2px solid color-mix(in srgb, var(--al-color-focus) 28%, transparent);
+  outline-offset: 0;
+  border-color: var(--al-color-focus);
+}
+
+.admin-login-page .admin-login-form > .al-button {
   width: 100%;
+}
+
+.admin-login-otp-hint {
+  margin: 0;
+  font-size: var(--al-text-label-size);
+  color: var(--al-admin-hint-color);
+}
+
+.admin-login-otp__label {
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color);
 }
 
 .admin-login-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--al-space-2);
 }
 
@@ -36,28 +169,29 @@
   min-width: 0;
 }
 
-.admin-login-card .al-text--muted {
-  color: color-mix(in srgb, var(--al-color-on-surface) 72%, transparent);
-}
-
-.admin-login-card .al-field__input {
-  border-radius: var(--al-radius-sm);
-}
-
-.admin-login-card .al-text[variant='headline'] {
-  font-size: var(--al-text-title-size);
-  line-height: var(--al-text-title-line-height);
-  font-weight: var(--al-text-title-weight);
-  letter-spacing: var(--al-text-title-letter-spacing);
-}
-
 .admin-login-error {
+  margin: 0;
   padding: var(--al-space-2) var(--al-space-3);
   border-radius: var(--al-radius-sm);
-  background: color-mix(in srgb, var(--al-color-danger) 8%, var(--al-color-surface));
-  border: var(--al-border-width-thin) solid
-    color-mix(in srgb, var(--al-color-danger) 24%, transparent);
+  background: color-mix(in srgb, var(--al-color-danger) 10%, var(--al-color-surface));
+  border: 1px solid color-mix(in srgb, var(--al-color-danger) 28%, transparent);
   color: var(--al-color-danger);
   font-size: var(--al-text-label-size);
   line-height: var(--al-text-label-line-height);
+}
+
+@media (max-width: 480px) {
+  .admin-login-page {
+    padding: var(--al-space-4);
+    align-items: flex-end;
+  }
+
+  .admin-login-card {
+    max-width: none;
+    padding: var(--al-space-5) var(--al-space-4);
+  }
+
+  .admin-login-brand__name {
+    font-size: 1.5rem;
+  }
 }
