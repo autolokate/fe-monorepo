@@ -22,6 +22,11 @@
   background: var(--al-admin-control-bg, var(--al-color-surface));
 }
 
+.garage-taxonomy-filter {
+  margin-bottom: 1rem;
+  max-width: 28rem;
+}
+
 .garage-taxonomy-form {
   display: grid;
   gap: 0.75rem;
