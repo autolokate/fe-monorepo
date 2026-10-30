@@ -186,6 +186,18 @@ export const endpoints = {
       `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,
     garageCommercialConfig: '/admin/v1/garage/commercial-config',
     garageCommercialConfigHistory: '/admin/v1/garage/commercial-config/history',
+    garageTaxonomy: '/admin/v1/garage/taxonomy',
+    garageTaxonomyVehicleCategories: '/admin/v1/garage/taxonomy/vehicle-categories',
+    garageTaxonomyVehicleCategory: (id: string) =>
+      `/admin/v1/garage/taxonomy/vehicle-categories/${encodeURIComponent(id)}`,
+    garageTaxonomyCategories: '/admin/v1/garage/taxonomy/categories',
+    garageTaxonomyCategory: (id: string) =>
+      `/admin/v1/garage/taxonomy/categories/${encodeURIComponent(id)}`,
+    garageTaxonomySubcategories: '/admin/v1/garage/taxonomy/subcategories',
+    garageTaxonomySubcategory: (id: string) =>
+      `/admin/v1/garage/taxonomy/subcategories/${encodeURIComponent(id)}`,
+    garageTaxonomyStoreServices: (storeId: string) =>
+      `/admin/v1/garage/taxonomy/stores/${encodeURIComponent(storeId)}/services`,
     garageProvision: '/admin/v1/garage/provision',
     garageOrgPassGrant: (orgId: string) =>
       `/admin/v1/garage/orgs/${encodeURIComponent(orgId)}/passes/grant`,

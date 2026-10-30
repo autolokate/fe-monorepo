@@ -250,3 +250,141 @@ export async function setGarageGstVerification(
   );
   return unwrapEnvelope(response) as GarageStoreDto;
 }
+
+/** Workshops taxonomy (migrate 0097) — platform vehicle / category / subcategory. */
+export type GarageTaxonomyVehicleDto = {
+  id: string;
+  slug: string;
+  label: string;
+  sortOrder: number;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GarageTaxonomySubcategoryDto = {
+  id: string;
+  categoryId: string;
+  slug: string;
+  label: string;
+  sortOrder: number;
+  visible: boolean;
+  legacyCsvId: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GarageTaxonomyCategoryDto = {
+  id: string;
+  slug: string;
+  label: string;
+  sortOrder: number;
+  visible: boolean;
+  createdAt: string;
+  updatedAt: string;
+  subcategories: GarageTaxonomySubcategoryDto[];
+};
+
+export type GarageTaxonomyTreeDto = {
+  vehicleCategories: GarageTaxonomyVehicleDto[];
+  categories: GarageTaxonomyCategoryDto[];
+  storeSubcategoryIds?: string[];
+};
+
+export type UpsertGarageTaxonomyItemBody = {
+  label: string;
+  slug?: string;
+  sortOrder?: number;
+  visible?: boolean;
+};
+
+export type UpsertGarageTaxonomySubcategoryBody = UpsertGarageTaxonomyItemBody & {
+  categoryId: string;
+  legacyCsvId?: number | null;
+};
+
+/** GET /admin/v1/garage/taxonomy — needs migrate 0097. */
+export async function getAdminGarageTaxonomy(
+  client: ApiClient,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageTaxonomyTreeDto> {
+  const response = await client.get<unknown>(endpoints.admin.garageTaxonomy, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as GarageTaxonomyTreeDto;
+}
+
+export async function createGarageVehicleCategory(
+  client: ApiClient,
+  body: UpsertGarageTaxonomyItemBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageTaxonomyVehicleDto> {
+  const response = await client.post<unknown>(
+    endpoints.admin.garageTaxonomyVehicleCategories,
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as GarageTaxonomyVehicleDto;
+}
+
+export async function updateGarageVehicleCategory(
+  client: ApiClient,
+  id: string,
+  body: Partial<UpsertGarageTaxonomyItemBody>,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageTaxonomyVehicleDto> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.garageTaxonomyVehicleCategory(id),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as GarageTaxonomyVehicleDto;
+}
+
+export async function createGarageBusinessCategory(
+  client: ApiClient,
+  body: UpsertGarageTaxonomyItemBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageTaxonomyCategoryDto> {
+  const response = await client.post<unknown>(endpoints.admin.garageTaxonomyCategories, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as GarageTaxonomyCategoryDto;
+}
+
+export async function updateGarageBusinessCategory(
+  client: ApiClient,
+  id: string,
+  body: Partial<UpsertGarageTaxonomyItemBody>,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageTaxonomyCategoryDto> {
+  const response = await client.patch<unknown>(endpoints.admin.garageTaxonomyCategory(id), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as GarageTaxonomyCategoryDto;
+}
+
+export async function createGarageSubcategory(
+  client: ApiClient,
+  body: UpsertGarageTaxonomySubcategoryBody,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageTaxonomySubcategoryDto> {
+  const response = await client.post<unknown>(endpoints.admin.garageTaxonomySubcategories, body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as GarageTaxonomySubcategoryDto;
+}
+
+export async function updateGarageSubcategory(
+  client: ApiClient,
+  id: string,
+  body: Partial<UpsertGarageTaxonomySubcategoryBody>,
+  options: { signal?: AbortSignal } = {},
+): Promise<GarageTaxonomySubcategoryDto> {
+  const response = await client.patch<unknown>(
+    endpoints.admin.garageTaxonomySubcategory(id),
+    body,
+    { ...(options.signal ? { signal: options.signal } : {}) },
+  );
+  return unwrapEnvelope(response) as GarageTaxonomySubcategoryDto;
+}

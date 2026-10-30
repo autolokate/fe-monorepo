@@ -114,6 +114,12 @@ const GarageCommercialConfigPage = lazy(() =>
   })),
 );
 
+const GarageTaxonomyPage = lazy(() =>
+  import('@/features/garage/GarageTaxonomyPage').then((module) => ({
+    default: module.GarageTaxonomyPage,
+  })),
+);
+
 const TaxiPolicyPage = lazy(() =>
   import('@/features/taxi/TaxiPolicyPage').then((module) => ({
     default: module.TaxiPolicyPage,
@@ -207,6 +213,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.catalog} element={<CatalogPage />} />
             <Route path={adminPaths.promos} element={<PromoManagementPage />} />
             <Route path={adminPaths.garageCommercial} element={<GarageCommercialConfigPage />} />
+            <Route path={adminPaths.garageTaxonomy} element={<GarageTaxonomyPage />} />
             <Route path={adminPaths.taxiPolicy} element={<TaxiPolicyPage />} />
             <Route path={adminPaths.servicesCatalogue} element={<ServicesCataloguePage />} />
             <Route path={adminPaths.orders} element={<OrdersPage />} />
