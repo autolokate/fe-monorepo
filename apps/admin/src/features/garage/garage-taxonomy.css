@@ -1,0 +1,93 @@
+.garage-taxonomy-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.garage-taxonomy-tab {
+  min-height: 2.25rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--al-admin-control-border, var(--al-color-outline));
+  border-radius: var(--al-radius-sm);
+  background: transparent;
+  color: var(--al-admin-control-text, var(--al-color-text));
+  font-size: 0.875rem;
+  font-weight: var(--al-font-weight-medium);
+  cursor: pointer;
+}
+
+.garage-taxonomy-tab--active {
+  border-color: var(--al-color-text);
+  background: var(--al-admin-control-bg, var(--al-color-surface));
+}
+
+.garage-taxonomy-form {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--al-admin-control-border, var(--al-color-outline));
+  border-radius: var(--al-radius-sm);
+}
+
+.garage-taxonomy-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+}
+
+.garage-taxonomy-field input,
+.garage-taxonomy-field select {
+  min-height: 2.375rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--al-admin-control-border, var(--al-color-outline));
+  border-radius: var(--al-radius-sm);
+  background: var(--al-admin-control-bg, var(--al-color-surface));
+  color: var(--al-admin-control-text, var(--al-color-text));
+  font-size: 0.9375rem;
+}
+
+.garage-taxonomy-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.garage-taxonomy-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.garage-taxonomy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.garage-taxonomy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--al-admin-control-border, var(--al-color-outline));
+}
+
+.garage-taxonomy-row__primary {
+  font-weight: var(--al-font-weight-medium);
+}
+
+.garage-taxonomy-row__secondary,
+.garage-taxonomy-row__meta {
+  color: var(--al-admin-hint-color, var(--al-color-text-muted));
+  font-size: var(--al-text-caption-size);
+}
