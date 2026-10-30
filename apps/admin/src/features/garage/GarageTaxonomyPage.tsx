@@ -59,18 +59,32 @@ export function GarageTaxonomyPage() {
   const [tab, setTab] = useState<TabId>('vehicles');
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
   const [formOpen, setFormOpen] = useState(false);
+  /** Subcategories tab: only show/edit rows for this parent category (mapping guarantee). */
+  const [subcategoryFilterCategoryId, setSubcategoryFilterCategoryId] = useState<string>('');
 
   const categories = tree?.categories ?? [];
   const vehicles = tree?.vehicleCategories ?? [];
-  const subcategories = useMemo(
-    () => categories.flatMap((c) => c.subcategories.map((s) => ({ ...s, categoryLabel: c.label }))),
-    [categories],
-  );
+
+  const effectiveSubcategoryFilterId =
+    subcategoryFilterCategoryId || categories[0]?.id || '';
+
+  const subcategories = useMemo(() => {
+    if (!effectiveSubcategoryFilterId) return [];
+    const parent = categories.find((c) => c.id === effectiveSubcategoryFilterId);
+    if (!parent) return [];
+    return parent.subcategories.map((s) => ({
+      ...s,
+      categoryLabel: parent.label,
+    }));
+  }, [categories, effectiveSubcategoryFilterId]);
 
   const openCreate = () => {
     setDraft({
       ...EMPTY_DRAFT,
-      categoryId: categories[0]?.id,
+      categoryId:
+        tab === 'subcategories'
+          ? effectiveSubcategoryFilterId || categories[0]?.id
+          : categories[0]?.id,
     });
     setFormOpen(true);
   };
@@ -213,12 +227,45 @@ export function GarageTaxonomyPage() {
                 onClick={() => {
                   setTab(id);
                   setFormOpen(false);
+                  if (id === 'subcategories' && !subcategoryFilterCategoryId && categories[0]) {
+                    setSubcategoryFilterCategoryId(categories[0].id);
+                  }
                 }}
               >
                 {label}
               </button>
             ))}
           </div>
+
+          {tab === 'subcategories' ? (
+            <label className="garage-taxonomy-field garage-taxonomy-filter">
+              <span>Parent category</span>
+              <select
+                value={effectiveSubcategoryFilterId}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setSubcategoryFilterCategoryId(next);
+                  setFormOpen(false);
+                  setDraft({
+                    ...EMPTY_DRAFT,
+                    categoryId: next || undefined,
+                  });
+                }}
+                data-testid="garage-taxonomy-subcategory-category-filter"
+                required
+              >
+                {categories.length === 0 ? (
+                  <option value="">No categories yet</option>
+                ) : (
+                  categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.label} ({c.subcategories.length})
+                    </option>
+                  ))
+                )}
+              </select>
+            </label>
+          ) : null}
 
           {formOpen && canWrite ? (
             <form
@@ -266,12 +313,20 @@ export function GarageTaxonomyPage() {
               </label>
               {tab === 'subcategories' ? (
                 <label className="garage-taxonomy-field">
-                  <span>Category</span>
+                  <span>Parent category (required)</span>
                   <select
                     value={draft.categoryId ?? ''}
-                    onChange={(e) => setDraft((d) => ({ ...d, categoryId: e.target.value }))}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setDraft((d) => ({ ...d, categoryId: next }));
+                      if (next) setSubcategoryFilterCategoryId(next);
+                    }}
                     required
+                    data-testid="garage-taxonomy-subcategory-parent"
                   >
+                    <option value="" disabled>
+                      Select parent category
+                    </option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.label}
@@ -341,7 +396,11 @@ export function GarageTaxonomyPage() {
                 meta: `csv#${s.legacyCsvId ?? '—'} · sort ${s.sortOrder}${s.visible ? '' : ' · hidden'}`,
                 onEdit: canWrite ? () => openEditSubcategory(s) : undefined,
               }))}
-              empty="No subcategories yet — apply migrate 0097 or add one."
+              empty={
+                effectiveSubcategoryFilterId
+                  ? 'No subcategories for this category — add one with the parent selected above.'
+                  : 'No subcategories yet — apply migrate 0097 or add a category first.'
+              }
             />
           ) : null}
         </AdminPanel>
