@@ -17,7 +17,7 @@ test.describe('Taxi policy (hermetic)', () => {
     await openTaxiPolicyPage(page);
 
     await expect(page.getByTestId('taxi-customer-advance-bps')).toHaveValue('500');
-    await expect(page.getByTestId('taxi-partner-deposit-bps')).toHaveValue('1000');
+    await expect(page.getByTestId('taxi-partner-deposit-bps')).toHaveValue('700');
     await expect(page.getByTestId('taxi-policy-status')).toContainText('DRAFT');
     expect(capture.taxiPolicyGet).toBeGreaterThanOrEqual(1);
 
@@ -32,7 +32,7 @@ test.describe('Taxi policy (hermetic)', () => {
     expect(capture.taxiPolicyPut[0]?.method).toBe('PUT');
     expect(capture.taxiPolicyPut[0]?.body).toMatchObject({
       customerAdvanceBps: 750,
-      partnerDepositBps: 1000,
+      partnerDepositBps: 700,
     });
     expect(capture.unexpected).toEqual([]);
   });
@@ -47,6 +47,9 @@ test.describe('Taxi policy (hermetic)', () => {
       timeout: 10_000,
     });
     await expect(page.getByTestId('taxi-policy-status')).toContainText('PUBLISHED');
+    await expect(page.getByTestId('taxi-policy-published')).toBeVisible();
+    await expect(page.getByTestId('taxi-policy-published-advance')).toContainText('500 bps');
+    await expect(page.getByTestId('taxi-policy-published-deposit')).toContainText('700 bps');
     expect(capture.taxiPolicyPublish).toBe(1);
     expect(capture.unexpected).toEqual([]);
   });
@@ -61,12 +64,16 @@ test.describe('Taxi policy (hermetic)', () => {
 
     await expect(page.getByTestId('taxi-policy-status')).toContainText('None');
     await page.getByTestId('taxi-customer-advance-bps').fill('500');
-    await page.getByTestId('taxi-partner-deposit-bps').fill('1000');
+    await page.getByTestId('taxi-partner-deposit-bps').fill('700');
     await page.getByRole('button', { name: 'Save draft' }).click();
     await expect(page.getByRole('status')).toContainText('Draft saved.', {
       timeout: 10_000,
     });
     expect(capture.taxiPolicyPut).toHaveLength(1);
+    expect(capture.taxiPolicyPut[0]?.body).toMatchObject({
+      customerAdvanceBps: 500,
+      partnerDepositBps: 700,
+    });
     expect(capture.unexpected).toEqual([]);
   });
 });
