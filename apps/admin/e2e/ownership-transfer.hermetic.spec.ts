@@ -68,7 +68,7 @@ test.describe('Ownership transfer (hermetic)', () => {
       timeout: 10_000,
     });
     await expect(page.getByRole('heading', { name: 'Transfer completed' })).toBeVisible();
-    await expect(page.getByText('COMPLETED')).toBeVisible();
+    await expect(page.getByText('Completed', { exact: true })).toBeVisible();
     await expect(dialog).toBeHidden();
 
     expect(capture.approve).toHaveLength(1);
