@@ -23,12 +23,10 @@ import { installHermeticRepliesRoutes } from './helpers/hermetic-replies';
  * Full Admin wow redesign evidence screenshots.
  * Run: ADMIN_WOW_SHOT_DIR=… pnpm exec playwright test e2e/admin-full-wow-screenshots.hermetic.spec.ts
  */
-const OUT = path.resolve(
-  process.env.ADMIN_WOW_SHOT_DIR ??
-    '/Users/kapil/Library/Application Support/Cursor/AgentStores/cursor_agent_stores/bc-838898e5-01b7-4a1b-9290-525bdb8c17ab/files/media',
-);
+const OUT = process.env.ADMIN_WOW_SHOT_DIR ? path.resolve(process.env.ADMIN_WOW_SHOT_DIR) : null;
 
 async function shot(page: Page, name: string) {
+  if (!OUT) return;
   mkdirSync(OUT, { recursive: true });
   await page.screenshot({
     path: path.join(OUT, `admin-full-wow-${name}-2026-10-29.png`),
@@ -49,6 +47,8 @@ async function gotoHeading(page: Page, route: string, heading: string | RegExp) 
 }
 
 test.describe('Admin full wow screenshots (hermetic)', () => {
+  test.skip(!OUT, 'Set ADMIN_WOW_SHOT_DIR to capture wow screenshots');
+
   test('capture remaining modules', async ({ page }) => {
     test.setTimeout(240_000);
     await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });

@@ -1,5 +1,5 @@
 import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { TaxiProvisionSheet } from '@/features/taxi/TaxiProvisionSheet';
 import { useTaxiPolicy } from '@/hooks/taxi/useTaxiPolicy';
@@ -8,9 +8,18 @@ import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './taxi-policy.css';
 
+/** Admin-supplied bps only — never invent runtime rates. Operator tip: 500 = 5% advance, 700 = 7% deposit. */
+const BPS_MIN = 0;
+const BPS_MAX = 10_000;
+
 type FormState = {
   customerAdvanceBps: number;
   partnerDepositBps: number;
+};
+
+type FieldErrors = {
+  customerAdvanceBps?: string;
+  partnerDepositBps?: string;
 };
 
 function bpsToPercent(bps: number): string {
@@ -21,6 +30,29 @@ function statusChipClass(status: string | undefined): string {
   if (status === 'PUBLISHED') return 'admin-status-chip admin-status-chip--published';
   if (status === 'DRAFT') return 'admin-status-chip admin-status-chip--draft';
   return 'admin-status-chip admin-status-chip--none';
+}
+
+function parseBpsInput(raw: string): number {
+  const trimmed = raw.trim();
+  if (trimmed === '') return 0;
+  return Number.parseInt(trimmed, 10);
+}
+
+function validateBps(value: number, label: string): string | undefined {
+  if (!Number.isFinite(value) || !Number.isInteger(value)) {
+    return `${label} must be a whole number.`;
+  }
+  if (value < BPS_MIN || value > BPS_MAX) {
+    return `${label} must be between ${String(BPS_MIN)} and ${String(BPS_MAX)} (100 = 1%).`;
+  }
+  return undefined;
+}
+
+function validateForm(form: FormState): FieldErrors {
+  return {
+    customerAdvanceBps: validateBps(form.customerAdvanceBps, 'Customer advance'),
+    partnerDepositBps: validateBps(form.partnerDepositBps, 'Partner deposit'),
+  };
 }
 
 export function TaxiPolicyPage() {
@@ -45,6 +77,7 @@ export function TaxiPolicyPage() {
   const [savedNote, setSavedNote] = useState<string | null>(null);
   const [publishedNote, setPublishedNote] = useState<string | null>(null);
   const [provisionOpen, setProvisionOpen] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
 
   useEffect(() => {
     if (!policy) {
@@ -59,14 +92,20 @@ export function TaxiPolicyPage() {
       partnerDepositBps:
         typeof policy.partnerDepositBps === 'number' ? policy.partnerDepositBps : 0,
     });
+    setShowValidation(false);
   }, [isUnavailable, policy]);
 
+  const fieldErrors = useMemo(() => (form ? validateForm(form) : {}), [form]);
+  const formInvalid = Boolean(fieldErrors.customerAdvanceBps || fieldErrors.partnerDepositBps);
+
   const pageDescription = isUnavailable
-    ? 'Set customer advance and partner deposit rates, then publish when ready.'
-    : 'Customer advance and partner deposit rates for Taxi. Save a draft, then publish.';
+    ? 'No live policy yet. Enter advance and deposit bps (e.g. 500 = 5%, 700 = 7%), save a draft, then publish.'
+    : 'Customer advance and partner deposit rates for Taxi. Save a draft, then publish. Rates are Admin-supplied (e.g. 500 = 5%, 700 = 7%).';
 
   const onSave = async () => {
     if (!form || !canWrite) return;
+    setShowValidation(true);
+    if (formInvalid) return;
     setSavedNote(null);
     setPublishedNote(null);
     try {
@@ -86,7 +125,7 @@ export function TaxiPolicyPage() {
     setPublishedNote(null);
     try {
       await publish();
-      setPublishedNote('Policy published.');
+      setPublishedNote('Policy published. Live money paths now use these rates.');
     } catch {
       // Error surfaced via publishErrorMessage + toast.
     }
@@ -106,6 +145,15 @@ export function TaxiPolicyPage() {
   }
 
   const statusLabel = policy?.status ?? (isUnavailable ? 'None' : '…');
+  const publishedAdvance =
+    policy?.status === 'PUBLISHED' && typeof policy.customerAdvanceBps === 'number'
+      ? policy.customerAdvanceBps
+      : null;
+  const publishedDeposit =
+    policy?.status === 'PUBLISHED' && typeof policy.partnerDepositBps === 'number'
+      ? policy.partnerDepositBps
+      : null;
+  const busy = isSaving || isPublishing;
 
   return (
     <RequirePermission permission="settings:read">
@@ -154,11 +202,48 @@ export function TaxiPolicyPage() {
           }
         />
 
+        {publishedAdvance !== null && publishedDeposit !== null ? (
+          <section
+            className="admin-panel taxi-policy__published"
+            data-testid="taxi-policy-published"
+          >
+            <div className="admin-panel__header">
+              <div>
+                <h2 className="admin-panel__title">Published (live)</h2>
+                <p className="admin-panel__subtitle">
+                  Money paths use these rates until a new draft is published.
+                </p>
+              </div>
+              <div className="admin-panel__meta">
+                <span className={statusChipClass('PUBLISHED')}>PUBLISHED</span>
+              </div>
+            </div>
+            <dl className="taxi-policy__published-grid">
+              <div>
+                <dt>Customer advance</dt>
+                <dd data-testid="taxi-policy-published-advance">
+                  {publishedAdvance} bps · {bpsToPercent(publishedAdvance)}
+                </dd>
+              </div>
+              <div>
+                <dt>Partner deposit</dt>
+                <dd data-testid="taxi-policy-published-deposit">
+                  {publishedDeposit} bps · {bpsToPercent(publishedDeposit)}
+                </dd>
+              </div>
+            </dl>
+          </section>
+        ) : null}
+
         <section className="admin-panel" data-testid="taxi-policy-panel">
           <div className="admin-panel__header">
             <div>
-              <h2 className="admin-panel__title">Current rates</h2>
-              <p className="admin-panel__subtitle">Enter whole numbers — 100 equals 1%.</p>
+              <h2 className="admin-panel__title">
+                {policy?.status === 'PUBLISHED' ? 'Edit draft rates' : 'Current rates'}
+              </h2>
+              <p className="admin-panel__subtitle">
+                Whole numbers — 100 = 1%. Tip: advance 500 (5%), deposit 700 (7%).
+              </p>
             </div>
             <div className="admin-panel__meta">
               <span className={statusChipClass(policy?.status)} data-testid="taxi-policy-status">
@@ -168,12 +253,15 @@ export function TaxiPolicyPage() {
           </div>
 
           {isLoading && !form ? (
-            <p className="taxi-policy__muted">Loading Taxi policy…</p>
+            <p className="taxi-policy__muted" data-testid="taxi-policy-loading">
+              Loading Taxi policy…
+            </p>
           ) : form ? (
             <form
               className="taxi-policy__form"
               onSubmit={(event) => {
                 event.preventDefault();
+                void onSave();
               }}
             >
               <label className="admin-field">
@@ -181,60 +269,84 @@ export function TaxiPolicyPage() {
                 <input
                   data-testid="taxi-customer-advance-bps"
                   type="number"
-                  min={0}
-                  max={10_000}
+                  min={BPS_MIN}
+                  max={BPS_MAX}
                   step={1}
+                  inputMode="numeric"
+                  placeholder="500"
+                  aria-invalid={showValidation && Boolean(fieldErrors.customerAdvanceBps)}
                   value={form.customerAdvanceBps}
-                  disabled={!canWrite || isSaving || isPublishing}
+                  disabled={!canWrite || busy}
                   onChange={(event) => {
                     setForm({
                       ...form,
-                      customerAdvanceBps: Number.parseInt(event.target.value || '0', 10) || 0,
+                      customerAdvanceBps: parseBpsInput(event.target.value),
                     });
                   }}
                 />
                 <span className="taxi-policy__pct admin-field__hint">
-                  {bpsToPercent(form.customerAdvanceBps)} of fare held as advance
+                  {Number.isFinite(form.customerAdvanceBps)
+                    ? `${bpsToPercent(form.customerAdvanceBps)} of fare held as advance`
+                    : 'Enter whole bps (e.g. 500 = 5%)'}
                 </span>
+                {showValidation && fieldErrors.customerAdvanceBps ? (
+                  <span className="taxi-policy__field-error" role="alert">
+                    {fieldErrors.customerAdvanceBps}
+                  </span>
+                ) : null}
               </label>
               <label className="admin-field">
                 Partner deposit
                 <input
                   data-testid="taxi-partner-deposit-bps"
                   type="number"
-                  min={0}
-                  max={10_000}
+                  min={BPS_MIN}
+                  max={BPS_MAX}
                   step={1}
+                  inputMode="numeric"
+                  placeholder="700"
+                  aria-invalid={showValidation && Boolean(fieldErrors.partnerDepositBps)}
                   value={form.partnerDepositBps}
-                  disabled={!canWrite || isSaving || isPublishing}
+                  disabled={!canWrite || busy}
                   onChange={(event) => {
                     setForm({
                       ...form,
-                      partnerDepositBps: Number.parseInt(event.target.value || '0', 10) || 0,
+                      partnerDepositBps: parseBpsInput(event.target.value),
                     });
                   }}
                 />
                 <span className="taxi-policy__pct admin-field__hint">
-                  {bpsToPercent(form.partnerDepositBps)} partner deposit rate
+                  {Number.isFinite(form.partnerDepositBps)
+                    ? `${bpsToPercent(form.partnerDepositBps)} partner deposit rate`
+                    : 'Enter whole bps (e.g. 700 = 7%)'}
                 </span>
+                {showValidation && fieldErrors.partnerDepositBps ? (
+                  <span className="taxi-policy__field-error" role="alert">
+                    {fieldErrors.partnerDepositBps}
+                  </span>
+                ) : null}
               </label>
               {saveErrorMessage ? (
-                <p className="taxi-policy__error" role="alert">
+                <p className="taxi-policy__error" role="alert" data-testid="taxi-policy-save-error">
                   {saveErrorMessage}
                 </p>
               ) : null}
               {publishErrorMessage ? (
-                <p className="taxi-policy__error" role="alert">
+                <p
+                  className="taxi-policy__error"
+                  role="alert"
+                  data-testid="taxi-policy-publish-error"
+                >
                   {publishErrorMessage}
                 </p>
               ) : null}
               {savedNote ? (
-                <p className="taxi-policy__ok" role="status">
+                <p className="taxi-policy__ok" role="status" data-testid="taxi-policy-save-ok">
                   {savedNote}
                 </p>
               ) : null}
               {publishedNote ? (
-                <p className="taxi-policy__ok" role="status">
+                <p className="taxi-policy__ok" role="status" data-testid="taxi-policy-publish-ok">
                   {publishedNote}
                 </p>
               ) : null}

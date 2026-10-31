@@ -116,7 +116,8 @@ export const HERMETIC_TAXI_POLICY: HermeticTaxiPolicy = {
   id: 'dddddddd-eeee-4fff-8000-111111111111',
   status: 'DRAFT',
   customerAdvanceBps: 500,
-  partnerDepositBps: 1000,
+  /** Kapil product deposit rate (7%) — not the stale OA example of 1000. */
+  partnerDepositBps: 700,
 };
 
 export const HERMETIC_BREAK_GLASS_APPROVAL_ID = 'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';

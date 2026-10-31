@@ -69,3 +69,31 @@
   font-size: var(--al-text-caption-size);
   font-weight: var(--al-font-weight-regular, 400);
 }
+
+.taxi-policy__field-error {
+  color: var(--al-color-danger);
+  font-size: var(--al-text-caption-size);
+  font-weight: var(--al-font-weight-regular, 400);
+}
+
+.taxi-policy__published-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--al-space-4) var(--al-space-5);
+  margin: 0;
+}
+
+.taxi-policy__published-grid dt {
+  margin: 0 0 0.25rem;
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+}
+
+.taxi-policy__published-grid dd {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: var(--al-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--al-admin-control-text, var(--al-color-text));
+}

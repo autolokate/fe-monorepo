@@ -17,14 +17,13 @@ import {
 
 /**
  * One-shot hermetic screenshots for Admin wow redesign evidence.
- * Not part of CI smoke — run manually: pnpm exec playwright test e2e/admin-wow-screenshots.hermetic.spec.ts
+ * Not part of CI smoke — set ADMIN_WOW_SHOT_DIR to enable:
+ *   ADMIN_WOW_SHOT_DIR=… pnpm exec playwright test e2e/admin-wow-screenshots.hermetic.spec.ts
  */
-const OUT = path.resolve(
-  process.env.ADMIN_WOW_SHOT_DIR ??
-    '/Users/kapil/Library/Application Support/Cursor/AgentStores/cursor_agent_stores/bc-838898e5-01b7-4a1b-9290-525bdb8c17ab/files/media',
-);
+const OUT = process.env.ADMIN_WOW_SHOT_DIR ? path.resolve(process.env.ADMIN_WOW_SHOT_DIR) : null;
 
 async function shot(page: Page, name: string) {
+  if (!OUT) return;
   mkdirSync(OUT, { recursive: true });
   await page.screenshot({
     path: path.join(OUT, `admin-wow-${name}-2026-10-29.png`),
@@ -33,6 +32,8 @@ async function shot(page: Page, name: string) {
 }
 
 test.describe('Admin wow screenshots (hermetic)', () => {
+  test.skip(!OUT, 'Set ADMIN_WOW_SHOT_DIR to capture wow screenshots');
+
   test('capture priority + shell screens', async ({ page }) => {
     await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await installHermeticPartnersRoutes(page);

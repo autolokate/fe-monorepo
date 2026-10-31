@@ -27,7 +27,7 @@ test.describe('Ownership transfer (hermetic)', () => {
     await expect(page.getByRole('button', { name: 'Initiate transfer' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Approve transfer' })).toBeVisible();
     await expect(
-      page.getByText('Transfer status appears here after you initiate or approve a transfer.'),
+      page.getByText('Status appears here after you initiate or approve a transfer.'),
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Initiate transfer' }).click();
@@ -40,8 +40,8 @@ test.describe('Ownership transfer (hermetic)', () => {
     await expect(page.getByRole('status')).toContainText('Transfer initiated.', {
       timeout: 10_000,
     });
-    await expect(page.getByLabel('Transfer initiated')).toBeVisible();
-    await expect(page.getByLabel('Transfer initiated')).toContainText('INITIATED');
+    await expect(page.getByRole('heading', { name: 'Transfer initiated' })).toBeVisible();
+    await expect(page.getByText('Initiated', { exact: true })).toBeVisible();
     await expect(dialog).toBeHidden();
 
     expect(capture.initiate).toHaveLength(1);
@@ -67,8 +67,8 @@ test.describe('Ownership transfer (hermetic)', () => {
     await expect(page.getByRole('status')).toContainText('Transfer completed.', {
       timeout: 10_000,
     });
-    await expect(page.getByLabel('Transfer completed')).toBeVisible();
-    await expect(page.getByLabel('Transfer completed')).toContainText('COMPLETED');
+    await expect(page.getByRole('heading', { name: 'Transfer completed' })).toBeVisible();
+    await expect(page.getByText('Completed', { exact: true })).toBeVisible();
     await expect(dialog).toBeHidden();
 
     expect(capture.approve).toHaveLength(1);
@@ -91,7 +91,7 @@ test.describe('Ownership transfer (hermetic)', () => {
 
     await expect(page.getByRole('heading', { name: 'Ownership' })).toBeVisible();
     await expect(
-      page.getByText('Transfer status appears here after you initiate or approve a transfer.'),
+      page.getByText('Status appears here after you initiate or approve a transfer.'),
     ).toBeVisible();
     await expect(page.getByRole('button', { name: 'Initiate transfer' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Approve transfer' })).toHaveCount(0);

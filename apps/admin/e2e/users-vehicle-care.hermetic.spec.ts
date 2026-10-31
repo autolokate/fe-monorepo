@@ -43,7 +43,7 @@ test.describe('Users vehicle care hierarchy (hermetic)', () => {
     await page.getByText('DL7CQ1939').click();
 
     await expect(page.getByTestId('users-back-to-account')).toBeVisible();
-    await expect(page.getByTestId('users-vehicle-care-ro')).toContainText('Read-only');
+    await expect(page.getByTestId('users-vehicle-care-ro')).toContainText('read-only');
     await expect(page.getByRole('heading', { name: 'Expenses' })).toBeVisible();
     await expect(page.getByText(HERMETIC_EXPENSE_TITLE_A)).toBeVisible();
     await expect(page.getByText(HERMETIC_EXPENSE_TITLE_B)).toHaveCount(0);
