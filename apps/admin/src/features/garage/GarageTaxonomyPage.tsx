@@ -62,11 +62,10 @@ export function GarageTaxonomyPage() {
   /** Subcategories tab: only show/edit rows for this parent category (mapping guarantee). */
   const [subcategoryFilterCategoryId, setSubcategoryFilterCategoryId] = useState<string>('');
 
-  const categories = tree?.categories ?? [];
-  const vehicles = tree?.vehicleCategories ?? [];
+  const categories = useMemo(() => tree?.categories ?? [], [tree?.categories]);
+  const vehicles = useMemo(() => tree?.vehicleCategories ?? [], [tree?.vehicleCategories]);
 
-  const effectiveSubcategoryFilterId =
-    subcategoryFilterCategoryId || categories[0]?.id || '';
+  const effectiveSubcategoryFilterId = subcategoryFilterCategoryId || categories[0]?.id || '';
 
   const subcategories = useMemo(() => {
     if (!effectiveSubcategoryFilterId) return [];
@@ -191,9 +190,7 @@ export function GarageTaxonomyPage() {
           description="Partner Workshops vehicle categories, business categories, and subcategories (platform root). Requires migrate 0097."
           actions={
             <>
-              {canWrite ? (
-                <AlPageHeaderAction label="Add" onClick={openCreate} />
-              ) : null}
+              {canWrite ? <AlPageHeaderAction label="Add" onClick={openCreate} /> : null}
               <AlPageHeaderAction
                 label={isFetching ? 'Refreshing…' : 'Refresh'}
                 loading={isFetching}
@@ -287,7 +284,9 @@ export function GarageTaxonomyPage() {
                 <span>Label</span>
                 <input
                   value={draft.label}
-                  onChange={(e) => setDraft((d) => ({ ...d, label: e.target.value }))}
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, label: e.target.value }));
+                  }}
                   required
                   maxLength={120}
                 />
@@ -296,7 +295,9 @@ export function GarageTaxonomyPage() {
                 <span>Slug (optional)</span>
                 <input
                   value={draft.slug}
-                  onChange={(e) => setDraft((d) => ({ ...d, slug: e.target.value }))}
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, slug: e.target.value }));
+                  }}
                   maxLength={64}
                   placeholder="auto from label"
                 />
@@ -306,7 +307,9 @@ export function GarageTaxonomyPage() {
                 <input
                   type="number"
                   value={draft.sortOrder}
-                  onChange={(e) => setDraft((d) => ({ ...d, sortOrder: e.target.value }))}
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, sortOrder: e.target.value }));
+                  }}
                   min={0}
                   max={10000}
                 />
@@ -339,7 +342,9 @@ export function GarageTaxonomyPage() {
                 <input
                   type="checkbox"
                   checked={draft.visible}
-                  onChange={(e) => setDraft((d) => ({ ...d, visible: e.target.checked }))}
+                  onChange={(e) => {
+                    setDraft((d) => ({ ...d, visible: e.target.checked }));
+                  }}
                 />
                 <span>Visible to partners</span>
               </label>
@@ -367,8 +372,12 @@ export function GarageTaxonomyPage() {
                 id: v.id,
                 primary: v.label,
                 secondary: v.slug,
-                meta: `sort ${v.sortOrder}${v.visible ? '' : ' · hidden'}`,
-                onEdit: canWrite ? () => openEditVehicle(v) : undefined,
+                meta: `sort ${String(v.sortOrder)}${v.visible ? '' : ' · hidden'}`,
+                onEdit: canWrite
+                  ? () => {
+                      openEditVehicle(v);
+                    }
+                  : undefined,
               }))}
               empty="No vehicle categories yet — apply migrate 0097 or add one."
             />
@@ -380,8 +389,12 @@ export function GarageTaxonomyPage() {
                 id: c.id,
                 primary: c.label,
                 secondary: c.slug,
-                meta: `${c.subcategories.length} sub · sort ${c.sortOrder}${c.visible ? '' : ' · hidden'}`,
-                onEdit: canWrite ? () => openEditCategory(c) : undefined,
+                meta: `${String(c.subcategories.length)} sub · sort ${String(c.sortOrder)}${c.visible ? '' : ' · hidden'}`,
+                onEdit: canWrite
+                  ? () => {
+                      openEditCategory(c);
+                    }
+                  : undefined,
               }))}
               empty="No business categories yet — apply migrate 0097 or add one."
             />
@@ -393,8 +406,12 @@ export function GarageTaxonomyPage() {
                 id: s.id,
                 primary: s.label,
                 secondary: `${s.categoryLabel} · ${s.slug}`,
-                meta: `csv#${s.legacyCsvId ?? '—'} · sort ${s.sortOrder}${s.visible ? '' : ' · hidden'}`,
-                onEdit: canWrite ? () => openEditSubcategory(s) : undefined,
+                meta: `csv#${s.legacyCsvId == null ? '—' : String(s.legacyCsvId)} · sort ${String(s.sortOrder)}${s.visible ? '' : ' · hidden'}`,
+                onEdit: canWrite
+                  ? () => {
+                      openEditSubcategory(s);
+                    }
+                  : undefined,
               }))}
               empty={
                 effectiveSubcategoryFilterId

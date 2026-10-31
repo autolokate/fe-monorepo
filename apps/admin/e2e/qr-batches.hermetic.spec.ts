@@ -29,9 +29,9 @@ test.describe('QR batches lifecycle (hermetic)', () => {
     const createDialog = page.getByRole('dialog', { name: 'Create batch' });
     await expect(createDialog).toBeVisible();
 
-    await createDialog.getByLabel('Channel').selectOption('B2C');
-    await expect(createDialog.getByLabel('SKU')).toBeEnabled({ timeout: 10_000 });
-    await createDialog.getByLabel('SKU').selectOption({ label: HERMETIC_SKU_CODE });
+    await createDialog.locator('select[name="channel"]').selectOption('B2C');
+    await expect(createDialog.locator('select[name="skuId"]')).toBeEnabled({ timeout: 10_000 });
+    await createDialog.locator('select[name="skuId"]').selectOption({ label: HERMETIC_SKU_CODE });
     await createDialog.getByLabel('Total count').fill('5');
     await createDialog.getByRole('button', { name: 'Create batch' }).click();
 
@@ -118,9 +118,9 @@ test.describe('QR batches lifecycle (hermetic)', () => {
 
     await page.getByRole('button', { name: 'Create batch' }).click();
     const dialog = page.getByRole('dialog', { name: 'Create batch' });
-    await dialog.getByLabel('Channel').selectOption('B2C');
-    await expect(dialog.getByLabel('SKU')).toBeEnabled({ timeout: 10_000 });
-    await dialog.getByLabel('SKU').selectOption({ label: HERMETIC_SKU_CODE });
+    await dialog.locator('select[name="channel"]').selectOption('B2C');
+    await expect(dialog.locator('select[name="skuId"]')).toBeEnabled({ timeout: 10_000 });
+    await dialog.locator('select[name="skuId"]').selectOption({ label: HERMETIC_SKU_CODE });
     await dialog.getByLabel('Total count').fill('5');
     await dialog.getByRole('button', { name: 'Create batch' }).click();
 

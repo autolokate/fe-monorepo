@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 import { installHermeticApiRoutes, seedHermeticSession } from './helpers/hermetic';
+import { installHermeticAcademyRoutes } from './helpers/hermetic-academy';
+import { installHermeticDailyDriveRoutes } from './helpers/hermetic-daily-drive';
 import {
   HERMETIC_MEDIA_POSTER_ID,
   HERMETIC_MEDIA_VIDEO_ID,
@@ -28,6 +30,9 @@ test.describe('Admin Discovery (hermetic)', () => {
   test('overview — counts from list endpoints + module links', async ({ page }) => {
     const base = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     const discovery = await installHermeticDiscoveryRoutes(page);
+    // Overview cards prefetch Daily Drive + Academy; stub so base.unexpected stays empty.
+    await installHermeticDailyDriveRoutes(page);
+    await installHermeticAcademyRoutes(page);
     await seedHermeticSession(page);
     await openDiscoveryOverviewPage(page);
 

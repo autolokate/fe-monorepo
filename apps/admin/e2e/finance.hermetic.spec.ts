@@ -98,7 +98,9 @@ test.describe('Finance clawback + settlement (hermetic)', () => {
     await confirm.getByRole('button', { name: 'Run settlement' }).click();
 
     await expect(page.getByLabel('Settlement batch result')).toHaveCount(0, { timeout: 10_000 });
-    await expect(page.getByText(/Results from clawbacks and settlement batches/i)).toBeVisible();
+    await expect(
+      page.getByText(/Results appear here after you create a clawback or run a settlement batch/i),
+    ).toBeVisible();
     expect(capture.settlementBatchPost).toBe(1);
     expect(capture.unexpected).toEqual([]);
   });

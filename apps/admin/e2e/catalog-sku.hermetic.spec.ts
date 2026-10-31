@@ -16,7 +16,10 @@ async function checkShelfTier(dialog: Locator, tierLabel: string): Promise<void>
   if (await checkbox.isChecked()) {
     return;
   }
-  await dialog.locator('label').filter({ hasText: tierLabel }).click();
+  await dialog
+    .locator('label')
+    .filter({ hasText: new RegExp(`^${tierLabel}$`) })
+    .click();
   await expect(checkbox).toBeChecked();
 }
 

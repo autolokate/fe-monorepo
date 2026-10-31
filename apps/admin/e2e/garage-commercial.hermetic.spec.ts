@@ -53,10 +53,10 @@ test.describe('Garage commercial (hermetic)', () => {
     await expect(page.getByTestId('garage-config-history')).toBeVisible({ timeout: 10_000 });
     await expect(
       page.getByTestId(`garage-config-history-row-${HERMETIC_GARAGE_AUDIT_ID}`),
-    ).toContainText('day ₹100');
+    ).toContainText('Day ₹100');
     await expect(
       page.getByTestId(`garage-config-history-row-${HERMETIC_GARAGE_AUDIT_ID}`),
-    ).toContainText('free bids 2');
+    ).toContainText('Free bids 2');
 
     expect(capture.garageConfigHistoryGet.length).toBeGreaterThanOrEqual(1);
     expect(capture.garageConfigHistoryGet[0]?.method).toBe('GET');
@@ -84,7 +84,7 @@ test.describe('Garage commercial (hermetic)', () => {
     await expect
       .poll(() => capture.garageConfigHistoryGet.length, { timeout: 10_000 })
       .toBeGreaterThan(historyGetsBefore);
-    await expect(page.getByTestId('garage-config-history')).toContainText('day ₹175', {
+    await expect(page.getByTestId('garage-config-history')).toContainText('Day ₹175', {
       timeout: 10_000,
     });
     expect(capture.unexpected).toEqual([]);
