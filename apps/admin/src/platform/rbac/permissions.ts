@@ -32,7 +32,6 @@ export type AdminPermission =
   | 'orders:refund'
   | 'subscriptions:view'
   | 'shipments:view'
-  | 'shipments:update'
   | 'payments:view'
   | 'support:view'
   | 'support:write'
@@ -71,7 +70,6 @@ const ALL_PERMISSIONS: readonly AdminPermission[] = [
   'orders:refund',
   'subscriptions:view',
   'shipments:view',
-  'shipments:update',
   'payments:view',
   'support:view',
   'support:write',

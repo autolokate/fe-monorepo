@@ -20,19 +20,14 @@ export function useCanWriteCatalogMutations(): boolean {
   return useAdminAnyPermission(['catalog:write']);
 }
 
-/** POST /admin/v1/orders/{orderId}/refund — a full money refund (FINANCE·step_up). */
+/** POST /admin/v1/orders/{orderId}/refund — a full money refund (OPERATOR·step_up, audited). */
 export function useCanRefundOrders(): boolean {
   return useAdminAnyPermission(['orders:refund']);
 }
 
-/** PATCH /admin/v1/support/tickets/{ticketId} — status triage (SUPPORT/OPS/SUPER_ADMIN). */
+/** PATCH /admin/v1/support/tickets/{ticketId} — status triage + ops note (OPERATOR, audited). */
 export function useCanWriteSupportTickets(): boolean {
   return useAdminAnyPermission(['support:write']);
-}
-
-/** POST /admin/v1/shipments/{orderId}/status — the manual shipment milestone mark (OPS/FINANCE). */
-export function useCanUpdateShipments(): boolean {
-  return useAdminAnyPermission(['shipments:update']);
 }
 
 /** POST/PATCH /admin/v1/community/questions|reels* — create, edit, publish, hide, archive (OPERATOR). */

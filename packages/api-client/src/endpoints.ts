@@ -145,14 +145,13 @@ export const endpoints = {
     adminSubscription: (id: string) => `/admin/v1/subscriptions/${encodeURIComponent(id)}`,
     adminShipments: '/admin/v1/shipments',
     adminShipment: (orderId: string) => `/admin/v1/shipments/${encodeURIComponent(orderId)}`,
-    updateAdminShipmentStatus: (orderId: string) =>
-      `/admin/v1/shipments/${encodeURIComponent(orderId)}/status`,
     adminPayments: '/admin/v1/payments',
     adminPayment: (paymentId: string) => `/admin/v1/payments/${encodeURIComponent(paymentId)}`,
     adminSupportTickets: '/admin/v1/support/tickets',
     adminSupportTicket: (ticketId: string) =>
       `/admin/v1/support/tickets/${encodeURIComponent(ticketId)}`,
     adminIncidents: '/admin/v1/incidents',
+    adminIncidentsFeed: '/admin/v1/incidents/feed',
     adminIncident: (incidentId: string) => `/admin/v1/incidents/${encodeURIComponent(incidentId)}`,
     breakGlassApprovals: '/admin/v1/break-glass/approvals',
     breakGlassApproval: (approvalId: string) =>
@@ -258,6 +257,12 @@ export const endpoints = {
     partnerGarageRequests: '/admin/v1/partners/requests',
     partnerGarageRequest: (id: string) => `/admin/v1/partners/requests/${encodeURIComponent(id)}`,
     partnersKyc: '/admin/v1/partners/kyc',
+    websiteBookingSlots: '/admin/v1/website/booking-slots',
+    websiteBookingSlotsDay: (date: string) =>
+      `/admin/v1/website/booking-slots/${encodeURIComponent(date)}`,
+    websiteBookings: '/admin/v1/website/bookings',
+    websiteBookingTransition: (bookingId: string, action: 'confirm' | 'complete' | 'cancel') =>
+      `/admin/v1/website/bookings/${encodeURIComponent(bookingId)}/${action}`,
   },
   media: {
     request: '/v1/media',

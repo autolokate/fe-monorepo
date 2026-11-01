@@ -6,9 +6,8 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
-import { MarkShipmentStatusDialog } from '@/features/shipments/MarkShipmentStatusDialog';
 import { SHIPMENTS_STATUS_FILTERS } from '@/features/shipments/shipments-filters';
 import { useShipmentsColumns } from '@/features/shipments/shipments-columns';
 import { useShipments } from '@/hooks/shipments/useShipments';
@@ -37,11 +36,7 @@ export function ShipmentsPage() {
     refresh,
   } = useShipments();
 
-  // Status mutation is product-blocked. Keep mutate CTA off.
-  const canUpdate = false;
-  const [markTarget, setMarkTarget] = useState<AdminShipmentSummary | null>(null);
-
-  const columns = useShipmentsColumns({ canUpdate, onUpdateStatus: setMarkTarget });
+  const columns = useShipmentsColumns();
   const kpiItems = useMemo(
     () => (shipments.length > 0 ? pageShipmentKpis(shipments) : []),
     [shipments],
@@ -76,8 +71,8 @@ export function ShipmentsPage() {
           }
         />
         <p className="admin-empty-note" data-testid="shipments-update-unavailable">
-          Manual delivery status updates are not available yet — the server has no shipment status
-          route. Status here comes from the courier feed.
+          Read-only by design: a shipment is a projection of a paid retail order, so there is no
+          manual status change here. Fix the underlying order or payment instead.
         </p>
 
         {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
@@ -109,15 +104,6 @@ export function ShipmentsPage() {
             getRowId={(row) => row.orderId}
           />
         </AdminDataBlock>
-
-        <MarkShipmentStatusDialog
-          shipment={markTarget}
-          onOpenChange={(nextOpen) => {
-            if (!nextOpen) {
-              setMarkTarget(null);
-            }
-          }}
-        />
       </AlStack>
     </RequirePermission>
   );
