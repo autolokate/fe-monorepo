@@ -35,3 +35,20 @@ export function toSupportQueryStatus(
 export function toSupportQueryType(filter: SupportTypeFilter): AdminSupportTicketType | undefined {
   return filter === 'ALL' ? undefined : filter;
 }
+
+/**
+ * Allowed triage moves (mirrors the server's state machine; the server still enforces it and answers
+ * 409 `support_ticket_invalid_transition`). CLOSED is terminal.
+ */
+export const SUPPORT_TICKET_TRANSITIONS: Record<
+  AdminSupportTicketStatus,
+  readonly AdminSupportTicketStatus[]
+> = {
+  OPEN: ['IN_PROGRESS', 'RESOLVED', 'CLOSED'],
+  IN_PROGRESS: ['OPEN', 'RESOLVED', 'CLOSED'],
+  RESOLVED: ['IN_PROGRESS', 'CLOSED'],
+  CLOSED: [],
+};
+
+/** Shown in place of the customer's message, which the admin plane never decrypts. */
+export const SUPPORT_BODY_PRIVACY_NOTE = 'Customer message not visible to operators (privacy).';

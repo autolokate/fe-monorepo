@@ -1,24 +1,16 @@
 import type { AdminSupportTicketSummary } from '@autolokate/api-client';
-import { AlButton, type ColumnDef } from '@autolokate/ui';
+import { type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
+import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
 import { SupportTicketStatusBadge } from '@/platform/components/EntityStatusBadge';
 
 function formatDateTime(value: string): string {
   return new Date(value).toLocaleString();
 }
 
-export type UseSupportColumnsOptions = {
-  /** Whether the signed-in admin may triage tickets (`support:write`). Off in read-only reuses. */
-  canTriage?: boolean;
-  /** Open the status-change dialog for a ticket. Omit to hide the triage action entirely. */
-  onChangeStatus?: (ticket: AdminSupportTicketSummary) => void;
-};
-
-export function useSupportColumns({
-  canTriage = false,
-  onChangeStatus,
-}: UseSupportColumnsOptions = {}): ColumnDef<AdminSupportTicketSummary>[] {
+/** List columns — subject only; the customer's message never reaches the admin plane. */
+export function useSupportColumns(): ColumnDef<AdminSupportTicketSummary>[] {
   return useMemo(
     () => [
       {
@@ -28,6 +20,7 @@ export function useSupportColumns({
       {
         accessorKey: 'type',
         header: 'Type',
+        cell: ({ row }) => humanizeAdminLabel(row.original.type),
       },
       {
         accessorKey: 'status',
@@ -37,6 +30,7 @@ export function useSupportColumns({
       {
         accessorKey: 'accountId',
         header: 'Account',
+        cell: ({ row }) => shortAdminId(row.original.accountId),
       },
       {
         accessorKey: 'createdAt',
@@ -44,25 +38,11 @@ export function useSupportColumns({
         cell: ({ row }) => formatDateTime(row.original.createdAt),
       },
       {
-        id: 'actions',
-        header: '',
-        enableSorting: false,
-        cell: ({ row }) =>
-          canTriage && onChangeStatus ? (
-            <AlButton
-              size="sm"
-              variant="secondary"
-              data-testid={`support-ticket-triage-${row.original.ticketId}`}
-              onClick={(event) => {
-                event.stopPropagation();
-                onChangeStatus(row.original);
-              }}
-            >
-              Change status
-            </AlButton>
-          ) : null,
+        accessorKey: 'updatedAt',
+        header: 'Updated',
+        cell: ({ row }) => formatDateTime(row.original.updatedAt),
       },
     ],
-    [canTriage, onChangeStatus],
+    [],
   );
 }

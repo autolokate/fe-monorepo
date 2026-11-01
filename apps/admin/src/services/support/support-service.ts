@@ -1,42 +1,36 @@
-import type {
-  AdminSupportTicket,
-  AdminSupportTicketStatus,
-  AdminSupportTicketsPageResult,
-  ListAdminSupportTicketsQuery,
+import {
+  getAdminSupportTicket,
+  listAdminSupportTicketsPage,
+  updateAdminSupportTicketStatus,
+  type AdminSupportTicket,
+  type AdminSupportTicketsPageResult,
+  type ListAdminSupportTicketsQuery,
+  type UpdateSupportTicketStatusBody,
 } from '@autolokate/api-client';
 
-import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
+import { getAdminApiClient } from '@/platform/api/admin-api-client';
 
-/**
- * GET /admin/v1/support/tickets — absent from Nest Dev OA.
- * Fail closed; do not call the network.
- */
-export function fetchSupportTicketsPage(
-  _query: ListAdminSupportTicketsQuery = {},
-  _signal?: AbortSignal,
+/** GET /admin/v1/support/tickets — keyset-paginated list (subject only; no customer body). */
+export async function fetchSupportTicketsPage(
+  query: ListAdminSupportTicketsQuery = {},
+  signal?: AbortSignal,
 ): Promise<AdminSupportTicketsPageResult> {
-  throwAdminProductBlocked('GET /admin/v1/support/tickets');
+  return listAdminSupportTicketsPage(getAdminApiClient(), query, { signal });
 }
 
-/**
- * GET /admin/v1/support/tickets/{ticketId} — absent from Nest Dev OA.
- * Fail closed; do not call the network.
- */
-export function fetchSupportTicket(
-  _ticketId: string,
-  _signal?: AbortSignal,
+/** GET /admin/v1/support/tickets/{ticketId} — `body` is always "" (privacy by design). */
+export async function fetchSupportTicket(
+  ticketId: string,
+  signal?: AbortSignal,
 ): Promise<AdminSupportTicket> {
-  throwAdminProductBlocked('GET /admin/v1/support/tickets/{ticketId}');
+  return getAdminSupportTicket(getAdminApiClient(), ticketId, { signal });
 }
 
-/**
- * PATCH /admin/v1/support/tickets/{ticketId} — absent from Nest Dev OA.
- * Fail closed; do not call the network.
- */
-export function updateSupportTicketStatus(
-  _ticketId: string,
-  _status: AdminSupportTicketStatus,
-  _signal?: AbortSignal,
+/** PATCH /admin/v1/support/tickets/{ticketId} — status + optional ops note (audited). */
+export async function updateSupportTicketStatus(
+  ticketId: string,
+  body: UpdateSupportTicketStatusBody,
+  signal?: AbortSignal,
 ): Promise<AdminSupportTicket> {
-  throwAdminProductBlocked('PATCH /admin/v1/support/tickets/{ticketId}');
+  return updateAdminSupportTicketStatus(getAdminApiClient(), ticketId, body, { signal });
 }
