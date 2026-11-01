@@ -184,6 +184,24 @@ const PartnerRequestsInboxPage = lazy(() =>
   })),
 );
 
+const TaxiBookingsPage = lazy(() =>
+  import('@/features/taxi/TaxiBookingsPage').then((module) => ({
+    default: module.TaxiBookingsPage,
+  })),
+);
+
+const TaxiBookingDetailPage = lazy(() =>
+  import('@/features/taxi/TaxiBookingDetailPage').then((module) => ({
+    default: module.TaxiBookingDetailPage,
+  })),
+);
+
+const TaxiEnrollmentsPage = lazy(() =>
+  import('@/features/taxi/TaxiEnrollmentsPage').then((module) => ({
+    default: module.TaxiEnrollmentsPage,
+  })),
+);
+
 function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
@@ -215,6 +233,12 @@ export function AdminRoutes() {
             <Route path={adminPaths.garageCommercial} element={<GarageCommercialConfigPage />} />
             <Route path={adminPaths.garageTaxonomy} element={<GarageTaxonomyPage />} />
             <Route path={adminPaths.taxiPolicy} element={<TaxiPolicyPage />} />
+            <Route path={adminPaths.taxiBookings} element={<TaxiBookingsPage />} />
+            <Route
+              path={`${adminPaths.taxiBookings}/:bookingId`}
+              element={<TaxiBookingDetailPage />}
+            />
+            <Route path={adminPaths.taxiEnrollments} element={<TaxiEnrollmentsPage />} />
             <Route path={adminPaths.servicesCatalogue} element={<ServicesCataloguePage />} />
             <Route path={adminPaths.orders} element={<OrdersPage />} />
             <Route path={adminPaths.subscriptions} element={<SubscriptionsPage />} />

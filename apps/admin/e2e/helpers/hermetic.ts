@@ -2460,13 +2460,25 @@ export async function installHermeticApiRoutes(
 }
 
 /** Inject synthetic session tokens before the Admin app mounts. */
-export async function seedHermeticSession(page: Page): Promise<void> {
+export async function seedHermeticSession(
+  page: Page,
+  tokens: typeof HERMETIC_TOKENS = HERMETIC_TOKENS,
+): Promise<void> {
   await page.addInitScript(
     ({ key, value }) => {
+      // Only seed once per tab so a later sign-out / token swap is not undone on reload.
+      if (sessionStorage.getItem('__hermetic_seeded') === '1') return;
+      sessionStorage.setItem('__hermetic_seeded', '1');
       sessionStorage.setItem(key, JSON.stringify(value));
     },
-    { key: ADMIN_TOKEN_KEY, value: HERMETIC_TOKENS },
+    { key: ADMIN_TOKEN_KEY, value: tokens },
   );
+}
+
+/** Unsigned JWT-shaped synthetic token (hermetic only — never a real credential). */
+export function hermeticJwt(claims: Record<string, unknown>): string {
+  const b64 = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
+  return `${b64({ alg: 'none', typ: 'JWT' })}.${b64(claims)}.hermetic`;
 }
 
 /** Land on ownership-transfers after auth bootstrap. */

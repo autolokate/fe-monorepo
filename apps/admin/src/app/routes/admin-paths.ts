@@ -29,7 +29,15 @@ export const adminPaths = {
   discoveryAcademy: '/discovery/academy',
   partners: '/partners',
   partnersRequests: '/partners/requests',
+  partnersKyc: '/partners/kyc',
+  taxiBookings: '/taxi/bookings',
+  taxiEnrollments: '/taxi/partners',
+  experts: '/experts',
 } as const;
+
+export function adminTaxiBookingPath(bookingId: string): string {
+  return `${adminPaths.taxiBookings}/${encodeURIComponent(bookingId)}`;
+}
 
 export function adminInventoryBatchPath(batchId: string): string {
   return `${adminPaths.inventory}/${batchId}`;
@@ -44,31 +52,34 @@ export function adminPartnerPath(orgId: string): string {
 }
 
 /**
- * Sidebar sections, grouped by the JOB a person is doing rather than the table behind it, and ordered
- * so the highest-frequency daily work sits at the top. One customer's whole world (their orders,
- * coverage, deliveries, payments and tickets) lives together under Customer Care; rare governance sinks
- * to the bottom; the break-glass emergency view is isolated in its own slot so it is only opened on purpose.
+ * Sidebar sections — one per operational domain, in the order a shift works through them:
+ * day-to-day operations first, then each partner marketplace, then catalogue/content authoring,
+ * then safety, money, people, and the audit trail.
  */
 export type AdminNavGroupId =
-  | 'overview'
-  | 'customer-care'
-  | 'finance'
-  | 'products'
+  | 'operations'
   | 'partners'
-  | 'discovery'
-  | 'governance'
-  | 'emergency';
+  | 'taxi'
+  | 'garage'
+  | 'catalog'
+  | 'content'
+  | 'safety'
+  | 'finance'
+  | 'users'
+  | 'audit';
 
 /** The section headers, in display order. */
 export const ADMIN_NAV_GROUPS: { id: AdminNavGroupId; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'customer-care', label: 'Customer Care' },
-  { id: 'finance', label: 'Finance' },
-  { id: 'products', label: 'Products' },
+  { id: 'operations', label: 'Operations' },
   { id: 'partners', label: 'Partners' },
-  { id: 'discovery', label: 'Discovery' },
-  { id: 'governance', label: 'Governance' },
-  { id: 'emergency', label: 'Emergency' },
+  { id: 'taxi', label: 'Taxi' },
+  { id: 'garage', label: 'Garage' },
+  { id: 'catalog', label: 'Catalog & Plans' },
+  { id: 'content', label: 'Content' },
+  { id: 'safety', label: 'Safety' },
+  { id: 'finance', label: 'Finance' },
+  { id: 'users', label: 'Users' },
+  { id: 'audit', label: 'Audit' },
 ];
 
 export type AdminRouteMeta = {
@@ -81,131 +92,69 @@ export type AdminRouteMeta = {
 
 /** Every admin route, in sidebar display order (group, then within-group order). */
 export const adminRoutes: AdminRouteMeta[] = [
-  // Overview — the shared shift-start pulse.
+  // Operations — the daily customer-facing queue.
   {
     path: adminPaths.dashboard,
     label: 'Dashboard',
     description: 'Operational overview',
-    group: 'overview',
+    group: 'operations',
     nav: true,
-  },
-
-  // Customer Care — one customer's whole world, in daily-frequency order.
-  {
-    path: adminPaths.users,
-    label: 'Customers',
-    description: 'Find a customer by phone — their orders, coverage and account access',
-    group: 'customer-care',
-    nav: true,
-  },
-  {
-    path: adminPaths.support,
-    label: 'Tickets',
-    description: 'Support tickets are not available yet',
-    group: 'customer-care',
-    nav: false,
   },
   {
     path: adminPaths.orders,
     label: 'Orders',
-    description: 'Customer orders',
-    group: 'customer-care',
+    description: 'Customer plan and QR orders',
+    group: 'operations',
     nav: true,
   },
   {
     path: adminPaths.subscriptions,
     label: 'Coverage',
     description: 'Active protection per vehicle',
-    group: 'customer-care',
+    group: 'operations',
     nav: true,
   },
   {
     path: adminPaths.shipments,
     label: 'Deliveries',
     description: 'Shipment tracking and delivery status',
-    group: 'customer-care',
+    group: 'operations',
     nav: true,
   },
   {
-    path: adminPaths.payments,
-    label: 'Payments',
-    description: 'Payment attempts, settled outcome and refunds',
-    group: 'customer-care',
+    path: adminPaths.ownershipTransfers,
+    label: 'Ownership transfers',
+    description: 'Initiate and approve vehicle ownership transfers',
+    group: 'operations',
     nav: true,
+  },
+  {
+    path: adminPaths.ownershipClaims,
+    label: 'Ownership claims',
+    description: 'Review customer ownership claims (RC proof + plan entitlement)',
+    group: 'operations',
+    nav: true,
+  },
+  {
+    path: adminPaths.support,
+    label: 'Tickets',
+    description: 'Support tickets are not available yet',
+    group: 'operations',
+    nav: false,
   },
 
-  // Finance — the money back office.
-  {
-    path: adminPaths.finance,
-    label: 'Settlements',
-    description: 'Clawbacks and settlement batches',
-    group: 'finance',
-    nav: true,
-  },
-  {
-    path: adminPaths.promos,
-    label: 'Promos',
-    description: 'Promotional campaigns and discount codes',
-    group: 'finance',
-    nav: true,
-  },
-
-  // Products — what we sell and the physical stickers that carry it.
-  {
-    path: adminPaths.catalog,
-    label: 'Catalog',
-    description: 'Plan versions and the SKU shelves that sell them',
-    group: 'products',
-    nav: true,
-  },
-  {
-    path: adminPaths.inventory,
-    label: 'Stock',
-    description: 'QR sticker stock by batch',
-    group: 'products',
-    nav: true,
-  },
-  {
-    path: adminPaths.qrBatches,
-    label: 'Batches',
-    description: 'Create and manage QR sticker batches',
-    group: 'products',
-    nav: true,
-  },
-  {
-    path: adminPaths.garageCommercial,
-    label: 'Garage commercial',
-    description: 'Pass pricing, free bids, and partner provisioning for Garage',
-    group: 'products',
-    nav: true,
-  },
-  {
-    path: adminPaths.garageTaxonomy,
-    label: 'Garage taxonomy',
-    description: 'Workshops vehicle categories, categories, and subcategories',
-    group: 'products',
-    nav: true,
-  },
-  {
-    path: adminPaths.taxiPolicy,
-    label: 'Taxi policy',
-    description: 'Taxi advance and deposit policy',
-    group: 'products',
-    nav: true,
-  },
-  {
-    path: adminPaths.servicesCatalogue,
-    label: 'Services catalogue',
-    description: 'Service providers for the consumer Services hub',
-    group: 'products',
-    nav: true,
-  },
-
-  // Partners — org directory + marketplace RFQ / bids inbox (Garage + Taxi).
+  // Partners — org directory, KYC review, marketplace inbox.
   {
     path: adminPaths.partners,
-    label: 'Partners',
+    label: 'Directory',
     description: 'Partner org directory (Garage / Store / Taxi)',
+    group: 'partners',
+    nav: true,
+  },
+  {
+    path: adminPaths.partnersKyc,
+    label: 'KYC review',
+    description: 'GST verification queue and decisions',
     group: 'partners',
     nav: true,
   },
@@ -217,79 +166,173 @@ export const adminRoutes: AdminRouteMeta[] = [
     nav: true,
   },
 
-  // Discovery — editorial content the consumer app shows (Q&A + Reels). Plans and coverage live under Products / Customer Care.
+  // Taxi — bookings money flow, partner enrollments, policy.
+  {
+    path: adminPaths.taxiBookings,
+    label: 'Bookings',
+    description: 'Taxi bookings, advance/deposit state, cancel and deposit release',
+    group: 'taxi',
+    nav: true,
+  },
+  {
+    path: adminPaths.taxiEnrollments,
+    label: 'Taxi partners',
+    description: 'Taxi enrollments — provision, suspend, reinstate',
+    group: 'taxi',
+    nav: true,
+  },
+  {
+    path: adminPaths.taxiPolicy,
+    label: 'Taxi policy',
+    description: 'Advance, deposit, no-show and cancellation policy',
+    group: 'taxi',
+    nav: true,
+  },
+
+  // Garage — marketplace commercials and taxonomy.
+  {
+    path: adminPaths.garageCommercial,
+    label: 'Commercial',
+    description: 'Pass pricing, free bids, and partner provisioning for Garage',
+    group: 'garage',
+    nav: true,
+  },
+  {
+    path: adminPaths.garageTaxonomy,
+    label: 'Taxonomy',
+    description: 'Workshops vehicle categories, categories, and subcategories',
+    group: 'garage',
+    nav: true,
+  },
+
+  // Catalog & Plans — what we sell, the stickers that carry it, and the services hub.
+  {
+    path: adminPaths.catalog,
+    label: 'Plans & SKUs',
+    description: 'Plan versions and the SKU shelves that sell them',
+    group: 'catalog',
+    nav: true,
+  },
+  {
+    path: adminPaths.promos,
+    label: 'Promos',
+    description: 'Promotional campaigns and discount codes',
+    group: 'catalog',
+    nav: true,
+  },
+  {
+    path: adminPaths.inventory,
+    label: 'QR stock',
+    description: 'QR sticker stock by batch',
+    group: 'catalog',
+    nav: true,
+  },
+  {
+    path: adminPaths.qrBatches,
+    label: 'QR batches',
+    description: 'Create and manage QR sticker batches',
+    group: 'catalog',
+    nav: true,
+  },
+  {
+    path: adminPaths.servicesCatalogue,
+    label: 'Services hub',
+    description: 'Service providers for the consumer Services hub',
+    group: 'catalog',
+    nav: true,
+  },
+
+  // Content — editorial surfaces the consumer app shows.
   {
     path: adminPaths.discovery,
-    label: 'Discovery',
+    label: 'Discovery overview',
     description: 'Discovery overview — Q&A, reels, plans and coverage at a glance',
-    group: 'discovery',
+    group: 'content',
     nav: true,
   },
   {
     path: adminPaths.discoveryQa,
     label: 'Q&A',
     description: 'Create, edit, publish and hide community Q&A',
-    group: 'discovery',
+    group: 'content',
     nav: true,
   },
   {
     path: adminPaths.discoveryReplies,
     label: 'Q&A replies',
     description: 'Moderate member replies under Q&A answers — hide or restore',
-    group: 'discovery',
+    group: 'content',
     nav: true,
   },
   {
     path: adminPaths.discoveryReels,
     label: 'Reels',
     description: 'Upload, publish and archive Discovery reels',
-    group: 'discovery',
+    group: 'content',
     nav: true,
   },
   {
     path: adminPaths.discoveryDailyDrive,
     label: 'Daily Drive',
     description: 'Free Daily Drive videos from the Indian Drive Guide YouTube channel',
-    group: 'discovery',
+    group: 'content',
     nav: true,
   },
   {
     path: adminPaths.discoveryAcademy,
     label: 'Academy',
     description: 'Courses of Indian Drive Guide lessons for members with an active plan',
-    group: 'discovery',
+    group: 'content',
+    nav: true,
+  },
+  {
+    path: adminPaths.experts,
+    label: 'Experts',
+    description: 'Expert profiles, session types, slots and booking confirmation',
+    group: 'content',
     nav: true,
   },
 
-  // Governance — infrequent, high-trust, fully-audited admin work.
-  {
-    path: adminPaths.ownershipTransfers,
-    label: 'Ownership',
-    description: 'Initiate and approve vehicle ownership transfers',
-    group: 'governance',
-    nav: true,
-  },
-  {
-    path: adminPaths.ownershipClaims,
-    label: 'Ownership claims',
-    description: 'Review customer ownership claims (RC proof + plan entitlement)',
-    group: 'governance',
-    nav: true,
-  },
-  {
-    path: adminPaths.auditEvents,
-    label: 'Activity Log',
-    description: 'Administrative activity timeline',
-    group: 'governance',
-    nav: true,
-  },
-
-  // Emergency — break-glass only, isolated so it is never opened by habit.
+  // Safety — break-glass emergency view, isolated so it is opened on purpose.
   {
     path: adminPaths.incidents,
     label: 'Incidents',
     description: 'Break-glass emergency-incident view (every read audited)',
-    group: 'emergency',
+    group: 'safety',
+    nav: true,
+  },
+
+  // Finance — payments and the money back office.
+  {
+    path: adminPaths.payments,
+    label: 'Payments',
+    description: 'Payment attempts, settled outcome and refunds',
+    group: 'finance',
+    nav: true,
+  },
+  {
+    path: adminPaths.finance,
+    label: 'Settlements',
+    description: 'Clawbacks and settlement batches',
+    group: 'finance',
+    nav: true,
+  },
+
+  // Users — find a customer and their whole account.
+  {
+    path: adminPaths.users,
+    label: 'Customers',
+    description: 'Find a customer by phone — their orders, coverage and account access',
+    group: 'users',
+    nav: true,
+  },
+
+  // Audit — the administrative activity timeline.
+  {
+    path: adminPaths.auditEvents,
+    label: 'Activity log',
+    description: 'Administrative activity timeline',
+    group: 'audit',
     nav: true,
   },
 ];

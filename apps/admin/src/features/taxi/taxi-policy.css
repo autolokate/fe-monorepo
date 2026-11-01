@@ -174,3 +174,36 @@
   color: var(--al-admin-label-color, var(--al-color-text-muted));
   font-weight: var(--al-font-weight-medium);
 }
+
+.taxi-ops__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--al-space-4);
+}
+
+.taxi-ops__action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--al-space-1);
+  max-width: 22rem;
+}
+
+.taxi-ops__table-wrap {
+  overflow-x: auto;
+}
+
+.taxi-ops__lookup {
+  display: flex;
+  gap: var(--al-space-2);
+  align-items: center;
+}
+
+.taxi-ops__lookup input {
+  flex: 1;
+}
+
+.admin-mono {
+  font-family: var(--al-font-mono, ui-monospace, monospace);
+  font-size: 0.8125rem;
+}

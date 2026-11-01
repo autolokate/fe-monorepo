@@ -63,7 +63,7 @@ export function StepUpGate() {
           <p className="admin-login-brand__name">Autolokate</p>
           <h1 className="admin-login-brand__title">Confirm it’s you</h1>
           <p className="admin-login-brand__subtitle">
-            {profile?.name ? `${profile.name}, admin` : 'Admin'} tools need a second verification.
+            Admin tools need a second verification{profile?.name ? ` for ${profile.name}` : ''}.
             We’ll send a one-time code to the phone on your operator account.
           </p>
         </header>

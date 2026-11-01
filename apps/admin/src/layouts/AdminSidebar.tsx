@@ -38,6 +38,11 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/taxi-policy': CarIcon,
   '/partners': StoreIcon,
   '/partners/requests': ReceiptTextIcon,
+  '/partners/kyc': ShieldCheckIcon,
+  '/taxi/bookings': ReceiptTextIcon,
+  '/taxi/partners': CarIcon,
+  '/experts': UsersIcon,
+  '/garage-taxonomy': StoreIcon,
   '/discovery': CameraIcon,
   '/discovery/qa': UsersIcon,
   '/discovery/replies': ShieldCheckIcon,
@@ -88,7 +93,11 @@ export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminS
                 <NavLink
                   key={route.path}
                   to={route.path}
-                  end={route.path === adminPaths.discovery || route.path === adminPaths.partners}
+                  end={
+                    route.path === adminPaths.discovery ||
+                    route.path === adminPaths.partners ||
+                    route.path === adminPaths.dashboard
+                  }
                   className={({ isActive }) =>
                     `admin-shell-nav-item al-admin-focus-ring ${isActive ? 'is-active' : ''}`.trim()
                   }
