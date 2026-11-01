@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --config vitest.config.ts",
     "test:local-dev-api": "node ./scripts/assert-local-dev-api.mjs",
     "test:dev-auth-matrix": "node ./scripts/run-dev-auth-matrix.mjs",
     "test:e2e": "node ./e2e/run-playwright.mjs test",
@@ -56,6 +57,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^5.0.5"
   }
 }

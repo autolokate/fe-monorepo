@@ -1,12 +1,12 @@
 import {
   listAdminOrdersPage,
+  refundAdminOrder,
   type AdminOrdersPageResult,
   type ListAdminOrdersQuery,
   type RefundOrderResult,
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
-import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
 
 export async function fetchOrdersPage(
   query: ListAdminOrdersQuery = {},
@@ -16,13 +16,13 @@ export async function fetchOrdersPage(
 }
 
 /**
- * POST /admin/v1/orders/{orderId}/refund — G0-4 Absent (not on Nest Dev OA).
- * Fail closed; do not call the network.
+ * POST /admin/v1/orders/{orderId}/refund — FULL refund only. `idempotencyKey` identifies one
+ * user-initiated attempt; the caller decides when to reuse or rotate it (see `refund-outcome.ts`).
  */
-export function refundOrder(
-  _orderId: string,
-  _reason: string,
-  _signal?: AbortSignal,
+export async function refundOrder(
+  orderId: string,
+  reason: string,
+  idempotencyKey: string,
 ): Promise<RefundOrderResult> {
-  throwAdminProductBlocked('POST /admin/v1/orders/{orderId}/refund');
+  return refundAdminOrder(getAdminApiClient(), orderId, { reason }, { idempotencyKey });
 }

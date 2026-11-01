@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/** OpenAPI `RefundOrderBodyDto.reason`: 3–500 chars. */
+/** OpenAPI `OrderRefundBodyDto.reason`: 3–500 chars. */
 export const refundOrderSchema = z.object({
   reason: z
     .string()
