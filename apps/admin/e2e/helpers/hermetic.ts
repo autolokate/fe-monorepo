@@ -110,6 +110,22 @@ export type HermeticTaxiPolicy = {
   status: 'DRAFT' | 'PUBLISHED';
   customerAdvanceBps: number;
   partnerDepositBps: number;
+  [key: string]: unknown;
+};
+
+/** Synthetic previously-published Taxi policy (live) used when `seedPublishedTaxiPolicy` is set. */
+export const HERMETIC_TAXI_POLICY_LIVE: HermeticTaxiPolicy = {
+  id: 'dddddddd-eeee-4fff-8000-000000000001',
+  status: 'PUBLISHED',
+  customerAdvanceBps: 400,
+  partnerDepositBps: 700,
+  customerNoShowWaitMinutes: 15,
+  customerNoShowMinContactAttempts: 2,
+  depositReleaseHoursAfterComplete: 48,
+  disputeSlaBusinessDays: 5,
+  partnerCancelPenaltyBpsByStage: { gt24h: 2500, h2to24: 5000, lt2hOrNoShow: 10000 },
+  notes: null,
+  publishedAt: '2026-10-01T00:00:00.000Z',
 };
 
 export const HERMETIC_TAXI_POLICY: HermeticTaxiPolicy = {
@@ -355,6 +371,8 @@ export type InstallHermeticRoutesOptions = {
   taxiPolicyPutStatus?: number;
   /** When set, taxi policy publish POST returns this status instead of 200. */
   taxiPolicyPublishStatus?: number;
+  /** Seed a previously-published (live) Taxi policy version in history alongside the draft. */
+  seedPublishedTaxiPolicy?: boolean;
   /** When set, break-glass request POST returns this status instead of 200. */
   breakGlassRequestStatus?: number;
   /** When set, ownership-claims GET returns this status instead of 200. */
@@ -616,7 +634,16 @@ export async function installHermeticApiRoutes(
       ]
     : [];
 
-  let taxiPolicyState: HermeticTaxiPolicy = { ...HERMETIC_TAXI_POLICY };
+  let taxiPolicyState: HermeticTaxiPolicy = options.seedPublishedTaxiPolicy
+    ? {
+        ...HERMETIC_TAXI_POLICY_LIVE,
+        ...HERMETIC_TAXI_POLICY,
+        depositReleaseHoursAfterComplete: 48,
+      }
+    : { ...HERMETIC_TAXI_POLICY };
+  let taxiPolicyHistory: HermeticTaxiPolicy[] = options.seedPublishedTaxiPolicy
+    ? [{ ...HERMETIC_TAXI_POLICY_LIVE }]
+    : [];
   let breakGlassState = {
     id: HERMETIC_BREAK_GLASS_APPROVAL_ID,
     status: 'PENDING',
@@ -1809,8 +1836,16 @@ export async function installHermeticApiRoutes(
         await fulfillJson(route, taxiPolicyPutStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
+      // PUT replaces the whole draft (BE semantics): omitted optional fields become null.
       taxiPolicyState = {
-        ...taxiPolicyState,
+        customerNoShowWaitMinutes: null,
+        customerNoShowMinContactAttempts: null,
+        depositReleaseHoursAfterComplete: null,
+        disputeSlaBusinessDays: null,
+        partnerCancelPenaltyBpsByStage: null,
+        notes: null,
+        ...body,
+        id: taxiPolicyState.id,
         status: 'DRAFT',
         customerAdvanceBps:
           typeof body.customerAdvanceBps === 'number'
@@ -1835,21 +1870,18 @@ export async function installHermeticApiRoutes(
         );
         return;
       }
-      taxiPolicyState = { ...taxiPolicyState, status: 'PUBLISHED' };
+      taxiPolicyState = {
+        ...taxiPolicyState,
+        status: 'PUBLISHED',
+        publishedAt: '2026-10-20T00:00:00.000Z',
+      };
+      taxiPolicyHistory = [{ ...taxiPolicyState }, ...taxiPolicyHistory];
       await fulfillJson(route, taxiPolicyPublishStatus, envelope(taxiPolicyState));
       return;
     }
 
     if (method === 'GET' && path === '/admin/v1/taxi/policy/history') {
-      await fulfillJson(
-        route,
-        200,
-        envelope(
-          taxiPolicyState.status === 'PUBLISHED'
-            ? [{ ...taxiPolicyState, publishedAt: '2026-10-20T00:00:00.000Z' }]
-            : [],
-        ),
-      );
+      await fulfillJson(route, 200, envelope(taxiPolicyHistory));
       return;
     }
 

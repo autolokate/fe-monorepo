@@ -80,6 +80,9 @@ export function useTaxiPolicy() {
   const saveErrorMessage = saveMutation.isError
     ? mapAdminApiError(saveMutation.error).userMessage
     : null;
+  const historyErrorMessage = historyQuery.isError
+    ? `Published history unavailable: ${mapAdminApiError(historyQuery.error).userMessage}`
+    : null;
   const publishErrorMessage = publishMutation.isError
     ? mapAdminApiError(publishMutation.error).userMessage
     : null;
@@ -91,6 +94,7 @@ export function useTaxiPolicy() {
     isFetching: query.isFetching || historyQuery.isFetching,
     isUnavailable,
     userErrorMessage,
+    historyErrorMessage,
     saveErrorMessage,
     publishErrorMessage,
     isSaving: saveMutation.isPending,
