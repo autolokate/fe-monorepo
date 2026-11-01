@@ -22,7 +22,7 @@ const FALLBACK_VISUAL: PlanVisual = {
 };
 
 /** Display order of the plan cards, left → right. */
-const PLAN_TIER_ORDER = ['SECURE', 'SHIELD', 'SHIELD_PLUS'];
+const PLAN_TIER_ORDER = ['SAFE', 'SECURE', 'SHIELD', 'SHIELD_PLUS'];
 
 export function getPlanVisual(tier: string): PlanVisual {
   return PLAN_VISUALS[tier.toUpperCase()] ?? FALLBACK_VISUAL;

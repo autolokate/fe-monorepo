@@ -1,12 +1,11 @@
 'use client';
 
 import { endpoints } from '@/lib/api/endpoints';
-import { hasSession } from '@/lib/session';
 import { readArray, readObject, unbox } from '@/lib/catalogue/normalize';
 import { http } from '@/lib/api/client';
 
-export type PlanTier = 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
-export type PlanPeriod = 'YEARLY' | 'MONTHLY';
+export type PlanTier = 'SAFE' | 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
+export type PlanPeriod = 'YEARLY';
 
 export interface PlanRiderOption {
   riderCount: number;
@@ -83,9 +82,8 @@ function normalizePlan(raw: unknown): Plan {
 let plansInFlight: Promise<Plan[]> | null = null;
 
 /**
- * GET /v1/plans — one currently-effective plan per tier. The Autolokate API serves
- * this catalogue to signed-in buyers only (bearer), so anonymous reads fail; they
- * go out without auth so the 401 surfaces as a load error, not a sign-out redirect.
+ * GET /v1/plans — one currently-effective plan per tier. Public (no bearer), so it is
+ * always sent anonymously: a stale session can never turn the catalogue into a 401.
  * Prices come back in paise.
  */
 export function getPlans(): Promise<Plan[]> {
@@ -93,7 +91,7 @@ export function getPlans(): Promise<Plan[]> {
 
   const request = (async () => {
     try {
-      const res = await http.get(endpoints.plans.list, { withAuth: hasSession() });
+      const res = await http.get(endpoints.plans.list, { withAuth: false });
       const rows = readArray<unknown>(unbox(res.data));
       return rows.map(normalizePlan);
     } finally {

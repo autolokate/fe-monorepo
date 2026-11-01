@@ -1,19 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import { hasSession } from '@/lib/session';
 import { getPlans } from '@/services/plans';
 
 /**
- * Reactive list of protection plans for marketing surfaces. `GET /v1/plans` is
- * bearer-only on the backend, so anonymous visitors skip the call (callers render
- * their static fallback tiers) instead of firing a guaranteed 401.
+ * Reactive list of protection plans for marketing surfaces. `GET /v1/plans` is public,
+ * so anonymous visitors see live plans too. Seeds with an empty list so the carousel
+ * can render a placeholder.
  */
 export function useSafetyPlans() {
-  const [authed, setAuthed] = useState(false);
-  useEffect(() => {
-    setAuthed(hasSession());
-  }, []);
-  return useApiQuery(() => getPlans(), [authed], { initialData: [], enabled: authed });
+  return useApiQuery(() => getPlans(), [], { initialData: [] });
 }
