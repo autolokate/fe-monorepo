@@ -5,5 +5,4 @@ export {
   useBookSession,
   type UseBookSessionOptions,
   type BookSessionInput,
-  type ResumePaymentInput,
 } from './useBookSession';

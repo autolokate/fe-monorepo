@@ -1,6 +1,6 @@
 'use client';
 
-import { ensureRazorpayScript } from '@/lib/booking/razorpay';
+import { ensureRazorpayScript } from './razorpay-script';
 
 export interface RazorpayCheckoutOptions {
   /** `razorpayKeyId` from the pay response. */

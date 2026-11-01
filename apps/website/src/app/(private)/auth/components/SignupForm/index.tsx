@@ -1,35 +1,48 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { type SubmitEvent, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { type SubmitEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Loader2, Send, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useRequestOtp } from '@/hooks/auth';
+import { useIsAuthenticated, useRequestOtp } from '@/hooks/auth';
 import { AuthShell } from '../AuthShell';
 import { BrandWordmark } from '../BrandWordmark';
 import { PhoneField } from '../PhoneField';
-import { PHONE_DIGITS, normalizePhoneDigits, toE164 } from '../constants';
+import {
+  PHONE_DIGITS,
+  normalizePhoneDigits,
+  pickSafeNext,
+  stashSignupName,
+  toE164,
+} from '../constants';
+import { PROFILE_NAME_MAX, validateProfileName } from '@/lib/profile';
 
 const FIELD =
   'h-12 w-full rounded-xl border border-border/80 bg-background px-4 text-base text-foreground shadow-inner outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60';
 
 export function SignupForm() {
   const router = useRouter();
+  const safeNext = pickSafeNext(useSearchParams().get('next'));
   const [name, setName] = useState('');
+  const authed = useIsAuthenticated();
+  useEffect(() => {
+    if (authed === true) router.replace(safeNext || '/');
+  }, [authed, safeNext, router]);
   const [digits, setDigits] = useState('');
 
   const requestOtp = useRequestOtp({
     onSuccess: (response, vars) => {
-      if (!response.sent) {
-        toast.error('Unable to send OTP. Please try again.');
-        return;
-      }
-      toast.success(response.message || 'OTP sent successfully.');
+      toast.success(
+        response.channel === 'whatsapp' ? 'Code sent on WhatsApp.' : 'Code sent by SMS.',
+      );
+      // Saved with PATCH /v1/profile right after the code is verified.
+      stashSignupName(name.trim());
       const q = new URLSearchParams();
       q.set('step', 'otp');
       q.set('phone', vars.phone);
+      if (safeNext) q.set('next', safeNext);
       router.replace(`/auth/login?${q.toString()}`);
     },
   });
@@ -39,8 +52,9 @@ export function SignupForm() {
     const trimmedName = name.trim();
     const clean = normalizePhoneDigits(digits);
 
-    if (trimmedName.length < 2) {
-      toast.error('Please enter your full name.');
+    const nameError = validateProfileName(trimmedName);
+    if (nameError) {
+      toast.error(nameError);
       return;
     }
     if (clean.length !== PHONE_DIGITS) {
@@ -77,6 +91,7 @@ export function SignupForm() {
             type="text"
             placeholder="Your name"
             autoComplete="name"
+            maxLength={PROFILE_NAME_MAX}
             value={name}
             onChange={(e) => {
               setName(e.target.value);

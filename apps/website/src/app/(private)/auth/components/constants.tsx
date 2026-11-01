@@ -46,6 +46,28 @@ export function toE164(digits: string): string {
   return `+91${digits}`;
 }
 
+/** sessionStorage key carrying the name typed on /auth/signup across the OTP step. */
+export const PENDING_SIGNUP_NAME_KEY = 'al-website-signup-name';
+
+export function stashSignupName(name: string): void {
+  try {
+    sessionStorage.setItem(PENDING_SIGNUP_NAME_KEY, name);
+  } catch {
+    // Private mode — the name can still be set later on /profile.
+  }
+}
+
+/** Read and clear the pending signup name (one-shot). */
+export function takeSignupName(): string {
+  try {
+    const name = sessionStorage.getItem(PENDING_SIGNUP_NAME_KEY) ?? '';
+    sessionStorage.removeItem(PENDING_SIGNUP_NAME_KEY);
+    return name.trim();
+  } catch {
+    return '';
+  }
+}
+
 /** Validate `safeNext` URLs from query string — must be a same-origin path. */
 export function pickSafeNext(raw: string | null | undefined): string {
   const v = (raw ?? '').trim();

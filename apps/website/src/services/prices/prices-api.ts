@@ -2,7 +2,7 @@
 
 import { endpoints } from '@/lib/api/endpoints';
 import { readArray, unbox } from '@/lib/catalogue/normalize';
-import { ApiService } from '@/services/api.service';
+import { http } from '@/lib/api/client';
 
 type Envelope<T> = { success?: boolean; data?: T };
 
@@ -41,7 +41,7 @@ export async function getTco(
   city: string,
   options?: { signal?: AbortSignal },
 ): Promise<TcoBreakdown> {
-  const res = await ApiService.get<Envelope<TcoBreakdown>>(endpoints.prices.tco(variantId, city), {
+  const res = await http.get<Envelope<TcoBreakdown>>(endpoints.prices.tco(variantId, city), {
     withAuth: false,
     signal: options?.signal,
   });
@@ -58,7 +58,7 @@ export async function getEmiQuote(params: {
     rate: String(params.rate),
     tenure_months: String(params.tenure_months),
   });
-  const res = await ApiService.get<Envelope<EmiQuote>>(`${endpoints.prices.emi}?${q.toString()}`, {
+  const res = await http.get<Envelope<EmiQuote>>(`${endpoints.prices.emi}?${q.toString()}`, {
     withAuth: false,
   });
   return unbox(res.data);
@@ -69,7 +69,7 @@ export async function getResaleEstimate(
   params: { year: number },
 ): Promise<ResaleEstimate> {
   const q = new URLSearchParams({ year: String(params.year) });
-  const res = await ApiService.get<Envelope<ResaleEstimate>>(
+  const res = await http.get<Envelope<ResaleEstimate>>(
     `${endpoints.prices.resale(variantId)}?${q.toString()}`,
     { withAuth: false },
   );
@@ -77,7 +77,7 @@ export async function getResaleEstimate(
 }
 
 export async function getEvSubsidies(): Promise<unknown[]> {
-  const res = await ApiService.get<Envelope<unknown>>(endpoints.prices.evSubsidies, {
+  const res = await http.get<Envelope<unknown>>(endpoints.prices.evSubsidies, {
     withAuth: false,
   });
   return readArray(unbox(res.data));
@@ -89,7 +89,7 @@ export async function getFuelPrices(
 ): Promise<unknown[]> {
   const q = new URLSearchParams({ city });
   if (params?.fuel_type) q.set('fuel_type', params.fuel_type);
-  const res = await ApiService.get<Envelope<unknown>>(`${endpoints.prices.fuel}?${q.toString()}`, {
+  const res = await http.get<Envelope<unknown>>(`${endpoints.prices.fuel}?${q.toString()}`, {
     withAuth: false,
   });
   return readArray(unbox(res.data));
@@ -103,9 +103,8 @@ export async function getFuelPriceHistory(
   if (params?.from) q.set('from', params.from);
   if (params?.to) q.set('to', params.to);
   if (params?.fuel_type) q.set('fuel_type', params.fuel_type);
-  const res = await ApiService.get<Envelope<unknown>>(
-    `${endpoints.prices.fuelHistory}?${q.toString()}`,
-    { withAuth: false },
-  );
+  const res = await http.get<Envelope<unknown>>(`${endpoints.prices.fuelHistory}?${q.toString()}`, {
+    withAuth: false,
+  });
   return readArray(unbox(res.data));
 }

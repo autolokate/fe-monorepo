@@ -21,11 +21,9 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
 
   const requestOtp = useRequestOtp({
     onSuccess: (response, vars) => {
-      if (!response.sent) {
-        toast.error('Unable to send OTP. Please try again.');
-        return;
-      }
-      toast.success(response.message || 'OTP sent successfully.');
+      toast.success(
+        response.channel === 'whatsapp' ? 'Code sent on WhatsApp.' : 'Code sent by SMS.',
+      );
       const q = new URLSearchParams();
       q.set('step', 'otp');
       q.set('phone', vars.phone);
@@ -66,7 +64,7 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
         <PhoneField
           id="login-phone"
           label="Phone number"
-          hint="Include country code (e.g. +91 for India)."
+          hint="Your 10-digit Indian mobile number."
           value={digits}
           onChange={setDigits}
           disabled={requestOtp.isLoading}

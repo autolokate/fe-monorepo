@@ -21,7 +21,7 @@ export const VALUE_PILLARS: ReadonlyArray<ValuePillar> = [
   {
     Icon: IndianRupee,
     title: 'One transparent fee',
-    body: 'Pay once via Razorpay. Amount is confirmed at checkout; GST included.',
+    body: 'One flat session fee, GST included — no dealer commissions or upsells.',
   },
   {
     Icon: Sparkles,

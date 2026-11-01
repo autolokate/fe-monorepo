@@ -1,10 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { PURCHASE_ROUTE } from '@/app/(purchase)/purchase/constants';
-import { writePurchaseIntent } from '@/app/(purchase)/purchase/storage';
+import { JOURNEY_ROUTES } from '@/app/(purchase-journey)/shared/routes';
 import { useSafetyPlans } from '@/hooks/plans';
 import { toSafetyPlan } from './constants';
 import { PlanCard } from './PlanCard';
@@ -16,20 +15,16 @@ type SlotPosition = 'left' | 'center' | 'right';
 
 export function PlanCarousel() {
   const router = useRouter();
-  const pathname = usePathname();
   const { data, isLoading, isError } = useSafetyPlans();
   const plans = useMemo(() => (data ?? []).map(toSafetyPlan), [data]);
 
   // Persist the chosen plan + the page the user came from (Home or Pricing) so
   // the purchase flow can preselect the plan and send them back on "back".
-  const choosePlan = useCallback(
-    (planId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- usePathname() is typed string but can be null in practice; keep the fallback
-      writePurchaseIntent({ plan: planId, from: pathname ?? '/' });
-      router.push(PURCHASE_ROUTE);
-    },
-    [router, pathname],
-  );
+  // The journey's plan picker (`/buy`) lists the live server plans (bearer-gated);
+  // the home cards only carry presentation slugs, so every CTA lands there.
+  const choosePlan = useCallback(() => {
+    router.push(JOURNEY_ROUTES.buy);
+  }, [router]);
   const count = plans.length;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -134,7 +129,7 @@ export function PlanCarousel() {
                 plan={plan}
                 focused={isCenter}
                 onChoose={() => {
-                  choosePlan(plan.id);
+                  choosePlan();
                 }}
               />
             </div>

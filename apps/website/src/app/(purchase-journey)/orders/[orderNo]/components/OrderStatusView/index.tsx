@@ -73,7 +73,7 @@ export function OrderStatusView({ orderNo }: OrderStatusViewProps) {
     let active = true;
     getJourneyProfile()
       .then((profile) => {
-        if (active) setName(profile.name);
+        if (active) setName(profile.name ?? '');
       })
       .catch(() => {
         /* name is optional on this screen */

@@ -1,5 +1,8 @@
 import path from 'node:path';
 import type { NextConfig } from 'next';
+import { PHASE_PRODUCTION_BUILD } from 'next/constants';
+
+import { assertBuildEnv } from './src/config/env.config';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -46,6 +49,18 @@ const nextConfig: NextConfig = {
         source: '/shipping-policy',
         destination: '/shipping-and-delivery',
         permanent: true,
+      },
+      // WEB-07: the legacy `(purchase)` stepper was retired — the `/buy` journey is the one
+      // QR purchase flow. Temporary (307) so the target can still change.
+      {
+        source: '/purchase',
+        destination: '/buy',
+        permanent: false,
+      },
+      {
+        source: '/my-orders',
+        destination: '/orders',
+        permanent: false,
       },
     ]);
   },
@@ -94,4 +109,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * WEB-09: refuse to produce a production build without a backend base URL — otherwise the
+ * bundle silently ships pointing at nowhere. `next dev` keeps its localhost default.
+ */
+export default function config(phase: string): NextConfig {
+  if (phase === PHASE_PRODUCTION_BUILD) {
+    assertBuildEnv();
+  }
+  return nextConfig;
+}

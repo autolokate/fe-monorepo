@@ -7,10 +7,8 @@ import { ArrowRight, Menu, Play } from 'lucide-react';
 import { AlIconButton } from '@autolokate/ui/icon-button';
 import { cn } from '@/lib/utils';
 import { useIsAuthenticated, useLogout } from '@/hooks/auth';
-import { isPurchaseAuthenticated } from '@/app/(purchase-journey)/shared/services/auth-api';
 import { AvatarMenu } from '@/layouts/Header/AvatarMenu';
 import { avatarMenuItems } from '@/layouts/Header/AvatarMenu/constants';
-import { PurchaseAccountMenu } from '@/layouts/Header/PurchaseAccountMenu';
 import headerStyles from '@/layouts/Header/header.module.css';
 import {
   CloseIcon,
@@ -35,11 +33,6 @@ export function HeroNav() {
       router.push('/');
     },
   });
-
-  const [purchaseAuthed, setPurchaseAuthed] = useState(false);
-  useEffect(() => {
-    setPurchaseAuthed(isPurchaseAuthenticated());
-  }, [pathname]);
 
   useEffect(() => {
     setOpen(false);
@@ -67,12 +60,6 @@ export function HeroNav() {
 
   const accountSlot = authed ? (
     <AvatarMenu />
-  ) : purchaseAuthed ? (
-    <PurchaseAccountMenu
-      onSignOut={() => {
-        setPurchaseAuthed(false);
-      }}
-    />
   ) : (
     <Link href={headerLoginCta.href} className={headerStyles.loginLink}>
       {headerLoginCta.label}
@@ -119,7 +106,7 @@ export function HeroNav() {
         </div>
 
         <div className={headerStyles.mobileToggle}>
-          {authed || purchaseAuthed ? accountSlot : null}
+          {authed ? accountSlot : null}
           <AlIconButton
             icon={open ? <CloseIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             label={open ? 'Close menu' : 'Open menu'}
@@ -152,7 +139,7 @@ export function HeroNav() {
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
 
-          {!authed && !purchaseAuthed ? (
+          {authed === false ? (
             <Link
               href={headerLoginCta.href}
               className={headerStyles.mobileLogin}

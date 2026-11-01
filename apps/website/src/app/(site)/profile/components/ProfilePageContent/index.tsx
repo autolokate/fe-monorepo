@@ -5,28 +5,27 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { AlertTriangle, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCurrentUser, useIsAuthenticated } from '@/hooks/auth';
+import { useIsAuthenticated, useProfile } from '@/hooks/auth';
 import { ProfileForm } from '../ProfileForm';
 import { ProfileSkeleton } from '../ProfileSkeleton';
 
 /**
  * Client wrapper for `/profile`. Three-state render:
  *  1. Auth still hydrating → skeleton (no flash).
- *  2. Not authed (either visiting cold or after a logout) → bounce to home.
- *  3. Authed → fetch `/me`, then render the editable form.
+ *  2. Not authed (cold visit or after a logout) → send to sign-in, returning here after.
+ *  3. Authed → `GET /v1/profiles`, then render the editable form.
  */
 export function ProfilePageContent() {
   const router = useRouter();
   const authed = useIsAuthenticated();
 
-  // Only fire /me once the auth state has resolved client-side.
-  const userQuery = useCurrentUser({ enabled: authed === true });
+  // Only fetch once the auth state has resolved client-side.
+  const userQuery = useProfile({ enabled: authed === true });
 
-  // Send unauthenticated visitors back to the homepage. They can sign in
-  // from the header CTA if they want.
+  // Route guard: no session in this tab → sign in, then come back.
   useEffect(() => {
     if (authed === false) {
-      router.replace('/');
+      router.replace(`/auth/login?next=${encodeURIComponent('/profile')}`);
     }
   }, [authed, router]);
 
@@ -67,5 +66,5 @@ export function ProfilePageContent() {
     return <ProfileSkeleton />;
   }
 
-  return <ProfileForm user={userQuery.data} onSaved={() => void userQuery.refetch()} />;
+  return <ProfileForm profile={userQuery.data} onSaved={() => void userQuery.refetch()} />;
 }

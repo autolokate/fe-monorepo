@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react';
-import { CalendarDays, LogOut, User } from 'lucide-react';
+import { CalendarDays, LogOut, MapPin, Package, User } from 'lucide-react';
 
 export interface AvatarMenuItem {
   id: string;
@@ -15,6 +15,8 @@ export interface AvatarMenuItem {
 /** Items rendered inside the avatar dropdown when the user is signed in. */
 export const avatarMenuItems: AvatarMenuItem[] = [
   { id: 'profile', label: 'My Profile', icon: User, href: '/profile' },
+  { id: 'orders', label: 'My orders', icon: Package, href: '/orders' },
+  { id: 'addresses', label: 'My addresses', icon: MapPin, href: '/addresses' },
   { id: 'book-session', label: 'Book a session', icon: CalendarDays, href: '/book-session' },
   { id: 'logout', label: 'Logout', icon: LogOut, action: 'logout', tone: 'danger' },
 ];
