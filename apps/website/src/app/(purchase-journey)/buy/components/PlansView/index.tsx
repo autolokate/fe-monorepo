@@ -24,7 +24,7 @@ const TRUST_ITEMS = [
 
 export function PlansView() {
   const router = useRouter();
-  const { plans, isLoading, isError, retry } = usePlans();
+  const { plans, isLoading, isError, needsSignIn, retry } = usePlans();
 
   const sortedPlans = useMemo(
     () => [...plans].sort((a, b) => planTierRank(a.tier) - planTierRank(b.tier)),
@@ -41,7 +41,19 @@ export function PlansView() {
       <JourneyHeader />
       <JourneyProgress activeIndex={0} />
 
-      {isError ? (
+      {needsSignIn ? (
+        <div className={styles.errorBody}>
+          <JourneyError
+            title="Sign in to see the plans"
+            message="Plans and prices are shown to signed-in buyers. It takes one OTP."
+            onRetry={retry}
+            action={{
+              label: 'Sign in',
+              href: `/auth/login?next=${encodeURIComponent(JOURNEY_ROUTES.buy)}`,
+            }}
+          />
+        </div>
+      ) : isError ? (
         <div className={styles.errorBody}>
           <JourneyError title="Couldn't load the plans" onRetry={retry} />
         </div>
