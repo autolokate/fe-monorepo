@@ -64,7 +64,7 @@ export function PhoneStep({ safeNext }: PhoneStepProps) {
         <PhoneField
           id="login-phone"
           label="Phone number"
-          hint="Include country code (e.g. +91 for India)."
+          hint="Your 10-digit Indian mobile number."
           value={digits}
           onChange={setDigits}
           disabled={requestOtp.isLoading}

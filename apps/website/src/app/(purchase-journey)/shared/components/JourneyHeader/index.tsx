@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ArrowRight, ChevronDown, LogOut, MapPin, Package } from 'lucide-react';
 import { AlMark } from '@/layouts/Header/constants';
@@ -33,10 +33,11 @@ interface JourneyHeaderProps {
  * Auth state is derived from the purchase session on the client. The first
  * paint (server + pre-hydration) always renders the guest state, so there's no
  * hydration mismatch; it flips to member after mount if a session exists. The
- * member's name is read once from `GET /v1/profile` (cached across pages).
+ * member's name is read once from `GET /v1/profiles` (cached across pages).
  */
-export function JourneyHeader({ userName, loginHref = '/login' }: JourneyHeaderProps) {
+export function JourneyHeader({ userName, loginHref }: JourneyHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMember, setIsMember] = useState(false);
   const [fetchedName, setFetchedName] = useState('');
 
@@ -124,7 +125,10 @@ export function JourneyHeader({ userName, loginHref = '/login' }: JourneyHeaderP
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
         ) : (
-          <Link href={loginHref} className={styles.loginLink}>
+          <Link
+            href={loginHref ?? `/auth/login?next=${encodeURIComponent(pathname || '/buy')}`}
+            className={styles.loginLink}
+          >
             <span className={styles.loginHint}>Already a member?</span>
             <span className={styles.loginCta}>Log in</span>
             <ArrowRight className={styles.loginArrow} aria-hidden />
