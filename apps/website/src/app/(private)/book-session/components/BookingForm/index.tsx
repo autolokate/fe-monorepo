@@ -32,8 +32,14 @@ export function BookingForm({ authed, onBooked }: BookingFormProps) {
   const [date, setDate] = useState('');
   const [selectedSlot, setSelectedSlot] = useState<ExpertTimeSlot | null>(null);
 
-  const { book, submitting } = useBookSession({ onSettled: onBooked });
   const slotsQuery = useBookingSlots({ date, enabled: authed === true });
+  const { book, submitting } = useBookSession({
+    onSettled: onBooked,
+    onSlotUnavailable: () => {
+      setSelectedSlot(null);
+      void slotsQuery.refetch();
+    },
+  });
 
   useEffect(() => {
     setSelectedSlot(null);

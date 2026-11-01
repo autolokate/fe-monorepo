@@ -7,6 +7,7 @@ import { envelope, installFakeFetch, resetWebsiteSession } from '@/test/fake-fet
 import {
   bookingStatusLabel,
   canCancelBooking,
+  isSlotUnavailableError,
   normalizeMyBookings,
   normalizeSlotsForDate,
 } from './normalize';
@@ -118,5 +119,21 @@ describe('booking slots (WEB-03)', () => {
     expect(row.slotStartLabel).toBe('9:30 AM');
     expect(canCancelBooking(row)).toBe(true);
     expect(canCancelBooking({ ...row, status: 'COMPLETED' })).toBe(false);
+  });
+
+  it('recognises 409 slot_unavailable from POST /v1/bookings/book', async () => {
+    const fake = installFakeFetch();
+    fake.on('POST', '/v1/bookings/book', {
+      status: 409,
+      body: { error: { code: 'slot_unavailable', message: 'Slot is already booked.' } },
+    });
+    const error = await createBooking({
+      slot_date: '2026-11-20',
+      slot_start_time: '09:30',
+      slot_end_time: '09:45',
+      booking_type: 'founder_call',
+    }).catch((e: unknown) => e);
+    expect(isSlotUnavailableError(error)).toBe(true);
+    expect(isSlotUnavailableError(new Error('boom'))).toBe(false);
   });
 });

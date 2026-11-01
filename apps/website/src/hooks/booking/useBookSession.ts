@@ -4,7 +4,11 @@ import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { extractApiErrorMessage } from '@/lib/api/error';
-import { bookingIdFromCreateResponse } from '@/lib/booking/normalize';
+import {
+  SLOT_UNAVAILABLE_MESSAGE,
+  bookingIdFromCreateResponse,
+  isSlotUnavailableError,
+} from '@/lib/booking/normalize';
 import type { ExpertTimeSlot } from '@/lib/booking/types';
 import { createBooking } from '@/services/booking';
 
@@ -15,6 +19,8 @@ export interface BookSessionInput {
 export interface UseBookSessionOptions {
   /** Called after the request settles (success or error) so callers can refetch bookings. */
   onSettled?: () => void | Promise<void>;
+  /** Called when the slot was taken or closed meanwhile (409 `slot_unavailable`) — refresh slots. */
+  onSlotUnavailable?: () => void;
 }
 
 /**
@@ -47,7 +53,12 @@ export function useBookSession(options: UseBookSessionOptions = {}) {
       toast.success('Slot requested. Track its status under “Your bookings”.');
       return id;
     } catch (err) {
-      toast.error(extractApiErrorMessage(err, 'Could not book this slot. Please try again.'));
+      if (isSlotUnavailableError(err)) {
+        toast.error(SLOT_UNAVAILABLE_MESSAGE);
+        optionsRef.current.onSlotUnavailable?.();
+      } else {
+        toast.error(extractApiErrorMessage(err, 'Could not book this slot. Please try again.'));
+      }
       return null;
     } finally {
       setSubmitting(false);

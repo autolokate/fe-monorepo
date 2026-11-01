@@ -129,3 +129,17 @@ export function bookingIdFromCreateResponse(raw: unknown): string {
   const nested = asRecord(o.data) ?? o;
   return toStr(nested.id);
 }
+
+/** Friendly copy for `POST /v1/bookings/book` 409 `slot_unavailable` (taken or closed meanwhile). */
+export const SLOT_UNAVAILABLE_MESSAGE =
+  'Sorry — that slot was just taken or closed. Please pick another time.';
+
+/** True when a booking attempt failed because the slot is no longer bookable. */
+export function isSlotUnavailableError(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'code' in err &&
+    (err as { code?: unknown }).code === 'slot_unavailable'
+  );
+}
