@@ -51,6 +51,10 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          # The website build now FAILS without an API base URL (WEB-09). This compile check is
+          # never deployed, so point it at an explicit local placeholder.
+          NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL: http://localhost:8080
 
   # Hermetic functional gate — parallel to verify; no staging/prod secrets.
   # Website Vitest + QR FID + QR auth-otp-hermetic + QR purchase-hermetic + Admin hermetic
