@@ -109,16 +109,19 @@ async function stubTaxiOps(page: Page, options: { deployed: boolean }): Promise<
       return;
     }
     if (method === 'POST' && path === `/admin/v1/taxi/bookings/${BOOKING_ID}/cancel`) {
-      capture.cancel.push({
-        body: req.postDataJSON() as unknown,
-        idempotencyKey: req.headers()['idempotency-key'] ?? null,
-      });
+      capture.cancel.push({ body: req.postDataJSON() as unknown });
       await json(route, 200, {
         data: {
           ...BOOKING_DETAIL,
           status: 'CANCELLED_ADMIN',
           cancelledBy: 'ADMIN',
+          cancelCode: 'ADMIN_CANCEL',
           customerAdvanceStatus: 'REFUND_PENDING',
+          revenue: [],
+          outcome: {
+            advance: { decision: 'REFUND', amountPaise: 12000 },
+            deposit: { decision: 'NONE', amountPaise: 0 },
+          },
         },
       });
       return;
@@ -146,7 +149,7 @@ async function stubTaxiOps(page: Page, options: { deployed: boolean }): Promise<
 
 /** ADM-06 — Taxi bookings / enrollments against the CONTRACTS.md admin routes (stubbed). */
 test.describe('Taxi operations (hermetic)', () => {
-  test('bookings list → detail shows server money, checkouts; cancel with refund', async ({
+  test('bookings list → detail shows server money, checkouts; cancel with explicit outcomes', async ({
     page,
   }) => {
     await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
@@ -162,16 +165,27 @@ test.describe('Taxi operations (hermetic)', () => {
     await expect(page.getByText('Held · ₹120 · 5%')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId('taxi-booking-checkouts')).toContainText('pay_hermetic_taxi_1');
     // Deposit is not held → release is disabled with a reason.
-    await expect(page.getByTestId('taxi-booking-release-deposit')).toBeDisabled();
+    await expect(page.getByTestId('taxi-booking-release')).toBeDisabled();
 
     await page.getByTestId('taxi-booking-cancel').click();
     await page.getByTestId('taxi-booking-cancel-reason').fill('Partner vehicle breakdown');
+    // No default money outcome: Review stays disabled until both are chosen explicitly.
+    await expect(page.getByTestId('taxi-booking-cancel-review')).toBeDisabled();
+    await page.locator('input[name="taxi-cancel-advance"][value="REFUND"]').check();
+    await page.locator('input[name="taxi-cancel-deposit"][value="RELEASE"]').check();
+    await page.getByTestId('taxi-booking-cancel-review').click();
     await page.getByTestId('taxi-booking-cancel-confirm').click();
     await expect.poll(() => capture.cancel.length).toBe(1);
     expect(capture.cancel[0]).toMatchObject({
-      body: { reason: 'Partner vehicle breakdown', refundAdvance: true },
+      body: {
+        reason: 'Partner vehicle breakdown',
+        advanceOutcome: 'REFUND',
+        depositOutcome: 'RELEASE',
+      },
     });
-    expect((capture.cancel[0] as { idempotencyKey: string | null }).idempotencyKey).toBeTruthy();
+    await expect(page.getByTestId('taxi-booking-outcome')).toContainText(
+      'Booking fee: ₹120 refunded to the customer.',
+    );
   });
 
   test('enrollments — suspend requires a reason, then reinstate', async ({ page }) => {

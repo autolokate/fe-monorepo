@@ -3,8 +3,8 @@ import type { TaxiPolicyDto, UpsertTaxiPolicyDraftBody } from '@autolokate/api-c
 /**
  * Taxi policy form model — every field of `UpsertTaxiPolicyDraftBodyDto`. PUT replaces the whole
  * DRAFT, so the form always sends every field; blank optional inputs are sent as `null`.
- * Ranges mirror the BE class-validator bounds; advance/deposit additionally refuse 0 (a 0 bps
- * money policy is never intended and would silently disable advance/deposit capture).
+ * Ranges mirror the BE class-validator bounds. Advance/deposit accept 0 bps: per money rules v2 a
+ * 0 skips that payment entirely (the page warns when a value is 0).
  */
 export type TaxiPolicyFormState = {
   customerAdvanceBps: string;
@@ -13,6 +13,9 @@ export type TaxiPolicyFormState = {
   customerNoShowMinContactAttempts: string;
   depositReleaseHoursAfterComplete: string;
   disputeSlaBusinessDays: string;
+  customerAdvanceRefundWindowHours: string;
+  partnerDepositDueMinutes: string;
+  tripDisputeWindowHours: string;
   penaltyGt24h: string;
   penaltyH2to24: string;
   penaltyLt2hOrNoShow: string;
@@ -31,8 +34,29 @@ type NumericFieldSpec = {
 };
 
 export const TAXI_POLICY_NUMERIC_FIELDS: NumericFieldSpec[] = [
-  { field: 'customerAdvanceBps', label: 'Customer advance', min: 1, max: 10_000, required: true },
-  { field: 'partnerDepositBps', label: 'Partner deposit', min: 1, max: 10_000, required: true },
+  { field: 'customerAdvanceBps', label: 'Customer advance', min: 0, max: 10_000, required: true },
+  { field: 'partnerDepositBps', label: 'Partner deposit', min: 0, max: 10_000, required: true },
+  {
+    field: 'customerAdvanceRefundWindowHours',
+    label: 'Booking-fee refund window',
+    min: 0,
+    max: 720,
+    required: false,
+  },
+  {
+    field: 'partnerDepositDueMinutes',
+    label: 'Partner deposit due',
+    min: 1,
+    max: 10_080,
+    required: false,
+  },
+  {
+    field: 'tripDisputeWindowHours',
+    label: 'Trip dispute window',
+    min: 0,
+    max: 720,
+    required: false,
+  },
   {
     field: 'customerNoShowWaitMinutes',
     label: 'Customer no-show wait',
@@ -87,6 +111,9 @@ export function formFromPolicy(policy: TaxiPolicyDto | null): TaxiPolicyFormStat
     customerNoShowMinContactAttempts: numToInput(policy?.customerNoShowMinContactAttempts),
     depositReleaseHoursAfterComplete: numToInput(policy?.depositReleaseHoursAfterComplete),
     disputeSlaBusinessDays: numToInput(policy?.disputeSlaBusinessDays),
+    customerAdvanceRefundWindowHours: numToInput(policy?.customerAdvanceRefundWindowHours),
+    partnerDepositDueMinutes: numToInput(policy?.partnerDepositDueMinutes),
+    tripDisputeWindowHours: numToInput(policy?.tripDisputeWindowHours),
     penaltyGt24h: numToInput(ladder?.gt24h),
     penaltyH2to24: numToInput(ladder?.h2to24),
     penaltyLt2hOrNoShow: numToInput(ladder?.lt2hOrNoShow),
@@ -133,6 +160,11 @@ export function hasFormErrors(errors: TaxiPolicyFormErrors): boolean {
   return Object.values(errors).some(Boolean);
 }
 
+function optionalWhole<K extends string>(key: K, raw: string): Partial<Record<K, number>> {
+  const value = parseWhole(raw);
+  return value === null ? {} : ({ [key]: value } as Record<K, number>);
+}
+
 /** Only call after {@link validateTaxiPolicyForm} returned no errors. */
 export function bodyFromForm(form: TaxiPolicyFormState): UpsertTaxiPolicyDraftBody {
   const num = (raw: string) => parseWhole(raw);
@@ -147,6 +179,10 @@ export function bodyFromForm(form: TaxiPolicyFormState): UpsertTaxiPolicyDraftBo
     customerNoShowMinContactAttempts: num(form.customerNoShowMinContactAttempts),
     depositReleaseHoursAfterComplete: num(form.depositReleaseHoursAfterComplete),
     disputeSlaBusinessDays: num(form.disputeSlaBusinessDays),
+    // Windows: blank → omitted, so the SERVER applies its own documented default (never a FE guess).
+    ...optionalWhole('customerAdvanceRefundWindowHours', form.customerAdvanceRefundWindowHours),
+    ...optionalWhole('partnerDepositDueMinutes', form.partnerDepositDueMinutes),
+    ...optionalWhole('tripDisputeWindowHours', form.tripDisputeWindowHours),
     partnerCancelPenaltyBpsByStage:
       gt24h !== null && h2to24 !== null && lt2hOrNoShow !== null
         ? { gt24h, h2to24, lt2hOrNoShow }
@@ -190,6 +226,21 @@ export const TAXI_POLICY_DISPLAY_ROWS: TaxiPolicyDisplayRow[] = [
     format: (p) => fmtBps(p?.partnerDepositBps),
   },
   {
+    key: 'customerAdvanceRefundWindowHours',
+    label: 'Booking-fee refund window',
+    format: (p) => fmtUnit(p?.customerAdvanceRefundWindowHours, 'h after payment'),
+  },
+  {
+    key: 'partnerDepositDueMinutes',
+    label: 'Partner deposit due',
+    format: (p) => fmtUnit(p?.partnerDepositDueMinutes, 'min after booking fee'),
+  },
+  {
+    key: 'tripDisputeWindowHours',
+    label: 'Trip dispute window',
+    format: (p) => fmtUnit(p?.tripDisputeWindowHours, 'h after pickup'),
+  },
+  {
     key: 'customerNoShowWaitMinutes',
     label: 'No-show wait',
     format: (p) => fmtUnit(p?.customerNoShowWaitMinutes, 'min'),
@@ -201,7 +252,7 @@ export const TAXI_POLICY_DISPLAY_ROWS: TaxiPolicyDisplayRow[] = [
   },
   {
     key: 'depositReleaseHoursAfterComplete',
-    label: 'Deposit release after completion',
+    label: 'Settlement window after completion',
     format: (p) => fmtUnit(p?.depositReleaseHoursAfterComplete, 'h'),
   },
   {

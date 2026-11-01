@@ -74,6 +74,8 @@ export const endpoints = {
     bookings: '/admin/v1/taxi/bookings',
     booking: (id: string) => `/admin/v1/taxi/bookings/${encodeURIComponent(id)}`,
     bookingCancel: (id: string) => `/admin/v1/taxi/bookings/${encodeURIComponent(id)}/cancel`,
+    bookingResolve: (id: string) => `/admin/v1/taxi/bookings/${encodeURIComponent(id)}/resolve`,
+    revenue: '/admin/v1/taxi/revenue',
     bookingDepositRelease: (id: string) =>
       `/admin/v1/taxi/bookings/${encodeURIComponent(id)}/deposit/release`,
     enrollments: '/admin/v1/taxi/enrollments',

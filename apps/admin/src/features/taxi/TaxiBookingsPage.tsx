@@ -17,6 +17,7 @@ import {
   customerAdvanceOf,
   formatMoneySide,
   partnerDepositOf,
+  taxiBookingStatusLabel,
 } from '@/features/taxi/taxi-ops-format';
 import { useTaxiBookings } from '@/hooks/taxi/useTaxiOperations';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
@@ -33,6 +34,11 @@ import {
 
 import './taxi-policy.css';
 
+const FLAG_FILTERS = [
+  { value: 'ALL', label: 'All bookings' },
+  { value: 'FLAGGED', label: 'Flagged (never started)' },
+] as const;
+
 function useBookingColumns(): ColumnDef<AdminTaxiBookingSummaryDto>[] {
   return useMemo(
     () => [
@@ -47,9 +53,25 @@ function useBookingColumns(): ColumnDef<AdminTaxiBookingSummaryDto>[] {
         header: 'Status',
         cell: ({ row }) => (
           <span className="admin-status-chip admin-status-chip--neutral">
-            {humanizeAdminLabel(row.original.status)}
+            {taxiBookingStatusLabel(row.original.status)}
           </span>
         ),
+      },
+      {
+        id: 'flag',
+        header: 'Flag',
+        accessorFn: (row) => row.adminFlagReason ?? '',
+        cell: ({ row }) =>
+          row.original.adminFlaggedAt ? (
+            <span
+              className="admin-status-chip admin-status-chip--draft"
+              title={`Flagged ${formatAdminDateTime(row.original.adminFlaggedAt)}`}
+            >
+              {humanizeAdminLabel(row.original.adminFlagReason ?? 'Flagged')}
+            </span>
+          ) : (
+            '—'
+          ),
       },
       {
         id: 'route',
@@ -68,7 +90,7 @@ function useBookingColumns(): ColumnDef<AdminTaxiBookingSummaryDto>[] {
       },
       {
         id: 'advance',
-        header: 'Customer advance',
+        header: 'Booking fee',
         accessorFn: (row) => formatMoneySide(customerAdvanceOf(row)),
       },
       {
@@ -98,6 +120,8 @@ export function TaxiBookingsPage() {
     bookings,
     status,
     setStatus,
+    flagged,
+    setFlagged,
     isLoading,
     isFetching,
     isFetchingNextPage,
@@ -114,7 +138,7 @@ export function TaxiBookingsPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Taxi bookings"
-          description="Every booking after a customer selected a bid — money state from the server, checkouts and refunds in the detail."
+          description="Every booking after a customer selected a bid — booking fee and deposit state from the server; disputes, refunds and revenue in the detail."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -132,16 +156,28 @@ export function TaxiBookingsPage() {
           <>
             <AdminDataBlock
               filters={
-                <AdminFilterField label="Status">
-                  <AdminFilterChips
-                    options={TAXI_BOOKING_STATUS_FILTERS}
-                    value={status}
-                    onChange={(value) => {
-                      setStatus(value);
-                    }}
-                    aria-label="Booking status"
-                  />
-                </AdminFilterField>
+                <>
+                  <AdminFilterField label="Status">
+                    <AdminFilterChips
+                      options={TAXI_BOOKING_STATUS_FILTERS}
+                      value={status}
+                      onChange={(value) => {
+                        setStatus(value);
+                      }}
+                      aria-label="Booking status"
+                    />
+                  </AdminFilterField>
+                  <AdminFilterField label="Needs action">
+                    <AdminFilterChips
+                      options={FLAG_FILTERS}
+                      value={flagged ? 'FLAGGED' : 'ALL'}
+                      onChange={(value) => {
+                        setFlagged(value === 'FLAGGED');
+                      }}
+                      aria-label="Flagged bookings"
+                    />
+                  </AdminFilterField>
+                </>
               }
             >
               <AlDataTable
@@ -156,9 +192,11 @@ export function TaxiBookingsPage() {
                 enableGlobalSearch={false}
                 emptyTitle="No bookings"
                 emptyDescription={
-                  status === 'ALL'
-                    ? 'No taxi booking has been created yet.'
-                    : 'No booking has this status. Try another filter.'
+                  flagged
+                    ? 'No booking is flagged for operator action.'
+                    : status === 'ALL'
+                      ? 'No taxi booking has been created yet.'
+                      : 'No booking has this status. Try another filter.'
                 }
                 getRowId={(row) => row.id}
                 onRowClick={(row) => {

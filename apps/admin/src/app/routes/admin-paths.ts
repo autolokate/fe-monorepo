@@ -32,6 +32,7 @@ export const adminPaths = {
   partnersKyc: '/partners/kyc',
   taxiBookings: '/taxi/bookings',
   taxiEnrollments: '/taxi/partners',
+  taxiRevenue: '/taxi/revenue',
   experts: '/experts',
   websiteBookings: '/website-bookings',
 } as const;
@@ -178,7 +179,14 @@ export const adminRoutes: AdminRouteMeta[] = [
   {
     path: adminPaths.taxiBookings,
     label: 'Bookings',
-    description: 'Taxi bookings, advance/deposit state, cancel and deposit release',
+    description: 'Taxi bookings, fee/deposit state, disputes, cancel and deposit return',
+    group: 'taxi',
+    nav: true,
+  },
+  {
+    path: adminPaths.taxiRevenue,
+    label: 'Revenue',
+    description: 'Booking fees earned/forfeited and partner deposits forfeited',
     group: 'taxi',
     nav: true,
   },
@@ -192,7 +200,7 @@ export const adminRoutes: AdminRouteMeta[] = [
   {
     path: adminPaths.taxiPolicy,
     label: 'Taxi policy',
-    description: 'Advance, deposit, no-show and cancellation policy',
+    description: 'Booking fee, deposit, refund/dispute windows and no-show policy',
     group: 'taxi',
     nav: true,
   },

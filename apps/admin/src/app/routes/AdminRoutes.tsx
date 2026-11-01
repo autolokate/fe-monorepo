@@ -208,6 +208,11 @@ const PartnersKycPage = lazy(() =>
   })),
 );
 
+const TaxiRevenuePage = lazy(() =>
+  import('@/features/taxi/TaxiRevenuePage').then((module) => ({
+    default: module.TaxiRevenuePage,
+  })),
+);
 const WebsiteBookingsPage = lazy(() =>
   import('@/features/website-bookings/WebsiteBookingsPage').then((module) => ({
     default: module.WebsiteBookingsPage,
@@ -279,6 +284,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.partnersKyc} element={<PartnersKycPage />} />
             <Route path={adminPaths.experts} element={<ExpertsAdminPage />} />
             <Route path={adminPaths.websiteBookings} element={<WebsiteBookingsPage />} />
+            <Route path={adminPaths.taxiRevenue} element={<TaxiRevenuePage />} />
             <Route path={`${adminPaths.partners}/:orgId`} element={<PartnerDetailPage />} />
           </Route>
         </Route>

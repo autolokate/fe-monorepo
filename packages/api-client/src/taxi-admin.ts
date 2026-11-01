@@ -22,6 +22,12 @@ export type TaxiPolicyDto = {
   customerNoShowMinContactAttempts?: number | null;
   depositReleaseHoursAfterComplete?: number | null;
   disputeSlaBusinessDays?: number | null;
+  /** Hours after advance capture during which a customer cancel refunds the fee in full (0–720). */
+  customerAdvanceRefundWindowHours?: number;
+  /** Minutes after advance capture (and before pickupAt) for the partner to pay the deposit (1–10080). */
+  partnerDepositDueMinutes?: number;
+  /** Customer may report "partner didn't show / trip not done" until pickupAt + this (0–720 h). */
+  tripDisputeWindowHours?: number;
   partnerCancelPenaltyBpsByStage?: TaxiPartnerCancelPenaltyBpsByStage | null;
   notes?: string | null;
   publishedAt?: string | null;
@@ -45,6 +51,12 @@ export type UpsertTaxiPolicyDraftBody = {
   customerNoShowMinContactAttempts: number | null;
   depositReleaseHoursAfterComplete: number | null;
   disputeSlaBusinessDays: number | null;
+  /** 0–720. Omitted → the server's default. */
+  customerAdvanceRefundWindowHours?: number;
+  /** 1–10080. Omitted → the server's default. */
+  partnerDepositDueMinutes?: number;
+  /** 0–720. Omitted → the server's default. */
+  tripDisputeWindowHours?: number;
   partnerCancelPenaltyBpsByStage: TaxiPartnerCancelPenaltyBpsByStage | null;
   notes: string | null;
 };
@@ -132,9 +144,9 @@ export async function provisionTaxi(
 }
 
 /* ------------------------------------------------------------------------------------------------
- * Taxi operations (Admin) — CONTRACTS.md "Taxi (be-taxi) / Admin". Coded against the shared
- * contract ahead of deployment: servers that predate these routes answer 404, which callers must
- * render as "not available on this server yet" (never as empty data).
+ * Taxi operations (Admin) — taxi money rules v2 (be-integration OpenAPI). Servers that predate a
+ * route answer 404, which callers must render as "not available on this server yet" (never as empty
+ * data). Amounts, bps and deadlines are always the server's — never computed client-side.
  * ---------------------------------------------------------------------------------------------- */
 
 export const ADMIN_TAXI_BOOKING_STATUSES = [
@@ -149,6 +161,7 @@ export const ADMIN_TAXI_BOOKING_STATUSES = [
   'NO_SHOW_CUSTOMER',
   'NO_SHOW_PARTNER',
   'DISPUTED',
+  'EXPIRED',
 ] as const;
 export type AdminTaxiBookingStatus = (typeof ADMIN_TAXI_BOOKING_STATUSES)[number];
 
@@ -165,6 +178,9 @@ export const ADMIN_TAXI_MONEY_STATUSES = [
   'DISPUTED_HOLD',
   'REFUND_PENDING',
   'RELEASE_PENDING_PAYOUT',
+  'EARNED',
+  'NOT_REQUIRED',
+  'NOT_REQUIRED_LEGACY',
 ] as const;
 export type AdminTaxiMoneyStatus = (typeof ADMIN_TAXI_MONEY_STATUSES)[number];
 
@@ -179,6 +195,90 @@ export type AdminTaxiMoneySideDto = {
   status: string;
   amountPaise: number | null;
   bps: number | null;
+};
+
+/** OpenAPI `TaxiAdvanceDto` — the customer booking fee (Autolokate's). */
+export type AdminTaxiAdvanceDto = {
+  /** {@link AdminTaxiMoneyStatus} (string so newer values render). */
+  status: string;
+  /** Checkout amount, else a quote from the bound policy; 0 when NOT_REQUIRED; null without policy. */
+  amountPaise: number | null;
+  bps: number | null;
+  /** Advance capture + refund window; a customer cancel before it refunds the fee in full. */
+  refundableUntil: string | null;
+  refundable: boolean;
+};
+
+/** OpenAPI `TaxiDepositDto` — the partner security deposit (held by Autolokate). */
+export type AdminTaxiDepositDto = {
+  status: string;
+  amountPaise: number | null;
+  bps: number | null;
+  /** Pay-by deadline while PENDING_PARTNER_DEPOSIT. */
+  dueAt: string | null;
+  /** When the booking settles (deposit returned, advance earned/forfeited) if no dispute opens. */
+  releaseDueAt: string | null;
+};
+
+/** OpenAPI `TaxiBookingPolicySnapshotDto` — the policy version bound to this booking. */
+export type AdminTaxiBookingPolicySnapshotDto = {
+  id: string;
+  customerAdvanceBps: number;
+  partnerDepositBps: number;
+  customerAdvanceRefundWindowHours: number;
+  partnerDepositDueMinutes: number;
+  customerNoShowWaitMinutes: number | null;
+  customerNoShowMinContactAttempts: number | null;
+  depositReleaseHoursAfterComplete: number | null;
+  tripDisputeWindowHours: number;
+};
+
+export type AdminTaxiDisputeResolution = 'PARTNER_FAULT' | 'CUSTOMER_FAULT' | 'NO_FAULT';
+
+/** OpenAPI `TaxiDisputeDto` */
+export type AdminTaxiDisputeDto = {
+  kind: 'PARTNER_NO_SHOW' | 'TRIP_NOT_COMPLETED' | 'OTHER' | null;
+  reason: string | null;
+  openedAt: string | null;
+  priorStatus: string | null;
+  resolution: AdminTaxiDisputeResolution | null;
+  resolutionReason: string | null;
+  resolvedAt: string | null;
+};
+
+/** OpenAPI `TaxiNoShowDto` — a partner's customer-no-show report. */
+export type AdminTaxiNoShowDto = {
+  reportedAt: string;
+  contactAttempts: number | null;
+  note: string | null;
+};
+
+export const ADMIN_TAXI_REVENUE_KINDS = [
+  'ADVANCE_EARNED',
+  'ADVANCE_FORFEITED',
+  'DEPOSIT_FORFEITED',
+] as const;
+export type AdminTaxiRevenueKind = (typeof ADMIN_TAXI_REVENUE_KINDS)[number];
+
+/** OpenAPI `AdminTaxiRevenueDto` — one Autolokate revenue ledger row. */
+export type AdminTaxiRevenueDto = {
+  id: string;
+  bookingId: string;
+  checkoutId: string;
+  policyVersionId: string | null;
+  orgId: string;
+  accountId: string;
+  kind: AdminTaxiRevenueKind;
+  amountPaise: number;
+  /** COMPLETED | NO_SHOW_CUSTOMER | CUSTOMER_CANCEL | PARTNER_CANCEL | ADMIN_CANCEL | *_FAULT … */
+  trigger: string;
+  createdAt: string;
+};
+
+/** OpenAPI `TaxiMoneyOutcomeDto` — what an admin action did to each money side. */
+export type AdminTaxiMoneyOutcomeDto = {
+  advance: { decision: 'REFUND' | 'FORFEIT' | 'EARN' | 'NONE'; amountPaise: number };
+  deposit: { decision: 'RELEASE' | 'FORFEIT' | 'NONE'; amountPaise: number };
 };
 
 /** OpenAPI `AdminTaxiCheckoutDto` — one checkout attempt (advance or deposit). */
@@ -204,7 +304,7 @@ export type AdminTaxiRefundDto = {
   id: string;
   checkoutId: string;
   kind: 'CUSTOMER_ADVANCE' | 'PARTNER_DEPOSIT';
-  /** CUSTOMER_CANCEL | PARTNER_CANCEL | ADMIN_CANCEL | UNAPPLIED_CAPTURE */
+  /** CUSTOMER_CANCEL | PARTNER_CANCEL | ADMIN_CANCEL | UNAPPLIED_CAPTURE | DEPOSIT_TIMEOUT | DEPOSIT_RELEASE | DISPUTE_RESOLUTION */
   reason: string;
   /** REQUESTED | SUBMITTING | PENDING | PROCESSED | FAILED | NEEDS_RECONCILIATION */
   status: string;
@@ -243,19 +343,39 @@ export type AdminTaxiBookingSummaryDto = {
   startedAt: string | null;
   completedAt: string | null;
   cancelledAt: string | null;
-  cancelledBy: 'CUSTOMER' | 'PARTNER' | 'ADMIN' | null;
+  /** SYSTEM = a sweep (e.g. deposit timeout). Typed as string so newer actors still render. */
+  cancelledBy: 'CUSTOMER' | 'PARTNER' | 'ADMIN' | 'SYSTEM' | (string & {}) | null;
   cancelReason: string | null;
+  /** CUSTOMER_CANCEL | PARTNER_CANCEL | ADMIN_CANCEL | DEPOSIT_TIMEOUT | ADVANCE_TIMEOUT | DISPUTE_NO_FAULT */
+  cancelCode?: string | null;
   depositReleaseDueAt: string | null;
   depositReleasedAt: string | null;
   depositReleasedByAdminId: string | null;
+  /** v2 money blocks — optional so a server that predates them still renders. */
+  advance?: AdminTaxiAdvanceDto;
+  deposit?: AdminTaxiDepositDto;
+  policy?: AdminTaxiBookingPolicySnapshotDto | null;
+  dispute?: AdminTaxiDisputeDto | null;
+  noShow?: AdminTaxiNoShowDto | null;
+  /** When money settled (window closed with no dispute, or an admin ruling). */
+  settledAt?: string | null;
+  /** Set by the never-started sweep (no money moves) — needs operator action. */
+  adminFlaggedAt?: string | null;
+  adminFlagReason?: 'NEVER_STARTED' | (string & {}) | null;
   createdAt: string;
   updatedAt: string;
 };
 
-/** OpenAPI `AdminTaxiBookingDetailDto` — GET /admin/v1/taxi/bookings/{id} (checkouts + refunds). */
+/** OpenAPI `AdminTaxiBookingDetailDto` — GET /admin/v1/taxi/bookings/{id}. */
 export type AdminTaxiBookingDetailDto = AdminTaxiBookingSummaryDto & {
   checkouts: AdminTaxiCheckoutDto[];
   refunds: AdminTaxiRefundDto[];
+  revenue: AdminTaxiRevenueDto[];
+};
+
+/** OpenAPI `AdminTaxiBookingMutationDto` — detail + the money `outcome` of the action. */
+export type AdminTaxiBookingMutationDto = AdminTaxiBookingDetailDto & {
+  outcome: AdminTaxiMoneyOutcomeDto;
 };
 
 /** OpenAPI `AdminTaxiEnrollmentDto` — row of GET /admin/v1/taxi/enrollments. */
@@ -270,6 +390,8 @@ export type AdminTaxiEnrollmentDto = {
 
 export type ListAdminTaxiBookingsQuery = {
   status?: AdminTaxiBookingStatus;
+  /** true → only bookings flagged by the never-started sweep. */
+  flagged?: boolean;
   cursor?: string;
   limit?: number;
 };
@@ -285,9 +407,28 @@ export type AdminTaxiPage<T> = {
   nextCursor: string | null;
 };
 
+/**
+ * OpenAPI `AdminCancelTaxiBookingDto` — v2 replaces `refundAdvance`. Both outcomes are explicit;
+ * each is ignored by the server when that side holds no money.
+ */
 export type CancelAdminTaxiBookingBody = {
   reason: string;
-  refundAdvance: boolean;
+  advanceOutcome: 'REFUND' | 'FORFEIT';
+  depositOutcome: 'RELEASE' | 'FORFEIT';
+};
+
+/** OpenAPI `AdminResolveTaxiDisputeDto` */
+export type ResolveAdminTaxiDisputeBody = {
+  outcome: AdminTaxiDisputeResolution;
+  reason: string;
+};
+
+export type ListAdminTaxiRevenueQuery = {
+  kind?: AdminTaxiRevenueKind;
+  bookingId?: string;
+  orgId?: string;
+  cursor?: string;
+  limit?: number;
 };
 
 function taxiQuery(params: Record<string, string | number | undefined>): string {
@@ -327,6 +468,7 @@ export async function listAdminTaxiBookings(
 ): Promise<AdminTaxiPage<AdminTaxiBookingSummaryDto>> {
   const path = `${endpoints.adminTaxi.bookings}${taxiQuery({
     status: query.status,
+    flagged: query.flagged ? 'true' : undefined,
     cursor: query.cursor,
     limit: query.limit,
   })}`;
@@ -346,38 +488,88 @@ export async function getAdminTaxiBooking(
     ...(data as AdminTaxiBookingDetailDto),
     checkouts: Array.isArray(data.checkouts) ? data.checkouts : [],
     refunds: Array.isArray(data.refunds) ? data.refunds : [],
+    revenue: Array.isArray(data.revenue) ? data.revenue : [],
   };
 }
 
-/** POST /admin/v1/taxi/bookings/{id}/cancel {reason, refundAdvance} */
+function readMutation(response: unknown): AdminTaxiBookingMutationDto {
+  const data = unwrapEnvelope(response) as Partial<AdminTaxiBookingMutationDto>;
+  return {
+    ...(data as AdminTaxiBookingMutationDto),
+    checkouts: Array.isArray(data.checkouts) ? data.checkouts : [],
+    refunds: Array.isArray(data.refunds) ? data.refunds : [],
+    revenue: Array.isArray(data.revenue) ? data.revenue : [],
+  };
+}
+
+/**
+ * POST /admin/v1/taxi/bookings/{id}/cancel {reason, advanceOutcome, depositOutcome} → CANCELLED_ADMIN.
+ * 409 `taxi_booking_not_cancellable`. Returns detail + `outcome`.
+ */
 export async function cancelAdminTaxiBooking(
   client: ApiClient,
   id: string,
   body: CancelAdminTaxiBookingBody,
-  options: TaxiRequestOptions & { idempotencyKey?: string } = {},
-): Promise<AdminTaxiBookingDetailDto> {
-  const response = await client.post<unknown>(endpoints.adminTaxi.bookingCancel(id), body, {
-    ...taxiSignal(options),
-    ...(options.idempotencyKey ? { headers: { 'Idempotency-Key': options.idempotencyKey } } : {}),
-  });
-  return unwrapEnvelope(response) as AdminTaxiBookingDetailDto;
+  options: TaxiRequestOptions = {},
+): Promise<AdminTaxiBookingMutationDto> {
+  const response = await client.post<unknown>(
+    endpoints.adminTaxi.bookingCancel(id),
+    body,
+    taxiSignal(options),
+  );
+  return readMutation(response);
 }
 
-/** POST /admin/v1/taxi/bookings/{id}/deposit/release */
+/**
+ * POST /admin/v1/taxi/bookings/{id}/resolve {outcome, reason} — rule on a DISPUTED booking.
+ * 409 `taxi_booking_not_resolvable`. Returns detail + `outcome`.
+ */
+export async function resolveAdminTaxiDispute(
+  client: ApiClient,
+  id: string,
+  body: ResolveAdminTaxiDisputeBody,
+  options: TaxiRequestOptions = {},
+): Promise<AdminTaxiBookingMutationDto> {
+  const response = await client.post<unknown>(
+    endpoints.adminTaxi.bookingResolve(id),
+    body,
+    taxiSignal(options),
+  );
+  return readMutation(response);
+}
+
+/**
+ * POST /admin/v1/taxi/bookings/{id}/deposit/release — a real provider refund of the deposit payment
+ * on a COMPLETED trip. 409 `taxi_deposit_not_releasable`. Returns detail + `outcome`.
+ */
 export async function releaseAdminTaxiBookingDeposit(
   client: ApiClient,
   id: string,
-  options: TaxiRequestOptions & { idempotencyKey?: string } = {},
-): Promise<AdminTaxiBookingDetailDto> {
+  options: TaxiRequestOptions = {},
+): Promise<AdminTaxiBookingMutationDto> {
   const response = await client.post<unknown>(
     endpoints.adminTaxi.bookingDepositRelease(id),
     {},
-    {
-      ...taxiSignal(options),
-      ...(options.idempotencyKey ? { headers: { 'Idempotency-Key': options.idempotencyKey } } : {}),
-    },
+    taxiSignal(options),
   );
-  return unwrapEnvelope(response) as AdminTaxiBookingDetailDto;
+  return readMutation(response);
+}
+
+/** GET /admin/v1/taxi/revenue?kind&bookingId&orgId&cursor&limit — Autolokate revenue ledger. */
+export async function listAdminTaxiRevenue(
+  client: ApiClient,
+  query: ListAdminTaxiRevenueQuery = {},
+  options: TaxiRequestOptions = {},
+): Promise<AdminTaxiPage<AdminTaxiRevenueDto>> {
+  const path = `${endpoints.adminTaxi.revenue}${taxiQuery({
+    kind: query.kind,
+    bookingId: query.bookingId,
+    orgId: query.orgId,
+    cursor: query.cursor,
+    limit: query.limit,
+  })}`;
+  const response = await client.get<unknown>(path, taxiSignal(options));
+  return readTaxiPage<AdminTaxiRevenueDto>(response);
 }
 
 /** GET /admin/v1/taxi/enrollments?status */

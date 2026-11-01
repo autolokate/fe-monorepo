@@ -41,6 +41,7 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/partners/kyc': ShieldCheckIcon,
   '/taxi/bookings': ReceiptTextIcon,
   '/taxi/partners': CarIcon,
+  '/taxi/revenue': CreditCardIcon,
   '/experts': UsersIcon,
   '/website-bookings': UsersIcon,
   '/garage-taxonomy': StoreIcon,

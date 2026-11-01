@@ -71,7 +71,12 @@ export type HermeticCapture = {
   incidentsGet: number;
   incidentsDetailGet: number;
   ordersGet: number;
-  ordersRefund: Array<{ method: string; path: string; body: unknown }>;
+  ordersRefund: Array<{
+    method: string;
+    path: string;
+    body: unknown;
+    idempotencyKey: string | null;
+  }>;
   clawbacksPost: Array<{ method: string; path: string; body: unknown }>;
   settlementBatchPost: number;
   supportTicketsGet: number;
@@ -123,6 +128,9 @@ export const HERMETIC_TAXI_POLICY_LIVE: HermeticTaxiPolicy = {
   customerNoShowMinContactAttempts: 2,
   depositReleaseHoursAfterComplete: 48,
   disputeSlaBusinessDays: 5,
+  customerAdvanceRefundWindowHours: 24,
+  partnerDepositDueMinutes: 120,
+  tripDisputeWindowHours: 24,
   partnerCancelPenaltyBpsByStage: { gt24h: 2500, h2to24: 5000, lt2hOrNoShow: 10000 },
   notes: null,
   publishedAt: '2026-10-01T00:00:00.000Z',
@@ -2228,26 +2236,35 @@ export async function installHermeticApiRoutes(
     const orderRefundMatch = path.match(/^\/admin\/v1\/orders\/([^/]+)\/refund$/);
     if (method === 'POST' && orderRefundMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
-      capture.ordersRefund.push({ method, path, body });
+      capture.ordersRefund.push({
+        method,
+        path,
+        body,
+        idempotencyKey: req.headers()['idempotency-key'] ?? null,
+      });
       if (ordersRefundStatus >= 400) {
-        await fulfillJson(
-          route,
-          ordersRefundStatus,
-          errorEnvelope(
-            ordersRefundStatus === 409 ? 'Order is not refundable' : 'Forbidden',
-            ordersRefundStatus === 409 ? 'order_not_refundable' : 'forbidden',
-          ),
-        );
+        const [message, code] =
+          ordersRefundStatus === 409
+            ? ['Order is not refundable', 'order_not_refundable']
+            : ordersRefundStatus === 502
+              ? ['Provider declined the refund', 'refund_failed']
+              : ordersRefundStatus === 503
+                ? ['Payment provider unavailable', 'vendor_unavailable']
+                : ['Forbidden', 'forbidden'];
+        await fulfillJson(route, ordersRefundStatus, errorEnvelope(message, code));
         return;
       }
       await fulfillJson(
         route,
         ordersRefundStatus,
         envelope({
+          orderId: orderRefundMatch[1],
           paymentRef: HERMETIC_PAYMENT_REF,
+          refundId: '99999999-0000-4000-8000-000000000001',
+          refundRef: HERMETIC_REFUND_REF,
           state: 'REFUND_PENDING',
           amountPaise: 19900,
-          refundRef: HERMETIC_REFUND_REF,
+          subscriptionId: null,
         }),
       );
       return;

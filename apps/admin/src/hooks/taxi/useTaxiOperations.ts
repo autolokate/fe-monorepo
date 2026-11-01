@@ -1,4 +1,12 @@
-import type { AdminTaxiBookingStatus, AdminTaxiEnrollmentStatus } from '@autolokate/api-client';
+import type {
+  AdminTaxiBookingMutationDto,
+  AdminTaxiBookingStatus,
+  AdminTaxiDisputeResolution,
+  AdminTaxiEnrollmentStatus,
+  AdminTaxiRevenueKind,
+  CancelAdminTaxiBookingBody,
+} from '@autolokate/api-client';
+import { ApiError } from '@autolokate/api-client';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
@@ -17,6 +25,8 @@ import {
   fetchTaxiEnrollmentsPage,
   submitTaxiBookingCancel,
   submitTaxiDepositRelease,
+  submitTaxiDisputeResolve,
+  fetchTaxiRevenuePage,
   submitTaxiEnrollmentReinstate,
   submitTaxiEnrollmentSuspend,
 } from '@/services/taxi/taxi-operations-service';
@@ -25,7 +35,10 @@ export const TAXI_OPS_PAGE_LIMIT = 25;
 
 export const taxiOpsQueryKeys = {
   all: ['admin', 'taxi', 'ops'] as const,
-  bookings: (status: string) => [...taxiOpsQueryKeys.all, 'bookings', status] as const,
+  bookings: (status: string, flagged: boolean) =>
+    [...taxiOpsQueryKeys.all, 'bookings', status, flagged] as const,
+  revenue: (filters: Record<string, string>) =>
+    [...taxiOpsQueryKeys.all, 'revenue', filters] as const,
   booking: (id: string) => [...taxiOpsQueryKeys.all, 'booking', id] as const,
   enrollments: (status: string) => [...taxiOpsQueryKeys.all, 'enrollments', status] as const,
 };
@@ -33,13 +46,15 @@ export const taxiOpsQueryKeys = {
 export function useTaxiBookings() {
   const canRead = useAdminPermission('taxi:read');
   const [status, setStatus] = useState<AdminTaxiBookingStatus | 'ALL'>('ALL');
+  const [flagged, setFlagged] = useState(false);
   const query = useInfiniteQuery({
-    queryKey: taxiOpsQueryKeys.bookings(status),
+    queryKey: taxiOpsQueryKeys.bookings(status, flagged),
     initialPageParam: undefined as string | undefined,
     queryFn: ({ signal, pageParam }) =>
       fetchTaxiBookingsPage(
         {
           ...(status !== 'ALL' ? { status } : {}),
+          ...(flagged ? { flagged: true } : {}),
           limit: TAXI_OPS_PAGE_LIMIT,
           ...(pageParam ? { cursor: pageParam } : {}),
         },
@@ -56,6 +71,8 @@ export function useTaxiBookings() {
     bookings,
     status,
     setStatus,
+    flagged,
+    setFlagged,
     notDeployed,
     userErrorMessage:
       query.isError && !notDeployed ? mapAdminApiError(query.error).userMessage : null,
@@ -78,27 +95,52 @@ export function useTaxiBooking(bookingId: string) {
     void queryClient.invalidateQueries({ queryKey: taxiOpsQueryKeys.all });
   };
 
+  // Each action answers detail + `outcome`; keep the last one so the page can show what happened.
+  const [lastOutcome, setLastOutcome] = useState<{
+    action: 'cancel' | 'resolve' | 'release';
+    result: AdminTaxiBookingMutationDto;
+  } | null>(null);
+
+  const onActionSuccess = (
+    action: 'cancel' | 'resolve' | 'release',
+    result: AdminTaxiBookingMutationDto,
+  ) => {
+    setLastOutcome({ action, result });
+    queryClient.setQueryData(taxiOpsQueryKeys.booking(bookingId), result);
+    onChanged();
+  };
+
   const cancelMutation = useMutation({
-    mutationFn: (input: { reason: string; refundAdvance: boolean; idempotencyKey: string }) =>
-      submitTaxiBookingCancel(
-        bookingId,
-        { reason: input.reason, refundAdvance: input.refundAdvance },
-        input.idempotencyKey,
-      ),
-    onSuccess: () => {
+    mutationFn: (body: CancelAdminTaxiBookingBody) => submitTaxiBookingCancel(bookingId, body),
+    retry: 0,
+    onSuccess: (result) => {
       showSuccessToast('Booking cancelled.');
-      onChanged();
+      onActionSuccess('cancel', result);
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'taxi-booking-cancel', toast: false });
     },
   });
 
+  const resolveMutation = useMutation({
+    mutationFn: (body: { outcome: AdminTaxiDisputeResolution; reason: string }) =>
+      submitTaxiDisputeResolve(bookingId, body),
+    retry: 0,
+    onSuccess: (result) => {
+      showSuccessToast('Dispute resolved.');
+      onActionSuccess('resolve', result);
+    },
+    onError: (error) => {
+      reportAdminApiError(error, { context: 'taxi-dispute-resolve', toast: false });
+    },
+  });
+
   const releaseMutation = useMutation({
-    mutationFn: (idempotencyKey: string) => submitTaxiDepositRelease(bookingId, idempotencyKey),
-    onSuccess: () => {
-      showSuccessToast('Deposit release requested.');
-      onChanged();
+    mutationFn: () => submitTaxiDepositRelease(bookingId),
+    retry: 0,
+    onSuccess: (result) => {
+      showSuccessToast('Deposit refund submitted to the payment provider.');
+      onActionSuccess('release', result);
     },
     onError: (error) => {
       reportAdminApiError(error, { context: 'taxi-deposit-release', toast: false });
@@ -118,8 +160,62 @@ export function useTaxiBooking(bookingId: string) {
     },
     cancel: cancelMutation,
     cancelError: cancelMutation.isError ? actionErrorMessage(cancelMutation.error) : null,
+    resolve: resolveMutation,
+    resolveError: resolveMutation.isError ? actionErrorMessage(resolveMutation.error) : null,
     release: releaseMutation,
     releaseError: releaseMutation.isError ? actionErrorMessage(releaseMutation.error) : null,
+    lastOutcome,
+    clearLastOutcome: () => {
+      setLastOutcome(null);
+    },
+  };
+}
+
+export type TaxiRevenueFilters = {
+  kind: AdminTaxiRevenueKind | 'ALL';
+  bookingId: string;
+  orgId: string;
+};
+
+export function useTaxiRevenue(filters: TaxiRevenueFilters) {
+  const canRead = useAdminPermission('taxi:read');
+  const bookingId = filters.bookingId.trim();
+  const orgId = filters.orgId.trim();
+  const query = useInfiniteQuery({
+    queryKey: taxiOpsQueryKeys.revenue({ kind: filters.kind, bookingId, orgId }),
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ signal, pageParam }) =>
+      fetchTaxiRevenuePage(
+        {
+          ...(filters.kind !== 'ALL' ? { kind: filters.kind } : {}),
+          ...(bookingId ? { bookingId } : {}),
+          ...(orgId ? { orgId } : {}),
+          limit: TAXI_OPS_PAGE_LIMIT,
+          ...(pageParam ? { cursor: pageParam } : {}),
+        },
+        signal,
+      ),
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
+    enabled: canRead,
+    retry: false,
+  });
+  const rows = useMemo(() => query.data?.pages.flatMap((p) => p.items) ?? [], [query.data]);
+  const notDeployed = query.isError && isAdminListNotDeployed(query.error);
+  return {
+    rows,
+    hasMore: query.hasNextPage,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isFetchingNextPage: query.isFetchingNextPage,
+    notDeployed,
+    userErrorMessage:
+      query.isError && !notDeployed ? mapAdminApiError(query.error).userMessage : null,
+    refresh: () => {
+      void query.refetch();
+    },
+    loadMore: () => {
+      void query.fetchNextPage();
+    },
   };
 }
 
@@ -197,6 +293,17 @@ export function useTaxiEnrollments() {
 function actionErrorMessage(error: unknown): string {
   if (isAdminRouteNotDeployed(error)) {
     return 'This action is not available on this server yet.';
+  }
+  if (error instanceof ApiError) {
+    if (error.code === 'taxi_booking_not_resolvable') {
+      return 'This booking is not in dispute any more (it may already be resolved). Refresh to see its current state.';
+    }
+    if (error.code === 'taxi_booking_not_cancellable') {
+      return 'This booking can no longer be cancelled from its current status. Refresh to see its state.';
+    }
+    if (error.code === 'taxi_deposit_not_releasable') {
+      return 'The deposit can only be returned while it is held on a completed trip. Refresh to see its state.';
+    }
   }
   const mapped = mapAdminApiError(error);
   if (mapped.status === 409 && mapped.message.trim()) {

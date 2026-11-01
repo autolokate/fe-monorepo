@@ -3,16 +3,22 @@ import {
   getAdminTaxiBooking,
   listAdminTaxiBookings,
   listAdminTaxiEnrollments,
+  listAdminTaxiRevenue,
   reinstateAdminTaxiEnrollment,
   releaseAdminTaxiBookingDeposit,
+  resolveAdminTaxiDispute,
   suspendAdminTaxiEnrollment,
   type AdminTaxiBookingDetailDto,
+  type AdminTaxiBookingMutationDto,
   type AdminTaxiBookingSummaryDto,
   type AdminTaxiEnrollmentDto,
   type AdminTaxiPage,
+  type AdminTaxiRevenueDto,
   type CancelAdminTaxiBookingBody,
   type ListAdminTaxiBookingsQuery,
   type ListAdminTaxiEnrollmentsQuery,
+  type ListAdminTaxiRevenueQuery,
+  type ResolveAdminTaxiDisputeBody,
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
@@ -32,19 +38,33 @@ export function fetchTaxiBooking(
   return getAdminTaxiBooking(getAdminApiClient(), id, signal ? { signal } : {});
 }
 
+/** Admin cancel with explicit advance/deposit outcomes (money rules v2). Returns detail + outcome. */
 export function submitTaxiBookingCancel(
   id: string,
   body: CancelAdminTaxiBookingBody,
-  idempotencyKey: string,
-): Promise<AdminTaxiBookingDetailDto> {
-  return cancelAdminTaxiBooking(getAdminApiClient(), id, body, { idempotencyKey });
+): Promise<AdminTaxiBookingMutationDto> {
+  return cancelAdminTaxiBooking(getAdminApiClient(), id, body);
 }
 
-export function submitTaxiDepositRelease(
+/** Rule on a DISPUTED booking. Returns detail + outcome. */
+export function submitTaxiDisputeResolve(
   id: string,
-  idempotencyKey: string,
-): Promise<AdminTaxiBookingDetailDto> {
-  return releaseAdminTaxiBookingDeposit(getAdminApiClient(), id, { idempotencyKey });
+  body: ResolveAdminTaxiDisputeBody,
+): Promise<AdminTaxiBookingMutationDto> {
+  return resolveAdminTaxiDispute(getAdminApiClient(), id, body);
+}
+
+/** Return a held deposit now — a real provider refund. Returns detail + outcome. */
+export function submitTaxiDepositRelease(id: string): Promise<AdminTaxiBookingMutationDto> {
+  return releaseAdminTaxiBookingDeposit(getAdminApiClient(), id);
+}
+
+/** GET /admin/v1/taxi/revenue — Autolokate revenue ledger (keyset). */
+export function fetchTaxiRevenuePage(
+  query: ListAdminTaxiRevenueQuery,
+  signal?: AbortSignal,
+): Promise<AdminTaxiPage<AdminTaxiRevenueDto>> {
+  return listAdminTaxiRevenue(getAdminApiClient(), query, signal ? { signal } : {});
 }
 
 export function fetchTaxiEnrollmentsPage(

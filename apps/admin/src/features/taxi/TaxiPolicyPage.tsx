@@ -310,8 +310,8 @@ export function TaxiPolicyPage() {
                   placeholder="500"
                   hint={bpsHint(
                     form.customerAdvanceBps,
-                    'of fare paid by the customer to confirm',
-                    'Required, 1–10000',
+                    'of fare — booking fee paid by the customer to Autolokate (0 = no fee)',
+                    'Required, 0–10000',
                   )}
                   form={form}
                   error={show('customerAdvanceBps')}
@@ -326,11 +326,49 @@ export function TaxiPolicyPage() {
                   placeholder="700"
                   hint={bpsHint(
                     form.partnerDepositBps,
-                    'of fare paid by the partner after completion',
-                    'Required, 1–10000',
+                    'of fare — security deposit the partner pays before the trip (0 = none)',
+                    'Required, 0–10000',
                   )}
                   form={form}
                   error={show('partnerDepositBps')}
+                  showError={showValidation}
+                  disabled={disabled}
+                  onChange={setField}
+                />
+
+                <h3 className="taxi-policy__group">Money windows</h3>
+                <PolicyNumberInput
+                  field="customerAdvanceRefundWindowHours"
+                  label="Booking-fee refund window (hours)"
+                  testId="taxi-advance-refund-window-hours"
+                  placeholder="24"
+                  hint="0–720 (blank = server default). A customer who cancels within this many hours of paying gets the booking fee back in full; after it the fee is non-refundable."
+                  form={form}
+                  error={show('customerAdvanceRefundWindowHours')}
+                  showError={showValidation}
+                  disabled={disabled}
+                  onChange={setField}
+                />
+                <PolicyNumberInput
+                  field="partnerDepositDueMinutes"
+                  label="Partner deposit due (minutes)"
+                  testId="taxi-deposit-due-minutes"
+                  placeholder="120"
+                  hint="1–10080 (blank = server default). The partner must pay the deposit within this many minutes of the booking fee (and before pickup), or the booking is cancelled and the customer refunded."
+                  form={form}
+                  error={show('partnerDepositDueMinutes')}
+                  showError={showValidation}
+                  disabled={disabled}
+                  onChange={setField}
+                />
+                <PolicyNumberInput
+                  field="tripDisputeWindowHours"
+                  label="Trip dispute window (hours)"
+                  testId="taxi-trip-dispute-window-hours"
+                  placeholder="24"
+                  hint="0–720 (blank = server default). The customer can report a partner no-show / trip not done until pickup + this many hours."
+                  form={form}
+                  error={show('tripDisputeWindowHours')}
                   showError={showValidation}
                   disabled={disabled}
                   onChange={setField}
@@ -361,9 +399,9 @@ export function TaxiPolicyPage() {
                 />
                 <PolicyNumberInput
                   field="depositReleaseHoursAfterComplete"
-                  label="Deposit release after completion (hours)"
+                  label="Settlement window after completion (hours)"
                   testId="taxi-deposit-release-hours"
-                  hint="0–720. Partner deposit is released this long after the trip completes."
+                  hint="0–720 (0 = immediate). The customer can dispute a completed trip for this long; with no dispute the deposit is returned and the booking fee earned."
                   form={form}
                   error={show('depositReleaseHoursAfterComplete')}
                   showError={showValidation}

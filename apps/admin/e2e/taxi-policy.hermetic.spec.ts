@@ -92,6 +92,8 @@ test.describe('Taxi policy (hermetic)', () => {
     await expect(page.getByTestId('taxi-deposit-release-hours')).toHaveValue('48');
     await page.getByTestId('taxi-no-show-wait-minutes').fill('20');
     await page.getByTestId('taxi-dispute-sla-days').fill('7');
+    await expect(page.getByTestId('taxi-advance-refund-window-hours')).toHaveValue('24');
+    await page.getByTestId('taxi-deposit-due-minutes').fill('90');
     await page.getByRole('button', { name: 'Save draft' }).click();
     await expect(page.getByTestId('taxi-policy-save-ok')).toBeVisible({ timeout: 10_000 });
 
@@ -103,6 +105,9 @@ test.describe('Taxi policy (hermetic)', () => {
       customerNoShowMinContactAttempts: 2,
       depositReleaseHoursAfterComplete: 48,
       disputeSlaBusinessDays: 7,
+      customerAdvanceRefundWindowHours: 24,
+      partnerDepositDueMinutes: 90,
+      tripDisputeWindowHours: 24,
       partnerCancelPenaltyBpsByStage: { gt24h: 2500, h2to24: 5000, lt2hOrNoShow: 10000 },
       notes: null,
     });
@@ -132,15 +137,20 @@ test.describe('Taxi policy (hermetic)', () => {
     expect(capture.taxiPolicyPublish).toBe(0);
   });
 
-  test('ADM-05 — 0 bps and partial penalty ladder are rejected client-side', async ({ page }) => {
+  test('ADM-05 — out-of-range values and a partial penalty ladder are rejected client-side', async ({
+    page,
+  }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
     await seedHermeticSession(page);
     await openTaxiPolicyPage(page);
 
-    await page.getByTestId('taxi-customer-advance-bps').fill('0');
+    // 0 bps is valid in money rules v2 (skips that payment); 10001 is not.
+    await page.getByTestId('taxi-customer-advance-bps').fill('10001');
+    await page.getByTestId('taxi-deposit-due-minutes').fill('0');
     await page.getByTestId('taxi-penalty-gt24h').fill('2500');
     await page.getByRole('button', { name: 'Save draft' }).click();
-    await expect(page.getByText('Customer advance must be between 1 and 10000.')).toBeVisible();
+    await expect(page.getByText('Customer advance must be between 0 and 10000.')).toBeVisible();
+    await expect(page.getByText('Partner deposit due must be between 1 and 10080.')).toBeVisible();
     await expect(page.getByText('Fill all three cancel-penalty stages')).toBeVisible();
     expect(capture.taxiPolicyPut).toEqual([]);
   });
