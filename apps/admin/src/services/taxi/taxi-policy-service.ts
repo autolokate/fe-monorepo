@@ -8,6 +8,7 @@ import {
   type ProvisionTaxiResultDto,
   type TaxiPolicyAuditDto,
   type TaxiPolicyDto,
+  type UpsertTaxiPolicyDraftBody,
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
@@ -18,7 +19,7 @@ export async function fetchTaxiPolicy(signal?: AbortSignal): Promise<TaxiPolicyD
 }
 
 export async function saveTaxiPolicyDraft(
-  body: Record<string, unknown>,
+  body: UpsertTaxiPolicyDraftBody,
   signal?: AbortSignal,
 ): Promise<TaxiPolicyDto> {
   return upsertTaxiPolicyDraft(getAdminApiClient(), body, { signal });
@@ -29,7 +30,7 @@ export async function publishTaxiPolicyDraft(signal?: AbortSignal): Promise<Taxi
 }
 
 export async function fetchTaxiPolicyHistory(signal?: AbortSignal): Promise<TaxiPolicyAuditDto[]> {
-  return listTaxiPolicyHistory(getAdminApiClient(), { signal });
+  return listTaxiPolicyHistory(getAdminApiClient(), { signal, limit: 20 });
 }
 
 /** POST /admin/v1/taxi/provision — Taxi fixture org + enrollment (never QR). */

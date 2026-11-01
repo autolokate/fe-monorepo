@@ -112,6 +112,12 @@ export function TaxiPolicyPage() {
       await save({
         customerAdvanceBps: form.customerAdvanceBps,
         partnerDepositBps: form.partnerDepositBps,
+        customerNoShowWaitMinutes: policy?.customerNoShowWaitMinutes ?? null,
+        customerNoShowMinContactAttempts: policy?.customerNoShowMinContactAttempts ?? null,
+        depositReleaseHoursAfterComplete: policy?.depositReleaseHoursAfterComplete ?? null,
+        disputeSlaBusinessDays: policy?.disputeSlaBusinessDays ?? null,
+        partnerCancelPenaltyBpsByStage: policy?.partnerCancelPenaltyBpsByStage ?? null,
+        notes: policy?.notes ?? null,
       });
       setSavedNote('Draft saved.');
     } catch {

@@ -1,17 +1,15 @@
-import { AlPageContent, AlPageLayout, AlText } from '@autolokate/ui';
+import { AlPageContent, AlPageLayout } from '@autolokate/ui';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { AdminCommandPalette } from '@/components/AdminCommandPalette';
 import { AdminHeader } from '@/layouts/AdminHeader';
 import { AdminSidebar } from '@/layouts/AdminSidebar';
-import { useAdminAuth } from '@/providers/AdminAuthProvider';
 
 export function AdminShellLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
-  const { isAuthenticated, hasAdminPlaneRole, session } = useAdminAuth();
 
   return (
     <>
@@ -50,18 +48,6 @@ export function AdminShellLayout() {
         }
       >
         <AlPageContent maxWidth="xl">
-          {isAuthenticated && !hasAdminPlaneRole ? (
-            <div
-              className="admin-shell-role-banner"
-              data-testid="admin-plane-role-missing"
-              role="status"
-            >
-              <AlText variant="caption" tone="muted">
-                Signed in as <strong>{session?.role ?? 'unknown'}</strong>. Some Admin tools need an
-                elevated operator session — ask for a step-up if a page won’t load.
-              </AlText>
-            </div>
-          ) : null}
           <Outlet />
         </AlPageContent>
       </AlPageLayout>

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { normalizeApiError } from '@autolokate/api-client';
+import { normalizeApiError, type UpsertTaxiPolicyDraftBody } from '@autolokate/api-client';
 
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
@@ -53,7 +53,7 @@ export function useTaxiPolicy() {
   }, [query.data, query.error, query.isError]);
 
   const saveMutation = useMutation({
-    mutationFn: (body: Record<string, unknown>) => saveTaxiPolicyDraft(body),
+    mutationFn: (body: UpsertTaxiPolicyDraftBody) => saveTaxiPolicyDraft(body),
     onSuccess: (data) => {
       queryClient.setQueryData(taxiPolicyQueryKey, data);
       void queryClient.invalidateQueries({ queryKey: taxiPolicyHistoryQueryKey });
@@ -95,7 +95,7 @@ export function useTaxiPolicy() {
     publishErrorMessage,
     isSaving: saveMutation.isPending,
     isPublishing: publishMutation.isPending,
-    save: (body: Record<string, unknown>) => saveMutation.mutateAsync(body),
+    save: (body: UpsertTaxiPolicyDraftBody) => saveMutation.mutateAsync(body),
     publish: () => publishMutation.mutateAsync(),
     refresh: () => {
       void query.refetch();

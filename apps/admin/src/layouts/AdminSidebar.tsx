@@ -59,9 +59,9 @@ export type AdminSidebarProps = {
 };
 
 export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminSidebarProps) {
-  const { session, adminRole } = useAdminAuth();
+  const { session } = useAdminAuth();
   const { themeMode } = useTheme();
-  const activeRole = session?.role ?? adminRole;
+  const activeRole = session?.role ?? '—';
   const logoVariant = themeMode === 'dark' ? 'dark' : 'light';
 
   return (

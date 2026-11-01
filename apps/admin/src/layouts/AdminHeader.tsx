@@ -63,7 +63,13 @@ export function AdminHeader({ onOpenCommandPalette, onOpenMobileNav }: AdminHead
             <span className="admin-shell-profile__name">{profile.name}</span>
           </div>
         ) : null}
-        <AlButton variant="secondary" size="sm" onClick={signOut}>
+        <AlButton
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            void signOut();
+          }}
+        >
           Sign out
         </AlButton>
       </div>
