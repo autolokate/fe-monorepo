@@ -10,10 +10,12 @@ import {
 
 /**
  * Hermetic Admin orders GET list (Nest OA Present — CL-BE-10 / CL-FE-3).
- * Refund remains product-blocked — see orders-refund.hermetic.spec.ts (still skipped).
+ * Refund flow lives in orders-refund.hermetic.spec.ts.
  */
 test.describe('Orders list (hermetic)', () => {
-  test('list PAID orders — Nest orderKind + no refund CTA', async ({ page }) => {
+  test('list PAID orders — Nest orderKind + refund CTA (no call until confirmed)', async ({
+    page,
+  }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openOrdersPage(page);
@@ -22,7 +24,7 @@ test.describe('Orders list (hermetic)', () => {
     await expect(page.getByText('Partner Attach', { exact: true })).toBeVisible();
     expect(capture.ordersGet).toBeGreaterThanOrEqual(1);
 
-    await expect(page.getByTestId(`order-refund-${HERMETIC_ORDER_ID}`)).toHaveCount(0);
+    await expect(page.getByTestId(`order-refund-${HERMETIC_ORDER_ID}`)).toBeVisible();
     expect(capture.ordersRefund).toEqual([]);
     expect(capture.unexpected).toEqual([]);
   });

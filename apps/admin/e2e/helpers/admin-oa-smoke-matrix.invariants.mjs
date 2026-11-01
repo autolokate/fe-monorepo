@@ -123,7 +123,6 @@ for (const p of mustNotBeInRoutes) {
 
 const e2eDir = join(here, '..');
 const stillSkipped = [
-  'orders-refund.hermetic.spec.ts',
   'shipments.hermetic.spec.ts',
   'users-roles.hermetic.spec.ts',
   'support-tickets.hermetic.spec.ts',

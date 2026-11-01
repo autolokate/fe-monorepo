@@ -76,8 +76,8 @@ export function LiveIncidentsFeedPanel() {
         columns={COLUMNS}
         data={rows}
         loading={isLoading}
-        emptyTitle="No recent incidents"
-        emptyDescription="Nothing reported or updated in the last 24 hours."
+        emptyTitle="Nothing new in the last 24 hours"
+        emptyDescription="New reports and status changes appear here automatically."
         getRowId={(row) => row.incidentId}
       />
     </AdminPanel>

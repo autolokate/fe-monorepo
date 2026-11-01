@@ -150,12 +150,6 @@ export type UnsupportedHermeticSpec = {
  */
 export const OA_UNSUPPORTED_HERMETIC_SPECS: readonly UnsupportedHermeticSpec[] = [
   {
-    file: 'orders-refund.hermetic.spec.ts',
-    missingContracts: ['POST /admin/v1/orders/{orderId}/refund'],
-    skipReason:
-      'G0-4: POST …/orders/{orderId}/refund KEEP DISABLED (absent from live Dev OA). GET list covered by orders-list — skipped ≠ passed.',
-  },
-  {
     file: 'shipments.hermetic.spec.ts',
     missingContracts: ['POST /admin/v1/shipments/{orderId}/status'],
     skipReason:
