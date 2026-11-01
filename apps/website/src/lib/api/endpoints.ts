@@ -1,28 +1,25 @@
-/** All backend paths the FE talks to. Centralised so refactors are one-file changes. */
+import { endpoints as shared } from '@autolokate/api-client';
+
+/**
+ * Backend paths the website talks to.
+ *
+ * Every domain the shared `@autolokate/api-client` already models (auth, profile, plans,
+ * cart, consents, legal, retail orders) is taken from there — one source of truth across
+ * Admin / QR / Website. Only website-specific domains the shared client does not cover
+ * (catalogue, prices, taxonomy, contact, booking slots/bookings, addresses) are listed here,
+ * each verified against the Nest controllers on be-monorepo origin/dev.
+ */
 export const endpoints = {
-  auth: {
-    requestOtp: '/v1/auth/login/otp',
-    /** Purchase-flow OTP request (new backend). */
-    otpRequest: '/v1/auth/otp/request',
-    /** Purchase-flow OTP verify (new backend). */
-    otpVerify: '/v1/auth/otp/verify',
-    verifyOtp: '/v1/auth/verify-otp',
-    refresh: '/v1/auth/refresh',
-    me: '/v1/auth/me',
-    logout: '/v1/auth/logout',
-  },
+  /** otp/request, otp/verify, refresh, logout, `profiles` (GET), `profile` (PATCH). */
+  auth: shared.auth,
+  /** Expert-session booking (website domain). Slots live under `/v1/booking-slots`. */
   bookings: {
-    slots: '/v1/bookings/slots',
-    slotsByDate: (dateIso: string) => `/v1/bookings/slots/${dateIso}`,
+    slots: '/v1/booking-slots',
+    slotsByDate: (dateIso: string) => `/v1/booking-slots/${encodeURIComponent(dateIso)}`,
     create: '/v1/bookings/book',
     my: '/v1/bookings/my',
-    byId: (id: string) => `/v1/bookings/${id}`,
-    cancel: (id: string) => `/v1/bookings/${id}/cancel`,
-  },
-  payments: {
-    createOrder: '/v1/payments/orders',
-    verify: '/v1/payments/verify',
-    byId: (id: string) => `/v1/payments/${id}`,
+    byId: (id: string) => `/v1/bookings/${encodeURIComponent(id)}`,
+    cancel: (id: string) => `/v1/bookings/${encodeURIComponent(id)}/cancel`,
   },
   catalogue: {
     brands: '/v1/catalogue/brands',
@@ -62,19 +59,16 @@ export const endpoints = {
   contact: {
     submit: '/v1/contact-us',
   },
-  plans: {
-    list: '/v1/plans',
-  },
+  plans: shared.plans,
   legal: {
     /** Legal notice list — carries the current `noticeVersion` a consent pins to. */
-    documents: '/v1/legal/documents',
+    documents: shared.legal.documents,
     document: (kind: string) => `/v1/legal/documents/${encodeURIComponent(kind)}`,
   },
   me: {
-    consents: '/v1/me/consents',
+    consents: shared.consents.list,
     withdrawConsent: (purpose: string) => `/v1/me/consents/${encodeURIComponent(purpose)}/withdraw`,
   },
-  profile: '/v1/profile',
   addresses: {
     /** The buyer's saved delivery addresses, default first (bearer). */
     list: '/v1/addresses',
@@ -88,18 +82,10 @@ export const endpoints = {
     resolve: (placeId: string) => `/v1/addresses/place/${encodeURIComponent(placeId)}`,
   },
   cart: {
-    create: '/v1/cart',
+    create: shared.cart.create,
     /** Re-price an existing cart in place (same flow) instead of minting a new one. */
-    update: (id: string) => `/v1/cart/${encodeURIComponent(id)}`,
+    update: shared.cart.detail,
   },
   /** Website retail (cart + address) orders. `/v1/orders` is the QR plan-commerce surface. */
-  orders: {
-    create: '/v1/retail/orders',
-    /** The buyer's own orders, newest first (bearer). */
-    list: (limit = 20) => `/v1/retail/orders?limit=${encodeURIComponent(String(limit))}`,
-    byId: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}`,
-    pay: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}/pay`,
-    payment: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}/payment`,
-    invoice: (id: string) => `/v1/retail/orders/${encodeURIComponent(id)}/invoice`,
-  },
+  orders: shared.retailOrders,
 } as const;

@@ -1,9 +1,9 @@
 'use client';
 
 import { endpoints } from '@/lib/api/endpoints';
-import { hasAuthTokens } from '@/lib/auth/storage';
+import { hasSession } from '@/lib/session';
 import { readArray, readObject, unbox } from '@/lib/catalogue/normalize';
-import { ApiService } from '@/services/api.service';
+import { http } from '@/lib/api/client';
 
 export type PlanTier = 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
 export type PlanPeriod = 'YEARLY' | 'MONTHLY';
@@ -93,7 +93,7 @@ export function getPlans(): Promise<Plan[]> {
 
   const request = (async () => {
     try {
-      const res = await ApiService.get(endpoints.plans.list, { withAuth: hasAuthTokens() });
+      const res = await http.get(endpoints.plans.list, { withAuth: hasSession() });
       const rows = readArray<unknown>(unbox(res.data));
       return rows.map(normalizePlan);
     } finally {

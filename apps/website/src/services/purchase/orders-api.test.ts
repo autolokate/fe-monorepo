@@ -1,47 +1,33 @@
-import nock from 'nock';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { saveSession } from '@/lib/session';
+import { installFakeFetch, resetWebsiteSession } from '@/test/fake-fetch';
 
 import { createOrder, getOrder, getOrderPayment, listOrders, payOrder } from './orders-api';
-import { PURCHASE_API_BASE_URL } from './client';
-import { clearPurchaseSession, setPurchaseSession } from './session';
 
-const HOST = PURCHASE_API_BASE_URL;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function seedSession(): void {
-  setPurchaseSession({
-    accessToken: 'access-token-1',
-    refreshToken: 'refresh-token-1',
-    expiresAt: new Date(Date.now() + 60_000).toISOString(),
-    userId: 'user-1',
-    phone: '+919876543210',
-  });
-}
+let fake: ReturnType<typeof installFakeFetch>;
 
 beforeEach(() => {
-  nock.disableNetConnect();
-  clearPurchaseSession();
-  seedSession();
-});
-
-afterEach(() => {
-  nock.cleanAll();
-  nock.enableNetConnect();
-  clearPurchaseSession();
+  resetWebsiteSession();
+  saveSession(
+    {
+      accessToken: 'access-token-1',
+      refreshToken: 'refresh-token-1',
+      expiresAt: new Date(Date.now() + 60 * 60_000).toISOString(),
+      userId: 'user-1',
+    },
+    '+919876543210',
+  );
+  fake = installFakeFetch();
 });
 
 describe('createOrder', () => {
   it('POSTs /v1/orders with cartId, addressId, and Idempotency-Key', async () => {
-    let capturedBody: unknown;
-
-    nock(HOST)
-      .post('/v1/retail/orders', (body) => {
-        capturedBody = body;
-        return true;
-      })
-      .matchHeader('authorization', 'Bearer access-token-1')
-      .matchHeader('idempotency-key', UUID_RE)
-      .reply(200, {
+    fake.on('POST', '/v1/retail/orders', {
+      status: 200,
+      body: {
         data: {
           orderId: 'ord_1',
           subtotalPaise: 1000,
@@ -50,19 +36,20 @@ describe('createOrder', () => {
           totalPaise: 1180,
           status: 'PENDING_PAYMENT',
         },
-      });
+      },
+    });
 
     const order = await createOrder({ cartId: 'cart_1', addressId: 'addr_1' });
 
     expect(order.orderId).toBe('ord_1');
-    expect(capturedBody).toEqual({ cartId: 'cart_1', addressId: 'addr_1' });
-    expect(nock.isDone()).toBe(true);
+    const call = fake.calls[0];
+    expect(call.body).toEqual({ cartId: 'cart_1', addressId: 'addr_1' });
+    expect(call.headers.authorization).toBe('Bearer access-token-1');
+    expect(call.headers['idempotency-key']).toMatch(UUID_RE);
   });
 
   it('throws ApiError when the envelope lacks orderId', async () => {
-    nock(HOST)
-      .post('/v1/retail/orders')
-      .reply(200, { data: { totalPaise: 100 } });
+    fake.on('POST', '/v1/retail/orders', { status: 200, body: { data: { totalPaise: 100 } } });
 
     await expect(createOrder({ cartId: 'cart_1', addressId: 'addr_1' })).rejects.toMatchObject({
       message: 'Invalid order response',
@@ -71,9 +58,10 @@ describe('createOrder', () => {
   });
 
   it('surfaces HTTP errors as ApiError', async () => {
-    nock(HOST)
-      .post('/v1/retail/orders')
-      .reply(400, { error: { code: 'BAD_REQUEST', message: 'cart expired' } });
+    fake.on('POST', '/v1/retail/orders', {
+      status: 400,
+      body: { error: { code: 'BAD_REQUEST', message: 'cart expired' } },
+    });
 
     await expect(createOrder({ cartId: 'cart_x', addressId: 'addr_1' })).rejects.toMatchObject({
       message: 'cart expired',
@@ -84,22 +72,16 @@ describe('createOrder', () => {
 
 describe('payOrder', () => {
   it('POSTs /v1/orders/:id/pay with payload and Idempotency-Key', async () => {
-    let capturedBody: unknown;
-
-    nock(HOST)
-      .post('/v1/retail/orders/ord_1/pay', (body) => {
-        capturedBody = body;
-        return true;
-      })
-      .matchHeader('authorization', 'Bearer access-token-1')
-      .matchHeader('idempotency-key', UUID_RE)
-      .reply(200, {
+    fake.on('POST', '/v1/retail/orders/ord_1/pay', {
+      status: 200,
+      body: {
         data: {
           paymentRef: 'pay_ref_1',
           providerOrderId: 'rzp_order_1',
           razorpayKeyId: 'rzp_test_key',
         },
-      });
+      },
+    });
 
     const ref = await payOrder('ord_1', { setupMandate: false, mandateConsent: true });
 
@@ -108,14 +90,17 @@ describe('payOrder', () => {
       providerOrderId: 'rzp_order_1',
       razorpayKeyId: 'rzp_test_key',
     });
-    expect(capturedBody).toEqual({ setupMandate: false, mandateConsent: true });
-    expect(nock.isDone()).toBe(true);
+    const call = fake.calls[0];
+    expect(call.body).toEqual({ setupMandate: false, mandateConsent: true });
+    expect(call.headers.authorization).toBe('Bearer access-token-1');
+    expect(call.headers['idempotency-key']).toMatch(UUID_RE);
   });
 
   it('throws ApiError when paymentRef is missing', async () => {
-    nock(HOST)
-      .post('/v1/retail/orders/ord_1/pay')
-      .reply(200, { data: { razorpayKeyId: 'rzp_test' } });
+    fake.on('POST', '/v1/retail/orders/ord_1/pay', {
+      status: 200,
+      body: { data: { razorpayKeyId: 'rzp_test' } },
+    });
 
     await expect(
       payOrder('ord_1', { setupMandate: true, mandateConsent: true }),
@@ -148,7 +133,7 @@ describe('retail order reads (Nest WebsiteRetailOrderDetailDto)', () => {
   };
 
   it('reads detail with real plan/rider fields and no invented shipping or order number', async () => {
-    nock(HOST).get(`/v1/retail/orders/${detail.orderId}`).reply(200, { data: detail });
+    fake.on('GET', `/v1/retail/orders/${detail.orderId}`, { status: 200, body: { data: detail } });
 
     const order = await getOrder(detail.orderId);
 
@@ -162,10 +147,7 @@ describe('retail order reads (Nest WebsiteRetailOrderDetailDto)', () => {
   });
 
   it('lists history rows in the same shape', async () => {
-    nock(HOST)
-      .get('/v1/retail/orders')
-      .query({ limit: '20' })
-      .reply(200, { data: [detail] });
+    fake.on('GET', '/v1/retail/orders?limit=20', { status: 200, body: { data: [detail] } });
 
     const rows = await listOrders();
 
@@ -175,9 +157,10 @@ describe('retail order reads (Nest WebsiteRetailOrderDetailDto)', () => {
   });
 
   it('accepts the coarse { outcome } payment poll', async () => {
-    nock(HOST)
-      .get(`/v1/retail/orders/${detail.orderId}/payment`)
-      .reply(200, { data: { outcome: 'FAILED' } });
+    fake.on('GET', `/v1/retail/orders/${detail.orderId}/payment`, {
+      status: 200,
+      body: { data: { outcome: 'FAILED' } },
+    });
 
     await expect(getOrderPayment(detail.orderId)).resolves.toEqual({ outcome: 'FAILED' });
   });

@@ -1,208 +1,131 @@
-import { isValid, parseISO } from 'date-fns';
-import type { ExpertTimeSlot, ParsedPaymentOrder, UserBookingSummary } from './types';
+import type { BookingStatus, ExpertTimeSlot, UserBookingSummary } from './types';
 
 function asRecord(v: unknown): Record<string, unknown> | null {
   return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
 }
 
-/** Coerce a loosely-typed API field to a string; objects/other types fall back. */
 function toStr(v: unknown, fallback = ''): string {
   if (typeof v === 'string') return v;
   if (typeof v === 'number' || typeof v === 'bigint') return String(v);
   return fallback;
 }
 
-/** Format an ISO start string into a user-friendly IST label (e.g. "3:00 PM"). */
-export function formatSlotLabel(isoStart: string): string {
-  const d = parseISO(isoStart);
-  if (!isValid(d)) return isoStart;
-  return d.toLocaleTimeString('en-IN', {
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZone: 'Asia/Kolkata',
-  });
+const HH_MM = /^([01]\d|2[0-3]):([0-5]\d)$/;
+const YMD = /^\d{4}-\d{2}-\d{2}$/;
+
+/** "14:30" → "2:30 PM". Unknown shapes are returned unchanged. */
+export function formatClock(hhmm: string): string {
+  const m = HH_MM.exec(hhmm.trim());
+  if (!m) return hhmm;
+  const h = Number(m[1]);
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${String(h12)}:${m[2]} ${suffix}`;
 }
 
-function slotFromUnknown(row: unknown): ExpertTimeSlot | null {
-  const o = asRecord(row);
-  if (!o) return null;
-  const start =
-    (typeof o.slot_start_time === 'string' && o.slot_start_time) ||
-    (typeof o.start_time === 'string' && o.start_time) ||
-    (typeof o.start === 'string' && o.start) ||
-    '';
-  const end =
-    (typeof o.slot_end_time === 'string' && o.slot_end_time) ||
-    (typeof o.end_time === 'string' && o.end_time) ||
-    (typeof o.end === 'string' && o.end) ||
-    '';
-  if (!start || !end) return null;
-  const s = parseISO(start);
-  const e = parseISO(end);
-  if (!isValid(s) || !isValid(e)) return null;
-  return { slotStartTime: start, slotEndTime: end, label: formatSlotLabel(start) };
-}
-
-function dedupeSlots(slots: ExpertTimeSlot[]): ExpertTimeSlot[] {
-  const seen = new Set<string>();
-  const out: ExpertTimeSlot[] = [];
-  for (const s of slots) {
-    const k = `${s.slotStartTime}|${s.slotEndTime}`;
-    if (seen.has(k)) continue;
-    seen.add(k);
-    out.push(s);
-  }
-  return out;
-}
-
-/**
- * Normalise GET /v1/bookings/slots or /slots/{date} payloads into the slot
- * buttons for a single calendar day. Handles array, envelope, and grouped
- * (`{ slots: [...] }`) shapes.
- */
-export function normalizeSlotsForDate(raw: unknown, yyyyMmDd: string): ExpertTimeSlot[] {
-  const rows: unknown[] = [];
-  if (Array.isArray(raw)) {
-    for (const item of raw) {
-      const day = asRecord(item);
-      if (day && Array.isArray(day.slots)) rows.push(...(day.slots as unknown[]));
-      else rows.push(item);
-    }
-  } else {
-    const top = asRecord(raw);
-    const data = top?.data ?? raw;
-    if (Array.isArray(data)) {
-      for (const item of data) {
-        const day = asRecord(item);
-        if (day && Array.isArray(day.slots)) rows.push(...(day.slots as unknown[]));
-        else rows.push(item);
-      }
-    } else if (Array.isArray((top as { slots?: unknown[] } | null)?.slots)) {
-      rows.push(...(top as { slots: unknown[] }).slots);
-    }
-  }
-
-  const dayPrefix = yyyyMmDd.trim();
-  const slots: ExpertTimeSlot[] = [];
-  for (const item of rows) {
-    const slot = slotFromUnknown(item);
-    if (!slot) continue;
-    if (slot.slotStartTime.slice(0, 10) !== dayPrefix) continue;
-    slots.push(slot);
-  }
-  slots.sort((a, b) => a.slotStartTime.localeCompare(b.slotStartTime));
-  return dedupeSlots(slots);
-}
-
-/** Normalise POST /v1/payments/orders for Razorpay Checkout. */
-export function parsePaymentOrderResponse(raw: unknown): ParsedPaymentOrder {
-  const top = asRecord(raw) ?? {};
-  const data = asRecord(top.data) ?? top;
-  const razorpayOrderId = toStr(
-    data.razorpay_order_id ?? data.order_id ?? data.id ?? data.razorpayOrderId,
-  );
-  const amountRaw = data.amount ?? data.amount_paise ?? data.amount_in_paise;
-  const amountPaise = typeof amountRaw === 'number' ? amountRaw : Number(amountRaw ?? 0);
-  const currency = toStr(data.currency, 'INR');
-  const keyId = toStr(data.key_id ?? data.razorpay_key_id ?? data.public_key_id ?? data.keyId);
-  return {
-    razorpayOrderId,
-    amountPaise: Number.isFinite(amountPaise) ? amountPaise : 0,
-    currency,
-    keyId,
-  };
-}
-
-function formatBookingTime(iso: string): string {
-  const d = parseISO(iso);
-  if (!isValid(d)) return iso;
-  return d.toLocaleString('en-IN', {
+/** "2026-10-20" → "Tue, 20 Oct". */
+export function formatSlotDate(ymd: string): string {
+  if (!YMD.test(ymd)) return ymd;
+  const d = new Date(`${ymd}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return ymd;
+  return d.toLocaleDateString('en-IN', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZone: 'Asia/Kolkata',
+    timeZone: 'UTC',
   });
 }
 
-/** Normalise GET /v1/bookings/my into the rows shown by the history table. */
-export function normalizeMyBookings(raw: unknown): UserBookingSummary[] {
-  const list = Array.isArray(raw) ? raw : ((asRecord(raw)?.data as unknown[] | undefined) ?? []);
-  if (!Array.isArray(list)) return [];
+function slotFromUnknown(row: unknown, fallbackDate: string): ExpertTimeSlot | null {
+  const o = asRecord(row);
+  if (!o) return null;
+  const start = toStr(o.slot_start_time).trim();
+  const end = toStr(o.slot_end_time).trim();
+  const date = toStr(o.slot_date, fallbackDate).trim();
+  if (!HH_MM.test(start) || !HH_MM.test(end) || !YMD.test(date)) return null;
+  return {
+    slotDate: date,
+    slotStartTime: start,
+    slotEndTime: end,
+    label: `${formatClock(start)} – ${formatClock(end)}`,
+    available: o.available !== false,
+  };
+}
 
+/**
+ * Normalise `GET /v1/booking-slots/{date}` (`WebsiteBookingSlotDto[]`) into the slot
+ * buttons for one day. Only slots the server published for that date are returned —
+ * nothing is invented. Unavailable slots are kept (rendered disabled).
+ */
+export function normalizeSlotsForDate(raw: unknown, yyyyMmDd: string): ExpertTimeSlot[] {
+  const list = Array.isArray(raw) ? raw : asRecord(raw)?.data;
+  if (!Array.isArray(list)) return [];
+  const day = yyyyMmDd.trim();
+  const seen = new Set<string>();
+  const slots: ExpertTimeSlot[] = [];
+  for (const item of list) {
+    const slot = slotFromUnknown(item, day);
+    if (slot?.slotDate !== day) continue;
+    const key = `${slot.slotStartTime}|${slot.slotEndTime}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    slots.push(slot);
+  }
+  slots.sort((a, b) => a.slotStartTime.localeCompare(b.slotStartTime));
+  return slots;
+}
+
+/** Normalise `GET /v1/bookings/my` (`WebsiteBookingDto[]`) into history rows. */
+export function normalizeMyBookings(raw: unknown): UserBookingSummary[] {
+  const list = Array.isArray(raw) ? raw : asRecord(raw)?.data;
+  if (!Array.isArray(list)) return [];
   const out: UserBookingSummary[] = [];
   for (const item of list) {
     const o = asRecord(item);
     if (!o) continue;
-    const id = toStr(o.id ?? o.booking_id);
+    const id = toStr(o.id);
     if (!id) continue;
-    const status = toStr(o.status ?? o.booking_status, 'unknown');
-    const slotDate = toStr(o.slot_date ?? o.slotDate).slice(0, 10);
-    const startIso = toStr(o.slot_start_time ?? o.slotStartTime);
-    const endIso = toStr(o.slot_end_time ?? o.slotEndTime);
-    const meetLink =
-      typeof o.google_meet_link === 'string' && o.google_meet_link
-        ? o.google_meet_link
-        : typeof o.meet_link === 'string'
-          ? o.meet_link
-          : typeof o.meeting_link === 'string'
-            ? o.meeting_link
-            : typeof o.google_meet_url === 'string'
-              ? o.google_meet_url
-              : null;
+    const start = toStr(o.slot_start_time);
+    const end = toStr(o.slot_end_time);
     out.push({
       id,
-      status,
-      slotDate,
-      slotStartLabel: startIso ? formatBookingTime(startIso) : '—',
-      slotEndLabel: endIso ? formatBookingTime(endIso) : '—',
-      meetLink,
+      status: toStr(o.status, 'UNKNOWN'),
+      slotDate: toStr(o.slot_date).slice(0, 10),
+      slotStartLabel: start ? formatClock(start) : '—',
+      slotEndLabel: end ? formatClock(end) : '—',
       raw: o,
     });
   }
   return out;
 }
 
-const normStatus = (s: string) => s.trim().toLowerCase().replace(/\s+/g, '_');
+const norm = (s: string) => s.trim().toUpperCase();
 
-/** A booking that should prevent the user from creating a new one. */
-export function bookingIsBlockingNewRequest(b: UserBookingSummary): boolean {
-  const s = normStatus(b.status);
-  if (s.includes('cancel')) return false;
-  if (s.includes('complete') || s.includes('done')) return false;
-  if (s.includes('fail') || s.includes('expired')) return false;
-  return true;
+/** Human label for a server status — the UI never upgrades a booking's state. */
+export function bookingStatusLabel(status: string): string {
+  switch (norm(status) as BookingStatus) {
+    case 'PENDING':
+      return 'Requested';
+    case 'CONFIRMED':
+      return 'Confirmed';
+    case 'CANCELLED':
+      return 'Cancelled';
+    case 'COMPLETED':
+      return 'Completed';
+    default:
+      return status;
+  }
 }
 
-export function isPendingPaymentBooking(b: UserBookingSummary): boolean {
-  return normStatus(b.status) === 'pending_payment';
-}
-
+/** The backend lets a consumer cancel PENDING or CONFIRMED bookings only. */
 export function canCancelBooking(b: UserBookingSummary): boolean {
-  const s = normStatus(b.status);
-  if (s.includes('cancel')) return false;
-  if (s.includes('complete') || s.includes('done')) return false;
-  return true;
+  const s = norm(b.status);
+  return s === 'PENDING' || s === 'CONFIRMED';
 }
 
-/** Pull a booking id out of `POST /v1/bookings/book` regardless of envelope shape. */
+/** Pull the booking id out of `POST /v1/bookings/book`. */
 export function bookingIdFromCreateResponse(raw: unknown): string {
   const o = asRecord(raw) ?? {};
-  const nested = asRecord(o.data) ?? asRecord(o.booking) ?? asRecord(o.result) ?? o;
-  const id = nested.id ?? nested.booking_id ?? o.booking_id;
-  return toStr(id);
-}
-
-/** Pick a Meet URL out of `POST /v1/payments/verify`, if the backend returned one. */
-export function meetLinkFromVerify(raw: unknown): string | null {
-  const o = asRecord(raw) ?? {};
   const nested = asRecord(o.data) ?? o;
-  const link =
-    (typeof nested.google_meet_link === 'string' && nested.google_meet_link) ||
-    (typeof nested.meet_link === 'string' && nested.meet_link) ||
-    (typeof nested.meeting_url === 'string' && nested.meeting_url) ||
-    (typeof nested.google_meet_url === 'string' && nested.google_meet_url) ||
-    null;
-  return link;
+  return toStr(nested.id);
 }

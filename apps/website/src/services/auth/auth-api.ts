@@ -1,158 +1,101 @@
 'use client';
 
-import { endpoints } from '@/lib/api/endpoints';
-import { ApiError } from '@/lib/api/error';
-import { ApiService } from '@/services/api.service';
-import type {
-  ApiEnvelope,
-  AuthUser,
-  RefreshTokenPayload,
-  RefreshTokenResponse,
-  RequestOtpPayload,
-  RequestOtpResponse,
-  UpdateProfilePayload,
-  VerifyOtpPayload,
-  VerifyOtpResponse,
-} from './types';
+/**
+ * Website account auth over the real Nest contract (WEB-01), via the shared api-client:
+ *   POST /v1/auth/otp/request · POST /v1/auth/otp/verify · POST /v1/auth/logout
+ *   GET /v1/profiles · PATCH /v1/profile
+ * Used by `/auth/login`, `/auth/signup`, `/profile`, `/book-session` AND the purchase journey.
+ */
+import {
+  getProfile as getProfileApi,
+  logoutSession,
+  requestOtp as requestOtpApi,
+  updateProfile as updateProfileApi,
+  verifyOtp as verifyOtpApi,
+  type OtpChannel,
+  type Profile as ApiProfile,
+  type TokenPair,
+} from '@autolokate/api-client';
 
-const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
+import { getApiClient } from '@/lib/api/client';
+import { toApiError } from '@/lib/api/error';
+import { clearSession, getSessionTokens, saveSession } from '@/lib/session';
 
-/** POST /v1/auth/login/otp — kicks off OTP delivery. */
-export async function requestOtp(payload: RequestOtpPayload): Promise<RequestOtpResponse> {
-  const res = await ApiService.post<ApiEnvelope<RequestOtpResponse>>(
-    endpoints.auth.requestOtp,
-    payload,
-    { withAuth: false },
+/** Owner profile as served by `GET /v1/profiles` (the backend has no phone/email here). */
+export type Profile = ApiProfile & { userName?: string | null };
+
+export interface UpdateProfilePayload {
+  name?: string;
+  locale?: string;
+  photoMediaId?: string;
+}
+
+export interface VerifiedSession {
+  userId: string;
+  isNewUser: boolean;
+}
+
+/** `+91XXXXXXXXXX` (E.164) — the backend DTO rejects anything else. */
+export const E164_PHONE = /^\+[1-9]\d{7,14}$/;
+
+async function call<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+/** POST /v1/auth/otp/request — sends a one-time code to an E.164 phone. */
+export function requestOtp(phone: string, channel?: OtpChannel): Promise<{ channel: OtpChannel }> {
+  return call(() => requestOtpApi(getApiClient(), { phone, ...(channel ? { channel } : {}) }));
+}
+
+/**
+ * POST /v1/auth/otp/verify — exchanges the code for a token pair and stores it as THE
+ * website session (sessionStorage via the shared TokenManager).
+ */
+export async function verifyOtp(phone: string, code: string): Promise<VerifiedSession> {
+  const pair: TokenPair = await call(() => verifyOtpApi(getApiClient(), { phone, code }));
+  saveSession(
+    {
+      accessToken: pair.accessToken,
+      refreshToken: pair.refreshToken,
+      expiresAt: pair.expiresAt,
+      userId: pair.userId,
+    },
+    phone,
   );
-  const data = res.data;
-
-  if (isRecord(data) && 'sent' in data) {
-    const r = data as Record<string, unknown>;
-    return {
-      sent: Boolean(r.sent),
-      expires_in: typeof r.expires_in === 'number' ? r.expires_in : 300,
-      message: typeof r.message === 'string' ? r.message : undefined,
-    };
-  }
-
-  const envelope = (isRecord(data) ? data : {}) as {
-    success?: boolean;
-    data?: { message?: string };
-  };
-  return {
-    sent: envelope.success !== false,
-    expires_in: 300,
-    message: envelope.data?.message,
-  };
+  return { userId: pair.userId, isNewUser: pair.isNewUser ?? false };
 }
 
-/** POST /v1/auth/verify-otp — exchanges OTP for tokens + user. */
-export async function verifyOtp(payload: VerifyOtpPayload): Promise<VerifyOtpResponse> {
-  const body: Record<string, unknown> = {
-    phone: payload.phone,
-    otp: payload.otp,
-    consent_accepted: payload.consent_accepted,
-    consent_version: payload.consent_version,
-  };
-  if (payload.full_name?.trim()) body.full_name = payload.full_name.trim();
-
-  const res = await ApiService.post(endpoints.auth.verifyOtp, body, {
-    withAuth: false,
-  });
-
-  // Backend may return any of these shapes — normalise into VerifyOtpResponse.
-  //   Flat:          { access_token, refresh_token, user, is_new_user? }
-  //   Enveloped:     { success, data: { access_token, refresh_token, user, is_new_user? } }
-  //   Supabase-like: { success, data: { user, session: { access_token, refresh_token, user } } }
-  const root = res.data;
-  const inner = isRecord(root) && isRecord(root.data) ? root.data : root;
-
-  if (
-    isRecord(inner) &&
-    typeof inner.access_token === 'string' &&
-    typeof inner.refresh_token === 'string'
-  ) {
-    return {
-      access_token: inner.access_token,
-      refresh_token: inner.refresh_token,
-      user: isRecord(inner.user) ? inner.user : {},
-      is_new_user: typeof inner.is_new_user === 'boolean' ? inner.is_new_user : false,
-    };
-  }
-
-  if (
-    isRecord(inner) &&
-    isRecord(inner.session) &&
-    typeof inner.session.access_token === 'string' &&
-    typeof inner.session.refresh_token === 'string'
-  ) {
-    const sessionUser = isRecord(inner.session.user) ? inner.session.user : null;
-    const topUser = isRecord(inner.user) ? inner.user : null;
-    return {
-      access_token: inner.session.access_token,
-      refresh_token: inner.session.refresh_token,
-      user: topUser ?? sessionUser ?? {},
-      is_new_user: typeof inner.is_new_user === 'boolean' ? inner.is_new_user : false,
-    };
-  }
-
-  throw new ApiError('Invalid verify OTP response', 0, root);
+/** GET /v1/profiles — the signed-in account's profile. */
+export function fetchProfile(): Promise<Profile> {
+  return call(() => getProfileApi(getApiClient()));
 }
 
-/** GET /v1/auth/me — returns the signed-in user's profile. */
-export async function fetchCurrentUser(): Promise<AuthUser> {
-  const res = await ApiService.get<ApiEnvelope<AuthUser>>(endpoints.auth.me);
-  const data = res.data;
-
-  if (isRecord(data) && 'id' in data) return data;
-  if (isRecord(data) && isRecord(data.data) && 'id' in data.data) return data.data;
-  throw new ApiError('Invalid profile response', 0, data);
+/** PATCH /v1/profile — only non-blank fields are sent (the DTO whitelists the rest away). */
+export function updateProfile(payload: UpdateProfilePayload): Promise<Profile> {
+  const body: UpdateProfilePayload = {};
+  if (payload.name?.trim()) body.name = payload.name.trim();
+  if (payload.locale?.trim()) body.locale = payload.locale.trim();
+  if (payload.photoMediaId?.trim()) body.photoMediaId = payload.photoMediaId.trim();
+  return call(() => updateProfileApi(getApiClient(), body));
 }
 
-/** POST /v1/auth/refresh — manual refresh. The interceptor also runs this automatically on 401. */
-export async function refreshAuthToken(
-  payload: RefreshTokenPayload,
-): Promise<RefreshTokenResponse> {
-  const res = await ApiService.post(endpoints.auth.refresh, payload, {
-    withAuth: false,
-    retryOnAuthFailure: false,
-  });
-  const root = res.data;
-  const inner = isRecord(root) && isRecord(root.data) ? root.data : root;
-
-  if (isRecord(inner) && typeof inner.access_token === 'string') {
-    return {
-      access_token: inner.access_token,
-      refresh_token: typeof inner.refresh_token === 'string' ? inner.refresh_token : undefined,
-      user: isRecord(inner.user) ? inner.user : undefined,
-    };
+/**
+ * Sign out everywhere this tab knows about: revoke the refresh family server-side
+ * (`POST /v1/auth/logout`, best-effort — it needs the bearer, so it runs first), then
+ * always drop the local session.
+ */
+export async function signOut(): Promise<void> {
+  try {
+    if (getSessionTokens().getAccessToken()) {
+      await logoutSession(getApiClient());
+    }
+  } catch {
+    // The local session is cleared regardless.
+  } finally {
+    clearSession();
   }
-  if (
-    isRecord(inner) &&
-    isRecord(inner.session) &&
-    typeof inner.session.access_token === 'string'
-  ) {
-    return {
-      access_token: inner.session.access_token,
-      refresh_token:
-        typeof inner.session.refresh_token === 'string' ? inner.session.refresh_token : undefined,
-      user: isRecord(inner.user) ? inner.user : undefined,
-    };
-  }
-  throw new ApiError('Invalid refresh token response', 0, root);
-}
-
-/** PATCH /v1/auth/me — partial update of the current user's profile. */
-export async function updateProfile(payload: UpdateProfilePayload): Promise<AuthUser> {
-  const res = await ApiService.patch<ApiEnvelope<AuthUser>>(endpoints.auth.me, payload);
-  const data = res.data;
-
-  if (isRecord(data) && 'id' in data) return data;
-  if (isRecord(data) && isRecord(data.data) && 'id' in data.data) return data.data;
-  throw new ApiError('Invalid update profile response', 0, data);
-}
-
-/** POST /v1/auth/logout — server-side revoke. The hook handles local token cleanup. */
-export async function logoutUser(): Promise<void> {
-  await ApiService.post(endpoints.auth.logout);
 }

@@ -49,7 +49,7 @@ export function JourneyHeader({ userName, loginHref = '/login' }: JourneyHeaderP
     let active = true;
     void getJourneyProfile()
       .then((profile) => {
-        if (active) setFetchedName(profile.name);
+        if (active) setFetchedName(profile.name ?? '');
       })
       .catch(() => {
         // Fall back to the neutral "Account" chip on failure.

@@ -1,7 +1,7 @@
 'use client';
 
 import { endpoints } from '@/lib/api/endpoints';
-import { ApiService } from '@/services/api.service';
+import { http } from '@/lib/api/client';
 import { readObject, toStr, unbox } from '@/lib/catalogue/normalize';
 
 type Envelope<T> = { success?: boolean; data?: T };
@@ -52,7 +52,7 @@ function parseBundle(payload: unknown): TaxonomyBundle {
 
 /** GET /v1/taxonomy?category=car — canonical labels for specs/features. */
 export async function getTaxonomy(params?: { category?: string }): Promise<TaxonomyBundle> {
-  const res = await ApiService.get<Envelope<unknown>>(endpoints.taxonomy.root(params?.category), {
+  const res = await http.get<Envelope<unknown>>(endpoints.taxonomy.root(params?.category), {
     withAuth: false,
   });
   return parseBundle(res.data);

@@ -15,7 +15,6 @@ export {
   getPurchaseToken,
   isAccessTokenLive,
   isPurchaseAuthenticated,
-  setPurchaseSession,
   clearPurchaseSession,
   type PurchaseSession,
 } from './session';

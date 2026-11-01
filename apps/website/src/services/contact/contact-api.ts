@@ -1,14 +1,14 @@
 'use client';
 
 import { endpoints } from '@/lib/api/endpoints';
-import { ApiService } from '@/services/api.service';
+import { http } from '@/lib/api/client';
 import type { ContactUsPayload, ContactUsResponse } from './types';
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
 /** POST /v1/contact-us — public enquiry form (no auth). */
 export async function submitContactUs(payload: ContactUsPayload): Promise<ContactUsResponse> {
-  const res = await ApiService.post(endpoints.contact.submit, payload, {
+  const res = await http.post(endpoints.contact.submit, payload, {
     withAuth: false,
   });
   const data = res.data;

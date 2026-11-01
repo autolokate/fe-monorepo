@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import { useIsAuthenticated } from '@/hooks/auth';
 import { AuthShell } from '../AuthShell';
 import { pickSafeNext } from '../constants';
 import { OtpStep } from './OtpStep';
@@ -22,6 +23,12 @@ export function LoginForm() {
   const stepParam = searchParams.get('step');
   const phoneParam = (searchParams.get('phone') ?? '').trim();
   const isOtpStep = stepParam === 'otp' && phoneParam.length > 0;
+
+  // Already signed in (this tab) → no need to log in again.
+  const authed = useIsAuthenticated();
+  useEffect(() => {
+    if (authed === true) router.replace(safeNext || '/');
+  }, [authed, safeNext, router]);
 
   // If someone lands on `?step=otp` without a phone, drop them back to step 1.
   useEffect(() => {

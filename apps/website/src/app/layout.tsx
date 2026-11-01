@@ -4,7 +4,6 @@ import '@autolokate/design-system/theme.css';
 import './styles/globals.css';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { ThemedToaster } from '@/providers/ThemedToaster';
-import { VehiclePreferenceSync } from '@/components/shared/VehiclePreferenceSync';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -48,7 +47,6 @@ export default function RootLayout({
       >
         <ThemeProvider>
           {children}
-          <VehiclePreferenceSync />
           <ThemedToaster />
         </ThemeProvider>
       </body>

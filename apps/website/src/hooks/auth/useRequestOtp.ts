@@ -2,21 +2,17 @@
 
 import { useMemo } from 'react';
 import { requestOtp } from '@/services/auth';
-import type { RequestOtpPayload, RequestOtpResponse } from '@/services/auth/types';
 import { useApiMutation, type UseApiMutationOptions } from '@/hooks/useApiMutation';
 
-/**
- * `POST /v1/auth/login/otp` — requests an OTP for the supplied phone.
- *
- * @example
- *   const { mutate, isLoading } = useRequestOtp({
- *     onSuccess: () => router.push("/auth/login?step=otp"),
- *   });
- *   await mutate({ phone: "+91XXXXXXXXXX" });
- */
+export interface RequestOtpInput {
+  /** E.164, e.g. "+919876543210". */
+  phone: string;
+}
+
+/** `POST /v1/auth/otp/request`. */
 export function useRequestOtp(
-  options?: UseApiMutationOptions<RequestOtpResponse, RequestOtpPayload>,
+  options?: UseApiMutationOptions<{ channel: 'sms' | 'whatsapp' }, RequestOtpInput>,
 ) {
-  const fn = useMemo(() => (payload: RequestOtpPayload) => requestOtp(payload), []);
+  const fn = useMemo(() => (input: RequestOtpInput) => requestOtp(input.phone), []);
   return useApiMutation(fn, options);
 }

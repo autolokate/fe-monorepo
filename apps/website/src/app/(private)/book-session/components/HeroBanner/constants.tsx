@@ -15,7 +15,7 @@ export const HERO_CHIPS: ReadonlyArray<HeroChip> = [
 ] as const;
 
 export const HERO_CHECKLIST = [
-  'Server-priced at checkout',
+  'Live published availability',
   'No hidden charges',
-  'Cancel or reschedule anytime',
+  'Cancel anytime before the call',
 ] as const;

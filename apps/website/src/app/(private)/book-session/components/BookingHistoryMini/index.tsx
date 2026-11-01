@@ -1,8 +1,8 @@
 'use client';
 
-import { ExternalLink, Loader2, Video, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { canCancelBooking } from '@/lib/booking/normalize';
+import { bookingStatusLabel, canCancelBooking } from '@/lib/booking/normalize';
 import type { UserBookingSummary } from '@/lib/booking/types';
 
 function statusBadge(status: string): string {
@@ -28,6 +28,9 @@ export interface BookingHistoryMiniProps {
   onRequestCancel?: (booking: UserBookingSummary) => void;
   /** Id currently being cancelled — used to show a spinner on that row. */
   cancellingId?: string | null;
+  /** Load failure message (the list is NOT shown as empty when it failed to load). */
+  error?: string | null;
+  onRetry?: () => void;
 }
 
 export function BookingHistoryMini({
@@ -35,6 +38,8 @@ export function BookingHistoryMini({
   isLoading,
   onRequestCancel,
   cancellingId,
+  error,
+  onRetry,
 }: BookingHistoryMiniProps) {
   const rows = bookings.slice(0, 5);
 
@@ -42,7 +47,7 @@ export function BookingHistoryMini({
     <div className="rounded-2xl border border-border bg-card shadow-sm">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
-          Booking History
+          Your bookings
         </p>
       </div>
 
@@ -50,6 +55,19 @@ export function BookingHistoryMini({
         <div className="flex items-center gap-2 px-4 py-5 text-xs text-muted-foreground">
           <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" aria-hidden />
           Loading your bookings…
+        </div>
+      ) : error ? (
+        <div className="px-4 py-5 text-xs text-amber-700" role="alert">
+          <p>{error}</p>
+          {onRetry ? (
+            <button
+              type="button"
+              className="mt-1.5 font-semibold underline underline-offset-2"
+              onClick={onRetry}
+            >
+              Try again
+            </button>
+          ) : null}
         </div>
       ) : rows.length === 0 ? (
         <p className="px-4 py-5 text-xs text-muted-foreground">No bookings yet.</p>
@@ -97,7 +115,7 @@ export function BookingHistoryMini({
                           statusBadge(b.status),
                         )}
                       >
-                        {b.status}
+                        {bookingStatusLabel(b.status)}
                       </span>
                     </td>
                     <td className="px-4 py-2.5 text-muted-foreground">{b.slotStartLabel || '—'}</td>
@@ -125,27 +143,6 @@ export function BookingHistoryMini({
               })}
             </tbody>
           </table>
-        </div>
-      )}
-
-      {bookings.some((b) => b.meetLink) && (
-        <div className="border-t border-border/50 px-4 py-3">
-          {bookings
-            .filter((b): b is UserBookingSummary & { meetLink: string } => b.meetLink != null)
-            .slice(0, 1)
-            .map((b) => (
-              <a
-                key={b.id}
-                href={b.meetLink}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80"
-              >
-                <Video className="h-3.5 w-3.5" aria-hidden />
-                Join active session
-                <ExternalLink className="h-3 w-3" aria-hidden />
-              </a>
-            ))}
         </div>
       )}
     </div>

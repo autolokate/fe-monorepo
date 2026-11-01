@@ -7,9 +7,15 @@ import { toast } from 'sonner';
 import { Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRequestOtp, useVerifyOtp } from '@/hooks/auth';
+import { updateProfile } from '@/services/auth';
 import { BrandWordmark } from '../BrandWordmark';
 import { OtpField } from '../OtpField';
-import { OTP_LENGTH, RESEND_COOLDOWN_SECONDS, formatPhoneDisplay } from '../constants';
+import {
+  OTP_LENGTH,
+  RESEND_COOLDOWN_SECONDS,
+  formatPhoneDisplay,
+  takeSignupName,
+} from '../constants';
 
 interface OtpStepProps {
   phone: string;
@@ -24,7 +30,17 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_SECONDS);
 
   const verify = useVerifyOtp({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Coming from /auth/signup: save the name they typed (PATCH /v1/profile). A failure
+      // here must not undo the sign-in — they can set it on /profile.
+      const signupName = takeSignupName();
+      if (signupName) {
+        try {
+          await updateProfile({ name: signupName });
+        } catch {
+          toast.error('Signed in, but we could not save your name. Update it on your profile.');
+        }
+      }
       toast.success('Logged in successfully.');
       router.push(safeNext || '/');
     },
@@ -101,7 +117,7 @@ export function OtpStep({ phone, safeNext }: OtpStepProps) {
           disabled={verify.isLoading}
         />
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          Use the OTP received on SMS to continue.
+          Enter the code we just sent to continue.
         </p>
 
         <Button
