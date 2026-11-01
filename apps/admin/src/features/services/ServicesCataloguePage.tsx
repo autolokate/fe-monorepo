@@ -34,6 +34,9 @@ export function ServicesCataloguePage() {
     toggleHubVisible,
     saveHubMutation,
     hubSaveError,
+    hubEditable,
+    hubUsingDefaults,
+    retryHub,
     providers,
     isLoading,
     isFetching,
@@ -133,6 +136,7 @@ export function ServicesCataloguePage() {
                 size="sm"
                 data-testid="services-hub-categories-save"
                 loading={saveHubMutation.isPending}
+                disabled={!hubEditable}
                 onClick={() => {
                   saveHubMutation.mutate(hubDraft);
                 }}
@@ -143,8 +147,21 @@ export function ServicesCataloguePage() {
           }
         >
           {categoriesErrorMessage ? (
-            <p className="admin-empty-note" data-testid="services-category-config-stub">
-              Hub categories could not be loaded — editing defaults. ({categoriesErrorMessage})
+            <div
+              className="admin-empty-note"
+              data-testid="services-category-config-error"
+              role="alert"
+            >
+              Hub categories could not be loaded, so they can’t be edited right now (saving would
+              overwrite the live configuration). {categoriesErrorMessage}{' '}
+              <AlButton variant="secondary" size="sm" onClick={retryHub}>
+                Retry
+              </AlButton>
+            </div>
+          ) : hubUsingDefaults ? (
+            <p className="admin-empty-note" data-testid="services-category-config-defaults">
+              No hub configuration is saved on the server yet — showing the default tile order. Save
+              to persist it.
             </p>
           ) : null}
 

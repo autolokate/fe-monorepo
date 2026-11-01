@@ -140,20 +140,19 @@ export interface OrderSummary extends OrderTracking {
   createdAt: string;
 }
 
+/**
+ * `GET /v1/retail/orders/:id/invoice` — today a retail invoice STUB (not a fiscal invoice): no PDF
+ * is generated yet, so `downloadUrl` is absent and the UI says the PDF is not ready.
+ */
 export interface Invoice {
-  id: string;
+  orderId: string;
   invoiceNumber: string;
-  taxableValuePaise: number;
-  cgstPaise: number;
-  sgstPaise: number;
-  igstPaise: number;
+  subtotalPaise: number;
+  gstPaise: number;
+  discountPaise: number;
   totalPaise: number;
-  amountPaidPaise: number;
   status: string;
-  paymentTerms?: string | null;
-  dueDate?: string | null;
-  issuedAt?: string | null;
-  paidAt?: string | null;
-  /** Pre-signed URL to the generated invoice PDF. */
+  note?: string | null;
+  /** Pre-signed URL to the generated invoice PDF, once a backend issues one. */
   downloadUrl?: string | null;
 }

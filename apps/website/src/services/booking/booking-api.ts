@@ -1,44 +1,30 @@
 'use client';
 
+import { http } from '@/lib/api/client';
 import { endpoints } from '@/lib/api/endpoints';
-import { ApiService } from '@/services/api.service';
-import type { BookingEnvelope, BookingSlotsQuery, CreateBookingPayload } from './types';
+import type { BookingSlotsQuery, CreateBookingPayload } from './types';
 
-const isRecord = (v: unknown): v is Record<string, unknown> =>
-  typeof v === 'object' && v !== null && !Array.isArray(v);
-
-/**
- * Unwrap `{ success, data }` envelopes; return the raw value for anything else.
- * `data` is optional on the envelope, so an unwrapped value may be `undefined`.
- */
-function unbox<T>(res: BookingEnvelope<T>): T | undefined {
-  if (isRecord(res) && 'data' in res) return (res as { data?: T }).data;
-  return res as T;
+interface Enveloped<T> {
+  data?: T;
 }
 
-/** GET /v1/bookings/slots — optional `date` + `range_days` filters. */
+/** GET /v1/booking-slots — published slots for `date` + `range_days` (CONSUMER bearer). */
 export async function getBookingSlots(query: BookingSlotsQuery = {}): Promise<unknown[]> {
-  const params: Record<string, string | number> = {};
-  if (query.date) params.date = query.date;
-  if (query.range_days != null) params.range_days = query.range_days;
-
-  const res = await ApiService.get<BookingEnvelope<unknown[]>>(endpoints.bookings.slots, {
-    params,
+  const res = await http.get<Enveloped<unknown[]>>(endpoints.bookings.slots, {
+    params: { date: query.date, range_days: query.range_days },
   });
-  return unbox(res.data) ?? [];
+  return res.data.data ?? [];
 }
 
-/** GET /v1/bookings/slots/{yyyy-MM-dd} — same as above but for a single day. */
+/** GET /v1/booking-slots/{yyyy-MM-dd} — published slots for one day (empty when none). */
 export async function getBookingSlotsByDate(dateIso: string): Promise<unknown[]> {
-  const res = await ApiService.get<BookingEnvelope<unknown[]>>(
-    endpoints.bookings.slotsByDate(dateIso),
-  );
-  return unbox(res.data) ?? [];
+  const res = await http.get<Enveloped<unknown[]>>(endpoints.bookings.slotsByDate(dateIso));
+  return res.data.data ?? [];
 }
 
 /**
- * POST /v1/bookings/book — payload mirrors `CreateBookingDto`.
- * Only the fields declared in the DTO are sent to avoid validation rejections.
+ * POST /v1/bookings/book — reserves the slot. The server creates the booking as PENDING;
+ * there is no payment endpoint for sessions, so nothing here charges the user.
  */
 export async function createBooking(payload: CreateBookingPayload): Promise<unknown> {
   const body: Record<string, unknown> = {
@@ -48,25 +34,24 @@ export async function createBooking(payload: CreateBookingPayload): Promise<unkn
     booking_type: payload.booking_type,
   };
   if (payload.car_profile_id) body.car_profile_id = payload.car_profile_id;
-
-  const res = await ApiService.post(endpoints.bookings.create, body);
-  return unbox(res.data);
+  const res = await http.post<Enveloped<unknown>>(endpoints.bookings.create, body);
+  return res.data.data;
 }
 
-/** GET /v1/bookings/my — bookings owned by the signed-in user. */
+/** GET /v1/bookings/my — the signed-in account's bookings. */
 export async function getMyBookings(): Promise<unknown[]> {
-  const res = await ApiService.get<BookingEnvelope<unknown[]>>(endpoints.bookings.my);
-  return unbox(res.data) ?? [];
+  const res = await http.get<Enveloped<unknown[]>>(endpoints.bookings.my);
+  return res.data.data ?? [];
 }
 
-/** GET /v1/bookings/{id} — single booking lookup. */
+/** GET /v1/bookings/{id}. */
 export async function getBookingById(bookingId: string): Promise<unknown> {
-  const res = await ApiService.get(endpoints.bookings.byId(bookingId));
-  return unbox(res.data);
+  const res = await http.get<Enveloped<unknown>>(endpoints.bookings.byId(bookingId));
+  return res.data.data;
 }
 
-/** POST /v1/bookings/{id}/cancel. */
+/** POST /v1/bookings/{id}/cancel (PENDING or CONFIRMED only). */
 export async function cancelBooking(bookingId: string): Promise<unknown> {
-  const res = await ApiService.post(endpoints.bookings.cancel(bookingId));
-  return unbox(res.data);
+  const res = await http.post<Enveloped<unknown>>(endpoints.bookings.cancel(bookingId));
+  return res.data.data;
 }

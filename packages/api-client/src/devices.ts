@@ -23,14 +23,15 @@ export async function registerDeviceToken(
 }
 
 /**
- * DELETE /v1/devices/token — unregister THIS device's push target.
+ * DELETE /v1/devices/token — unregister THIS device's push target (204).
  *
- * Fired when the browser's Firebase Installation ID is retired (`onUnregistered`), so the server
- * stops targeting a dead installation instead of waiting for a send to 404. Idempotent.
+ * Contract body is `{ token }` (the push token travels in the body, never the URL, so it stays out
+ * of access logs). Callers keep passing `fcmToken`; it is mapped here. Fired when the browser's
+ * Firebase Installation ID is retired (`onUnregistered`) or on sign-out. Idempotent.
  */
 export async function unregisterDeviceToken(
   client: ApiClient,
   body: { fcmToken: string },
 ): Promise<void> {
-  await client.delete<unknown>(endpoints.devices.token, { body });
+  await client.delete<unknown>(endpoints.devices.token, { body: { token: body.fcmToken } });
 }

@@ -215,7 +215,16 @@ export async function publishGarageStore(
 }
 
 /** OpenAPI `GarageStoreDto.gstVerification` */
-export type GarageGstVerification = 'NOT_SUBMITTED' | 'PENDING' | 'VERIFIED' | 'NEEDS_ATTENTION';
+/**
+ * `PENDING_REVIEW` — partner self-verified via the sandbox vendor; only a live vendor or an
+ * operator decision may move it to `VERIFIED` (CONTRACTS.md, be-garage).
+ */
+export type GarageGstVerification =
+  | 'NOT_SUBMITTED'
+  | 'PENDING'
+  | 'PENDING_REVIEW'
+  | 'VERIFIED'
+  | 'NEEDS_ATTENTION';
 
 /** OpenAPI `AdminSetGarageGstVerificationDto` */
 export type SetGarageGstVerificationBody = {

@@ -38,6 +38,13 @@ const NAV_ICONS: Record<string, typeof HouseIcon> = {
   '/taxi-policy': CarIcon,
   '/partners': StoreIcon,
   '/partners/requests': ReceiptTextIcon,
+  '/partners/kyc': ShieldCheckIcon,
+  '/taxi/bookings': ReceiptTextIcon,
+  '/taxi/partners': CarIcon,
+  '/taxi/revenue': CreditCardIcon,
+  '/experts': UsersIcon,
+  '/website-bookings': UsersIcon,
+  '/garage-taxonomy': StoreIcon,
   '/discovery': CameraIcon,
   '/discovery/qa': UsersIcon,
   '/discovery/replies': ShieldCheckIcon,
@@ -59,9 +66,9 @@ export type AdminSidebarProps = {
 };
 
 export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminSidebarProps) {
-  const { session, adminRole } = useAdminAuth();
+  const { session } = useAdminAuth();
   const { themeMode } = useTheme();
-  const activeRole = session?.role ?? adminRole;
+  const activeRole = session?.role ?? '—';
   const logoVariant = themeMode === 'dark' ? 'dark' : 'light';
 
   return (
@@ -88,7 +95,11 @@ export function AdminSidebar({ collapsed, onToggleCollapse, onNavigate }: AdminS
                 <NavLink
                   key={route.path}
                   to={route.path}
-                  end={route.path === adminPaths.discovery || route.path === adminPaths.partners}
+                  end={
+                    route.path === adminPaths.discovery ||
+                    route.path === adminPaths.partners ||
+                    route.path === adminPaths.dashboard
+                  }
                   className={({ isActive }) =>
                     `admin-shell-nav-item al-admin-focus-ring ${isActive ? 'is-active' : ''}`.trim()
                   }

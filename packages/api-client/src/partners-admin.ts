@@ -50,6 +50,8 @@ export type AdminPartnerOrgDto = {
   storeStatus?: string | null;
   /** Present when BE partner detail includes store GST; optional until DTO ships. */
   gstVerification?: string | null;
+  /** Explicit storefront surface (be-garage 0116); taxi-only orgs have none. */
+  surfaceType?: 'GARAGE' | 'STORE' | null;
   cities?: string[];
 };
 
@@ -268,4 +270,61 @@ export async function getAdminTaxiRequest(
     signalOption(options),
   );
   return unwrapEnvelope(response) as AdminTaxiRequestInboxDto;
+}
+
+/**
+ * Row of GET /admin/v1/partners/kyc — the garage GST review queue (be-garage `AdminPartnerKycItemDto`).
+ * Business identifiers only; the decision goes through POST …/garage/orgs/{orgId}/gst-verification.
+ */
+export type AdminPartnerKycItemDto = {
+  orgId: string;
+  orgName: string;
+  storeId: string;
+  storeName: string | null;
+  surfaceType: 'GARAGE' | 'STORE';
+  storeStatus: 'DRAFT' | 'PUBLISHED';
+  /** NOT_SUBMITTED | PENDING | PENDING_REVIEW | VERIFIED | NEEDS_ATTENTION */
+  gstVerification: string;
+  gstin: string | null;
+  registrationKind: 'REGISTERED' | 'UNREGISTERED';
+  legalName: string | null;
+  tradeName: string | null;
+  updatedAt: string;
+};
+
+export type ListAdminPartnersKycQuery = {
+  status?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** GET /admin/v1/partners/kyc?status (server default PENDING_REVIEW) — envelope list + meta.pagination. */
+export async function listAdminPartnersKycPage(
+  client: ApiClient,
+  query: ListAdminPartnersKycQuery = {},
+  options: RequestOptions = {},
+): Promise<AdminPartnersPageResult<AdminPartnerKycItemDto>> {
+  const path = `${endpoints.admin.partnersKyc}${buildQuery({
+    status: query.status,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, signalOption(options));
+  const data = unwrapEnvelope(response);
+  if (data && typeof data === 'object' && !Array.isArray(data) && 'items' in data) {
+    const record = data as { items: AdminPartnerKycItemDto[]; nextCursor?: string | null };
+    const meta = readEnvelopeMeta(response);
+    return {
+      items: record.items,
+      pagination: {
+        limit: query.limit ?? record.items.length,
+        cursor: query.cursor ?? null,
+        nextCursor: record.nextCursor ?? null,
+        hasMore: Boolean(record.nextCursor),
+      },
+      requestId: meta?.requestId ?? null,
+      correlationId: meta?.correlationId ?? null,
+    };
+  }
+  return readPage<AdminPartnerKycItemDto>(response);
 }

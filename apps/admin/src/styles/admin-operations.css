@@ -68,3 +68,26 @@
 .admin-operations-results:empty {
   display: none;
 }
+
+.admin-simple-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--al-text-label-size);
+}
+
+.admin-simple-table th,
+.admin-simple-table td {
+  padding: var(--al-space-2);
+  border-bottom: 1px solid var(--al-admin-divider, var(--al-color-outline));
+  text-align: left;
+}
+
+.admin-simple-table thead th {
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+  font-weight: var(--al-font-weight-medium);
+}
+
+.admin-mono {
+  font-family: var(--al-font-mono, ui-monospace, monospace);
+  font-size: 0.8125rem;
+}

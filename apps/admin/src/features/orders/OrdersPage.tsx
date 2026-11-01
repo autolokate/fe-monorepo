@@ -17,6 +17,7 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
+import { useCanRefundOrders } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 /** Honest KPIs from the loaded page only — not catalog-wide totals. */
@@ -45,8 +46,7 @@ export function OrdersPage() {
     refresh,
   } = useOrders();
 
-  // Refund mutation is product-blocked. Keep CTA off regardless of RBAC.
-  const canRefund = false;
+  const canRefund = useCanRefundOrders();
   const [refundTarget, setRefundTarget] = useState<AdminOrderSummary | null>(null);
   const [detailOrder, setDetailOrder] = useState<AdminOrderSummary | null>(null);
 
@@ -81,6 +81,10 @@ export function OrdersPage() {
             />
           }
         />
+        <p className="admin-empty-note" data-testid="orders-refund-note">
+          Refunds here are full refunds of paid plan orders. Taxi advance refunds are handled from
+          Taxi → Bookings (cancel with refund).
+        </p>
 
         {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 

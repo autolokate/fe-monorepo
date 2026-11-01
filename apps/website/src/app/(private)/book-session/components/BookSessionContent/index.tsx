@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { useCurrentUser, useIsAuthenticated } from '@/hooks/auth';
+import { useIsAuthenticated } from '@/hooks/auth';
 import { useCancelBooking, useMyBookings } from '@/hooks/booking';
 import type { UserBookingSummary } from '@/lib/booking/types';
 
@@ -23,7 +23,6 @@ import { CancelDialog } from '../CancelDialog';
  */
 export function BookSessionContent() {
   const authed = useIsAuthenticated();
-  const userQuery = useCurrentUser({ enabled: authed === true });
   const bookingsQuery = useMyBookings({ enabled: authed === true });
 
   const [cancelTarget, setCancelTarget] = useState<UserBookingSummary | null>(null);
@@ -35,7 +34,7 @@ export function BookSessionContent() {
     },
   });
 
-  const handlePaymentSettled = useCallback(() => {
+  const handleBooked = useCallback(() => {
     void bookingsQuery.refetch();
   }, [bookingsQuery]);
 
@@ -65,18 +64,16 @@ export function BookSessionContent() {
               aria-labelledby="book-session-title"
             >
               <h2 id="book-session-title" className="sr-only">
-                Reserve and pay for your session
+                Request your session
               </h2>
               <div className="flex flex-col gap-4">
-                <BookingForm
-                  authed={authed}
-                  user={userQuery.data ?? null}
-                  onPaymentSettled={handlePaymentSettled}
-                />
+                <BookingForm authed={authed} onBooked={handleBooked} />
                 {authed === true && (
                   <BookingHistoryMini
                     bookings={bookingsQuery.bookings}
                     isLoading={bookingsQuery.isLoading}
+                    error={bookingsQuery.error?.message ?? null}
+                    onRetry={() => void bookingsQuery.refetch()}
                     onRequestCancel={setCancelTarget}
                     cancellingId={cancelMutation.isLoading ? (cancelTarget?.id ?? null) : null}
                   />
@@ -97,7 +94,7 @@ export function BookSessionContent() {
                 <Faq />
                 <p className="mt-8 rounded-2xl border border-border bg-muted/30 p-4 text-sm leading-relaxed text-muted-foreground">
                   Autolokate expert sessions are guidance only — not financial, legal, or insurance
-                  advice. See checkout for reschedule and refund terms.
+                  advice.
                 </p>
               </div>
             </article>

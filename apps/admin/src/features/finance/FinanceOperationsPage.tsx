@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 
 import { ClawbackResultPanel, CreateClawbackSheet } from '@/features/finance/CreateClawbackSheet';
+import { FinanceHistoryPanel } from '@/features/finance/FinanceHistoryPanel';
 import { useFinanceMutations } from '@/hooks/finance/useFinanceMutations';
 import { AdminPanel, AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { useAdminAnyPermission, useAdminPermission } from '@/platform/rbac/useAdminPermission';
@@ -92,6 +93,8 @@ export function FinanceOperationsPage() {
           {settlementResult ? <SettlementResultPanel result={settlementResult} /> : null}
         </>
       )}
+
+      <FinanceHistoryPanel />
 
       <CreateClawbackSheet
         open={clawbackOpen}

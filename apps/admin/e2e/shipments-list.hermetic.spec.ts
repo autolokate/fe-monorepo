@@ -36,7 +36,9 @@ test.describe('Shipments list (hermetic)', () => {
     });
     await seedHermeticSession(page);
     await page.goto('/shipments', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('Something went wrong. Try again.')).toBeVisible({
+    await expect(
+      page.getByText('The server refused this action for your operator session.'),
+    ).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();

@@ -26,6 +26,7 @@ import './partners.css';
 const GST_OPTIONS: { value: GarageGstVerification; label: string }[] = [
   { value: 'NOT_SUBMITTED', label: 'Not submitted' },
   { value: 'PENDING', label: 'Pending' },
+  { value: 'PENDING_REVIEW', label: 'Pending review (sandbox self-verify)' },
   { value: 'VERIFIED', label: 'Verified' },
   { value: 'NEEDS_ATTENTION', label: 'Needs attention' },
 ];
@@ -34,6 +35,7 @@ function isGarageGstVerification(value: string | null | undefined): value is Gar
   return (
     value === 'NOT_SUBMITTED' ||
     value === 'PENDING' ||
+    value === 'PENDING_REVIEW' ||
     value === 'VERIFIED' ||
     value === 'NEEDS_ATTENTION'
   );

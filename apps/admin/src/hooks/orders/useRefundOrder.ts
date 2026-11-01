@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { ordersQueryKeys } from '@/hooks/orders/useOrders';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
-import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { showSuccessToast } from '@/platform/feedback/toast';
 import { refundOrder } from '@/services/orders/orders-service';
 
@@ -13,21 +12,23 @@ export function useRefundOrder() {
     mutationFn: ({
       orderId,
       reason,
-      signal,
+      idempotencyKey,
     }: {
       orderId: string;
       reason: string;
-      signal?: AbortSignal;
-    }) => refundOrder(orderId, reason, signal),
+      idempotencyKey: string;
+    }) => refundOrder(orderId, reason, idempotencyKey),
+    // Never auto-retry a money mutation: the dialog decides whether a retry reuses the key.
     retry: 0,
     onSuccess: async (result) => {
       await queryClient.invalidateQueries({ queryKey: ordersQueryKeys.all });
-      // The refund is async — it settles at REFUND_PENDING here and REFUNDED lands later via webhook.
-      showSuccessToast(`Refund initiated — ${result.state}.`);
+      showSuccessToast(
+        result.state === 'REFUNDED'
+          ? 'Refund processed by the payment provider.'
+          : 'Refund accepted — settling with the payment provider (REFUND_PENDING).',
+      );
     },
-    onError: (error) => {
-      reportAdminApiError(error, { context: 'orders:refund', toast: true });
-    },
+    // Failures are explained inline by the dialog (`classifyRefundError`), not as a generic toast.
   });
 
   return {

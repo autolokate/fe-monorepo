@@ -71,7 +71,12 @@ export type HermeticCapture = {
   incidentsGet: number;
   incidentsDetailGet: number;
   ordersGet: number;
-  ordersRefund: Array<{ method: string; path: string; body: unknown }>;
+  ordersRefund: Array<{
+    method: string;
+    path: string;
+    body: unknown;
+    idempotencyKey: string | null;
+  }>;
   clawbacksPost: Array<{ method: string; path: string; body: unknown }>;
   settlementBatchPost: number;
   supportTicketsGet: number;
@@ -110,6 +115,25 @@ export type HermeticTaxiPolicy = {
   status: 'DRAFT' | 'PUBLISHED';
   customerAdvanceBps: number;
   partnerDepositBps: number;
+  [key: string]: unknown;
+};
+
+/** Synthetic previously-published Taxi policy (live) used when `seedPublishedTaxiPolicy` is set. */
+export const HERMETIC_TAXI_POLICY_LIVE: HermeticTaxiPolicy = {
+  id: 'dddddddd-eeee-4fff-8000-000000000001',
+  status: 'PUBLISHED',
+  customerAdvanceBps: 400,
+  partnerDepositBps: 700,
+  customerNoShowWaitMinutes: 15,
+  customerNoShowMinContactAttempts: 2,
+  depositReleaseHoursAfterComplete: 48,
+  disputeSlaBusinessDays: 5,
+  customerAdvanceRefundWindowHours: 24,
+  partnerDepositDueMinutes: 120,
+  tripDisputeWindowHours: 24,
+  partnerCancelPenaltyBpsByStage: { gt24h: 2500, h2to24: 5000, lt2hOrNoShow: 10000 },
+  notes: null,
+  publishedAt: '2026-10-01T00:00:00.000Z',
 };
 
 export const HERMETIC_TAXI_POLICY: HermeticTaxiPolicy = {
@@ -355,6 +379,8 @@ export type InstallHermeticRoutesOptions = {
   taxiPolicyPutStatus?: number;
   /** When set, taxi policy publish POST returns this status instead of 200. */
   taxiPolicyPublishStatus?: number;
+  /** Seed a previously-published (live) Taxi policy version in history alongside the draft. */
+  seedPublishedTaxiPolicy?: boolean;
   /** When set, break-glass request POST returns this status instead of 200. */
   breakGlassRequestStatus?: number;
   /** When set, ownership-claims GET returns this status instead of 200. */
@@ -616,7 +642,16 @@ export async function installHermeticApiRoutes(
       ]
     : [];
 
-  let taxiPolicyState: HermeticTaxiPolicy = { ...HERMETIC_TAXI_POLICY };
+  let taxiPolicyState: HermeticTaxiPolicy = options.seedPublishedTaxiPolicy
+    ? {
+        ...HERMETIC_TAXI_POLICY_LIVE,
+        ...HERMETIC_TAXI_POLICY,
+        depositReleaseHoursAfterComplete: 48,
+      }
+    : { ...HERMETIC_TAXI_POLICY };
+  let taxiPolicyHistory: HermeticTaxiPolicy[] = options.seedPublishedTaxiPolicy
+    ? [{ ...HERMETIC_TAXI_POLICY_LIVE }]
+    : [];
   let breakGlassState = {
     id: HERMETIC_BREAK_GLASS_APPROVAL_ID,
     status: 'PENDING',
@@ -1436,7 +1471,7 @@ export async function installHermeticApiRoutes(
         await fulfillJson(route, usersGrantPostStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
-      const role = typeof body.role === 'string' ? body.role : 'ADMIN';
+      const role = typeof body.role === 'string' ? body.role : 'OPERATOR';
       if (!hermeticCustomerRoles.some((entry) => entry.role === role)) {
         hermeticCustomerRoles = [
           ...hermeticCustomerRoles,
@@ -1463,14 +1498,14 @@ export async function installHermeticApiRoutes(
           usersRevokeDeleteStatus,
           errorEnvelope(
             usersRevokeDeleteStatus === 409
-              ? 'Cannot revoke the last remaining ADMIN.'
+              ? 'Cannot revoke the last active OPERATOR.'
               : 'Forbidden',
-            usersRevokeDeleteStatus === 409 ? 'conflict' : 'forbidden',
+            usersRevokeDeleteStatus === 409 ? 'last_admin' : 'forbidden',
           ),
         );
         return;
       }
-      const role = decodeURIComponent(userRolesRevokeMatch[2] ?? 'ADMIN');
+      const role = decodeURIComponent(userRolesRevokeMatch[2] ?? 'OPERATOR');
       hermeticCustomerRoles = hermeticCustomerRoles.filter((entry) => entry.role !== role);
       await fulfillJson(
         route,
@@ -1809,8 +1844,16 @@ export async function installHermeticApiRoutes(
         await fulfillJson(route, taxiPolicyPutStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
+      // PUT replaces the whole draft (BE semantics): omitted optional fields become null.
       taxiPolicyState = {
-        ...taxiPolicyState,
+        customerNoShowWaitMinutes: null,
+        customerNoShowMinContactAttempts: null,
+        depositReleaseHoursAfterComplete: null,
+        disputeSlaBusinessDays: null,
+        partnerCancelPenaltyBpsByStage: null,
+        notes: null,
+        ...body,
+        id: taxiPolicyState.id,
         status: 'DRAFT',
         customerAdvanceBps:
           typeof body.customerAdvanceBps === 'number'
@@ -1835,21 +1878,18 @@ export async function installHermeticApiRoutes(
         );
         return;
       }
-      taxiPolicyState = { ...taxiPolicyState, status: 'PUBLISHED' };
+      taxiPolicyState = {
+        ...taxiPolicyState,
+        status: 'PUBLISHED',
+        publishedAt: '2026-10-20T00:00:00.000Z',
+      };
+      taxiPolicyHistory = [{ ...taxiPolicyState }, ...taxiPolicyHistory];
       await fulfillJson(route, taxiPolicyPublishStatus, envelope(taxiPolicyState));
       return;
     }
 
     if (method === 'GET' && path === '/admin/v1/taxi/policy/history') {
-      await fulfillJson(
-        route,
-        200,
-        envelope(
-          taxiPolicyState.status === 'PUBLISHED'
-            ? [{ ...taxiPolicyState, publishedAt: '2026-10-20T00:00:00.000Z' }]
-            : [],
-        ),
-      );
+      await fulfillJson(route, 200, envelope(taxiPolicyHistory));
       return;
     }
 
@@ -2196,26 +2236,35 @@ export async function installHermeticApiRoutes(
     const orderRefundMatch = path.match(/^\/admin\/v1\/orders\/([^/]+)\/refund$/);
     if (method === 'POST' && orderRefundMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
-      capture.ordersRefund.push({ method, path, body });
+      capture.ordersRefund.push({
+        method,
+        path,
+        body,
+        idempotencyKey: req.headers()['idempotency-key'] ?? null,
+      });
       if (ordersRefundStatus >= 400) {
-        await fulfillJson(
-          route,
-          ordersRefundStatus,
-          errorEnvelope(
-            ordersRefundStatus === 409 ? 'Order is not refundable' : 'Forbidden',
-            ordersRefundStatus === 409 ? 'order_not_refundable' : 'forbidden',
-          ),
-        );
+        const [message, code] =
+          ordersRefundStatus === 409
+            ? ['Order is not refundable', 'order_not_refundable']
+            : ordersRefundStatus === 502
+              ? ['Provider declined the refund', 'refund_failed']
+              : ordersRefundStatus === 503
+                ? ['Payment provider unavailable', 'vendor_unavailable']
+                : ['Forbidden', 'forbidden'];
+        await fulfillJson(route, ordersRefundStatus, errorEnvelope(message, code));
         return;
       }
       await fulfillJson(
         route,
         ordersRefundStatus,
         envelope({
+          orderId: orderRefundMatch[1],
           paymentRef: HERMETIC_PAYMENT_REF,
+          refundId: '99999999-0000-4000-8000-000000000001',
+          refundRef: HERMETIC_REFUND_REF,
           state: 'REFUND_PENDING',
           amountPaise: 19900,
-          refundRef: HERMETIC_REFUND_REF,
+          subscriptionId: null,
         }),
       );
       return;
@@ -2299,6 +2348,27 @@ export async function installHermeticApiRoutes(
     }
 
     const supportTicketPatchMatch = path.match(/^\/admin\/v1\/support\/tickets\/([^/]+)$/);
+    if (method === 'GET' && supportTicketPatchMatch) {
+      // Admin plane never decrypts the customer body: it is always "".
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          ticketId: decodeURIComponent(supportTicketPatchMatch[1] ?? HERMETIC_SUPPORT_TICKET_ID),
+          accountId: HERMETIC_USER_ID,
+          type: 'LOST_QR',
+          subject: HERMETIC_SUPPORT_TICKET_SUBJECT,
+          body: '',
+          status: 'OPEN',
+          metadata: { qr_code: 'ALK-HERM-ST' },
+          opsNote: null,
+          opsUpdatedByAdminId: null,
+          createdAt: '2026-10-19T00:00:00.000Z',
+          updatedAt: '2026-10-19T00:00:00.000Z',
+        }),
+      );
+      return;
+    }
     if (method === 'PATCH' && supportTicketPatchMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
       capture.supportTicketsPatch.push({ method, path, body });
@@ -2306,7 +2376,9 @@ export async function installHermeticApiRoutes(
         await fulfillJson(
           route,
           supportTicketsPatchStatus,
-          errorEnvelope('Forbidden', 'forbidden'),
+          supportTicketsPatchStatus === 409
+            ? errorEnvelope('Invalid transition', 'support_ticket_invalid_transition')
+            : errorEnvelope('Forbidden', 'forbidden'),
         );
         return;
       }
@@ -2320,9 +2392,11 @@ export async function installHermeticApiRoutes(
           accountId: HERMETIC_USER_ID,
           type: 'LOST_QR',
           subject: HERMETIC_SUPPORT_TICKET_SUBJECT,
-          body: 'Hermetic ticket body',
+          body: '',
           status: nextStatus,
           metadata: { qr_code: 'ALK-HERM-ST' },
+          opsNote: typeof body.note === 'string' ? body.note : null,
+          opsUpdatedByAdminId: typeof body.note === 'string' ? HERMETIC_USER_ID : null,
           createdAt: '2026-10-19T00:00:00.000Z',
           updatedAt: '2026-10-20T12:00:00.000Z',
         }),
@@ -2428,13 +2502,25 @@ export async function installHermeticApiRoutes(
 }
 
 /** Inject synthetic session tokens before the Admin app mounts. */
-export async function seedHermeticSession(page: Page): Promise<void> {
+export async function seedHermeticSession(
+  page: Page,
+  tokens: typeof HERMETIC_TOKENS = HERMETIC_TOKENS,
+): Promise<void> {
   await page.addInitScript(
     ({ key, value }) => {
+      // Only seed once per tab so a later sign-out / token swap is not undone on reload.
+      if (sessionStorage.getItem('__hermetic_seeded') === '1') return;
+      sessionStorage.setItem('__hermetic_seeded', '1');
       sessionStorage.setItem(key, JSON.stringify(value));
     },
-    { key: ADMIN_TOKEN_KEY, value: HERMETIC_TOKENS },
+    { key: ADMIN_TOKEN_KEY, value: tokens },
   );
+}
+
+/** Unsigned JWT-shaped synthetic token (hermetic only — never a real credential). */
+export function hermeticJwt(claims: Record<string, unknown>): string {
+  const b64 = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
+  return `${b64({ alg: 'none', typ: 'JWT' })}.${b64(claims)}.hermetic`;
 }
 
 /** Land on ownership-transfers after auth bootstrap. */

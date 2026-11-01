@@ -68,23 +68,22 @@ test.describe('Promo create (hermetic)', () => {
     await dialog.getByTestId('promo-create-submit').click();
 
     await expect(dialog.locator('.admin-form-error')).toHaveText(
-      'Something went wrong. Try again.',
+      'The server refused this action for your operator session.',
       { timeout: 10_000 },
     );
     expect(capture.promosCreate).toHaveLength(1);
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY hides Create promo CTA', async ({ page }) => {
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await openPromosPage(page);
-
-    await expect(page.getByRole('heading', { name: 'Promos', exact: true })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByRole('button', { name: 'Create promo' })).toHaveCount(0);
-    expect(capture.promosCreate).toEqual([]);
+    await page.goto('/promos');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -95,7 +94,9 @@ test.describe('Promo create (hermetic)', () => {
     });
     await seedHermeticSession(page);
     await page.goto('/promos', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('Something went wrong. Try again.')).toBeVisible({
+    await expect(
+      page.getByText('The server refused this action for your operator session.'),
+    ).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();

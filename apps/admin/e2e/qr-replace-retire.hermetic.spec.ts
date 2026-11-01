@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
 import {
-  HERMETIC_QR_BATCH_CODE,
   HERMETIC_QR_CODE,
   HERMETIC_QR_CODE_ID,
   HERMETIC_QR_CODE_REPLACEMENT,
@@ -118,7 +117,7 @@ test.describe('QR replace / retire (hermetic)', () => {
       .click();
 
     await expect(page.getByTestId('qr-code-action-error')).toHaveText(
-      'Something went wrong. Try again.',
+      'The server refused this action for your operator session.',
       { timeout: 10_000 },
     );
     await expect(page.getByLabel('Replacement issued')).toHaveCount(0);
@@ -148,22 +147,15 @@ test.describe('QR replace / retire (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY hides Replace/Retire CTAs', async ({ page }) => {
-    const capture = await installHermeticApiRoutes(page, {
-      sessionRole: 'READ_ONLY',
-      seedProvisionedQrBatch: true,
-    });
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await openQrBatchDetailPage(page);
-
-    await expect(page.getByRole('heading', { name: HERMETIC_QR_BATCH_CODE })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByTestId('qr-code-replace')).toHaveCount(0);
-    await expect(page.getByTestId('qr-code-retire')).toHaveCount(0);
-    await expect(page.getByTestId('qr-code-write-required')).toBeVisible();
-    expect(capture.qrReplace).toEqual([]);
-    expect(capture.qrRetire).toEqual([]);
+    await page.goto('/qr-batches');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -209,19 +201,6 @@ test.describe('QR replace / retire (hermetic)', () => {
     expect(capture.qrAutoDetachSweep[0]?.path).toBe('/admin/v1/qr-auto-detach-sweep');
     expect(capture.qrAutoDetachSweep[0]?.body).toBeNull();
     expect(capture.inventoryGet).toBeGreaterThan(inventoryBefore);
-    expect(capture.unexpected).toEqual([]);
-  });
-
-  test('permission — READ_ONLY hides auto-detach more-action', async ({ page }) => {
-    const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
-    await seedHermeticSession(page);
-    await openQrBatchesPage(page);
-
-    await expect(page.getByRole('heading', { name: 'Batches', exact: true })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.locator('summary.admin-more-actions__summary')).toHaveCount(0);
-    expect(capture.qrAutoDetachSweep).toEqual([]);
     expect(capture.unexpected).toEqual([]);
   });
 });

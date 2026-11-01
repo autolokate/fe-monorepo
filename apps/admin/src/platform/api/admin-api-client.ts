@@ -13,11 +13,24 @@ const ADMIN_TOKEN_KEY = 'al-admin-auth-tokens-v1';
 let bootstrapClient: ApiClient | null = null;
 let authenticatedClient: ApiClient | null = null;
 let authFailureHandler: (() => void) | null = null;
+let stepUpRequiredHandler: (() => void) | null = null;
 
 const tokenManager = createTokenManager(createSessionTokenStorage(ADMIN_TOKEN_KEY));
 
 export function registerAdminAuthFailureHandler(handler: () => void): void {
   authFailureHandler = handler;
+}
+
+/**
+ * Called when the server answers 403 `step_up_required` (wired from the global QueryCache /
+ * MutationCache `onError`). The auth provider re-prompts for the step-up OTP.
+ */
+export function registerAdminStepUpRequiredHandler(handler: (() => void) | null): void {
+  stepUpRequiredHandler = handler;
+}
+
+export function notifyAdminStepUpRequired(): void {
+  stepUpRequiredHandler?.();
 }
 
 export function getAdminBootstrapClient(): ApiClient {

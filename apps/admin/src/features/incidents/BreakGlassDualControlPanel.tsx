@@ -1,5 +1,6 @@
 import type { BreakGlassApprovalDto } from '@autolokate/api-client';
 import { AlButton, AlStack, AlText } from '@autolokate/ui';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import {
@@ -31,6 +32,9 @@ export type BreakGlassDualControlPanelProps = {
   /** Optional prefill when operator picks a row from the list. */
   preferredDetailIncidentId?: string | null;
 };
+
+/** Poll cadence for a PENDING dual-control grant (status only — never incident PII). */
+export const BREAK_GLASS_POLL_MS = 5_000;
 
 function formatScopeLabel(scopeKey: string): string {
   const key = scopeKey.toUpperCase();
@@ -72,6 +76,24 @@ export function BreakGlassDualControlPanel({
   }, [preferredDetailIncidentId]);
 
   const effectiveDetailIncidentId = detailIncidentId.trim();
+
+  // ADM-10: while the requester waits for a second admin, poll the grant so an approval/denial
+  // shows up without a manual refresh. Status reads are PII-free and do not consume the grant.
+  const pendingId = approval?.status === 'PENDING' ? approval.id : null;
+  const pendingPoll = useQuery({
+    queryKey: ['admin', 'break-glass', 'approval', pendingId],
+    queryFn: () => fetchBreakGlassApproval(pendingId ?? ''),
+    enabled: pendingId !== null,
+    refetchInterval: BREAK_GLASS_POLL_MS,
+    refetchIntervalInBackground: false,
+    retry: false,
+  });
+  useEffect(() => {
+    const next = pendingPoll.data;
+    if (next && approval && next.id === approval.id && next.status !== approval.status) {
+      onApprovalChange(next);
+    }
+  }, [approval, onApprovalChange, pendingPoll.data]);
 
   const run = async (fn: () => Promise<BreakGlassApprovalDto>) => {
     setBusy(true);
@@ -269,6 +291,7 @@ export function BreakGlassDualControlPanel({
               <AlText variant="caption" tone="muted" title={approval.id}>
                 {shortAdminId(approval.id)} · {formatScopeLabel(approval.scopeKey)} · expires{' '}
                 {new Date(approval.expiresAt).toLocaleString()}
+                {approval.status === 'PENDING' ? ' · checking for approval every 5 s' : ''}
               </AlText>
             </div>
           ) : null}

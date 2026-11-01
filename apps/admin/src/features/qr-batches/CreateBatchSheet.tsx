@@ -140,7 +140,8 @@ export function CreateBatchSheet({ open, onOpenChange, onCreated }: CreateBatchS
             channel: values.channel,
             skuId: values.skuId,
             totalCount: values.totalCount,
-            ...(values.channel === 'B2B' && values.planTier ? { planTier: values.planTier } : {}),
+            // B2B tier is pinned by the Sku chosen above; `CreateBatchDto` has no planTier field
+            // (the API rejects unknown properties).
           },
           signal: controller.signal,
         });

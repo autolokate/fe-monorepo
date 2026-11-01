@@ -10,7 +10,7 @@ import {
 
 /**
  * `GET /admin/v1/users*` is on live Dev OA. Hermetics mock HTTP — they do not prove Live
- * OPERATOR/step_up. Role grant/revoke remains G0-4 blocked.
+ * OPERATOR/step_up. Role grant/revoke is covered in users-roles.hermetic.spec.ts.
  */
 test.describe('Users directory (hermetic)', () => {
   test('directory + phone search — Consumer type + grant/revoke hidden', async ({ page }) => {
@@ -46,14 +46,15 @@ test.describe('Users directory (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY sees Access denied', async ({ page }) => {
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await page.goto('/users', { waitUntil: 'domcontentloaded' });
-
-    await expect(page.getByText('Access denied')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('users-lookup-submit')).toHaveCount(0);
-    expect(capture.usersLookupGet).toEqual([]);
+    await page.goto('/users');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
     expect(capture.unexpected).toEqual([]);
   });
 });

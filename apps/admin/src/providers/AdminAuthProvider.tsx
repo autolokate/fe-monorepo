@@ -1,8 +1,11 @@
 import {
   getOrSwitchSession,
   getProfile,
+  logoutSession,
   requestOtp,
+  requestStepUpOtp,
   verifyOtp,
+  verifyStepUpOtp,
   type Profile,
   type SessionRoles,
 } from '@autolokate/api-client';
@@ -17,14 +20,21 @@ import {
   type ReactNode,
 } from 'react';
 
-import { normalizeAdminRole, type AdminRole } from '@/platform/rbac/permissions';
-import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries';
 import {
   getAdminApiClient,
   getAdminBootstrapClient,
   registerAdminAuthFailureHandler,
+  registerAdminStepUpRequiredHandler,
   tokenManager,
 } from '@/platform/api/admin-api-client';
+import { prefetchAdminQueries } from '@/platform/api/prefetch-admin-queries';
+import { accessTokenLacksStepUp } from '@/platform/auth/access-token-claims';
+import {
+  isAdminPlaneSessionRole,
+  normalizeAdminRole,
+  type AdminRole,
+} from '@/platform/rbac/permissions';
+import { queryClient } from '@/providers/QueryProvider';
 
 export type AdminAuthState = {
   isAuthenticated: boolean;
@@ -32,11 +42,15 @@ export type AdminAuthState = {
   profile: Profile | null;
   session: SessionRoles | null;
   adminRole: AdminRole;
-  /** True when JWT active role is OPERATOR or legacy ADMIN (admin-plane capable). */
+  /** True only when the ACTIVE session role is OPERATOR (or legacy ADMIN) — what the server enforces. */
   hasAdminPlaneRole: boolean;
+  /** True when the admin plane needs a step-up (2FA) OTP before any `/admin/v1/*` call can succeed. */
+  stepUpRequired: boolean;
   requestOtp: (phone: string) => Promise<void>;
   verifyOtp: (phone: string, code: string) => Promise<void>;
-  signOut: () => void;
+  requestStepUp: () => Promise<{ channel: string }>;
+  verifyStepUp: (code: string) => Promise<void>;
+  signOut: () => Promise<void>;
 };
 
 const AdminAuthContext = createContext<AdminAuthState | null>(null);
@@ -46,8 +60,7 @@ const ADMIN_TOKEN_KEY = 'al-admin-auth-tokens-v1';
 async function loadAuthenticatedSession(): Promise<{ profile: Profile; session: SessionRoles }> {
   const client = getAdminApiClient();
   const profile = await getProfile(client);
-  // Prefer OPERATOR (BE admin plane for Garage/promos). Fall back to ADMIN for legacy grants.
-  // Login may mint CONSUMER as the default outside elevation environments.
+  // The admin plane is OPERATOR-only on the server; switch to it when the account holds it.
   let session = await getOrSwitchSession(client);
   const preferredRole = session.availableRoles.includes('OPERATOR')
     ? 'OPERATOR'
@@ -73,6 +86,11 @@ async function loadAuthenticatedSession(): Promise<{ profile: Profile; session: 
 function clearLocalSession(): void {
   tokenManager.clear();
   createSessionTokenStorage(ADMIN_TOKEN_KEY).remove();
+  queryClient.clear();
+}
+
+function currentTokenLacksStepUp(): boolean {
+  return accessTokenLacksStepUp(tokenManager.getAccessToken());
 }
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
@@ -80,21 +98,58 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<SessionRoles | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(() => tokenManager.hasSession());
   const [isBootstrapping, setIsBootstrapping] = useState(() => tokenManager.hasSession());
+  const [stepUpRequired, setStepUpRequired] = useState(false);
 
-  const signOut = useCallback(() => {
-    clearLocalSession();
+  const resetState = useCallback(() => {
     setProfile(null);
     setSession(null);
+    setStepUpRequired(false);
     setIsAuthenticated(false);
     setIsBootstrapping(false);
   }, []);
 
-  // 401 refresh failure → clear session so RequireAuth returns to login (was a no-op before).
+  /** Revoke the server session (best effort), then clear everything local. */
+  const signOut = useCallback(async () => {
+    if (tokenManager.hasSession()) {
+      try {
+        await logoutSession(getAdminApiClient());
+      } catch {
+        // Best effort: an expired/revoked session must still sign out locally.
+      }
+    }
+    clearLocalSession();
+    resetState();
+  }, [resetState]);
+
+  // Refresh failure (401 after one refresh) → local sign-out only; the server already refused us.
   useEffect(() => {
     registerAdminAuthFailureHandler(() => {
-      signOut();
+      clearLocalSession();
+      resetState();
     });
-  }, [signOut]);
+  }, [resetState]);
+
+  // Server said 403 step_up_required → re-prompt (the stepped-up token expired or was never minted).
+  useEffect(() => {
+    registerAdminStepUpRequiredHandler(() => {
+      setStepUpRequired(true);
+    });
+    return () => {
+      registerAdminStepUpRequiredHandler(null);
+    };
+  }, []);
+
+  const applySession = useCallback((next: { profile: Profile; session: SessionRoles }) => {
+    setProfile(next.profile);
+    setSession(next.session);
+    setIsAuthenticated(true);
+    const operator = isAdminPlaneSessionRole(next.session.role);
+    const needsStepUp = operator && currentTokenLacksStepUp();
+    setStepUpRequired(needsStepUp);
+    if (operator && !needsStepUp) {
+      void prefetchAdminQueries();
+    }
+  }, []);
 
   useEffect(() => {
     if (!tokenManager.hasSession()) {
@@ -110,49 +165,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         if (!abort.active) {
           return;
         }
-        setProfile(next.profile);
-        setSession(next.session);
-        setIsAuthenticated(true);
-        void prefetchAdminQueries();
-        // Dev-only agent handoff: ?agentExportBearer=1 downloads env (never logs token).
-        if (import.meta.env.DEV && typeof window !== 'undefined') {
-          const params = new URLSearchParams(window.location.search);
-          if (params.get('agentExportBearer') === '1') {
-            const pair = tokenManager.read();
-            if (pair?.accessToken) {
-              const body = [
-                'API_BASE=https://d1wpatcmpyt0pw.cloudfront.net',
-                `ADMIN_BEARER=${pair.accessToken}`,
-                pair.expiresAt ? `EXPIRES_AT=${pair.expiresAt}` : '',
-              ]
-                .filter(Boolean)
-                .join('\n');
-              const blob = new Blob([`${body}\n`], { type: 'text/plain' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = 'al-admin-bearer-a645.env';
-              a.rel = 'noopener';
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              URL.revokeObjectURL(url);
-              params.delete('agentExportBearer');
-              const nextUrl = `${window.location.pathname}${
-                params.toString() ? `?${params.toString()}` : ''
-              }${window.location.hash}`;
-              window.history.replaceState({}, '', nextUrl);
-            }
-          }
-        }
+        applySession(next);
       } catch {
         if (!abort.active) {
           return;
         }
         clearLocalSession();
-        setProfile(null);
-        setSession(null);
-        setIsAuthenticated(false);
+        resetState();
       } finally {
         if (abort.active) {
           setIsBootstrapping(false);
@@ -163,33 +182,46 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     return () => {
       abort.active = false;
     };
-  }, []);
+  }, [applySession, resetState]);
 
   const requestAdminOtp = useCallback(async (phone: string) => {
     await requestOtp(getAdminBootstrapClient(), { phone });
   }, []);
 
-  const verifyAdminOtp = useCallback(async (phone: string, code: string) => {
-    const tokens = await verifyOtp(getAdminBootstrapClient(), { phone, code });
-    tokenManager.save(tokens);
-    const next = await loadAuthenticatedSession();
-    setProfile(next.profile);
-    setSession(next.session);
-    setIsAuthenticated(true);
-    setIsBootstrapping(false);
+  const verifyAdminOtp = useCallback(
+    async (phone: string, code: string) => {
+      const tokens = await verifyOtp(getAdminBootstrapClient(), { phone, code });
+      tokenManager.save(tokens);
+      const next = await loadAuthenticatedSession();
+      applySession(next);
+      setIsBootstrapping(false);
+    },
+    [applySession],
+  );
+
+  const requestStepUp = useCallback(async () => requestStepUpOtp(getAdminApiClient()), []);
+
+  const verifyStepUp = useCallback(async (code: string) => {
+    const result = await verifyStepUpOtp(getAdminApiClient(), { token: code });
+    const current = tokenManager.read();
+    if (!current) {
+      throw new Error('Session ended before step-up completed. Sign in again.');
+    }
+    tokenManager.save({
+      ...current,
+      accessToken: result.accessToken,
+      expiresAt: new Date(Date.now() + result.expiresIn * 1000).toISOString(),
+    });
+    setStepUpRequired(false);
+    // Anything that failed for lack of step-up can now succeed.
+    void queryClient.invalidateQueries();
     void prefetchAdminQueries();
   }, []);
 
   const adminRole = normalizeAdminRole(session?.role);
-  const hasAdminPlaneRole = Boolean(
-    session &&
-    (session.role === 'OPERATOR' ||
-      session.role === 'ADMIN' ||
-      session.availableRoles.includes('OPERATOR') ||
-      session.availableRoles.includes('ADMIN')),
-  );
+  const hasAdminPlaneRole = Boolean(session && isAdminPlaneSessionRole(session.role));
 
-  const value = useMemo(
+  const value = useMemo<AdminAuthState>(
     () => ({
       isAuthenticated,
       isBootstrapping,
@@ -197,8 +229,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       session,
       adminRole,
       hasAdminPlaneRole,
+      stepUpRequired,
       requestOtp: requestAdminOtp,
       verifyOtp: verifyAdminOtp,
+      requestStepUp,
+      verifyStepUp,
       signOut,
     }),
     [
@@ -208,9 +243,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       isBootstrapping,
       profile,
       requestAdminOtp,
+      requestStepUp,
       session,
       signOut,
+      stepUpRequired,
       verifyAdminOtp,
+      verifyStepUp,
     ],
   );
 

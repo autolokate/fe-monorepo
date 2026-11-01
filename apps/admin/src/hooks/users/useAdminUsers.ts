@@ -9,7 +9,7 @@ import { listUsers } from '@/services/users/admin-users-service';
 export type AdminUsersStatusFilter = 'ALL' | 'ACTIVE' | 'CLOSED';
 export type AdminUsersTypeFilter = 'ALL' | AdminUserRoleFamily;
 
-function normalizePhoneSearch(raw: string): string | undefined {
+export function normalizePhoneSearch(raw: string): string | undefined {
   const trimmed = raw.trim().replace(/[\s-]/g, '');
   if (!trimmed) {
     return undefined;

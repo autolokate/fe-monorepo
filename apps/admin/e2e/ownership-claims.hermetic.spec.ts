@@ -94,7 +94,9 @@ test.describe('Ownership claims (hermetic)', () => {
     });
     await seedHermeticSession(page);
     await page.goto('/ownership-claims', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('Something went wrong. Try again.')).toBeVisible({
+    await expect(
+      page.getByText('The server refused this action for your operator session.'),
+    ).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
@@ -102,12 +104,16 @@ test.describe('Ownership claims (hermetic)', () => {
 });
 
 test.describe('Admin plane role banner (hermetic)', () => {
-  test('CONSUMER session shows missing OPERATOR banner', async ({ page }) => {
-    await installHermeticApiRoutes(page, { sessionRole: 'CONSUMER' });
+  test('permission — CONSUMER (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'CONSUMER' });
     await seedHermeticSession(page);
-    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByTestId('admin-plane-role-missing')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('admin-plane-role-missing')).toContainText('elevated operator');
+    await page.goto('/dashboard');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
+    expect(capture.unexpected).toEqual([]);
   });
 
   test('ADMIN session does not show missing-role banner', async ({ page }) => {

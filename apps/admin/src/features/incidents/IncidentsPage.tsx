@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react';
 
 import { BreakGlassDualControlPanel } from '@/features/incidents/BreakGlassDualControlPanel';
 import { IncidentDetailPanel } from '@/features/incidents/IncidentDetailPanel';
+import { LiveIncidentsFeedPanel } from '@/features/incidents/LiveIncidentsFeedPanel';
 import { INCIDENTS_STATUS_FILTERS } from '@/features/incidents/incidents-filters';
 import { useIncidentsColumns } from '@/features/incidents/incidents-columns';
 import { useIncidentDetail } from '@/hooks/incidents/useIncidentDetail';
@@ -37,7 +38,7 @@ export function IncidentsPage() {
   } | null>(null);
   const [preferredDetailIncidentId, setPreferredDetailIncidentId] = useState<string | null>(null);
 
-  const { incidents, isLoading, userErrorMessage, statusFilter, setStatusFilter } =
+  const { incidents, isLoading, userErrorMessage, statusFilter, setStatusFilter, snapshotAt } =
     useIncidents(listApprovalId);
 
   const {
@@ -117,6 +118,8 @@ export function IncidentsPage() {
           </AlStack>
         </AdminPanel>
 
+        <LiveIncidentsFeedPanel />
+
         <BreakGlassDualControlPanel
           approval={approval}
           onApprovalChange={setApproval}
@@ -149,6 +152,12 @@ export function IncidentsPage() {
           </AdminPanel>
         ) : (
           <>
+            {snapshotAt ? (
+              <AlText variant="caption" tone="muted" data-testid="incidents-snapshot-at">
+                Snapshot read at {snapshotAt.toLocaleTimeString()}. This list does not update live:
+                each read consumes a single-use dual-control grant. Request a new grant to refresh.
+              </AlText>
+            ) : null}
             {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
             <AdminDataBlock
               filters={

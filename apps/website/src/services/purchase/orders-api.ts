@@ -82,7 +82,7 @@ export async function getOrder(orderId: string): Promise<OrderTracking> {
 export async function getOrderInvoice(orderId: string): Promise<Invoice> {
   const res = await PurchaseApi.get<Enveloped<Invoice>>(endpoints.orders.invoice(orderId));
   const invoice = res.data.data;
-  if (!invoice?.id && !invoice?.invoiceNumber) {
+  if (!invoice?.invoiceNumber) {
     throw new ApiError('Invalid invoice response', 0, res.data);
   }
   return invoice;

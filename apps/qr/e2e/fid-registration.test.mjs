@@ -245,7 +245,7 @@ const run = async (browser, appUrl) => {
     await page.waitForTimeout(2000);
     check(
       'DELETE fired with the retired FID',
-      deletes.length >= 1 && deletes.at(-1).body.fcmToken === 'FAKE-FID-E1',
+      deletes.length >= 1 && deletes.at(-1).body.token === 'FAKE-FID-E1',
       `${deletes.length} delete(s), body=${JSON.stringify(deletes.at(-1)?.body)}`,
     );
     check(

@@ -118,6 +118,60 @@ export async function logoutSession(client: ApiClient): Promise<void> {
   await client.post(endpoints.auth.logout);
 }
 
+/** Result of `POST /v1/auth/step-up/otp/request` (202). */
+export type StepUpOtpRequested = {
+  channel: string;
+};
+
+/** Result of `POST /v1/auth/step-up/otp/verify` — same token shape as `/v1/auth/session`, `step_up=true`. */
+export type StepUpTokenDto = {
+  accessToken: string;
+  /** Seconds until the stepped-up access token expires (short TTL). */
+  expiresIn: number;
+};
+
+/** POST /v1/auth/step-up/otp/request — OPERATOR only; sends an OTP to the account's own phone. */
+export async function requestStepUpOtp(client: ApiClient): Promise<StepUpOtpRequested> {
+  const response = await client.post<unknown>(endpoints.auth.stepUpOtpRequest, {});
+  const data = unwrapEnvelope(response);
+  const channel = isRecord(data) && typeof data['channel'] === 'string' ? data['channel'] : 'sms';
+  return { channel };
+}
+
+/** POST /v1/auth/step-up/otp/verify — exchanges the OTP for a stepped-up access token. */
+export async function verifyStepUpOtp(
+  client: ApiClient,
+  body: { token: string },
+): Promise<StepUpTokenDto> {
+  const response = await client.post<unknown>(endpoints.auth.stepUpOtpVerify, body);
+  const data = unwrapEnvelope(response);
+  if (!isRecord(data)) {
+    throw new ApiError('Invalid step-up response', 0, 'invalid_response');
+  }
+  const accessToken = readString(data, 'accessToken', 'access_token');
+  const expiresInRaw = data['expiresIn'] ?? data['expires_in'];
+  const expiresIn = typeof expiresInRaw === 'number' ? expiresInRaw : Number(expiresInRaw);
+  if (!accessToken || !Number.isFinite(expiresIn) || expiresIn <= 0) {
+    throw new ApiError('Invalid step-up response: missing token fields', 0, 'invalid_response');
+  }
+  return { accessToken, expiresIn };
+}
+
+/**
+ * True when the server refused an admin-plane call because the access token lacks the
+ * `step_up` (2FA) claim. Contract code is `step_up_required`; older servers answer a plain
+ * 403 `forbidden` whose message names step-up — both are recognised.
+ */
+export function isStepUpRequiredError(error: unknown): boolean {
+  if (!(error instanceof ApiError) || error.status !== 403) {
+    return false;
+  }
+  if (error.code?.toLowerCase() === 'step_up_required') {
+    return true;
+  }
+  return /step-up|step_up/i.test(error.message);
+}
+
 /** POST /v1/auth/session — read or switch role (omit role to read). */
 export async function getOrSwitchSession(
   client: ApiClient,
@@ -195,8 +249,7 @@ export async function exchangeFlowAHandoff(
   });
   const data = unwrapEnvelope(response);
   const tokens = normalizeTokenPair(data);
-  const record =
-    typeof data === 'object' && data !== null ? (data as Record<string, unknown>) : {};
+  const record = typeof data === 'object' && data !== null ? (data as Record<string, unknown>) : {};
   return {
     ...tokens,
     accountId:

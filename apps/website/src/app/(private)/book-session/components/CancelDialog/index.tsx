@@ -37,9 +37,7 @@ export function CancelDialog({ target, onClose, onConfirm, loading }: CancelDial
         <DialogHeader>
           <DialogTitle>Cancel this booking?</DialogTitle>
           <DialogDescription>
-            {target
-              ? `${target.slotDate || '—'} · ${target.slotStartLabel || '—'}. Refunds follow platform rules if applicable.`
-              : null}
+            {target ? `${target.slotDate || '—'} · ${target.slotStartLabel || '—'}.` : null}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-0">

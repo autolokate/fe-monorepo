@@ -16,6 +16,7 @@ import type {
 import {
   findAdminUserByPhone,
   getAdminUser,
+  grantUserRole,
   listAdminUserEmergencyContacts,
   listAdminUserExpenses,
   listAdminUserMaintenanceJobs,
@@ -25,10 +26,10 @@ import {
   listAdminUserVehicles,
   listAdminUsersPage,
   patchAdminUser,
+  revokeUserRole,
 } from '@autolokate/api-client';
 
 import { getAdminApiClient } from '@/platform/api/admin-api-client';
-import { throwAdminProductBlocked } from '@/platform/api/product-blocked';
 
 export async function listUsers(
   query: ListAdminUsersQuery = {},
@@ -108,20 +109,20 @@ export async function fetchUserEmergencyContacts(
   return listAdminUserEmergencyContacts(getAdminApiClient(), userId, { signal });
 }
 
-/** POST …/users/{userId}/roles — G0-4 Absent. Fail closed. */
-export function grantRole(
-  _userId: string,
-  _role: GrantableUserRole,
-  _signal?: AbortSignal,
+/** POST /admin/v1/users/{userId}/roles — grant CONSUMER or OPERATOR (idempotent, audited). */
+export async function grantRole(
+  userId: string,
+  role: GrantableUserRole,
+  signal?: AbortSignal,
 ): Promise<AdminUserSummaryDto> {
-  throwAdminProductBlocked('POST /admin/v1/users/{userId}/roles');
+  return grantUserRole(getAdminApiClient(), userId, role, { signal });
 }
 
-/** DELETE …/users/{userId}/roles/{role} — G0-4 Absent. Fail closed. */
-export function revokeRole(
-  _userId: string,
-  _role: GrantableUserRole,
-  _signal?: AbortSignal,
+/** DELETE /admin/v1/users/{userId}/roles/{role} — revoke (409 `last_admin` / `last_role` guards). */
+export async function revokeRole(
+  userId: string,
+  role: GrantableUserRole,
+  signal?: AbortSignal,
 ): Promise<AdminUserSummaryDto> {
-  throwAdminProductBlocked('DELETE /admin/v1/users/{userId}/roles/{role}');
+  return revokeUserRole(getAdminApiClient(), userId, role, { signal });
 }

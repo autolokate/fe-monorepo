@@ -71,11 +71,17 @@ export type CreateVehicleDto = {
   year?: number | null;
 };
 
-/** POST /v1/vehicles — register a vehicle for the authenticated consumer. */
+/**
+ * POST /v1/vehicles — register a vehicle for the authenticated consumer. Pass one `idempotencyKey`
+ * (UUID v4) per user-initiated create so a network retry replays instead of double-registering.
+ */
 export async function createVehicle(
   client: ApiClient,
   body: CreateVehicleDto,
+  options: { idempotencyKey?: string } = {},
 ): Promise<VehicleDetailDto> {
-  const response = await client.post<unknown>(endpoints.vehicles.create, body);
+  const response = await client.post<unknown>(endpoints.vehicles.create, body, {
+    ...(options.idempotencyKey ? { headers: { 'Idempotency-Key': options.idempotencyKey } } : {}),
+  });
   return unwrapEnvelope(response) as VehicleDetailDto;
 }

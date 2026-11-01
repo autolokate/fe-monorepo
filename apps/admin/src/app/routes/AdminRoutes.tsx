@@ -184,6 +184,46 @@ const PartnerRequestsInboxPage = lazy(() =>
   })),
 );
 
+const TaxiBookingsPage = lazy(() =>
+  import('@/features/taxi/TaxiBookingsPage').then((module) => ({
+    default: module.TaxiBookingsPage,
+  })),
+);
+
+const TaxiBookingDetailPage = lazy(() =>
+  import('@/features/taxi/TaxiBookingDetailPage').then((module) => ({
+    default: module.TaxiBookingDetailPage,
+  })),
+);
+
+const TaxiEnrollmentsPage = lazy(() =>
+  import('@/features/taxi/TaxiEnrollmentsPage').then((module) => ({
+    default: module.TaxiEnrollmentsPage,
+  })),
+);
+
+const PartnersKycPage = lazy(() =>
+  import('@/features/partners/PartnersKycPage').then((module) => ({
+    default: module.PartnersKycPage,
+  })),
+);
+
+const TaxiRevenuePage = lazy(() =>
+  import('@/features/taxi/TaxiRevenuePage').then((module) => ({
+    default: module.TaxiRevenuePage,
+  })),
+);
+const WebsiteBookingsPage = lazy(() =>
+  import('@/features/website-bookings/WebsiteBookingsPage').then((module) => ({
+    default: module.WebsiteBookingsPage,
+  })),
+);
+const ExpertsAdminPage = lazy(() =>
+  import('@/features/experts/ExpertsAdminPage').then((module) => ({
+    default: module.ExpertsAdminPage,
+  })),
+);
+
 function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
@@ -215,6 +255,12 @@ export function AdminRoutes() {
             <Route path={adminPaths.garageCommercial} element={<GarageCommercialConfigPage />} />
             <Route path={adminPaths.garageTaxonomy} element={<GarageTaxonomyPage />} />
             <Route path={adminPaths.taxiPolicy} element={<TaxiPolicyPage />} />
+            <Route path={adminPaths.taxiBookings} element={<TaxiBookingsPage />} />
+            <Route
+              path={`${adminPaths.taxiBookings}/:bookingId`}
+              element={<TaxiBookingDetailPage />}
+            />
+            <Route path={adminPaths.taxiEnrollments} element={<TaxiEnrollmentsPage />} />
             <Route path={adminPaths.servicesCatalogue} element={<ServicesCataloguePage />} />
             <Route path={adminPaths.orders} element={<OrdersPage />} />
             <Route path={adminPaths.subscriptions} element={<SubscriptionsPage />} />
@@ -235,6 +281,10 @@ export function AdminRoutes() {
             <Route path={adminPaths.discoveryAcademy} element={<DiscoveryAcademyPage />} />
             <Route path={adminPaths.partners} element={<PartnersDirectoryPage />} />
             <Route path={adminPaths.partnersRequests} element={<PartnerRequestsInboxPage />} />
+            <Route path={adminPaths.partnersKyc} element={<PartnersKycPage />} />
+            <Route path={adminPaths.experts} element={<ExpertsAdminPage />} />
+            <Route path={adminPaths.websiteBookings} element={<WebsiteBookingsPage />} />
+            <Route path={adminPaths.taxiRevenue} element={<TaxiRevenuePage />} />
             <Route path={`${adminPaths.partners}/:orgId`} element={<PartnerDetailPage />} />
           </Route>
         </Route>

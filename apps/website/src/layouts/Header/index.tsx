@@ -7,10 +7,8 @@ import { ArrowRight, Menu } from 'lucide-react';
 import { AlIconButton } from '@autolokate/ui/icon-button';
 import { cn } from '@/lib/utils';
 import { useIsAuthenticated, useLogout } from '@/hooks/auth';
-import { isPurchaseAuthenticated } from '@/app/(purchase-journey)/shared/services/auth-api';
 import { AvatarMenu } from './AvatarMenu';
 import { avatarMenuItems } from './AvatarMenu/constants';
-import { PurchaseAccountMenu } from './PurchaseAccountMenu';
 import {
   CloseIcon,
   NavBrand,
@@ -47,11 +45,6 @@ export function Header({ className }: HeaderProps) {
     },
   });
 
-  const [purchaseAuthed, setPurchaseAuthed] = useState(false);
-  useEffect(() => {
-    setPurchaseAuthed(isPurchaseAuthenticated());
-  }, [pathname]);
-
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
@@ -78,12 +71,6 @@ export function Header({ className }: HeaderProps) {
 
   const accountSlot = authed ? (
     <AvatarMenu />
-  ) : purchaseAuthed ? (
-    <PurchaseAccountMenu
-      onSignOut={() => {
-        setPurchaseAuthed(false);
-      }}
-    />
   ) : (
     <Link href={headerLoginCta.href} className={styles.loginLink}>
       {headerLoginCta.label}
@@ -131,7 +118,7 @@ export function Header({ className }: HeaderProps) {
         </div>
 
         <div className={styles.mobileToggle}>
-          {authed || purchaseAuthed ? accountSlot : null}
+          {authed ? accountSlot : null}
           <AlIconButton
             icon={open ? <CloseIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             label={open ? 'Close menu' : 'Open menu'}
@@ -160,7 +147,7 @@ export function Header({ className }: HeaderProps) {
             }}
           />
 
-          {!authed && !purchaseAuthed ? (
+          {authed === false ? (
             <Link
               href={headerLoginCta.href}
               onClick={() => {

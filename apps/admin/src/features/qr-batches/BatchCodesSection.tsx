@@ -12,6 +12,9 @@ import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminDetailSection } from '@/platform/components/AdminDetailField';
 import { AdminPanel } from '@/platform/components/AdminWowSurface';
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { showErrorToast, showSuccessToast } from '@/platform/feedback/toast';
+import { downloadQrBatchCodesCsv } from '@/services/qr-batches/qr-batch-codes-export-service';
 
 export type BatchCodesSectionProps = {
   batchId: string;
@@ -40,13 +43,43 @@ export function BatchCodesSection({
     loadOlder,
   } = useQrBatchCodes(batchId, statusFilter, enabled);
 
+  const [exporting, setExporting] = useState(false);
+  const exportCsv = async () => {
+    setExporting(true);
+    try {
+      const { filename } = await downloadQrBatchCodesCsv(
+        batchId,
+        statusFilter === 'ALL' ? undefined : statusFilter,
+      );
+      showSuccessToast(`Downloaded ${filename}.`);
+    } catch (error) {
+      showErrorToast(mapAdminApiError(error).userMessage);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const statusFilters = (
-    <AdminFilterChips
-      options={BATCH_CODE_STATUS_FILTERS}
-      value={statusFilter}
-      onChange={setStatusFilter}
-      aria-label="Code status"
-    />
+    <div className="admin-page-actions">
+      <AdminFilterChips
+        options={BATCH_CODE_STATUS_FILTERS}
+        value={statusFilter}
+        onChange={setStatusFilter}
+        aria-label="Code status"
+      />
+      <AlButton
+        size="sm"
+        variant="secondary"
+        data-testid="qr-batch-codes-export"
+        loading={exporting}
+        disabled={exporting}
+        onClick={() => {
+          void exportCsv();
+        }}
+      >
+        {statusFilter === 'ALL' ? 'Download CSV' : 'Download CSV (filtered)'}
+      </AlButton>
+    </div>
   );
 
   const codesTable =

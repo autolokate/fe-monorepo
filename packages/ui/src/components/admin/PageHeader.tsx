@@ -51,6 +51,7 @@ export type AlPageHeaderActionProps = {
   label: string;
   onClick: () => void;
   loading?: boolean;
+  disabled?: boolean;
   variant?: 'primary' | 'secondary';
 };
 
@@ -58,10 +59,17 @@ export function AlPageHeaderAction({
   label,
   onClick,
   loading,
+  disabled,
   variant = 'primary',
 }: AlPageHeaderActionProps) {
   return (
-    <AlButton variant={variant} size="sm" {...(loading ? { loading: true } : {})} onClick={onClick}>
+    <AlButton
+      variant={variant}
+      size="sm"
+      {...(loading ? { loading: true } : {})}
+      {...(disabled ? { disabled: true } : {})}
+      onClick={onClick}
+    >
       {label}
     </AlButton>
   );

@@ -9,6 +9,7 @@
   "include": [
     "src",
     "vite.config.ts",
+    "vitest.config.ts",
     "playwright.config.ts",
     "playwright.hermetic.config.ts",
     "e2e/**/*.ts",

@@ -98,7 +98,7 @@ export const footerLinks: FooterLinkSection[] = [
     links: [
       { id: 'contact', label: 'Contact us', href: '/contact-us' },
       { id: 'whatsapp', label: 'WhatsApp us', href: WHATSAPP_URL, external: true },
-      { id: 'orders', label: 'My orders', href: '/my-orders' },
+      { id: 'orders', label: 'My orders', href: '/orders' },
     ],
   },
   {

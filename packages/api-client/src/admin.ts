@@ -106,12 +106,11 @@ export type AuditEventDto = {
   at: string;
 };
 
-/** OpenAPI `CreateBatchDto` — `planTier` required when `channel` is `B2B` (ops batch_code). */
+/** OpenAPI `CreateBatchDto` — the Sku pins the tier; there is no planTier field. */
 export type CreateBatchBody = {
   channel: QrBatchChannel;
   skuId: string;
   totalCount: number;
-  planTier?: ApiPlanTier;
 };
 
 /**
@@ -561,13 +560,17 @@ export async function listQrBatchCodesPage(
   };
 }
 
-/** GET /admin/v1/qr-batches/{id}/codes/export — print-house CSV download. */
+/**
+ * GET /admin/v1/qr-batches/{id}/codes/export[?status=] — print-house CSV (`code,status,createdAt`).
+ * Authenticated fetch → Blob; never hand the browser a bare link (it would carry no bearer token).
+ */
 export async function exportQrBatchCodesCsv(
   client: ApiClient,
   batchId: string,
-  options: { signal?: AbortSignal } = {},
+  options: { status?: QrCodeStatus; signal?: AbortSignal } = {},
 ): Promise<{ blob: Blob; filename: string }> {
-  const { blob, filename } = await client.getBlob(endpoints.admin.exportQrBatchCodes(batchId), {
+  const path = `${endpoints.admin.exportQrBatchCodes(batchId)}${buildQuery({ status: options.status })}`;
+  const { blob, filename } = await client.getBlob(path, {
     accept: 'text/csv',
     ...(options.signal ? { signal: options.signal } : {}),
   });
@@ -946,29 +949,42 @@ export async function getAdminOrder(
 }
 
 /**
- * OpenAPI `RefundOrderResult` — the result of `POST /admin/v1/orders/{orderId}/refund`.
- * The refund is ASYNC: the response settles at `REFUND_PENDING`; the terminal `REFUNDED` state lands
- * later via the payment provider's webhook.
+ * OpenAPI `OrderRefundResultDto` — the result of `POST /admin/v1/orders/{orderId}/refund`.
+ * `state` is `REFUNDED` when the provider processed it synchronously, or `REFUND_PENDING` when it was
+ * accepted but is still settling (the terminal state then lands via the provider webhook).
  */
 export type RefundOrderResult = {
+  orderId: string;
   paymentRef: string;
-  state: 'REFUND_PENDING';
+  refundId: string;
+  /** Provider refund id (`rfnd_…`); null until the provider assigns one. */
+  refundRef: string | null;
+  state: 'REFUNDED' | 'REFUND_PENDING';
   amountPaise: number;
-  refundRef: string;
+  /** The subscription moved to REFUNDED (coverage stopped), or null if none was live. */
+  subscriptionId: string | null;
+};
+
+/** OpenAPI `OrderRefundBodyDto` — full refunds only; `amountPaise`, when sent, must equal the captured amount. */
+export type RefundOrderBody = {
+  reason: string;
+  amountPaise?: number;
 };
 
 /**
- * POST /admin/v1/orders/{orderId}/refund — initiate a FULL refund of a PAID order (FINANCE·step_up).
- * Only a PAID order with a captured payment is refundable; the server returns 409 `order_not_refundable`
- * (or 404) otherwise.
+ * POST /admin/v1/orders/{orderId}/refund — FULL refund of a PAID plan order (OPERATOR·step_up, audited).
+ * `idempotencyKey` (UUID v4) is REQUIRED: same key + same body replays the result. Errors the caller must
+ * tell apart: 409 `order_not_refundable`, 502 `refund_failed` (provider declined — safe to retry with a NEW
+ * key), 503 `vendor_unavailable` (outcome unknown — do NOT retry; flagged for reconciliation).
  */
 export async function refundAdminOrder(
   client: ApiClient,
   orderId: string,
-  body: { reason: string },
-  options: { signal?: AbortSignal } = {},
+  body: RefundOrderBody,
+  options: { idempotencyKey: string; signal?: AbortSignal },
 ): Promise<RefundOrderResult> {
   const response = await client.post<unknown>(endpoints.admin.refundAdminOrder(orderId), body, {
+    headers: { 'Idempotency-Key': options.idempotencyKey },
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as RefundOrderResult;
@@ -1121,36 +1137,6 @@ export async function getAdminShipment(
   return unwrapEnvelope(response) as AdminShipmentDetail;
 }
 
-/**
- * Courier-checkpoint targets for the product-blocked `POST …/shipments/{orderId}/status`
- * (absent from Nest OA). Kept for the typed client only — Admin UI must not offer these.
- */
-export type ManualShipmentStatus =
-  | 'SHIPPED'
-  | 'IN_TRANSIT'
-  | 'DELIVERED'
-  | 'RETURNED'
-  | 'CANCELLED'
-  | 'LOST';
-
-/**
- * POST /admin/v1/shipments/{orderId}/status — product-blocked (absent from Nest OA).
- * Client retained for fail-closed callers; Admin UI must not invoke this.
- */
-export async function updateAdminShipmentStatus(
-  client: ApiClient,
-  orderId: string,
-  body: { status: ManualShipmentStatus },
-  options: { signal?: AbortSignal } = {},
-): Promise<AdminShipmentDetail> {
-  const response = await client.post<unknown>(
-    endpoints.admin.updateAdminShipmentStatus(orderId),
-    body,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
-  return unwrapEnvelope(response) as AdminShipmentDetail;
-}
-
 /** OpenAPI `AdminPaymentSummary.mode` / `AdminPaymentDetail.mode` — the payment channel. */
 export type AdminPaymentMode = 'ONLINE' | 'CASH';
 
@@ -1272,8 +1258,10 @@ export type AdminSupportTicketSummary = {
 };
 
 /**
- * OpenAPI `AdminSupportTicketDetail` — a single ticket in full. `subject`/`body` are operator-readable
- * for triage; `metadata` is the structured context (e.g. `{ qr_code }` for a LOST_QR ticket).
+ * OpenAPI `AdminSupportTicketDetailDto` — a single ticket in full. `body` is ALWAYS `""`: the customer's
+ * message is never decrypted on the admin plane (privacy by design), so an empty body does not mean the
+ * ticket is blank. `metadata` is the structured context (e.g. `{ qr_code }` for a LOST_QR ticket);
+ * `opsNote` is the latest operator triage note and `opsUpdatedByAdminId` who wrote it.
  */
 export type AdminSupportTicket = {
   ticketId: string;
@@ -1283,6 +1271,8 @@ export type AdminSupportTicket = {
   body: string;
   status: AdminSupportTicketStatus;
   metadata: Record<string, unknown> | null;
+  opsNote: string | null;
+  opsUpdatedByAdminId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -1304,9 +1294,14 @@ export type AdminSupportTicketsPageResult = {
   correlationId: string | null;
 };
 
-/** Body for `PATCH /admin/v1/support/tickets/{ticketId}` — the triage action (set status). */
+/**
+ * Body for `PATCH /admin/v1/support/tickets/{ticketId}` — the triage action. Allowed moves:
+ * OPEN→IN_PROGRESS|RESOLVED|CLOSED; IN_PROGRESS→OPEN|RESOLVED|CLOSED; RESOLVED→IN_PROGRESS|CLOSED;
+ * CLOSED is terminal (409 `support_ticket_invalid_transition`). `note` replaces the previous ops note.
+ */
 export type UpdateSupportTicketStatusBody = {
   status: AdminSupportTicketStatus;
+  note?: string;
 };
 
 /** GET /admin/v1/support/tickets — includes pagination meta from the envelope. */
@@ -1353,18 +1348,16 @@ export async function getAdminSupportTicket(
   return unwrapEnvelope(response) as AdminSupportTicket;
 }
 
-/** PATCH /admin/v1/support/tickets/{ticketId} — triage a ticket (set its status). */
+/** PATCH /admin/v1/support/tickets/{ticketId} — triage a ticket (set its status, optional ops note). */
 export async function updateAdminSupportTicketStatus(
   client: ApiClient,
   ticketId: string,
-  status: AdminSupportTicketStatus,
+  body: UpdateSupportTicketStatusBody,
   options: { signal?: AbortSignal } = {},
 ): Promise<AdminSupportTicket> {
-  const response = await client.patch<unknown>(
-    endpoints.admin.adminSupportTicket(ticketId),
-    { status } satisfies UpdateSupportTicketStatusBody,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
+  const response = await client.patch<unknown>(endpoints.admin.adminSupportTicket(ticketId), body, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
   return unwrapEnvelope(response) as AdminSupportTicket;
 }
 
@@ -1406,6 +1399,56 @@ export type AdminDispatchStepState = 'PENDING' | 'ACTIVE' | 'DONE';
 
 /** OpenAPI `AdminIncidentMedia.slot` — a scene / park photo slot. */
 export type AdminScanMediaSlot = 'BLOCKING' | 'BLOCKED' | 'FRONT' | 'REAR' | 'LEFT' | 'RIGHT';
+
+/** OpenAPI `AdminIncidentFeedItemDto` — one PII-free row of the live incident feed. */
+export type AdminIncidentFeedItem = {
+  incidentId: string;
+  source: AdminIncidentSource;
+  status: AdminIncidentStatus;
+  dispatchPath: AdminDispatchPath | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** `meta.feed` on `GET /admin/v1/incidents/feed` — pass `nextSince` back as the next poll's `since`. */
+export type AdminIncidentFeedCursor = {
+  since: string;
+  nextSince: string;
+  hasMore: boolean;
+  serverTime: string;
+};
+
+export type AdminIncidentFeedResult = {
+  items: AdminIncidentFeedItem[];
+  feed: AdminIncidentFeedCursor | null;
+};
+
+/**
+ * GET /admin/v1/incidents/feed?since=&limit= — PII-free polling feed (no break-glass approval needed or
+ * consumed). `since` is an exclusive lower bound on `updatedAt` (server default: 24h ago, clamped to 7d).
+ */
+export async function getAdminIncidentsFeed(
+  client: ApiClient,
+  query: { since?: string; limit?: number } = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminIncidentFeedResult> {
+  const path = `${endpoints.admin.adminIncidentsFeed}${buildQuery({
+    since: query.since,
+    limit: query.limit,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const meta = readEnvelopeMeta(response) as (Record<string, unknown> & { feed?: unknown }) | null;
+  const feed = meta?.feed;
+  return {
+    items: unwrapEnvelope(response) as AdminIncidentFeedItem[],
+    feed:
+      feed && typeof feed === 'object' && 'nextSince' in feed
+        ? (feed as AdminIncidentFeedCursor)
+        : null,
+  };
+}
 
 /** OpenAPI `AdminIncidentSummary` — one row in the break-glass incident list. */
 export type AdminIncidentSummary = {
@@ -1715,10 +1758,11 @@ export async function getAdminOwnershipClaimRcProof(
 }
 
 /**
- * FE-ahead grant body roles — Nest has no POST/DELETE `/admin/v1/users/…/roles*`.
- * Do not enable grant/revoke UI. Nest lookup returns {@link NestAdminUserRole} names only.
+ * OpenAPI `GrantAdminUserRoleBodyDto.role` — the unscoped platform roles an operator may toggle.
+ * Partner roles (QR_PARTNER / GARAGE_PARTNER / CORPORATE_BUYER) are provisioned through partner
+ * onboarding; the server answers 400 `validation` if one is sent here.
  */
-export type GrantableUserRole = 'ADMIN' | 'CONSUMER';
+export type GrantableUserRole = 'CONSUMER' | 'OPERATOR';
 
 /** OpenAPI `AdminUserRoleDto.role` — Nest `user_roles` names from phone lookup. */
 export type NestAdminUserRole =
@@ -2033,7 +2077,7 @@ export async function listAdminUserEmergencyContacts(
   return unwrapEnvelope(response) as AdminUserEmergencyContactDto[];
 }
 
-/** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent). */
+/** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent; audited). */
 export async function grantUserRole(
   client: ApiClient,
   userId: string,
@@ -2048,7 +2092,11 @@ export async function grantUserRole(
   return unwrapEnvelope(response) as AdminUserSummaryDto;
 }
 
-/** DELETE /admin/v1/users/{userId}/roles/{role} — revoke a platform role (idempotent; `last_admin` 409 guards). */
+/**
+ * DELETE /admin/v1/users/{userId}/roles/{role} — revoke a platform role and its refresh families
+ * (idempotent). 409 `last_admin`: would strip your own or the platform's last OPERATOR; 409 `last_role`:
+ * would leave the account with no role at all.
+ */
 export async function revokeUserRole(
   client: ApiClient,
   userId: string,

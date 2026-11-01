@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { PURCHASE_ROUTE } from '@/app/(purchase)/purchase/constants';
-import { writePurchaseIntent } from '@/app/(purchase)/purchase/storage';
+import { useRouter } from 'next/navigation';
+import { JOURNEY_ROUTES } from '@/app/(purchase-journey)/shared/routes';
 import { useSafetyPlans } from '@/hooks/plans';
 import { FALLBACK_SAFETY_PLANS, toSafetyPlan } from './constants';
 import { PlanGridCard } from './PlanGridCard';
@@ -11,7 +10,6 @@ import styles from './grid.module.css';
 
 export function PlanGrid() {
   const router = useRouter();
-  const pathname = usePathname();
   const { data } = useSafetyPlans();
   // Prefer live plans; fall back to the static tiers so the grid always renders.
   const plans = useMemo(() => {
@@ -19,14 +17,11 @@ export function PlanGrid() {
     return live.length > 0 ? live : FALLBACK_SAFETY_PLANS;
   }, [data]);
 
-  const choosePlan = useCallback(
-    (planId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- usePathname() is typed string but can be null in practice; keep the fallback
-      writePurchaseIntent({ plan: planId, from: pathname ?? '/' });
-      router.push(PURCHASE_ROUTE);
-    },
-    [router, pathname],
-  );
+  // The journey's plan picker (`/buy`) lists the live server plans (bearer-gated);
+  // the home cards only carry presentation slugs, so every CTA lands there.
+  const choosePlan = useCallback(() => {
+    router.push(JOURNEY_ROUTES.buy);
+  }, [router]);
 
   return (
     <div className={styles.grid}>
@@ -35,7 +30,7 @@ export function PlanGrid() {
           key={plan.id}
           plan={plan}
           onChoose={() => {
-            choosePlan(plan.id);
+            choosePlan();
           }}
         />
       ))}

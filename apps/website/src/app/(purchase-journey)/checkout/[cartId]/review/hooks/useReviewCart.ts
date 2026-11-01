@@ -15,8 +15,7 @@ type Status = 'loading' | 'ready' | 'error' | 'stale';
 /** The `code` from the backend's `{ error: { code } }` envelope, when there is one. */
 function errorCode(err: unknown): string | undefined {
   if (!(err instanceof ApiError)) return undefined;
-  const body = (err.data as { error?: { code?: string } } | undefined)?.error;
-  return typeof body?.code === 'string' ? body.code : undefined;
+  return err.code ?? undefined;
 }
 
 /**

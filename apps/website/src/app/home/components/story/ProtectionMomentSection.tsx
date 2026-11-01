@@ -3,9 +3,8 @@
 import Link from 'next/link';
 import { ArrowRight, QrCode, Radar, Siren } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { PURCHASE_ROUTE } from '@/app/(purchase)/purchase/constants';
-import { writePurchaseIntent } from '@/app/(purchase)/purchase/storage';
+import { useRouter } from 'next/navigation';
+import { JOURNEY_ROUTES } from '@/app/(purchase-journey)/shared/routes';
 import { useSafetyPlans } from '@/hooks/plans';
 import {
   FALLBACK_SAFETY_PLANS,
@@ -20,7 +19,6 @@ const INCLUDE_ICONS = [Radar, Siren, QrCode] as const;
 
 export function ProtectionMomentSection() {
   const router = useRouter();
-  const pathname = usePathname();
   const { data } = useSafetyPlans();
 
   const plans = useMemo(() => {
@@ -28,14 +26,11 @@ export function ProtectionMomentSection() {
     return live.length > 0 ? live : FALLBACK_SAFETY_PLANS;
   }, [data]);
 
-  const choosePlan = useCallback(
-    (planId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- usePathname() can be null in practice
-      writePurchaseIntent({ plan: planId, from: pathname ?? '/' });
-      router.push(PURCHASE_ROUTE);
-    },
-    [router, pathname],
-  );
+  // The journey's plan picker (`/buy`) lists the live server plans (bearer-gated);
+  // the home cards only carry presentation slugs, so every CTA lands there.
+  const choosePlan = useCallback(() => {
+    router.push(JOURNEY_ROUTES.buy);
+  }, [router]);
 
   const {
     eyebrow,
@@ -92,7 +87,7 @@ export function ProtectionMomentSection() {
               plan={plan}
               highlights={PROTECTION_PLAN_HIGHLIGHTS[plan.id] ?? []}
               onChoose={() => {
-                choosePlan(plan.id);
+                choosePlan();
               }}
             />
           ))}

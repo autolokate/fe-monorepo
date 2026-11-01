@@ -2,7 +2,7 @@
 
 import { endpoints } from '@/lib/api/endpoints';
 import { dedupedRequest } from '@/lib/api/dedupe-cache';
-import { ApiService } from '@/services/api.service';
+import { http } from '@/lib/api/client';
 import {
   normalizeBrand,
   normalizeModel,
@@ -25,7 +25,7 @@ const CATALOGUE_TTL_MS = 5 * 60_000;
  */
 export async function getBrands(): Promise<CatalogueBrand[]> {
   return dedupedRequest('catalogue:brands', CATALOGUE_TTL_MS, async () => {
-    const res = await ApiService.get(endpoints.catalogue.brands, {
+    const res = await http.get(endpoints.catalogue.brands, {
       withAuth: false,
     });
     const rows = readArray<unknown>(unbox(res.data));
@@ -40,7 +40,7 @@ export async function getBrandDetails(brandSlug: string): Promise<CatalogueBrand
   const trimmed = brandSlug.trim();
   if (!trimmed) return null;
   try {
-    const res = await ApiService.get(endpoints.catalogue.brandBySlug(trimmed), {
+    const res = await http.get(endpoints.catalogue.brandBySlug(trimmed), {
       withAuth: false,
     });
     const payload = unbox(res.data);
@@ -58,7 +58,7 @@ export async function getBrandModels(brandSlug: string): Promise<CatalogueModel[
   const trimmed = brandSlug.trim();
   if (!trimmed) return [];
 
-  const res = await ApiService.get(endpoints.catalogue.brandModels(trimmed), {
+  const res = await http.get(endpoints.catalogue.brandModels(trimmed), {
     withAuth: false,
   });
   const rows = readArray<unknown>(unbox(res.data));
@@ -82,7 +82,7 @@ export async function getModelDetails(
   const key = `catalogue:modelDetails:${b}:${m}`;
   try {
     return await dedupedRequest(key, CATALOGUE_TTL_MS, async () => {
-      const res = await ApiService.get(endpoints.catalogue.modelDetails(b, m), {
+      const res = await http.get(endpoints.catalogue.modelDetails(b, m), {
         withAuth: false,
       });
       const payload = unbox(res.data);
@@ -105,7 +105,7 @@ export async function getModelVariants(
   if (!b || !m) return [];
   const key = `catalogue:modelVariants:${b}:${m}`;
   return dedupedRequest(key, CATALOGUE_TTL_MS, async () => {
-    const res = await ApiService.get(endpoints.catalogue.modelVariants(b, m), {
+    const res = await http.get(endpoints.catalogue.modelVariants(b, m), {
       withAuth: false,
     });
     const rows = readArray<unknown>(unbox(res.data));
@@ -123,7 +123,7 @@ export async function getVariantDetails(
   const m = modelSlug.trim();
   const v = variantSlug.trim();
   if (!v) return {};
-  const res = await ApiService.get(endpoints.catalogue.variantDetails(b, m, v), {
+  const res = await http.get(endpoints.catalogue.variantDetails(b, m, v), {
     withAuth: false,
   });
   return normalizeVariant(unbox(res.data));
@@ -132,7 +132,7 @@ export async function getVariantDetails(
 /** GET /v1/catalogue/trending — top picks for the hero trending rail. */
 export async function getTrendingModels(): Promise<CatalogueModel[]> {
   return dedupedRequest('catalogue:trending', CATALOGUE_TTL_MS, async () => {
-    const res = await ApiService.get(endpoints.catalogue.trending, {
+    const res = await http.get(endpoints.catalogue.trending, {
       withAuth: false,
     });
     const rows = readArray<unknown>(unbox(res.data));
@@ -142,7 +142,7 @@ export async function getTrendingModels(): Promise<CatalogueModel[]> {
 
 /** GET /v1/catalogue/models — supports optional filter params. */
 export async function getModels(params?: Record<string, string>): Promise<CatalogueModel[]> {
-  const res = await ApiService.get(endpoints.catalogue.models, {
+  const res = await http.get(endpoints.catalogue.models, {
     params,
     withAuth: false,
   });
@@ -174,7 +174,7 @@ export async function getCatalogueModelsPage(
 ): Promise<CatalogueModelsPageResult> {
   const params: Record<string, string> = {};
   if (opts.cursor) params.cursor = opts.cursor;
-  const res = await ApiService.get(endpoints.catalogue.models, {
+  const res = await http.get(endpoints.catalogue.models, {
     params: Object.keys(params).length ? params : undefined,
     withAuth: false,
   });
@@ -193,7 +193,7 @@ export async function getCatalogueModelsPage(
 
 /** GET /v1/catalogue/search?q=… — combined results across models/brands/variants. */
 export async function searchCatalogue(query: string): Promise<CatalogueModel[]> {
-  const res = await ApiService.get(endpoints.catalogue.search, {
+  const res = await http.get(endpoints.catalogue.search, {
     params: { q: query },
     withAuth: false,
   });
@@ -251,7 +251,7 @@ export async function searchCatalogueMixed(query: string): Promise<CatalogueSear
   const q = query.trim();
   if (q.length < 2) return [];
 
-  const res = await ApiService.get(endpoints.catalogue.search, {
+  const res = await http.get(endpoints.catalogue.search, {
     params: { q },
     withAuth: false,
   });
@@ -295,7 +295,7 @@ export async function compareVariants(variantIds: string[]): Promise<unknown> {
     .slice(0, 3);
   if (ids.length < 2) return [];
 
-  const res = await ApiService.get(endpoints.catalogue.compare(ids), {
+  const res = await http.get(endpoints.catalogue.compare(ids), {
     withAuth: false,
   });
   return unbox(res.data);

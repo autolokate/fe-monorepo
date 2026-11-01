@@ -1,6 +1,6 @@
 import type { AdminUserDto, GrantableUserRole } from '@autolokate/api-client';
-import { normalizeApiError } from '@autolokate/api-client';
-import { useMutation } from '@tanstack/react-query';
+import { ApiError, normalizeApiError } from '@autolokate/api-client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
@@ -9,11 +9,22 @@ import { grantRole, lookupUserByPhone, revokeRole } from '@/services/users/admin
 
 /**
  * The role console's failures are the interesting part of its contract — "no account on that number"
- * (404) and the lockout guards (`last_admin` 409) are outcomes an operator must read verbatim, not
- * flattened into "Something went wrong". The server authors those messages; everything else falls back
- * to the shared mapper.
+ * (404) and the lockout guards (`last_admin` / `last_role` 409) are outcomes an operator must act on,
+ * not "Something went wrong". Known codes get a fixed, actionable message; other 404/409s show the
+ * server's text; everything else falls back to the shared mapper.
  */
 export function describeUserRoleError(error: unknown): string {
+  if (error instanceof ApiError) {
+    if (error.code === 'last_admin') {
+      return 'Blocked: this would remove your own OPERATOR role or the platform’s last OPERATOR. Grant OPERATOR to another account first.';
+    }
+    if (error.code === 'last_role') {
+      return 'Blocked: this is the account’s only active role, and an account with no role cannot sign in. Use “Flag for review” instead.';
+    }
+    if (error.status === 400) {
+      return 'Only CONSUMER and OPERATOR can be changed here. Partner roles are managed through partner onboarding.';
+    }
+  }
   const normalized = normalizeApiError(error);
   if (normalized.status === 404 || normalized.status === 409) {
     return normalized.message;
@@ -22,6 +33,8 @@ export function describeUserRoleError(error: unknown): string {
 }
 
 export function useAdminUserRoles() {
+  const queryClient = useQueryClient();
+
   const lookupMutation = useMutation({
     mutationFn: ({ phone, signal }: { phone: string; signal?: AbortSignal }) =>
       lookupUserByPhone(phone, signal),
@@ -45,11 +58,16 @@ export function useAdminUserRoles() {
       signal?: AbortSignal;
     }) => grantRole(userId, role, signal),
     retry: 0,
-    onSuccess: (_result: AdminUserDto, variables) => {
+    onSuccess: async (_result: AdminUserDto, variables) => {
       showSuccessToast(`${variables.role} granted.`);
+      await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
     onError: (error) => {
-      reportAdminApiError(error, { context: 'users:grant-role', toast: true });
+      // 400/409 are explained inline by `describeUserRoleError`; only unexpected failures toast.
+      const status = normalizeApiError(error).status;
+      if (status !== 400 && status !== 409) {
+        reportAdminApiError(error, { context: 'users:grant-role', toast: true });
+      }
     },
   });
 
@@ -64,11 +82,15 @@ export function useAdminUserRoles() {
       signal?: AbortSignal;
     }) => revokeRole(userId, role, signal),
     retry: 0,
-    onSuccess: (_result: AdminUserDto, variables) => {
+    onSuccess: async (_result: AdminUserDto, variables) => {
       showSuccessToast(`${variables.role} revoked.`);
+      await queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
     onError: (error) => {
-      reportAdminApiError(error, { context: 'users:revoke-role', toast: true });
+      const status = normalizeApiError(error).status;
+      if (status !== 400 && status !== 409) {
+        reportAdminApiError(error, { context: 'users:revoke-role', toast: true });
+      }
     },
   });
 
