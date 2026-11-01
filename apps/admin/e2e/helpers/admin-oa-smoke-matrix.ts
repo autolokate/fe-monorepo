@@ -155,25 +155,6 @@ export const OA_UNSUPPORTED_HERMETIC_SPECS: readonly UnsupportedHermeticSpec[] =
     skipReason:
       'G0-4: POST …/shipments/{orderId}/status KEEP DISABLED (absent). GET list covered by shipments-list — skipped ≠ passed.',
   },
-  {
-    file: 'users-roles.hermetic.spec.ts',
-    missingContracts: [
-      'POST /admin/v1/users/{userId}/roles',
-      'DELETE /admin/v1/users/{userId}/roles/{role}',
-    ],
-    skipReason:
-      'G0-4: Role grant/revoke KEEP DISABLED (absent from live Dev OA). Directory lookup is covered by users-lookup — skipped ≠ passed.',
-  },
-  {
-    file: 'support-tickets.hermetic.spec.ts',
-    missingContracts: [
-      'GET /admin/v1/support/tickets',
-      'GET /admin/v1/support/tickets/{ticketId}',
-      'PATCH /admin/v1/support/tickets/{ticketId}',
-    ],
-    skipReason:
-      'Phase 11: /admin/v1/support/tickets* absent from live Dev OA. FE support callers exist — BE decision. Hermetic mock ≠ Live Supported.',
-  },
 ] as const;
 
 /** G0-4 Absents — KEEP DISABLED. Must never appear in NEST_OA_ADMIN_ROUTES. */

@@ -1471,7 +1471,7 @@ export async function installHermeticApiRoutes(
         await fulfillJson(route, usersGrantPostStatus, errorEnvelope('Forbidden', 'forbidden'));
         return;
       }
-      const role = typeof body.role === 'string' ? body.role : 'ADMIN';
+      const role = typeof body.role === 'string' ? body.role : 'OPERATOR';
       if (!hermeticCustomerRoles.some((entry) => entry.role === role)) {
         hermeticCustomerRoles = [
           ...hermeticCustomerRoles,
@@ -1498,14 +1498,14 @@ export async function installHermeticApiRoutes(
           usersRevokeDeleteStatus,
           errorEnvelope(
             usersRevokeDeleteStatus === 409
-              ? 'Cannot revoke the last remaining ADMIN.'
+              ? 'Cannot revoke the last active OPERATOR.'
               : 'Forbidden',
-            usersRevokeDeleteStatus === 409 ? 'conflict' : 'forbidden',
+            usersRevokeDeleteStatus === 409 ? 'last_admin' : 'forbidden',
           ),
         );
         return;
       }
-      const role = decodeURIComponent(userRolesRevokeMatch[2] ?? 'ADMIN');
+      const role = decodeURIComponent(userRolesRevokeMatch[2] ?? 'OPERATOR');
       hermeticCustomerRoles = hermeticCustomerRoles.filter((entry) => entry.role !== role);
       await fulfillJson(
         route,
@@ -2348,6 +2348,27 @@ export async function installHermeticApiRoutes(
     }
 
     const supportTicketPatchMatch = path.match(/^\/admin\/v1\/support\/tickets\/([^/]+)$/);
+    if (method === 'GET' && supportTicketPatchMatch) {
+      // Admin plane never decrypts the customer body: it is always "".
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          ticketId: decodeURIComponent(supportTicketPatchMatch[1] ?? HERMETIC_SUPPORT_TICKET_ID),
+          accountId: HERMETIC_USER_ID,
+          type: 'LOST_QR',
+          subject: HERMETIC_SUPPORT_TICKET_SUBJECT,
+          body: '',
+          status: 'OPEN',
+          metadata: { qr_code: 'ALK-HERM-ST' },
+          opsNote: null,
+          opsUpdatedByAdminId: null,
+          createdAt: '2026-10-19T00:00:00.000Z',
+          updatedAt: '2026-10-19T00:00:00.000Z',
+        }),
+      );
+      return;
+    }
     if (method === 'PATCH' && supportTicketPatchMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
       capture.supportTicketsPatch.push({ method, path, body });
@@ -2355,7 +2376,9 @@ export async function installHermeticApiRoutes(
         await fulfillJson(
           route,
           supportTicketsPatchStatus,
-          errorEnvelope('Forbidden', 'forbidden'),
+          supportTicketsPatchStatus === 409
+            ? errorEnvelope('Invalid transition', 'support_ticket_invalid_transition')
+            : errorEnvelope('Forbidden', 'forbidden'),
         );
         return;
       }
@@ -2369,9 +2392,11 @@ export async function installHermeticApiRoutes(
           accountId: HERMETIC_USER_ID,
           type: 'LOST_QR',
           subject: HERMETIC_SUPPORT_TICKET_SUBJECT,
-          body: 'Hermetic ticket body',
+          body: '',
           status: nextStatus,
           metadata: { qr_code: 'ALK-HERM-ST' },
+          opsNote: typeof body.note === 'string' ? body.note : null,
+          opsUpdatedByAdminId: typeof body.note === 'string' ? HERMETIC_USER_ID : null,
           createdAt: '2026-10-19T00:00:00.000Z',
           updatedAt: '2026-10-20T12:00:00.000Z',
         }),

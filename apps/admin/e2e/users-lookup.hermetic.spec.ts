@@ -10,7 +10,7 @@ import {
 
 /**
  * `GET /admin/v1/users*` is on live Dev OA. Hermetics mock HTTP — they do not prove Live
- * OPERATOR/step_up. Role grant/revoke remains G0-4 blocked.
+ * OPERATOR/step_up. Role grant/revoke is covered in users-roles.hermetic.spec.ts.
  */
 test.describe('Users directory (hermetic)', () => {
   test('directory + phone search — Consumer type + grant/revoke hidden', async ({ page }) => {
