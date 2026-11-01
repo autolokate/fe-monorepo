@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react';
 
 import { BreakGlassDualControlPanel } from '@/features/incidents/BreakGlassDualControlPanel';
 import { IncidentDetailPanel } from '@/features/incidents/IncidentDetailPanel';
+import { LiveIncidentsFeedPanel } from '@/features/incidents/LiveIncidentsFeedPanel';
 import { INCIDENTS_STATUS_FILTERS } from '@/features/incidents/incidents-filters';
 import { useIncidentsColumns } from '@/features/incidents/incidents-columns';
 import { useIncidentDetail } from '@/hooks/incidents/useIncidentDetail';
@@ -116,6 +117,8 @@ export function IncidentsPage() {
             </AlText>
           </AlStack>
         </AdminPanel>
+
+        <LiveIncidentsFeedPanel />
 
         <BreakGlassDualControlPanel
           approval={approval}

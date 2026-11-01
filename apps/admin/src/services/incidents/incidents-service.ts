@@ -1,7 +1,9 @@
 import {
   getAdminIncident,
+  getAdminIncidentsFeed,
   listAdminIncidentsPage,
   type AdminIncidentDetail,
+  type AdminIncidentFeedResult,
   type AdminIncidentsPageResult,
   type ListAdminIncidentsQuery,
 } from '@autolokate/api-client';
@@ -29,4 +31,19 @@ export async function fetchIncident(
   signal?: AbortSignal,
 ): Promise<AdminIncidentDetail> {
   return getAdminIncident(getAdminApiClient(), incidentId, approvalId, { signal });
+}
+
+/**
+ * GET /admin/v1/incidents/feed — PII-free live feed for polling. Needs no break-glass approval and
+ * consumes none; pass the previous `meta.feed.nextSince` as `since`.
+ */
+export async function fetchIncidentsFeed(
+  since: string | undefined,
+  signal?: AbortSignal,
+): Promise<AdminIncidentFeedResult> {
+  return getAdminIncidentsFeed(
+    getAdminApiClient(),
+    { ...(since ? { since } : {}), limit: 100 },
+    { signal },
+  );
 }
