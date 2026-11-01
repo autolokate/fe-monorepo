@@ -3,6 +3,20 @@ import { createSessionTokenStorage } from './token-storage';
 
 const EXPIRY_BUFFER_MS = 30_000;
 
+/**
+ * True when a refresh failure means the refresh token itself was rejected by the
+ * server (4xx), as opposed to a transient failure (offline, timeout, 5xx). Only a
+ * rejection may drop the stored session: clearing on a network blip would log the
+ * user out for no reason. Duck-typed so this package stays transport-agnostic.
+ */
+export function isRefreshRejection(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+  const status = (error as { status?: unknown }).status;
+  return typeof status === 'number' && status >= 400 && status < 500;
+}
+
 export class TokenManager {
   private refreshHandler: TokenRefreshHandler | null = null;
   private refreshInFlight: Promise<boolean> | null = null;
@@ -58,6 +72,10 @@ export class TokenManager {
   /**
    * Rotate refresh token via injected handler.
    * Single in-flight queue — concurrent callers share one refresh.
+   * The rotated pair returned by the handler replaces the stored pair (the backend
+   * revokes the whole family if an old refresh token is ever replayed).
+   * Tokens are cleared only when the server rejects the refresh token (4xx);
+   * transient failures keep the session so a later call can retry.
    */
   async refresh(): Promise<boolean> {
     if (this.refreshInFlight) {
@@ -78,8 +96,10 @@ export class TokenManager {
         const next = await handler(refreshToken);
         this.save(next);
         return true;
-      } catch {
-        this.clear();
+      } catch (error) {
+        if (isRefreshRejection(error)) {
+          this.clear();
+        }
         return false;
       } finally {
         this.refreshInFlight = null;
