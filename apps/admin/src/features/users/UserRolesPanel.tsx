@@ -1,0 +1,153 @@
+import type { AdminUserRoleDto, GrantableUserRole } from '@autolokate/api-client';
+import { AlButton, AlModal, AlText } from '@autolokate/ui';
+import { useState } from 'react';
+
+import { describeUserRoleError, useAdminUserRoles } from '@/hooks/users/useAdminUserRoles';
+import {
+  AdminPanel,
+  AdminStatusChip,
+  humanizeAdminLabel,
+} from '@/platform/components/AdminWowSurface';
+
+/** The only roles the admin plane may toggle; partner roles come from partner onboarding. */
+const GRANTABLE_ROLES: readonly { role: GrantableUserRole; summary: string }[] = [
+  { role: 'CONSUMER', summary: 'Customer app access.' },
+  { role: 'OPERATOR', summary: 'Full Admin console access (with step-up verification).' },
+];
+
+type PendingRoleChange = { action: 'grant' | 'revoke'; role: GrantableUserRole };
+
+export type UserRolesPanelProps = {
+  userId: string;
+  roles: AdminUserRoleDto[];
+  /** Called after a successful change so the caller can refetch the account. */
+  onChanged: () => void;
+};
+
+/**
+ * Grant / revoke the unscoped platform roles (CONSUMER, OPERATOR). Every change is confirmed first and
+ * audited server-side; revoking also ends that role's sessions. Lockout guards (`last_admin`,
+ * `last_role`) are explained inline rather than flattened into a generic failure.
+ */
+export function UserRolesPanel({ userId, roles, onChanged }: UserRolesPanelProps) {
+  const { grantMutation, revokeMutation } = useAdminUserRoles();
+  const [pending, setPending] = useState<PendingRoleChange | null>(null);
+
+  const activeMutation = pending?.action === 'revoke' ? revokeMutation : grantMutation;
+  const submitError = activeMutation.isError ? describeUserRoleError(activeMutation.error) : null;
+  const held = new Set(roles.filter((r) => r.scopeRef === null).map((r) => r.role));
+  const partnerRoles = roles.filter(
+    (r) => !GRANTABLE_ROLES.some((g) => g.role === r.role) || r.scopeRef !== null,
+  );
+
+  const close = () => {
+    setPending(null);
+    grantMutation.reset();
+    revokeMutation.reset();
+  };
+
+  const confirm = async () => {
+    if (!pending) {
+      return;
+    }
+    try {
+      await activeMutation.mutateAsync({ userId, role: pending.role });
+      onChanged();
+      close();
+    } catch {
+      // Error stays inline in the dialog (and toasts when unexpected).
+    }
+  };
+
+  return (
+    <AdminPanel
+      title="Platform roles"
+      subtitle="Grant or revoke CONSUMER and OPERATOR. Changes are audited."
+    >
+      <div className="admin-user-account__actions" data-testid="users-roles-panel">
+        {GRANTABLE_ROLES.map(({ role, summary }) => {
+          const has = held.has(role);
+          return (
+            <div key={role} className="admin-user-account__roles">
+              <AdminStatusChip label={humanizeAdminLabel(role)} tone={has ? 'active' : 'none'} />
+              <AlText variant="caption" tone="muted">
+                {summary}
+              </AlText>
+              <AlButton
+                type="button"
+                size="sm"
+                variant={has ? 'secondary' : 'primary'}
+                data-testid={`users-role-${has ? 'revoke' : 'grant'}-${role}`}
+                onClick={() => {
+                  setPending({ action: has ? 'revoke' : 'grant', role });
+                }}
+              >
+                {has ? `Revoke ${humanizeAdminLabel(role)}` : `Grant ${humanizeAdminLabel(role)}`}
+              </AlButton>
+            </div>
+          );
+        })}
+      </div>
+      {partnerRoles.length > 0 ? (
+        <AlText variant="caption" tone="muted">
+          Partner roles ({partnerRoles.map((r) => humanizeAdminLabel(r.role)).join(', ')}) are
+          managed through partner onboarding, not here.
+        </AlText>
+      ) : null}
+
+      <AlModal
+        open={pending !== null}
+        onOpenChange={(open) => {
+          if (!open && !activeMutation.isPending) {
+            close();
+          }
+        }}
+        size="sm"
+        title={
+          pending
+            ? `${pending.action === 'grant' ? 'Grant' : 'Revoke'} ${humanizeAdminLabel(pending.role)}?`
+            : 'Change role'
+        }
+        description={
+          pending?.action === 'revoke'
+            ? 'The account loses this role immediately and its sessions for this role are signed out.'
+            : pending?.role === 'OPERATOR'
+              ? 'This gives the account full Admin console access.'
+              : 'The account gains customer app access.'
+        }
+        footer={
+          <div className="admin-modal-actions">
+            <AlButton
+              type="button"
+              size="sm"
+              variant={pending?.action === 'revoke' ? 'destructive' : 'primary'}
+              data-testid="users-role-confirm"
+              loading={activeMutation.isPending}
+              disabled={activeMutation.isPending}
+              onClick={() => {
+                void confirm();
+              }}
+            >
+              {pending?.action === 'revoke' ? 'Revoke role' : 'Grant role'}
+            </AlButton>
+            <AlButton
+              type="button"
+              size="sm"
+              variant="secondary"
+              disabled={activeMutation.isPending}
+              onClick={close}
+            >
+              Cancel
+            </AlButton>
+          </div>
+        }
+      >
+        {submitError ? (
+          <p className="admin-form-error" role="alert" data-testid="users-role-error">
+            {submitError}
+          </p>
+        ) : null}
+      </AlModal>
+    </AdminPanel>
+  );
+}

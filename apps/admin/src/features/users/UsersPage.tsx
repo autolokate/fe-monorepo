@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
 import { filterCareByVehicleId } from '@/features/users/filter-care-by-vehicle';
+import { UserRolesPanel } from '@/features/users/UserRolesPanel';
 import { useUsersColumns } from '@/features/users/users-columns';
 import { useAdminUserCareRecords } from '@/hooks/users/useAdminUserCareRecords';
 import { useAdminUserDetail } from '@/hooks/users/useAdminUserDetail';
@@ -386,6 +387,10 @@ function UserDetailPanel({
           </AdminPanel>
 
           {canWrite ? (
+            <UserRolesPanel userId={account.id} roles={roles} onChanged={refreshDetail} />
+          ) : null}
+
+          {canWrite ? (
             <AdminPanel
               title="Authorized edits"
               subtitle="Locale and review flag only. Identity and billing use dedicated workflows."
@@ -521,7 +526,7 @@ function UserDetailPanel({
 
 /**
  * Customers directory — list + phone search, then account / vehicle care.
- * Detail / vehicles / authorized PATCH. Role grant/revoke and permanent delete stay unavailable.
+ * Detail / vehicles / authorized PATCH / platform-role grant+revoke. Permanent delete stays unavailable.
  */
 export function UsersPage() {
   const {
