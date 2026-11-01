@@ -1,6 +1,9 @@
 # Autolokate Onboarding — Project Status
 
-**Last updated:** 2026-06-17 (Project lockdown — **BASELINE LOCKED**)  
+**Last updated:** 2026-06-17 (Project lockdown — **BASELINE LOCKED**)
+
+> Admin console status lives in [`ADMIN_CONSOLE_STATUS.md`](./ADMIN_CONSOLE_STATUS.md); this file covers the QR onboarding PWA only.
+
 **Source of truth priority:** Figma → `VISUAL_TRUTH_MATRIX_V2.md` → **`PROJECT_CHARTER.md`** → `ARCHITECTURE_PRINCIPLES.md` → `DEVELOPMENT_STANDARDS.md` → `PROJECT_STATUS.md` → `docs/archive/`
 
 ---
