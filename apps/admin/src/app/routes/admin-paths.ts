@@ -33,6 +33,7 @@ export const adminPaths = {
   taxiBookings: '/taxi/bookings',
   taxiEnrollments: '/taxi/partners',
   experts: '/experts',
+  websiteBookings: '/website-bookings',
 } as const;
 
 export function adminTaxiBookingPath(bookingId: string): string {
@@ -138,9 +139,16 @@ export const adminRoutes: AdminRouteMeta[] = [
   {
     path: adminPaths.support,
     label: 'Tickets',
-    description: 'Support tickets are not available yet',
+    description: 'Customer support tickets — triage and ops notes',
     group: 'operations',
-    nav: false,
+    nav: true,
+  },
+  {
+    path: adminPaths.websiteBookings,
+    label: 'Session bookings',
+    description: 'Publish website session slots and manage bookings',
+    group: 'operations',
+    nav: true,
   },
 
   // Partners — org directory, KYC review, marketplace inbox.

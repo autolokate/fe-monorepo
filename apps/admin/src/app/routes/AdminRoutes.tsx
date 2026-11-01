@@ -208,6 +208,11 @@ const PartnersKycPage = lazy(() =>
   })),
 );
 
+const WebsiteBookingsPage = lazy(() =>
+  import('@/features/website-bookings/WebsiteBookingsPage').then((module) => ({
+    default: module.WebsiteBookingsPage,
+  })),
+);
 const ExpertsAdminPage = lazy(() =>
   import('@/features/experts/ExpertsAdminPage').then((module) => ({
     default: module.ExpertsAdminPage,
@@ -273,6 +278,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.partnersRequests} element={<PartnerRequestsInboxPage />} />
             <Route path={adminPaths.partnersKyc} element={<PartnersKycPage />} />
             <Route path={adminPaths.experts} element={<ExpertsAdminPage />} />
+            <Route path={adminPaths.websiteBookings} element={<WebsiteBookingsPage />} />
             <Route path={`${adminPaths.partners}/:orgId`} element={<PartnerDetailPage />} />
           </Route>
         </Route>

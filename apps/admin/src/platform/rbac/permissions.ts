@@ -48,7 +48,9 @@ export type AdminPermission =
   | 'users:write'
   | 'taxi:read'
   | 'taxi:write'
-  | 'experts:write';
+  | 'experts:write'
+  | 'website-bookings:view'
+  | 'website-bookings:write';
 
 const ALL_PERMISSIONS: readonly AdminPermission[] = [
   'dashboard:view',
@@ -87,6 +89,8 @@ const ALL_PERMISSIONS: readonly AdminPermission[] = [
   'taxi:read',
   'taxi:write',
   'experts:write',
+  'website-bookings:view',
+  'website-bookings:write',
 ];
 
 const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
