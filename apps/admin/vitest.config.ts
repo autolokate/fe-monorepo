@@ -13,6 +13,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    // Modules that import the API client read this at load time; tests never hit the network.
+    env: { VITE_API_BASE_URL: 'https://admin-api.test' },
   },
   resolve: {
     alias: {
