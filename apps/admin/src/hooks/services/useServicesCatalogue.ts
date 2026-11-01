@@ -20,7 +20,10 @@ import {
   saveServiceProvider,
 } from '@/services/services-catalogue/admin-services-catalogue-service';
 
-/** Fallback hub tiles when hub-categories GET fails. */
+/**
+ * Category keys for the provider filter when the hub config has not loaded. Never used to seed an
+ * editable hub draft after a failed GET (ADM-08: a save would overwrite live config with these).
+ */
 export const DEFAULT_SERVICE_HUB_CATEGORIES: ServiceCategory[] = [
   'ras',
   'hospitals',
@@ -82,11 +85,21 @@ export function useServicesCatalogue(initialCategory: ServiceCategory = 'ras') {
     retry: false,
   });
 
+  // The draft is seeded ONLY from a successful GET. The server already falls back to its own default
+  // list before migrate 0092, so an empty 200 is the one case where local defaults are offered.
   useEffect(() => {
-    const items = hubQuery.data?.items ?? [];
+    if (!hubQuery.isSuccess) {
+      setHubDraft([]);
+      return;
+    }
+    const items = hubQuery.data.items;
     setHubDraft(normalizeHubItems(items.length > 0 ? items : defaultHubItems()));
     setHubSaveError(null);
-  }, [hubQuery.data]);
+  }, [hubQuery.data, hubQuery.isSuccess]);
+
+  /** Save is only allowed when the current server config was read successfully. */
+  const hubEditable = hubQuery.isSuccess;
+  const hubUsingDefaults = hubQuery.isSuccess && hubQuery.data.items.length === 0;
 
   const upsertMutation = useMutation({
     mutationFn: (body: UpsertServiceProviderBody) => saveServiceProvider(body),
@@ -110,8 +123,14 @@ export function useServicesCatalogue(initialCategory: ServiceCategory = 'ras') {
   });
 
   const saveHubMutation = useMutation({
-    mutationFn: (items: ServiceHubCategoryItem[]) =>
-      saveServiceHubCategories({ items: normalizeHubItems(items) }),
+    mutationFn: (items: ServiceHubCategoryItem[]) => {
+      if (!hubQuery.isSuccess || items.length === 0) {
+        return Promise.reject(
+          new Error('Hub categories were not loaded from the server — refusing to overwrite them.'),
+        );
+      }
+      return saveServiceHubCategories({ items: normalizeHubItems(items) });
+    },
     retry: 0,
     onSuccess: async (result) => {
       setHubSaveError(null);
@@ -178,6 +197,11 @@ export function useServicesCatalogue(initialCategory: ServiceCategory = 'ras') {
     toggleHubVisible,
     saveHubMutation,
     hubSaveError,
+    hubEditable,
+    hubUsingDefaults,
+    retryHub: () => {
+      void hubQuery.refetch();
+    },
     providers,
     isLoading: providersQuery.isLoading || hubQuery.isLoading,
     isFetching: providersQuery.isFetching || hubQuery.isFetching,

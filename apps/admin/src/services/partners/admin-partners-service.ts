@@ -5,6 +5,9 @@ import {
   listAdminPartnerGarageRequestsPage,
   listAdminPartnersPage,
   listAdminTaxiRequestsPage,
+  listAdminPartnersKycPage,
+  type AdminPartnerKycItemDto,
+  type ListAdminPartnersKycQuery,
   type AdminGarageRequestInboxDto,
   type AdminPartnerOrgDetailDto,
   type AdminPartnerOrgDto,
@@ -63,4 +66,12 @@ export async function fetchAdminTaxiRequest(
   signal?: AbortSignal,
 ): Promise<AdminTaxiRequestInboxDto> {
   return getAdminTaxiRequest(getAdminApiClient(), id, { signal });
+}
+
+/** GET /admin/v1/partners/kyc — garage GST review queue. */
+export async function fetchAdminPartnersKycPage(
+  query: ListAdminPartnersKycQuery = {},
+  signal?: AbortSignal,
+): Promise<AdminPartnersPageResult<AdminPartnerKycItemDto>> {
+  return listAdminPartnersKycPage(getAdminApiClient(), query, { signal });
 }

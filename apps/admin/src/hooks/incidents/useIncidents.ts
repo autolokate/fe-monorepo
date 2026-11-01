@@ -54,6 +54,8 @@ export function useIncidents(
 
   return {
     ...query,
+    /** When the current snapshot was read (grants are single-use, so the list cannot poll). */
+    snapshotAt: query.dataUpdatedAt > 0 ? new Date(query.dataUpdatedAt) : null,
     incidents,
     statusFilter,
     setStatusFilter,

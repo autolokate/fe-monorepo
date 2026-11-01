@@ -83,4 +83,29 @@ test.describe('Services catalogue (hermetic)', () => {
     });
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
   });
+
+  test('ADM-08 — hub categories load error disables Save (no defaults-on-error overwrite)', async ({
+    page,
+  }) => {
+    await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
+    let hubPuts = 0;
+    await page.route('**/admin/v1/services/hub-categories', async (route) => {
+      if (route.request().method() === 'PUT') {
+        hubPuts += 1;
+      }
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: { code: 'server_error', message: 'boom' } }),
+      });
+    });
+    await seedHermeticSession(page);
+    await openServicesCataloguePage(page);
+
+    await expect(page.getByTestId('services-category-config-error')).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByTestId('services-hub-categories-save')).toBeDisabled();
+    expect(hubPuts).toBe(0);
+  });
 });
