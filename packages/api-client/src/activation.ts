@@ -16,10 +16,10 @@ export type ActivationPreviewDto = {
   planTier: ApiPlanTier;
   pricePaise: number;
   riderCount: number;
-  /** Display name of the sold/pinned plan version (not the tier enum). */
-  planName: string;
-  /** Server-driven card copy for the pinned plan version. */
-  features: string[];
+  /** Not in OpenAPI `ActivationPreviewDto` today; read defensively if a server adds it. */
+  planName?: string;
+  /** Not in OpenAPI `ActivationPreviewDto` today; read defensively if a server adds it. */
+  features?: string[];
   channel: ActivationPreviewChannel | null;
   paid: boolean;
   /** Optional plate/summary when the activation is already bound to a vehicle. */

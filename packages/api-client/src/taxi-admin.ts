@@ -1,4 +1,4 @@
-import type { ApiClient } from './client';
+import { ApiError, type ApiClient } from './client';
 import { endpoints } from './endpoints';
 import { readEnvelopeMeta, unwrapEnvelope } from './envelope';
 
@@ -145,90 +145,127 @@ export const ADMIN_TAXI_BOOKING_STATUSES = [
   'COMPLETED',
   'CANCELLED_CUSTOMER',
   'CANCELLED_PARTNER',
+  'CANCELLED_ADMIN',
   'NO_SHOW_CUSTOMER',
   'NO_SHOW_PARTNER',
   'DISPUTED',
 ] as const;
 export type AdminTaxiBookingStatus = (typeof ADMIN_TAXI_BOOKING_STATUSES)[number];
 
+/** OpenAPI money-side status (customer advance / partner deposit). */
+export const ADMIN_TAXI_MONEY_STATUSES = [
+  'NONE',
+  'PENDING',
+  'HELD',
+  'APPLIED_TO_FARE',
+  'RELEASED',
+  'REFUNDED',
+  'FORFEITED',
+  'PENALIZED',
+  'DISPUTED_HOLD',
+  'REFUND_PENDING',
+  'RELEASE_PENDING_PAYOUT',
+] as const;
+export type AdminTaxiMoneyStatus = (typeof ADMIN_TAXI_MONEY_STATUSES)[number];
+
 export const ADMIN_TAXI_ENROLLMENT_STATUSES = ['ACTIVE', 'SUSPENDED', 'REVOKED'] as const;
 export type AdminTaxiEnrollmentStatus = (typeof ADMIN_TAXI_ENROLLMENT_STATUSES)[number];
 
-/** Money side of a booking (customer advance or partner deposit) — server-computed amounts. */
+/**
+ * Money side of a booking as rendered by Admin: the server status plus, when a checkout exists,
+ * the server-computed amount and bps snapshot from that checkout (never computed client-side).
+ */
 export type AdminTaxiMoneySideDto = {
   status: string;
   amountPaise: number | null;
   bps: number | null;
 };
 
-/** One checkout attempt (advance or deposit). */
+/** OpenAPI `AdminTaxiCheckoutDto` — one checkout attempt (advance or deposit). */
 export type AdminTaxiCheckoutDto = {
   id: string;
-  /** CUSTOMER_ADVANCE | PARTNER_DEPOSIT */
-  kind: string;
+  kind: 'CUSTOMER_ADVANCE' | 'PARTNER_DEPOSIT';
+  /** PENDING_PAYMENT | PAID | FAILED | CANCELLED | CAPTURED_UNAPPLIED (string so newer values render). */
   status: string;
   amountPaise: number;
-  paymentRef?: string | null;
-  providerOrderId?: string | null;
+  customerAdvanceBpsSnapshot: number;
+  partnerDepositBpsSnapshot: number | null;
+  policyVersionId: string;
+  paymentRef: string;
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  capturedPaise: number | null;
+  capturedAt: string | null;
   createdAt: string;
-  updatedAt?: string | null;
 };
 
-/** One refund recorded against a booking checkout. */
+/** OpenAPI `AdminTaxiRefundDto` — one refund recorded against a booking checkout. */
 export type AdminTaxiRefundDto = {
   id: string;
-  checkoutId?: string | null;
-  kind?: string | null;
+  checkoutId: string;
+  kind: 'CUSTOMER_ADVANCE' | 'PARTNER_DEPOSIT';
+  /** CUSTOMER_CANCEL | PARTNER_CANCEL | ADMIN_CANCEL | UNAPPLIED_CAPTURE */
+  reason: string;
+  /** REQUESTED | SUBMITTING | PENDING | PROCESSED | FAILED | NEEDS_RECONCILIATION */
   status: string;
   amountPaise: number;
-  reason?: string | null;
-  providerRefundId?: string | null;
+  providerPaymentId: string;
+  providerRefundId: string | null;
+  attempts: number;
+  lastError: string | null;
   createdAt: string;
+  updatedAt: string;
 };
 
-/** Row of GET /admin/v1/taxi/bookings. */
+/** OpenAPI `AdminTaxiBookingDto` — row of GET /admin/v1/taxi/bookings. */
 export type AdminTaxiBookingSummaryDto = {
   id: string;
   requestId: string;
+  bidId: string;
   orgId: string;
-  orgName?: string | null;
+  accountId: string;
+  vehicleId: string;
+  driverAccountId: string | null;
   /** {@link AdminTaxiBookingStatus} (string so newer server statuses still render). */
   status: string;
   selectedFareRupees: number;
-  pickupLabel?: string | null;
-  dropoffLabel?: string | null;
-  pickupAt?: string | null;
-  customerAdvance?: AdminTaxiMoneySideDto | null;
-  partnerDeposit?: AdminTaxiMoneySideDto | null;
-  /** Legacy flat side-status fields (BE `TaxiBookingDto`). */
-  customerAdvanceStatus?: string | null;
-  partnerDepositStatus?: string | null;
+  currency: 'INR';
+  policyVersionId?: string | null;
+  /** {@link AdminTaxiMoneyStatus} */
+  customerAdvanceStatus: string;
+  /** {@link AdminTaxiMoneyStatus} */
+  partnerDepositStatus: string;
+  contactUnlocked: boolean;
+  pickupLabel: string | null;
+  dropoffLabel: string | null;
+  pickupAt: string | null;
+  selectedAt: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  cancelledAt: string | null;
+  cancelledBy: 'CUSTOMER' | 'PARTNER' | 'ADMIN' | null;
+  cancelReason: string | null;
+  depositReleaseDueAt: string | null;
+  depositReleasedAt: string | null;
+  depositReleasedByAdminId: string | null;
   createdAt: string;
-  updatedAt?: string | null;
+  updatedAt: string;
 };
 
-/** GET /admin/v1/taxi/bookings/{id} — includes checkouts and refunds. */
+/** OpenAPI `AdminTaxiBookingDetailDto` — GET /admin/v1/taxi/bookings/{id} (checkouts + refunds). */
 export type AdminTaxiBookingDetailDto = AdminTaxiBookingSummaryDto & {
-  bidId?: string | null;
-  vehicleId?: string | null;
-  driverAccountId?: string | null;
-  customerAccountId?: string | null;
-  policyVersionId?: string | null;
-  cancelReason?: string | null;
   checkouts: AdminTaxiCheckoutDto[];
   refunds: AdminTaxiRefundDto[];
 };
 
-/** Row of GET /admin/v1/taxi/enrollments. */
+/** OpenAPI `AdminTaxiEnrollmentDto` — row of GET /admin/v1/taxi/enrollments. */
 export type AdminTaxiEnrollmentDto = {
   orgId: string;
-  orgName?: string | null;
-  enrollmentId?: string | null;
+  orgName: string | null;
   /** {@link AdminTaxiEnrollmentStatus} */
   status: string;
-  reason?: string | null;
-  createdAt?: string | null;
-  updatedAt?: string | null;
+  enrolledAt: string;
+  updatedAt: string;
 };
 
 export type ListAdminTaxiBookingsQuery = {
@@ -237,9 +274,9 @@ export type ListAdminTaxiBookingsQuery = {
   limit?: number;
 };
 
+/** The enrollments list takes `status` and `limit` only (no cursor paging). */
 export type ListAdminTaxiEnrollmentsQuery = {
   status?: AdminTaxiEnrollmentStatus;
-  cursor?: string;
   limit?: number;
 };
 
@@ -264,22 +301,16 @@ function taxiQuery(params: Record<string, string | number | undefined>): string 
   return query ? `?${query}` : '';
 }
 
-/**
- * Accept either `{data: {items, nextCursor}}` (contract) or `{data: T[], meta.pagination}`
- * (existing admin list convention) so the client survives either server shape.
- */
+/** Admin lists answer `{data: T[], meta: {pagination}}` (OpenAPI admin list convention). */
 function readTaxiPage<T>(response: unknown): AdminTaxiPage<T> {
   const data = unwrapEnvelope(response);
-  if (Array.isArray(data)) {
-    const meta = readEnvelopeMeta(response);
-    const pagination = meta?.pagination as { nextCursor?: string | null } | undefined;
-    return { items: data as T[], nextCursor: pagination?.nextCursor ?? null };
+  if (!Array.isArray(data)) {
+    throw new ApiError('Invalid admin taxi list response', 0, 'invalid_response');
   }
-  if (data && typeof data === 'object' && Array.isArray((data as { items?: unknown }).items)) {
-    const record = data as { items: T[]; nextCursor?: string | null };
-    return { items: record.items, nextCursor: record.nextCursor ?? null };
-  }
-  return { items: [], nextCursor: null };
+  const pagination = readEnvelopeMeta(response)?.pagination as
+    | { nextCursor?: string | null }
+    | undefined;
+  return { items: data as T[], nextCursor: pagination?.nextCursor ?? null };
 }
 
 type TaxiRequestOptions = { signal?: AbortSignal };
@@ -357,7 +388,6 @@ export async function listAdminTaxiEnrollments(
 ): Promise<AdminTaxiPage<AdminTaxiEnrollmentDto>> {
   const path = `${endpoints.adminTaxi.enrollments}${taxiQuery({
     status: query.status,
-    cursor: query.cursor,
     limit: query.limit,
   })}`;
   const response = await client.get<unknown>(path, taxiSignal(options));

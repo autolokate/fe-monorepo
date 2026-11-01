@@ -123,6 +123,8 @@ export function useTaxiBooking(bookingId: string) {
   };
 }
 
+const TAXI_OPS_ENROLLMENTS_LIMIT = 200;
+
 export function useTaxiEnrollments() {
   const canRead = useAdminPermission('taxi:read');
   const queryClient = useQueryClient();
@@ -130,16 +132,16 @@ export function useTaxiEnrollments() {
   const query = useInfiniteQuery({
     queryKey: taxiOpsQueryKeys.enrollments(status),
     initialPageParam: undefined as string | undefined,
-    queryFn: ({ signal, pageParam }) =>
+    queryFn: ({ signal }) =>
       fetchTaxiEnrollmentsPage(
         {
           ...(status !== 'ALL' ? { status } : {}),
-          limit: TAXI_OPS_PAGE_LIMIT,
-          ...(pageParam ? { cursor: pageParam } : {}),
+          limit: TAXI_OPS_ENROLLMENTS_LIMIT,
         },
         signal,
       ),
-    getNextPageParam: (last) => last.nextCursor ?? undefined,
+    // The enrollments list is not cursor-paged (OpenAPI: status + limit only).
+    getNextPageParam: () => undefined,
     enabled: canRead,
     retry: false,
   });

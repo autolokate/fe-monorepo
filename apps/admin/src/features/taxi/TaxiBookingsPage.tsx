@@ -79,7 +79,7 @@ function useBookingColumns(): ColumnDef<AdminTaxiBookingSummaryDto>[] {
       {
         id: 'partner',
         header: 'Partner',
-        accessorFn: (row) => row.orgName ?? shortAdminId(row.orgId),
+        accessorFn: (row) => shortAdminId(row.orgId),
       },
       {
         id: 'createdAt',

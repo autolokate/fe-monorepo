@@ -106,12 +106,11 @@ export type AuditEventDto = {
   at: string;
 };
 
-/** OpenAPI `CreateBatchDto` — `planTier` required when `channel` is `B2B` (ops batch_code). */
+/** OpenAPI `CreateBatchDto` — the Sku pins the tier; there is no planTier field. */
 export type CreateBatchBody = {
   channel: QrBatchChannel;
   skuId: string;
   totalCount: number;
-  planTier?: ApiPlanTier;
 };
 
 /**

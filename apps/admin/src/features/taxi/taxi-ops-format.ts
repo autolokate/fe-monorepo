@@ -1,4 +1,9 @@
-import type { AdminTaxiBookingSummaryDto, AdminTaxiMoneySideDto } from '@autolokate/api-client';
+import type {
+  AdminTaxiBookingDetailDto,
+  AdminTaxiBookingSummaryDto,
+  AdminTaxiCheckoutDto,
+  AdminTaxiMoneySideDto,
+} from '@autolokate/api-client';
 
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { formatPaise } from '@/platform/utils/format-admin-date';
@@ -11,6 +16,7 @@ export const TAXI_BOOKING_STATUS_FILTERS = [
   { value: 'COMPLETED', label: 'Completed' },
   { value: 'CANCELLED_CUSTOMER', label: 'Cancelled (customer)' },
   { value: 'CANCELLED_PARTNER', label: 'Cancelled (partner)' },
+  { value: 'CANCELLED_ADMIN', label: 'Cancelled (admin)' },
   { value: 'DISPUTED', label: 'Disputed' },
 ] as const;
 
@@ -21,38 +27,44 @@ export const TAXI_ENROLLMENT_STATUS_FILTERS = [
   { value: 'REVOKED', label: 'Revoked' },
 ] as const;
 
-/** Booking statuses after which the trip has started or ended — cancel is not offered. */
-const NOT_CANCELLABLE = new Set([
-  'IN_PROGRESS',
-  'COMPLETED',
-  'CANCELLED_CUSTOMER',
-  'CANCELLED_PARTNER',
-  'NO_SHOW_CUSTOMER',
-  'NO_SHOW_PARTNER',
-]);
+/** Statuses the server lets an operator cancel (BE `ADMIN_CANCELLABLE`). */
+const ADMIN_CANCELLABLE = new Set(['PENDING_ADVANCE', 'CONFIRMED', 'IN_PROGRESS']);
 
 export function bookingCancelBlockedReason(status: string): string | null {
-  if (status === 'IN_PROGRESS')
-    return 'Trip already started — cancel is only allowed before pickup.';
-  if (NOT_CANCELLABLE.has(status)) return `Booking is ${humanizeAdminLabel(status)}.`;
-  return null;
+  if (ADMIN_CANCELLABLE.has(status)) return null;
+  return `Booking is ${humanizeAdminLabel(status)} — only awaiting-advance, confirmed or in-progress bookings can be cancelled.`;
+}
+
+type BookingRow = AdminTaxiBookingSummaryDto | AdminTaxiBookingDetailDto;
+
+/** Latest checkout of a kind, preferring one the provider captured (server amounts + bps). */
+function checkoutOf(
+  row: BookingRow,
+  kind: AdminTaxiCheckoutDto['kind'],
+): AdminTaxiCheckoutDto | null {
+  const checkouts = 'checkouts' in row ? row.checkouts.filter((c) => c.kind === kind) : [];
+  if (checkouts.length === 0) return null;
+  const sorted = [...checkouts].sort((x, y) => y.createdAt.localeCompare(x.createdAt));
+  return sorted.find((c) => c.status === 'PAID') ?? sorted[0] ?? null;
 }
 
 function side(
-  nested: AdminTaxiMoneySideDto | null | undefined,
-  flatStatus: string | null | undefined,
+  status: string | null | undefined,
+  checkout: AdminTaxiCheckoutDto | null,
+  bps: number | null,
 ): AdminTaxiMoneySideDto | null {
-  if (nested) return nested;
-  if (flatStatus) return { status: flatStatus, amountPaise: null, bps: null };
-  return null;
+  if (!status) return null;
+  return { status, amountPaise: checkout?.amountPaise ?? null, bps: checkout ? bps : null };
 }
 
-export function customerAdvanceOf(row: AdminTaxiBookingSummaryDto): AdminTaxiMoneySideDto | null {
-  return side(row.customerAdvance, row.customerAdvanceStatus);
+export function customerAdvanceOf(row: BookingRow): AdminTaxiMoneySideDto | null {
+  const checkout = checkoutOf(row, 'CUSTOMER_ADVANCE');
+  return side(row.customerAdvanceStatus, checkout, checkout?.customerAdvanceBpsSnapshot ?? null);
 }
 
-export function partnerDepositOf(row: AdminTaxiBookingSummaryDto): AdminTaxiMoneySideDto | null {
-  return side(row.partnerDeposit, row.partnerDepositStatus);
+export function partnerDepositOf(row: BookingRow): AdminTaxiMoneySideDto | null {
+  const checkout = checkoutOf(row, 'PARTNER_DEPOSIT');
+  return side(row.partnerDepositStatus, checkout, checkout?.partnerDepositBpsSnapshot ?? null);
 }
 
 /** Server amount + status; percent only when the server reported the bps snapshot. */
@@ -64,9 +76,13 @@ export function formatMoneySide(value: AdminTaxiMoneySideDto | null): string {
   return parts.join(' · ');
 }
 
-export function depositReleaseBlockedReason(row: AdminTaxiBookingSummaryDto): string | null {
-  const deposit = partnerDepositOf(row);
-  if (!deposit) return 'No partner deposit recorded for this booking.';
-  if (deposit.status === 'HELD' || deposit.status === 'DISPUTED_HOLD') return null;
-  return `Deposit is ${humanizeAdminLabel(deposit.status)} — only a held deposit can be released.`;
+/** Mirrors the server rule: release only a HELD deposit on a COMPLETED trip. */
+export function depositReleaseBlockedReason(row: BookingRow): string | null {
+  if (row.status !== 'COMPLETED') {
+    return `Booking is ${humanizeAdminLabel(row.status)} — a deposit is released only after the trip completes.`;
+  }
+  const deposit = row.partnerDepositStatus;
+  if (!deposit || deposit === 'NONE') return 'No partner deposit recorded for this booking.';
+  if (deposit === 'HELD') return null;
+  return `Deposit is ${humanizeAdminLabel(deposit)} — only a held deposit can be released.`;
 }

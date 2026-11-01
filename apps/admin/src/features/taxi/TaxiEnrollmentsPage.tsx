@@ -79,11 +79,15 @@ export function TaxiEnrollmentsPage() {
           </span>
         ),
       },
-      { id: 'reason', header: 'Reason', accessorFn: (row) => row.reason ?? '—' },
+      {
+        id: 'enrolledAt',
+        header: 'Enrolled',
+        accessorFn: (row) => formatAdminDateTime(row.enrolledAt),
+      },
       {
         id: 'updatedAt',
         header: 'Updated',
-        accessorFn: (row) => formatAdminDateTime(row.updatedAt ?? row.createdAt),
+        accessorFn: (row) => formatAdminDateTime(row.updatedAt),
       },
       {
         id: 'actions',

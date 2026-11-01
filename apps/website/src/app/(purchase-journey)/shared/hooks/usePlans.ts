@@ -1,17 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ApiError } from '@/lib/api/error';
 import { fetchPlans, type Plan } from '../services/plans-api';
 
-type Status = 'loading' | 'success' | 'error' | 'signin';
+type Status = 'loading' | 'success' | 'error';
 
 export interface UsePlansResult {
   plans: Plan[];
   isLoading: boolean;
   isError: boolean;
-  /** `GET /v1/plans` is bearer-only on the backend: an anonymous visitor must sign in first. */
-  needsSignIn: boolean;
   /** Re-run the fetch (bypasses the cache only when the last attempt failed). */
   retry: () => void;
 }
@@ -37,8 +34,8 @@ export function usePlans(): UsePlansResult {
       const data = await fetchPlans();
       setPlans(data);
       setStatus('success');
-    } catch (err) {
-      setStatus(err instanceof ApiError && err.status === 401 ? 'signin' : 'error');
+    } catch {
+      setStatus('error');
     } finally {
       inFlight.current = false;
     }
@@ -52,7 +49,6 @@ export function usePlans(): UsePlansResult {
     plans,
     isLoading: status === 'loading',
     isError: status === 'error',
-    needsSignIn: status === 'signin',
     retry: () => {
       void load();
     },

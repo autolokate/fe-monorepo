@@ -67,16 +67,28 @@ describe('CONTRACTS.md additions', () => {
     expect(init.body).toBe(JSON.stringify({ token: 'fcm-abc' }));
   });
 
-  it('admin taxi bookings list accepts the {items, nextCursor} contract shape', async () => {
-    const fetchImpl = vi
-      .fn()
-      .mockResolvedValueOnce(
-        jsonResponse(200, { data: { items: [{ id: 'b1' }], nextCursor: 'c2' } }),
-      );
+  it('admin taxi bookings list reads the OpenAPI {data[], meta.pagination} shape', async () => {
+    const fetchImpl = vi.fn().mockResolvedValueOnce(
+      jsonResponse(200, {
+        data: [{ id: 'b1', status: 'CANCELLED_ADMIN', customerAdvanceStatus: 'REFUND_PENDING' }],
+        meta: {
+          requestId: 'r',
+          correlationId: 'c',
+          pagination: { limit: 25, cursor: null, nextCursor: 'c2', hasMore: true },
+        },
+      }),
+    );
     const page = await listAdminTaxiBookings(clientWith(fetchImpl), { status: 'CONFIRMED' });
     expect(page.items).toHaveLength(1);
     expect(page.nextCursor).toBe('c2');
     const [url] = fetchImpl.mock.calls[0] as [string];
     expect(url).toBe('https://example.test/admin/v1/taxi/bookings?status=CONFIRMED');
+  });
+
+  it('admin taxi bookings list rejects a non-list payload instead of rendering it as empty', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(200, { data: { items: [], nextCursor: null } }));
+    await expect(listAdminTaxiBookings(clientWith(fetchImpl))).rejects.toBeInstanceOf(ApiError);
   });
 });

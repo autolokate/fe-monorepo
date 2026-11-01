@@ -5,21 +5,38 @@ import { installHermeticApiRoutes, seedHermeticSession } from './helpers/hermeti
 const BOOKING_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7001';
 const ORG_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7002';
 
+/** OpenAPI `AdminTaxiBookingDto` (flat money-side statuses; amounts live on checkouts). */
 const BOOKING = {
   id: BOOKING_ID,
   requestId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7003',
+  bidId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7004',
   orgId: ORG_ID,
-  orgName: 'Hermetic Cabs',
+  accountId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7005',
+  vehicleId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7006',
+  driverAccountId: null,
   status: 'CONFIRMED',
   selectedFareRupees: 2400,
+  currency: 'INR',
+  customerAdvanceStatus: 'HELD',
+  partnerDepositStatus: 'NONE',
+  contactUnlocked: true,
   pickupLabel: 'Hermetic Pickup',
   dropoffLabel: 'Hermetic Drop',
   pickupAt: '2026-11-05T09:00:00.000Z',
-  customerAdvance: { status: 'HELD', amountPaise: 12000, bps: 500 },
-  partnerDeposit: { status: 'NONE', amountPaise: null, bps: 700 },
+  selectedAt: '2026-11-01T09:00:00.000Z',
+  startedAt: null,
+  completedAt: null,
+  cancelledAt: null,
+  cancelledBy: null,
+  cancelReason: null,
+  depositReleaseDueAt: null,
+  depositReleasedAt: null,
+  depositReleasedByAdminId: null,
   createdAt: '2026-11-01T09:00:00.000Z',
+  updatedAt: '2026-11-01T09:05:00.000Z',
 };
 
+/** OpenAPI `AdminTaxiBookingDetailDto`. */
 const BOOKING_DETAIL = {
   ...BOOKING,
   checkouts: [
@@ -28,12 +45,31 @@ const BOOKING_DETAIL = {
       kind: 'CUSTOMER_ADVANCE',
       status: 'PAID',
       amountPaise: 12000,
+      customerAdvanceBpsSnapshot: 500,
+      partnerDepositBpsSnapshot: null,
+      policyVersionId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7007',
       paymentRef: 'pay_hermetic_taxi_1',
+      providerOrderId: null,
+      providerPaymentId: 'pay_hermetic_provider_1',
+      capturedPaise: 12000,
+      capturedAt: '2026-11-01T09:06:00.000Z',
       createdAt: '2026-11-01T09:05:00.000Z',
     },
   ],
   refunds: [],
 };
+
+const META = { requestId: 'req-hermetic', correlationId: 'corr-hermetic' };
+
+function enrollment(status: string) {
+  return {
+    orgId: ORG_ID,
+    orgName: 'Hermetic Cabs',
+    status,
+    enrolledAt: '2026-10-01T09:00:00.000Z',
+    updatedAt: '2026-11-01T09:00:00.000Z',
+  };
+}
 
 async function json(route: Route, status: number, body: unknown) {
   await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
@@ -59,7 +95,13 @@ async function stubTaxiOps(page: Page, options: { deployed: boolean }): Promise<
       return;
     }
     if (method === 'GET' && path === '/admin/v1/taxi/bookings') {
-      await json(route, 200, { data: { items: [BOOKING], nextCursor: null } });
+      await json(route, 200, {
+        data: [BOOKING],
+        meta: {
+          ...META,
+          pagination: { limit: 25, cursor: null, nextCursor: null, hasMore: false },
+        },
+      });
       return;
     }
     if (method === 'GET' && path === `/admin/v1/taxi/bookings/${BOOKING_ID}`) {
@@ -71,25 +113,30 @@ async function stubTaxiOps(page: Page, options: { deployed: boolean }): Promise<
         body: req.postDataJSON() as unknown,
         idempotencyKey: req.headers()['idempotency-key'] ?? null,
       });
-      await json(route, 200, { data: { ...BOOKING_DETAIL, status: 'CANCELLED_PARTNER' } });
+      await json(route, 200, {
+        data: {
+          ...BOOKING_DETAIL,
+          status: 'CANCELLED_ADMIN',
+          cancelledBy: 'ADMIN',
+          customerAdvanceStatus: 'REFUND_PENDING',
+        },
+      });
       return;
     }
     if (method === 'GET' && path === '/admin/v1/taxi/enrollments') {
-      await json(route, 200, {
-        data: { items: [{ orgId: ORG_ID, orgName: 'Hermetic Cabs', status: enrollmentStatus }] },
-      });
+      await json(route, 200, { data: [enrollment(enrollmentStatus)], meta: META });
       return;
     }
     if (method === 'POST' && path === `/admin/v1/taxi/enrollments/${ORG_ID}/suspend`) {
       capture.suspend.push(req.postDataJSON() as unknown);
       enrollmentStatus = 'SUSPENDED';
-      await json(route, 200, { data: { orgId: ORG_ID, status: 'SUSPENDED' } });
+      await json(route, 200, { data: enrollment('SUSPENDED') });
       return;
     }
     if (method === 'POST' && path === `/admin/v1/taxi/enrollments/${ORG_ID}/reinstate`) {
       capture.reinstate += 1;
       enrollmentStatus = 'ACTIVE';
-      await json(route, 200, { data: { orgId: ORG_ID, status: 'ACTIVE' } });
+      await json(route, 200, { data: enrollment('ACTIVE') });
       return;
     }
     await json(route, 404, { error: { code: 'not_found', message: `Cannot ${method} ${path}` } });

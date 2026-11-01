@@ -120,7 +120,8 @@ export function TaxiBookingDetailPage() {
             <AdminDetailField label="Status" value={humanizeAdminLabel(booking.status)} />
             <AdminDetailField label="Booking id" value={booking.id} mono />
             <AdminDetailField label="Request" value={booking.requestId} mono />
-            <AdminDetailField label="Partner" value={booking.orgName ?? booking.orgId} />
+            <AdminDetailField label="Partner org" value={booking.orgId} mono />
+            <AdminDetailField label="Customer account" value={booking.accountId} mono />
             <AdminDetailField label="Pickup" value={formatAdminDateTime(booking.pickupAt)} />
             <AdminDetailField label="Fare" value={formatRupeeAmount(booking.selectedFareRupees)} />
             <AdminDetailField label="Customer advance" value={formatMoneySide(advance)} />
@@ -130,6 +131,20 @@ export function TaxiBookingDetailPage() {
             />
             <AdminDetailField label="Policy version" value={booking.policyVersionId ?? '—'} mono />
             <AdminDetailField label="Created" value={formatAdminDateTime(booking.createdAt)} />
+            {booking.cancelledAt ? (
+              <AdminDetailField
+                label="Cancelled"
+                value={`${formatAdminDateTime(booking.cancelledAt)}${booking.cancelledBy ? ` by ${humanizeAdminLabel(booking.cancelledBy)}` : ''}`}
+              />
+            ) : null}
+            {booking.depositReleaseDueAt || booking.depositReleasedAt ? (
+              <AdminDetailField
+                label={booking.depositReleasedAt ? 'Deposit released' : 'Deposit release due'}
+                value={formatAdminDateTime(
+                  booking.depositReleasedAt ?? booking.depositReleaseDueAt,
+                )}
+              />
+            ) : null}
             {booking.cancelReason ? (
               <AdminDetailField label="Cancel reason" value={booking.cancelReason} />
             ) : null}
@@ -209,7 +224,7 @@ export function TaxiBookingDetailPage() {
                       <td>{humanizeAdminLabel(checkout.kind)}</td>
                       <td>{humanizeAdminLabel(checkout.status)}</td>
                       <td>{formatPaise(checkout.amountPaise)}</td>
-                      <td className="admin-mono">{checkout.paymentRef ?? '—'}</td>
+                      <td className="admin-mono">{checkout.paymentRef}</td>
                       <td>{formatAdminDateTime(checkout.createdAt)}</td>
                     </tr>
                   ))}
@@ -239,7 +254,7 @@ export function TaxiBookingDetailPage() {
                     <tr key={refund.id}>
                       <td>{humanizeAdminLabel(refund.status)}</td>
                       <td>{formatPaise(refund.amountPaise)}</td>
-                      <td>{refund.reason ?? '—'}</td>
+                      <td>{humanizeAdminLabel(refund.reason)}</td>
                       <td className="admin-mono">{refund.providerRefundId ?? '—'}</td>
                       <td>{formatAdminDateTime(refund.createdAt)}</td>
                     </tr>
