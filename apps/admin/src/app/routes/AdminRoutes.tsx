@@ -208,6 +208,12 @@ const PartnersKycPage = lazy(() =>
   })),
 );
 
+const ExpertsAdminPage = lazy(() =>
+  import('@/features/experts/ExpertsAdminPage').then((module) => ({
+    default: module.ExpertsAdminPage,
+  })),
+);
+
 function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
@@ -266,6 +272,7 @@ export function AdminRoutes() {
             <Route path={adminPaths.partners} element={<PartnersDirectoryPage />} />
             <Route path={adminPaths.partnersRequests} element={<PartnerRequestsInboxPage />} />
             <Route path={adminPaths.partnersKyc} element={<PartnersKycPage />} />
+            <Route path={adminPaths.experts} element={<ExpertsAdminPage />} />
             <Route path={`${adminPaths.partners}/:orgId`} element={<PartnerDetailPage />} />
           </Route>
         </Route>

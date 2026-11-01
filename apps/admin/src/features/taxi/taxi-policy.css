@@ -202,8 +202,3 @@
 .taxi-ops__lookup input {
   flex: 1;
 }
-
-.admin-mono {
-  font-family: var(--al-font-mono, ui-monospace, monospace);
-  font-size: 0.8125rem;
-}
