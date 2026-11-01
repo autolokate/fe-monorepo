@@ -10,6 +10,9 @@ export const endpoints = {
     profiles: '/v1/profiles',
     /** PATCH owner profile (Nest OA). */
     profile: '/v1/profile',
+    /** Admin-plane step-up (2FA) — OPERATOR only; returns a short-lived `step_up` access token. */
+    stepUpOtpRequest: '/v1/auth/step-up/otp/request',
+    stepUpOtpVerify: '/v1/auth/step-up/otp/verify',
     mintFlowAHandoff: '/v1/auth/flow-a/handoff/mint',
     exchangeFlowAHandoff: '/v1/auth/flow-a/handoff/exchange',
   },
@@ -68,6 +71,24 @@ export const endpoints = {
     provision: '/admin/v1/taxi/provision',
     requests: '/admin/v1/taxi/requests',
     request: (id: string) => `/admin/v1/taxi/requests/${encodeURIComponent(id)}`,
+    bookings: '/admin/v1/taxi/bookings',
+    booking: (id: string) => `/admin/v1/taxi/bookings/${encodeURIComponent(id)}`,
+    bookingCancel: (id: string) => `/admin/v1/taxi/bookings/${encodeURIComponent(id)}/cancel`,
+    bookingDepositRelease: (id: string) =>
+      `/admin/v1/taxi/bookings/${encodeURIComponent(id)}/deposit/release`,
+    enrollments: '/admin/v1/taxi/enrollments',
+    enrollmentSuspend: (orgId: string) =>
+      `/admin/v1/taxi/enrollments/${encodeURIComponent(orgId)}/suspend`,
+    enrollmentReinstate: (orgId: string) =>
+      `/admin/v1/taxi/enrollments/${encodeURIComponent(orgId)}/reinstate`,
+  },
+  adminExperts: {
+    upsertExpert: '/admin/v1/experts',
+    sessionTypes: (expertId: string) =>
+      `/admin/v1/experts/${encodeURIComponent(expertId)}/session-types`,
+    slots: (expertId: string) => `/admin/v1/experts/${encodeURIComponent(expertId)}/slots`,
+    confirmBooking: (bookingId: string) =>
+      `/admin/v1/expert-bookings/${encodeURIComponent(bookingId)}/confirm`,
   },
 
   promos: {
@@ -236,6 +257,7 @@ export const endpoints = {
     partner: (orgId: string) => `/admin/v1/partners/${encodeURIComponent(orgId)}`,
     partnerGarageRequests: '/admin/v1/partners/requests',
     partnerGarageRequest: (id: string) => `/admin/v1/partners/requests/${encodeURIComponent(id)}`,
+    partnersKyc: '/admin/v1/partners/kyc',
   },
   media: {
     request: '/v1/media',

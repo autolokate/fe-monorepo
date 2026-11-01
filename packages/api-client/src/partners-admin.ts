@@ -269,3 +269,55 @@ export async function getAdminTaxiRequest(
   );
   return unwrapEnvelope(response) as AdminTaxiRequestInboxDto;
 }
+
+/** Row of GET /admin/v1/partners/kyc — the partner KYC (GST) review queue. */
+export type AdminPartnerKycItemDto = {
+  orgId: string;
+  orgName: string;
+  storeId?: string | null;
+  storeName?: string | null;
+  gstin?: string | null;
+  legalName?: string | null;
+  gstVerification: string;
+  /** Vendor that produced the current status (e.g. SANDBOX / LIVE), when the server reports it. */
+  verificationSource?: string | null;
+  submittedAt?: string | null;
+  updatedAt?: string | null;
+};
+
+export type ListAdminPartnersKycQuery = {
+  status?: string;
+  limit?: number;
+  cursor?: string;
+};
+
+/** GET /admin/v1/partners/kyc?status — decision goes through POST …/garage/orgs/{orgId}/gst-verification. */
+export async function listAdminPartnersKycPage(
+  client: ApiClient,
+  query: ListAdminPartnersKycQuery = {},
+  options: RequestOptions = {},
+): Promise<AdminPartnersPageResult<AdminPartnerKycItemDto>> {
+  const path = `${endpoints.admin.partnersKyc}${buildQuery({
+    status: query.status,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, signalOption(options));
+  const data = unwrapEnvelope(response);
+  if (data && typeof data === 'object' && !Array.isArray(data) && 'items' in data) {
+    const record = data as { items: AdminPartnerKycItemDto[]; nextCursor?: string | null };
+    const meta = readEnvelopeMeta(response);
+    return {
+      items: record.items,
+      pagination: {
+        limit: query.limit ?? record.items.length,
+        cursor: query.cursor ?? null,
+        nextCursor: record.nextCursor ?? null,
+        hasMore: Boolean(record.nextCursor),
+      },
+      requestId: meta?.requestId ?? null,
+      correlationId: meta?.correlationId ?? null,
+    };
+  }
+  return readPage<AdminPartnerKycItemDto>(response);
+}
