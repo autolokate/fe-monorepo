@@ -56,7 +56,7 @@ test.describe('Finance clawback + settlement (hermetic)', () => {
     await dialog.getByTestId('clawback-submit').click();
 
     await expect(dialog.locator('.admin-form-error')).toHaveText(
-      'Something went wrong. Try again.',
+      'The server refused this action for your operator session.',
       { timeout: 10_000 },
     );
     await expect(page.getByLabel('Clawback result')).toHaveCount(0);
@@ -105,15 +105,15 @@ test.describe('Finance clawback + settlement (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY sees Access denied', async ({ page }) => {
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await page.goto('/finance', { waitUntil: 'domcontentloaded' });
-
-    await expect(page.getByText('Access denied')).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByRole('button', { name: 'Create clawback' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Run settlement' })).toHaveCount(0);
-    expect(capture.clawbacksPost).toEqual([]);
-    expect(capture.settlementBatchPost).toBe(0);
+    await page.goto('/finance');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
+    expect(capture.unexpected).toEqual([]);
   });
 });

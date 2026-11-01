@@ -124,9 +124,12 @@ test.describe('QR batches lifecycle (hermetic)', () => {
     await dialog.getByLabel('Total count').fill('5');
     await dialog.getByRole('button', { name: 'Create batch' }).click();
 
-    await expect(dialog.getByRole('alert')).toHaveText('Something went wrong. Try again.', {
-      timeout: 10_000,
-    });
+    await expect(dialog.getByRole('alert')).toHaveText(
+      'The server refused this action for your operator session.',
+      {
+        timeout: 10_000,
+      },
+    );
     await expect(page).toHaveURL(/\/qr-batches\/?$/);
     expect(capture.qrBatchesCreate).toHaveLength(1);
     expect(capture.qrBatchesGenerate).toEqual([]);
@@ -134,16 +137,15 @@ test.describe('QR batches lifecycle (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY hides Create batch CTA', async ({ page }) => {
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await openQrBatchesPage(page);
-
-    await expect(page.getByRole('heading', { name: 'Batches', exact: true })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByRole('button', { name: 'Create batch' })).toHaveCount(0);
-    expect(capture.qrBatchesCreate).toEqual([]);
+    await page.goto('/qr-batches');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -154,7 +156,9 @@ test.describe('QR batches lifecycle (hermetic)', () => {
     });
     await seedHermeticSession(page);
     await page.goto('/qr-batches', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('Something went wrong. Try again.')).toBeVisible({
+    await expect(
+      page.getByText('The server refused this action for your operator session.'),
+    ).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();

@@ -64,25 +64,22 @@ test.describe.skip(`Support ticket status (hermetic) — ${skipReason}`, () => {
     await dialog.getByTestId('support-ticket-status-submit').click();
 
     await expect(dialog.locator('.admin-form-error')).toHaveText(
-      'Something went wrong. Try again.',
+      'The server refused this action for your operator session.',
       { timeout: 10_000 },
     );
     expect(capture.supportTicketsPatch).toHaveLength(1);
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY hides Change status CTA', async ({ page }) => {
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await openSupportTicketsPage(page);
-
-    await expect(page.getByText(HERMETIC_SUPPORT_TICKET_SUBJECT)).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(
-      page.getByTestId(`support-ticket-triage-${HERMETIC_SUPPORT_TICKET_ID}`),
-    ).toHaveCount(0);
-    expect(capture.supportTicketsPatch).toEqual([]);
+    await page.goto('/support');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -93,7 +90,9 @@ test.describe.skip(`Support ticket status (hermetic) — ${skipReason}`, () => {
     });
     await seedHermeticSession(page);
     await page.goto('/support', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('Something went wrong. Try again.')).toBeVisible({
+    await expect(
+      page.getByText('The server refused this action for your operator session.'),
+    ).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();

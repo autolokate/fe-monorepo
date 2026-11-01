@@ -174,19 +174,16 @@ test.describe('Garage commercial (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY hides write CTAs', async ({ page }) => {
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await page.goto('/garage-commercial', { waitUntil: 'domcontentloaded' });
-
-    // settings:read is SUPER_ADMIN-only; READ_ONLY sees Access denied.
-    await expect(page.getByText('Access denied')).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByRole('button', { name: 'Save' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Grant pass' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Provision partner' })).toHaveCount(0);
-    expect(capture.garageConfigPut).toEqual([]);
-    expect(capture.garagePassGrant).toEqual([]);
-    expect(capture.garageProvision).toEqual([]);
+    await page.goto('/garage-commercial');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
+    expect(capture.unexpected).toEqual([]);
   });
 
   test('error — stubbed 403 on grant surfaces form error', async ({ page }) => {
@@ -202,7 +199,7 @@ test.describe('Garage commercial (hermetic)', () => {
     await dialog.getByLabel('Organization').fill(HERMETIC_GARAGE_ORG_ID);
     await dialog.getByRole('button', { name: 'Grant pass' }).click();
 
-    const expectedMessage = 'Something went wrong. Try again.';
+    const expectedMessage = 'The server refused this action for your operator session.';
     await expect(dialog.locator('.admin-form-error')).toHaveText(expectedMessage, {
       timeout: 10_000,
     });
@@ -260,7 +257,7 @@ test.describe('Garage commercial (hermetic)', () => {
     await dialog.getByRole('button', { name: 'Provision' }).click();
 
     await expect(dialog.locator('.admin-form-error')).toHaveText(
-      'Something went wrong. Try again.',
+      'The server refused this action for your operator session.',
       { timeout: 10_000 },
     );
     await expect(page.getByLabel('Garage provisioned')).toHaveCount(0);

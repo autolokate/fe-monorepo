@@ -75,7 +75,7 @@ test.describe('Partner reorder fulfil (hermetic)', () => {
     await confirm.getByRole('button', { name: 'Fulfil reorder' }).click();
 
     await expect(dialog.locator('.admin-form-error')).toHaveText(
-      'Something went wrong. Try again.',
+      'The server refused this action for your operator session.',
       { timeout: 10_000 },
     );
     await expect(page.getByLabel('Reorder fulfilled')).toHaveCount(0);
@@ -106,16 +106,15 @@ test.describe('Partner reorder fulfil (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY hides Fulfil reorder CTA', async ({ page }) => {
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+    page,
+  }) => {
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await openQrBatchesPage(page);
-
-    await expect(page.getByRole('heading', { name: 'Batches', exact: true })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByRole('button', { name: 'Fulfil reorder' })).toHaveCount(0);
-    expect(capture.partnerReorderFulfil).toEqual([]);
+    await page.goto('/qr-batches');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toHaveCount(0);
     expect(capture.unexpected).toEqual([]);
   });
 });

@@ -75,6 +75,10 @@ export function ShipmentsPage() {
             />
           }
         />
+        <p className="admin-empty-note" data-testid="shipments-update-unavailable">
+          Manual delivery status updates are not available yet — the server has no shipment status
+          route. Status here comes from the courier feed.
+        </p>
 
         {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 

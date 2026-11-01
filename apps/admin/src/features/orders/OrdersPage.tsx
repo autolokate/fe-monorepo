@@ -81,6 +81,10 @@ export function OrdersPage() {
             />
           }
         />
+        <p className="admin-empty-note" data-testid="orders-refund-unavailable">
+          Refunds cannot be issued from Admin yet — the server has no order refund route. Taxi
+          advance refunds are handled from Taxi → Bookings (cancel with refund).
+        </p>
 
         {!isLoading && kpiItems.length > 0 ? <AdminKpiStrip items={kpiItems} /> : null}
 

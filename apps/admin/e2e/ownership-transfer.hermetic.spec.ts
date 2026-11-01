@@ -80,30 +80,22 @@ test.describe('Ownership transfer (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('permission — READ_ONLY session hides write CTAs (inventory:view only)', async ({
+  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
     page,
   }) => {
-    // READ_ONLY has inventory:view (page gate) but not qr-lifecycle:write (CTA gate).
-    // See apps/admin/src/platform/rbac/permissions.ts ROLE_PERMISSIONS.
+    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
     await seedHermeticSession(page);
-    await openOwnershipTransfersPage(page);
-
-    await expect(page.getByRole('heading', { name: 'Ownership' })).toBeVisible();
-    await expect(
-      page.getByText('Status appears here after you initiate or approve a transfer.'),
-    ).toBeVisible();
+    await page.goto('/ownership-transfers');
+    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('button', { name: 'Initiate transfer' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Approve transfer' })).toHaveCount(0);
-    await expect(page.getByText('Access denied')).toHaveCount(0);
     expect(capture.initiate).toEqual([]);
-    expect(capture.approve).toEqual([]);
     expect(capture.unexpected).toEqual([]);
   });
 
   test('error — stubbed 403 surfaces form error + toast', async ({ page }) => {
     // normalizeApiError maps 403 → code `unknown` → userMessage
-    // "Something went wrong. Try again." (admin-api-errors.ts USER_MESSAGES).
+    // "The server refused this action for your operator session." (admin-api-errors.ts USER_MESSAGES).
     const capture = await installHermeticApiRoutes(page, {
       sessionRole: 'ADMIN',
       initiateStatus: 403,
@@ -119,7 +111,7 @@ test.describe('Ownership transfer (hermetic)', () => {
     await dialog.getByRole('button', { name: 'Initiate transfer' }).click();
 
     // mapAdminApiError(403) → unknown → USER_MESSAGES.unknown
-    const expectedMessage = 'Something went wrong. Try again.';
+    const expectedMessage = 'The server refused this action for your operator session.';
     // Durable in-sheet surface (OwnershipTransferSheets submitError).
     await expect(dialog.locator('.admin-form-error')).toHaveText(expectedMessage, {
       timeout: 10_000,

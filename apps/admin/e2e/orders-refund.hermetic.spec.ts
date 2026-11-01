@@ -8,8 +8,7 @@ import { unsupportedSpecSkipReason } from './helpers/admin-oa-smoke-matrix';
  * Skipped ≠ passed.
  */
 const skipReason =
-  unsupportedSpecSkipReason('orders-refund.hermetic.spec.ts') ??
-  'POST …/refund product-blocked';
+  unsupportedSpecSkipReason('orders-refund.hermetic.spec.ts') ?? 'POST …/refund product-blocked';
 
 test.describe.skip(`Orders refund (hermetic) — ${skipReason}`, () => {
   test('placeholder — refund remains product-blocked', () => {

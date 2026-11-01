@@ -8,8 +8,7 @@ import { unsupportedSpecSkipReason } from './helpers/admin-oa-smoke-matrix';
  * Skipped ≠ passed. Do not invent ADMIN↔OPERATOR grant mapping.
  */
 const skipReason =
-  unsupportedSpecSkipReason('users-roles.hermetic.spec.ts') ??
-  'Role grant/revoke product-blocked';
+  unsupportedSpecSkipReason('users-roles.hermetic.spec.ts') ?? 'Role grant/revoke product-blocked';
 
 test.describe.skip(`Users roles (hermetic) — ${skipReason}`, () => {
   test('placeholder — role grant/revoke remains product-blocked', () => {
