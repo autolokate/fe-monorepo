@@ -1,5 +1,6 @@
 import type { AuditEventDto } from '@autolokate/api-client';
-import { AlIconButton, AlText } from '@autolokate/ui';
+import { AlText } from '@autolokate/ui';
+import { Bell } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -11,25 +12,6 @@ import {
 } from '@/platform/components/activity-feed-utils';
 import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
-
-function BellIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-      <path
-        d="M9 2.25a4.5 4.5 0 0 0-4.5 4.5v2.44c0 .47-.16.93-.45 1.3L3.2 12.3A1.13 1.13 0 0 0 4.13 14h9.74a1.13 1.13 0 0 0 .93-1.7l-1.35-1.91a2.1 2.1 0 0 1-.45-1.3V6.75A4.5 4.5 0 0 0 9 2.25Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M7.5 14a1.5 1.5 0 0 0 3 0"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: boolean }) {
   if (loading) {
@@ -113,16 +95,18 @@ export function AdminActivityNotification() {
 
   return (
     <div ref={rootRef} className="admin-activity-notification">
-      <AlIconButton
-        icon={<BellIcon />}
-        label="Recent activity"
-        size="sm"
-        className={`admin-activity-notification__trigger al-admin-focus-ring${open ? ' is-open' : ''}`}
+      <button
+        type="button"
+        className={`ax-icon-btn admin-activity-notification__trigger${open ? ' is-open' : ''}`}
+        aria-label="Recent activity"
+        title="Recent activity"
         aria-expanded={open}
         onClick={() => {
           setOpen((value) => !value);
         }}
-      />
+      >
+        <Bell size={17} aria-hidden />
+      </button>
 
       {open ? (
         <div className="admin-activity-panel" role="dialog" aria-label="Recent activity">

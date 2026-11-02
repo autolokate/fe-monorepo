@@ -1,5 +1,8 @@
-import { AlButton, AlIconButton } from '@autolokate/ui';
+import { ChevronRight, LogOut, Menu, Search } from 'lucide-react';
+import { Fragment, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
+import { buildAdminBreadcrumbs } from '@/layouts/admin-breadcrumbs';
 import { AdminActivityNotification } from '@/platform/components/AdminActivityNotification';
 import { ThemeToggleButton } from '@/platform/theme/ThemeToggleButton';
 import { useAdminAuth } from '@/providers/AdminAuthProvider';
@@ -9,69 +12,72 @@ export type AdminHeaderProps = {
   onOpenMobileNav: () => void;
 };
 
-function getInitials(name: string): string {
-  return name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join('');
-}
-
 export function AdminHeader({ onOpenCommandPalette, onOpenMobileNav }: AdminHeaderProps) {
-  const { profile, session, signOut } = useAdminAuth();
+  const { signOut } = useAdminAuth();
+  const { pathname } = useLocation();
+  const crumbs = useMemo(() => buildAdminBreadcrumbs(pathname), [pathname]);
 
   return (
-    <header className="admin-shell-header">
-      <div className="admin-shell-header__leading">
-        <AlIconButton
-          icon={
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-              <path
-                d="M3 5h12M3 9h12M3 13h12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-          }
-          label="Open navigation"
-          className="admin-shell-mobile-nav"
-          size="sm"
+    <header className="ax-header">
+      <div className="ax-header__leading">
+        <button
+          type="button"
+          className="ax-icon-btn ax-header__menu"
+          aria-label="Open navigation"
           onClick={onOpenMobileNav}
-        />
-      </div>
-      <div className="admin-shell-header__actions">
-        <AlButton
-          variant="secondary"
-          size="sm"
-          className="admin-command-trigger al-admin-focus-ring"
-          onClick={onOpenCommandPalette}
         >
-          <span className="admin-command-trigger__label">Jump to…</span>
-          <span className="admin-command-trigger__kbd">⌘K</span>
-        </AlButton>
+          <Menu size={18} aria-hidden />
+        </button>
+        {crumbs.length > 0 ? (
+          <nav aria-label="Breadcrumb" className="ax-breadcrumbs">
+            <ol>
+              {crumbs.map((crumb, index) => {
+                const last = index === crumbs.length - 1;
+                return (
+                  <Fragment key={`${crumb.label}-${String(index)}`}>
+                    <li className={last ? 'is-current' : undefined}>
+                      {crumb.to && !last ? (
+                        <Link to={crumb.to}>{crumb.label}</Link>
+                      ) : (
+                        <span aria-current={last ? 'page' : undefined}>{crumb.label}</span>
+                      )}
+                    </li>
+                    {last ? null : (
+                      <li aria-hidden className="ax-breadcrumbs__sep">
+                        <ChevronRight size={14} />
+                      </li>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </ol>
+          </nav>
+        ) : null}
+      </div>
+
+      <div className="ax-header__actions">
+        <button
+          type="button"
+          className="ax-command-trigger"
+          onClick={onOpenCommandPalette}
+          aria-keyshortcuts="Meta+K Control+K"
+        >
+          <Search size={15} aria-hidden />
+          <span className="ax-command-trigger__label">Jump to…</span>
+          <kbd className="ax-kbd">⌘K</kbd>
+        </button>
         <ThemeToggleButton />
         <AdminActivityNotification />
-        {profile?.name ? (
-          <div
-            className="admin-shell-profile"
-            title={session?.role ? `Role: ${session.role}` : undefined}
-          >
-            <span className="admin-shell-profile__avatar" aria-hidden>
-              {getInitials(profile.name)}
-            </span>
-            <span className="admin-shell-profile__name">{profile.name}</span>
-          </div>
-        ) : null}
-        <AlButton
-          variant="secondary"
-          size="sm"
+        <button
+          type="button"
+          className="ax-signout"
           onClick={() => {
             void signOut();
           }}
         >
-          Sign out
-        </AlButton>
+          <LogOut size={15} aria-hidden />
+          <span>Sign out</span>
+        </button>
       </div>
     </header>
   );

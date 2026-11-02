@@ -7,7 +7,6 @@ import type {
   UpdateAdminAcademyLessonBody,
 } from '@autolokate/api-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 
 import { discoveryQueryKeys } from '@/hooks/discovery/discovery-query-keys';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
@@ -25,6 +24,7 @@ import {
   updateAcademyCourse,
   updateAcademyLesson,
 } from '@/services/discovery/admin-academy-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type AcademyStatusFilter = AdminAcademyStatus | 'ALL';
 
@@ -38,7 +38,7 @@ const TRANSITION_DONE: Record<AdminAcademyTransition, string> = {
 
 export function useAcademyCourses() {
   const canRead = useAdminPermission('discovery:read');
-  const [status, setStatus] = useState<AcademyStatusFilter>('ALL');
+  const [status, setStatus] = useUrlFilterState<AcademyStatusFilter>('status', 'ALL');
 
   const query = useQuery({
     queryKey: [...academyKey(), 'courses', status] as const,

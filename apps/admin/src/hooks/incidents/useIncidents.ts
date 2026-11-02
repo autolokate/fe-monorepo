@@ -1,5 +1,5 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   toIncidentsQueryStatus,
@@ -8,6 +8,7 @@ import {
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchIncidentsPage } from '@/services/incidents/incidents-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export const incidentsQueryKeys = {
   all: ['admin', 'incidents'] as const,
@@ -24,7 +25,10 @@ export function useIncidents(
   approvalId: string | null,
   initialStatusFilter: IncidentsStatusFilter = 'ALL',
 ) {
-  const [statusFilter, setStatusFilter] = useState<IncidentsStatusFilter>(initialStatusFilter);
+  const [statusFilter, setStatusFilter] = useUrlFilterState<IncidentsStatusFilter>(
+    'status',
+    initialStatusFilter,
+  );
 
   const query = useQuery({
     queryKey: incidentsQueryKeys.list(approvalId ?? ''),

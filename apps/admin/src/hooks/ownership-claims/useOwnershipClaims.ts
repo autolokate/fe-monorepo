@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import type { OwnershipClaimStatus, ReviewOwnershipClaimBody } from '@autolokate/api-client';
 
@@ -9,6 +9,7 @@ import {
   fetchOwnershipClaims,
   reviewClaim,
 } from '@/services/ownership-claims/ownership-claims-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type OwnershipClaimsStatusFilter = OwnershipClaimStatus | 'ALL';
 
@@ -19,7 +20,10 @@ export const ownershipClaimsQueryKeys = {
 };
 
 export function useOwnershipClaims(initial: OwnershipClaimsStatusFilter = 'ALL') {
-  const [statusFilter, setStatusFilter] = useState<OwnershipClaimsStatusFilter>(initial);
+  const [statusFilter, setStatusFilter] = useUrlFilterState<OwnershipClaimsStatusFilter>(
+    'status',
+    initial,
+  );
   const queryClient = useQueryClient();
 
   const query = useQuery({

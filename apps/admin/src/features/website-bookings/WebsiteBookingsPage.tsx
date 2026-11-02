@@ -40,6 +40,7 @@ import {
 } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 const WEEK_DAYS = 7;
 
@@ -299,7 +300,7 @@ function BookingActionDialog({
 }
 
 function BookingsPanel({ canWrite }: { canWrite: boolean }) {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('PENDING');
+  const [statusFilter, setStatusFilter] = useUrlFilterState<StatusFilter>('status', 'PENDING');
   const [dateFilter, setDateFilter] = useState('');
   const [pending, setPending] = useState<PendingAction | null>(null);
   const list = useWebsiteBookingsList(

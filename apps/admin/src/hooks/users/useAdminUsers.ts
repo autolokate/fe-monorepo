@@ -6,6 +6,7 @@ import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { ADMIN_LIST_PAGE_SIZE, nextCursorOf } from '@/platform/query/cursor-pages';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { listUsers } from '@/services/users/admin-users-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type AdminUsersStatusFilter = 'ALL' | 'ACTIVE' | 'CLOSED';
 export type AdminUsersTypeFilter = 'ALL' | AdminUserRoleFamily;
@@ -31,8 +32,11 @@ export function useAdminUsers() {
   const canRead = useAdminPermission('users:read');
   const [phoneInput, setPhoneInput] = useState('');
   const [phoneApplied, setPhoneApplied] = useState<string | undefined>(undefined);
-  const [statusFilter, setStatusFilter] = useState<AdminUsersStatusFilter>('ACTIVE');
-  const [typeFilter, setTypeFilter] = useState<AdminUsersTypeFilter>('ALL');
+  const [statusFilter, setStatusFilter] = useUrlFilterState<AdminUsersStatusFilter>(
+    'status',
+    'ACTIVE',
+  );
+  const [typeFilter, setTypeFilter] = useUrlFilterState<AdminUsersTypeFilter>('type', 'ALL');
 
   const queryKey = useMemo(
     () => ['admin', 'users', 'list', phoneApplied ?? '', statusFilter, typeFilter] as const,

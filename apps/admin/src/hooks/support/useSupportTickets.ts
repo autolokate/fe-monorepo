@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   toSupportQueryStatus,
@@ -10,6 +10,7 @@ import {
 import { isAdminListNotDeployed, mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchSupportTicket, fetchSupportTicketsPage } from '@/services/support/support-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 const SUPPORT_PAGE_LIMIT = 50;
 
@@ -31,8 +32,14 @@ export function useSupportTickets(
   initialStatusFilter: SupportStatusFilter = 'OPEN',
   initialTypeFilter: SupportTypeFilter = 'ALL',
 ) {
-  const [statusFilter, setStatusFilter] = useState<SupportStatusFilter>(initialStatusFilter);
-  const [typeFilter, setTypeFilter] = useState<SupportTypeFilter>(initialTypeFilter);
+  const [statusFilter, setStatusFilter] = useUrlFilterState<SupportStatusFilter>(
+    'status',
+    initialStatusFilter,
+  );
+  const [typeFilter, setTypeFilter] = useUrlFilterState<SupportTypeFilter>(
+    'type',
+    initialTypeFilter,
+  );
 
   const query = useInfiniteQuery({
     queryKey: supportTicketsQueryKeys.list(statusFilter, typeFilter),

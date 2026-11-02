@@ -1,6 +1,6 @@
 import type { AdminTaxiRequestInboxDto, AdminTaxiRequestStatus } from '@autolokate/api-client';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   PARTNERS_LIST_LIMIT,
@@ -11,10 +11,14 @@ import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchAdminTaxiRequestsPage } from '@/services/partners/admin-partners-service';
 import { describePartnersReadError } from '@/services/partners/partners-errors';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export function useTaxiRequestsInbox() {
   const canRead = useAdminPermission('partners:read');
-  const [status, setStatus] = useState<AdminTaxiRequestStatus | 'ALL'>('ALL');
+  const [status, setStatus] = useUrlFilterState<AdminTaxiRequestStatus | 'ALL'>(
+    'taxiStatus',
+    'ALL',
+  );
 
   const params = useMemo<TaxiRequestsListParams>(() => ({ status }), [status]);
 

@@ -6,7 +6,6 @@ import type {
   UpdateAdminDailyDriveVideoBody,
 } from '@autolokate/api-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
 
 import { discoveryQueryKeys } from '@/hooks/discovery/discovery-query-keys';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
@@ -19,6 +18,7 @@ import {
   transitionDailyDriveVideo,
   updateDailyDriveVideo,
 } from '@/services/discovery/admin-daily-drive-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type DailyDriveStatusFilter = AdminDailyDriveStatus | 'ALL';
 
@@ -35,7 +35,7 @@ const TRANSITION_TOAST: Record<
 
 export function useDailyDriveVideos() {
   const canRead = useAdminPermission('discovery:read');
-  const [status, setStatus] = useState<DailyDriveStatusFilter>('ALL');
+  const [status, setStatus] = useUrlFilterState<DailyDriveStatusFilter>('status', 'ALL');
 
   const query = useQuery({
     queryKey: [...dailyDriveKey(), 'list', status] as const,

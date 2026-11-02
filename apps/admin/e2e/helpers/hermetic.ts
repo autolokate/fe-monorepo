@@ -112,6 +112,8 @@ export type HermeticCapture = {
   qrBatchCodesGet: number;
   qrBatchCodesExportGet: number;
   unexpected: string[];
+  /** Dashboard queue / revenue reads (default stubs). */
+  dashboardReads: string[];
 };
 
 export type HermeticTaxiPolicy = {
@@ -367,6 +369,69 @@ export const HERMETIC_GARAGE_CONFIG_AUDIT = {
   createdAt: '2026-10-18T12:00:00.000Z',
 };
 
+/** One disputed booking so the dashboard shows a non-zero, urgent tile. */
+const HERMETIC_DASHBOARD_DISPUTED_BOOKING = {
+  id: 'bk_hermetic_disputed',
+  requestId: 'rq_hermetic',
+  bidId: 'bid_hermetic',
+  status: 'DISPUTED',
+  selectedFareRupees: 1800,
+  currency: 'INR',
+  vehicleId: 'veh_hermetic',
+  driverAccountId: null,
+  orgId: 'org_hermetic_taxi',
+  accountId: 'acct_hermetic_customer',
+  customerAdvanceStatus: 'HELD',
+  partnerDepositStatus: 'HELD',
+  contactUnlocked: true,
+  selectedAt: '2026-11-01T10:00:00.000Z',
+  createdAt: '2026-11-01T10:00:00.000Z',
+  updatedAt: '2026-11-02T10:00:00.000Z',
+  pickupLabel: 'Indiranagar, Bengaluru',
+  dropoffLabel: 'Mysuru Palace, Mysuru',
+  pickupAt: '2026-11-02T06:00:00.000Z',
+};
+
+/** Ledger rows the dashboard sums (₹90 + ₹25 + ₹126 = ₹241). */
+const HERMETIC_DASHBOARD_REVENUE_ROWS = [
+  {
+    id: 'rev_1',
+    bookingId: 'bk_1',
+    checkoutId: 'co_1',
+    policyVersionId: 'pol_1',
+    orgId: 'org_1',
+    accountId: 'acct_1',
+    kind: 'ADVANCE_EARNED',
+    amountPaise: 9000,
+    trigger: 'TRIP_COMPLETED',
+    createdAt: '2026-11-01T10:00:00.000Z',
+  },
+  {
+    id: 'rev_2',
+    bookingId: 'bk_2',
+    checkoutId: 'co_2',
+    policyVersionId: 'pol_1',
+    orgId: 'org_1',
+    accountId: 'acct_2',
+    kind: 'ADVANCE_FORFEITED',
+    amountPaise: 2500,
+    trigger: 'CUSTOMER_NO_SHOW',
+    createdAt: '2026-11-01T11:00:00.000Z',
+  },
+  {
+    id: 'rev_3',
+    bookingId: 'bk_3',
+    checkoutId: 'co_3',
+    policyVersionId: 'pol_1',
+    orgId: 'org_2',
+    accountId: 'acct_3',
+    kind: 'DEPOSIT_FORFEITED',
+    amountPaise: 12600,
+    trigger: 'PARTNER_CANCEL',
+    createdAt: '2026-11-01T12:00:00.000Z',
+  },
+];
+
 function envelope<T>(data: T) {
   return {
     data,
@@ -610,6 +675,7 @@ export async function installHermeticApiRoutes(
     qrBatchCodesGet: 0,
     qrBatchCodesExportGet: 0,
     unexpected: [],
+    dashboardReads: [],
   };
 
   let hermeticCustomerRoles: Array<{
@@ -2629,6 +2695,61 @@ export async function installHermeticApiRoutes(
           remittanceIds: ['aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7777'],
         }),
       );
+      return;
+    }
+
+    // Dashboard "Needs attention" + "Taxi revenue" reads (specs that exercise these pages register
+    // their own, richer routes after this one, which take precedence).
+    if (method === 'GET' && path === '/admin/v1/taxi/bookings') {
+      capture.dashboardReads.push(`${path}?${url.searchParams.toString()}`);
+      const disputed = url.searchParams.get('status') === 'DISPUTED';
+      await fulfillJson(route, 200, {
+        data: disputed ? [HERMETIC_DASHBOARD_DISPUTED_BOOKING] : [],
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: { limit: 50, cursor: null, nextCursor: null, hasMore: false },
+        },
+      });
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/taxi/revenue') {
+      capture.dashboardReads.push(path);
+      await fulfillJson(route, 200, {
+        data: HERMETIC_DASHBOARD_REVENUE_ROWS,
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: { limit: 100, cursor: null, nextCursor: null, hasMore: false },
+        },
+      });
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/partners/kyc') {
+      capture.dashboardReads.push(path);
+      await fulfillJson(route, 200, {
+        data: [],
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: { limit: 50, cursor: null, nextCursor: null, hasMore: false },
+        },
+      });
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/website/bookings') {
+      capture.dashboardReads.push(path);
+      await fulfillJson(route, 200, {
+        data: [],
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: { limit: 50, cursor: null, nextCursor: null, hasMore: false },
+        },
+      });
       return;
     }
 

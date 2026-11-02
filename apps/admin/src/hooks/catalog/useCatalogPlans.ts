@@ -1,11 +1,12 @@
 import type { ApiPlanTier } from '@autolokate/api-client';
 import { useQueries, useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { catalogQueryKeys } from '@/hooks/catalog/catalog-query-keys';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchAdminPlans, fetchPlanFeatures } from '@/services/catalog/admin-catalog-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type PlanTierFilter = ApiPlanTier | 'ALL';
 
@@ -21,7 +22,7 @@ export type PlanTierFilter = ApiPlanTier | 'ALL';
  * cheap fan-out that is what lets the table flag the blank-card case (zero features) at a glance.
  */
 export function useCatalogPlans(initialTierFilter: PlanTierFilter = 'ALL') {
-  const [tierFilter, setTierFilter] = useState<PlanTierFilter>(initialTierFilter);
+  const [tierFilter, setTierFilter] = useUrlFilterState<PlanTierFilter>('tier', initialTierFilter);
 
   const query = useQuery({
     queryKey: catalogQueryKeys.plansList('ALL'),

@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   toShipmentsQueryStatus,
@@ -9,6 +9,7 @@ import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { ADMIN_LIST_PAGE_SIZE, nextCursorOf } from '@/platform/query/cursor-pages';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchShipmentsPage } from '@/services/shipments/shipments-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export const shipmentsQueryKeys = {
   all: ['admin', 'shipments'] as const,
@@ -17,7 +18,10 @@ export const shipmentsQueryKeys = {
 };
 
 export function useShipments(initialStatusFilter: ShipmentsStatusFilter = 'ALL') {
-  const [statusFilter, setStatusFilter] = useState<ShipmentsStatusFilter>(initialStatusFilter);
+  const [statusFilter, setStatusFilter] = useUrlFilterState<ShipmentsStatusFilter>(
+    'status',
+    initialStatusFilter,
+  );
 
   const query = useInfiniteQuery({
     queryKey: shipmentsQueryKeys.list(statusFilter),

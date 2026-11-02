@@ -1,6 +1,6 @@
 import type { AdminGarageRequestInboxDto, AdminGarageRequestStatus } from '@autolokate/api-client';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   PARTNERS_LIST_LIMIT,
@@ -11,10 +11,14 @@ import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchAdminGarageRequestsPage } from '@/services/partners/admin-partners-service';
 import { describePartnersReadError } from '@/services/partners/partners-errors';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export function useGarageRequestsInbox() {
   const canRead = useAdminPermission('partners:read');
-  const [status, setStatus] = useState<AdminGarageRequestStatus | 'ALL'>('ALL');
+  const [status, setStatus] = useUrlFilterState<AdminGarageRequestStatus | 'ALL'>(
+    'garageStatus',
+    'ALL',
+  );
 
   const params = useMemo<GarageRequestsListParams>(() => ({ status }), [status]);
 

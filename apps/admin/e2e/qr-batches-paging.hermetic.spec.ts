@@ -88,8 +88,9 @@ test.describe('QR batches paging + single-batch read (hermetic)', () => {
     });
     await seedHermeticSession(page);
     await page.goto('/dashboard');
-    await expect(page.getByText('QR batches (newest 100)')).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByText('100+').first()).toBeVisible();
+    const card = page.getByTestId('dashboard-card-qr');
+    await expect(card).toContainText('Newest 100 batches', { timeout: 30_000 });
+    await expect(card).toContainText('100+');
   });
 
   test('dashboard shows an exact count for a full final page', async ({ page }) => {
@@ -99,9 +100,9 @@ test.describe('QR batches paging + single-batch read (hermetic)', () => {
     });
     await seedHermeticSession(page);
     await page.goto('/dashboard');
-    const kpis = page.getByRole('group', { name: 'Summary' });
-    await expect(kpis.getByText('QR batches', { exact: true })).toBeVisible({ timeout: 30_000 });
-    await expect(kpis).toContainText('100');
-    await expect(kpis).not.toContainText('100+');
+    const card = page.getByTestId('dashboard-card-qr');
+    await expect(card).toContainText('Stock and batch lifecycle', { timeout: 30_000 });
+    await expect(card).toContainText('100');
+    await expect(card).not.toContainText('100+');
   });
 });
