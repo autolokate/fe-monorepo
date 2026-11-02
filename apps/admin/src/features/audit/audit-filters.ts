@@ -37,6 +37,20 @@ export const AUDIT_ACTION_OPTIONS: { value: AuditAction; label: string }[] = [
   { value: 'CONSENT_WITHDRAWAL', label: 'Consent withdrawal' },
   { value: 'AUDIT_EXPORTED', label: 'Audit exported' },
   { value: 'PARTNER_ENROLLED', label: 'Partner enrolled' },
+  { value: 'DISCOVERY_REEL_MUTATION', label: 'Discovery reel change' },
+  { value: 'DISCOVERY_QA_MODERATION', label: 'Discovery Q&A moderation' },
+  { value: 'TAXI_POLICY_PUBLISHED', label: 'Taxi policy published' },
+  { value: 'TAXI_BOOKING_ADMIN_CANCELLED', label: 'Taxi booking cancelled by admin' },
+  { value: 'TAXI_DEPOSIT_RELEASED', label: 'Taxi deposit released' },
+  { value: 'TAXI_ENROLLMENT_SUSPENDED', label: 'Taxi enrollment suspended' },
+  { value: 'TAXI_ENROLLMENT_REINSTATED', label: 'Taxi enrollment reinstated' },
+  { value: 'TAXI_DISPUTE_RESOLVED', label: 'Taxi dispute resolved' },
+  { value: 'USER_ROLE_GRANTED', label: 'User role granted' },
+  { value: 'USER_ROLE_REVOKED', label: 'User role revoked' },
+  { value: 'SUPPORT_TICKET_UPDATED', label: 'Support ticket updated' },
+  { value: 'BATCH_CODES_EXPORTED', label: 'Batch codes exported' },
+  { value: 'WEBSITE_BOOKING_SLOTS_PUBLISHED', label: 'Website booking slots published' },
+  { value: 'WEBSITE_BOOKING_STATUS_CHANGED', label: 'Website booking status changed' },
 ];
 
 export const AUDIT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;

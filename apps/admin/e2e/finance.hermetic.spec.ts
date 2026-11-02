@@ -79,6 +79,7 @@ test.describe('Finance clawback + settlement (hermetic)', () => {
     });
     await expect(page.getByLabel('Settlement batch result')).toBeVisible();
     await expect(page.getByLabel('Settlement batch result')).toContainText('Payouts created');
+    await expect(page.getByLabel('Settlement batch result')).toContainText('Remittances due');
     await expect(confirm).toBeHidden();
 
     expect(capture.settlementBatchPost).toBe(1);

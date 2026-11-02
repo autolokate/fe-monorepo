@@ -58,7 +58,7 @@ export type CreatePromoBody = {
   active?: boolean;
 };
 
-/** OpenAPI audit action enum subset — extend as backend adds values. */
+/** OpenAPI `GET /admin/v1/audit-events` `action` enum — extend as backend adds values. */
 export type AuditAction =
   | 'PAYOUT_ISSUED'
   | 'TRANSFER_APPROVED'
@@ -92,6 +92,23 @@ export type AuditAction =
   | 'CONSENT_WITHDRAWAL'
   | 'AUDIT_EXPORTED'
   | 'PARTNER_ENROLLED'
+  | 'OWNERSHIP_CLAIM_APPROVED'
+  | 'OWNERSHIP_CLAIM_REJECTED'
+  | 'OWNERSHIP_CLAIM_UNDER_REVIEW'
+  | 'DISCOVERY_REEL_MUTATION'
+  | 'DISCOVERY_QA_MODERATION'
+  | 'TAXI_POLICY_PUBLISHED'
+  | 'TAXI_BOOKING_ADMIN_CANCELLED'
+  | 'TAXI_DEPOSIT_RELEASED'
+  | 'TAXI_ENROLLMENT_SUSPENDED'
+  | 'TAXI_ENROLLMENT_REINSTATED'
+  | 'TAXI_DISPUTE_RESOLVED'
+  | 'USER_ROLE_GRANTED'
+  | 'USER_ROLE_REVOKED'
+  | 'SUPPORT_TICKET_UPDATED'
+  | 'BATCH_CODES_EXPORTED'
+  | 'WEBSITE_BOOKING_SLOTS_PUBLISHED'
+  | 'WEBSITE_BOOKING_STATUS_CHANGED'
   | (string & {});
 
 /** OpenAPI `AuditEventDto` — nullable object fields typed as `object | null`. */
@@ -292,6 +309,9 @@ export type SettlementBatchResultDto = {
   skipped: number;
   errors: number;
   payoutIds: string[];
+  /** DUE remittances minted this run (cash-heavy groups where the partner owes the net). */
+  remittances: number;
+  remittanceIds: string[];
 };
 
 /** OpenAPI `ReorderFulfilResultDto` */
@@ -1365,7 +1385,7 @@ export async function updateAdminSupportTicketStatus(
 export type AdminIncidentStatus = 'OPEN' | 'RESOLVED';
 
 /** OpenAPI `AdminIncidentSummary.source` — how the incident was first reported. */
-export type AdminIncidentSource = 'BYSTANDER' | 'TELEMATICS' | 'CONVERGED';
+export type AdminIncidentSource = 'BYSTANDER' | 'TELEMATICS' | 'CONVERGED' | 'APP';
 
 /** OpenAPI `AdminIncidentAlert.status` — the corroborating SOS alert's lifecycle. */
 export type AdminIncidentAlertStatus =

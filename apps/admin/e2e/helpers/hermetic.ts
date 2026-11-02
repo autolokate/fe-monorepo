@@ -2381,6 +2381,8 @@ export async function installHermeticApiRoutes(
           skipped: 1,
           errors: 0,
           payoutIds: [HERMETIC_SETTLEMENT_PAYOUT_ID],
+          remittances: 1,
+          remittanceIds: ['aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7777'],
         }),
       );
       return;
