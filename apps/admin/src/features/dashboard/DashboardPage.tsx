@@ -119,6 +119,11 @@ function DashboardLinkCard({ title, description, icon, onClick }: DashboardLinkC
   );
 }
 
+/** A count from a capped list reads "100+" so it never claims to be the full total. */
+function cappedCount(value: number, capped: boolean): string {
+  return capped ? `${value.toLocaleString()}+` : value.toLocaleString();
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const { metrics, isLoading, isFetching, userErrorMessage, refresh } = useDashboard();
@@ -131,9 +136,18 @@ export function DashboardPage() {
   const snapshotKpis = useMemo(() => {
     if (!inventory || !batchManagement || !promos) return [];
     const items = [
-      { label: 'QR batches', value: inventory.totalBatches.toLocaleString() },
-      { label: 'Draft batches', value: batchManagement.draftBatches.toLocaleString() },
-      { label: 'Active promos', value: promos.activePromos.toLocaleString() },
+      {
+        label: inventory.capped ? 'QR batches (newest 100)' : 'QR batches',
+        value: cappedCount(inventory.totalBatches, inventory.capped),
+      },
+      {
+        label: inventory.capped ? 'Draft batches (newest 100)' : 'Draft batches',
+        value: batchManagement.draftBatches.toLocaleString(),
+      },
+      {
+        label: promos.capped ? 'Active promos (newest 200)' : 'Active promos',
+        value: promos.activePromos.toLocaleString(),
+      },
       {
         label: 'Audit page',
         value: metrics.auditLatestCount.toLocaleString(),
@@ -191,9 +205,13 @@ export function DashboardPage() {
               <div className="dashboard-page-grid">
                 <DashboardPageCard
                   title="QR stickers"
-                  description="Stock and batch lifecycle"
+                  description={
+                    inventory.capped
+                      ? 'Newest 100 batches — the server returns no more'
+                      : 'Stock and batch lifecycle'
+                  }
                   icon={<ScanLineIcon size={18} aria-hidden />}
-                  primaryValue={inventory.totalBatches.toLocaleString()}
+                  primaryValue={cappedCount(inventory.totalBatches, inventory.capped)}
                   primaryLabel="batches"
                   stats={[
                     {
@@ -265,7 +283,7 @@ export function DashboardPage() {
                   stats={[
                     {
                       label: 'Total',
-                      value: promos.totalPromos.toLocaleString(),
+                      value: cappedCount(promos.totalPromos, promos.capped),
                       tone: 'neutral',
                     },
                     {

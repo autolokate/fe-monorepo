@@ -1,7 +1,12 @@
 import type { AdminPromoDto } from '@autolokate/api-client';
 
+/** `GET /admin/v1/promos` default page (limit 200, newest first). */
+export const PROMOS_PAGE_CAP = 200;
+
 export type PromoMetrics = {
   totalPromos: number;
+  /** True when a full page came back — counts cover the newest promos only. */
+  capped: boolean;
   activePromos: number;
   inactivePromos: number;
   upcomingPromos: number;
@@ -69,6 +74,7 @@ export function computePromoMetrics(promos: AdminPromoDto[]): PromoMetrics {
 
   return {
     totalPromos: promos.length,
+    capped: promos.length >= PROMOS_PAGE_CAP,
     activePromos,
     inactivePromos,
     upcomingPromos,
