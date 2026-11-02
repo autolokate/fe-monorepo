@@ -1,6 +1,6 @@
 import { AlButton, AlCheckbox, AlPageHeader, AlStack, AlText } from '@autolokate/ui';
 import { useMutation } from '@tanstack/react-query';
-import { useState, type ReactNode } from 'react';
+import { useState, type ChangeEvent, type ReactNode } from 'react';
 
 import { AdminPanel } from '@/platform/components/AdminWowSurface';
 import './experts-admin.css';
@@ -65,8 +65,21 @@ export function ExpertsAdminPage() {
     designation: '',
     bio: '',
     expertise: '',
+    channelUrl: '',
+    rating: '',
+    sessionsCompleted: '',
+    photoAsset: '',
     status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE',
   });
+  const isExpertUpdate = expert.id.trim().length > 0;
+  const [replaceConfirmed, setReplaceConfirmed] = useState(false);
+  const ratingValue = expert.rating.trim() === '' ? undefined : Number(expert.rating);
+  const sessionsValue =
+    expert.sessionsCompleted.trim() === '' ? undefined : Number(expert.sessionsCompleted);
+  const expertNumbersValid =
+    (ratingValue === undefined ||
+      (Number.isFinite(ratingValue) && ratingValue >= 0 && ratingValue <= 5)) &&
+    (sessionsValue === undefined || (Number.isInteger(sessionsValue) && sessionsValue >= 0));
   const expertMutation = useMutation({
     mutationFn: () =>
       saveExpert({
@@ -78,10 +91,15 @@ export function ExpertsAdminPage() {
           .split(',')
           .map((value) => value.trim())
           .filter(Boolean),
+        ...(expert.channelUrl.trim() ? { channelUrl: expert.channelUrl.trim() } : {}),
+        ...(ratingValue !== undefined ? { rating: ratingValue } : {}),
+        ...(sessionsValue !== undefined ? { sessionsCompleted: sessionsValue } : {}),
+        ...(expert.photoAsset.trim() ? { photoAsset: expert.photoAsset.trim() } : {}),
         status: expert.status,
       }),
     onSuccess: (saved) => {
       setExpert((current) => ({ ...current, id: saved.id }));
+      setReplaceConfirmed(false);
       setSessionExpertId(saved.id);
       setSlotExpertId(saved.id);
     },
@@ -157,6 +175,7 @@ export function ExpertsAdminPage() {
                 placeholder="Blank = new expert"
                 onChange={(e) => {
                   setExpert({ ...expert, id: e.target.value });
+                  setReplaceConfirmed(false);
                 }}
               />
             </Field>
@@ -210,12 +229,82 @@ export function ExpertsAdminPage() {
                 }}
               />
             </Field>
+            <Field label="Channel URL">
+              <input
+                data-testid="expert-channel-url"
+                value={expert.channelUrl}
+                disabled={disabled}
+                onChange={(e) => {
+                  setExpert({ ...expert, channelUrl: e.target.value });
+                }}
+              />
+            </Field>
+            <Field label="Photo asset (bundle name)">
+              <input
+                data-testid="expert-photo-asset"
+                value={expert.photoAsset}
+                disabled={disabled}
+                onChange={(e) => {
+                  setExpert({ ...expert, photoAsset: e.target.value });
+                }}
+              />
+            </Field>
+            <Field label="Rating (0–5)">
+              <input
+                data-testid="expert-rating"
+                inputMode="decimal"
+                value={expert.rating}
+                disabled={disabled}
+                onChange={(e) => {
+                  setExpert({ ...expert, rating: e.target.value });
+                }}
+              />
+            </Field>
+            <Field label="Sessions completed">
+              <input
+                data-testid="expert-sessions-completed"
+                inputMode="numeric"
+                value={expert.sessionsCompleted}
+                disabled={disabled}
+                onChange={(e) => {
+                  setExpert({ ...expert, sessionsCompleted: e.target.value });
+                }}
+              />
+            </Field>
           </div>
+          {isExpertUpdate ? (
+            <div className="admin-inline-alert" data-testid="expert-replace-warning">
+              <p>
+                Saving an existing expert replaces the whole profile. Blank fields are cleared
+                (rating becomes empty, sessions completed becomes 0, photo and channel are removed).
+                The server has no admin read for experts, so re-enter every field.
+              </p>
+              <AlCheckbox
+                label="I've re-entered every field — replace this profile"
+                data-testid="expert-replace-confirm"
+                checked={replaceConfirmed}
+                disabled={disabled}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                  setReplaceConfirmed(event.target.checked);
+                }}
+              />
+            </div>
+          ) : null}
+          {!expertNumbersValid ? (
+            <AlText tone="muted" role="alert" data-testid="expert-number-error">
+              Rating must be 0–5 and sessions completed a whole number.
+            </AlText>
+          ) : null}
           <AlButton
             size="sm"
             data-testid="expert-save"
             loading={expertMutation.isPending}
-            disabled={disabled || expert.name.trim().length < 2}
+            disabled={
+              disabled ||
+              expert.name.trim().length < 2 ||
+              !expertNumbersValid ||
+              (isExpertUpdate && !replaceConfirmed)
+            }
             onClick={() => {
               expertMutation.mutate();
             }}

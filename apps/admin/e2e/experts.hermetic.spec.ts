@@ -38,6 +38,17 @@ test('experts — upsert profile shows server id; confirm booking surfaces 409 r
   await expect(page.getByTestId('expert-result')).toContainText(EXPERT_ID);
   expect(puts[0]).toMatchObject({ name: 'Hermetic Expert', status: 'ACTIVE' });
 
+  // The saved id puts the form in update mode: PUT replaces every column, so saving needs an
+  // explicit confirmation and carries rating / sessions instead of silently resetting them.
+  await expect(page.getByTestId('expert-replace-warning')).toBeVisible();
+  await expect(page.getByTestId('expert-save')).toBeDisabled();
+  await page.getByTestId('expert-rating').fill('4.8');
+  await page.getByTestId('expert-sessions-completed').fill('120');
+  await page.getByTestId('expert-replace-confirm').check({ force: true });
+  await page.getByTestId('expert-save').click();
+  await expect.poll(() => puts.length).toBe(2);
+  expect(puts[1]).toMatchObject({ id: EXPERT_ID, rating: 4.8, sessionsCompleted: 120 });
+
   await page.getByTestId('expert-booking-id').fill(BOOKING_ID);
   await page.getByTestId('expert-booking-confirm').click();
   await expect(page.getByText('Booking is not PENDING.')).toBeVisible();
