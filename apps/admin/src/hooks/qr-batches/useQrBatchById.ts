@@ -5,6 +5,19 @@ import { useMemo } from 'react';
 import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { fetchQrInventory } from '@/services/inventory/inventory-service';
+import { INVENTORY_SERVER_CAP } from '@/services/inventory/inventory-metrics';
+
+/** The batch isn't in `GET /admin/v1/inventory` (there is no `GET /admin/v1/qr-batches/{id}`). */
+export class QrBatchNotListedError extends Error {
+  constructor(readonly listCapped: boolean) {
+    super(
+      listCapped
+        ? 'This batch is older than the newest 100 the server lists, and there is no single-batch lookup yet, so its detail can’t be loaded.'
+        : 'This batch may have been removed or the link is invalid.',
+    );
+    this.name = 'QrBatchNotListedError';
+  }
+}
 
 export const qrBatchDetailQueryKeys = {
   byId: inventoryQueryKeys.byId,
@@ -63,23 +76,28 @@ export function useQrBatchById(batchId: string | undefined, initialBatch?: Batch
       const batches = await fetchQrInventory({}, signal);
       const found = batches.find((batch) => batch.id === batchId);
       if (!found) {
-        throw new Error('Batch not found.');
+        throw new QrBatchNotListedError(batches.length >= INVENTORY_SERVER_CAP);
       }
       return found;
     },
     enabled: Boolean(batchId),
+    retry: (count, error) => !(error instanceof QrBatchNotListedError) && count < 2,
     initialData: initialBatch ?? cachedBatch ?? undefined,
     placeholderData: (previous) => previous ?? initialBatch ?? cachedBatch ?? undefined,
     staleTime: initialBatch || cachedBatch ? 0 : undefined,
   });
 
-  const userErrorMessage = query.isError ? mapAdminApiError(query.error).userMessage : null;
+  const notListed = query.error instanceof QrBatchNotListedError ? query.error : null;
+  const userErrorMessage =
+    query.isError && !notListed ? mapAdminApiError(query.error).userMessage : null;
 
   return {
     batch: query.data ?? null,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     userErrorMessage,
+    /** Set when the batch isn't in the server's list — the message says why. */
+    notListedMessage: notListed?.message ?? null,
     refresh: () => {
       void query.refetch();
     },
