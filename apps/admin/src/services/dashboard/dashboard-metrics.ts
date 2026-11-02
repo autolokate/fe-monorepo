@@ -15,8 +15,6 @@ export type DashboardMetrics = {
   batchManagement: BatchManagementMetrics;
   promos: PromoMetrics;
   catalog: CatalogMetrics | null;
-  /** Size of the latest audit feed page (API limit), not total audit history. */
-  auditLatestCount: number;
 };
 
 export function computeDashboardMetrics(snapshot: DashboardSnapshot): DashboardMetrics {
@@ -26,6 +24,5 @@ export function computeDashboardMetrics(snapshot: DashboardSnapshot): DashboardM
     promos: computePromoMetrics(snapshot.promos),
     catalog:
       snapshot.plans && snapshot.skus ? computeCatalogMetrics(snapshot.plans, snapshot.skus) : null,
-    auditLatestCount: snapshot.recentAuditEvents.length,
   };
 }

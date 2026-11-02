@@ -5,7 +5,7 @@ import { fetchAdminPlans, fetchCatalogSkus } from '@/services/catalog/admin-cata
 
 /** Warm shared React Query caches after authentication. */
 export async function prefetchAdminQueries(): Promise<void> {
-  const [inventoryDefinition, promosDefinition, auditDefinition] = dashboardQueryDefinitions;
+  const [inventoryDefinition, promosDefinition] = dashboardQueryDefinitions;
 
   await Promise.all([
     queryClient.prefetchQuery({
@@ -17,11 +17,6 @@ export async function prefetchAdminQueries(): Promise<void> {
       queryKey: promosDefinition.queryKey,
       queryFn: promosDefinition.queryFn,
       meta: promosDefinition.meta,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: auditDefinition.queryKey,
-      queryFn: auditDefinition.queryFn,
-      meta: auditDefinition.meta,
     }),
     // The catalog's two lists are coupled — the SKU shelf pickers read from the plan list, so warm both.
     queryClient.prefetchQuery({

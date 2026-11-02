@@ -148,16 +148,12 @@ export function DashboardPage() {
         label: promos.capped ? 'Active promos (newest 200)' : 'Active promos',
         value: promos.activePromos.toLocaleString(),
       },
-      {
-        label: 'Audit page',
-        value: metrics.auditLatestCount.toLocaleString(),
-      },
     ];
     if (catalog) {
       items.splice(2, 0, { label: 'Catalog SKUs', value: catalog.skus.toLocaleString() });
     }
     return items;
-  }, [batchManagement, catalog, inventory, metrics?.auditLatestCount, promos]);
+  }, [batchManagement, catalog, inventory, promos]);
 
   if (userErrorMessage && !metrics) {
     return (
@@ -198,10 +194,7 @@ export function DashboardPage() {
           <>
             {snapshotKpis.length > 0 ? <AdminKpiStrip items={snapshotKpis} /> : null}
 
-            <AdminPanel
-              title="Operations"
-              subtitle="Stock, catalog, promos, and recent audit activity."
-            >
+            <AdminPanel title="Operations" subtitle="Stock, catalog and promos.">
               <div className="dashboard-page-grid">
                 <DashboardPageCard
                   title="QR stickers"
@@ -301,21 +294,19 @@ export function DashboardPage() {
                     void navigate(adminPaths.promos);
                   }}
                 />
-                <DashboardPageCard
-                  title="Activity"
-                  description="Latest audit feed page"
-                  icon={<ReceiptTextIcon size={18} aria-hidden />}
-                  primaryValue={metrics.auditLatestCount.toLocaleString()}
-                  primaryLabel="events on latest page"
-                  onClick={() => {
-                    void navigate(adminPaths.auditEvents);
-                  }}
-                />
               </div>
             </AdminPanel>
 
             <AdminPanel title="Jump to" subtitle="Common operator destinations.">
               <div className="dashboard-page-grid">
+                <DashboardLinkCard
+                  title="Activity log"
+                  description="Administrative actions, searchable"
+                  icon={<ReceiptTextIcon size={18} aria-hidden />}
+                  onClick={() => {
+                    void navigate(adminPaths.auditEvents);
+                  }}
+                />
                 <DashboardLinkCard
                   title="Customers"
                   description="Phone lookup and vehicle care"

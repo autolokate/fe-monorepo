@@ -73,8 +73,9 @@ function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: b
 
 export function AdminActivityNotification() {
   const canView = useAdminPermission('audit:view');
-  const { data: events = [], isLoading } = useRecentAuditEvents();
   const [open, setOpen] = useState(false);
+  // Read only when the panel opens: each read writes an AUDIT_EXPORTED row on the server.
+  const { data: events = [], isLoading } = useRecentAuditEvents(open);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => {
@@ -110,8 +111,6 @@ export function AdminActivityNotification() {
     return null;
   }
 
-  const unreadCount = events.length;
-
   return (
     <div ref={rootRef} className="admin-activity-notification">
       <AlIconButton
@@ -124,11 +123,6 @@ export function AdminActivityNotification() {
           setOpen((value) => !value);
         }}
       />
-      {unreadCount > 0 ? (
-        <span className="admin-activity-notification__badge" aria-hidden>
-          {unreadCount > 9 ? '9+' : unreadCount}
-        </span>
-      ) : null}
 
       {open ? (
         <div className="admin-activity-panel" role="dialog" aria-label="Recent activity">
