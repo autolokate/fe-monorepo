@@ -79,6 +79,26 @@ function selectedVehicleRoleLabel(
   return VEHICLE_ROLE_LABEL[entry.role] ?? humanizeAdminLabel(entry.role);
 }
 
+const RC_LABEL: Record<string, string> = {
+  NOT_SUBMITTED: 'Not submitted',
+  IN_REVIEW: 'In review',
+  APPROVED: 'Approved',
+  REJECTED: 'Rejected',
+};
+
+/** Flow v3 RC review state + rejection reason for one vehicle; absent on pre-v3 servers. */
+function selectedVehicleRcLabel(
+  entitlements: AdminUserEntitlementsDto | null,
+  vehicleId: string,
+): string {
+  const entry = entitlements?.vehicles.find((row) => row.vehicleId === vehicleId);
+  if (!entry?.rcStatus) return '—';
+  const label = RC_LABEL[entry.rcStatus] ?? humanizeAdminLabel(entry.rcStatus);
+  return entry.rcStatus === 'REJECTED' && entry.rejectionReason
+    ? `${label} — ${entry.rejectionReason}`
+    : label;
+}
+
 function protectionLabel(value: string): string {
   return humanizeAdminLabel(value);
 }
@@ -253,6 +273,10 @@ function UserDetailPanel({
               <AdminDetailField
                 label="Customer's role"
                 value={selectedVehicleRoleLabel(entitlements.data, selectedVehicle.vehicleId)}
+              />
+              <AdminDetailField
+                label="RC review"
+                value={selectedVehicleRcLabel(entitlements.data, selectedVehicle.vehicleId)}
               />
             </AdminDetailGrid>
           </AdminPanel>
@@ -438,7 +462,14 @@ function UserDetailPanel({
             </div>
           </AdminPanel>
 
-          <UserPlanPanel state={entitlements} onRetry={refreshConsumer} />
+          <UserPlanPanel
+            state={entitlements}
+            onRetry={refreshConsumer}
+            mainVehiclePlate={
+              vehicles.find((row) => row.vehicleId === entitlements.data?.mainVehicleId)?.plate ??
+              null
+            }
+          />
 
           <UserStreakPanel state={streak} onRetry={refreshConsumer} />
 

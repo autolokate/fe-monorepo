@@ -30,11 +30,6 @@ export type AdminPartnerReelSummaryDto = {
   title: string;
   status: string;
   publishedAt: string | null;
-  /** Optional engagement counters — only when the Admin DTO includes them. */
-  likeCount?: number;
-  commentCount?: number;
-  bookmarkCount?: number;
-  viewCount?: number;
 };
 
 /**
@@ -146,6 +141,14 @@ export type AdminTaxiRequestInboxDto = {
   /** Flow v3 canonical drop-off city/state (null on pre-v3 requests; absent on pre-v3 servers). */
   dropoffCity?: string | null;
   dropoffState?: string | null;
+  /**
+   * Server-derived coordinates. Since the Places cut-over (2026-11-03) the server resolves the
+   * customer's Google place ids into label, lat/lng and canonical city/state — clients never send them.
+   */
+  pickupLat?: number | null;
+  pickupLng?: number | null;
+  dropoffLat?: number | null;
+  dropoffLng?: number | null;
   seats?: number | null;
   estimatedFareRupees: number;
   notes: string | null;

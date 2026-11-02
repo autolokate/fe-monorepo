@@ -382,6 +382,7 @@ export {
   type AdminPlanTier,
   type AdminVehicleRole,
   type AdminUserVehicleRoleDto,
+  type AdminVehicleRcStatus,
   type AdminUserEntitlementsDto,
   type AdminVehicleOwnerRole,
   type AdminVehicleOwnerDto,

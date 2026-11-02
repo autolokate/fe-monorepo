@@ -2,6 +2,8 @@ import type {
   AdminUserEntitlementsDto,
   AdminUserStreakDto,
   AdminUserVehicleDto,
+  AdminUserVehicleRoleDto,
+  AdminVehicleRcStatus,
   AdminVehicleRole,
 } from '@autolokate/api-client';
 import { AlDataTable, AlErrorState, AlSkeleton, AlStack, AlText } from '@autolokate/ui';
@@ -25,6 +27,29 @@ const ROLE_LABEL: Record<AdminVehicleRole, string> = {
   PROVISIONAL_OWNER: 'Provisional owner',
   DRIVER: 'Driver',
 };
+
+const RC_STATUS_LABEL: Record<AdminVehicleRcStatus, string> = {
+  NOT_SUBMITTED: 'RC not submitted',
+  IN_REVIEW: 'RC in review',
+  APPROVED: 'RC approved',
+  REJECTED: 'RC rejected',
+};
+
+type RcFields = Pick<AdminUserVehicleRoleDto, 'rcStatus' | 'ownershipVerified'>;
+
+/** RC review label — flow v3 `rcStatus` when the server sends it, else the legacy verified flag. */
+function rcStatusLabel(row: RcFields): string {
+  if (row.rcStatus) return RC_STATUS_LABEL[row.rcStatus];
+  return row.ownershipVerified ? 'Verified' : 'Not verified';
+}
+
+function rcStatusTone(row: RcFields): 'active' | 'draft' | 'none' | 'neutral' {
+  const status = row.rcStatus ?? (row.ownershipVerified ? 'APPROVED' : 'NOT_SUBMITTED');
+  if (status === 'APPROVED') return 'active';
+  if (status === 'IN_REVIEW') return 'draft';
+  if (status === 'REJECTED') return 'none';
+  return 'neutral';
+}
 
 const FEATURE_ROWS: { key: keyof AdminUserEntitlementsDto['features']; label: string }[] = [
   { key: 'driveQuant', label: 'DriveQuant (trips, driver score, crash detection)' },
@@ -60,9 +85,12 @@ function formatIstDay(value: string | null | undefined): string {
 export function UserPlanPanel({
   state,
   onRetry,
+  mainVehiclePlate = null,
 }: {
   state: AdminReadState<AdminUserEntitlementsDto>;
   onRetry: () => void;
+  /** Plate of `mainVehicleId` when it is one of this customer's vehicles. */
+  mainVehiclePlate?: string | null;
 }) {
   const title = 'Plan & premium access';
   if (state.notDeployed) {
@@ -111,6 +139,20 @@ export function UserPlanPanel({
               label="Renews / expires"
               value={data.expiresAt ? formatAdminDateTime(data.expiresAt) : '—'}
             />
+            {data.mainVehicleId !== undefined ? (
+              <AdminDetailField
+                label="Main vehicle (vehicle premium)"
+                value={
+                  data.mainVehicleId ? (
+                    <span className="admin-mono" title={data.mainVehicleId}>
+                      {mainVehiclePlate ?? shortAdminId(data.mainVehicleId)}
+                    </span>
+                  ) : (
+                    '— (no plan)'
+                  )
+                }
+              />
+            ) : null}
           </AdminDetailGrid>
           <ul className="admin-user-features" aria-label="Premium features">
             {FEATURE_ROWS.map((row) => {
@@ -192,11 +234,9 @@ export function UserStreakPanel({
   );
 }
 
-type MembershipRow = {
-  vehicleId: string;
-  role: AdminVehicleRole;
-  ownershipVerified: boolean;
+type MembershipRow = AdminUserVehicleRoleDto & {
   vehicle: AdminUserVehicleDto | null;
+  isMain: boolean;
 };
 
 export function UserVehicleMembershipsPanel({
@@ -222,9 +262,11 @@ export function UserVehicleMembershipsPanel({
   const [rosterVehicleId, setRosterVehicleId] = useState<string | null>(null);
   const rows: MembershipRow[] = useMemo(() => {
     const byId = new Map(vehicles.map((vehicle) => [vehicle.vehicleId, vehicle]));
+    const mainVehicleId = state.data?.mainVehicleId ?? null;
     return (state.data?.vehicles ?? []).map((entry) => ({
       ...entry,
       vehicle: byId.get(entry.vehicleId) ?? null,
+      isMain: mainVehicleId !== null && entry.vehicleId === mainVehicleId,
     }));
   }, [state.data, vehicles]);
 
@@ -241,7 +283,7 @@ export function UserVehicleMembershipsPanel({
   return (
     <AdminPanel
       title={title}
-      subtitle="This customer's role on each vehicle: owner, provisional owner (paid, RC not yet verified) or driver."
+      subtitle="This customer's role on each vehicle: owner (RC approved), provisional owner (paid, RC not yet approved) or driver. Vehicle premium (DriveQuant binding, protection badge) applies to the main vehicle the plan was bought with."
     >
       {state.error ? (
         <AlErrorState message={state.error} onRetry={onRetry} />
@@ -255,14 +297,20 @@ export function UserVehicleMembershipsPanel({
                 id: 'vehicle',
                 header: 'Vehicle',
                 accessorFn: (row) => row.vehicle?.plate ?? row.vehicleId,
-                cell: ({ row }) =>
-                  row.original.vehicle?.plate ? (
-                    row.original.vehicle.plate
-                  ) : (
-                    <span className="admin-mono" title={row.original.vehicleId}>
-                      {shortAdminId(row.original.vehicleId)}
-                    </span>
-                  ),
+                cell: ({ row }) => (
+                  <span className="admin-inline-cluster">
+                    {row.original.vehicle?.plate ? (
+                      row.original.vehicle.plate
+                    ) : (
+                      <span className="admin-mono" title={row.original.vehicleId}>
+                        {shortAdminId(row.original.vehicleId)}
+                      </span>
+                    )}
+                    {row.original.isMain ? (
+                      <AdminStatusChip label="Main vehicle" tone="published" />
+                    ) : null}
+                  </span>
+                ),
               },
               {
                 id: 'role',
@@ -276,9 +324,35 @@ export function UserVehicleMembershipsPanel({
                 ),
               },
               {
-                id: 'ownershipVerified',
-                header: 'RC verified',
-                accessorFn: (row) => (row.ownershipVerified ? 'Verified' : 'Not verified'),
+                id: 'rcStatus',
+                header: 'RC review',
+                accessorFn: (row) => rcStatusLabel(row),
+                cell: ({ row }) => (
+                  <span className="admin-inline-cluster">
+                    <AdminStatusChip
+                      label={rcStatusLabel(row.original)}
+                      tone={rcStatusTone(row.original)}
+                    />
+                    {row.original.rcStatus === 'REJECTED' && row.original.rejectionReason ? (
+                      <span className="admin-cell-hint">{row.original.rejectionReason}</span>
+                    ) : null}
+                  </span>
+                ),
+              },
+              {
+                id: 'vehiclePremium',
+                header: 'Vehicle premium',
+                accessorFn: (row) =>
+                  row.vehiclePremium === undefined ? '—' : row.vehiclePremium ? 'Yes' : 'No',
+                cell: ({ row }) =>
+                  row.original.vehiclePremium === undefined ? (
+                    '—'
+                  ) : (
+                    <AdminStatusChip
+                      label={row.original.vehiclePremium ? 'Premium' : 'Not covered'}
+                      tone={row.original.vehiclePremium ? 'active' : 'neutral'}
+                    />
+                  ),
               },
               {
                 id: 'protection',
