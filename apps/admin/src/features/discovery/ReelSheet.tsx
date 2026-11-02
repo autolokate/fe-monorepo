@@ -360,7 +360,14 @@ export function ReelSheet({
         {isEdit && liveReel ? (
           <AdminDetailSection title="Preview">
             <div className="discovery-preview">
-              {liveReel.playbackUrl ? (
+              {liveReel.playbackUrl && liveReel.mediaType === 'IMAGE' ? (
+                <img
+                  className="discovery-preview__video"
+                  src={liveReel.playbackUrl}
+                  alt={liveReel.title}
+                  data-testid="discovery-reel-preview-image"
+                />
+              ) : liveReel.playbackUrl ? (
                 // eslint-disable-next-line jsx-a11y/media-has-caption -- internal editorial preview of an uploaded reel; no caption track exists in the media pipeline
                 <video
                   className="discovery-preview__video"
