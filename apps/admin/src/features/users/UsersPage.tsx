@@ -30,6 +30,7 @@ import { useAdminUsers } from '@/hooks/users/useAdminUsers';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import {
   AdminPanel,
@@ -592,6 +593,9 @@ export function UsersPage() {
     typeFilter,
     setTypeFilter,
     refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
   } = useAdminUsers();
 
   const [selected, setSelected] = useState<AdminUserSummaryDto | null>(null);
@@ -721,6 +725,12 @@ export function UsersPage() {
                 onRowClick={(row) => {
                   setSelected(row);
                 }}
+              />
+              <AdminLoadMore
+                hasMore={hasMore}
+                loading={isFetchingNextPage}
+                onLoadMore={loadMore}
+                testId="users-load-more"
               />
             </AdminDataBlock>
           </>

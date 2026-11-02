@@ -13,6 +13,7 @@ import { usePaymentsColumns } from '@/features/payments/payments-columns';
 import { usePayments } from '@/hooks/payments/usePayments';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -28,7 +29,7 @@ function pagePaymentKpis(payments: AdminPaymentSummary[]) {
   return [
     { label: 'Paid', value: String(paid) },
     { label: 'Pending', value: String(pending) },
-    { label: 'Total', value: String(payments.length) },
+    { label: 'Shown', value: String(payments.length) },
   ];
 }
 
@@ -41,6 +42,9 @@ export function PaymentsPage() {
     outcomeFilter,
     setOutcomeFilter,
     refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
   } = usePayments();
 
   const columns = usePaymentsColumns();
@@ -105,6 +109,12 @@ export function PaymentsPage() {
             emptyTitle="No payments found"
             emptyDescription="Try another outcome filter."
             getRowId={(row) => row.paymentId}
+          />
+          <AdminLoadMore
+            hasMore={hasMore}
+            loading={isFetchingNextPage}
+            onLoadMore={loadMore}
+            testId="payments-load-more"
           />
         </AdminDataBlock>
       </AlStack>

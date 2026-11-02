@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   toShipmentsQueryStatus,
   type ShipmentsStatusFilter,
 } from '@/features/shipments/shipments-filters';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { ADMIN_LIST_PAGE_SIZE, nextCursorOf } from '@/platform/query/cursor-pages';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchShipmentsPage } from '@/services/shipments/shipments-service';
 
@@ -18,10 +19,19 @@ export const shipmentsQueryKeys = {
 export function useShipments(initialStatusFilter: ShipmentsStatusFilter = 'ALL') {
   const [statusFilter, setStatusFilter] = useState<ShipmentsStatusFilter>(initialStatusFilter);
 
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: shipmentsQueryKeys.list(statusFilter),
-    queryFn: ({ signal }) =>
-      fetchShipmentsPage({ status: toShipmentsQueryStatus(statusFilter) }, signal),
+    queryFn: ({ pageParam, signal }) =>
+      fetchShipmentsPage(
+        {
+          status: toShipmentsQueryStatus(statusFilter),
+          limit: ADMIN_LIST_PAGE_SIZE,
+          ...(pageParam ? { cursor: pageParam } : {}),
+        },
+        signal,
+      ),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: nextCursorOf,
     meta: { errorMessage: 'Unable to load shipments.' },
   });
 
@@ -31,13 +41,25 @@ export function useShipments(initialStatusFilter: ShipmentsStatusFilter = 'ALL')
     }
   }, [query.data, query.error, query.isError]);
 
-  const shipments = query.data?.items ?? [];
+  const shipments = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items) ?? [],
+    [query.data],
+  );
+  const hasMore = query.hasNextPage;
 
   const userErrorMessage = query.isError ? mapAdminApiError(query.error).userMessage : null;
 
   return {
-    ...query,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isError: query.isError,
+    error: query.error,
     shipments,
+    hasMore,
+    isFetchingNextPage: query.isFetchingNextPage,
+    loadMore: () => {
+      void query.fetchNextPage();
+    },
     statusFilter,
     setStatusFilter,
     userErrorMessage,

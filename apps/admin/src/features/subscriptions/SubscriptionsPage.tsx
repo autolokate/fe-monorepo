@@ -13,6 +13,7 @@ import { useSubscriptionsColumns } from '@/features/subscriptions/subscriptions-
 import { useSubscriptions } from '@/hooks/subscriptions/useSubscriptions';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -25,7 +26,7 @@ function pageCoverageKpis(subscriptions: AdminSubscriptionSummary[]) {
   }
   return [
     { label: 'Active', value: String(active) },
-    { label: 'Total', value: String(subscriptions.length) },
+    { label: 'Shown', value: String(subscriptions.length) },
   ];
 }
 
@@ -38,6 +39,9 @@ export function SubscriptionsPage() {
     statusFilter,
     setStatusFilter,
     refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
   } = useSubscriptions();
 
   const columns = useSubscriptionsColumns();
@@ -102,6 +106,12 @@ export function SubscriptionsPage() {
             emptyTitle="No coverage found"
             emptyDescription="Try another status filter."
             getRowId={(row) => row.subscriptionId}
+          />
+          <AdminLoadMore
+            hasMore={hasMore}
+            loading={isFetchingNextPage}
+            onLoadMore={loadMore}
+            testId="subscriptions-load-more"
           />
         </AdminDataBlock>
       </AlStack>
