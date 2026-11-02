@@ -82,7 +82,9 @@ export function PartnerDetailPage() {
   const { publishStoreMutation, setGstVerificationMutation, mapMutationError } =
     useGarageEntitlementMutations();
 
-  const [gstDraft, setGstDraft] = useState<GarageGstVerification>('NOT_SUBMITTED');
+  // '' = no choice yet. The partner detail endpoint doesn't return the store's GST state, so we never
+  // pre-select a value that could overwrite a VERIFIED / PENDING_REVIEW store by accident.
+  const [gstDraft, setGstDraft] = useState<GarageGstVerification | ''>('');
   const [gstApplied, setGstApplied] = useState<GarageGstVerification | null>(null);
 
   useEffect(() => {
@@ -90,8 +92,7 @@ export function PartnerDetailPage() {
     const fromDto = isGarageGstVerification(partner.gstVerification)
       ? partner.gstVerification
       : null;
-    const next = gstApplied ?? fromDto ?? 'NOT_SUBMITTED';
-    setGstDraft(next);
+    setGstDraft(gstApplied ?? fromDto ?? '');
   }, [partner, gstApplied]);
 
   if (userErrorMessage && !partner) {
@@ -218,19 +219,30 @@ export function PartnerDetailPage() {
                   Set store GST status for Nearby eligibility and ops review.
                 </p>
               </div>
-              {currentGst ? (
-                <div className="admin-panel__meta">
-                  <span className="admin-status-chip admin-status-chip--neutral">
-                    {humanLabel(currentGst)}
-                  </span>
-                </div>
-              ) : null}
+              <div className="admin-panel__meta">
+                <span
+                  className="admin-status-chip admin-status-chip--neutral"
+                  data-testid="partners-gst-current"
+                >
+                  {currentGst ? humanLabel(currentGst) : 'Current status unknown'}
+                </span>
+              </div>
             </div>
+            {!currentGst ? (
+              <AlText tone="muted" variant="caption" data-testid="partners-gst-unknown">
+                The partner record doesn&apos;t include the store&apos;s current GST status. Check
+                it in KYC review before changing it here.
+              </AlText>
+            ) : null}
             {canWrite ? (
               <div className="partners-gst-row">
                 <AlSelect
                   label="Status"
-                  options={GST_OPTIONS}
+                  options={
+                    gstDraft === ''
+                      ? [{ value: '', label: 'Choose a status…' }, ...GST_OPTIONS]
+                      : GST_OPTIONS
+                  }
                   value={gstDraft}
                   data-testid="partners-gst-verification-select"
                   onChange={(event) => {
@@ -242,8 +254,9 @@ export function PartnerDetailPage() {
                   size="sm"
                   data-testid="partners-gst-verification-apply"
                   loading={setGstVerificationMutation.isPending}
-                  disabled={gstDraft === currentGst}
+                  disabled={gstDraft === '' || gstDraft === currentGst}
                   onClick={() => {
+                    if (gstDraft === '') return;
                     setGstVerificationMutation.mutate(
                       { orgId: partner.orgId, body: { gstVerification: gstDraft } },
                       {
