@@ -72,6 +72,25 @@ test.describe('Admin auth gates (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
+  test('ADM-01 — step-up send right after sign-in (SMS resend window) explains the wait', async ({
+    page,
+  }) => {
+    await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
+    await page.route('**/v1/auth/step-up/otp/request', async (route) => {
+      await json(route, 429, {
+        error: { code: 'rate_limited', message: 'Too many OTP attempts. Try again shortly.' },
+      });
+    });
+    await seedHermeticSession(page, {
+      ...HERMETIC_TOKENS,
+      accessToken: hermeticJwt({ role: 'OPERATOR', step_up: false }),
+    });
+    await page.goto('/orders');
+    await page.getByTestId('admin-step-up-send').click({ timeout: 15_000 });
+    await expect(page.getByRole('alert')).toContainText('Wait about a minute');
+    await expect(page.getByTestId('admin-step-up-send')).toBeEnabled();
+  });
+
   test('ADM-01 — a 403 step_up_required from any admin call re-opens the step-up prompt', async ({
     page,
   }) => {

@@ -22,6 +22,10 @@ export function StepUpGate() {
     if (mapped.status === 404) {
       return 'This server does not offer admin step-up yet. Ask the platform team to deploy POST /v1/auth/step-up/otp/request.';
     }
+    if (mapped.code === 'rate_limit') {
+      // The SMS provider allows one code per number about every 60 s, and signing in just sent one.
+      return 'A code was sent to this number moments ago. Wait about a minute, then send the verification code again.';
+    }
     return mapped.code === 'validation' ? mapped.message : mapped.userMessage;
   };
 
