@@ -18,3 +18,51 @@
   border: 1px solid var(--al-border-subtle, #d8dde6);
   background: var(--al-surface-muted, #f4f6f9);
 }
+
+.ownership-claim-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--al-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ownership-claim-history__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: var(--al-space-2) var(--al-space-3);
+  border: var(--al-border-width-thin, 1px) solid var(--al-color-outline);
+  border-radius: var(--al-radius-sm);
+}
+
+.ownership-claim-history__item--current {
+  border-color: var(--al-color-primary);
+}
+
+.ownership-claim-history__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--al-space-2);
+}
+
+.ownership-claim-history__meta {
+  font-size: var(--al-text-caption-size);
+  color: var(--al-color-text-muted);
+}
+
+.ownership-claim-history__reason {
+  font-size: var(--al-text-label-size);
+  color: var(--al-color-text);
+  overflow-wrap: anywhere;
+}
+
+.ownership-claim-title-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}

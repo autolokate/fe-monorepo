@@ -3,7 +3,15 @@ import { AlButton, AlModal, AlStack, AlText } from '@autolokate/ui';
 import { Link } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
+import {
+  claimAttempts,
+  claimStatusTone,
+  currentOwnerLabel,
+  deriveClaimantRole,
+} from '@/features/ownership-claims/ownership-claim-context';
 import { RcMediaPreview } from '@/features/ownership-claims/RcMediaPreview';
+import { useAllOwnershipClaims } from '@/hooks/ownership-claims/useOwnershipClaims';
+import { useAdminVehicleDrivers } from '@/hooks/users/useAdminVehicleDrivers';
 import {
   AdminDetailField,
   AdminDetailGrid,
@@ -13,7 +21,6 @@ import {
   AdminStatusChip,
   humanizeAdminLabel,
   shortAdminId,
-  type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
 
 export type OwnershipClaimDetailSheetProps = {
@@ -36,13 +43,6 @@ function displayOrDash(value: string | null | undefined): string {
   return value && value.trim() ? value : '—';
 }
 
-function claimStatusTone(status: OwnershipClaimDto['status']): AdminStatusChipTone {
-  if (status === 'APPROVED') return 'active';
-  if (status === 'REJECTED' || status === 'WITHDRAWN') return 'none';
-  if (status === 'UNDER_REVIEW') return 'draft';
-  return 'neutral';
-}
-
 export function OwnershipClaimDetailSheet({
   claim,
   open,
@@ -52,9 +52,20 @@ export function OwnershipClaimDetailSheet({
   onReject,
   onMarkUnderReview,
 }: OwnershipClaimDetailSheetProps) {
+  const roster = useAdminVehicleDrivers(open && claim ? claim.vehicleId : null);
+  const allClaims = useAllOwnershipClaims(open && claim !== null);
+
   if (!claim) {
     return null;
   }
+
+  const rosterData = roster.state.data;
+  const plate = rosterData?.plate ?? null;
+  const role = deriveClaimantRole(rosterData, claim.claimantAccountId);
+  const otherOwner = currentOwnerLabel(rosterData, claim.claimantAccountId);
+  const rosterUnavailable = roster.state.notDeployed || Boolean(roster.state.error);
+  const attempts = claimAttempts(allClaims.claims, claim);
+  const currentAttempt = attempts.find((row) => row.isCurrent)?.attempt ?? 1;
 
   const openForReview = claim.status === 'SUBMITTED' || claim.status === 'UNDER_REVIEW';
 
@@ -64,20 +75,52 @@ export function OwnershipClaimDetailSheet({
       onOpenChange={onOpenChange}
       size="lg"
       title="Ownership claim"
-      description={`${humanizeAdminLabel(claim.status)} · ${shortAdminId(claim.id)}`}
+      description={`${plate ? `${plate} · ` : ''}${humanizeAdminLabel(claim.status)} · ${shortAdminId(claim.id)}`}
     >
       <AlStack gap="md" data-testid="ownership-claim-detail-sheet">
-        <AdminDetailSection title="Claim" description="Who is claiming this vehicle.">
-          <div className="admin-status-row">
+        <AdminDetailSection
+          title="Vehicle & claimant"
+          description="The vehicle whose RC is under review and who submitted it."
+        >
+          <div className="admin-status-row" data-testid="ownership-claim-status-row">
             <AdminStatusChip
               label={humanizeAdminLabel(claim.status)}
               tone={claimStatusTone(claim.status)}
             />
+            {role ? (
+              <span data-testid="ownership-claim-role">
+                <AdminStatusChip label={role.label} tone={role.tone} />
+              </span>
+            ) : null}
+            {attempts.length > 1 ? (
+              <span data-testid="ownership-claim-attempt">
+                <AdminStatusChip
+                  label={`Attempt ${String(currentAttempt)} of ${String(attempts.length)}`}
+                  tone="neutral"
+                />
+              </span>
+            ) : null}
           </div>
           <AdminDetailGrid>
-            <AdminDetailField label="Claim" value={shortAdminId(claim.id)} mono />
+            <AdminDetailField
+              label="Registration"
+              value={
+                plate ??
+                (roster.state.isLoading ? 'Loading…' : rosterUnavailable ? 'Unavailable' : '—')
+              }
+              mono
+            />
             <AdminDetailField label="Vehicle" value={shortAdminId(claim.vehicleId)} mono />
             <AdminDetailField label="Claimant" value={shortAdminId(claim.claimantAccountId)} mono />
+            <AdminDetailField
+              label="Claim role (current)"
+              value={
+                role?.label ??
+                (roster.state.isLoading ? 'Loading…' : rosterUnavailable ? 'Unavailable' : '—')
+              }
+            />
+            {otherOwner ? <AdminDetailField label="Current owner" value={otherOwner} mono /> : null}
+            <AdminDetailField label="Claim" value={shortAdminId(claim.id)} mono />
             <AdminDetailField
               label="Coverage"
               value={claim.planSubscriptionId ? shortAdminId(claim.planSubscriptionId) : '—'}
@@ -86,6 +129,16 @@ export function OwnershipClaimDetailSheet({
             <AdminDetailField label="Submitted" value={formatWhen(claim.createdAt)} />
             <AdminDetailField label="Updated" value={formatWhen(claim.updatedAt)} />
           </AdminDetailGrid>
+          {role ? (
+            <AlText variant="caption" tone="muted" data-testid="ownership-claim-role-hint">
+              {role.description}
+            </AlText>
+          ) : rosterUnavailable ? (
+            <AlText variant="caption" tone="muted" data-testid="ownership-claim-role-unavailable">
+              Vehicle registration and the claimant&apos;s role could not be loaded from the vehicle
+              roster. Review the RC against the vehicle ID.
+            </AlText>
+          ) : null}
         </AdminDetailSection>
 
         <AdminDetailSection title="Notes" description="Claimant notes submitted with the claim.">
@@ -97,6 +150,59 @@ export function OwnershipClaimDetailSheet({
           description="Registration certificate submitted with this claim."
         >
           <RcMediaPreview claimId={claim.id} rcMediaAssetId={claim.rcMediaAssetId} />
+        </AdminDetailSection>
+
+        <AdminDetailSection
+          title="Submission history"
+          description="Every RC this claimant submitted for this vehicle, oldest first."
+        >
+          {allClaims.errorMessage ? (
+            <AlText variant="caption" tone="muted" data-testid="ownership-claim-history-error">
+              History unavailable: {allClaims.errorMessage}
+            </AlText>
+          ) : allClaims.isLoading ? (
+            <AlText variant="caption" tone="muted">
+              Loading history…
+            </AlText>
+          ) : attempts.length <= 1 ? (
+            <AlText variant="caption" tone="muted" data-testid="ownership-claim-history-first">
+              First submission for this vehicle.
+            </AlText>
+          ) : (
+            <ol className="ownership-claim-history" data-testid="ownership-claim-history">
+              {attempts.map((row) => (
+                <li
+                  key={row.claim.id}
+                  className={
+                    row.isCurrent
+                      ? 'ownership-claim-history__item ownership-claim-history__item--current'
+                      : 'ownership-claim-history__item'
+                  }
+                  data-testid={`ownership-claim-history-${row.claim.id}`}
+                >
+                  <div className="ownership-claim-history__head">
+                    <strong>
+                      Attempt {row.attempt}
+                      {row.isCurrent ? ' · this claim' : ''}
+                    </strong>
+                    <AdminStatusChip
+                      label={humanizeAdminLabel(row.claim.status)}
+                      tone={claimStatusTone(row.claim.status)}
+                    />
+                  </div>
+                  <span className="ownership-claim-history__meta">
+                    Submitted {formatWhen(row.claim.createdAt)}
+                    {row.claim.reviewedAt ? ` · Reviewed ${formatWhen(row.claim.reviewedAt)}` : ''}
+                  </span>
+                  {row.claim.rejectionReason ? (
+                    <span className="ownership-claim-history__reason">
+                      Reason: {row.claim.rejectionReason}
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ol>
+          )}
         </AdminDetailSection>
 
         <AdminDetailSection title="Review" description="Decision recorded for this claim.">

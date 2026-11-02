@@ -24,11 +24,21 @@ test.describe('Garage commercial (hermetic)', () => {
     await seedHermeticSession(page);
     await openGarageCommercialPage(page);
 
-    await expect(page.getByTestId('garage-free-bid-lifetime-count')).toHaveValue('2');
+    await expect(page.getByTestId('garage-free-bids-per-week')).toHaveValue('2');
     await expect(page.getByTestId('garage-day-pass-price')).toHaveValue('100');
+    // Flow v3: the lifetime grant is history only — no editable lifetime input.
+    await expect(page.getByTestId('garage-free-bid-lifetime-count')).toHaveCount(0);
+    await expect(page.getByTestId('garage-free-bids-next-reset')).toContainText('IST');
+    await expect(page.getByTestId('garage-kpi-free-bids-per-week')).toContainText('2');
+    // Calendar month → no day-count input.
+    await expect(page.getByTestId('garage-month-pass-duration-kind')).toHaveValue(
+      'CALENDAR_MONTH_IST',
+    );
+    await expect(page.getByTestId('garage-month-pass-duration-days')).toHaveCount(0);
     expect(capture.garageConfigGet).toBeGreaterThanOrEqual(1);
 
     await page.getByTestId('garage-day-pass-price').fill('150');
+    await page.getByTestId('garage-free-bids-per-week').fill('5');
     await page.getByRole('button', { name: 'Save' }).click();
 
     await expect(page.getByRole('status')).toContainText('Commercial configuration saved.', {
@@ -40,8 +50,84 @@ test.describe('Garage commercial (hermetic)', () => {
     expect(capture.garageConfigPut[0]?.body).toMatchObject({
       dayPassPriceRupees: 150,
       freeBidLifetimeCount: 2,
+      freeBidsPerWeek: 5,
+      monthPassDurationKind: 'CALENDAR_MONTH_IST',
+      monthPassDurationDays: 30,
+    });
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('flow v3 — rolling-days month pass + validation blocks bad values', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
+    await seedHermeticSession(page);
+    await openGarageCommercialPage(page);
+
+    await expect(page.getByTestId('garage-free-bids-per-week')).toHaveValue('2', {
+      timeout: 10_000,
+    });
+    await page.getByTestId('garage-month-pass-duration-kind').selectOption('ROLLING_DAYS');
+    const days = page.getByTestId('garage-month-pass-duration-days');
+    await expect(days).toBeVisible();
+    await expect(days).toHaveValue('30');
+
+    await days.fill('0');
+    await page.getByTestId('garage-free-bids-per-week').fill('101');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByTestId('garage-month-pass-duration-days-error')).toContainText(
+      '1 to 366',
+    );
+    await expect(page.getByTestId('garage-free-bids-per-week-error')).toContainText('0 to 100');
+    expect(capture.garageConfigPut).toHaveLength(0);
+
+    await days.fill('45');
+    await expect(page.getByTestId('garage-month-pass-duration-days-error')).toHaveCount(0);
+    await page.getByTestId('garage-free-bids-per-week').fill('0');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('status')).toContainText('Commercial configuration saved.', {
+      timeout: 10_000,
+    });
+    expect(capture.garageConfigPut).toHaveLength(1);
+    expect(capture.garageConfigPut[0]?.body).toMatchObject({
+      freeBidsPerWeek: 0,
+      monthPassDurationKind: 'ROLLING_DAYS',
+      monthPassDurationDays: 45,
+    });
+    await expect(page.getByTestId('garage-kpi-month-pass')).toContainText('45 days from purchase');
+    await expect(page.getByTestId('garage-config-history')).toContainText('0/week', {
+      timeout: 10_000,
+    });
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('pre-v3 API — legacy lifetime control, no weekly fields sent', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, {
+      sessionRole: 'ADMIN',
+      garageConfigLegacy: true,
+    });
+    await seedHermeticSession(page);
+    await openGarageCommercialPage(page);
+
+    await expect(page.getByTestId('garage-free-bid-lifetime-count')).toHaveValue('2', {
+      timeout: 10_000,
+    });
+    await expect(page.getByTestId('garage-free-bids-per-week')).toHaveCount(0);
+    await expect(page.getByTestId('garage-weekly-free-bids-unavailable')).toBeVisible();
+    await expect(page.getByTestId('garage-month-pass-duration-kind')).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Adjust free bids' })).toBeVisible();
+
+    await page.getByTestId('garage-day-pass-price').fill('120');
+    await page.getByRole('button', { name: 'Save' }).click();
+    await expect(page.getByRole('status')).toContainText('Commercial configuration saved.', {
+      timeout: 10_000,
+    });
+    const body = capture.garageConfigPut[0]?.body as Record<string, unknown>;
+    expect(body).toMatchObject({
+      dayPassPriceRupees: 120,
+      freeBidLifetimeCount: 2,
       monthPassDurationKind: 'CALENDAR_MONTH_IST',
     });
+    expect(body).not.toHaveProperty('freeBidsPerWeek');
+    expect(body).not.toHaveProperty('monthPassDurationDays');
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -148,29 +234,33 @@ test.describe('Garage commercial (hermetic)', () => {
     await seedHermeticSession(page);
     await openGarageCommercialPage(page);
 
-    await page.getByRole('button', { name: 'Adjust free bids' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Adjust free bids' });
+    await page.getByRole('button', { name: 'Weekly free-bid bonus' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Weekly free-bid bonus' });
     await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText('this IST week only');
+    // Flow v3 servers ignore raiseLifetime — the legacy checkbox is gone.
+    await expect(dialog.getByTestId('garage-adjust-raise-lifetime')).toHaveCount(0);
 
     await dialog.getByLabel('Organization').fill(HERMETIC_GARAGE_ORG_ID);
-    await dialog.getByTestId('garage-adjust-delta').fill('1');
-    await dialog.getByTestId('garage-adjust-raise-lifetime').check();
-    await dialog.getByRole('button', { name: 'Adjust free bids' }).click();
+    await dialog.getByLabel('Bonus / penalty for this IST week').fill('1');
+    await dialog.getByRole('button', { name: 'Apply to this week' }).click();
 
     await expect(page.getByRole('status')).toContainText('Free bids adjusted.', {
       timeout: 10_000,
     });
-    await expect(page.getByLabel('Free bids balance')).toBeVisible();
-    await expect(page.getByLabel('Free bids balance')).toContainText('Remaining');
+    const balance = page.getByLabel('Free bids balance');
+    await expect(balance).toBeVisible();
+    // Stub week: allowance 2 + bonus 1, 1 used → 2 remaining.
+    await expect(balance).toContainText('Remaining this week');
+    await expect(balance).toContainText('Used this week');
+    await expect(balance).toContainText('Week allowance incl. bonus');
+    await expect(balance).toContainText('IST');
 
     expect(capture.garageFreeBidsAdjust).toHaveLength(1);
     expect(capture.garageFreeBidsAdjust[0]?.path).toBe(
       `/admin/v1/garage/orgs/${encodeURIComponent(HERMETIC_GARAGE_ORG_ID)}/free-bids/adjust`,
     );
-    expect(capture.garageFreeBidsAdjust[0]?.body).toEqual({
-      delta: 1,
-      raiseLifetime: true,
-    });
+    expect(capture.garageFreeBidsAdjust[0]?.body).toEqual({ delta: 1 });
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -271,7 +361,7 @@ test.describe('Garage commercial (hermetic)', () => {
     await openGarageCommercialPage(page);
 
     await expect(
-      page.getByText('Pass pricing, free bids, and partner provisioning for Garage.'),
+      page.getByText('Weekly free bids, pass pricing, and partner provisioning for Garage.'),
     ).toBeVisible();
     await expect(page.getByTestId('garage-contract-gap-note')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Provision partner' })).toBeVisible();

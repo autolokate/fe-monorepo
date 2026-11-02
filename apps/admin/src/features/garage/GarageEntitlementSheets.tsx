@@ -8,6 +8,7 @@ import { AlButton, AlModal } from '@autolokate/ui';
 import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { formatIstDateTime, nextIstWeeklyReset } from '@/features/garage/garage-commercial-form';
 import {
   adjustGarageFreeBidsSchema,
   grantGaragePassSchema,
@@ -156,12 +157,22 @@ export function GrantPassSheet({ open, onOpenChange, onGranted }: GrantPassSheet
 }
 
 export type AdjustFreeBidsSheetProps = {
+  /**
+   * Flow v3: the adjustment is a signed bonus/penalty for the CURRENT IST week only (it resets on
+   * Monday 00:00 IST) and the legacy "raise lifetime" flag is ignored by the server.
+   */
+  weekly?: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAdjusted?: (result: GarageFreeBidsBalanceDto) => void;
 };
 
-export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFreeBidsSheetProps) {
+export function AdjustFreeBidsSheet({
+  weekly = false,
+  open,
+  onOpenChange,
+  onAdjusted,
+}: AdjustFreeBidsSheetProps) {
   const abortRef = useRef<AbortController | null>(null);
   const { adjustFreeBidsMutation, mapMutationError } = useGarageEntitlementMutations();
 
@@ -202,7 +213,7 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
     try {
       const result = await adjustFreeBidsMutation.mutateAsync({
         orgId: values.orgId,
-        body: toAdjustFreeBidsBody(values),
+        body: toAdjustFreeBidsBody(weekly ? { ...values, raiseLifetime: false } : values),
         signal: controller.signal,
       });
       onAdjusted?.(result);
@@ -217,8 +228,12 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
       open={open}
       onOpenChange={onOpenChange}
       size="md"
-      title="Adjust free bids"
-      description="Add or remove free bids for a partner org."
+      title={weekly ? 'Weekly free-bid bonus' : 'Adjust free bids'}
+      description={
+        weekly
+          ? 'Give a garage business extra free bids (bonus) or take some away (penalty) for this IST week only. It resets with the weekly allowance on Monday 00:00 IST.'
+          : 'Add or remove free bids for a partner org.'
+      }
       footer={
         <div className="admin-modal-actions">
           <AlButton
@@ -228,7 +243,7 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
             loading={adjustFreeBidsMutation.isPending}
             disabled={adjustFreeBidsMutation.isPending}
           >
-            Adjust free bids
+            {weekly ? 'Apply to this week' : 'Adjust free bids'}
           </AlButton>
           <AlButton
             type="button"
@@ -266,10 +281,12 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
           </label>
 
           <label className="admin-field">
-            Change amount
+            {weekly ? 'Bonus / penalty for this IST week' : 'Change amount'}
             <input type="number" data-testid="garage-adjust-delta" {...form.register('delta')} />
             <span className="admin-field__hint">
-              Non-zero whole number. Positive adds remaining free bids.
+              {weekly
+                ? `Non-zero whole number. Positive = bonus, negative = penalty. Expires at the next reset (${formatIstDateTime(nextIstWeeklyReset(new Date()))}).`
+                : 'Non-zero whole number. Positive adds remaining free bids.'}
             </span>
             {form.formState.errors.delta?.message ? (
               <span className="admin-form-error" role="alert">
@@ -288,25 +305,27 @@ export function AdjustFreeBidsSheet({ open, onOpenChange, onAdjusted }: AdjustFr
             ) : null}
           </label>
 
-          <div className="admin-field admin-form-span garage-entitlement-checkbox">
-            <Controller
-              name="raiseLifetime"
-              control={form.control}
-              render={({ field }) => (
-                <label className="garage-entitlement-checkbox">
-                  <input
-                    type="checkbox"
-                    data-testid="garage-adjust-raise-lifetime"
-                    checked={Boolean(field.value)}
-                    onChange={(event) => {
-                      field.onChange(event.target.checked);
-                    }}
-                  />
-                  Raise lifetime granted when remaining would exceed it
-                </label>
-              )}
-            />
-          </div>
+          {weekly ? null : (
+            <div className="admin-field admin-form-span garage-entitlement-checkbox">
+              <Controller
+                name="raiseLifetime"
+                control={form.control}
+                render={({ field }) => (
+                  <label className="garage-entitlement-checkbox">
+                    <input
+                      type="checkbox"
+                      data-testid="garage-adjust-raise-lifetime"
+                      checked={Boolean(field.value)}
+                      onChange={(event) => {
+                        field.onChange(event.target.checked);
+                      }}
+                    />
+                    Raise lifetime granted when remaining would exceed it
+                  </label>
+                )}
+              />
+            </div>
+          )}
 
           <label className="admin-field admin-form-span">
             Optional request key
@@ -345,7 +364,38 @@ export function PassGrantResultPanel({ result }: { result: GaragePassGrantResult
   );
 }
 
-export function FreeBidsBalancePanel({ result }: { result: GarageFreeBidsBalanceDto }) {
+export function FreeBidsBalancePanel({
+  result,
+  weekly = false,
+}: {
+  result: GarageFreeBidsBalanceDto;
+  /** Flow v3: `remaining` / `lifetimeGranted` describe the current IST week (allowance + bonus). */
+  weekly?: boolean;
+}) {
+  if (weekly) {
+    const used = Math.max(0, result.lifetimeGranted - result.remaining);
+    return (
+      <AdminPanel
+        title="Free bids balance"
+        subtitle="This IST week, after the bonus/penalty. Resets Monday 00:00 IST."
+      >
+        <AdminKpiStrip
+          items={[
+            { label: 'Remaining this week', value: String(result.remaining) },
+            { label: 'Used this week', value: String(used) },
+            { label: 'Week allowance incl. bonus', value: String(result.lifetimeGranted) },
+          ]}
+        />
+        <AdminDetailGrid>
+          <AdminDetailField label="Organization" value={result.orgId} mono />
+          <AdminDetailField
+            label="Resets"
+            value={formatIstDateTime(nextIstWeeklyReset(new Date()))}
+          />
+        </AdminDetailGrid>
+      </AdminPanel>
+    );
+  }
   return (
     <AdminPanel title="Free bids balance" subtitle="Updated free-bid counts for this partner.">
       <AdminKpiStrip

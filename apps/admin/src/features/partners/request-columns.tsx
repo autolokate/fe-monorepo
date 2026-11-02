@@ -8,6 +8,7 @@ import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import {
+  formatCityState,
   formatPartnersDateTime,
   formatRupees,
   shortId,
@@ -113,12 +114,44 @@ export function useTaxiRequestColumns(): ColumnDef<AdminTaxiRequestInboxDto>[] {
       {
         id: 'trip',
         header: 'Trip',
+        accessorFn: (row) => `${row.pickupLabel} ${row.dropoffLabel}`,
         cell: ({ row }) => (
           <div className="partners-cell-title">
             <span className="partners-cell-title__primary">{row.original.pickupLabel}</span>
             <span className="partners-cell-title__secondary">→ {row.original.dropoffLabel}</span>
           </div>
         ),
+      },
+      {
+        id: 'cities',
+        header: 'Cities',
+        accessorFn: (row) =>
+          [row.pickupCity, row.pickupState, row.dropoffCity, row.dropoffState]
+            .filter(Boolean)
+            .join(' '),
+        cell: ({ row }) => {
+          const from = formatCityState(row.original.pickupCity, row.original.pickupState);
+          const to = formatCityState(row.original.dropoffCity, row.original.dropoffState);
+          if (!from && !to) {
+            return (
+              <span
+                className="partners-cell-title__secondary"
+                title="Requests created before structured city/state was captured"
+              >
+                —
+              </span>
+            );
+          }
+          return (
+            <div
+              className="partners-cell-title"
+              data-testid={`taxi-request-cities-${row.original.id}`}
+            >
+              <span className="partners-cell-title__primary">{from ?? '—'}</span>
+              <span className="partners-cell-title__secondary">→ {to ?? '—'}</span>
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'status',

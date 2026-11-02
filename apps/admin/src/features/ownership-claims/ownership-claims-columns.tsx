@@ -2,19 +2,12 @@ import type { OwnershipClaimDto } from '@autolokate/api-client';
 import { AlButton, AlText, type ColumnDef } from '@autolokate/ui';
 import { useMemo, type MouseEvent } from 'react';
 
+import { claimStatusTone } from '@/features/ownership-claims/ownership-claim-context';
 import {
   AdminStatusChip,
   humanizeAdminLabel,
   shortAdminId,
-  type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
-
-function claimStatusTone(status: OwnershipClaimDto['status']): AdminStatusChipTone {
-  if (status === 'APPROVED') return 'active';
-  if (status === 'REJECTED' || status === 'WITHDRAWN') return 'none';
-  if (status === 'UNDER_REVIEW') return 'draft';
-  return 'neutral';
-}
 
 function formatDate(value: string | null | undefined): string {
   if (!value) return '—';
@@ -28,12 +21,15 @@ export type OwnershipClaimsColumnHandlers = {
   onReject: (claim: OwnershipClaimDto) => void;
   onMarkUnderReview: (claim: OwnershipClaimDto) => void;
   busyClaimId: string | null;
+  /** Attempt number per claim (same claimant + vehicle) among the loaded rows; >1 = resubmission. */
+  attemptByClaimId?: ReadonlyMap<string, number>;
 };
 
 export function useOwnershipClaimsColumns(
   handlers: OwnershipClaimsColumnHandlers,
 ): ColumnDef<OwnershipClaimDto>[] {
-  const { onOpenDetail, onApprove, onReject, onMarkUnderReview, busyClaimId } = handlers;
+  const { onOpenDetail, onApprove, onReject, onMarkUnderReview, busyClaimId, attemptByClaimId } =
+    handlers;
 
   return useMemo(
     () => [
@@ -43,13 +39,19 @@ export function useOwnershipClaimsColumns(
         accessorFn: (row) => row.status,
         cell: ({ row }) => {
           const claim = row.original;
+          const attempt = attemptByClaimId?.get(claim.id) ?? 1;
           return (
             <div className="admin-primary-cell">
-              <span className="admin-primary-cell__title">
+              <span className="admin-primary-cell__title ownership-claim-title-chips">
                 <AdminStatusChip
                   label={humanizeAdminLabel(claim.status)}
                   tone={claimStatusTone(claim.status)}
                 />
+                {attempt > 1 ? (
+                  <span data-testid={`ownership-claim-resubmission-${claim.id}`}>
+                    <AdminStatusChip label={`Resubmission #${String(attempt)}`} tone="draft" />
+                  </span>
+                ) : null}
               </span>
               <AlText
                 className="admin-primary-cell__meta"
@@ -162,6 +164,6 @@ export function useOwnershipClaimsColumns(
         },
       },
     ],
-    [busyClaimId, onApprove, onMarkUnderReview, onOpenDetail, onReject],
+    [attemptByClaimId, busyClaimId, onApprove, onMarkUnderReview, onOpenDetail, onReject],
   );
 }
