@@ -4,8 +4,8 @@ import { unwrapEnvelope } from './envelope';
 
 /**
  * Admin Expert marketplace authorship — Nest `/admin/v1/experts*` + `/admin/v1/expert-bookings`.
- * OPERATOR + step_up. The BE exposes write routes only (no admin list/read); ids come from the
- * response of an upsert or from support/audit context.
+ * OPERATOR + step_up. `GET /admin/v1/experts[?status]` + `GET /admin/v1/experts/{id}` read every
+ * status (INACTIVE included) so the edit form can prefill from the stored profile.
  */
 
 export const ADMIN_EXPERT_STATUSES = ['ACTIVE', 'INACTIVE'] as const;
@@ -36,6 +36,28 @@ export type AdminExpertProfileDto = {
   rating?: number;
   sessionsCompleted?: number;
   photoAsset?: string;
+};
+
+/** OpenAPI `AdminExpertDto` — the full stored profile, any status (admin read). */
+export type AdminExpertDto = {
+  id: string;
+  name: string;
+  designation: string;
+  bio: string;
+  expertise: string[];
+  channelUrl: string | null;
+  rating: number | null;
+  sessionsCompleted: number;
+  status: AdminExpertStatus;
+  /** Bundle resource name (no extension) — not a remote URL. */
+  photoAsset: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ListAdminExpertsQuery = {
+  /** Omit for every status. */
+  status?: AdminExpertStatus;
 };
 
 /** OpenAPI `UpsertExpertSessionTypeDto` (omit `id` to create). */
@@ -99,6 +121,32 @@ type RequestOptions = { signal?: AbortSignal };
 
 function signalOption(options: RequestOptions): RequestOptions {
   return options.signal ? { signal: options.signal } : {};
+}
+
+/** GET /admin/v1/experts[?status=ACTIVE|INACTIVE] */
+export async function listAdminExperts(
+  client: ApiClient,
+  query: ListAdminExpertsQuery = {},
+  options: RequestOptions = {},
+): Promise<AdminExpertDto[]> {
+  const path = query.status
+    ? `${endpoints.adminExperts.experts}?status=${encodeURIComponent(query.status)}`
+    : endpoints.adminExperts.experts;
+  const response = await client.get<unknown>(path, signalOption(options));
+  return unwrapEnvelope(response) as AdminExpertDto[];
+}
+
+/** GET /admin/v1/experts/{id} — the stored profile used to prefill the edit form. */
+export async function getAdminExpert(
+  client: ApiClient,
+  expertId: string,
+  options: RequestOptions = {},
+): Promise<AdminExpertDto> {
+  const response = await client.get<unknown>(
+    endpoints.adminExperts.expert(expertId),
+    signalOption(options),
+  );
+  return unwrapEnvelope(response) as AdminExpertDto;
 }
 
 /** PUT /admin/v1/experts — create or update an expert profile. */
