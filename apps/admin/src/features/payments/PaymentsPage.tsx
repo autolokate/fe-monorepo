@@ -6,11 +6,12 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { PAYMENTS_OUTCOME_FILTERS } from '@/features/payments/payments-filters';
 import { usePaymentsColumns } from '@/features/payments/payments-columns';
 import { usePayments } from '@/hooks/payments/usePayments';
+import { PaymentDetailSheet } from '@/features/payments/PaymentDetailSheet';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
@@ -46,6 +47,7 @@ export function PaymentsPage() {
     isFetchingNextPage,
     loadMore,
   } = usePayments();
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const columns = usePaymentsColumns();
   const kpiItems = useMemo(
@@ -109,6 +111,9 @@ export function PaymentsPage() {
             emptyTitle="No payments found"
             emptyDescription="Try another outcome filter."
             getRowId={(row) => row.paymentId}
+            onRowClick={(row) => {
+              setOpenId(row.paymentId);
+            }}
           />
           <AdminLoadMore
             hasMore={hasMore}
@@ -117,6 +122,14 @@ export function PaymentsPage() {
             testId="payments-load-more"
           />
         </AdminDataBlock>
+
+        <PaymentDetailSheet
+          paymentId={openId}
+          open={openId !== null}
+          onOpenChange={(open) => {
+            if (!open) setOpenId(null);
+          }}
+        />
       </AlStack>
     </RequirePermission>
   );

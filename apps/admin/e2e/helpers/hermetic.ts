@@ -1589,6 +1589,53 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    const subscriptionDetailMatch = path.match(/^\/admin\/v1\/subscriptions\/([^/]+)$/);
+    if (method === 'GET' && subscriptionDetailMatch) {
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          subscriptionId: decodeURIComponent(subscriptionDetailMatch[1] ?? ''),
+          accountId: HERMETIC_USER_ID,
+          qrCodeId: HERMETIC_QR_CODE,
+          vehicleId: HERMETIC_VEHICLE_ID,
+          planId: HERMETIC_PLAN_ID,
+          planTier: 'SHIELD',
+          planVersion: 1,
+          status: 'ACTIVE',
+          activatedVia: 'CONSUMER_SELF',
+          autoRenew: false,
+          startedAt: '2026-10-01T00:00:00.000Z',
+          renewsAt: '2027-10-01T00:00:00.000Z',
+          billingMandateId: null,
+        }),
+      );
+      return;
+    }
+
+    const paymentDetailMatch = path.match(/^\/admin\/v1\/payments\/([^/]+)$/);
+    if (method === 'GET' && paymentDetailMatch) {
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          paymentId: decodeURIComponent(paymentDetailMatch[1] ?? ''),
+          orderId: HERMETIC_ORDER_ID,
+          orderNumber: HERMETIC_ORDER_NUMBER,
+          ref: HERMETIC_PAYMENT_REF,
+          providerRef: 'pay_hermetic_provider',
+          mode: 'ONLINE',
+          state: 'CAPTURED',
+          outcome: 'PAID',
+          amountPaise: 19900,
+          capturedPaise: 19900,
+          stateSeq: 3,
+          createdAt: '2026-10-19T00:00:00.000Z',
+        }),
+      );
+      return;
+    }
+
     if (method === 'GET' && path === '/admin/v1/subscriptions') {
       capture.subscriptionsGet += 1;
       await fulfillJson(
