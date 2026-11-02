@@ -45,3 +45,12 @@ export function shortId(value: string | null | undefined): string {
   }
   return value.length > 12 ? `${value.slice(0, 8)}…` : value;
 }
+
+/** "City, State" from flow v3 structured taxi places; null when the request predates v3. */
+export function formatCityState(
+  city: string | null | undefined,
+  state: string | null | undefined,
+): string | null {
+  const parts = [city, state].map((part) => part?.trim()).filter((part): part is string => !!part);
+  return parts.length > 0 ? parts.join(', ') : null;
+}

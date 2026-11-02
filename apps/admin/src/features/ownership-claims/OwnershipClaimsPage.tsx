@@ -11,6 +11,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { OwnershipClaimDetailSheet } from '@/features/ownership-claims/OwnershipClaimDetailSheet';
 import { RejectOwnershipClaimDialog } from '@/features/ownership-claims/RejectOwnershipClaimDialog';
+import { claimAttempts } from '@/features/ownership-claims/ownership-claim-context';
 import { useOwnershipClaimsColumns } from '@/features/ownership-claims/ownership-claims-columns';
 import { OWNERSHIP_CLAIMS_STATUS_FILTERS } from '@/features/ownership-claims/ownership-claims-filters';
 import { useOwnershipClaims } from '@/hooks/ownership-claims/useOwnershipClaims';
@@ -97,8 +98,18 @@ export function OwnershipClaimsPage() {
     [reviewMutation],
   );
 
+  const attemptByClaimId = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const claim of claims) {
+      const attempt = claimAttempts(claims, claim).find((row) => row.isCurrent)?.attempt ?? 1;
+      map.set(claim.id, attempt);
+    }
+    return map;
+  }, [claims]);
+
   const columns = useOwnershipClaimsColumns({
     busyClaimId,
+    attemptByClaimId,
     onOpenDetail: openDetail,
     onApprove: (claim) => {
       setApproveClaim(claim);
@@ -128,7 +139,7 @@ export function OwnershipClaimsPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Ownership claims"
-          description="Customer ownership claims awaiting review."
+          description="RC review: approving verifies the RC and makes the claimant the vehicle's verified owner (taxi vehicles can then bid)."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
@@ -201,8 +212,8 @@ export function OwnershipClaimsPage() {
           title="Approve ownership claim"
           description={
             approveClaim
-              ? `Approving claim ${shortAdminId(approveClaim.id)} transfers this vehicle to the claimant. This cannot be undone from this screen.`
-              : 'Approving transfers vehicle ownership to the claimant.'
+              ? `Approving claim ${shortAdminId(approveClaim.id)} verifies the RC and transfers this vehicle to the claimant as its verified owner. This cannot be undone from this screen.`
+              : 'Approving verifies the RC and transfers vehicle ownership to the claimant.'
           }
           confirmLabel="Approve and transfer ownership"
           loading={busy && approveClaim !== null && busyClaimId === approveClaim.id}

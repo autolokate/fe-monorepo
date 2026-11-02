@@ -2,8 +2,16 @@ import type { ApiClient } from './client';
 import { endpoints } from './endpoints';
 import { unwrapEnvelope } from './envelope';
 
-/** OpenAPI `GarageCommercialConfigDto.monthPassDurationKind` */
-export type GarageMonthPassDurationKind = 'CALENDAR_MONTH_IST';
+/**
+ * OpenAPI `GarageCommercialConfigDto.monthPassDurationKind`.
+ * Flow v3 adds `ROLLING_DAYS` (window = `monthPassDurationDays` from purchase).
+ */
+export type GarageMonthPassDurationKind = 'CALENDAR_MONTH_IST' | 'ROLLING_DAYS';
+
+/** Flow v3 server limits for the weekly free-bid allowance and ROLLING_DAYS month pass. */
+export const GARAGE_FREE_BIDS_PER_WEEK_MAX = 100;
+export const GARAGE_MONTH_PASS_DURATION_DAYS_MIN = 1;
+export const GARAGE_MONTH_PASS_DURATION_DAYS_MAX = 366;
 
 /**
  * OpenAPI `GarageCommercialConfigDto` — commercial settings for Garage.
@@ -18,6 +26,16 @@ export type GarageCommercialConfigDto = {
   monthPassPriceRupees: number;
   dayPassDurationHours: number;
   monthPassDurationKind: GarageMonthPassDurationKind;
+  /**
+   * Flow v3 — MONTH pass window (days) when `monthPassDurationKind = ROLLING_DAYS`.
+   * Optional: absent on servers that predate flow v3.
+   */
+  monthPassDurationDays?: number;
+  /**
+   * Flow v3 — free bids per garage org per IST week (0-100, reset Monday 00:00 IST).
+   * Optional: absent on servers that predate flow v3.
+   */
+  freeBidsPerWeek?: number;
   gstRateBps: number;
   updatedByAdminId?: string | null;
   updatedAt: string;
@@ -32,6 +50,10 @@ export type UpdateGarageCommercialConfigBody = {
   monthPassPriceRupees: number;
   dayPassDurationHours: number;
   monthPassDurationKind: GarageMonthPassDurationKind;
+  /** Flow v3 — optional; omitted → server keeps the current value. */
+  monthPassDurationDays?: number;
+  /** Flow v3 — optional; omitted → server keeps the current value. */
+  freeBidsPerWeek?: number;
   gstRateBps: number;
 };
 
@@ -64,7 +86,10 @@ export type GaragePassGrantResultDto = {
   purchaseId: string;
 };
 
-/** OpenAPI `AdjustFreeBidsBodyDto` */
+/**
+ * OpenAPI `AdjustFreeBidsBodyDto`. Since flow v3 the signed `delta` is a bonus/penalty for the
+ * CURRENT IST week only (it resets with the week); `raiseLifetime` is ignored by v3 servers.
+ */
 export type AdjustGarageFreeBidsBody = {
   delta: number;
   note?: string;
@@ -72,7 +97,10 @@ export type AdjustGarageFreeBidsBody = {
   raiseLifetime?: boolean;
 };
 
-/** OpenAPI `FreeBidsBalanceDto` */
+/**
+ * OpenAPI `FreeBidsBalanceDto`. On flow v3 servers `remaining` is this IST week's remaining free bids
+ * and `lifetimeGranted` is this week's total allowance including the admin bonus.
+ */
 export type GarageFreeBidsBalanceDto = {
   orgId: string;
   remaining: number;

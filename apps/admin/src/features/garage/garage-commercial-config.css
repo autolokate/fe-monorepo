@@ -1,7 +1,58 @@
 .garage-commercial-config__form {
   display: grid;
+  gap: var(--al-space-5);
+}
+
+.garage-commercial-config__group {
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: var(--al-space-4) var(--al-space-5);
+  align-items: start;
+  margin: 0;
+  padding: var(--al-space-4) 0 0;
+  border: 0;
+  border-top: var(--al-border-width-thin, 1px) solid
+    var(--al-admin-divider, var(--al-color-outline));
+  min-width: 0;
+}
+
+.garage-commercial-config__group:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.garage-commercial-config__legend {
+  grid-column: 1 / -1;
+  float: left;
+  width: 100%;
+  margin: 0 0 var(--al-space-3);
+  padding: 0;
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-semibold);
+  color: var(--al-color-text);
+}
+
+.garage-commercial-config__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.garage-commercial-config__fact-label {
+  font-size: var(--al-text-label-size);
+  font-weight: var(--al-font-weight-medium);
+  color: var(--al-admin-label-color, var(--al-color-text-muted));
+}
+
+.garage-commercial-config__fact-value {
+  display: flex;
+  align-items: center;
+  min-height: 2.375rem;
+  font-size: 0.9375rem;
+  font-weight: var(--al-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--al-color-text);
 }
 
 .garage-commercial-config__form label {
@@ -15,7 +66,8 @@
   text-transform: none;
 }
 
-.garage-commercial-config__form input {
+.garage-commercial-config__form input,
+.garage-commercial-config__form select {
   min-height: 2.375rem;
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--al-admin-control-border, var(--al-color-outline));
@@ -25,6 +77,16 @@
   font-size: 0.9375rem;
   font-weight: var(--al-font-weight-medium);
   font-variant-numeric: tabular-nums;
+}
+
+.garage-commercial-config__form input[aria-invalid='true'] {
+  border-color: var(--al-color-danger);
+}
+
+.garage-commercial-config__form input:disabled,
+.garage-commercial-config__form select:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .garage-commercial-config__muted {

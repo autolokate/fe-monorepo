@@ -140,6 +140,13 @@ export type AdminTaxiRequestInboxDto = {
   pickupAt: string;
   pickupLabel: string;
   dropoffLabel: string;
+  /** Flow v3 canonical pickup city/state (null on pre-v3 requests; absent on pre-v3 servers). */
+  pickupCity?: string | null;
+  pickupState?: string | null;
+  /** Flow v3 canonical drop-off city/state (null on pre-v3 requests; absent on pre-v3 servers). */
+  dropoffCity?: string | null;
+  dropoffState?: string | null;
+  seats?: number | null;
   estimatedFareRupees: number;
   notes: string | null;
   closesAt: string | null;

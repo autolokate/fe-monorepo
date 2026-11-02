@@ -151,6 +151,9 @@ export const HERMETIC_TAXI_POLICY: HermeticTaxiPolicy = {
 export const HERMETIC_BREAK_GLASS_APPROVAL_ID = 'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';
 export const HERMETIC_OWNERSHIP_CLAIM_ID = 'cccccccc-dddd-4eee-8fff-000000000002';
 export const HERMETIC_OWNERSHIP_CLAIM_ID_APPROVED = 'cccccccc-dddd-4eee-8fff-000000000003';
+/** Earlier REJECTED RC claim (attempt 1) for the same vehicle + claimant as the SUBMITTED one. */
+export const HERMETIC_OWNERSHIP_CLAIM_ID_REJECTED = 'cccccccc-dddd-4eee-8fff-000000000004';
+export const HERMETIC_OWNERSHIP_CLAIM_REJECTION_REASON = 'RC photo is blurry';
 export const HERMETIC_INCIDENT_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee1111';
 export const HERMETIC_ORDER_ID = 'eeeeeeee-ffff-4aaa-8bbb-cccccccccccc';
 /** Nest admin orders/payments carry `orderNumber: null` — the UI shows the short order id. */
@@ -271,11 +274,15 @@ export const HERMETIC_SERVICE_PROVIDER: HermeticServiceProvider = {
   status: 'ACTIVE',
 };
 
+/**
+ * Flow v3 RC resubmission: the claimant is the PROVISIONAL_OWNER of HERMETIC_VEHICLE_ID in the
+ * `/admin/v1/vehicles/{id}/drivers` stub; attempt 1 was rejected (HERMETIC_OWNERSHIP_CLAIM_REJECTED).
+ */
 export const HERMETIC_OWNERSHIP_CLAIM = {
   id: HERMETIC_OWNERSHIP_CLAIM_ID,
   status: 'SUBMITTED' as const,
   vehicleId: HERMETIC_VEHICLE_ID,
-  claimantAccountId: HERMETIC_USER_ID,
+  claimantAccountId: HERMETIC_CUSTOMER_ACCOUNT_ID,
   rcMediaAssetId: HERMETIC_RC_MEDIA_ASSET_ID,
   planSubscriptionId: 'eeeeeeee-ffff-4000-8000-222222222222',
   notes: 'Hermetic RC claim notes',
@@ -286,11 +293,12 @@ export const HERMETIC_OWNERSHIP_CLAIM = {
   updatedAt: '2026-10-19T00:00:00.000Z',
 };
 
+/** Approved RC claim: the claimant is the verified OWNER of HERMETIC_VEHICLE_ID_B in the roster stub. */
 export const HERMETIC_OWNERSHIP_CLAIM_APPROVED = {
   id: HERMETIC_OWNERSHIP_CLAIM_ID_APPROVED,
   status: 'APPROVED' as const,
-  vehicleId: HERMETIC_VEHICLE_ID,
-  claimantAccountId: HERMETIC_USER_ID,
+  vehicleId: HERMETIC_VEHICLE_ID_B,
+  claimantAccountId: HERMETIC_CUSTOMER_ACCOUNT_ID,
   rcMediaAssetId: HERMETIC_RC_MEDIA_ASSET_ID,
   planSubscriptionId: null as string | null,
   notes: null as string | null,
@@ -301,6 +309,19 @@ export const HERMETIC_OWNERSHIP_CLAIM_APPROVED = {
   updatedAt: '2026-10-18T12:00:00.000Z',
 };
 
+export const HERMETIC_OWNERSHIP_CLAIM_REJECTED = {
+  ...HERMETIC_OWNERSHIP_CLAIM,
+  id: HERMETIC_OWNERSHIP_CLAIM_ID_REJECTED,
+  status: 'REJECTED' as const,
+  notes: null as string | null,
+  planSubscriptionId: null as string | null,
+  rejectionReason: HERMETIC_OWNERSHIP_CLAIM_REJECTION_REASON as string | null,
+  reviewedByAdminId: HERMETIC_USER_ID as string | null,
+  reviewedAt: '2026-10-17T12:00:00.000Z' as string | null,
+  createdAt: '2026-10-17T00:00:00.000Z',
+  updatedAt: '2026-10-17T12:00:00.000Z',
+};
+
 export const HERMETIC_GARAGE_CONFIG = {
   id: 'cccccccc-dddd-4eee-8fff-000000000001',
   welcomeCredits: 20,
@@ -309,7 +330,11 @@ export const HERMETIC_GARAGE_CONFIG = {
   dayPassPriceRupees: 100,
   monthPassPriceRupees: 1800,
   dayPassDurationHours: 24,
-  monthPassDurationKind: 'CALENDAR_MONTH_IST' as const,
+  monthPassDurationKind: 'CALENDAR_MONTH_IST' as 'CALENDAR_MONTH_IST' | 'ROLLING_DAYS',
+  /** Flow v3 (be-monorepo#49): MONTH pass window for ROLLING_DAYS. */
+  monthPassDurationDays: 30,
+  /** Flow v3 (be-monorepo#49): weekly free bids per org, reset Monday 00:00 IST. */
+  freeBidsPerWeek: 2,
   gstRateBps: 1800,
   updatedByAdminId: null,
   updatedAt: '2026-10-18T00:00:00.000Z',
@@ -323,6 +348,8 @@ const HERMETIC_GARAGE_CONFIG_BODY = {
   monthPassPriceRupees: HERMETIC_GARAGE_CONFIG.monthPassPriceRupees,
   dayPassDurationHours: HERMETIC_GARAGE_CONFIG.dayPassDurationHours,
   monthPassDurationKind: HERMETIC_GARAGE_CONFIG.monthPassDurationKind,
+  monthPassDurationDays: HERMETIC_GARAGE_CONFIG.monthPassDurationDays,
+  freeBidsPerWeek: HERMETIC_GARAGE_CONFIG.freeBidsPerWeek,
   gstRateBps: HERMETIC_GARAGE_CONFIG.gstRateBps,
 };
 
@@ -382,6 +409,8 @@ export type InstallHermeticRoutesOptions = {
   garagePassGrantStatus?: number;
   /** When set, garage free-bids adjust POST returns this status instead of 200. */
   garageFreeBidsAdjustStatus?: number;
+  /** Serve the pre-flow-v3 commercial config (no freeBidsPerWeek / monthPassDurationDays). */
+  garageConfigLegacy?: boolean;
   /** When set, garage provision POST returns this status instead of 201. */
   garageProvisionStatus?: number;
   /** When set, taxi policy GET returns this status instead of 200. */
@@ -701,7 +730,11 @@ export async function installHermeticApiRoutes(
     createdAt: '2026-10-20T11:00:00.000Z',
   };
   let ownershipClaimState = { ...HERMETIC_OWNERSHIP_CLAIM };
-  const ownershipClaimsCatalog = [ownershipClaimState, { ...HERMETIC_OWNERSHIP_CLAIM_APPROVED }];
+  const ownershipClaimsCatalog = [
+    ownershipClaimState,
+    { ...HERMETIC_OWNERSHIP_CLAIM_APPROVED },
+    { ...HERMETIC_OWNERSHIP_CLAIM_REJECTED },
+  ];
   let serviceProvidersState: Array<
     Omit<typeof HERMETIC_SERVICE_PROVIDER, 'status'> & { status: 'ACTIVE' | 'INACTIVE' }
   > = [{ ...HERMETIC_SERVICE_PROVIDER }];
@@ -1946,6 +1979,17 @@ export async function installHermeticApiRoutes(
         );
         return;
       }
+      if (options.garageConfigLegacy) {
+        const {
+          freeBidsPerWeek: _w,
+          monthPassDurationDays: _d,
+          ...legacy
+        } = HERMETIC_GARAGE_CONFIG;
+        void _w;
+        void _d;
+        await fulfillJson(route, garageConfigGetStatus, envelope(legacy));
+        return;
+      }
       await fulfillJson(route, garageConfigGetStatus, envelope(HERMETIC_GARAGE_CONFIG));
       return;
     }
@@ -2055,13 +2099,15 @@ export async function installHermeticApiRoutes(
         return;
       }
       const delta = typeof body.delta === 'number' ? body.delta : 0;
+      // Flow v3: a bonus/penalty for the current IST week. Seeded week = allowance 2, 1 already used;
+      // `lifetimeGranted` = this week's allowance incl. bonus, `remaining` = allowance + bonus - used.
       await fulfillJson(
         route,
         garageFreeBidsAdjustStatus,
         envelope({
           orgId: decodeURIComponent(adjustMatch[1] ?? HERMETIC_GARAGE_ORG_ID),
-          remaining: Math.max(0, 2 + delta),
-          lifetimeGranted: Math.max(2, 2 + delta),
+          remaining: Math.max(0, 1 + delta),
+          lifetimeGranted: Math.max(0, 2 + delta),
         }),
       );
       return;

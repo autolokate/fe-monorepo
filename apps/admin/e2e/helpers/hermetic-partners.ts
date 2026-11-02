@@ -164,6 +164,12 @@ export async function installHermeticPartnersRoutes(
     pickupAt: NOW,
     pickupLabel: 'Kothrud, Pune',
     dropoffLabel: 'Airport',
+    // Flow v3 (be-monorepo#49) structured places — server-normalized names.
+    pickupCity: 'Pune',
+    pickupState: 'Maharashtra',
+    dropoffCity: 'Mumbai',
+    dropoffState: 'Maharashtra',
+    seats: 3,
     estimatedFareRupees: 450,
     notes: null,
     closesAt: NOW,

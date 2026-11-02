@@ -16,6 +16,7 @@ import {
   useTaxiRequestColumns,
 } from '@/features/partners/request-columns';
 import {
+  formatCityState,
   formatPartnersDateTime,
   formatRupees,
   GARAGE_REQUEST_STATUS_FILTERS,
@@ -312,7 +313,24 @@ export function PartnerRequestsInboxPage() {
                   <DetailCard label="Request" value={shortAdminId(selectedTaxi.id)} mono />
                   <DetailCard label="Status" value={humanizeAdminLabel(selectedTaxi.status)} />
                   <DetailCard label="Pickup" value={selectedTaxi.pickupLabel} />
+                  <DetailCard
+                    label="Pickup city / state"
+                    value={
+                      formatCityState(selectedTaxi.pickupCity, selectedTaxi.pickupState) ??
+                      'Not captured'
+                    }
+                  />
                   <DetailCard label="Drop-off" value={selectedTaxi.dropoffLabel} />
+                  <DetailCard
+                    label="Drop-off city / state"
+                    value={
+                      formatCityState(selectedTaxi.dropoffCity, selectedTaxi.dropoffState) ??
+                      'Not captured'
+                    }
+                  />
+                  {typeof selectedTaxi.seats === 'number' ? (
+                    <DetailCard label="Seats" value={String(selectedTaxi.seats)} />
+                  ) : null}
                   <DetailCard
                     label="Pickup at"
                     value={formatPartnersDateTime(selectedTaxi.pickupAt)}

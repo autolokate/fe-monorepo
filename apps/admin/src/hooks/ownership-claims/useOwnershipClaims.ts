@@ -25,10 +25,7 @@ export function useOwnershipClaims(initial: OwnershipClaimsStatusFilter = 'ALL')
   const query = useQuery({
     queryKey: ownershipClaimsQueryKeys.list(statusFilter),
     queryFn: ({ signal }) =>
-      fetchOwnershipClaims(
-        statusFilter === 'ALL' ? {} : { status: statusFilter },
-        signal,
-      ),
+      fetchOwnershipClaims(statusFilter === 'ALL' ? {} : { status: statusFilter }, signal),
     meta: { errorMessage: 'Unable to load ownership claims.' },
   });
 
@@ -59,5 +56,23 @@ export function useOwnershipClaims(initial: OwnershipClaimsStatusFilter = 'ALL')
     refresh: () => {
       void query.refetch();
     },
+  };
+}
+
+/**
+ * Every claim (no status filter) — shares the `ALL` list cache. Used to show a claimant's
+ * resubmission history for one vehicle; the API has no per-vehicle claim history endpoint.
+ */
+export function useAllOwnershipClaims(enabled: boolean) {
+  const query = useQuery({
+    queryKey: ownershipClaimsQueryKeys.list('ALL'),
+    queryFn: ({ signal }) => fetchOwnershipClaims({}, signal),
+    enabled,
+    meta: { errorMessage: 'Unable to load ownership claims.' },
+  });
+  return {
+    claims: query.data ?? [],
+    isLoading: enabled && query.isLoading,
+    errorMessage: query.isError ? mapAdminApiError(query.error).userMessage : null,
   };
 }
