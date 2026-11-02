@@ -30,6 +30,7 @@ import {
   submitTaxiEnrollmentReinstate,
   submitTaxiEnrollmentSuspend,
 } from '@/services/taxi/taxi-operations-service';
+import { useUrlFilterState, useUrlFlagState } from '@/platform/state/useUrlFilterState';
 
 export const TAXI_OPS_PAGE_LIMIT = 25;
 
@@ -45,8 +46,8 @@ export const taxiOpsQueryKeys = {
 
 export function useTaxiBookings() {
   const canRead = useAdminPermission('taxi:read');
-  const [status, setStatus] = useState<AdminTaxiBookingStatus | 'ALL'>('ALL');
-  const [flagged, setFlagged] = useState(false);
+  const [status, setStatus] = useUrlFilterState<AdminTaxiBookingStatus | 'ALL'>('status', 'ALL');
+  const [flagged, setFlagged] = useUrlFlagState('flagged');
   const query = useInfiniteQuery({
     queryKey: taxiOpsQueryKeys.bookings(status, flagged),
     initialPageParam: undefined as string | undefined,
@@ -224,7 +225,7 @@ const TAXI_OPS_ENROLLMENTS_LIMIT = 200;
 export function useTaxiEnrollments() {
   const canRead = useAdminPermission('taxi:read');
   const queryClient = useQueryClient();
-  const [status, setStatus] = useState<AdminTaxiEnrollmentStatus | 'ALL'>('ALL');
+  const [status, setStatus] = useUrlFilterState<AdminTaxiEnrollmentStatus | 'ALL'>('status', 'ALL');
   const query = useInfiniteQuery({
     queryKey: taxiOpsQueryKeys.enrollments(status),
     initialPageParam: undefined as string | undefined,

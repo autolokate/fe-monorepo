@@ -1,6 +1,6 @@
 import type { GarageGstVerification } from '@autolokate/api-client';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { partnersQueryKeys, PARTNERS_LIST_LIMIT } from '@/hooks/partners/partners-query-keys';
 import {
@@ -13,6 +13,7 @@ import { showSuccessToast } from '@/platform/feedback/toast';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { submitGarageGstVerification } from '@/services/garage/garage-entitlement-service';
 import { fetchAdminPartnersKycPage } from '@/services/partners/admin-partners-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type KycQueueStatus =
   | 'PENDING_REVIEW'
@@ -27,7 +28,7 @@ const kycKey = (status: KycQueueStatus) => [...partnersQueryKeys.all, 'kyc', sta
 export function usePartnersKyc() {
   const canRead = useAdminPermission('partners:read');
   const queryClient = useQueryClient();
-  const [status, setStatus] = useState<KycQueueStatus>('PENDING_REVIEW');
+  const [status, setStatus] = useUrlFilterState<KycQueueStatus>('status', 'PENDING_REVIEW');
 
   const query = useInfiniteQuery({
     queryKey: kycKey(status),

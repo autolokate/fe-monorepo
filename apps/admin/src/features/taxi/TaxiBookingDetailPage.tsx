@@ -13,9 +13,9 @@ import {
   AlText,
 } from '@autolokate/ui';
 import { useState, type ReactNode } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { adminPaths } from '@/app/routes/admin-paths';
+import { adminPartnerPath, adminPaths } from '@/app/routes/admin-paths';
 import {
   TAXI_REVENUE_KIND_LABELS,
   bookingCancelBlockedReason,
@@ -365,8 +365,37 @@ export function TaxiBookingDetailPage() {
             <AdminDetailField label="Status" value={taxiBookingStatusLabel(booking.status)} />
             <AdminDetailField label="Booking id" value={booking.id} mono />
             <AdminDetailField label="Request" value={booking.requestId} mono />
-            <AdminDetailField label="Partner org" value={booking.orgId} mono />
+            <AdminDetailField
+              label="Route"
+              value={
+                booking.pickupLabel || booking.dropoffLabel
+                  ? `${booking.pickupLabel ?? '—'} → ${booking.dropoffLabel ?? '—'}`
+                  : '—'
+              }
+            />
+            <AdminDetailField
+              label="Partner org"
+              value={
+                <Link className="admin-link admin-mono" to={adminPartnerPath(booking.orgId)}>
+                  {booking.orgId}
+                </Link>
+              }
+            />
+            <AdminDetailField label="Fleet vehicle (bid)" value={booking.vehicleId} mono />
+            <AdminDetailField
+              label="Assigned driver"
+              value={booking.driverAccountId ?? 'Owner drives / not assigned'}
+              mono={Boolean(booking.driverAccountId)}
+            />
             <AdminDetailField label="Customer account" value={booking.accountId} mono />
+            <AdminDetailField
+              label="Contact shared"
+              value={
+                booking.contactUnlocked
+                  ? 'Yes — both sides see each other’s details'
+                  : 'No — unlocks once the deposit is paid'
+              }
+            />
             <AdminDetailField label="Pickup" value={formatAdminDateTime(booking.pickupAt)} />
             <AdminDetailField label="Fare" value={formatRupeeAmount(booking.selectedFareRupees)} />
             <AdminDetailField label="Started" value={formatAdminDateTime(booking.startedAt)} />

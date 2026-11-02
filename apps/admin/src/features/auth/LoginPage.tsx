@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AlBrandMark } from '@autolokate/brand';
 import { AlButton, AlOtpInput } from '@autolokate/ui';
 import { formatAdminLoginMobile } from '@/services/auth/admin-auth-format';
 import { useState } from 'react';
@@ -8,6 +9,7 @@ import { z } from 'zod';
 
 import { adminPaths } from '@/app/routes/admin-paths';
 import { useAdminAuth } from '@/providers/AdminAuthProvider';
+import { useTheme } from '@/providers/ThemeProvider';
 
 const phoneSchema = z.object({
   phone: z
@@ -28,6 +30,7 @@ type LoginLocationState = {
 };
 
 export function LoginPage() {
+  const { themeMode } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, requestOtp, verifyOtp } = useAdminAuth();
@@ -85,6 +88,9 @@ export function LoginPage() {
       <div className="admin-login-atmosphere" aria-hidden="true" />
       <div className="admin-login-card admin-panel">
         <header className="admin-login-brand">
+          <span className="ax-login-logo" aria-hidden>
+            <AlBrandMark size={22} variant={themeMode === 'dark' ? 'dark' : 'light'} />
+          </span>
           <p className="admin-login-brand__name">Autolokate</p>
           <h1 className="admin-login-brand__title">Admin</h1>
           <p className="admin-login-brand__subtitle">

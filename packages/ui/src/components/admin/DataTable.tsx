@@ -314,10 +314,18 @@ export function AlDataTable<TData>({
     if (focusedRowIndex === null) {
       return;
     }
-    const row = tableRef.current?.querySelector<HTMLTableRowElement>(
+    const container = tableRef.current;
+    const row = container?.querySelector<HTMLTableRowElement>(
       `tbody tr[data-row-index="${String(focusedRowIndex)}"]`,
     );
-    row?.focus();
+    // Only move focus for keyboard row navigation (focus already in the table, on another row).
+    // Never steal it from a control inside the row (a mid-click focus move scrolls the page and the
+    // click lands on the row) or from filters outside the table when the data refetches.
+    const active = document.activeElement;
+    if (!row || !container?.contains(active) || row.contains(active)) {
+      return;
+    }
+    row.focus();
   }, [focusedRowIndex, rowCount]);
 
   const selectedCount = Object.keys(rowSelection ?? internalRowSelection).length;
@@ -536,8 +544,11 @@ export function AlDataTable<TData>({
                   }
                   data-state={row.getIsSelected() ? 'selected' : undefined}
                   className={cn(onRowClick && 'is-clickable')}
-                  onFocus={() => {
-                    setFocusedRowIndex(rowIndex);
+                  onFocus={(event) => {
+                    // Focus bubbling up from a button/link inside the row is not row focus.
+                    if (event.target === event.currentTarget) {
+                      setFocusedRowIndex(rowIndex);
+                    }
                   }}
                   onKeyDown={(event) => {
                     handleRowKeyDown(event, rowIndex, row.original);

@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   toPaymentsQueryOutcome,
@@ -9,6 +9,7 @@ import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { ADMIN_LIST_PAGE_SIZE, nextCursorOf } from '@/platform/query/cursor-pages';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchPaymentsPage } from '@/services/payments/payments-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export const paymentsQueryKeys = {
   all: ['admin', 'payments'] as const,
@@ -17,7 +18,10 @@ export const paymentsQueryKeys = {
 };
 
 export function usePayments(initialOutcomeFilter: PaymentsOutcomeFilter = 'ALL') {
-  const [outcomeFilter, setOutcomeFilter] = useState<PaymentsOutcomeFilter>(initialOutcomeFilter);
+  const [outcomeFilter, setOutcomeFilter] = useUrlFilterState<PaymentsOutcomeFilter>(
+    'outcome',
+    initialOutcomeFilter,
+  );
 
   const query = useInfiniteQuery({
     queryKey: paymentsQueryKeys.list(outcomeFilter),

@@ -11,15 +11,6 @@ import {
   type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
 
-function hasEngagement(reel: AdminPartnerReelSummaryDto): boolean {
-  return (
-    reel.likeCount != null ||
-    reel.commentCount != null ||
-    reel.bookmarkCount != null ||
-    reel.viewCount != null
-  );
-}
-
 function reelStatusTone(status: string): AdminStatusChipTone {
   if (status === 'PUBLISHED') return 'published';
   if (status === 'DRAFT') return 'draft';
@@ -32,10 +23,8 @@ type PartnerReelsSectionProps = {
 };
 
 export function PartnerReelsSection({ reels }: PartnerReelsSectionProps) {
-  const showEngagement = reels.some(hasEngagement);
-
   const columns = useMemo<ColumnDef<AdminPartnerReelSummaryDto>[]>(() => {
-    const base: ColumnDef<AdminPartnerReelSummaryDto>[] = [
+    const list: ColumnDef<AdminPartnerReelSummaryDto>[] = [
       {
         accessorKey: 'title',
         header: 'Reel',
@@ -62,42 +51,8 @@ export function PartnerReelsSection({ reels }: PartnerReelsSectionProps) {
         cell: ({ row }) => formatPartnersDateTime(row.original.publishedAt),
       },
     ];
-
-    if (showEngagement) {
-      base.push(
-        {
-          id: 'likes',
-          header: 'Likes',
-          accessorFn: (row) => row.likeCount ?? null,
-          cell: ({ row }) =>
-            row.original.likeCount != null ? row.original.likeCount.toLocaleString() : '—',
-        },
-        {
-          id: 'comments',
-          header: 'Comments',
-          accessorFn: (row) => row.commentCount ?? null,
-          cell: ({ row }) =>
-            row.original.commentCount != null ? row.original.commentCount.toLocaleString() : '—',
-        },
-        {
-          id: 'bookmarks',
-          header: 'Bookmarks',
-          accessorFn: (row) => row.bookmarkCount ?? null,
-          cell: ({ row }) =>
-            row.original.bookmarkCount != null ? row.original.bookmarkCount.toLocaleString() : '—',
-        },
-        {
-          id: 'views',
-          header: 'Views',
-          accessorFn: (row) => row.viewCount ?? null,
-          cell: ({ row }) =>
-            row.original.viewCount != null ? row.original.viewCount.toLocaleString() : '—',
-        },
-      );
-    }
-
-    return base;
-  }, [showEngagement]);
+    return list;
+  }, []);
 
   const published = reels.filter((reel) => reel.status === 'PUBLISHED').length;
   const subtitle =
@@ -110,11 +65,10 @@ export function PartnerReelsSection({ reels }: PartnerReelsSectionProps) {
   return (
     <div data-testid="partners-reels-section">
       <AdminPanel title="AutoClip inventory" subtitle={subtitle}>
-        {!showEngagement && reels.length > 0 ? (
-          <AlText tone="muted" variant="caption">
-            Engagement counts are not available for these reels.
-          </AlText>
-        ) : null}
+        <AlText tone="muted" variant="caption">
+          Engagement (likes, comments, views) and publish / archive controls live in Content →
+          Reels.
+        </AlText>
         <AlDataTable
           {...ADMIN_LIST_TABLE_PROPS}
           tableId="partner-reels"

@@ -6,6 +6,19 @@ import { formatCount, formatDiscoveryDateTime } from '@/features/discovery/disco
 import { ReelThumb } from '@/features/discovery/ReelThumb';
 import { DiscoveryReelStatusBadge } from '@/platform/components/EntityStatusBadge';
 
+function humanizeKind(kind: string): string {
+  return kind.charAt(0) + kind.slice(1).toLowerCase();
+}
+
+/** Display name the consumer app credits — partner card, then creator, then Autolokate. */
+export function reelCreatorLabel(reel: AdminDiscoveryReelDto): string {
+  return (
+    reel.partner?.displayName ??
+    reel.creator?.displayName ??
+    (reel.partnerOrgId ? 'Linked partner' : 'Autolokate')
+  );
+}
+
 export type UseReelColumnsOptions = {
   canWrite: boolean;
   pendingReelId: string | null;
@@ -36,6 +49,26 @@ export function useReelColumns({
             <span className="discovery-cell-title__secondary">{row.original.stableKey}</span>
           </div>
         ),
+      },
+      {
+        id: 'creator',
+        header: 'Creator',
+        accessorFn: (row) => reelCreatorLabel(row),
+        cell: ({ row }) => {
+          const reel = row.original;
+          const kind = reel.creator?.kind ?? (reel.partnerOrgId ? 'PARTNER' : 'AUTOLOKATE');
+          return (
+            <div
+              className="discovery-cell-title"
+              data-testid={`discovery-reel-creator-${reel.reelId}`}
+            >
+              <span className="discovery-cell-title__primary">{reelCreatorLabel(reel)}</span>
+              <span className="discovery-cell-title__secondary">
+                {kind === 'AUTOLOKATE' ? 'Autolokate reel' : `${humanizeKind(kind)} clip`}
+              </span>
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'status',

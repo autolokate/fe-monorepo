@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import {
   CameraIcon,
@@ -9,13 +10,24 @@ import {
   UsersIcon,
 } from '@autolokate/icons';
 import { AlErrorState, AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
-import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ArrowUpRight, CircleCheck } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
 import { useDashboard } from '@/hooks/dashboard/useDashboard';
+import {
+  useDashboardAttention,
+  useDashboardTaxiRevenue,
+  type AttentionItem,
+} from '@/hooks/dashboard/useDashboardAttention';
+import {
+  attentionTone,
+  formatAttentionCount,
+  formatPaiseAsRupees,
+  REVENUE_PAGE_LIMIT,
+} from '@/services/dashboard/dashboard-attention';
 import { MetricSkeleton } from '@/platform/components/MetricSkeleton';
-import { AdminKpiStrip, AdminPanel } from '@/platform/components/AdminWowSurface';
+import { AdminPanel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 
 import './dashboard.css';
@@ -44,6 +56,7 @@ type DashboardPageCardProps = {
   stats?: DashboardTileStat[];
   icon: ReactNode;
   onClick: () => void;
+  testId?: string;
 };
 
 function toneClass(prefix: string, tone: DashboardTone = 'neutral'): string {
@@ -59,9 +72,10 @@ function DashboardPageCard({
   stats,
   icon,
   onClick,
+  testId,
 }: DashboardPageCardProps) {
   return (
-    <button type="button" className="dashboard-page-card" onClick={onClick}>
+    <button type="button" className="dashboard-page-card" onClick={onClick} data-testid={testId}>
       <div className="dashboard-page-card__head">
         <div className="dashboard-page-card__icon">{icon}</div>
         <div className="dashboard-page-card__titles">
@@ -119,6 +133,126 @@ function DashboardLinkCard({ title, description, icon, onClick }: DashboardLinkC
   );
 }
 
+function AttentionTile({ item }: { item: AttentionItem }) {
+  const tone = item.value ? attentionTone(item.value, item.urgent) : 'calm';
+  return (
+    <Link
+      to={item.to}
+      className={`ax-attention ax-attention--${tone}`}
+      data-testid={`dashboard-attention-${item.id}`}
+      aria-busy={item.isLoading || undefined}
+    >
+      <span className="ax-attention__top">
+        <span className="ax-attention__label">{item.label}</span>
+        <ArrowUpRight size={15} aria-hidden className="ax-attention__arrow" />
+      </span>
+      {item.isLoading ? (
+        <span className="ax-attention__value">
+          <span className="al-skeleton ax-attention__skeleton" />
+        </span>
+      ) : item.error ? (
+        <span className="ax-attention__value ax-attention__value--muted" title={item.error}>
+          —
+        </span>
+      ) : (
+        <span className="ax-attention__value ax-num">
+          {item.value ? formatAttentionCount(item.value) : '—'}
+        </span>
+      )}
+      <span className="ax-attention__hint">{item.error ?? item.hint}</span>
+    </Link>
+  );
+}
+
+function AttentionPanel() {
+  const { items } = useDashboardAttention();
+  const visible = items.filter((item) => item.allowed);
+  const settled = visible.filter((item) => !item.isLoading && !item.error && item.value);
+  const allClear =
+    settled.length === visible.length && settled.every((item) => item.value?.count === 0);
+  if (visible.length === 0) return null;
+  return (
+    <AdminPanel
+      title="Needs attention"
+      subtitle="Live queues from the admin API — open one to work it. Counts above 50 show as 50+."
+      meta={
+        allClear ? (
+          <span className="ax-all-clear">
+            <CircleCheck size={15} aria-hidden /> All clear
+          </span>
+        ) : null
+      }
+    >
+      <div className="ax-attention-grid" data-testid="dashboard-attention">
+        {visible.map((item) => (
+          <AttentionTile key={item.id} item={item} />
+        ))}
+      </div>
+    </AdminPanel>
+  );
+}
+
+function TaxiRevenuePanel() {
+  const { allowed, summary, isLoading, error, refetch } = useDashboardTaxiRevenue();
+  if (!allowed) return null;
+  return (
+    <AdminPanel
+      title="Taxi revenue"
+      subtitle={
+        summary?.partial
+          ? `Autolokate's share from the newest ${String(REVENUE_PAGE_LIMIT)} ledger entries — open Revenue for the full ledger.`
+          : 'Autolokate’s share from the taxi revenue ledger (booking fees + forfeits).'
+      }
+      meta={
+        <Link className="admin-link" to={adminPaths.taxiRevenue}>
+          Open ledger
+        </Link>
+      }
+    >
+      {error ? (
+        <AlErrorState message={error} onRetry={refetch} />
+      ) : isLoading || !summary ? (
+        <div className="ax-stat-row" aria-busy="true">
+          {Array.from({ length: 4 }, (_, index) => (
+            <div key={index} className="ax-stat">
+              <span className="al-skeleton" style={{ width: '60%', height: 22 }} />
+              <span className="al-skeleton" style={{ width: '40%', height: 12 }} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="ax-stat-row" data-testid="dashboard-taxi-revenue">
+          <div className="ax-stat ax-stat--lead">
+            <span className="ax-stat__value">{formatPaiseAsRupees(summary.totalPaise)}</span>
+            <span className="ax-stat__label">
+              Total{summary.partial ? ' (newest entries)' : ''} ·{' '}
+              {summary.entries.toLocaleString('en-IN')} entries
+            </span>
+          </div>
+          <div className="ax-stat">
+            <span className="ax-stat__value">
+              {formatPaiseAsRupees(summary.advanceEarnedPaise)}
+            </span>
+            <span className="ax-stat__label">Booking fees earned</span>
+          </div>
+          <div className="ax-stat">
+            <span className="ax-stat__value">
+              {formatPaiseAsRupees(summary.advanceForfeitedPaise)}
+            </span>
+            <span className="ax-stat__label">Booking fees forfeited</span>
+          </div>
+          <div className="ax-stat">
+            <span className="ax-stat__value">
+              {formatPaiseAsRupees(summary.depositForfeitedPaise)}
+            </span>
+            <span className="ax-stat__label">Partner deposits forfeited</span>
+          </div>
+        </div>
+      )}
+    </AdminPanel>
+  );
+}
+
 /** A count from a capped list reads "100+" so it never claims to be the full total. */
 function cappedCount(value: number, capped: boolean): string {
   return capped ? `${value.toLocaleString()}+` : value.toLocaleString();
@@ -126,6 +260,7 @@ function cappedCount(value: number, capped: boolean): string {
 
 export function DashboardPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { metrics, isLoading, isFetching, userErrorMessage, refresh } = useDashboard();
 
   const inventory = metrics?.inventory;
@@ -133,58 +268,41 @@ export function DashboardPage() {
   const promos = metrics?.promos;
   const catalog = metrics?.catalog;
 
-  const snapshotKpis = useMemo(() => {
-    if (!inventory || !batchManagement || !promos) return [];
-    const items = [
-      {
-        label: inventory.capped ? 'QR batches (newest 100)' : 'QR batches',
-        value: cappedCount(inventory.totalBatches, inventory.capped),
-      },
-      {
-        label: inventory.capped ? 'Draft batches (newest 100)' : 'Draft batches',
-        value: batchManagement.draftBatches.toLocaleString(),
-      },
-      {
-        label: promos.capped ? 'Active promos (newest 200)' : 'Active promos',
-        value: promos.activePromos.toLocaleString(),
-      },
-    ];
-    if (catalog) {
-      items.splice(2, 0, { label: 'Catalog SKUs', value: catalog.skus.toLocaleString() });
-    }
-    return items;
-  }, [batchManagement, catalog, inventory, promos]);
-
-  if (userErrorMessage && !metrics) {
-    return (
-      <RequirePermission permission="dashboard:view">
-        <AlErrorState
-          message={userErrorMessage}
-          onRetry={() => {
-            refresh();
-          }}
-        />
-      </RequirePermission>
-    );
-  }
-
   return (
     <RequirePermission permission="dashboard:view">
       <AlStack gap="md">
         <AlPageHeader
           title="Dashboard"
-          description="Operations snapshot and shortcuts across Admin."
+          description="What needs you right now, money in, and stock — every number is read live from the admin API."
           actions={
             <AlPageHeaderAction
               label={isFetching ? 'Refreshing…' : 'Refresh'}
               loading={isFetching}
               variant="secondary"
-              onClick={refresh}
+              onClick={() => {
+                refresh();
+                void queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+              }}
             />
           }
         />
 
-        {isLoading || !metrics || !inventory || !batchManagement || !promos ? (
+        <AttentionPanel />
+        <TaxiRevenuePanel />
+
+        {userErrorMessage && !metrics ? (
+          <AdminPanel
+            title="Stock & catalog"
+            subtitle="QR sticker batches, plan shelves and promos."
+          >
+            <AlErrorState
+              message={userErrorMessage}
+              onRetry={() => {
+                refresh();
+              }}
+            />
+          </AdminPanel>
+        ) : isLoading || !metrics || !inventory || !batchManagement || !promos ? (
           <div className="dashboard-page-grid dashboard-page-grid--loading">
             {Array.from({ length: 6 }, (_, index) => (
               <MetricSkeleton key={index} />
@@ -192,11 +310,13 @@ export function DashboardPage() {
           </div>
         ) : (
           <>
-            {snapshotKpis.length > 0 ? <AdminKpiStrip items={snapshotKpis} /> : null}
-
-            <AdminPanel title="Operations" subtitle="Stock, catalog and promos.">
+            <AdminPanel
+              title="Stock & catalog"
+              subtitle="QR sticker batches, plan shelves and promos."
+            >
               <div className="dashboard-page-grid">
                 <DashboardPageCard
+                  testId="dashboard-card-qr"
                   title="QR stickers"
                   description={
                     inventory.capped

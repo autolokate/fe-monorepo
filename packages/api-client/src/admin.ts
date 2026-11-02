@@ -2156,11 +2156,22 @@ export type AdminPlanTier = 'SAFE' | 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
 /** Per-vehicle role from `AccountEntitlementsDto.vehicles[]`. */
 export type AdminVehicleRole = 'OWNER' | 'PROVISIONAL_OWNER' | 'DRIVER';
 
+/** Flow v3 per-vehicle RC review state (`VehicleRoleDto.rcStatus`). */
+export type AdminVehicleRcStatus = 'NOT_SUBMITTED' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED';
+
 export type AdminUserVehicleRoleDto = {
   vehicleId: string;
   role: AdminVehicleRole;
   /** True once an RC ownership claim is approved. */
   ownershipVerified: boolean;
+  /** Flow v3: whether the vehicle has any owner at all (absent on pre-v3 servers). */
+  hasOwner?: boolean;
+  /** Flow v3: this account's RC review state for the vehicle (absent on pre-v3 servers). */
+  rcStatus?: AdminVehicleRcStatus;
+  /** Flow v3: the admin's reason when `rcStatus` is REJECTED. */
+  rejectionReason?: string | null;
+  /** Flow v3: vehicle-scoped premium (DriveQuant binding, protection badge) applies to this vehicle. */
+  vehiclePremium?: boolean;
 };
 
 /** `GET /admin/v1/users/{userId}/entitlements` — the same snapshot the consumer app reads from `/v1/me/entitlements`. */
@@ -2170,6 +2181,11 @@ export type AdminUserEntitlementsDto = {
   source: 'SUBSCRIPTION' | 'NONE';
   expiresAt: string | null;
   features: { driveQuant: boolean; leaderboard: boolean; academy: boolean; ai: boolean };
+  /**
+   * Flow v3: the vehicle the plan was purchased with — vehicle-scoped premium applies only here.
+   * Null when unpaid; absent on pre-v3 servers.
+   */
+  mainVehicleId?: string | null;
   vehicles: AdminUserVehicleRoleDto[];
 };
 

@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   toSubscriptionsQueryStatus,
@@ -9,6 +9,7 @@ import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { ADMIN_LIST_PAGE_SIZE, nextOffsetOf } from '@/platform/query/cursor-pages';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchSubscriptions } from '@/services/subscriptions/subscriptions-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export const subscriptionsQueryKeys = {
   all: ['admin', 'subscriptions'] as const,
@@ -17,7 +18,10 @@ export const subscriptionsQueryKeys = {
 };
 
 export function useSubscriptions(initialStatusFilter: SubscriptionsStatusFilter = 'ALL') {
-  const [statusFilter, setStatusFilter] = useState<SubscriptionsStatusFilter>(initialStatusFilter);
+  const [statusFilter, setStatusFilter] = useUrlFilterState<SubscriptionsStatusFilter>(
+    'status',
+    initialStatusFilter,
+  );
 
   const query = useInfiniteQuery({
     queryKey: subscriptionsQueryKeys.list(statusFilter),

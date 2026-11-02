@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { filterPromosByStatus, type PromoStatusFilter } from '@/features/promos/promo-filters';
 import { promosQueryKeys } from '@/hooks/promos/promo-query-keys';
@@ -7,9 +7,13 @@ import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
 import { computePromoMetrics } from '@/services/promos/promo-metrics';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export function usePromoManagement(initialStatusFilter: PromoStatusFilter = 'ALL') {
-  const [statusFilter, setStatusFilter] = useState<PromoStatusFilter>(initialStatusFilter);
+  const [statusFilter, setStatusFilter] = useUrlFilterState<PromoStatusFilter>(
+    'status',
+    initialStatusFilter,
+  );
 
   const query = useQuery({
     queryKey: promosQueryKeys.list(),

@@ -123,6 +123,22 @@ export type AdminDiscoveryReelDto = {
   updatedAt: string;
   /** Garage/Store partner org attribution (0086). Null when unlinked. */
   partnerOrgId?: string | null;
+  /** OpenAPI `DiscoveryReelPartnerDto` — the linked partner's public card (null when unlinked). */
+  partner?: {
+    orgId: string;
+    displayName: string | null;
+    type: 'GARAGE' | 'STORE';
+    city: string | null;
+    cities: string[];
+  } | null;
+  /** OpenAPI `DiscoveryReelCreatorDto` — who the app credits: a partner clip or an Autolokate reel. */
+  creator?: {
+    kind: 'GARAGE' | 'STORE' | 'AUTOLOKATE';
+    id: string | null;
+    displayName: string | null;
+    avatarUrl: string | null;
+    profileAvailable: boolean;
+  };
   /** `VIDEO` (default) or `IMAGE` — an image reel's `playbackUrl` is the signed image URL. */
   mediaType?: 'VIDEO' | 'IMAGE';
   /** Carousel extras after the primary media (signed `url` on the detail read). */

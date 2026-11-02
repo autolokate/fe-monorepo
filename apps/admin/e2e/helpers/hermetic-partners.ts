@@ -235,6 +235,11 @@ export async function installHermeticPartnersRoutes(
     }
 
     const partnerDetail = path.match(/\/admin\/v1\/partners\/([^/]+)$/);
+    // `/partners/kyc` is the GST queue, not an org id — let the base stubs (or a spec) answer it.
+    if (partnerDetail?.[1] === 'kyc') {
+      await route.fallback();
+      return;
+    }
     if (partnerDetail && partnerDetail[1] !== 'requests') {
       capture.partnerDetail.push(partnerDetail[1] ?? '');
       if (listStatus !== 200) {

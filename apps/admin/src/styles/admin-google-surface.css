@@ -27,40 +27,6 @@
 
 /* ── Navigation (rounded pill active, no accent bar) ────────────── */
 
-.admin-shell-nav-item.is-active::before {
-  display: none;
-}
-
-.admin-shell-nav-item {
-  min-height: 2.5rem;
-  padding: var(--al-space-2) var(--al-space-3);
-  border-radius: var(--al-admin-radius-control, var(--al-radius-sm));
-  font-weight: var(--al-font-weight-regular);
-}
-
-.admin-shell-nav-item.is-active {
-  background: var(--al-color-surface-active);
-  color: var(--al-color-text);
-  font-weight: var(--al-font-weight-medium);
-}
-
-.admin-shell-sidebar__group-label {
-  letter-spacing: 0.04em;
-  font-weight: var(--al-font-weight-medium);
-  padding-inline: var(--al-space-4);
-}
-
-.admin-shell-sidebar__brand-mark {
-  box-shadow: none;
-  background: transparent;
-}
-
-.admin-shell-profile {
-  box-shadow: none;
-  border: var(--al-border-width-thin) solid var(--al-color-border-subtle);
-  background: var(--al-color-surface);
-}
-
 /* ── Page headers (Google: regular weight, clear hierarchy) ─────── */
 
 .al-page-layout .al-page-header {
@@ -85,13 +51,6 @@
 }
 
 /* Sidebar & shell text readability */
-.al-page-layout .admin-shell-nav-item {
-  color: color-mix(in srgb, var(--al-color-on-surface) 78%, transparent);
-}
-
-.al-page-layout .admin-shell-sidebar__group-label {
-  color: var(--al-admin-hint-color, var(--al-color-text-subtle));
-}
 
 .al-page-layout .al-data-table__table td {
   color: var(--al-color-text);
@@ -245,14 +204,6 @@
 .al-page-layout .al-button--secondary,
 .al-modal .al-button--secondary {
   border-color: var(--al-color-border-subtle);
-}
-
-.al-page-layout .admin-command-trigger {
-  min-width: 16rem;
-  border-radius: var(--al-radius-pill);
-  border-color: var(--al-color-border-subtle);
-  background: var(--al-color-surface-variant);
-  font-weight: var(--al-font-weight-regular) !important;
 }
 
 /* ── Modals (Google dialog: flat footer, subtle close) ──────────── */

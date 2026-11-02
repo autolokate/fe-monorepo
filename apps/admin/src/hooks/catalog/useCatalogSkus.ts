@@ -6,6 +6,7 @@ import { catalogQueryKeys } from '@/hooks/catalog/catalog-query-keys';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchCatalogSkus } from '@/services/catalog/admin-catalog-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type SkuChannelFilter = QrBatchChannel | 'ALL';
 
@@ -17,7 +18,10 @@ export function useCatalogSkus(
   initialChannelFilter: SkuChannelFilter = 'ALL',
   initialIncludeInactive = true,
 ) {
-  const [channelFilter, setChannelFilter] = useState<SkuChannelFilter>(initialChannelFilter);
+  const [channelFilter, setChannelFilter] = useUrlFilterState<SkuChannelFilter>(
+    'channel',
+    initialChannelFilter,
+  );
   const [includeInactive, setIncludeInactive] = useState(initialIncludeInactive);
 
   const params = useMemo(

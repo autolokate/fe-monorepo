@@ -12,6 +12,7 @@ import {
   fetchDiscoveryReplies,
   moderateDiscoveryReply,
 } from '@/services/discovery/admin-replies-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 export type ReplyStatusFilter = AdminQaStatus | 'ALL';
 
@@ -19,7 +20,7 @@ const repliesKey = () => [...discoveryQueryKeys.all, 'replies'] as const;
 
 export function useDiscoveryReplies() {
   const canRead = useAdminPermission('discovery:read');
-  const [status, setStatus] = useState<ReplyStatusFilter>('VISIBLE');
+  const [status, setStatus] = useUrlFilterState<ReplyStatusFilter>('status', 'VISIBLE');
   const [search, setSearch] = useState('');
   const q = useDebouncedValue(search.trim(), 300);
 

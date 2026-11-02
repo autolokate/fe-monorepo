@@ -7,7 +7,7 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 
 import {
   useGarageBidColumns,
@@ -62,7 +62,7 @@ function DetailCard({
   mono = false,
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   mono?: boolean;
 }) {
   return (
@@ -72,6 +72,25 @@ function DetailCard({
         {value}
       </span>
     </div>
+  );
+}
+
+/**
+ * Coordinates the server derived from the customer's Google place — opens the point on Google Maps
+ * (a plain link, no API key involved). Pre-Places requests may have none.
+ */
+function MapPointLink({ lat, lng }: { lat?: number | null; lng?: number | null }) {
+  if (typeof lat !== 'number' || typeof lng !== 'number') return <>Not captured</>;
+  const label = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  return (
+    <a
+      className="admin-link"
+      href={`https://www.google.com/maps/search/?api=1&query=${String(lat)},${String(lng)}`}
+      target="_blank"
+      rel="noreferrer noopener"
+    >
+      {label}
+    </a>
   );
 }
 
@@ -320,12 +339,24 @@ export function PartnerRequestsInboxPage() {
                       'Not captured'
                     }
                   />
+                  <DetailCard
+                    label="Pickup point"
+                    value={
+                      <MapPointLink lat={selectedTaxi.pickupLat} lng={selectedTaxi.pickupLng} />
+                    }
+                  />
                   <DetailCard label="Drop-off" value={selectedTaxi.dropoffLabel} />
                   <DetailCard
                     label="Drop-off city / state"
                     value={
                       formatCityState(selectedTaxi.dropoffCity, selectedTaxi.dropoffState) ??
                       'Not captured'
+                    }
+                  />
+                  <DetailCard
+                    label="Drop-off point"
+                    value={
+                      <MapPointLink lat={selectedTaxi.dropoffLat} lng={selectedTaxi.dropoffLng} />
                     }
                   />
                   {typeof selectedTaxi.seats === 'number' ? (

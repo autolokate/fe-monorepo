@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   toInventoryQueryState,
@@ -13,6 +13,7 @@ import {
   INVENTORY_PAGE_LIMIT,
 } from '@/services/inventory/inventory-metrics';
 import { fetchQrInventoryPage } from '@/services/inventory/inventory-service';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 /**
  * Cache shapes under `inventoryQueryKeys.all`:
@@ -29,7 +30,10 @@ export const inventoryQueryKeys = {
 };
 
 export function useQrInventory(initialStateFilter: InventoryStateFilter = 'ALL') {
-  const [stateFilter, setStateFilter] = useState<InventoryStateFilter>(initialStateFilter);
+  const [stateFilter, setStateFilter] = useUrlFilterState<InventoryStateFilter>(
+    'state',
+    initialStateFilter,
+  );
 
   const query = useInfiniteQuery({
     queryKey: inventoryQueryKeys.list(stateFilter),
