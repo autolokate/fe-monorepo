@@ -24,11 +24,14 @@ Web app for **Autolokate**, an automotive discovery and marketplace experience. 
    cp .env.example .env.local
    ```
 
-   | Variable                              | Purpose                                                                                                                          |
-   | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-   | `NEXT_PUBLIC_SITE_URL`                | Public site origin (canonical URLs, metadata). Example: `http://localhost:3000`                                                  |
-   | `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL` | Backend API base URL. **Required for `next build`** (the build fails if unset); `next dev` falls back to `http://localhost:8080` |
-   | `NEXT_PUBLIC_RAZORPAY_KEY_ID`         | _(Unused)_ the `/buy` checkout takes the Razorpay key from the backend pay response                                              |
+   | Variable                              | Purpose                                                                                                                                                           |
+   | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+   | `NEXT_PUBLIC_SITE_URL`                | Public site origin (canonical URLs, metadata). Example: `http://localhost:3000`                                                                                   |
+   | `NEXT_PUBLIC_AUTOLOKATE_API_BASE_URL` | Backend API base URL. **Required for `next build`** (the build fails if unset); `next dev` falls back to `http://localhost:8080`                                  |
+   | `NEXT_PUBLIC_RAZORPAY_KEY_ID`         | _(Unused)_ the `/buy` checkout takes the Razorpay key from the backend pay response                                                                               |
+   | `APP_LINKS_*` (runtime)               | Universal / App Links served at `/.well-known/apple-app-site-association` + `/.well-known/assetlinks.json` — see `.env.example` and `src/lib/app-links/config.ts` |
+
+   **Share links.** `/r/{reelId}` (Discovery reel) and `/c/{clipId}` (garage clip) server-render an Open Graph / Twitter card preview from `GET /v1/public/reels/{id}` with "Open in app" (custom scheme / Android intent) and store buttons; the poster goes through `/api/share/reels/{id}/poster` (302 to a freshly signed URL). When the app is installed the OS opens these URLs in the app directly.
 
 3. **Development server** (uses [Turbopack](https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack))
 
