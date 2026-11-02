@@ -13,6 +13,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
+import {
+  PARTNER_GST_LABEL,
+  PartnerGstBadge,
+  partnerGstLabel,
+} from '@/features/partners/partner-gst';
 import { PartnerReelsSection } from '@/features/partners/PartnerReelsSection';
 import { formatPartnersDateTime, shortId } from '@/features/partners/partners-filters';
 import { useGarageEntitlementMutations } from '@/hooks/garage/useGarageEntitlementMutations';
@@ -82,7 +87,9 @@ export function PartnerDetailPage() {
   const { publishStoreMutation, setGstVerificationMutation, mapMutationError } =
     useGarageEntitlementMutations();
 
-  const [gstDraft, setGstDraft] = useState<GarageGstVerification>('NOT_SUBMITTED');
+  // Preselects the store's real GST state from the partner record (`gstVerification`); '' only when
+  // the record carries none, so we never pre-select a value that could overwrite the real one.
+  const [gstDraft, setGstDraft] = useState<GarageGstVerification | ''>('');
   const [gstApplied, setGstApplied] = useState<GarageGstVerification | null>(null);
 
   useEffect(() => {
@@ -90,8 +97,7 @@ export function PartnerDetailPage() {
     const fromDto = isGarageGstVerification(partner.gstVerification)
       ? partner.gstVerification
       : null;
-    const next = gstApplied ?? fromDto ?? 'NOT_SUBMITTED';
-    setGstDraft(next);
+    setGstDraft(gstApplied ?? fromDto ?? '');
   }, [partner, gstApplied]);
 
   if (userErrorMessage && !partner) {
@@ -116,7 +122,9 @@ export function PartnerDetailPage() {
     Boolean(partner.storeId) &&
     partner.storeStatus !== 'PUBLISHED' &&
     isGarageStorePartner;
-  const showGstPanel = isGarageStorePartner && Boolean(partner.storeId);
+  // `gstVerification` is null only for orgs without a storefront (taxi-only) — GST doesn't apply.
+  const showGstPanel =
+    partner.gstVerification !== null || (isGarageStorePartner && Boolean(partner.storeId));
 
   const currentGst =
     gstApplied ??
@@ -200,7 +208,12 @@ export function PartnerDetailPage() {
             />
             <DetailField
               label="GST verification"
-              value={currentGst ? humanLabel(currentGst) : '—'}
+              value={currentGst ? PARTNER_GST_LABEL[currentGst] : partnerGstLabel(null)}
+            />
+            <DetailField
+              label="GSTIN"
+              value={partner.gstinMasked ?? '—'}
+              mono={Boolean(partner.gstinMasked)}
             />
             <DetailField
               label="Cities"
@@ -218,19 +231,39 @@ export function PartnerDetailPage() {
                   Set store GST status for Nearby eligibility and ops review.
                 </p>
               </div>
-              {currentGst ? (
-                <div className="admin-panel__meta">
-                  <span className="admin-status-chip admin-status-chip--neutral">
-                    {humanLabel(currentGst)}
+              <div className="admin-panel__meta">
+                {currentGst ? (
+                  <PartnerGstBadge value={currentGst} testId="partners-gst-current" />
+                ) : (
+                  <span
+                    className="admin-status-chip admin-status-chip--neutral"
+                    data-testid="partners-gst-current"
+                  >
+                    Current status unknown
                   </span>
-                </div>
-              ) : null}
+                )}
+              </div>
             </div>
+            {partner.gstinMasked ? (
+              <AlText tone="muted" variant="caption" data-testid="partners-gst-gstin">
+                GSTIN {partner.gstinMasked} (masked — the full number is in KYC review).
+              </AlText>
+            ) : null}
+            {!currentGst ? (
+              <AlText tone="muted" variant="caption" data-testid="partners-gst-unknown">
+                The partner record doesn&apos;t include the store&apos;s current GST status. Check
+                it in KYC review before changing it here.
+              </AlText>
+            ) : null}
             {canWrite ? (
               <div className="partners-gst-row">
                 <AlSelect
                   label="Status"
-                  options={GST_OPTIONS}
+                  options={
+                    gstDraft === ''
+                      ? [{ value: '', label: 'Choose a status…' }, ...GST_OPTIONS]
+                      : GST_OPTIONS
+                  }
                   value={gstDraft}
                   data-testid="partners-gst-verification-select"
                   onChange={(event) => {
@@ -242,8 +275,9 @@ export function PartnerDetailPage() {
                   size="sm"
                   data-testid="partners-gst-verification-apply"
                   loading={setGstVerificationMutation.isPending}
-                  disabled={gstDraft === currentGst}
+                  disabled={gstDraft === '' || gstDraft === currentGst}
                   onClick={() => {
+                    if (gstDraft === '') return;
                     setGstVerificationMutation.mutate(
                       { orgId: partner.orgId, body: { gstVerification: gstDraft } },
                       {

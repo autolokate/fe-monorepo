@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   toPaymentsQueryOutcome,
   type PaymentsOutcomeFilter,
 } from '@/features/payments/payments-filters';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { ADMIN_LIST_PAGE_SIZE, nextCursorOf } from '@/platform/query/cursor-pages';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchPaymentsPage } from '@/services/payments/payments-service';
 
@@ -18,10 +19,19 @@ export const paymentsQueryKeys = {
 export function usePayments(initialOutcomeFilter: PaymentsOutcomeFilter = 'ALL') {
   const [outcomeFilter, setOutcomeFilter] = useState<PaymentsOutcomeFilter>(initialOutcomeFilter);
 
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: paymentsQueryKeys.list(outcomeFilter),
-    queryFn: ({ signal }) =>
-      fetchPaymentsPage({ outcome: toPaymentsQueryOutcome(outcomeFilter) }, signal),
+    queryFn: ({ pageParam, signal }) =>
+      fetchPaymentsPage(
+        {
+          outcome: toPaymentsQueryOutcome(outcomeFilter),
+          limit: ADMIN_LIST_PAGE_SIZE,
+          ...(pageParam ? { cursor: pageParam } : {}),
+        },
+        signal,
+      ),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: nextCursorOf,
     meta: { errorMessage: 'Unable to load payments.' },
   });
 
@@ -31,13 +41,25 @@ export function usePayments(initialOutcomeFilter: PaymentsOutcomeFilter = 'ALL')
     }
   }, [query.data, query.error, query.isError]);
 
-  const payments = query.data?.items ?? [];
+  const payments = useMemo(
+    () => query.data?.pages.flatMap((page) => page.items) ?? [],
+    [query.data],
+  );
+  const hasMore = query.hasNextPage;
 
   const userErrorMessage = query.isError ? mapAdminApiError(query.error).userMessage : null;
 
   return {
-    ...query,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isError: query.isError,
+    error: query.error,
     payments,
+    hasMore,
+    isFetchingNextPage: query.isFetchingNextPage,
+    loadMore: () => {
+      void query.fetchNextPage();
+    },
     outcomeFilter,
     setOutcomeFilter,
     userErrorMessage,

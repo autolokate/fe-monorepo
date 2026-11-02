@@ -14,6 +14,7 @@ import {
   type RefundOrderFormValues,
 } from '@/features/orders/refund-order-schema';
 import { useRefundOrder } from '@/hooks/orders/useRefundOrder';
+import { adminOrderLabel } from '@/platform/utils/admin-order-label';
 
 function formatInr(paise: number): string {
   return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
@@ -104,7 +105,7 @@ export function RefundOrderDialog({ order, onOpenChange }: RefundOrderDialogProp
       title={done ? 'Refund submitted' : 'Refund order'}
       description={
         order
-          ? `Full refund of ${formatInr(order.totalPaise)} for order ${order.orderNumber}. Partial refunds are not supported.`
+          ? `Full refund of ${formatInr(order.totalPaise)} for order ${adminOrderLabel(order.orderNumber, order.orderId)}. Partial refunds are not supported.`
           : 'Refund this order in full.'
       }
       footer={

@@ -4,13 +4,23 @@ import { useOrdersColumns } from '@/features/orders/orders-columns';
 import { useSubscriptionsColumns } from '@/features/subscriptions/subscriptions-columns';
 import { useAccountOrders } from '@/hooks/users/useAccountOrders';
 import { useAccountSubscriptions } from '@/hooks/users/useAccountSubscriptions';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminPanel } from '@/platform/components/AdminWowSurface';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 /** The resolved customer's orders — reuses the orders console columns, scoped by `accountId`. */
 function AccountOrdersSection({ accountId }: { accountId: string }) {
-  const { orders, isLoading, isFetching, userErrorMessage, refresh } = useAccountOrders(accountId);
+  const {
+    orders,
+    isLoading,
+    isFetching,
+    userErrorMessage,
+    refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
+  } = useAccountOrders(accountId);
   const columns = useOrdersColumns();
 
   return (
@@ -27,20 +37,34 @@ function AccountOrdersSection({ accountId }: { accountId: string }) {
           isRefreshing={isFetching}
           error={userErrorMessage && orders.length > 0 ? userErrorMessage : null}
           onRetry={refresh}
-          globalSearchPlaceholder="Search order #…"
+          globalSearchPlaceholder="Search order…"
           emptyTitle="No orders"
           emptyDescription="This customer has not placed any orders."
           getRowId={(row) => row.orderId}
         />
       )}
+      <AdminLoadMore
+        hasMore={hasMore}
+        loading={isFetchingNextPage}
+        onLoadMore={loadMore}
+        testId="account-orders-load-more"
+      />
     </AdminPanel>
   );
 }
 
 /** The resolved customer's subscriptions — reuses the subscriptions console columns, scoped by `accountId`. */
 function AccountSubscriptionsSection({ accountId }: { accountId: string }) {
-  const { subscriptions, isLoading, isFetching, userErrorMessage, refresh } =
-    useAccountSubscriptions(accountId);
+  const {
+    subscriptions,
+    isLoading,
+    isFetching,
+    userErrorMessage,
+    refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
+  } = useAccountSubscriptions(accountId);
   const columns = useSubscriptionsColumns();
 
   return (
@@ -63,6 +87,12 @@ function AccountSubscriptionsSection({ accountId }: { accountId: string }) {
           getRowId={(row) => row.subscriptionId}
         />
       )}
+      <AdminLoadMore
+        hasMore={hasMore}
+        loading={isFetchingNextPage}
+        onLoadMore={loadMore}
+        testId="account-subscriptions-load-more"
+      />
     </AdminPanel>
   );
 }

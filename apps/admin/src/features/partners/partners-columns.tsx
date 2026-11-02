@@ -2,6 +2,7 @@ import type { AdminPartnerOrgDto } from '@autolokate/api-client';
 import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
+import { PartnerGstBadge, partnerGstLabel } from '@/features/partners/partner-gst';
 import { formatPartnersDateTime, shortId } from '@/features/partners/partners-filters';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
@@ -31,6 +32,17 @@ export function usePartnersColumns(): ColumnDef<AdminPartnerOrgDto>[] {
         accessorFn: (row) => row.storeStatus ?? '',
         cell: ({ row }) =>
           row.original.storeStatus ? humanizeAdminLabel(row.original.storeStatus) : '—',
+      },
+      {
+        id: 'gst',
+        header: 'GST',
+        accessorFn: (row) => partnerGstLabel(row.gstVerification),
+        cell: ({ row }) => (
+          <PartnerGstBadge
+            value={row.original.gstVerification}
+            testId={`partners-gst-badge-${row.original.orgId}`}
+          />
+        ),
       },
       {
         id: 'cities',

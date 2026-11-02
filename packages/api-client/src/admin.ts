@@ -58,7 +58,7 @@ export type CreatePromoBody = {
   active?: boolean;
 };
 
-/** OpenAPI audit action enum subset — extend as backend adds values. */
+/** OpenAPI `GET /admin/v1/audit-events` `action` enum — extend as backend adds values. */
 export type AuditAction =
   | 'PAYOUT_ISSUED'
   | 'TRANSFER_APPROVED'
@@ -92,6 +92,23 @@ export type AuditAction =
   | 'CONSENT_WITHDRAWAL'
   | 'AUDIT_EXPORTED'
   | 'PARTNER_ENROLLED'
+  | 'OWNERSHIP_CLAIM_APPROVED'
+  | 'OWNERSHIP_CLAIM_REJECTED'
+  | 'OWNERSHIP_CLAIM_UNDER_REVIEW'
+  | 'DISCOVERY_REEL_MUTATION'
+  | 'DISCOVERY_QA_MODERATION'
+  | 'TAXI_POLICY_PUBLISHED'
+  | 'TAXI_BOOKING_ADMIN_CANCELLED'
+  | 'TAXI_DEPOSIT_RELEASED'
+  | 'TAXI_ENROLLMENT_SUSPENDED'
+  | 'TAXI_ENROLLMENT_REINSTATED'
+  | 'TAXI_DISPUTE_RESOLVED'
+  | 'USER_ROLE_GRANTED'
+  | 'USER_ROLE_REVOKED'
+  | 'SUPPORT_TICKET_UPDATED'
+  | 'BATCH_CODES_EXPORTED'
+  | 'WEBSITE_BOOKING_SLOTS_PUBLISHED'
+  | 'WEBSITE_BOOKING_STATUS_CHANGED'
   | (string & {});
 
 /** OpenAPI `AuditEventDto` — nullable object fields typed as `object | null`. */
@@ -292,6 +309,9 @@ export type SettlementBatchResultDto = {
   skipped: number;
   errors: number;
   payoutIds: string[];
+  /** DUE remittances minted this run (cash-heavy groups where the partner owes the net). */
+  remittances: number;
+  remittanceIds: string[];
 };
 
 /** OpenAPI `ReorderFulfilResultDto` */
@@ -304,6 +324,18 @@ export type ReorderFulfilResultDto = {
 
 export type ListQrInventoryQuery = {
   state?: QrBatchStatus;
+  /** 1–100 (server default 100). */
+  limit?: number;
+  /** Opaque `meta.pagination.nextCursor` from the previous page (same `state` filter). */
+  cursor?: string;
+};
+
+/** Keyset page of `GET /admin/v1/inventory` with envelope pagination meta. */
+export type QrInventoryPageResult = {
+  items: BatchSummaryDto[];
+  pagination: PaginationDto | null;
+  requestId: string | null;
+  correlationId: string | null;
 };
 
 /** OpenAPI `BatchCodeDto.status` */
@@ -398,7 +430,8 @@ export type AdminOrderFulfillment = {
 /** OpenAPI `AdminOrderSummary` — one row in the admin orders list. */
 export type AdminOrderSummary = {
   orderId: string;
-  orderNumber: string;
+  /** Always null on Nest — `payment.orders` has no order-number column; display `orderId`. */
+  orderNumber: string | null;
   accountId: string | null;
   orderKind: AdminOrderKind;
   status: AdminOrderStatus;
@@ -413,7 +446,8 @@ export type AdminOrderSummary = {
 /** OpenAPI `AdminOrderDetail` — a single order with its money breakdown and partner attribution. */
 export type AdminOrderDetail = {
   orderId: string;
-  orderNumber: string;
+  /** Always null on Nest — `payment.orders` has no order-number column; display `orderId`. */
+  orderNumber: string | null;
   accountId: string | null;
   orderKind: AdminOrderKind;
   qrCodeId: string | null;
@@ -505,17 +539,56 @@ function buildQuery(params: Record<string, string | number | undefined>): string
   return query ? `?${query}` : '';
 }
 
-/** GET /admin/v1/inventory */
+/** GET /admin/v1/inventory — one page (data only; see {@link listQrInventoryPage} for the cursor). */
 export async function listQrInventory(
   client: ApiClient,
   query: ListQrInventoryQuery = {},
   options: { signal?: AbortSignal } = {},
 ): Promise<BatchSummaryDto[]> {
-  const path = `${endpoints.admin.inventory}${buildQuery({ state: query.state })}`;
+  const page = await listQrInventoryPage(client, query, options);
+  return page.items;
+}
+
+/** GET /admin/v1/inventory — keyset page with `meta.pagination` (newest first). */
+export async function listQrInventoryPage(
+  client: ApiClient,
+  query: ListQrInventoryQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<QrInventoryPageResult> {
+  const path = `${endpoints.admin.inventory}${buildQuery({
+    state: query.state,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
   const response = await client.get<unknown>(path, {
     ...(options.signal ? { signal: options.signal } : {}),
   });
-  return unwrapEnvelope(response) as BatchSummaryDto[];
+  const meta = readEnvelopeMeta(response);
+  const pagination = meta?.pagination;
+  return {
+    items: unwrapEnvelope(response) as BatchSummaryDto[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+    requestId: meta?.requestId ?? null,
+    correlationId: meta?.correlationId ?? null,
+  };
+}
+
+/** GET /admin/v1/qr-batches/{id} — one batch summary, whatever its age. */
+export async function getQrBatch(
+  client: ApiClient,
+  batchId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<BatchSummaryDto> {
+  const response = await client.get<unknown>(endpoints.admin.qrBatch(batchId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as BatchSummaryDto;
 }
 
 /** GET /admin/v1/qr-batches/{id}/codes — data only. */
@@ -1365,7 +1438,7 @@ export async function updateAdminSupportTicketStatus(
 export type AdminIncidentStatus = 'OPEN' | 'RESOLVED';
 
 /** OpenAPI `AdminIncidentSummary.source` — how the incident was first reported. */
-export type AdminIncidentSource = 'BYSTANDER' | 'TELEMATICS' | 'CONVERGED';
+export type AdminIncidentSource = 'BYSTANDER' | 'TELEMATICS' | 'CONVERGED' | 'APP';
 
 /** OpenAPI `AdminIncidentAlert.status` — the corroborating SOS alert's lifecycle. */
 export type AdminIncidentAlertStatus =
@@ -2075,6 +2148,112 @@ export async function listAdminUserEmergencyContacts(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as AdminUserEmergencyContactDto[];
+}
+
+/** Consumer plan tier (`AccountEntitlementsDto.planTier`). */
+export type AdminPlanTier = 'SAFE' | 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
+
+/** Per-vehicle role from `AccountEntitlementsDto.vehicles[]`. */
+export type AdminVehicleRole = 'OWNER' | 'PROVISIONAL_OWNER' | 'DRIVER';
+
+export type AdminUserVehicleRoleDto = {
+  vehicleId: string;
+  role: AdminVehicleRole;
+  /** True once an RC ownership claim is approved. */
+  ownershipVerified: boolean;
+};
+
+/** `GET /admin/v1/users/{userId}/entitlements` — the same snapshot the consumer app reads from `/v1/me/entitlements`. */
+export type AdminUserEntitlementsDto = {
+  paid: boolean;
+  planTier: AdminPlanTier | null;
+  source: 'SUBSCRIPTION' | 'NONE';
+  expiresAt: string | null;
+  features: { driveQuant: boolean; leaderboard: boolean; academy: boolean; ai: boolean };
+  vehicles: AdminUserVehicleRoleDto[];
+};
+
+/** `GET /admin/v1/users/{userId}/streak` — IST-day streak with weekly forgiveness. */
+export type AdminUserStreakDto = {
+  current: number;
+  longest: number;
+  todayCompleted: boolean;
+  lastActiveDate: string | null;
+  forgivenessUsedThisWeek: boolean;
+  weekStart: string;
+  nextMilestone: number;
+  celebrate: { kind: 'INCREASED' | 'MILESTONE'; value: number; eventId: string } | null;
+};
+
+/** GET /admin/v1/users/{userId}/entitlements — paid state, premium flags, per-vehicle role (read-only). */
+export async function getAdminUserEntitlements(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserEntitlementsDto> {
+  const response = await client.get<unknown>(endpoints.admin.userEntitlements(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserEntitlementsDto;
+}
+
+/** OpenAPI `AdminVehicleOwnerDto.role` */
+export type AdminVehicleOwnerRole = 'OWNER' | 'PROVISIONAL_OWNER';
+
+/** OpenAPI `AdminVehicleOwnerDto` — the vehicle's current owner (display name lives on GET /admin/v1/users/{id}). */
+export type AdminVehicleOwnerDto = {
+  accountId: string;
+  username: string | null;
+  role: AdminVehicleOwnerRole;
+  ownershipVerified: boolean;
+  ownershipVerifiedAt: string | null;
+};
+
+/** OpenAPI `AdminVehicleDriverDto.status` */
+export type AdminVehicleDriverStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'REMOVED';
+
+/** OpenAPI `AdminVehicleDriverDto` — one driver membership on a vehicle. */
+export type AdminVehicleDriverDto = {
+  id: string;
+  accountId: string;
+  username: string | null;
+  status: AdminVehicleDriverStatus;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** OpenAPI `AdminVehicleDriversDto` — owner + every driver membership (newest first). */
+export type AdminVehicleDriversDto = {
+  vehicleId: string;
+  plate: string;
+  /** Null while nobody has paid for / claimed the vehicle. */
+  owner: AdminVehicleOwnerDto | null;
+  drivers: AdminVehicleDriverDto[];
+};
+
+/** GET /admin/v1/vehicles/{vehicleId}/drivers — the vehicle's owner and driver roster (read-only). */
+export async function getAdminVehicleDrivers(
+  client: ApiClient,
+  vehicleId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminVehicleDriversDto> {
+  const response = await client.get<unknown>(endpoints.admin.vehicleDrivers(vehicleId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminVehicleDriversDto;
+}
+
+/** GET /admin/v1/users/{userId}/streak — the consumer's streak exactly as their app sees it (read-only). */
+export async function getAdminUserStreak(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserStreakDto> {
+  const response = await client.get<unknown>(endpoints.admin.userStreak(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserStreakDto;
 }
 
 /** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent; audited). */

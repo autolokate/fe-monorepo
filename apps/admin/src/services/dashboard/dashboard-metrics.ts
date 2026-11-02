@@ -15,17 +15,20 @@ export type DashboardMetrics = {
   batchManagement: BatchManagementMetrics;
   promos: PromoMetrics;
   catalog: CatalogMetrics | null;
-  /** Size of the latest audit feed page (API limit), not total audit history. */
-  auditLatestCount: number;
 };
 
 export function computeDashboardMetrics(snapshot: DashboardSnapshot): DashboardMetrics {
   return {
-    inventory: computeInventoryMetrics(snapshot.inventory),
-    batchManagement: computeBatchManagementMetrics(snapshot.inventory),
+    inventory: computeInventoryMetrics(
+      snapshot.inventory.items,
+      snapshot.inventory.pagination?.hasMore === true,
+    ),
+    batchManagement: computeBatchManagementMetrics(
+      snapshot.inventory.items,
+      snapshot.inventory.pagination?.hasMore === true,
+    ),
     promos: computePromoMetrics(snapshot.promos),
     catalog:
       snapshot.plans && snapshot.skus ? computeCatalogMetrics(snapshot.plans, snapshot.skus) : null,
-    auditLatestCount: snapshot.recentAuditEvents.length,
   };
 }

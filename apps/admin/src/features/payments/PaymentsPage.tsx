@@ -6,13 +6,15 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { PAYMENTS_OUTCOME_FILTERS } from '@/features/payments/payments-filters';
 import { usePaymentsColumns } from '@/features/payments/payments-columns';
 import { usePayments } from '@/hooks/payments/usePayments';
+import { PaymentDetailSheet } from '@/features/payments/PaymentDetailSheet';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -28,7 +30,7 @@ function pagePaymentKpis(payments: AdminPaymentSummary[]) {
   return [
     { label: 'Paid', value: String(paid) },
     { label: 'Pending', value: String(pending) },
-    { label: 'Total', value: String(payments.length) },
+    { label: 'Shown', value: String(payments.length) },
   ];
 }
 
@@ -41,7 +43,11 @@ export function PaymentsPage() {
     outcomeFilter,
     setOutcomeFilter,
     refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
   } = usePayments();
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const columns = usePaymentsColumns();
   const kpiItems = useMemo(
@@ -101,12 +107,29 @@ export function PaymentsPage() {
             isRefreshing={isFetching}
             error={userErrorMessage && payments.length > 0 ? userErrorMessage : null}
             onRetry={refresh}
-            globalSearchPlaceholder="Search order # or ref…"
+            globalSearchPlaceholder="Search order or ref…"
             emptyTitle="No payments found"
             emptyDescription="Try another outcome filter."
             getRowId={(row) => row.paymentId}
+            onRowClick={(row) => {
+              setOpenId(row.paymentId);
+            }}
+          />
+          <AdminLoadMore
+            hasMore={hasMore}
+            loading={isFetchingNextPage}
+            onLoadMore={loadMore}
+            testId="payments-load-more"
           />
         </AdminDataBlock>
+
+        <PaymentDetailSheet
+          paymentId={openId}
+          open={openId !== null}
+          onOpenChange={(open) => {
+            if (!open) setOpenId(null);
+          }}
+        />
       </AlStack>
     </RequirePermission>
   );

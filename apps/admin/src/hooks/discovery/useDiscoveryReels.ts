@@ -39,6 +39,8 @@ export function useDiscoveryReels() {
         },
         signal,
       ),
+    // The reel cursor encodes the sort it was issued under (a cross-sort cursor is a 400). `sort`
+    // is part of the query key, so changing it starts a fresh list with no cursor.
     getNextPageParam: (lastPage) =>
       lastPage.pagination?.hasMore ? (lastPage.pagination.nextCursor ?? undefined) : undefined,
     enabled: canRead,

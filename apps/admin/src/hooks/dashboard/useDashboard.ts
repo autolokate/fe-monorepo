@@ -8,33 +8,31 @@ import { computeDashboardMetrics } from '@/services/dashboard/dashboard-metrics'
 import type { DashboardSnapshot } from '@/services/dashboard/dashboard-service';
 
 export function useDashboard() {
-  const [inventoryQuery, promosQuery, auditQuery, plansQuery, skusQuery] = useQueries({
+  const [inventoryQuery, promosQuery, plansQuery, skusQuery] = useQueries({
     queries: [...dashboardQueryDefinitions],
   });
 
-  const isLoading = inventoryQuery.isLoading || promosQuery.isLoading || auditQuery.isLoading;
+  const isLoading = inventoryQuery.isLoading || promosQuery.isLoading;
   const isFetching =
     inventoryQuery.isFetching ||
     promosQuery.isFetching ||
-    auditQuery.isFetching ||
     plansQuery.isFetching ||
     skusQuery.isFetching;
 
-  const coreError = inventoryQuery.error ?? promosQuery.error ?? auditQuery.error ?? null;
-  const isCoreError = inventoryQuery.isError || promosQuery.isError || auditQuery.isError;
+  const coreError = inventoryQuery.error ?? promosQuery.error ?? null;
+  const isCoreError = inventoryQuery.isError || promosQuery.isError;
 
   const data = useMemo((): DashboardSnapshot | undefined => {
-    if (!inventoryQuery.data || !promosQuery.data || !auditQuery.data) {
+    if (!inventoryQuery.data || !promosQuery.data) {
       return undefined;
     }
     return {
       inventory: inventoryQuery.data,
       promos: promosQuery.data,
-      recentAuditEvents: auditQuery.data,
       plans: plansQuery.data ?? null,
       skus: skusQuery.data ?? null,
     };
-  }, [auditQuery.data, inventoryQuery.data, plansQuery.data, promosQuery.data, skusQuery.data]);
+  }, [inventoryQuery.data, plansQuery.data, promosQuery.data, skusQuery.data]);
 
   useEffect(() => {
     if (isCoreError && data) {
@@ -57,7 +55,6 @@ export function useDashboard() {
     refresh: () => {
       void inventoryQuery.refetch();
       void promosQuery.refetch();
-      void auditQuery.refetch();
       void plansQuery.refetch();
       void skusQuery.refetch();
     },

@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import { OrderStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
+import { adminOrderLabel } from '@/platform/utils/admin-order-label';
 
 function formatInr(paise: number): string {
   return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
@@ -27,8 +28,14 @@ export function useOrdersColumns({
   return useMemo(
     () => [
       {
-        accessorKey: 'orderNumber',
-        header: 'Order #',
+        id: 'order',
+        header: 'Order',
+        accessorFn: (row) => adminOrderLabel(row.orderNumber, row.orderId),
+        cell: ({ row }) => (
+          <span className="admin-mono" title={row.original.orderId}>
+            {adminOrderLabel(row.original.orderNumber, row.original.orderId)}
+          </span>
+        ),
       },
       {
         accessorKey: 'orderKind',

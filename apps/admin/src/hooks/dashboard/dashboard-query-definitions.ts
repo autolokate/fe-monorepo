@@ -1,27 +1,27 @@
-import { RECENT_AUDIT_PARAMS, auditQueryKeys } from '@/hooks/audit/audit-query-keys';
 import { catalogQueryKeys } from '@/hooks/catalog/catalog-query-keys';
 import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
 import { promosQueryKeys } from '@/hooks/promos/promo-query-keys';
 import { fetchAdminPlans, fetchCatalogSkus } from '@/services/catalog/admin-catalog-service';
-import { fetchAuditEvents } from '@/services/audit/audit-events-service';
-import { fetchQrInventory } from '@/services/inventory/inventory-service';
+import { INVENTORY_PAGE_LIMIT } from '@/services/inventory/inventory-metrics';
+import { fetchQrInventoryPage } from '@/services/inventory/inventory-service';
 import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
 
+/**
+ * No audit-events read here: `GET /admin/v1/audit-events` writes an AUDIT_EXPORTED row on every call,
+ * so reading it on each app load / dashboard view flooded the Activity log with the operator's own
+ * reads. The Activity log page reads it on purpose.
+ */
 export const dashboardQueryDefinitions = [
   {
-    queryKey: inventoryQueryKeys.list('ALL'),
-    queryFn: ({ signal }: { signal: AbortSignal }) => fetchQrInventory({}, signal),
+    queryKey: inventoryQueryKeys.firstPage(),
+    queryFn: ({ signal }: { signal: AbortSignal }) =>
+      fetchQrInventoryPage({ limit: INVENTORY_PAGE_LIMIT }, signal),
     meta: { errorMessage: 'Unable to load QR inventory.' },
   },
   {
     queryKey: promosQueryKeys.list(),
     queryFn: ({ signal }: { signal: AbortSignal }) => fetchAdminPromos(signal),
     meta: { errorMessage: 'Unable to load promos.' },
-  },
-  {
-    queryKey: auditQueryKeys.list(RECENT_AUDIT_PARAMS),
-    queryFn: ({ signal }: { signal: AbortSignal }) => fetchAuditEvents(RECENT_AUDIT_PARAMS, signal),
-    meta: { errorMessage: 'Unable to load audit events.' },
   },
   {
     queryKey: catalogQueryKeys.plansList('ALL'),

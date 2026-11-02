@@ -1,5 +1,7 @@
 import type {
   AdminUserDetailDto,
+  AdminUserEntitlementsDto,
+  AdminUserStreakDto,
   AdminUserEmergencyContactDto,
   AdminUserExpenseDto,
   AdminUserMaintenanceJobDto,
@@ -9,13 +11,17 @@ import type {
   AdminUserVehicleDocumentDto,
   AdminUserVehicleDto,
   AdminUsersPageResult,
+  AdminVehicleDriversDto,
   GrantableUserRole,
   ListAdminUsersQuery,
   PatchAdminUserBody,
 } from '@autolokate/api-client';
 import {
   findAdminUserByPhone,
+  getAdminUserEntitlements,
+  getAdminUserStreak,
   getAdminUser,
+  getAdminVehicleDrivers,
   grantUserRole,
   listAdminUserEmergencyContacts,
   listAdminUserExpenses,
@@ -125,4 +131,28 @@ export async function revokeRole(
   signal?: AbortSignal,
 ): Promise<AdminUserSummaryDto> {
   return revokeUserRole(getAdminApiClient(), userId, role, { signal });
+}
+
+/** GET /admin/v1/users/{userId}/entitlements — what the consumer app sees (paid, tier, premium flags, vehicle roles). */
+export async function fetchUserEntitlements(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserEntitlementsDto> {
+  return getAdminUserEntitlements(getAdminApiClient(), userId, { signal });
+}
+
+/** GET /admin/v1/users/{userId}/streak — IST-day streak with weekly forgiveness. */
+export async function fetchUserStreak(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserStreakDto> {
+  return getAdminUserStreak(getAdminApiClient(), userId, { signal });
+}
+
+/** GET /admin/v1/vehicles/{vehicleId}/drivers — owner + every driver membership on one vehicle. */
+export async function fetchVehicleDrivers(
+  vehicleId: string,
+  signal?: AbortSignal,
+): Promise<AdminVehicleDriversDto> {
+  return getAdminVehicleDrivers(getAdminApiClient(), vehicleId, { signal });
 }

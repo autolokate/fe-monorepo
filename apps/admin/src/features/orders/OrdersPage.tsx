@@ -15,6 +15,7 @@ import { RefundOrderDialog } from '@/features/orders/RefundOrderDialog';
 import { useOrders } from '@/hooks/orders/useOrders';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { useCanRefundOrders } from '@/platform/rbac/module-write-permissions';
@@ -31,7 +32,7 @@ function pageOrderKpis(orders: AdminOrderSummary[]) {
   return [
     { label: 'Paid', value: String(paid) },
     { label: 'Pending', value: String(pending) },
-    { label: 'Total', value: String(orders.length) },
+    { label: 'Shown', value: String(orders.length) },
   ];
 }
 
@@ -44,6 +45,9 @@ export function OrdersPage() {
     statusFilter,
     setStatusFilter,
     refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
   } = useOrders();
 
   const canRefund = useCanRefundOrders();
@@ -109,13 +113,19 @@ export function OrdersPage() {
             isRefreshing={isFetching}
             error={userErrorMessage && orders.length > 0 ? userErrorMessage : null}
             onRetry={refresh}
-            globalSearchPlaceholder="Search order #…"
+            globalSearchPlaceholder="Search order…"
             emptyTitle="No orders found"
             emptyDescription="Try another status filter."
             getRowId={(row) => row.orderId}
             onRowClick={(row) => {
               setDetailOrder(row);
             }}
+          />
+          <AdminLoadMore
+            hasMore={hasMore}
+            loading={isFetchingNextPage}
+            onLoadMore={loadMore}
+            testId="orders-load-more"
           />
         </AdminDataBlock>
 

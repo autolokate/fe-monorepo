@@ -119,6 +119,11 @@ function DashboardLinkCard({ title, description, icon, onClick }: DashboardLinkC
   );
 }
 
+/** A count from a capped list reads "100+" so it never claims to be the full total. */
+function cappedCount(value: number, capped: boolean): string {
+  return capped ? `${value.toLocaleString()}+` : value.toLocaleString();
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const { metrics, isLoading, isFetching, userErrorMessage, refresh } = useDashboard();
@@ -131,19 +136,24 @@ export function DashboardPage() {
   const snapshotKpis = useMemo(() => {
     if (!inventory || !batchManagement || !promos) return [];
     const items = [
-      { label: 'QR batches', value: inventory.totalBatches.toLocaleString() },
-      { label: 'Draft batches', value: batchManagement.draftBatches.toLocaleString() },
-      { label: 'Active promos', value: promos.activePromos.toLocaleString() },
       {
-        label: 'Audit page',
-        value: metrics.auditLatestCount.toLocaleString(),
+        label: inventory.capped ? 'QR batches (newest 100)' : 'QR batches',
+        value: cappedCount(inventory.totalBatches, inventory.capped),
+      },
+      {
+        label: inventory.capped ? 'Draft batches (newest 100)' : 'Draft batches',
+        value: batchManagement.draftBatches.toLocaleString(),
+      },
+      {
+        label: promos.capped ? 'Active promos (newest 200)' : 'Active promos',
+        value: promos.activePromos.toLocaleString(),
       },
     ];
     if (catalog) {
       items.splice(2, 0, { label: 'Catalog SKUs', value: catalog.skus.toLocaleString() });
     }
     return items;
-  }, [batchManagement, catalog, inventory, metrics?.auditLatestCount, promos]);
+  }, [batchManagement, catalog, inventory, promos]);
 
   if (userErrorMessage && !metrics) {
     return (
@@ -184,16 +194,17 @@ export function DashboardPage() {
           <>
             {snapshotKpis.length > 0 ? <AdminKpiStrip items={snapshotKpis} /> : null}
 
-            <AdminPanel
-              title="Operations"
-              subtitle="Stock, catalog, promos, and recent audit activity."
-            >
+            <AdminPanel title="Operations" subtitle="Stock, catalog and promos.">
               <div className="dashboard-page-grid">
                 <DashboardPageCard
                   title="QR stickers"
-                  description="Stock and batch lifecycle"
+                  description={
+                    inventory.capped
+                      ? 'Newest 100 batches — load the rest on the Batches page'
+                      : 'Stock and batch lifecycle'
+                  }
                   icon={<ScanLineIcon size={18} aria-hidden />}
-                  primaryValue={inventory.totalBatches.toLocaleString()}
+                  primaryValue={cappedCount(inventory.totalBatches, inventory.capped)}
                   primaryLabel="batches"
                   stats={[
                     {
@@ -265,7 +276,7 @@ export function DashboardPage() {
                   stats={[
                     {
                       label: 'Total',
-                      value: promos.totalPromos.toLocaleString(),
+                      value: cappedCount(promos.totalPromos, promos.capped),
                       tone: 'neutral',
                     },
                     {
@@ -283,21 +294,19 @@ export function DashboardPage() {
                     void navigate(adminPaths.promos);
                   }}
                 />
-                <DashboardPageCard
-                  title="Activity"
-                  description="Latest audit feed page"
-                  icon={<ReceiptTextIcon size={18} aria-hidden />}
-                  primaryValue={metrics.auditLatestCount.toLocaleString()}
-                  primaryLabel="events on latest page"
-                  onClick={() => {
-                    void navigate(adminPaths.auditEvents);
-                  }}
-                />
               </div>
             </AdminPanel>
 
             <AdminPanel title="Jump to" subtitle="Common operator destinations.">
               <div className="dashboard-page-grid">
+                <DashboardLinkCard
+                  title="Activity log"
+                  description="Administrative actions, searchable"
+                  icon={<ReceiptTextIcon size={18} aria-hidden />}
+                  onClick={() => {
+                    void navigate(adminPaths.auditEvents);
+                  }}
+                />
                 <DashboardLinkCard
                   title="Customers"
                   description="Phone lookup and vehicle care"

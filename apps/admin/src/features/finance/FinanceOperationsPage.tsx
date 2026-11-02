@@ -21,6 +21,7 @@ function SettlementResultPanel({ result }: { result: SettlementBatchResultDto })
         items={[
           { label: 'Groups considered', value: result.groups.toLocaleString() },
           { label: 'Payouts created', value: result.payouts.toLocaleString() },
+          { label: 'Remittances due', value: result.remittances.toLocaleString() },
           { label: 'Skipped', value: result.skipped.toLocaleString() },
           { label: 'Errors', value: result.errors.toLocaleString() },
         ]}

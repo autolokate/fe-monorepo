@@ -37,7 +37,18 @@ export type AdminPartnerReelSummaryDto = {
   viewCount?: number;
 };
 
-/** Admin partner directory row — no fake KYC status fields. */
+/**
+ * OpenAPI `AdminPartnerOrgDto.gstVerification` — storefront GST state (`garage.stores.gst_verification`).
+ * There is no `REJECTED`; `null` means the org has no storefront (taxi-only).
+ */
+export type AdminPartnerGstVerification =
+  | 'NOT_SUBMITTED'
+  | 'PENDING'
+  | 'VERIFIED'
+  | 'NEEDS_ATTENTION'
+  | 'PENDING_REVIEW';
+
+/** Admin partner directory row (OpenAPI `AdminPartnerOrgDto`). */
 export type AdminPartnerOrgDto = {
   orgId: string;
   name: string;
@@ -48,8 +59,10 @@ export type AdminPartnerOrgDto = {
   storeId?: string | null;
   storeName?: string | null;
   storeStatus?: string | null;
-  /** Present when BE partner detail includes store GST; optional until DTO ships. */
-  gstVerification?: string | null;
+  /** Storefront GST verification; null for orgs without a storefront (taxi-only). */
+  gstVerification: AdminPartnerGstVerification | null;
+  /** Submitted GSTIN with the PAN masked (state code + last 3); null when none. */
+  gstinMasked: string | null;
   /** Explicit storefront surface (be-garage 0116); taxi-only orgs have none. */
   surfaceType?: 'GARAGE' | 'STORE' | null;
   cities?: string[];

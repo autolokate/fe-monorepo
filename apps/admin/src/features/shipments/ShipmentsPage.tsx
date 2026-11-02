@@ -13,6 +13,7 @@ import { useShipmentsColumns } from '@/features/shipments/shipments-columns';
 import { useShipments } from '@/hooks/shipments/useShipments';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -21,7 +22,7 @@ import { RequirePermission } from '@/platform/rbac/RequirePermission';
 function pageShipmentKpis(shipments: AdminShipmentSummary[]) {
   return [
     { label: 'Paid', value: String(shipments.length) },
-    { label: 'Total', value: String(shipments.length) },
+    { label: 'Shown', value: String(shipments.length) },
   ];
 }
 
@@ -34,6 +35,9 @@ export function ShipmentsPage() {
     statusFilter,
     setStatusFilter,
     refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
   } = useShipments();
 
   const columns = useShipmentsColumns();
@@ -102,6 +106,12 @@ export function ShipmentsPage() {
             emptyTitle="No shipments found"
             emptyDescription="Try another status filter."
             getRowId={(row) => row.orderId}
+          />
+          <AdminLoadMore
+            hasMore={hasMore}
+            loading={isFetchingNextPage}
+            onLoadMore={loadMore}
+            testId="shipments-load-more"
           />
         </AdminDataBlock>
       </AlStack>

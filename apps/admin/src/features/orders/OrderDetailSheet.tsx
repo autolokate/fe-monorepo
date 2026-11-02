@@ -12,6 +12,7 @@ import {
   humanizeAdminLabel,
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
+import { adminOrderLabel } from '@/platform/utils/admin-order-label';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
 
 export type OrderDetailSheetProps = {
@@ -44,7 +45,11 @@ export function OrderDetailSheet({
       open={open}
       onOpenChange={onOpenChange}
       size="lg"
-      title={order?.orderNumber ?? orderNumber ?? 'Order'}
+      title={
+        order || orderId
+          ? `Order ${adminOrderLabel(order?.orderNumber ?? orderNumber, order?.orderId ?? orderId)}`
+          : 'Order'
+      }
       description="Money, plan, and attribution for this order."
     >
       {isLoading ? <AdminPageLoader label="Loading order…" /> : null}

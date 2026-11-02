@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 import {
   HERMETIC_ORDER_ID,
-  HERMETIC_ORDER_NUMBER,
+  HERMETIC_ORDER_LABEL,
   installHermeticApiRoutes,
   openOrdersPage,
   seedHermeticSession,
@@ -20,7 +20,9 @@ test.describe('Orders list (hermetic)', () => {
     await seedHermeticSession(page);
     await openOrdersPage(page);
 
-    await expect(page.getByText(HERMETIC_ORDER_NUMBER)).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(HERMETIC_ORDER_LABEL, { exact: true })).toBeVisible({
+      timeout: 10_000,
+    });
     await expect(page.getByText('Partner Attach', { exact: true })).toBeVisible();
     expect(capture.ordersGet).toBeGreaterThanOrEqual(1);
 

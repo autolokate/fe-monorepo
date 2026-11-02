@@ -89,6 +89,10 @@ export type HermeticCapture = {
   skusGet: number;
   skusCreate: Array<{ method: string; path: string; body: unknown }>;
   inventoryGet: number;
+  /** Query strings of every `GET /admin/v1/inventory` (cursor / limit / state). */
+  inventoryQueries: string[];
+  /** `GET /admin/v1/qr-batches/{id}` (batch detail) calls. */
+  qrBatchGet: number;
   qrBatchesCreate: Array<{ method: string; path: string; body: unknown }>;
   qrBatchesGenerate: Array<{ method: string; path: string }>;
   qrBatchesProvision: Array<{ method: string; path: string }>;
@@ -149,9 +153,9 @@ export const HERMETIC_OWNERSHIP_CLAIM_ID = 'cccccccc-dddd-4eee-8fff-000000000002
 export const HERMETIC_OWNERSHIP_CLAIM_ID_APPROVED = 'cccccccc-dddd-4eee-8fff-000000000003';
 export const HERMETIC_INCIDENT_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee1111';
 export const HERMETIC_ORDER_ID = 'eeeeeeee-ffff-4aaa-8bbb-cccccccccccc';
-export const HERMETIC_ORDER_NUMBER = 'ALK-HERM-ORD-1';
+/** Nest admin orders/payments carry `orderNumber: null` — the UI shows the short order id. */
+export const HERMETIC_ORDER_LABEL = 'eeeeeeee';
 export const HERMETIC_ORDER_DRAFT_ID = 'ffffffff-aaaa-4bbb-8ccc-dddddddddddd';
-export const HERMETIC_ORDER_DRAFT_NUMBER = 'ALK-HERM-ORD-2';
 export const HERMETIC_PAYMENT_REF = 'pay_hermetic_refund_1';
 export const HERMETIC_REFUND_REF = 'rfnd_hermetic_1';
 export const HERMETIC_CLAWBACK_PAYMENT_REF = 'pay_hermetic_cb_1';
@@ -178,6 +182,13 @@ export const HERMETIC_AUDIT_EVENT_ID_2 = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee8889';
 export const HERMETIC_AUDIT_BATCH_ID = 'hermetic-batch-1';
 export const HERMETIC_CUSTOMER_ACCOUNT_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee9999';
 export const HERMETIC_CUSTOMER_PHONE = '+919876543210';
+/** Another account on the hermetic vehicle rosters (driver on the customer's cars, owner of the driven one). */
+export const HERMETIC_ROSTER_OTHER_ACCOUNT_ID = 'eeeeeeee-1111-4111-8111-000000000001';
+export const HERMETIC_ROSTER_OTHER_USERNAME = 'hermetic_driver';
+export const HERMETIC_ROSTER_OTHER_NAME = 'Hermetic Roster Driver';
+/** The vehicle the hermetic customer only drives (DRIVER membership, not in their vehicle list). */
+export const HERMETIC_ROSTER_DRIVER_VEHICLE_ID = 'dddddddd-2222-4222-8222-222222222222';
+export const HERMETIC_ROSTER_DRIVER_PLATE = 'KA01ZZ0001';
 export const HERMETIC_UNKNOWN_PHONE = '+919000000123';
 
 export const HERMETIC_AUDIT_EVENT = {
@@ -436,6 +447,11 @@ export type InstallHermeticRoutesOptions = {
    * without running create → generate → provision first.
    */
   seedProvisionedQrBatch?: boolean;
+  /**
+   * Extra (older) batches appended after the seeded ones — lets specs exercise inventory Load more
+   * and the single-batch read for a batch past the first page.
+   */
+  extraQrBatches?: Array<Record<string, unknown>>;
   /** When set, audit-events GET returns this status instead of 200. */
   auditEventsGetStatus?: number;
   /** When set, users GET (phone lookup) returns this status instead of 200. */
@@ -444,6 +460,15 @@ export type InstallHermeticRoutesOptions = {
   usersGrantPostStatus?: number;
   /** When set, users roles DELETE returns this status instead of 200. */
   usersRevokeDeleteStatus?: number;
+  /**
+   * Consumer v2 admin reads (`/users/{id}/entitlements` + `/users/{id}/streak`). `404` answers Nest's
+   * unrouted `Cannot GET …` (route not deployed); any other value ≥ 400 answers a server error.
+   */
+  usersConsumerV2Status?: number;
+  /** Override the entitlement snapshot served for the hermetic customer. */
+  usersEntitlements?: Record<string, unknown>;
+  /** When set, `GET /admin/v1/vehicles/{id}/drivers` answers this status (404 = not deployed). */
+  vehicleDriversStatus?: number;
 };
 
 /**
@@ -496,6 +521,7 @@ export async function installHermeticApiRoutes(
   const usersLookupGetStatus = options.usersLookupGetStatus ?? 200;
   const usersGrantPostStatus = options.usersGrantPostStatus ?? 200;
   const usersRevokeDeleteStatus = options.usersRevokeDeleteStatus ?? 200;
+  const usersConsumerV2Status = options.usersConsumerV2Status ?? 200;
 
   const capture: HermeticCapture = {
     initiate: [],
@@ -535,6 +561,8 @@ export async function installHermeticApiRoutes(
     skusGet: 0,
     skusCreate: [],
     inventoryGet: 0,
+    inventoryQueries: [],
+    qrBatchGet: 0,
     qrBatchesCreate: [],
     qrBatchesGenerate: [],
     qrBatchesProvision: [],
@@ -641,6 +669,12 @@ export async function installHermeticApiRoutes(
         },
       ]
     : [];
+  if (options.extraQrBatches) {
+    inventoryBatches = [
+      ...inventoryBatches,
+      ...(options.extraQrBatches as unknown as HermeticBatchSummary[]),
+    ];
+  }
 
   let taxiPolicyState: HermeticTaxiPolicy = options.seedPublishedTaxiPolicy
     ? {
@@ -797,11 +831,47 @@ export async function installHermeticApiRoutes(
         );
         return;
       }
+      capture.inventoryQueries.push(url.search);
       const state = url.searchParams.get('state');
-      const rows = !state
+      const filtered = !state
         ? [...inventoryBatches]
         : inventoryBatches.filter((batch) => batch.status === state);
-      await fulfillJson(route, inventoryGetStatus, envelope(rows));
+      // Keyset paging (Nest: limit 1–100, default 100; opaque cursor bound to the same `state`).
+      const limit = Math.min(
+        100,
+        Math.max(1, Number(url.searchParams.get('limit') ?? '100') || 100),
+      );
+      const cursor = url.searchParams.get('cursor');
+      const offset = cursor?.startsWith('inv:') ? Number(cursor.slice(4)) || 0 : 0;
+      const rows = filtered.slice(offset, offset + limit);
+      const hasMore = offset + limit < filtered.length;
+      await fulfillJson(route, inventoryGetStatus, {
+        data: rows,
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: {
+            limit,
+            cursor: cursor ?? null,
+            nextCursor: hasMore ? `inv:${String(offset + limit)}` : null,
+            hasMore,
+          },
+        },
+      });
+      return;
+    }
+
+    // Nest OA: GET /admin/v1/qr-batches/{id} — single BatchSummary (any age).
+    const qrBatchDetailMatch = path.match(/^\/admin\/v1\/qr-batches\/([^/]+)$/);
+    if (method === 'GET' && qrBatchDetailMatch) {
+      capture.qrBatchGet += 1;
+      const batchId = decodeURIComponent(qrBatchDetailMatch[1] ?? '');
+      const found = inventoryBatches.find((batch) => batch.id === batchId);
+      if (!found) {
+        await fulfillJson(route, 404, errorEnvelope('QR batch not found', 'not_found'));
+        return;
+      }
+      await fulfillJson(route, 200, envelope(found));
       return;
     }
 
@@ -1237,7 +1307,10 @@ export async function installHermeticApiRoutes(
           fraudFlagged: false,
           createdAt: '2026-01-01T00:00:00.000Z',
           roles: [...hermeticCustomerRoles],
-          name: 'Hermetic Customer',
+          name:
+            decodeURIComponent(userDetailMatch[1] ?? '') === HERMETIC_ROSTER_OTHER_ACCOUNT_ID
+              ? HERMETIC_ROSTER_OTHER_NAME
+              : 'Hermetic Customer',
         }),
       );
       return;
@@ -1444,6 +1517,155 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    // Nest OA: GET /admin/v1/vehicles/{vehicleId}/drivers — owner + driver roster (AdminVehicleDriversDto).
+    const vehicleDriversMatch = path.match(/^\/admin\/v1\/vehicles\/([^/]+)\/drivers$/);
+    if (method === 'GET' && vehicleDriversMatch) {
+      const vehicleDriversStatus = options.vehicleDriversStatus ?? 200;
+      if (vehicleDriversStatus === 404) {
+        await fulfillJson(route, 404, {
+          error: { code: 'not_found', message: `Cannot GET ${path}`, details: {} },
+          meta: { requestId: 'hermetic', correlationId: 'hermetic' },
+        });
+        return;
+      }
+      if (vehicleDriversStatus >= 400) {
+        await fulfillJson(
+          route,
+          vehicleDriversStatus,
+          errorEnvelope('Server error', 'internal_error'),
+        );
+        return;
+      }
+      const vehicleId = decodeURIComponent(vehicleDriversMatch[1] ?? '');
+      const ownedByCustomer =
+        vehicleId === HERMETIC_VEHICLE_ID || vehicleId === HERMETIC_VEHICLE_ID_B;
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          vehicleId,
+          plate:
+            vehicleId === HERMETIC_VEHICLE_ID
+              ? 'DL7CQ1939'
+              : vehicleId === HERMETIC_VEHICLE_ID_B
+                ? 'MH12AB9999'
+                : HERMETIC_ROSTER_DRIVER_PLATE,
+          owner: ownedByCustomer
+            ? {
+                accountId: HERMETIC_CUSTOMER_ACCOUNT_ID,
+                username: 'hermetic_customer',
+                role: vehicleId === HERMETIC_VEHICLE_ID ? 'PROVISIONAL_OWNER' : 'OWNER',
+                ownershipVerified: vehicleId !== HERMETIC_VEHICLE_ID,
+                ownershipVerifiedAt:
+                  vehicleId === HERMETIC_VEHICLE_ID ? null : '2026-10-18T12:00:00.000Z',
+              }
+            : {
+                accountId: HERMETIC_ROSTER_OTHER_ACCOUNT_ID,
+                username: HERMETIC_ROSTER_OTHER_USERNAME,
+                role: 'OWNER',
+                ownershipVerified: true,
+                ownershipVerifiedAt: '2026-09-01T10:00:00.000Z',
+              },
+          drivers: ownedByCustomer
+            ? [
+                {
+                  id: 'dddddddd-1111-4111-8111-000000000001',
+                  accountId: HERMETIC_ROSTER_OTHER_ACCOUNT_ID,
+                  username: HERMETIC_ROSTER_OTHER_USERNAME,
+                  status: 'ACTIVE',
+                  resolvedAt: '2026-10-20T09:00:00.000Z',
+                  createdAt: '2026-10-19T09:00:00.000Z',
+                  updatedAt: '2026-10-20T09:00:00.000Z',
+                },
+                {
+                  id: 'dddddddd-1111-4111-8111-000000000002',
+                  accountId: 'eeeeeeee-1111-4111-8111-000000000003',
+                  username: null,
+                  status: 'REMOVED',
+                  resolvedAt: '2026-10-10T09:00:00.000Z',
+                  createdAt: '2026-10-01T09:00:00.000Z',
+                  updatedAt: '2026-10-10T09:00:00.000Z',
+                },
+              ]
+            : [
+                {
+                  id: 'dddddddd-1111-4111-8111-000000000004',
+                  accountId: HERMETIC_CUSTOMER_ACCOUNT_ID,
+                  username: 'hermetic_customer',
+                  status: 'ACTIVE',
+                  resolvedAt: '2026-10-21T09:00:00.000Z',
+                  createdAt: '2026-10-21T08:00:00.000Z',
+                  updatedAt: '2026-10-21T09:00:00.000Z',
+                },
+              ],
+        }),
+      );
+      return;
+    }
+
+    const userConsumerV2Match = path.match(/^\/admin\/v1\/users\/([^/]+)\/(entitlements|streak)$/);
+    if (method === 'GET' && userConsumerV2Match) {
+      if (usersConsumerV2Status === 404) {
+        await fulfillJson(route, 404, {
+          error: { code: 'not_found', message: `Cannot GET ${path}`, details: {} },
+          meta: { requestId: 'hermetic', correlationId: 'hermetic' },
+        });
+        return;
+      }
+      if (usersConsumerV2Status >= 400) {
+        await fulfillJson(
+          route,
+          usersConsumerV2Status,
+          errorEnvelope('Server error', 'internal_error'),
+        );
+        return;
+      }
+      if (userConsumerV2Match[2] === 'entitlements') {
+        await fulfillJson(
+          route,
+          200,
+          envelope(
+            options.usersEntitlements ?? {
+              paid: true,
+              planTier: 'SHIELD',
+              source: 'SUBSCRIPTION',
+              expiresAt: '2027-03-01T00:00:00.000Z',
+              features: { driveQuant: true, leaderboard: true, academy: true, ai: false },
+              vehicles: [
+                {
+                  vehicleId: HERMETIC_VEHICLE_ID,
+                  role: 'PROVISIONAL_OWNER',
+                  ownershipVerified: false,
+                },
+                { vehicleId: HERMETIC_VEHICLE_ID_B, role: 'OWNER', ownershipVerified: true },
+                {
+                  vehicleId: HERMETIC_ROSTER_DRIVER_VEHICLE_ID,
+                  role: 'DRIVER',
+                  ownershipVerified: false,
+                },
+              ],
+            },
+          ),
+        );
+        return;
+      }
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          current: 5,
+          longest: 12,
+          todayCompleted: true,
+          lastActiveDate: '2026-11-02',
+          forgivenessUsedThisWeek: true,
+          weekStart: '2026-11-02',
+          nextMilestone: 7,
+          celebrate: null,
+        }),
+      );
+      return;
+    }
+
     const userEmergencyContactsMatch = path.match(
       /^\/admin\/v1\/users\/([^/]+)\/emergency-contacts$/,
     );
@@ -1518,6 +1740,53 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    const subscriptionDetailMatch = path.match(/^\/admin\/v1\/subscriptions\/([^/]+)$/);
+    if (method === 'GET' && subscriptionDetailMatch) {
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          subscriptionId: decodeURIComponent(subscriptionDetailMatch[1] ?? ''),
+          accountId: HERMETIC_USER_ID,
+          qrCodeId: HERMETIC_QR_CODE,
+          vehicleId: HERMETIC_VEHICLE_ID,
+          planId: HERMETIC_PLAN_ID,
+          planTier: 'SHIELD',
+          planVersion: 1,
+          status: 'ACTIVE',
+          activatedVia: 'CONSUMER_SELF',
+          autoRenew: false,
+          startedAt: '2026-10-01T00:00:00.000Z',
+          renewsAt: '2027-10-01T00:00:00.000Z',
+          billingMandateId: null,
+        }),
+      );
+      return;
+    }
+
+    const paymentDetailMatch = path.match(/^\/admin\/v1\/payments\/([^/]+)$/);
+    if (method === 'GET' && paymentDetailMatch) {
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          paymentId: decodeURIComponent(paymentDetailMatch[1] ?? ''),
+          orderId: HERMETIC_ORDER_ID,
+          orderNumber: null,
+          ref: HERMETIC_PAYMENT_REF,
+          providerRef: 'pay_hermetic_provider',
+          mode: 'ONLINE',
+          state: 'CAPTURED',
+          outcome: 'PAID',
+          amountPaise: 19900,
+          capturedPaise: 19900,
+          stateSeq: 3,
+          createdAt: '2026-10-19T00:00:00.000Z',
+        }),
+      );
+      return;
+    }
+
     if (method === 'GET' && path === '/admin/v1/subscriptions') {
       capture.subscriptionsGet += 1;
       await fulfillJson(
@@ -1552,7 +1821,7 @@ export async function installHermeticApiRoutes(
           {
             paymentId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7777',
             orderId: HERMETIC_ORDER_ID,
-            orderNumber: HERMETIC_ORDER_NUMBER,
+            orderNumber: null,
             ref: HERMETIC_PAYMENT_REF,
             providerRef: null,
             mode: 'ONLINE',
@@ -2203,7 +2472,7 @@ export async function installHermeticApiRoutes(
       const catalog = [
         {
           orderId: HERMETIC_ORDER_ID,
-          orderNumber: HERMETIC_ORDER_NUMBER,
+          orderNumber: null,
           accountId: HERMETIC_USER_ID,
           orderKind: 'PARTNER_ATTACH',
           status: 'PAID',
@@ -2216,7 +2485,7 @@ export async function installHermeticApiRoutes(
         },
         {
           orderId: HERMETIC_ORDER_DRAFT_ID,
-          orderNumber: HERMETIC_ORDER_DRAFT_NUMBER,
+          orderNumber: null,
           accountId: HERMETIC_USER_ID,
           orderKind: 'SCAN_SELF_PAY',
           status: 'DRAFT',
@@ -2310,6 +2579,8 @@ export async function installHermeticApiRoutes(
           skipped: 1,
           errors: 0,
           payoutIds: [HERMETIC_SETTLEMENT_PAYOUT_ID],
+          remittances: 1,
+          remittanceIds: ['aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeee7777'],
         }),
       );
       return;

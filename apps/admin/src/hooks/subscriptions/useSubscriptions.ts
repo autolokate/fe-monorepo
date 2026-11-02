@@ -1,11 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   toSubscriptionsQueryStatus,
   type SubscriptionsStatusFilter,
 } from '@/features/subscriptions/subscriptions-filters';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
+import { ADMIN_LIST_PAGE_SIZE, nextOffsetOf } from '@/platform/query/cursor-pages';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { fetchSubscriptions } from '@/services/subscriptions/subscriptions-service';
 
@@ -18,10 +19,19 @@ export const subscriptionsQueryKeys = {
 export function useSubscriptions(initialStatusFilter: SubscriptionsStatusFilter = 'ALL') {
   const [statusFilter, setStatusFilter] = useState<SubscriptionsStatusFilter>(initialStatusFilter);
 
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: subscriptionsQueryKeys.list(statusFilter),
-    queryFn: ({ signal }) =>
-      fetchSubscriptions({ status: toSubscriptionsQueryStatus(statusFilter) }, signal),
+    queryFn: ({ pageParam, signal }) =>
+      fetchSubscriptions(
+        {
+          status: toSubscriptionsQueryStatus(statusFilter),
+          limit: ADMIN_LIST_PAGE_SIZE,
+          offset: pageParam,
+        },
+        signal,
+      ),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => nextOffsetOf(lastPage, allPages),
     meta: { errorMessage: 'Unable to load subscriptions.' },
   });
 
@@ -31,13 +41,22 @@ export function useSubscriptions(initialStatusFilter: SubscriptionsStatusFilter 
     }
   }, [query.data, query.error, query.isError]);
 
-  const subscriptions = query.data ?? [];
+  const subscriptions = useMemo(() => query.data?.pages.flat() ?? [], [query.data]);
+  const hasMore = query.hasNextPage;
 
   const userErrorMessage = query.isError ? mapAdminApiError(query.error).userMessage : null;
 
   return {
-    ...query,
+    isLoading: query.isLoading,
+    isFetching: query.isFetching,
+    isError: query.isError,
+    error: query.error,
     subscriptions,
+    hasMore,
+    isFetchingNextPage: query.isFetchingNextPage,
+    loadMore: () => {
+      void query.fetchNextPage();
+    },
     statusFilter,
     setStatusFilter,
     userErrorMessage,

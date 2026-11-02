@@ -91,9 +91,13 @@ export const createSkuShape = {
   skuCode: z
     .string()
     .trim()
-    .min(1, 'SKU code is required.')
+    .min(2, 'SKU code needs at least 2 characters.')
     .max(64, 'SKU code is too long.')
-    .regex(/^[A-Z0-9-]+$/, 'Use uppercase letters, digits and hyphens — e.g. SKU-B2C-SHIELD.'),
+    // Mirrors the backend `CreateSkuDto.skuCode` pattern `^[A-Z0-9][A-Z0-9_-]{1,63}$`.
+    .regex(
+      /^[A-Z0-9][A-Z0-9_-]{1,63}$/,
+      'Start with a letter or digit; then uppercase letters, digits, hyphens or underscores — e.g. SKU-B2C-SHIELD.',
+    ),
   channel: channelEnum,
   prepaid: z.boolean(),
   sponsorOrgId: z.string().trim(),

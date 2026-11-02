@@ -123,6 +123,10 @@ export type AdminDiscoveryReelDto = {
   updatedAt: string;
   /** Garage/Store partner org attribution (0086). Null when unlinked. */
   partnerOrgId?: string | null;
+  /** `VIDEO` (default) or `IMAGE` — an image reel's `playbackUrl` is the signed image URL. */
+  mediaType?: 'VIDEO' | 'IMAGE';
+  /** Carousel extras after the primary media (signed `url` on the detail read). */
+  media?: { mediaId: string; mediaType: 'VIDEO' | 'IMAGE'; url: string | null }[];
 };
 
 export type ListAdminReelsQuery = {

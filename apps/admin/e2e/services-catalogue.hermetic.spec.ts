@@ -71,6 +71,36 @@ test.describe('Services catalogue (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
+  test('edit keeps status and the listing fields the form does not own', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
+    await seedHermeticSession(page);
+    await openServicesCataloguePage(page);
+
+    await page.getByTestId('filter-chip-ras').click();
+    await page.getByTestId(`services-deactivate-${HERMETIC_SERVICE_PROVIDER_ID}`).click();
+    await page.getByRole('button', { name: 'Deactivate', exact: true }).click();
+    await expect(page.getByRole('cell', { name: 'INACTIVE' })).toBeVisible({ timeout: 10_000 });
+
+    await page.getByTestId(`services-edit-${HERMETIC_SERVICE_PROVIDER_ID}`).click();
+    await expect(page.getByTestId('services-upsert-status')).toHaveValue('INACTIVE');
+    await expect(page.getByTestId('services-upsert-services')).toHaveValue('flatTyre');
+    await page.getByTestId('services-upsert-city').fill('Mysuru');
+    await page.getByTestId('services-upsert-submit').click();
+
+    await expect.poll(() => capture.servicesProvidersPut.length, { timeout: 10_000 }).toBe(1);
+    expect(capture.servicesProvidersPut[0]?.body).toMatchObject({
+      id: HERMETIC_SERVICE_PROVIDER_ID,
+      city: 'Mysuru',
+      status: 'INACTIVE',
+      services: ['flatTyre'],
+      rating: 4.5,
+      reviewCount: 12,
+      etaMinutes: 25,
+      openNow: true,
+    });
+    expect(capture.unexpected).toEqual([]);
+  });
+
   test('providers GET 403 surfaces AlErrorState', async ({ page }) => {
     await installHermeticApiRoutes(page, {
       sessionRole: 'ADMIN',

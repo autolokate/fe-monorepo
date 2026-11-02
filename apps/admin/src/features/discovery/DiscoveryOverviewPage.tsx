@@ -136,13 +136,15 @@ export function DiscoveryOverviewPage() {
   const overview = useDiscoveryOverview();
   const { questions, reels, dailyDrive, academy, engagement } = overview;
 
+  // Engagement is summed over the reels page we loaded; when that page is capped the sums are a floor.
+  const engagementSuffix = reels?.capped ? '+' : '';
   const engagementItems =
     engagement && !overview.reelsError
       ? [
-          { label: 'Views', value: formatCount(engagement.views) },
-          { label: 'Likes', value: formatCount(engagement.likes) },
-          { label: 'Comments', value: formatCount(engagement.comments) },
-          { label: 'Saves', value: formatCount(engagement.saves) },
+          { label: 'Views', value: `${formatCount(engagement.views)}${engagementSuffix}` },
+          { label: 'Likes', value: `${formatCount(engagement.likes)}${engagementSuffix}` },
+          { label: 'Comments', value: `${formatCount(engagement.comments)}${engagementSuffix}` },
+          { label: 'Saves', value: `${formatCount(engagement.saves)}${engagementSuffix}` },
         ]
       : [];
 
@@ -242,7 +244,11 @@ export function DiscoveryOverviewPage() {
           <div data-testid="discovery-overview-engagement">
             <AdminPanel
               title="Reels engagement"
-              subtitle="Totals across Discovery reels on this environment."
+              subtitle={
+                reels?.capped
+                  ? 'Totals across the newest reels loaded here (more exist).'
+                  : 'Totals across Discovery reels on this environment.'
+              }
             >
               <AdminKpiStrip items={engagementItems} />
               <AlText tone="muted" variant="caption">

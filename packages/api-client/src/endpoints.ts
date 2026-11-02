@@ -86,6 +86,8 @@ export const endpoints = {
   },
   adminExperts: {
     upsertExpert: '/admin/v1/experts',
+    experts: '/admin/v1/experts',
+    expert: (expertId: string) => `/admin/v1/experts/${encodeURIComponent(expertId)}`,
     sessionTypes: (expertId: string) =>
       `/admin/v1/experts/${encodeURIComponent(expertId)}/session-types`,
     slots: (expertId: string) => `/admin/v1/experts/${encodeURIComponent(expertId)}/slots`,
@@ -175,6 +177,7 @@ export const endpoints = {
     promos: '/admin/v1/promos',
     qrAutoDetachSweep: '/admin/v1/qr-auto-detach-sweep',
     qrBatches: '/admin/v1/qr-batches',
+    qrBatch: (id: string) => `/admin/v1/qr-batches/${encodeURIComponent(id)}`,
     generateQrBatch: (id: string) => `/admin/v1/qr-batches/${encodeURIComponent(id)}/generate`,
     provisionQrBatch: (id: string) => `/admin/v1/qr-batches/${encodeURIComponent(id)}/provision`,
     distributeQrBatch: (id: string) => `/admin/v1/qr-batches/${encodeURIComponent(id)}/distribute`,
@@ -203,6 +206,11 @@ export const endpoints = {
       `/admin/v1/users/${encodeURIComponent(userId)}/vehicle-documents`,
     userEmergencyContacts: (userId: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/emergency-contacts`,
+    userEntitlements: (userId: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/entitlements`,
+    vehicleDrivers: (vehicleId: string) =>
+      `/admin/v1/vehicles/${encodeURIComponent(vehicleId)}/drivers`,
+    userStreak: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/streak`,
     userRoles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/roles`,
     userRole: (userId: string, role: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,

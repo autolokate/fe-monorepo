@@ -1,4 +1,8 @@
-import type { AdminUserSummaryDto, AdminUserVehicleDto } from '@autolokate/api-client';
+import type {
+  AdminUserEntitlementsDto,
+  AdminUserSummaryDto,
+  AdminUserVehicleDto,
+} from '@autolokate/api-client';
 import {
   AlButton,
   AlDataTable,
@@ -8,18 +12,27 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
 import { filterCareByVehicleId } from '@/features/users/filter-care-by-vehicle';
+import {
+  UserPlanPanel,
+  UserStreakPanel,
+  UserVehicleMembershipsPanel,
+} from '@/features/users/UserConsumerStatePanels';
 import { UserRolesPanel } from '@/features/users/UserRolesPanel';
 import { useUsersColumns } from '@/features/users/users-columns';
+import { VehicleRosterPanel } from '@/features/users/VehicleRosterPanel';
 import { useAdminUserCareRecords } from '@/hooks/users/useAdminUserCareRecords';
+import { useAdminUserConsumerState } from '@/hooks/users/useAdminUserConsumerState';
 import { useAdminUserDetail } from '@/hooks/users/useAdminUserDetail';
 import { useAdminUsers } from '@/hooks/users/useAdminUsers';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import {
   AdminPanel,
@@ -27,8 +40,10 @@ import {
   humanizeAdminLabel,
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
+import { fetchUserDetail } from '@/services/users/admin-users-service';
 
 import './users.css';
 
@@ -48,6 +63,22 @@ const TYPE_FILTERS = [
   { value: 'INTERNAL', label: 'Internal' },
 ] as const;
 
+const VEHICLE_ROLE_LABEL: Record<string, string> = {
+  OWNER: 'Owner',
+  PROVISIONAL_OWNER: 'Provisional owner',
+  DRIVER: 'Driver',
+};
+
+/** The customer's role on one vehicle, straight from the entitlement snapshot (never guessed). */
+function selectedVehicleRoleLabel(
+  entitlements: AdminUserEntitlementsDto | null,
+  vehicleId: string,
+): string {
+  const entry = entitlements?.vehicles.find((row) => row.vehicleId === vehicleId);
+  if (!entry) return '—';
+  return VEHICLE_ROLE_LABEL[entry.role] ?? humanizeAdminLabel(entry.role);
+}
+
 function protectionLabel(value: string): string {
   return humanizeAdminLabel(value);
 }
@@ -56,10 +87,13 @@ function UserDetailPanel({
   account,
   searchPhone,
   onClose,
+  onOpenAccount,
 }: {
   account: AdminUserSummaryDto;
   searchPhone: string | null;
   onClose: () => void;
+  /** Switch the detail to another account (e.g. a driver or owner on a vehicle roster). */
+  onOpenAccount: (accountId: string) => void;
 }) {
   const canWrite = useAdminPermission('users:write');
   const {
@@ -95,9 +129,17 @@ function UserDetailPanel({
     refresh: refreshCare,
   } = useAdminUserCareRecords(account.id);
 
+  const {
+    entitlements,
+    streak,
+    isFetching: consumerFetching,
+    refresh: refreshConsumer,
+  } = useAdminUserConsumerState(account.id);
+
   const refresh = () => {
     refreshDetail();
     refreshCare();
+    refreshConsumer();
   };
 
   const [localeDraft, setLocaleDraft] = useState(account.locale);
@@ -162,7 +204,7 @@ function UserDetailPanel({
           type="button"
           size="sm"
           variant="secondary"
-          loading={isLoading || careFetching}
+          loading={isLoading || careFetching || consumerFetching}
           onClick={refresh}
         >
           Refresh
@@ -208,9 +250,19 @@ function UserDetailPanel({
                     : 'Not verified'
                 }
               />
-              <AdminDetailField label="Owner account" value={shortAdminId(account.id)} mono />
+              <AdminDetailField
+                label="Customer's role"
+                value={selectedVehicleRoleLabel(entitlements.data, selectedVehicle.vehicleId)}
+              />
             </AdminDetailGrid>
           </AdminPanel>
+
+          <VehicleRosterPanel
+            vehicleId={selectedVehicle.vehicleId}
+            currentAccountId={account.id}
+            onOpenAccount={onOpenAccount}
+            testId="vehicle-care-roster"
+          />
 
           <AdminPanel title="Expenses" subtitle="Personal expenses for this vehicle.">
             {expensesError ? (
@@ -386,6 +438,10 @@ function UserDetailPanel({
             </div>
           </AdminPanel>
 
+          <UserPlanPanel state={entitlements} onRetry={refreshConsumer} />
+
+          <UserStreakPanel state={streak} onRetry={refreshConsumer} />
+
           {canWrite ? (
             <UserRolesPanel userId={account.id} roles={roles} onChanged={refreshDetail} />
           ) : null}
@@ -478,7 +534,7 @@ function UserDetailPanel({
 
           <AdminPanel
             title="Vehicles"
-            subtitle="All owned vehicles. Open one to view expenses, maintenance, and documents."
+            subtitle="Vehicles on this account. Open one to view expenses, maintenance, and documents."
           >
             {vehiclesError ? (
               <AlErrorState message={vehiclesError} onRetry={refresh} />
@@ -508,7 +564,7 @@ function UserDetailPanel({
                 data={vehicles}
                 loading={vehiclesLoading}
                 emptyTitle="No vehicles"
-                emptyDescription="This account has no owned vehicles yet."
+                emptyDescription="This account has no vehicles yet."
                 getRowId={(row) => row.vehicleId}
                 onRowClick={(row) => {
                   setSelectedVehicleId(row.vehicleId);
@@ -516,6 +572,15 @@ function UserDetailPanel({
               />
             )}
           </AdminPanel>
+
+          <UserVehicleMembershipsPanel
+            state={entitlements}
+            vehicles={vehicles}
+            onRetry={refreshConsumer}
+            onOpenVehicle={setSelectedVehicleId}
+            accountId={account.id}
+            onOpenAccount={onOpenAccount}
+          />
 
           <CustomerDrilldown accountId={account.id} />
         </>
@@ -544,10 +609,36 @@ export function UsersPage() {
     typeFilter,
     setTypeFilter,
     refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
   } = useAdminUsers();
 
   const [selected, setSelected] = useState<AdminUserSummaryDto | null>(null);
+  const [openingAccountId, setOpeningAccountId] = useState<string | null>(null);
   const columns = useUsersColumns();
+  const queryClient = useQueryClient();
+
+  /** Roster rows carry only an account id — load its detail (a summary superset) and open it. */
+  const openAccount = (accountId: string) => {
+    if (openingAccountId) return;
+    setOpeningAccountId(accountId);
+    queryClient
+      .fetchQuery({
+        queryKey: ['admin', 'users', 'detail', accountId],
+        queryFn: ({ signal }) => fetchUserDetail(accountId, signal),
+        retry: 0,
+      })
+      .then((detail) => {
+        setSelected(detail);
+      })
+      .catch((error: unknown) => {
+        reportAdminApiError(error, { context: 'users:open-account', toast: true });
+      })
+      .finally(() => {
+        setOpeningAccountId(null);
+      });
+  };
 
   const pageDescription = 'Look up customers and review account care.';
 
@@ -582,7 +673,9 @@ export function UsersPage() {
 
         {selected ? (
           <UserDetailPanel
+            key={selected.id}
             account={selected}
+            onOpenAccount={openAccount}
             searchPhone={phoneApplied ?? null}
             onClose={() => {
               setSelected(null);
@@ -673,6 +766,12 @@ export function UsersPage() {
                 onRowClick={(row) => {
                   setSelected(row);
                 }}
+              />
+              <AdminLoadMore
+                hasMore={hasMore}
+                loading={isFetchingNextPage}
+                onLoadMore={loadMore}
+                testId="users-load-more"
               />
             </AdminDataBlock>
           </>

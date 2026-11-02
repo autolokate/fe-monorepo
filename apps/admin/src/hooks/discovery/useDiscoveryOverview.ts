@@ -107,7 +107,8 @@ export function useDiscoveryOverview() {
       published: count('PUBLISHED'),
       unpublished: count('DRAFT'),
       archived: count('ARCHIVED'),
-      capped: false,
+      // The admin list is limit 200 with no cursor: a full page means there may be more.
+      capped: items.length >= 200,
     };
   }, [dailyDriveQuery.data]);
 
