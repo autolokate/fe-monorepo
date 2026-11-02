@@ -25,7 +25,7 @@ test.describe.skip(`Admin Partners directory (hermetic) — ${skipReason}`, () =
 
     await expect(page.getByText('Hermetic Garage Partner')).toBeVisible();
     await page.getByTestId('filter-chip-TAXI').click();
-    await expect(page.getByText('No taxi partners yet')).toBeVisible();
+    await expect(page.getByText('Hermetic Taxi Fleet')).toBeVisible();
     await page.getByTestId('filter-chip-GARAGE').click();
     await page.getByText('Hermetic Garage Partner').click();
     await expect(page).toHaveURL(new RegExp(`/partners/${HERMETIC_PARTNER_ORG_ID}$`));

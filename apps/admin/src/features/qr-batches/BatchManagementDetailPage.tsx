@@ -84,7 +84,7 @@ export function BatchManagementDetailPage() {
     batch: fetchedBatch,
     isLoading,
     userErrorMessage,
-    notListedMessage,
+    notFoundMessage,
     refresh,
   } = useQrBatchById(batchId, locationState?.batch ?? null);
   const batch = batchOverride ?? fetchedBatch;
@@ -167,7 +167,7 @@ export function BatchManagementDetailPage() {
           title={userErrorMessage ? 'Something went wrong' : 'Batch not found'}
           message={
             userErrorMessage ??
-            notListedMessage ??
+            notFoundMessage ??
             'This batch may have been removed or the link is invalid.'
           }
           onRetry={

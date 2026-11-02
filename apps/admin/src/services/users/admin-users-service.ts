@@ -11,6 +11,7 @@ import type {
   AdminUserVehicleDocumentDto,
   AdminUserVehicleDto,
   AdminUsersPageResult,
+  AdminVehicleDriversDto,
   GrantableUserRole,
   ListAdminUsersQuery,
   PatchAdminUserBody,
@@ -20,6 +21,7 @@ import {
   getAdminUserEntitlements,
   getAdminUserStreak,
   getAdminUser,
+  getAdminVehicleDrivers,
   grantUserRole,
   listAdminUserEmergencyContacts,
   listAdminUserExpenses,
@@ -145,4 +147,12 @@ export async function fetchUserStreak(
   signal?: AbortSignal,
 ): Promise<AdminUserStreakDto> {
   return getAdminUserStreak(getAdminApiClient(), userId, { signal });
+}
+
+/** GET /admin/v1/vehicles/{vehicleId}/drivers — owner + every driver membership on one vehicle. */
+export async function fetchVehicleDrivers(
+  vehicleId: string,
+  signal?: AbortSignal,
+): Promise<AdminVehicleDriversDto> {
+  return getAdminVehicleDrivers(getAdminApiClient(), vehicleId, { signal });
 }

@@ -113,7 +113,7 @@ export function OrdersPage() {
             isRefreshing={isFetching}
             error={userErrorMessage && orders.length > 0 ? userErrorMessage : null}
             onRetry={refresh}
-            globalSearchPlaceholder="Search order #…"
+            globalSearchPlaceholder="Search order…"
             emptyTitle="No orders found"
             emptyDescription="Try another status filter."
             getRowId={(row) => row.orderId}

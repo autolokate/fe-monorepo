@@ -1,18 +1,47 @@
-import { AlButton, AlCheckbox, AlPageHeader, AlStack, AlText } from '@autolokate/ui';
-import { useMutation } from '@tanstack/react-query';
-import { useState, type ChangeEvent, type ReactNode } from 'react';
+import type { AdminExpertDto, AdminExpertStatus } from '@autolokate/api-client';
+import {
+  AlButton,
+  AlCheckbox,
+  AlDataTable,
+  AlErrorState,
+  AlPageHeader,
+  AlStack,
+  AlText,
+} from '@autolokate/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, type ReactNode } from 'react';
 
-import { AdminPanel } from '@/platform/components/AdminWowSurface';
+import { EMPTY_EXPERT_FORM, expertToForm, type ExpertForm } from '@/features/experts/expert-form';
+import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminPanel, AdminStatusChip } from '@/platform/components/AdminWowSurface';
 import './experts-admin.css';
 import { mapAdminApiError, resolveSubmitErrorMessage } from '@/platform/errors/admin-api-errors';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 import {
   confirmExpertBooking,
+  fetchExpert,
+  fetchExperts,
   publishExpertSlots,
   saveExpert,
   saveExpertSessionType,
 } from '@/services/experts-admin-service';
+
+type ExpertStatusFilter = 'ALL' | AdminExpertStatus;
+
+const EXPERT_STATUS_FILTERS: { value: ExpertStatusFilter; label: string }[] = [
+  { value: 'ALL', label: 'All' },
+  { value: 'ACTIVE', label: 'Active' },
+  { value: 'INACTIVE', label: 'Inactive' },
+];
+
+const expertsQueryKeys = {
+  all: ['admin', 'experts'] as const,
+  list: (status: ExpertStatusFilter) => [...expertsQueryKeys.all, 'list', status] as const,
+  byId: (expertId: string) => [...expertsQueryKeys.all, 'by-id', expertId] as const,
+};
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SLOT_RE = /^(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})\s+(\S.*)$/;
@@ -53,26 +82,42 @@ function Field({
 }
 
 /**
- * ADM-11 — Expert marketplace authorship. The BE exposes write routes only (no admin list/read),
- * so each form shows exactly what the server returned. Ids come from these responses or support.
+ * ADM-11 — Expert marketplace authorship. `GET /admin/v1/experts` lists every profile (any status);
+ * opening one reads `GET /admin/v1/experts/{id}` and prefills the form, so a save keeps every field.
  */
 export function ExpertsAdminPage() {
   const canWrite = useAdminPermission('experts:write');
+  const queryClient = useQueryClient();
 
-  const [expert, setExpert] = useState({
-    id: '',
-    name: '',
-    designation: '',
-    bio: '',
-    expertise: '',
-    channelUrl: '',
-    rating: '',
-    sessionsCompleted: '',
-    photoAsset: '',
-    status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE',
+  const [statusFilter, setStatusFilter] = useState<ExpertStatusFilter>('ALL');
+  const expertsQuery = useQuery({
+    queryKey: expertsQueryKeys.list(statusFilter),
+    queryFn: ({ signal }) =>
+      fetchExperts(statusFilter === 'ALL' ? undefined : statusFilter, signal),
+    retry: 0,
   });
+
+  const [expert, setExpert] = useState<ExpertForm>(EMPTY_EXPERT_FORM);
   const isExpertUpdate = expert.id.trim().length > 0;
-  const [replaceConfirmed, setReplaceConfirmed] = useState(false);
+
+  const loadExpertMutation = useMutation({
+    mutationFn: (expertId: string) =>
+      queryClient.fetchQuery({
+        queryKey: expertsQueryKeys.byId(expertId),
+        queryFn: ({ signal }) => fetchExpert(expertId, signal),
+        staleTime: 0,
+        retry: 0,
+      }),
+    onSuccess: (loaded) => {
+      setExpert(expertToForm(loaded));
+      expertMutation.reset();
+      setSessionExpertId(loaded.id);
+      setSlotExpertId(loaded.id);
+    },
+  });
+  const openExpert = (expertId: string) => {
+    loadExpertMutation.mutate(expertId);
+  };
   const ratingValue = expert.rating.trim() === '' ? undefined : Number(expert.rating);
   const sessionsValue =
     expert.sessionsCompleted.trim() === '' ? undefined : Number(expert.sessionsCompleted);
@@ -99,9 +144,9 @@ export function ExpertsAdminPage() {
       }),
     onSuccess: (saved) => {
       setExpert((current) => ({ ...current, id: saved.id }));
-      setReplaceConfirmed(false);
       setSessionExpertId(saved.id);
       setSlotExpertId(saved.id);
+      void queryClient.invalidateQueries({ queryKey: expertsQueryKeys.all });
     },
   });
 
@@ -160,25 +205,121 @@ export function ExpertsAdminPage() {
       <AlStack gap="md">
         <AlPageHeader
           title="Experts"
-          description="Create expert profiles, session types and bookable slots, and confirm paid bookings. The server has no admin list for experts yet — keep the ids returned here."
+          description="Create and edit expert profiles, session types and bookable slots, and confirm paid bookings."
         />
 
         <AdminPanel
-          title="Expert profile"
-          subtitle="PUT /admin/v1/experts — leave id blank to create."
+          title="Experts"
+          subtitle="Every expert profile, active and inactive. Open one to edit it."
+          meta={
+            <AdminFilterChips
+              options={EXPERT_STATUS_FILTERS}
+              value={statusFilter}
+              onChange={setStatusFilter}
+              aria-label="Expert status"
+            />
+          }
         >
-          <div className="admin-form-grid">
-            <Field label="Expert id (to update)">
-              <input
-                value={expert.id}
-                disabled={disabled}
-                placeholder="Blank = new expert"
-                onChange={(e) => {
-                  setExpert({ ...expert, id: e.target.value });
-                  setReplaceConfirmed(false);
+          {expertsQuery.isError ? (
+            <AlErrorState
+              message={errorText(expertsQuery.error)}
+              onRetry={() => {
+                void expertsQuery.refetch();
+              }}
+            />
+          ) : (
+            <AlDataTable
+              {...ADMIN_LIST_TABLE_PROPS}
+              tableId="admin-experts"
+              columns={[
+                { id: 'name', header: 'Name', accessorFn: (row: AdminExpertDto) => row.name },
+                {
+                  id: 'designation',
+                  header: 'Designation',
+                  accessorFn: (row: AdminExpertDto) => row.designation || '—',
+                },
+                {
+                  id: 'status',
+                  header: 'Status',
+                  accessorFn: (row: AdminExpertDto) => row.status,
+                  cell: ({ row }) => (
+                    <AdminStatusChip
+                      label={row.original.status === 'ACTIVE' ? 'Active' : 'Inactive'}
+                      tone={row.original.status === 'ACTIVE' ? 'active' : 'none'}
+                    />
+                  ),
+                },
+                {
+                  id: 'rating',
+                  header: 'Rating',
+                  accessorFn: (row: AdminExpertDto) =>
+                    row.rating === null ? '—' : row.rating.toFixed(1),
+                },
+                {
+                  id: 'sessions',
+                  header: 'Sessions',
+                  accessorFn: (row: AdminExpertDto) => row.sessionsCompleted.toLocaleString(),
+                },
+                {
+                  id: 'updatedAt',
+                  header: 'Updated',
+                  accessorFn: (row: AdminExpertDto) => row.updatedAt,
+                  cell: ({ row }) => formatAdminDateTime(row.original.updatedAt),
+                },
+              ]}
+              data={expertsQuery.data ?? []}
+              loading={expertsQuery.isLoading}
+              isRefreshing={expertsQuery.isFetching}
+              emptyTitle="No experts"
+              emptyDescription="Create the first expert profile below."
+              getRowId={(row) => row.id}
+              onRowClick={(row) => {
+                openExpert(row.id);
+              }}
+            />
+          )}
+        </AdminPanel>
+
+        <AdminPanel
+          title={isExpertUpdate ? `Edit expert · ${expert.name || expert.id}` : 'New expert'}
+          subtitle={
+            isExpertUpdate
+              ? 'Prefilled from the stored profile. Saving writes every field shown here.'
+              : 'Create an expert profile.'
+          }
+          meta={
+            isExpertUpdate ? (
+              <AlButton
+                size="sm"
+                variant="secondary"
+                data-testid="expert-new"
+                onClick={() => {
+                  setExpert(EMPTY_EXPERT_FORM);
+                  expertMutation.reset();
+                  loadExpertMutation.reset();
                 }}
-              />
-            </Field>
+              >
+                New expert
+              </AlButton>
+            ) : null
+          }
+        >
+          {loadExpertMutation.isPending ? (
+            <AlText tone="muted" data-testid="expert-loading">
+              Loading profile…
+            </AlText>
+          ) : null}
+          {loadExpertMutation.isError ? (
+            <AlText tone="muted" role="alert" data-testid="expert-load-error">
+              {errorText(loadExpertMutation.error)}
+            </AlText>
+          ) : null}
+          <div className="admin-form-grid">
+            {isExpertUpdate ? (
+              <Field label="Expert id">
+                <input data-testid="expert-id" value={expert.id} readOnly className="admin-mono" />
+              </Field>
+            ) : null}
             <Field label="Name">
               <input
                 data-testid="expert-name"
@@ -272,24 +413,6 @@ export function ExpertsAdminPage() {
               />
             </Field>
           </div>
-          {isExpertUpdate ? (
-            <div className="admin-inline-alert" data-testid="expert-replace-warning">
-              <p>
-                Saving an existing expert replaces the whole profile. Blank fields are cleared
-                (rating becomes empty, sessions completed becomes 0, photo and channel are removed).
-                The server has no admin read for experts, so re-enter every field.
-              </p>
-              <AlCheckbox
-                label="I've re-entered every field — replace this profile"
-                data-testid="expert-replace-confirm"
-                checked={replaceConfirmed}
-                disabled={disabled}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  setReplaceConfirmed(event.target.checked);
-                }}
-              />
-            </div>
-          ) : null}
           {!expertNumbersValid ? (
             <AlText tone="muted" role="alert" data-testid="expert-number-error">
               Rating must be 0–5 and sessions completed a whole number.
@@ -303,7 +426,7 @@ export function ExpertsAdminPage() {
               disabled ||
               expert.name.trim().length < 2 ||
               !expertNumbersValid ||
-              (isExpertUpdate && !replaceConfirmed)
+              loadExpertMutation.isPending
             }
             onClick={() => {
               expertMutation.mutate();

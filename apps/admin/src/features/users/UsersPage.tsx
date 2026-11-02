@@ -12,6 +12,7 @@ import {
   AlStack,
   AlText,
 } from '@autolokate/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
@@ -23,6 +24,7 @@ import {
 } from '@/features/users/UserConsumerStatePanels';
 import { UserRolesPanel } from '@/features/users/UserRolesPanel';
 import { useUsersColumns } from '@/features/users/users-columns';
+import { VehicleRosterPanel } from '@/features/users/VehicleRosterPanel';
 import { useAdminUserCareRecords } from '@/hooks/users/useAdminUserCareRecords';
 import { useAdminUserConsumerState } from '@/hooks/users/useAdminUserConsumerState';
 import { useAdminUserDetail } from '@/hooks/users/useAdminUserDetail';
@@ -38,8 +40,10 @@ import {
   humanizeAdminLabel,
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
+import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
+import { fetchUserDetail } from '@/services/users/admin-users-service';
 
 import './users.css';
 
@@ -83,10 +87,13 @@ function UserDetailPanel({
   account,
   searchPhone,
   onClose,
+  onOpenAccount,
 }: {
   account: AdminUserSummaryDto;
   searchPhone: string | null;
   onClose: () => void;
+  /** Switch the detail to another account (e.g. a driver or owner on a vehicle roster). */
+  onOpenAccount: (accountId: string) => void;
 }) {
   const canWrite = useAdminPermission('users:write');
   const {
@@ -249,6 +256,13 @@ function UserDetailPanel({
               />
             </AdminDetailGrid>
           </AdminPanel>
+
+          <VehicleRosterPanel
+            vehicleId={selectedVehicle.vehicleId}
+            currentAccountId={account.id}
+            onOpenAccount={onOpenAccount}
+            testId="vehicle-care-roster"
+          />
 
           <AdminPanel title="Expenses" subtitle="Personal expenses for this vehicle.">
             {expensesError ? (
@@ -564,6 +578,8 @@ function UserDetailPanel({
             vehicles={vehicles}
             onRetry={refreshConsumer}
             onOpenVehicle={setSelectedVehicleId}
+            accountId={account.id}
+            onOpenAccount={onOpenAccount}
           />
 
           <CustomerDrilldown accountId={account.id} />
@@ -599,7 +615,30 @@ export function UsersPage() {
   } = useAdminUsers();
 
   const [selected, setSelected] = useState<AdminUserSummaryDto | null>(null);
+  const [openingAccountId, setOpeningAccountId] = useState<string | null>(null);
   const columns = useUsersColumns();
+  const queryClient = useQueryClient();
+
+  /** Roster rows carry only an account id — load its detail (a summary superset) and open it. */
+  const openAccount = (accountId: string) => {
+    if (openingAccountId) return;
+    setOpeningAccountId(accountId);
+    queryClient
+      .fetchQuery({
+        queryKey: ['admin', 'users', 'detail', accountId],
+        queryFn: ({ signal }) => fetchUserDetail(accountId, signal),
+        retry: 0,
+      })
+      .then((detail) => {
+        setSelected(detail);
+      })
+      .catch((error: unknown) => {
+        reportAdminApiError(error, { context: 'users:open-account', toast: true });
+      })
+      .finally(() => {
+        setOpeningAccountId(null);
+      });
+  };
 
   const pageDescription = 'Look up customers and review account care.';
 
@@ -634,7 +673,9 @@ export function UsersPage() {
 
         {selected ? (
           <UserDetailPanel
+            key={selected.id}
             account={selected}
+            onOpenAccount={openAccount}
             searchPhone={phoneApplied ?? null}
             onClose={() => {
               setSelected(null);

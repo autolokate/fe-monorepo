@@ -8,6 +8,7 @@ import {
 } from '@/platform/components/AdminDetailField';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
 import { AdminStatusChip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
+import { adminOrderLabel } from '@/platform/utils/admin-order-label';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { formatAdminDateTime, formatPaise } from '@/platform/utils/format-admin-date';
 import { fetchPaymentDetail } from '@/services/payments/payments-service';
@@ -65,7 +66,11 @@ export function PaymentDetailSheet({
           </AdminDetailSection>
           <AdminDetailSection title="References" description="Order and provider references.">
             <AdminDetailGrid>
-              <AdminDetailField label="Order #" value={payment.orderNumber ?? '—'} mono />
+              <AdminDetailField
+                label="Order"
+                value={adminOrderLabel(payment.orderNumber, payment.orderId)}
+                mono
+              />
               <AdminDetailField label="Reference" value={payment.ref} mono />
               <AdminDetailField label="Provider ref" value={payment.providerRef ?? '—'} mono />
               <AdminDetailField label="Created" value={formatAdminDateTime(payment.createdAt)} />

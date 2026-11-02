@@ -37,7 +37,7 @@ function AccountOrdersSection({ accountId }: { accountId: string }) {
           isRefreshing={isFetching}
           error={userErrorMessage && orders.length > 0 ? userErrorMessage : null}
           onRetry={refresh}
-          globalSearchPlaceholder="Search order #…"
+          globalSearchPlaceholder="Search order…"
           emptyTitle="No orders"
           emptyDescription="This customer has not placed any orders."
           getRowId={(row) => row.orderId}

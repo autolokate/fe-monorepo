@@ -2,7 +2,8 @@ import { catalogQueryKeys } from '@/hooks/catalog/catalog-query-keys';
 import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
 import { promosQueryKeys } from '@/hooks/promos/promo-query-keys';
 import { fetchAdminPlans, fetchCatalogSkus } from '@/services/catalog/admin-catalog-service';
-import { fetchQrInventory } from '@/services/inventory/inventory-service';
+import { INVENTORY_PAGE_LIMIT } from '@/services/inventory/inventory-metrics';
+import { fetchQrInventoryPage } from '@/services/inventory/inventory-service';
 import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
 
 /**
@@ -12,8 +13,9 @@ import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
  */
 export const dashboardQueryDefinitions = [
   {
-    queryKey: inventoryQueryKeys.list('ALL'),
-    queryFn: ({ signal }: { signal: AbortSignal }) => fetchQrInventory({}, signal),
+    queryKey: inventoryQueryKeys.firstPage(),
+    queryFn: ({ signal }: { signal: AbortSignal }) =>
+      fetchQrInventoryPage({ limit: INVENTORY_PAGE_LIMIT }, signal),
     meta: { errorMessage: 'Unable to load QR inventory.' },
   },
   {

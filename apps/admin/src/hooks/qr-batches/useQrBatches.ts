@@ -8,8 +8,9 @@ export function useQrBatches(initialStateFilter?: Parameters<typeof useQrInvento
   const inventory = useQrInventory(initialStateFilter);
 
   const metrics = useMemo(
-    () => (inventory.data ? computeBatchManagementMetrics(inventory.data) : null),
-    [inventory.data],
+    () =>
+      inventory.data ? computeBatchManagementMetrics(inventory.data, inventory.hasMore) : null,
+    [inventory.data, inventory.hasMore],
   );
 
   return {

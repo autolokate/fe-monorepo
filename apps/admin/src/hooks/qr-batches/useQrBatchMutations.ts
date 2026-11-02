@@ -1,5 +1,10 @@
 import type { BatchSummaryDto } from '@autolokate/api-client';
-import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+  type InfiniteData,
+  type QueryClient,
+} from '@tanstack/react-query';
 
 import { inventoryQueryKeys } from '@/hooks/inventory/useQrInventory';
 import { qrBatchCodesQueryKeys } from '@/hooks/qr-batches/qr-batch-codes-query-keys';
@@ -17,11 +22,44 @@ import {
   runAutoDetachSweep,
 } from '@/services/qr-batches/qr-batch-service';
 
+type InventoryPage = { items: BatchSummaryDto[] };
+
+function isInventoryPage(value: unknown): value is InventoryPage {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Array.isArray((value as { items?: unknown }).items)
+  );
+}
+
+function isInfiniteInventory(value: unknown): value is InfiniteData<InventoryPage> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Array.isArray((value as { pages?: unknown }).pages)
+  );
+}
+
+function upsertIntoPage<T extends InventoryPage>(
+  page: T,
+  batch: BatchSummaryDto,
+  prepend: boolean,
+): T {
+  const index = page.items.findIndex((entry) => entry.id === batch.id);
+  if (index === -1) {
+    return prepend ? { ...page, items: [batch, ...page.items] } : page;
+  }
+  const items = page.items.slice();
+  items[index] = batch;
+  return { ...page, items };
+}
+
 /**
- * Write the mutation response into detail + inventory list caches so the UI
- * reflects the new status immediately (before background refetch).
+ * Write the mutation response into detail + inventory list caches so the UI reflects the new status
+ * immediately (before background refetch). Lists are infinite (pages of `items`), the dashboard holds
+ * one page, and the detail holds one batch — see `inventoryQueryKeys`.
  */
-function applyBatchSummaryToCaches(
+export function applyBatchSummaryToCaches(
   queryClient: QueryClient,
   batch: BatchSummaryDto,
   options: { appendIfMissing?: boolean } = {},
@@ -33,21 +71,29 @@ function applyBatchSummaryToCaches(
       return current;
     }
 
+    if (isInfiniteInventory(current)) {
+      const alreadyListed = current.pages.some((page) =>
+        page.items.some((entry) => entry.id === batch.id),
+      );
+      return {
+        ...current,
+        pages: current.pages.map((page, index) =>
+          upsertIntoPage(
+            page,
+            batch,
+            !alreadyListed && index === 0 && options.appendIfMissing === true,
+          ),
+        ),
+      };
+    }
+
+    if (isInventoryPage(current)) {
+      return upsertIntoPage(current, batch, options.appendIfMissing === true);
+    }
+
     // Detail queries under the same inventory prefix store a single batch.
-    if (!Array.isArray(current)) {
-      const detail = current as BatchSummaryDto;
-      return detail.id === batch.id ? batch : detail;
-    }
-
-    const list = current as BatchSummaryDto[];
-    const index = list.findIndex((entry) => entry.id === batch.id);
-    if (index === -1) {
-      return options.appendIfMissing ? [batch, ...list] : list;
-    }
-
-    const next = list.slice();
-    next[index] = batch;
-    return next;
+    const detail = current as BatchSummaryDto;
+    return detail.id === batch.id ? batch : detail;
   });
 }
 

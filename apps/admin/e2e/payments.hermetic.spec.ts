@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import {
-  HERMETIC_ORDER_NUMBER,
+  HERMETIC_ORDER_LABEL,
   HERMETIC_PAYMENT_REF,
   installHermeticApiRoutes,
   openPaymentsPage,
@@ -18,7 +18,9 @@ test.describe('Payments list (hermetic)', () => {
     await seedHermeticSession(page);
     await openPaymentsPage(page);
 
-    await expect(page.getByText(HERMETIC_ORDER_NUMBER)).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(HERMETIC_ORDER_LABEL, { exact: true })).toBeVisible({
+      timeout: 10_000,
+    });
     await expect(page.getByText(HERMETIC_PAYMENT_REF)).toBeVisible();
     expect(capture.paymentsGet).toBeGreaterThanOrEqual(1);
     expect(capture.unexpected).toEqual([]);

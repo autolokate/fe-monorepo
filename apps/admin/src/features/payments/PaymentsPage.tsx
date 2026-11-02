@@ -107,7 +107,7 @@ export function PaymentsPage() {
             isRefreshing={isFetching}
             error={userErrorMessage && payments.length > 0 ? userErrorMessage : null}
             onRetry={refresh}
-            globalSearchPlaceholder="Search order # or ref…"
+            globalSearchPlaceholder="Search order or ref…"
             emptyTitle="No payments found"
             emptyDescription="Try another outcome filter."
             getRowId={(row) => row.paymentId}

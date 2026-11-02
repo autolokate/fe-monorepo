@@ -19,8 +19,14 @@ export type DashboardMetrics = {
 
 export function computeDashboardMetrics(snapshot: DashboardSnapshot): DashboardMetrics {
   return {
-    inventory: computeInventoryMetrics(snapshot.inventory),
-    batchManagement: computeBatchManagementMetrics(snapshot.inventory),
+    inventory: computeInventoryMetrics(
+      snapshot.inventory.items,
+      snapshot.inventory.pagination?.hasMore === true,
+    ),
+    batchManagement: computeBatchManagementMetrics(
+      snapshot.inventory.items,
+      snapshot.inventory.pagination?.hasMore === true,
+    ),
     promos: computePromoMetrics(snapshot.promos),
     catalog:
       snapshot.plans && snapshot.skus ? computeCatalogMetrics(snapshot.plans, snapshot.skus) : null,

@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import { PaymentOutcomeBadge } from '@/platform/components/EntityStatusBadge';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
+import { adminOrderLabel } from '@/platform/utils/admin-order-label';
 
 function formatInr(paise: number): string {
   return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
@@ -17,9 +18,14 @@ export function usePaymentsColumns(): ColumnDef<AdminPaymentSummary>[] {
   return useMemo(
     () => [
       {
-        accessorKey: 'orderNumber',
-        header: 'Order #',
-        cell: ({ row }) => row.original.orderNumber ?? '—',
+        id: 'order',
+        header: 'Order',
+        accessorFn: (row) => adminOrderLabel(row.orderNumber, row.orderId),
+        cell: ({ row }) => (
+          <span className="admin-mono" title={row.original.orderId ?? undefined}>
+            {adminOrderLabel(row.original.orderNumber, row.original.orderId)}
+          </span>
+        ),
       },
       {
         accessorKey: 'ref',

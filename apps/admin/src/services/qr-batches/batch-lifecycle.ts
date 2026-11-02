@@ -68,8 +68,11 @@ export type BatchManagementMetrics = InventoryMetrics & {
   pipelineBatches: number;
 };
 
-export function computeBatchManagementMetrics(batches: BatchSummaryDto[]): BatchManagementMetrics {
-  const base = computeInventoryMetrics(batches);
+export function computeBatchManagementMetrics(
+  batches: BatchSummaryDto[],
+  hasMore = false,
+): BatchManagementMetrics {
+  const base = computeInventoryMetrics(batches, hasMore);
   return {
     ...base,
     draftBatches: batches.filter((batch) => batch.status === 'DRAFT').length,

@@ -5,8 +5,9 @@ import type {
   AdminVehicleRole,
 } from '@autolokate/api-client';
 import { AlDataTable, AlErrorState, AlSkeleton, AlStack, AlText } from '@autolokate/ui';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
+import { VehicleRosterPanel } from '@/features/users/VehicleRosterPanel';
 import type { AdminReadState } from '@/hooks/users/useAdminUserConsumerState';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
@@ -203,13 +204,22 @@ export function UserVehicleMembershipsPanel({
   vehicles,
   onRetry,
   onOpenVehicle,
+  accountId,
+  onOpenAccount,
 }: {
   state: AdminReadState<AdminUserEntitlementsDto>;
   vehicles: AdminUserVehicleDto[];
   onRetry: () => void;
   onOpenVehicle: (vehicleId: string) => void;
+  /** The account being viewed. */
+  accountId: string;
+  /** Open another account from a vehicle roster row. */
+  onOpenAccount: (accountId: string) => void;
 }) {
   const title = 'Vehicle memberships';
+  // A membership on a vehicle this customer doesn't own (driver-only) has no care page here —
+  // its owner + driver roster opens inline instead.
+  const [rosterVehicleId, setRosterVehicleId] = useState<string | null>(null);
   const rows: MembershipRow[] = useMemo(() => {
     const byId = new Map(vehicles.map((vehicle) => [vehicle.vehicleId, vehicle]));
     return (state.data?.vehicles ?? []).map((entry) => ({
@@ -283,14 +293,25 @@ export function UserVehicleMembershipsPanel({
             emptyDescription="This customer isn't an owner or driver on any vehicle."
             getRowId={(row) => row.vehicleId}
             onRowClick={(row) => {
-              if (row.vehicle) onOpenVehicle(row.vehicleId);
+              if (row.vehicle) {
+                onOpenVehicle(row.vehicleId);
+                return;
+              }
+              setRosterVehicleId((current) => (current === row.vehicleId ? null : row.vehicleId));
             }}
           />
           <AlText variant="caption" tone="muted" data-testid="users-memberships-drivers-note">
-            Driver memberships appear here from the customer&apos;s side. The other drivers on a
-            vehicle aren&apos;t listed: the backend has no admin route for a vehicle&apos;s driver
-            roster yet.
+            Open a vehicle to see its owner and every driver on it. Vehicles this customer only
+            drives open their roster below.
           </AlText>
+          {rosterVehicleId ? (
+            <VehicleRosterPanel
+              vehicleId={rosterVehicleId}
+              currentAccountId={accountId}
+              onOpenAccount={onOpenAccount}
+              testId="membership-roster"
+            />
+          ) : null}
         </AlStack>
       )}
     </AdminPanel>

@@ -32,7 +32,7 @@ test.describe('QR replace / retire (hermetic)', () => {
     await seedHermeticSession(page);
     await openQrBatchDetailPage(page);
 
-    const inventoryBefore = capture.inventoryGet;
+    const batchReadsBefore = capture.qrBatchGet;
 
     await page.getByTestId('qr-code-action-input').fill(HERMETIC_QR_CODE);
     await page.getByTestId('qr-code-replace').click();
@@ -58,7 +58,8 @@ test.describe('QR replace / retire (hermetic)', () => {
     expect(capture.qrReplace[0]?.path).toBe(`/admin/v1/qr/${HERMETIC_QR_CODE}/replace`);
     expect(capture.qrReplace[0]?.body).toBeNull();
     expect(capture.qrRetire).toEqual([]);
-    expect(capture.inventoryGet).toBeGreaterThan(inventoryBefore);
+    // Detail refresh re-reads the batch via GET /admin/v1/qr-batches/{id}.
+    expect(capture.qrBatchGet).toBeGreaterThan(batchReadsBefore);
     expect(capture.unexpected).toEqual([]);
   });
 
@@ -72,7 +73,7 @@ test.describe('QR replace / retire (hermetic)', () => {
     await seedHermeticSession(page);
     await openQrBatchDetailPage(page);
 
-    const inventoryBefore = capture.inventoryGet;
+    const batchReadsBefore = capture.qrBatchGet;
 
     await page.getByTestId('qr-code-action-input').fill(HERMETIC_QR_CODE);
     await page.getByTestId('qr-code-retire').click();
@@ -96,7 +97,8 @@ test.describe('QR replace / retire (hermetic)', () => {
     expect(capture.qrRetire[0]?.path).toBe(`/admin/v1/qr/${HERMETIC_QR_CODE}/retire`);
     expect(capture.qrRetire[0]?.body).toBeNull();
     expect(capture.qrReplace).toEqual([]);
-    expect(capture.inventoryGet).toBeGreaterThan(inventoryBefore);
+    // Detail refresh re-reads the batch via GET /admin/v1/qr-batches/{id}.
+    expect(capture.qrBatchGet).toBeGreaterThan(batchReadsBefore);
     expect(capture.unexpected).toEqual([]);
   });
 

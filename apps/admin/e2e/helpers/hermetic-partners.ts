@@ -50,7 +50,18 @@ export type HermeticPartnersCapture = {
 export type InstallHermeticPartnersOptions = {
   /** Status for list/detail Admin Partners routes; 404 simulates "not deployed here". */
   listStatus?: number;
+  /** Storefront GST state on the garage partner (default `PENDING_REVIEW`); null = no storefront. */
+  gstVerification?:
+    | 'NOT_SUBMITTED'
+    | 'PENDING'
+    | 'VERIFIED'
+    | 'NEEDS_ATTENTION'
+    | 'PENDING_REVIEW'
+    | null;
 };
+
+export const HERMETIC_PARTNER_GSTIN_MASKED = '29**********1Z5';
+export const HERMETIC_TAXI_ONLY_ORG_ID = 'aaaaaaaa-0000-4000-8000-0000000000ab';
 
 /**
  * Hermetic stubs for `/admin/v1/partners*` + `/admin/v1/taxi/requests*`.
@@ -79,7 +90,28 @@ export async function installHermeticPartnersRoutes(
     storeId: 'aaaaaaaa-0000-4000-8000-000000000002',
     storeName: 'Hermetic Store',
     storeStatus: 'PUBLISHED',
+    surfaceType: 'GARAGE',
+    gstVerification:
+      options.gstVerification === undefined ? 'PENDING_REVIEW' : options.gstVerification,
+    gstinMasked: options.gstVerification === null ? null : HERMETIC_PARTNER_GSTIN_MASKED,
     cities: ['Pune'],
+  };
+
+  /** Taxi-only org: no storefront, so `gstVerification` / `gstinMasked` are null. */
+  const taxiOnlyPartner = {
+    orgId: HERMETIC_TAXI_ONLY_ORG_ID,
+    name: 'Hermetic Taxi Fleet',
+    partnerKind: 'QR',
+    orgKind: null,
+    ownerAccountId: 'aaaaaaaa-0000-4000-8000-000000000007',
+    createdAt: NOW,
+    storeId: null,
+    storeName: null,
+    storeStatus: null,
+    surfaceType: null,
+    gstVerification: null,
+    gstinMasked: null,
+    cities: [],
   };
 
   const reel = {
@@ -203,7 +235,12 @@ export async function installHermeticPartnersRoutes(
         await fulfillJson(route, listStatus, errorEnvelope('Not deployed', 'not_found'));
         return;
       }
-      await fulfillJson(route, 200, envelope({ ...partner, reels: [reel] }));
+      const detailOrg = partnerDetail[1] === HERMETIC_TAXI_ONLY_ORG_ID ? taxiOnlyPartner : partner;
+      await fulfillJson(
+        route,
+        200,
+        envelope({ ...detailOrg, reels: detailOrg === partner ? [reel] : [] }),
+      );
       return;
     }
 
@@ -214,7 +251,8 @@ export async function installHermeticPartnersRoutes(
         return;
       }
       const type = url.searchParams.get('type');
-      const items = type === 'TAXI' ? [] : [partner];
+      const items =
+        type === 'TAXI' ? [taxiOnlyPartner] : type ? [partner] : [partner, taxiOnlyPartner];
       await fulfillJson(
         route,
         200,

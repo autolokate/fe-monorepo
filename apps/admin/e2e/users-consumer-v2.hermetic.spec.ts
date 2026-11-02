@@ -2,6 +2,10 @@ import { expect, test } from '@playwright/test';
 
 import {
   HERMETIC_CUSTOMER_ACCOUNT_ID,
+  HERMETIC_ROSTER_DRIVER_PLATE,
+  HERMETIC_ROSTER_OTHER_ACCOUNT_ID,
+  HERMETIC_ROSTER_OTHER_NAME,
+  HERMETIC_ROSTER_OTHER_USERNAME,
   installHermeticApiRoutes,
   openUsersPage,
   seedHermeticSession,
@@ -48,13 +52,73 @@ test.describe('Users consumer v2 state (hermetic)', () => {
     await expect(memberships).toContainText('dddddddd');
     await expect(page.getByTestId('users-memberships-drivers-note')).toBeVisible();
 
+    // A driver-only membership opens the vehicle's owner + driver roster inline.
+    await memberships.getByText('dddddddd').click();
+    const membershipRoster = page.getByTestId('membership-roster');
+    await expect(membershipRoster).toContainText(HERMETIC_ROSTER_OTHER_USERNAME, {
+      timeout: 10_000,
+    });
+    await expect(membershipRoster).toContainText('Owner');
+    await expect(membershipRoster).toContainText('This customer');
+    await expect(
+      page.getByRole('heading', { name: `Owner & drivers · ${HERMETIC_ROSTER_DRIVER_PLATE}` }),
+    ).toBeVisible();
+
     // Opening an owned vehicle shows the customer's role there (not an assumed "owner").
     await memberships.getByText('DL7CQ1939').click();
     await expect(page.getByTestId('users-back-to-account')).toBeVisible();
     await expect(page.getByText("Customer's role")).toBeVisible();
-    await expect(page.getByText('Provisional owner')).toBeVisible();
+    await expect(
+      page.getByRole('region', { name: 'DL7CQ1939', exact: true }).getByText('Provisional owner'),
+    ).toBeVisible();
 
     expect(capture.unexpected).toEqual([]);
+  });
+
+  test('vehicle care lists the owner + driver roster and opens a driver account', async ({
+    page,
+  }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
+    await seedHermeticSession(page);
+    await openUsersPage(page);
+    await page.getByText(SHORT_ACCOUNT_ID, { exact: true }).first().click();
+
+    const vehiclesPanel = page.getByRole('region', { name: 'Vehicles', exact: true });
+    await vehiclesPanel.getByText('DL7CQ1939').click();
+
+    const roster = page.getByTestId('vehicle-care-roster');
+    await expect(roster).toContainText('hermetic_customer', { timeout: 10_000 });
+    await expect(roster).toContainText('Provisional owner');
+    await expect(roster).toContainText('RC not verified');
+    await expect(roster).toContainText(HERMETIC_ROSTER_OTHER_USERNAME);
+    await expect(roster).toContainText('Active');
+    // A driver without a username falls back to the short account id; removed memberships stay listed.
+    await expect(roster).toContainText('eeeeeeee');
+    await expect(roster).toContainText('Removed');
+
+    await page.getByTestId(`vehicle-care-roster-open-${HERMETIC_ROSTER_OTHER_ACCOUNT_ID}`).click();
+    await expect(page.getByRole('heading', { name: HERMETIC_ROSTER_OTHER_NAME })).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(
+      page.getByText(HERMETIC_ROSTER_OTHER_ACCOUNT_ID.slice(0, 8)).first(),
+    ).toBeVisible();
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('roster route not deployed shows an honest state', async ({ page }) => {
+    await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR', vehicleDriversStatus: 404 });
+    await seedHermeticSession(page);
+    await openUsersPage(page);
+    await page.getByText(SHORT_ACCOUNT_ID, { exact: true }).first().click();
+    await page
+      .getByRole('region', { name: 'Vehicles', exact: true })
+      .getByText('DL7CQ1939')
+      .click();
+    await expect(page.getByTestId('admin-not-deployed')).toContainText(
+      'GET /admin/v1/vehicles/{vehicleId}/drivers',
+      { timeout: 10_000 },
+    );
   });
 
   test('free account shows every premium feature locked', async ({ page }) => {

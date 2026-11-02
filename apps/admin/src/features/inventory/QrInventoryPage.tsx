@@ -20,19 +20,31 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { AdminMoreActions } from '@/platform/components/AdminMoreActions';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
+import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
 import { AdminKpiStrip } from '@/platform/components/AdminWowSurface';
 import {
   useCanRunQrLifecycleMutations,
   useCanWriteInventoryMutations,
 } from '@/platform/rbac/module-write-permissions';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
+import { formatLoadedCount } from '@/services/inventory/inventory-metrics';
 
 import './inventory.css';
 
 export function QrInventoryPage() {
   const navigate = useNavigate();
-  const { data, isLoading, isFetching, userErrorMessage, stateFilter, setStateFilter, refresh } =
-    useQrInventory();
+  const {
+    data,
+    isLoading,
+    isFetching,
+    userErrorMessage,
+    stateFilter,
+    setStateFilter,
+    refresh,
+    hasMore,
+    isFetchingNextPage,
+    loadMore,
+  } = useQrInventory();
 
   const canWriteBatches = useCanWriteInventoryMutations();
   const canRunLifecycle = useCanRunQrLifecycleMutations();
@@ -65,11 +77,14 @@ export function QrInventoryPage() {
     const totalCodes = batches.reduce((sum, batch) => sum + batch.totalCount, 0);
     const generated = batches.reduce((sum, batch) => sum + batch.generatedCount, 0);
     return [
-      { label: 'Batches (page)', value: String(batches.length) },
+      {
+        label: hasMore ? 'Batches (loaded)' : 'Batches',
+        value: formatLoadedCount(batches.length, hasMore),
+      },
       { label: 'Codes', value: totalCodes.toLocaleString() },
       { label: 'Generated', value: generated.toLocaleString() },
     ];
-  }, [batches]);
+  }, [batches, hasMore]);
 
   const moreActions = useMemo(
     () =>
@@ -156,6 +171,12 @@ export function QrInventoryPage() {
             emptyDescription="Try another status filter or create a batch."
             getRowId={(row) => row.id}
             onRowClick={openBatch}
+          />
+          <AdminLoadMore
+            hasMore={hasMore}
+            loading={isFetchingNextPage}
+            onLoadMore={loadMore}
+            testId="qr-inventory-load-more"
           />
         </AdminDataBlock>
 

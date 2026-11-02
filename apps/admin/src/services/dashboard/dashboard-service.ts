@@ -1,16 +1,18 @@
 import type {
   AdminPlanDto,
   AdminPromoDto,
-  BatchSummaryDto,
+  QrInventoryPageResult,
   SkuSummaryDto,
 } from '@autolokate/api-client';
 
 import { fetchAdminPlans, fetchCatalogSkus } from '@/services/catalog/admin-catalog-service';
-import { fetchQrInventory } from '@/services/inventory/inventory-service';
+import { INVENTORY_PAGE_LIMIT } from '@/services/inventory/inventory-metrics';
+import { fetchQrInventoryPage } from '@/services/inventory/inventory-service';
 import { fetchAdminPromos } from '@/services/promos/admin-promos-service';
 
 export type DashboardSnapshot = {
-  inventory: BatchSummaryDto[];
+  /** First (newest) inventory page — `pagination.hasMore` says whether counts are partial. */
+  inventory: QrInventoryPageResult;
   promos: AdminPromoDto[];
   plans: AdminPlanDto[] | null;
   skus: SkuSummaryDto[] | null;
@@ -18,7 +20,7 @@ export type DashboardSnapshot = {
 
 export async function fetchDashboardSnapshot(signal?: AbortSignal): Promise<DashboardSnapshot> {
   const [inventory, promos, plansResult, skusResult] = await Promise.allSettled([
-    fetchQrInventory({}, signal),
+    fetchQrInventoryPage({ limit: INVENTORY_PAGE_LIMIT }, signal),
     fetchAdminPromos(signal),
     fetchAdminPlans({}, signal),
     fetchCatalogSkus({ includeInactive: true }, signal),

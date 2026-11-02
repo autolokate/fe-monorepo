@@ -27,24 +27,45 @@ function reel(n: number) {
 }
 
 /**
- * The backend reel cursor is (updatedAt, id) for every sort, so Load more is only offered for
- * "Recently updated"; other sorts say how to reach the rest instead of skipping/repeating rows.
+ * The backend reel cursor now encodes its sort (a cross-sort cursor is a 400), so Load more works
+ * in every sort order, and changing the sort starts over without a cursor.
  */
-test('reels Load more follows the cursor only in Recently updated order', async ({ page }) => {
+test('reels Load more follows the cursor in every sort; a sort change resets the cursor', async ({
+  page,
+}) => {
   await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
   const queries: string[] = [];
   await page.route('**/admin/v1/community/reels?**', async (route) => {
     const url = new URL(route.request().url());
     queries.push(url.search);
+    const sort = url.searchParams.get('sort') ?? 'updated';
+    const cursor = url.searchParams.get('cursor');
+    if (cursor && cursor !== `next-${sort}`) {
+      // Nest rejects a cursor issued under another sort.
+      await route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: { code: 'validation', message: 'cursor does not match sort' },
+        }),
+      });
+      return;
+    }
+    const items = cursor ? [reel(3)] : [reel(1), reel(2)];
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
-        data: [reel(1), reel(2)],
+        data: items,
         meta: {
           requestId: 'r',
           correlationId: 'c',
-          pagination: { limit: 100, cursor: null, nextCursor: 'next', hasMore: true },
+          pagination: {
+            limit: 100,
+            cursor,
+            nextCursor: cursor ? null : `next-${sort}`,
+            hasMore: !cursor,
+          },
         },
       }),
     });
@@ -53,11 +74,19 @@ test('reels Load more follows the cursor only in Recently updated order', async 
   await page.goto('/discovery/reels');
 
   await expect(page.getByText('Paging reel 1')).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByTestId('discovery-reels-load-more')).toBeVisible();
-  await expect(page.getByTestId('discovery-reels-sort-paging-note')).toHaveCount(0);
+  await page.getByTestId('discovery-reels-load-more').click();
+  await expect(page.getByText('Paging reel 3')).toBeVisible();
+  await expect(page.getByTestId('discovery-reels-load-more')).toHaveCount(0);
+  expect(queries.at(-1)).toContain('cursor=next-updated');
 
   await page.getByLabel('Reel sort').selectOption('likes');
   await expect.poll(() => queries.some((q) => q.includes('sort=likes'))).toBe(true);
-  await expect(page.getByTestId('discovery-reels-sort-paging-note')).toBeVisible();
-  await expect(page.getByTestId('discovery-reels-load-more')).toHaveCount(0);
+  // The first page under the new sort carries no cursor (the old one would be a 400).
+  const firstLikes = queries.find((q) => q.includes('sort=likes'));
+  expect(firstLikes).not.toContain('cursor=');
+  await expect(page.getByText('Paging reel 3')).toHaveCount(0);
+  await page.getByTestId('discovery-reels-load-more').click();
+  await expect(page.getByText('Paging reel 3')).toBeVisible();
+  expect(queries.at(-1)).toContain('sort=likes');
+  expect(queries.at(-1)).toContain('cursor=next-likes');
 });

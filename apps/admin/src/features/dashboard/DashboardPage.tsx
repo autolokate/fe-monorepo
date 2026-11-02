@@ -200,7 +200,7 @@ export function DashboardPage() {
                   title="QR stickers"
                   description={
                     inventory.capped
-                      ? 'Newest 100 batches — the server returns no more'
+                      ? 'Newest 100 batches — load the rest on the Batches page'
                       : 'Stock and batch lifecycle'
                   }
                   icon={<ScanLineIcon size={18} aria-hidden />}
