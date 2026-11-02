@@ -33,14 +33,15 @@ test.describe('Users vehicle care hierarchy (hermetic)', () => {
     });
     await expect(page.getByText('Hermetic Contact')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Vehicles' })).toBeVisible();
-    await expect(page.getByText('DL7CQ1939')).toBeVisible();
-    await expect(page.getByText('MH12AB9999')).toBeVisible();
+    const vehiclesPanel = page.getByRole('region', { name: 'Vehicles', exact: true });
+    await expect(vehiclesPanel.getByText('DL7CQ1939')).toBeVisible();
+    await expect(vehiclesPanel.getByText('MH12AB9999')).toBeVisible();
     // Vehicle-scoped tables must not appear on account root.
     await expect(page.getByRole('heading', { name: 'Expenses' })).toHaveCount(0);
     await expect(page.getByText(HERMETIC_EXPENSE_TITLE_A)).toHaveCount(0);
     await expect(page.getByText(HERMETIC_EXPENSE_TITLE_B)).toHaveCount(0);
 
-    await page.getByText('DL7CQ1939').click();
+    await vehiclesPanel.getByText('DL7CQ1939').click();
 
     await expect(page.getByTestId('users-back-to-account')).toBeVisible();
     await expect(page.getByTestId('users-vehicle-care-ro')).toContainText('read-only');

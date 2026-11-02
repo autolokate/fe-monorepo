@@ -2077,6 +2077,65 @@ export async function listAdminUserEmergencyContacts(
   return unwrapEnvelope(response) as AdminUserEmergencyContactDto[];
 }
 
+/** Consumer plan tier (`AccountEntitlementsDto.planTier`). */
+export type AdminPlanTier = 'SAFE' | 'SECURE' | 'SHIELD' | 'SHIELD_PLUS';
+
+/** Per-vehicle role from `AccountEntitlementsDto.vehicles[]`. */
+export type AdminVehicleRole = 'OWNER' | 'PROVISIONAL_OWNER' | 'DRIVER';
+
+export type AdminUserVehicleRoleDto = {
+  vehicleId: string;
+  role: AdminVehicleRole;
+  /** True once an RC ownership claim is approved. */
+  ownershipVerified: boolean;
+};
+
+/** `GET /admin/v1/users/{userId}/entitlements` — the same snapshot the consumer app reads from `/v1/me/entitlements`. */
+export type AdminUserEntitlementsDto = {
+  paid: boolean;
+  planTier: AdminPlanTier | null;
+  source: 'SUBSCRIPTION' | 'NONE';
+  expiresAt: string | null;
+  features: { driveQuant: boolean; leaderboard: boolean; academy: boolean; ai: boolean };
+  vehicles: AdminUserVehicleRoleDto[];
+};
+
+/** `GET /admin/v1/users/{userId}/streak` — IST-day streak with weekly forgiveness. */
+export type AdminUserStreakDto = {
+  current: number;
+  longest: number;
+  todayCompleted: boolean;
+  lastActiveDate: string | null;
+  forgivenessUsedThisWeek: boolean;
+  weekStart: string;
+  nextMilestone: number;
+  celebrate: { kind: 'INCREASED' | 'MILESTONE'; value: number; eventId: string } | null;
+};
+
+/** GET /admin/v1/users/{userId}/entitlements — paid state, premium flags, per-vehicle role (read-only). */
+export async function getAdminUserEntitlements(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserEntitlementsDto> {
+  const response = await client.get<unknown>(endpoints.admin.userEntitlements(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserEntitlementsDto;
+}
+
+/** GET /admin/v1/users/{userId}/streak — the consumer's streak exactly as their app sees it (read-only). */
+export async function getAdminUserStreak(
+  client: ApiClient,
+  userId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminUserStreakDto> {
+  const response = await client.get<unknown>(endpoints.admin.userStreak(userId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as AdminUserStreakDto;
+}
+
 /** POST /admin/v1/users/{userId}/roles — grant a platform role (idempotent; audited). */
 export async function grantUserRole(
   client: ApiClient,

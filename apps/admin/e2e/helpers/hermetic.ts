@@ -444,6 +444,13 @@ export type InstallHermeticRoutesOptions = {
   usersGrantPostStatus?: number;
   /** When set, users roles DELETE returns this status instead of 200. */
   usersRevokeDeleteStatus?: number;
+  /**
+   * Consumer v2 admin reads (`/users/{id}/entitlements` + `/users/{id}/streak`). `404` answers Nest's
+   * unrouted `Cannot GET …` (route not deployed); any other value ≥ 400 answers a server error.
+   */
+  usersConsumerV2Status?: number;
+  /** Override the entitlement snapshot served for the hermetic customer. */
+  usersEntitlements?: Record<string, unknown>;
 };
 
 /**
@@ -496,6 +503,7 @@ export async function installHermeticApiRoutes(
   const usersLookupGetStatus = options.usersLookupGetStatus ?? 200;
   const usersGrantPostStatus = options.usersGrantPostStatus ?? 200;
   const usersRevokeDeleteStatus = options.usersRevokeDeleteStatus ?? 200;
+  const usersConsumerV2Status = options.usersConsumerV2Status ?? 200;
 
   const capture: HermeticCapture = {
     initiate: [],
@@ -1440,6 +1448,69 @@ export async function installHermeticApiRoutes(
             updatedAt: '2026-10-02T00:00:00.000Z',
           },
         ]),
+      );
+      return;
+    }
+
+    const userConsumerV2Match = path.match(/^\/admin\/v1\/users\/([^/]+)\/(entitlements|streak)$/);
+    if (method === 'GET' && userConsumerV2Match) {
+      if (usersConsumerV2Status === 404) {
+        await fulfillJson(route, 404, {
+          error: { code: 'not_found', message: `Cannot GET ${path}`, details: {} },
+          meta: { requestId: 'hermetic', correlationId: 'hermetic' },
+        });
+        return;
+      }
+      if (usersConsumerV2Status >= 400) {
+        await fulfillJson(
+          route,
+          usersConsumerV2Status,
+          errorEnvelope('Server error', 'internal_error'),
+        );
+        return;
+      }
+      if (userConsumerV2Match[2] === 'entitlements') {
+        await fulfillJson(
+          route,
+          200,
+          envelope(
+            options.usersEntitlements ?? {
+              paid: true,
+              planTier: 'SHIELD',
+              source: 'SUBSCRIPTION',
+              expiresAt: '2027-03-01T00:00:00.000Z',
+              features: { driveQuant: true, leaderboard: true, academy: true, ai: false },
+              vehicles: [
+                {
+                  vehicleId: HERMETIC_VEHICLE_ID,
+                  role: 'PROVISIONAL_OWNER',
+                  ownershipVerified: false,
+                },
+                { vehicleId: HERMETIC_VEHICLE_ID_B, role: 'OWNER', ownershipVerified: true },
+                {
+                  vehicleId: 'dddddddd-2222-4222-8222-222222222222',
+                  role: 'DRIVER',
+                  ownershipVerified: false,
+                },
+              ],
+            },
+          ),
+        );
+        return;
+      }
+      await fulfillJson(
+        route,
+        200,
+        envelope({
+          current: 5,
+          longest: 12,
+          todayCompleted: true,
+          lastActiveDate: '2026-11-02',
+          forgivenessUsedThisWeek: true,
+          weekStart: '2026-11-02',
+          nextMilestone: 7,
+          celebrate: null,
+        }),
       );
       return;
     }

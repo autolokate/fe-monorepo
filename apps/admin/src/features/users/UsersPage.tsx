@@ -1,4 +1,8 @@
-import type { AdminUserSummaryDto, AdminUserVehicleDto } from '@autolokate/api-client';
+import type {
+  AdminUserEntitlementsDto,
+  AdminUserSummaryDto,
+  AdminUserVehicleDto,
+} from '@autolokate/api-client';
 import {
   AlButton,
   AlDataTable,
@@ -12,9 +16,15 @@ import { useMemo, useState } from 'react';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
 import { filterCareByVehicleId } from '@/features/users/filter-care-by-vehicle';
+import {
+  UserPlanPanel,
+  UserStreakPanel,
+  UserVehicleMembershipsPanel,
+} from '@/features/users/UserConsumerStatePanels';
 import { UserRolesPanel } from '@/features/users/UserRolesPanel';
 import { useUsersColumns } from '@/features/users/users-columns';
 import { useAdminUserCareRecords } from '@/hooks/users/useAdminUserCareRecords';
+import { useAdminUserConsumerState } from '@/hooks/users/useAdminUserConsumerState';
 import { useAdminUserDetail } from '@/hooks/users/useAdminUserDetail';
 import { useAdminUsers } from '@/hooks/users/useAdminUsers';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
@@ -47,6 +57,22 @@ const TYPE_FILTERS = [
   { value: 'PARTNER', label: 'Partner' },
   { value: 'INTERNAL', label: 'Internal' },
 ] as const;
+
+const VEHICLE_ROLE_LABEL: Record<string, string> = {
+  OWNER: 'Owner',
+  PROVISIONAL_OWNER: 'Provisional owner',
+  DRIVER: 'Driver',
+};
+
+/** The customer's role on one vehicle, straight from the entitlement snapshot (never guessed). */
+function selectedVehicleRoleLabel(
+  entitlements: AdminUserEntitlementsDto | null,
+  vehicleId: string,
+): string {
+  const entry = entitlements?.vehicles.find((row) => row.vehicleId === vehicleId);
+  if (!entry) return '—';
+  return VEHICLE_ROLE_LABEL[entry.role] ?? humanizeAdminLabel(entry.role);
+}
 
 function protectionLabel(value: string): string {
   return humanizeAdminLabel(value);
@@ -95,9 +121,17 @@ function UserDetailPanel({
     refresh: refreshCare,
   } = useAdminUserCareRecords(account.id);
 
+  const {
+    entitlements,
+    streak,
+    isFetching: consumerFetching,
+    refresh: refreshConsumer,
+  } = useAdminUserConsumerState(account.id);
+
   const refresh = () => {
     refreshDetail();
     refreshCare();
+    refreshConsumer();
   };
 
   const [localeDraft, setLocaleDraft] = useState(account.locale);
@@ -162,7 +196,7 @@ function UserDetailPanel({
           type="button"
           size="sm"
           variant="secondary"
-          loading={isLoading || careFetching}
+          loading={isLoading || careFetching || consumerFetching}
           onClick={refresh}
         >
           Refresh
@@ -208,7 +242,10 @@ function UserDetailPanel({
                     : 'Not verified'
                 }
               />
-              <AdminDetailField label="Owner account" value={shortAdminId(account.id)} mono />
+              <AdminDetailField
+                label="Customer's role"
+                value={selectedVehicleRoleLabel(entitlements.data, selectedVehicle.vehicleId)}
+              />
             </AdminDetailGrid>
           </AdminPanel>
 
@@ -386,6 +423,10 @@ function UserDetailPanel({
             </div>
           </AdminPanel>
 
+          <UserPlanPanel state={entitlements} onRetry={refreshConsumer} />
+
+          <UserStreakPanel state={streak} onRetry={refreshConsumer} />
+
           {canWrite ? (
             <UserRolesPanel userId={account.id} roles={roles} onChanged={refreshDetail} />
           ) : null}
@@ -478,7 +519,7 @@ function UserDetailPanel({
 
           <AdminPanel
             title="Vehicles"
-            subtitle="All owned vehicles. Open one to view expenses, maintenance, and documents."
+            subtitle="Vehicles on this account. Open one to view expenses, maintenance, and documents."
           >
             {vehiclesError ? (
               <AlErrorState message={vehiclesError} onRetry={refresh} />
@@ -508,7 +549,7 @@ function UserDetailPanel({
                 data={vehicles}
                 loading={vehiclesLoading}
                 emptyTitle="No vehicles"
-                emptyDescription="This account has no owned vehicles yet."
+                emptyDescription="This account has no vehicles yet."
                 getRowId={(row) => row.vehicleId}
                 onRowClick={(row) => {
                   setSelectedVehicleId(row.vehicleId);
@@ -516,6 +557,13 @@ function UserDetailPanel({
               />
             )}
           </AdminPanel>
+
+          <UserVehicleMembershipsPanel
+            state={entitlements}
+            vehicles={vehicles}
+            onRetry={refreshConsumer}
+            onOpenVehicle={setSelectedVehicleId}
+          />
 
           <CustomerDrilldown accountId={account.id} />
         </>

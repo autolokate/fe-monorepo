@@ -203,6 +203,9 @@ export const endpoints = {
       `/admin/v1/users/${encodeURIComponent(userId)}/vehicle-documents`,
     userEmergencyContacts: (userId: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/emergency-contacts`,
+    userEntitlements: (userId: string) =>
+      `/admin/v1/users/${encodeURIComponent(userId)}/entitlements`,
+    userStreak: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/streak`,
     userRoles: (userId: string) => `/admin/v1/users/${encodeURIComponent(userId)}/roles`,
     userRole: (userId: string, role: string) =>
       `/admin/v1/users/${encodeURIComponent(userId)}/roles/${encodeURIComponent(role)}`,
