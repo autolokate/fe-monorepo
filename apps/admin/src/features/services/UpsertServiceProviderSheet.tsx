@@ -1,6 +1,6 @@
 import type {
+  AdminServiceProviderDto,
   ServiceCategory,
-  ServiceProviderDto,
   ServiceProviderStatus,
   UpsertServiceProviderBody,
 } from '@autolokate/api-client';
@@ -13,7 +13,7 @@ export type UpsertServiceProviderSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   categories: ServiceCategory[];
-  initial: ServiceProviderDto | null;
+  initial: AdminServiceProviderDto | null;
   defaultCategory: ServiceCategory;
   busy: boolean;
   error: unknown;
@@ -31,9 +31,11 @@ type FormState = {
   subtitle: string;
   phone: string;
   address: string;
+  services: string;
+  note: string;
 };
 
-function toForm(initial: ServiceProviderDto | null, defaultCategory: string): FormState {
+function toForm(initial: AdminServiceProviderDto | null, defaultCategory: string): FormState {
   if (!initial) {
     return {
       name: '',
@@ -46,6 +48,8 @@ function toForm(initial: ServiceProviderDto | null, defaultCategory: string): Fo
       subtitle: '',
       phone: '',
       address: '',
+      services: '',
+      note: '',
     };
   }
   return {
@@ -55,10 +59,13 @@ function toForm(initial: ServiceProviderDto | null, defaultCategory: string): Fo
     latitude: initial.latitude == null ? '' : String(initial.latitude),
     longitude: initial.longitude == null ? '' : String(initial.longitude),
     verifiedPartner: initial.verifiedPartner,
-    status: 'ACTIVE',
+    // Keep the provider's real status — never silently reactivate an INACTIVE provider on edit.
+    status: initial.status,
     subtitle: initial.subtitle,
     phone: initial.phone ?? '',
     address: initial.address ?? '',
+    services: initial.services.join(', '),
+    note: initial.note ?? '',
   };
 }
 
@@ -129,6 +136,21 @@ export function UpsertServiceProviderSheet({
       latitude,
       longitude,
       status: form.status,
+      services: form.services
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean),
+      note: form.note.trim() ? form.note.trim() : null,
+      // PUT replaces the whole row: carry the server-owned listing fields this form doesn't edit, so
+      // saving never wipes rating / reviews / ETA / open-now.
+      ...(initial
+        ? {
+            openNow: initial.openNow,
+            rating: initial.rating,
+            reviewCount: initial.reviewCount,
+            etaMinutes: initial.etaMinutes,
+          }
+        : {}),
     };
 
     try {
@@ -307,6 +329,31 @@ export function UpsertServiceProviderSheet({
               autoComplete="off"
               onChange={(event) => {
                 setForm((prev) => ({ ...prev, address: event.target.value }));
+              }}
+            />
+          </label>
+
+          <label className="admin-field admin-form-span">
+            Services
+            <input
+              data-testid="services-upsert-services"
+              value={form.services}
+              autoComplete="off"
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, services: event.target.value }));
+              }}
+            />
+            <span className="admin-field__hint">Comma-separated, e.g. Towing, Jump start.</span>
+          </label>
+
+          <label className="admin-field admin-form-span">
+            Note
+            <input
+              data-testid="services-upsert-note"
+              value={form.note}
+              autoComplete="off"
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, note: event.target.value }));
               }}
             />
           </label>
