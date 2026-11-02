@@ -74,6 +74,7 @@ export function DiscoveryReelsPage() {
     hasNextPage,
     fetchNextPage,
     mayBeTruncated,
+    pagingNeedsUpdatedSort,
     userErrorMessage,
     status,
     setStatus,
@@ -243,6 +244,12 @@ export function DiscoveryReelsPage() {
               Load more
             </AlButton>
           </div>
+        ) : null}
+        {pagingNeedsUpdatedSort ? (
+          <AlText tone="muted" variant="caption" data-testid="discovery-reels-sort-paging-note">
+            More reels exist. The server can only page further in Recently updated order — switch
+            the sort to load the rest.
+          </AlText>
         ) : null}
         {mayBeTruncated ? (
           <AlText tone="muted" variant="caption">

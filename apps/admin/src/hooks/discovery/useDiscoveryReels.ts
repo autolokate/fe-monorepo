@@ -39,8 +39,12 @@ export function useDiscoveryReels() {
         },
         signal,
       ),
+    // The backend reel cursor is always (updatedAt, id), so it only pages correctly for the
+    // "Recently updated" sort; following it under another sort skips or repeats rows.
     getNextPageParam: (lastPage) =>
-      lastPage.pagination?.hasMore ? (lastPage.pagination.nextCursor ?? undefined) : undefined,
+      sort === 'updated' && lastPage.pagination?.hasMore
+        ? (lastPage.pagination.nextCursor ?? undefined)
+        : undefined,
     enabled: canRead,
     retry: false,
     meta: { errorMessage: 'Unable to load reels.' },
@@ -60,11 +64,14 @@ export function useDiscoveryReels() {
   const lastPagination = query.data?.pages.at(-1)?.pagination ?? null;
   const mayBeTruncated =
     !query.hasNextPage && lastPagination === null && reels.length >= DISCOVERY_LIST_LIMIT;
+  /** More rows exist but can't be paged in this sort order (see getNextPageParam). */
+  const pagingNeedsUpdatedSort = sort !== 'updated' && lastPagination?.hasMore === true;
 
   return {
     ...query,
     reels,
     mayBeTruncated,
+    pagingNeedsUpdatedSort,
     status,
     setStatus,
     sort,

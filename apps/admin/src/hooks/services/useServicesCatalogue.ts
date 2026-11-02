@@ -65,6 +65,17 @@ function isHubPersistenceUnavailable(error: unknown): boolean {
   return error.status === 404 || error.status === 500 || error.code === 'not_found';
 }
 
+/** `AdminServiceProviderDto.category` enum (backend OpenAPI). */
+const ADMIN_SERVICE_CATEGORIES: ServiceCategory[] = [
+  'ras',
+  'hospitals',
+  'garages',
+  'emergency',
+  'roadside',
+  'maintenance',
+  'partners',
+];
+
 export function useServicesCatalogue(initialCategory: ServiceCategory = 'ras') {
   const [category, setCategory] = useState<ServiceCategory>(initialCategory);
   const [hubDraft, setHubDraft] = useState<ServiceHubCategoryItem[]>([]);
@@ -148,13 +159,13 @@ export function useServicesCatalogue(initialCategory: ServiceCategory = 'ras') {
     },
   });
 
+  // Providers can live in any backend category (hidden hub tiles and non-hub categories included), so
+  // the admin filter offers visible hub tiles first, then every other category the server accepts.
   const categories: ServiceCategory[] = useMemo(() => {
     const items = hubQuery.data?.items ?? [];
     const visible = items.filter((item) => item.visible).map((item) => item.category);
-    if (visible.length > 0) return visible;
-    const all = items.map((item) => item.category);
-    if (all.length > 0) return all;
-    return DEFAULT_SERVICE_HUB_CATEGORIES;
+    const ordered = visible.length > 0 ? visible : DEFAULT_SERVICE_HUB_CATEGORIES;
+    return [...ordered, ...ADMIN_SERVICE_CATEGORIES.filter((value) => !ordered.includes(value))];
   }, [hubQuery.data]);
 
   const allProviders: AdminServiceProviderDto[] = providersQuery.data ?? [];
