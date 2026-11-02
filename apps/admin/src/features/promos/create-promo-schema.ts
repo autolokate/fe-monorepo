@@ -22,6 +22,10 @@ export const createPromoSchema = z
     maxPerAccount: optionalIntField(1),
     active: z.boolean(),
   })
+  .refine((values) => values.discountPercent !== undefined || values.discountRupees !== '', {
+    message: 'Enter a discount percent or a flat rupee discount.',
+    path: ['discountPercent'],
+  })
   .refine(
     (values) => {
       const from = Date.parse(values.validFrom);
