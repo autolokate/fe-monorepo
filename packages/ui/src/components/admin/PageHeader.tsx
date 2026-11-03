@@ -16,7 +16,10 @@ export function AlPageHeader({ title, description, breadcrumbs, actions }: AlPag
       <AlStack gap="sm" className="al-page-header__main">
         {breadcrumbs ? <div className="al-page-header__breadcrumbs">{breadcrumbs}</div> : null}
         <AlStack gap="xs">
-          <AlHeading variant="h2">{title}</AlHeading>
+          {/* The page title is the document's one h1 (styled as h2 so the visual scale is unchanged). */}
+          <AlHeading as="h1" variant="h2">
+            {title}
+          </AlHeading>
           {description ? <AlText tone="muted">{description}</AlText> : null}
         </AlStack>
       </AlStack>

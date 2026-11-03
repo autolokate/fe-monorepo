@@ -37,7 +37,7 @@ test.describe('QR batch provisioning', () => {
     // Detail page opens on the new batch (title = human batchCode).
     await expect(page).toHaveURL(/\/qr-batches\/[^/]+$/, { timeout: 20_000 });
     const detail = page.locator('main');
-    await expect(detail.getByRole('heading', { level: 2 })).toHaveText(
+    await expect(detail.getByRole('heading', { level: 1 })).toHaveText(
       new RegExp(`^B2C-[A-Z0-9]+-${String(totalCount)}-\\d{8}(?:-\\d+)?$`),
     );
     // The BATCH badge is the Overview section's direct child; each row in "Codes in batch" carries
