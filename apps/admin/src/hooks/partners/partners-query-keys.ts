@@ -15,6 +15,10 @@ export type GarageRequestsListParams = {
 
 export type TaxiRequestsListParams = {
   status: AdminTaxiRequestStatus | 'ALL';
+  pickupCity?: string;
+  pickupState?: string;
+  from?: string;
+  to?: string;
 };
 
 export const partnersQueryKeys = {

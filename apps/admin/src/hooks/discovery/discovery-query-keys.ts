@@ -1,6 +1,7 @@
 import type {
   AdminQaSort,
   AdminQaStatus,
+  AdminReelCreatorKind,
   AdminReelSort,
   AdminReelStatus,
   CommunityQuestionCategory,
@@ -17,6 +18,9 @@ export type DiscoveryReelListParams = {
   status: AdminReelStatus | 'ALL';
   sort: AdminReelSort;
   q: string;
+  /** Creator filter — `ALL` sends nothing. */
+  creatorKind?: AdminReelCreatorKind | 'ALL';
+  partnerOrgId?: string;
 };
 
 export const discoveryQueryKeys = {

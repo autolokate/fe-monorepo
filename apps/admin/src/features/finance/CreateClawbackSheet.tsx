@@ -28,14 +28,14 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
 
   const form = useForm<CreateClawbackFormValues>({
     resolver: zodResolver(createClawbackSchema),
-    defaultValues: { paymentRef: '' },
+    defaultValues: { paymentRef: '', reason: '' },
   });
 
   useEffect(() => {
     if (!open) {
       abortRef.current?.abort();
       abortRef.current = null;
-      form.reset({ paymentRef: '' });
+      form.reset({ paymentRef: '', reason: '' });
     }
   }, [form, open]);
 
@@ -50,7 +50,10 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
 
     try {
       const result = await clawbackMutation.mutateAsync({
-        body: { paymentRef: values.paymentRef },
+        body: {
+          paymentRef: values.paymentRef,
+          ...(values.reason ? { reason: values.reason } : {}),
+        },
         signal: controller.signal,
       });
       onCreated?.(result);
@@ -61,6 +64,7 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
   });
 
   const paymentRefError = form.formState.errors.paymentRef?.message;
+  const reasonError = form.formState.errors.reason?.message;
 
   return (
     <AlModal
@@ -115,6 +119,23 @@ export function CreateClawbackSheet({ open, onOpenChange, onCreated }: CreateCla
                 {paymentRefError}
               </span>
             ) : null}
+          </label>
+          <label className="admin-field admin-form-span">
+            Reason (optional, recorded in the audit log)
+            <textarea
+              data-testid="clawback-reason"
+              rows={3}
+              maxLength={500}
+              placeholder="Why this payment is being clawed back"
+              {...form.register('reason')}
+            />
+            {reasonError ? (
+              <span className="admin-form-error" role="alert">
+                {reasonError}
+              </span>
+            ) : (
+              <span className="admin-field__hint">Stored on the clawback audit event.</span>
+            )}
           </label>
         </div>
 

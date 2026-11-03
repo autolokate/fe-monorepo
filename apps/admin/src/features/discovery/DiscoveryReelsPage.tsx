@@ -13,7 +13,11 @@ import {
 } from '@autolokate/ui';
 import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
 
-import { REEL_SORT_OPTIONS, REEL_STATUS_FILTERS } from '@/features/discovery/discovery-filters';
+import {
+  REEL_CREATOR_FILTERS,
+  REEL_SORT_OPTIONS,
+  REEL_STATUS_FILTERS,
+} from '@/features/discovery/discovery-filters';
 import { useReelColumns } from '@/features/discovery/reel-columns';
 import { ReelSheet } from '@/features/discovery/ReelSheet';
 import { useDiscoveryMutations } from '@/hooks/discovery/useDiscoveryMutations';
@@ -81,6 +85,10 @@ export function DiscoveryReelsPage() {
     setSort,
     search,
     setSearch,
+    creatorKind,
+    setCreatorKind,
+    partnerOrgId,
+    setPartnerOrgId,
     refresh,
     data,
   } = useDiscoveryReels();
@@ -183,6 +191,23 @@ export function DiscoveryReelsPage() {
                   value={status}
                   onChange={setStatus}
                   aria-label="Reel status"
+                />
+              </AdminFilterField>
+              <AdminFilterField label="Creator">
+                <AdminFilterChips
+                  options={REEL_CREATOR_FILTERS}
+                  value={creatorKind}
+                  onChange={setCreatorKind}
+                  aria-label="Reel creator"
+                />
+              </AdminFilterField>
+              <AdminFilterField label="Partner org ID">
+                <AlSearchInput
+                  compact
+                  value={partnerOrgId}
+                  onChange={setPartnerOrgId}
+                  placeholder="Org UUID"
+                  ariaLabel="Filter reels by partner org id"
                 />
               </AdminFilterField>
               <AdminFilterField label="Sort">

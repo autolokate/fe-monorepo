@@ -67,7 +67,8 @@ export type HermeticCapture = {
   servicesCategoriesGet: number;
   servicesProvidersGet: Array<{ method: string; path: string; category: string | null }>;
   servicesProvidersPut: Array<{ method: string; path: string; body: unknown }>;
-  servicesProvidersDelete: Array<{ method: string; path: string }>;
+  /** `body` is the optional `{reason}` (null when the request had no body). */
+  servicesProvidersDelete: Array<{ method: string; path: string; body?: unknown }>;
   incidentsGet: number;
   incidentsDetailGet: number;
   ordersGet: number;
@@ -563,6 +564,25 @@ export type InstallHermeticRoutesOptions = {
   usersEntitlements?: Record<string, unknown>;
   /** When set, `GET /admin/v1/vehicles/{id}/drivers` answers this status (404 = not deployed). */
   vehicleDriversStatus?: number;
+  /**
+   * `GET /admin/v1/stats/queues` status (default 200 with {@link HERMETIC_QUEUE_STATS}). `404` answers
+   * Nest's unrouted `Cannot GET …` so the dashboard falls back to first-page list counts.
+   */
+  queueStatsStatus?: number;
+  /** Override the exact queue counters served by `GET /admin/v1/stats/queues`. */
+  queueStats?: Partial<typeof HERMETIC_QUEUE_STATS>;
+};
+
+/** Exact dashboard counters (`AdminQueueStatsDto`) — consistent with the list stubs below. */
+export const HERMETIC_QUEUE_STATS = {
+  ownershipClaimsPending: 1,
+  taxiDisputed: 1,
+  taxiFlagged: 0,
+  taxiPendingPartnerDeposit: 0,
+  kycPendingReview: 0,
+  supportOpen: 1,
+  websiteBookingsPending: 0,
+  taxiRefundsNeedingAction: 0,
 };
 
 /**
@@ -1616,6 +1636,19 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    // Admin v4: driver invites per vehicle / per user — default empty page (specs layer fixtures).
+    if (method === 'GET' && /^\/admin\/v1\/(vehicles|users)\/[^/]+\/driver-invites$/.test(path)) {
+      await fulfillJson(route, 200, {
+        data: [],
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: { limit: 20, cursor: null, nextCursor: null, hasMore: false },
+        },
+      });
+      return;
+    }
+
     // Nest OA: GET /admin/v1/vehicles/{vehicleId}/drivers — owner + driver roster (AdminVehicleDriversDto).
     const vehicleDriversMatch = path.match(/^\/admin\/v1\/vehicles\/([^/]+)\/drivers$/);
     if (method === 'GET' && vehicleDriversMatch) {
@@ -2557,7 +2590,12 @@ export async function installHermeticApiRoutes(
 
     const deactivateProviderMatch = path.match(/^\/admin\/v1\/services\/providers\/([^/]+)$/);
     if (method === 'DELETE' && deactivateProviderMatch) {
-      capture.servicesProvidersDelete.push({ method, path });
+      const deleteRaw = req.postData();
+      capture.servicesProvidersDelete.push({
+        method,
+        path,
+        body: deleteRaw ? (JSON.parse(deleteRaw) as unknown) : null,
+      });
       const id = decodeURIComponent(deactivateProviderMatch[1] ?? '');
       const existing = serviceProvidersState.find((row) => row.id === id);
       if (!existing) {
@@ -2700,6 +2738,37 @@ export async function installHermeticApiRoutes(
 
     // Dashboard "Needs attention" + "Taxi revenue" reads (specs that exercise these pages register
     // their own, richer routes after this one, which take precedence).
+    if (method === 'GET' && path === '/admin/v1/stats/queues') {
+      capture.dashboardReads.push(path);
+      const statsStatus = options.queueStatsStatus ?? 200;
+      if (statsStatus >= 400) {
+        await fulfillJson(
+          route,
+          statsStatus,
+          errorEnvelope(
+            statsStatus === 404 ? `Cannot GET ${path}` : 'Unable to load queue stats',
+            statsStatus === 404 ? 'not_found' : 'server_error',
+          ),
+        );
+        return;
+      }
+      await fulfillJson(route, 200, envelope({ ...HERMETIC_QUEUE_STATS, ...options.queueStats }));
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/taxi/refunds') {
+      capture.dashboardReads.push(`${path}?${url.searchParams.toString()}`);
+      await fulfillJson(route, 200, {
+        data: [],
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: { limit: 50, cursor: null, nextCursor: null, hasMore: false },
+        },
+      });
+      return;
+    }
+
     if (method === 'GET' && path === '/admin/v1/taxi/bookings') {
       capture.dashboardReads.push(`${path}?${url.searchParams.toString()}`);
       const disputed = url.searchParams.get('status') === 'DISPUTED';

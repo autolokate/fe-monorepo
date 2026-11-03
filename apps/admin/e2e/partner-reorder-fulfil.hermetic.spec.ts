@@ -16,7 +16,7 @@ import {
  * There is no Nest Admin list for partner-reorders — UI shows result panel + inventory refresh.
  */
 test.describe('Partner reorder fulfil (hermetic)', () => {
-  test('fulfil success — POST path + empty body + result panel', async ({ page }) => {
+  test('fulfil success — POST path + optional reason body + result panel', async ({ page }) => {
     const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openQrBatchesPage(page);
@@ -30,8 +30,9 @@ test.describe('Partner reorder fulfil (hermetic)', () => {
     await dialog.getByTestId('partner-reorder-fulfil-id').fill(HERMETIC_REORDER_ID);
     await dialog.getByTestId('partner-reorder-fulfil-review').click();
 
-    const confirm = page.getByRole('alertdialog', { name: 'Fulfil partner reorder' });
+    const confirm = page.getByRole('dialog', { name: 'Confirm reorder fulfilment' });
     await expect(confirm).toBeVisible();
+    await confirm.getByTestId('partner-reorder-fulfil-reason').fill('Partner restock request #42');
     await confirm.getByRole('button', { name: 'Fulfil reorder' }).click();
 
     await expect(page.locator('.admin-toast-host')).toContainText(
@@ -52,8 +53,10 @@ test.describe('Partner reorder fulfil (hermetic)', () => {
     expect(capture.partnerReorderFulfil[0]?.path).toBe(
       `/admin/v1/partner-reorders/${HERMETIC_REORDER_ID}/fulfil`,
     );
-    // Nest OA: no request body — client posts undefined.
-    expect(capture.partnerReorderFulfil[0]?.body).toBeNull();
+    // Optional audit reason (`BATCH_ALLOCATED.metadata.reason`); omitted entirely when blank.
+    expect(capture.partnerReorderFulfil[0]?.body).toEqual({
+      reason: 'Partner restock request #42',
+    });
     // Mutation invalidates inventory list (Nest GET /admin/v1/inventory).
     expect(capture.inventoryGet).toBeGreaterThan(inventoryBefore);
     expect(capture.unexpected).toEqual([]);
@@ -71,7 +74,8 @@ test.describe('Partner reorder fulfil (hermetic)', () => {
     const dialog = page.getByRole('dialog', { name: 'Fulfil partner reorder' });
     await dialog.getByTestId('partner-reorder-fulfil-id').fill(HERMETIC_REORDER_ID);
     await dialog.getByTestId('partner-reorder-fulfil-review').click();
-    const confirm = page.getByRole('alertdialog', { name: 'Fulfil partner reorder' });
+    const confirm = page.getByRole('dialog', { name: 'Confirm reorder fulfilment' });
+    await expect(confirm.getByTestId('partner-reorder-fulfil-reason')).toBeVisible();
     await confirm.getByRole('button', { name: 'Fulfil reorder' }).click();
 
     await expect(dialog.locator('.admin-form-error')).toHaveText(
@@ -96,7 +100,7 @@ test.describe('Partner reorder fulfil (hermetic)', () => {
     await dialog.getByTestId('partner-reorder-fulfil-id').fill(HERMETIC_REORDER_ID);
     await dialog.getByTestId('partner-reorder-fulfil-review').click();
     await page
-      .getByRole('alertdialog', { name: 'Fulfil partner reorder' })
+      .getByRole('dialog', { name: 'Confirm reorder fulfilment' })
       .getByRole('button', { name: 'Fulfil reorder' })
       .click();
 

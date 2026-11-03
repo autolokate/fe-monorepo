@@ -59,12 +59,16 @@ test.describe('Services catalogue (hermetic)', () => {
       timeout: 10_000,
     });
     await page.getByTestId(`services-deactivate-${HERMETIC_SERVICE_PROVIDER_ID}`).click();
-    await expect(page.getByRole('alertdialog')).toBeVisible({ timeout: 5_000 });
-    await page.getByRole('button', { name: 'Deactivate', exact: true }).click();
+    const confirm = page.getByRole('dialog', { name: 'Deactivate provider?' });
+    await expect(confirm).toBeVisible({ timeout: 5_000 });
+    await confirm.getByTestId('services-deactivate-reason').fill('Provider closed down');
+    await confirm.getByRole('button', { name: 'Deactivate', exact: true }).click();
     await expect.poll(() => capture.servicesProvidersDelete.length, { timeout: 10_000 }).toBe(1);
     expect(capture.servicesProvidersDelete[0]?.path).toBe(
       `/admin/v1/services/providers/${HERMETIC_SERVICE_PROVIDER_ID}`,
     );
+    // Optional reason → `SERVICE_PROVIDER_DEACTIVATED` audit row.
+    expect(capture.servicesProvidersDelete[0]?.body).toEqual({ reason: 'Provider closed down' });
     await expect(page.getByRole('cell', { name: 'INACTIVE' })).toBeVisible({
       timeout: 10_000,
     });
@@ -80,6 +84,8 @@ test.describe('Services catalogue (hermetic)', () => {
     await page.getByTestId(`services-deactivate-${HERMETIC_SERVICE_PROVIDER_ID}`).click();
     await page.getByRole('button', { name: 'Deactivate', exact: true }).click();
     await expect(page.getByRole('cell', { name: 'INACTIVE' })).toBeVisible({ timeout: 10_000 });
+    // No reason typed → no body at all.
+    expect(capture.servicesProvidersDelete[0]?.body).toBeNull();
 
     await page.getByTestId(`services-edit-${HERMETIC_SERVICE_PROVIDER_ID}`).click();
     await expect(page.getByTestId('services-upsert-status')).toHaveValue('INACTIVE');

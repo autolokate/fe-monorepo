@@ -3,6 +3,7 @@ import { AlButton, AlModal, AlText } from '@autolokate/ui';
 import { useState } from 'react';
 
 import { describeUserRoleError, useAdminUserRoles } from '@/hooks/users/useAdminUserRoles';
+import { AdminReasonDialog } from '@/platform/components/AdminReasonDialog';
 import {
   AdminPanel,
   AdminStatusChip,
@@ -46,12 +47,20 @@ export function UserRolesPanel({ userId, roles, onChanged }: UserRolesPanelProps
     revokeMutation.reset();
   };
 
-  const confirm = async () => {
+  const confirm = async (reason?: string) => {
     if (!pending) {
       return;
     }
     try {
-      await activeMutation.mutateAsync({ userId, role: pending.role });
+      if (pending.action === 'revoke') {
+        await revokeMutation.mutateAsync({
+          userId,
+          role: pending.role,
+          ...(reason ? { reason } : {}),
+        });
+      } else {
+        await grantMutation.mutateAsync({ userId, role: pending.role });
+      }
       onChanged();
       close();
     } catch {
@@ -95,32 +104,46 @@ export function UserRolesPanel({ userId, roles, onChanged }: UserRolesPanelProps
         </AlText>
       ) : null}
 
+      <AdminReasonDialog
+        open={pending?.action === 'revoke'}
+        onOpenChange={(open) => {
+          if (!open && !revokeMutation.isPending) {
+            close();
+          }
+        }}
+        title={pending ? `Revoke ${humanizeAdminLabel(pending.role)}?` : 'Revoke role'}
+        description="The account loses this role immediately and its sessions for this role are signed out."
+        confirmLabel="Revoke role"
+        required={false}
+        destructive
+        loading={revokeMutation.isPending}
+        error={pending?.action === 'revoke' ? submitError : null}
+        testIdPrefix="users-role"
+        onConfirm={(reason) => {
+          void confirm(reason);
+        }}
+      />
+
       <AlModal
-        open={pending !== null}
+        open={pending?.action === 'grant'}
         onOpenChange={(open) => {
           if (!open && !activeMutation.isPending) {
             close();
           }
         }}
         size="sm"
-        title={
-          pending
-            ? `${pending.action === 'grant' ? 'Grant' : 'Revoke'} ${humanizeAdminLabel(pending.role)}?`
-            : 'Change role'
-        }
+        title={pending ? `Grant ${humanizeAdminLabel(pending.role)}?` : 'Grant role'}
         description={
-          pending?.action === 'revoke'
-            ? 'The account loses this role immediately and its sessions for this role are signed out.'
-            : pending?.role === 'OPERATOR'
-              ? 'This gives the account full Admin console access.'
-              : 'The account gains customer app access.'
+          pending?.role === 'OPERATOR'
+            ? 'This gives the account full Admin console access.'
+            : 'The account gains customer app access.'
         }
         footer={
           <div className="admin-modal-actions">
             <AlButton
               type="button"
               size="sm"
-              variant={pending?.action === 'revoke' ? 'destructive' : 'primary'}
+              variant="primary"
               data-testid="users-role-confirm"
               loading={activeMutation.isPending}
               disabled={activeMutation.isPending}
@@ -128,7 +151,7 @@ export function UserRolesPanel({ userId, roles, onChanged }: UserRolesPanelProps
                 void confirm();
               }}
             >
-              {pending?.action === 'revoke' ? 'Revoke role' : 'Grant role'}
+              Grant role
             </AlButton>
             <AlButton
               type="button"

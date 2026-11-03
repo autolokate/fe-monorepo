@@ -22,6 +22,7 @@ test.describe('Finance clawback + settlement (hermetic)', () => {
     await expect(dialog).toBeVisible();
 
     await dialog.getByTestId('clawback-payment-ref').fill(HERMETIC_CLAWBACK_PAYMENT_REF);
+    await dialog.getByTestId('clawback-reason').fill('Chargeback lost at the bank');
     await dialog.getByTestId('clawback-submit').click();
 
     await expect(page.getByRole('status')).toContainText(
@@ -38,6 +39,7 @@ test.describe('Finance clawback + settlement (hermetic)', () => {
     expect(capture.clawbacksPost[0]?.path).toBe('/admin/v1/clawbacks');
     expect(capture.clawbacksPost[0]?.body).toEqual({
       paymentRef: HERMETIC_CLAWBACK_PAYMENT_REF,
+      reason: 'Chargeback lost at the bank',
     });
     expect(capture.unexpected).toEqual([]);
   });

@@ -55,8 +55,11 @@ export function submitTaxiDisputeResolve(
 }
 
 /** Return a held deposit now — a real provider refund. Returns detail + outcome. */
-export function submitTaxiDepositRelease(id: string): Promise<AdminTaxiBookingMutationDto> {
-  return releaseAdminTaxiBookingDeposit(getAdminApiClient(), id);
+export function submitTaxiDepositRelease(
+  id: string,
+  reason?: string,
+): Promise<AdminTaxiBookingMutationDto> {
+  return releaseAdminTaxiBookingDeposit(getAdminApiClient(), id, reason ? { reason } : {});
 }
 
 /** GET /admin/v1/taxi/revenue — Autolokate revenue ledger (keyset). */
@@ -81,6 +84,9 @@ export function submitTaxiEnrollmentSuspend(
   return suspendAdminTaxiEnrollment(getAdminApiClient(), orgId, { reason });
 }
 
-export function submitTaxiEnrollmentReinstate(orgId: string): Promise<AdminTaxiEnrollmentDto> {
-  return reinstateAdminTaxiEnrollment(getAdminApiClient(), orgId);
+export function submitTaxiEnrollmentReinstate(
+  orgId: string,
+  reason?: string,
+): Promise<AdminTaxiEnrollmentDto> {
+  return reinstateAdminTaxiEnrollment(getAdminApiClient(), orgId, reason ? { reason } : {});
 }

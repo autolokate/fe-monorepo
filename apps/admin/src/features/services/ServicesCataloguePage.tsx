@@ -1,7 +1,6 @@
 import type { AdminServiceProviderDto } from '@autolokate/api-client';
 import {
   AlButton,
-  AlConfirmationDialog,
   AlDataTable,
   AlErrorState,
   AlPageHeader,
@@ -18,6 +17,7 @@ import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDat
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { AdminKpiStrip, AdminPanel } from '@/platform/components/AdminWowSurface';
+import { AdminReasonDialog } from '@/platform/components/AdminReasonDialog';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
@@ -271,7 +271,7 @@ export function ServicesCataloguePage() {
           }}
         />
 
-        <AlConfirmationDialog
+        <AdminReasonDialog
           open={Boolean(deactivateTarget)}
           onOpenChange={(open) => {
             if (!open) setDeactivateTarget(null);
@@ -283,14 +283,16 @@ export function ServicesCataloguePage() {
               : 'Deactivate this provider?'
           }
           confirmLabel="Deactivate"
+          required={false}
           destructive
+          testIdPrefix="services-deactivate"
           loading={deactivateMutation.isPending}
-          onConfirm={() => {
+          onConfirm={(reason) => {
             if (!deactivateTarget) return;
             const target = deactivateTarget;
             setBusyId(target.id);
             void deactivateMutation
-              .mutateAsync(target.id)
+              .mutateAsync({ id: target.id, ...(reason ? { reason } : {}) })
               .then(() => {
                 setDeactivateTarget(null);
               })

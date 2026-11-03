@@ -124,7 +124,7 @@ export function useServicesCatalogue(initialCategory: ServiceCategory = 'ras') {
   });
 
   const deactivateMutation = useMutation({
-    mutationFn: (id: string) => deactivateProvider(id),
+    mutationFn: ({ id, reason }: { id: string; reason?: string }) => deactivateProvider(id, reason),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: servicesCatalogueQueryKeys.all });
     },

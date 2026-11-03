@@ -18,6 +18,7 @@ import {
   PartnerGstBadge,
   partnerGstLabel,
 } from '@/features/partners/partner-gst';
+import { PartnerGarageAccessSection } from '@/features/partners/PartnerGarageAccessSection';
 import { PartnerReelsSection } from '@/features/partners/PartnerReelsSection';
 import { formatPartnersDateTime, shortId } from '@/features/partners/partners-filters';
 import { useGarageEntitlementMutations } from '@/hooks/garage/useGarageEntitlementMutations';
@@ -372,6 +373,10 @@ export function PartnerDetailPage() {
             </AlText>
           ) : null}
         </section>
+
+        {isGarageStorePartner || partner.surfaceType ? (
+          <PartnerGarageAccessSection orgId={partner.orgId} />
+        ) : null}
 
         <PartnerReelsSection reels={partner.reels} />
       </AlStack>

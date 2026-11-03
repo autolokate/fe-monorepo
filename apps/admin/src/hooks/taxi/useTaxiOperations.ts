@@ -137,7 +137,7 @@ export function useTaxiBooking(bookingId: string) {
   });
 
   const releaseMutation = useMutation({
-    mutationFn: () => submitTaxiDepositRelease(bookingId),
+    mutationFn: (reason: string | undefined) => submitTaxiDepositRelease(bookingId, reason),
     retry: 0,
     onSuccess: (result) => {
       showSuccessToast('Deposit refund submitted to the payment provider.');
@@ -260,7 +260,8 @@ export function useTaxiEnrollments() {
   });
 
   const reinstateMutation = useMutation({
-    mutationFn: (orgId: string) => submitTaxiEnrollmentReinstate(orgId),
+    mutationFn: (input: { orgId: string; reason?: string }) =>
+      submitTaxiEnrollmentReinstate(input.orgId, input.reason),
     onSuccess: () => {
       showSuccessToast('Taxi enrollment reinstated.');
       onChanged();

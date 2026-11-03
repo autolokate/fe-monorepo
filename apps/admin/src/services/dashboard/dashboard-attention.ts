@@ -1,4 +1,4 @@
-import type { AdminTaxiRevenueDto } from '@autolokate/api-client';
+import type { AdminQueueStatsDto, AdminTaxiRevenueDto } from '@autolokate/api-client';
 
 /** Page size for every dashboard queue read — counts above it read "50+" (never a fake total). */
 export const ATTENTION_PAGE_LIMIT = 50;
@@ -24,6 +24,21 @@ export function countListPage(items: unknown, hasMore: boolean): AttentionCount 
     throw new Error('Unexpected response from the server for this queue.');
   }
   return attentionCount(items.length, hasMore);
+}
+
+/**
+ * An exact counter from `GET /admin/v1/stats/queues`. A missing / non-integer field (older or
+ * different server) throws, so the tile says "couldn't load" rather than showing a wrong number.
+ */
+export function attentionFromQueueStats(
+  stats: Partial<AdminQueueStatsDto> | null | undefined,
+  key: keyof AdminQueueStatsDto,
+): AttentionCount {
+  const value = stats?.[key];
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0) {
+    throw new Error('Unexpected response from the server for this queue.');
+  }
+  return attentionCount(value, false);
 }
 
 /** "0", "7", "50+" — a capped page is never shown as an exact total. */

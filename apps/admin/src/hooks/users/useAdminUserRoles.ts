@@ -76,11 +76,14 @@ export function useAdminUserRoles() {
       userId,
       role,
       signal,
+      reason,
     }: {
       userId: string;
       role: GrantableUserRole;
       signal?: AbortSignal;
-    }) => revokeRole(userId, role, signal),
+      /** Optional 3..500 — stored on the `USER_ROLE_REVOKED` audit row. */
+      reason?: string;
+    }) => revokeRole(userId, role, signal, reason),
     retry: 0,
     onSuccess: async (_result: AdminUserDto, variables) => {
       showSuccessToast(`${variables.role} revoked.`);
