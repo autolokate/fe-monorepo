@@ -19,6 +19,7 @@ import {
   type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
 import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
+import { useUrlTextState } from '@/platform/state/useUrlTextState';
 import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export const HOUR_OPTIONS = [
@@ -75,8 +76,11 @@ export function PlateScanningLookupsTab() {
     RESULT_VALUES,
   );
   const [hours, setHours] = useUrlFilterState<HourOption>('hours', '24', HOUR_VALUES);
-  const [accountDraft, setAccountDraft] = useState('');
-  const [accountId, setAccountId] = useState('');
+  // The applied scanner filter lives in the URL (`?account=`) like the other filters; a malformed
+  // value in a pasted URL is ignored rather than sent to the API.
+  const [urlAccount, setAccountId] = useUrlTextState('account');
+  const accountId = UUID.test(urlAccount.trim()) ? urlAccount.trim() : '';
+  const [accountDraft, setAccountDraft] = useState(accountId);
   const accountInvalid = accountDraft.trim().length > 0 && !UUID.test(accountDraft.trim());
 
   const lookups = useScanLookups({ accountId, result, hours: Number(hours) });
