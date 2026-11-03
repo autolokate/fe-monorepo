@@ -9,6 +9,7 @@ export type OwnershipClaimsFilterOption = {
 
 export const OWNERSHIP_CLAIMS_STATUS_FILTERS: OwnershipClaimsFilterOption[] = [
   { value: 'ALL', label: 'All' },
+  { value: 'PENDING', label: 'Needs review' },
   { value: 'SUBMITTED', label: 'Submitted' },
   { value: 'UNDER_REVIEW', label: 'Under review' },
   { value: 'APPROVED', label: 'Approved' },

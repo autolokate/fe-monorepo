@@ -201,7 +201,7 @@ export function useDashboardAttention() {
       id: 'rc-reviews',
       label: 'RC & ownership reviews',
       hint: 'Claims waiting for approve / reject',
-      to: `${adminPaths.ownershipClaims}?status=SUBMITTED`,
+      to: `${adminPaths.ownershipClaims}?status=PENDING`,
       urgent: false,
       allowed: canClaims,
     },

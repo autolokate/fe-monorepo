@@ -11,7 +11,26 @@ import {
 } from '@/services/ownership-claims/ownership-claims-service';
 import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
-export type OwnershipClaimsStatusFilter = OwnershipClaimStatus | 'ALL';
+/** `PENDING` = every claim still waiting for a decision (SUBMITTED + UNDER_REVIEW) — the dashboard queue. */
+export type OwnershipClaimsStatusFilter = OwnershipClaimStatus | 'ALL' | 'PENDING';
+
+const PENDING_CLAIM_STATUSES: OwnershipClaimStatus[] = ['SUBMITTED', 'UNDER_REVIEW'];
+
+/**
+ * The list route takes one status, so `PENDING` reads both open statuses and merges them newest
+ * first — the same set `GET /admin/v1/stats/queues` counts as `ownershipClaimsPending`.
+ */
+export async function fetchOwnershipClaimsForFilter(
+  filter: OwnershipClaimsStatusFilter,
+  signal?: AbortSignal,
+) {
+  if (filter === 'ALL') return fetchOwnershipClaims({}, signal);
+  if (filter !== 'PENDING') return fetchOwnershipClaims({ status: filter }, signal);
+  const pages = await Promise.all(
+    PENDING_CLAIM_STATUSES.map((status) => fetchOwnershipClaims({ status }, signal)),
+  );
+  return pages.flat().sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+}
 
 export const ownershipClaimsQueryKeys = {
   all: ['admin', 'ownership-claims'] as const,
@@ -28,8 +47,7 @@ export function useOwnershipClaims(initial: OwnershipClaimsStatusFilter = 'ALL')
 
   const query = useQuery({
     queryKey: ownershipClaimsQueryKeys.list(statusFilter),
-    queryFn: ({ signal }) =>
-      fetchOwnershipClaims(statusFilter === 'ALL' ? {} : { status: statusFilter }, signal),
+    queryFn: ({ signal }) => fetchOwnershipClaimsForFilter(statusFilter, signal),
     meta: { errorMessage: 'Unable to load ownership claims.' },
   });
 
