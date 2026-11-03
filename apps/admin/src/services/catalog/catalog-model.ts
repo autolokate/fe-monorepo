@@ -1,5 +1,6 @@
 import type { AdminPlanDto, ApiPlanTier, SkuSummaryDto } from '@autolokate/api-client';
 
+import { formatAdminDate } from '@/platform/utils/format-admin-date';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
 
 export const PLAN_TIERS = [
@@ -65,11 +66,8 @@ export function formatPlanRef(plan: AdminPlanDto): string {
 }
 
 export function formatEffectiveWindow(plan: AdminPlanDto): string {
-  const from =
-    plan.effectiveFrom !== null
-      ? new Date(plan.effectiveFrom).toLocaleDateString()
-      : 'Not published';
-  const to = plan.effectiveTo !== null ? new Date(plan.effectiveTo).toLocaleDateString() : 'Open';
+  const from = plan.effectiveFrom !== null ? formatAdminDate(plan.effectiveFrom) : 'Not published';
+  const to = plan.effectiveTo !== null ? formatAdminDate(plan.effectiveTo) : 'Open';
   return `${from} → ${to}`;
 }
 

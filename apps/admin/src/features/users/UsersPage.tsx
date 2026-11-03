@@ -453,7 +453,7 @@ function UserDetailPanel({
               <AdminDetailField label="Status" value={humanizeAdminLabel(accountStatus)} />
               <AdminDetailField
                 label="Created"
-                value={new Date((detail ?? account).createdAt).toLocaleString()}
+                value={formatAdminDateTime((detail ?? account).createdAt)}
               />
             </AdminDetailGrid>
 
@@ -666,6 +666,10 @@ export function UsersPage() {
   const columns = useUsersColumns();
   const queryClient = useQueryClient();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const deepLinkAccount = searchParams.get('account');
+  const handledDeepLink = useRef<string | null>(null);
+
   /** Roster rows carry only an account id — load its detail (a summary superset) and open it. */
   const openAccount = (accountId: string) => {
     if (openingAccountId) return;
@@ -677,7 +681,17 @@ export function UsersPage() {
         retry: 0,
       })
       .then((detail) => {
+        handledDeepLink.current = detail.id;
         setSelected(detail);
+        setSearchParams(
+          (current) => {
+            const next = new URLSearchParams(current);
+            next.set('account', detail.id);
+            return next;
+          },
+          // Already in the URL (deep link / reload) → replace; opened from a roster → new history entry.
+          { replace: deepLinkAccount === accountId },
+        );
       })
       .catch((error: unknown) => {
         reportAdminApiError(error, { context: 'users:open-account', toast: true });
@@ -687,24 +701,32 @@ export function UsersPage() {
       });
   };
 
-  // `/users?account=<id>` (e.g. from Vehicles or Plate scanning) opens that account directly.
-  const [searchParams, setSearchParams] = useSearchParams();
-  const deepLinkAccount = searchParams.get('account');
-  const handledDeepLink = useRef<string | null>(null);
+  // `/users?account=<id>` opens that account (from Vehicles, Plate scanning, or a reload / shared
+  // link). The open account stays in the URL so a reload keeps it; browser Back returns to the list.
   useEffect(() => {
-    if (!deepLinkAccount || handledDeepLink.current === deepLinkAccount) return;
+    if (!deepLinkAccount) {
+      // Back button (or a link) left the account: show the directory again.
+      handledDeepLink.current = null;
+      setSelected(null);
+      return;
+    }
+    if (handledDeepLink.current === deepLinkAccount) return;
     handledDeepLink.current = deepLinkAccount;
     openAccount(deepLinkAccount);
-    setSearchParams(
-      (current) => {
-        const next = new URLSearchParams(current);
-        next.delete('account');
-        return next;
-      },
-      { replace: true },
-    );
     // eslint-disable-next-line react-hooks/exhaustive-deps -- open once per deep-linked id
   }, [deepLinkAccount]);
+
+  /** Open (or close with null) an account and mirror it in `?account=`. */
+  const selectAccount = (row: AdminUserSummaryDto | null) => {
+    handledDeepLink.current = row?.id ?? null;
+    setSelected(row);
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      if (row) next.set('account', row.id);
+      else next.delete('account');
+      return next;
+    });
+  };
 
   const pageDescription = 'Look up customers and review account care.';
 
@@ -744,7 +766,7 @@ export function UsersPage() {
             onOpenAccount={openAccount}
             searchPhone={phoneApplied ?? null}
             onClose={() => {
-              setSelected(null);
+              selectAccount(null);
             }}
           />
         ) : (
@@ -830,7 +852,7 @@ export function UsersPage() {
                 }
                 getRowId={(row) => row.id}
                 onRowClick={(row) => {
-                  setSelected(row);
+                  selectAccount(row);
                 }}
               />
               <AdminLoadMore
