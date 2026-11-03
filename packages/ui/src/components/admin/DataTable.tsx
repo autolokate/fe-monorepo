@@ -36,6 +36,7 @@ import {
   exportTableToCsv,
   getColumnDisplayLabel,
   loadDataTablePrefs,
+  matchesGlobalSearch,
   saveDataTablePrefs,
   type DataTableDensity,
   type DataTablePrefs,
@@ -241,6 +242,8 @@ export function AlDataTable<TData>({
     },
     onColumnPinningChange: setColumnPinning,
     onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, columnId, filterValue) =>
+      matchesGlobalSearch(row.id, row.getValue(columnId), filterValue),
     onRowSelectionChange: onRowSelectionChange ?? setInternalRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -378,7 +381,7 @@ export function AlDataTable<TData>({
                   ? 'Loading…'
                   : isRefreshing
                     ? 'Refreshing…'
-                    : `${String(filteredCount)} rows`}
+                    : `${filteredCount.toLocaleString()} ${filteredCount === 1 ? 'row' : 'rows'}`}
               </span>
             )}
             {enableDensitySwitch ? (

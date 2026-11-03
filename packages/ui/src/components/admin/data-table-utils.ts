@@ -152,3 +152,21 @@ export async function copyCellValue(value: unknown): Promise<void> {
 }
 
 export type { ColumnDef };
+
+/**
+ * Global search for `AlDataTable`: a row matches when the query appears in the cell value of a
+ * searchable column OR in the row id (`getRowId`). Matching the row id lets operators paste an
+ * entity id (claim, booking, refund…) even when no visible column's accessor is that id — e.g. a
+ * "Claim" column that sorts by status but shows the short id.
+ */
+export function matchesGlobalSearch(rowId: string, cellValue: unknown, query: unknown): boolean {
+  const needle = (typeof query === 'string' ? query : '').trim().toLowerCase();
+  if (!needle) return true;
+  if (rowId.toLowerCase().includes(needle)) return true;
+  if (cellValue === null || cellValue === undefined) return false;
+  if (typeof cellValue === 'string') return cellValue.toLowerCase().includes(needle);
+  if (typeof cellValue === 'number' || typeof cellValue === 'boolean') {
+    return String(cellValue).toLowerCase().includes(needle);
+  }
+  return false;
+}
