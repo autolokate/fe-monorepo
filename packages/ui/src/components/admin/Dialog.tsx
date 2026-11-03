@@ -1,11 +1,35 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 
 import { AlButton } from '../primitives/Button/index';
 import { AlHeading, AlStack, AlText } from '../primitives/index';
 import './Dialog.css';
 
 export type AlModalSize = 'sm' | 'md' | 'lg' | 'xl';
+
+/**
+ * Radix only returns focus to its own `Dialog.Trigger`. Admin dialogs are opened from state (a
+ * table row, a row action), so on close focus fell to <body> and keyboard users lost their place.
+ * Remember what had focus when the dialog opened (layout effect = before Radix moves focus into
+ * the content) and put it back on close while it is still in the document.
+ */
+function useReturnFocus(open: boolean) {
+  const returnTo = useRef<HTMLElement | null>(null);
+  useLayoutEffect(() => {
+    if (open && typeof document !== 'undefined') {
+      const active = document.activeElement;
+      returnTo.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+  }, [open]);
+  return (event: Event) => {
+    const target = returnTo.current;
+    returnTo.current = null;
+    if (target?.isConnected) {
+      event.preventDefault();
+      target.focus();
+    }
+  };
+}
 
 export type AlModalProps = {
   open: boolean;
@@ -27,11 +51,15 @@ export function AlModal({
   footer,
   size = 'md',
 }: AlModalProps) {
+  const onCloseAutoFocus = useReturnFocus(open);
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="al-dialog-overlay" />
-        <Dialog.Content className={`al-modal al-modal--${size}`}>
+        <Dialog.Content
+          className={`al-modal al-modal--${size}`}
+          onCloseAutoFocus={onCloseAutoFocus}
+        >
           <div className="al-modal__header">
             <AlStack gap="xs">
               <Dialog.Title asChild>
@@ -81,11 +109,15 @@ export function AlSheet({
   footer,
   side = 'right',
 }: AlSheetProps) {
+  const onCloseAutoFocus = useReturnFocus(open);
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="al-dialog-overlay" />
-        <Dialog.Content className={`al-sheet al-sheet--${side}`}>
+        <Dialog.Content
+          className={`al-sheet al-sheet--${side}`}
+          onCloseAutoFocus={onCloseAutoFocus}
+        >
           <AlStack gap="sm">
             <Dialog.Title asChild>
               <AlHeading variant="h4">{title}</AlHeading>
@@ -136,11 +168,16 @@ export function AlConfirmationDialog({
   loading = false,
   onConfirm,
 }: AlConfirmationDialogProps) {
+  const onCloseAutoFocus = useReturnFocus(open);
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="al-dialog-overlay" />
-        <Dialog.Content className="al-dialog-content" role="alertdialog">
+        <Dialog.Content
+          className="al-dialog-content"
+          role="alertdialog"
+          onCloseAutoFocus={onCloseAutoFocus}
+        >
           <AlStack gap="sm">
             <Dialog.Title asChild>
               <AlHeading variant="h4">{title}</AlHeading>
