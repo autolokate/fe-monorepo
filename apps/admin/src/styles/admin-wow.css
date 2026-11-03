@@ -227,10 +227,10 @@
   color: var(--al-admin-hint-color, var(--al-color-text-muted));
 }
 
-.al-page-layout .admin-field input,
+.al-page-layout .admin-field input:not([type='checkbox']):not([type='radio']),
 .al-page-layout .admin-field select,
 .al-page-layout .admin-field textarea,
-.al-modal .admin-field input,
+.al-modal .admin-field input:not([type='checkbox']):not([type='radio']),
 .al-modal .admin-field select,
 .al-modal .admin-field textarea,
 .al-page-layout .taxi-policy__form input,
@@ -501,4 +501,15 @@
   .al-page-layout .al-page-header__actions {
     width: 100%;
   }
+}
+
+/* Checkboxes inside an .admin-field label sit inline with their text (they used to inherit the
+   full-width text-input box and render as a large detached square, e.g. the refund confirm). */
+.al-page-layout .admin-field input[type='checkbox'],
+.al-modal .admin-field input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  margin: 0 0.5rem 0 0;
+  vertical-align: -0.15em;
+  accent-color: var(--al-color-primary);
 }
