@@ -201,7 +201,8 @@ export function PartnerRequestsInboxPage() {
           }
         />
 
-        <div className="partners-inbox-tabs" role="tablist" aria-label="Request inbox">
+        {/* Toggle chips (role=group, aria-pressed), not ARIA tabs — no tablist wrapper. */}
+        <div className="partners-inbox-tabs">
           <AdminFilterChips
             options={INBOX_TABS}
             value={tab}

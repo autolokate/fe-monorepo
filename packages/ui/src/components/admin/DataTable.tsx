@@ -86,6 +86,10 @@ function getAriaSortValue(
   return 'none';
 }
 
+function isBlankHeader(header: unknown): boolean {
+  return header === undefined || (typeof header === 'string' && header.trim() === '');
+}
+
 export type AlDataTableProps<TData> = {
   columns: ColumnDef<TData>[];
   data: TData[];
@@ -512,6 +516,12 @@ export function AlDataTable<TData>({
                             {flexRender(header.column.columnDef.header, header.getContext())}
                             <SortIcon />
                           </button>
+                        ) : isBlankHeader(header.column.columnDef.header) ? (
+                          // Row-action columns have no visible title; name them for screen readers.
+                          <span className="al-data-table__sr-only">
+                            {(header.column.columnDef.meta as { label?: string } | undefined)
+                              ?.label ?? 'Actions'}
+                          </span>
                         ) : (
                           flexRender(header.column.columnDef.header, header.getContext())
                         )}
