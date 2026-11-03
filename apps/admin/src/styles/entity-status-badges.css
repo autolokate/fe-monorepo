@@ -17,11 +17,17 @@
 
 /*
  * Light theme: the per-status hues are tuned for dark surfaces and measured 2.9–4.0:1 on their pale
- * light fills (axe color-contrast). Darken the same hue so 12px badge text clears 4.5:1 while the
+ * light fills (axe color-contrast; amber needed 60%). Darken the same hue so 12px badge text clears 4.5:1 while the
  * status colours stay recognisable. Dark-theme rules below still set \`color\` directly.
  */
 [data-theme='light'] .admin-entity-status-badge {
-  color: color-mix(in srgb, var(--badge-fg, currentColor) 70%, #000);
+  color: color-mix(in srgb, var(--badge-fg, currentColor) 60%, #000);
+}
+
+/* Dark theme: hues without their own dark rule (e.g. #ea580c 4.44:1, #4f46e5 3.79:1) are lifted toward white.
+   Statuses that define a dark colour below override this (same specificity, later in the file). */
+[data-theme='dark'] .admin-entity-status-badge {
+  color: color-mix(in srgb, var(--badge-fg, currentColor) 70%, #fff);
 }
 
 .admin-entity-status-badge__dot {
