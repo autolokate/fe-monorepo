@@ -41,6 +41,7 @@ import {
 } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 
 import './partners.css';
 
@@ -50,6 +51,7 @@ const INBOX_TABS: { value: InboxTab; label: string }[] = [
   { value: 'garage', label: 'Garage' },
   { value: 'taxi', label: 'Taxi' },
 ];
+const INBOX_TAB_VALUES: readonly InboxTab[] = ['garage', 'taxi'];
 
 function statusTone(status: string): AdminStatusChipTone {
   if (status === 'OPEN' || status === 'AWARDED') return 'active';
@@ -124,7 +126,8 @@ function requestKpis(
 }
 
 export function PartnerRequestsInboxPage() {
-  const [tab, setTab] = useState<InboxTab>('garage');
+  // In the URL (`?tab=taxi`) so a reload or a shared link keeps the taxi filters on the taxi tab.
+  const [tab, setTab] = useUrlFilterState<InboxTab>('tab', 'garage', INBOX_TAB_VALUES);
   const [selectedGarage, setSelectedGarage] = useState<AdminGarageRequestInboxDto | null>(null);
   const [selectedTaxi, setSelectedTaxi] = useState<AdminTaxiRequestInboxDto | null>(null);
 
