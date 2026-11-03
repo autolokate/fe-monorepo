@@ -3,6 +3,7 @@ import type {
   AdminPartnerType,
   AdminTaxiRequestStatus,
 } from '@autolokate/api-client';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export type FilterOption<T extends string> = { value: T; label: string };
 
@@ -32,7 +33,7 @@ export function formatPartnersDateTime(value: string | null | undefined): string
   if (!value) {
     return '—';
   }
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 export function formatRupees(value: number): string {

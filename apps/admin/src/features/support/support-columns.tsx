@@ -4,9 +4,10 @@ import { useMemo } from 'react';
 
 import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
 import { SupportTicketStatusBadge } from '@/platform/components/EntityStatusBadge';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string): string {
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 /** List columns — subject only; the customer's message never reaches the admin plane. */

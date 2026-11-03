@@ -3,12 +3,13 @@ import { AlStatusBadge, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { formatPromoDiscount, getPromoLifecycleStatus } from '@/services/promos/promo-metrics';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string | null): string {
   if (!value) {
     return '—';
   }
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 function lifecycleTone(

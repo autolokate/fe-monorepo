@@ -14,6 +14,7 @@ import {
 } from '@/platform/components/AdminWowSurface';
 import { adminOrderLabel } from '@/platform/utils/admin-order-label';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export type OrderDetailSheetProps = {
   orderId: string | null;
@@ -23,7 +24,7 @@ export type OrderDetailSheetProps = {
 };
 
 function formatDateTime(value: string): string {
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 function statusTone(status: string) {

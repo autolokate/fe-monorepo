@@ -8,11 +8,12 @@ import {
   humanizeAdminLabel,
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
+import { formatAdminDate } from '@/platform/utils/format-admin-date';
 
 function formatDate(value: string | null | undefined): string {
   if (!value) return '—';
   const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value.slice(0, 10) : parsed.toLocaleDateString();
+  return Number.isNaN(parsed.getTime()) ? value.slice(0, 10) : formatAdminDate(value);
 }
 
 export type OwnershipClaimsColumnHandlers = {

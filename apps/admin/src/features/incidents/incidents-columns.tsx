@@ -4,9 +4,10 @@ import { useMemo } from 'react';
 
 import { IncidentStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string): string {
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 /** QR or vehicle bound to the incident — short secondary refs only. */

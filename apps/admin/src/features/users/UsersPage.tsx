@@ -53,6 +53,7 @@ import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { fetchUserDetail } from '@/services/users/admin-users-service';
 
 import './users.css';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 /** Care lists are GET-only today — show honestly (no fabricate write). */
 const CARE_RO_CAPTION = 'Care records are read-only.';
@@ -273,7 +274,7 @@ function UserDetailPanel({
                 label="Ownership verified"
                 value={
                   selectedVehicle.ownershipVerifiedAt
-                    ? new Date(selectedVehicle.ownershipVerifiedAt).toLocaleString()
+                    ? formatAdminDateTime(selectedVehicle.ownershipVerifiedAt)
                     : 'Not verified'
                 }
               />

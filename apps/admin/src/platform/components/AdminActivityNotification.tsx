@@ -12,6 +12,7 @@ import {
 } from '@/platform/components/activity-feed-utils';
 import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: boolean }) {
   if (loading) {
@@ -43,7 +44,7 @@ function ActivityList({ events, loading }: { events: AuditEventDto[]; loading: b
           <time
             className="admin-activity-panel__time"
             dateTime={event.at}
-            title={new Date(event.at).toLocaleString()}
+            title={formatAdminDateTime(event.at)}
           >
             {formatRelativeTime(event.at)}
           </time>

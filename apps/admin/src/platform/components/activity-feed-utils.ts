@@ -1,4 +1,5 @@
 import { formatAuditField } from '@/platform/utils/audit-field';
+import { formatAdminDate } from '@/platform/utils/format-admin-date';
 
 export function formatRelativeTime(value: string): string {
   const date = new Date(value);
@@ -14,7 +15,7 @@ export function formatRelativeTime(value: string): string {
   if (hours < 24) {
     return `${String(hours)}h ago`;
   }
-  return date.toLocaleDateString();
+  return formatAdminDate(date.toISOString());
 }
 
 export function formatActivityDetail(targetType: object | null, _targetId: object | null): string {

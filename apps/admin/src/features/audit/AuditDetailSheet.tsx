@@ -10,6 +10,7 @@ import {
 import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { formatAuditField } from '@/platform/utils/audit-field';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export type AuditDetailSheetProps = {
   event: AuditEventDto | null;
@@ -18,7 +19,7 @@ export type AuditDetailSheetProps = {
 };
 
 function formatDateTime(value: string): string {
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 function formatActor(event: AuditEventDto): string {
