@@ -100,7 +100,7 @@ export function TaxiFleetDrawer({
                   <AdminDetailField label="RC rejection" value={vehicle.rejectionReason} />
                 ) : null}
                 <AdminDetailField
-                  label="Owner role"
+                  label="Partner's role on vehicle"
                   value={vehicle.role ? humanizeAdminLabel(vehicle.role) : '—'}
                 />
                 <AdminDetailField label="Fleet vehicle" value={vehicle.id} mono />

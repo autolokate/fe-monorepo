@@ -1,4 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { garageAccessQueryKeys } from '@/hooks/garage/useGarageAccess';
 
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
@@ -12,6 +14,12 @@ import {
 } from '@/services/garage/garage-entitlement-service';
 
 export function useGarageEntitlementMutations() {
+  const queryClient = useQueryClient();
+  /** A grant / adjust changes the org's access state and pass history — refetch both. */
+  const invalidateOrgAccess = (orgId: string) => {
+    void queryClient.invalidateQueries({ queryKey: garageAccessQueryKeys.access(orgId) });
+    void queryClient.invalidateQueries({ queryKey: garageAccessQueryKeys.passes(orgId) });
+  };
   const grantPassMutation = useMutation({
     mutationFn: ({
       orgId,
@@ -23,7 +31,8 @@ export function useGarageEntitlementMutations() {
       signal?: AbortSignal;
     }) => submitGaragePassGrant(orgId, body, signal),
     retry: 0,
-    onSuccess: () => {
+    onSuccess: (_result, { orgId }) => {
+      invalidateOrgAccess(orgId);
       showSuccessToast('Garage pass granted.');
     },
     onError: (error) => {
@@ -42,7 +51,8 @@ export function useGarageEntitlementMutations() {
       signal?: AbortSignal;
     }) => submitGarageFreeBidsAdjust(orgId, body, signal),
     retry: 0,
-    onSuccess: () => {
+    onSuccess: (_result, { orgId }) => {
+      invalidateOrgAccess(orgId);
       showSuccessToast('Free bids adjusted.');
     },
     onError: (error) => {

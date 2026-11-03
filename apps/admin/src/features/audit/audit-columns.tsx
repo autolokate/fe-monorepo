@@ -4,9 +4,10 @@ import { useMemo } from 'react';
 
 import { AuditActionBadge } from '@/platform/components/EntityStatusBadge';
 import { formatAuditField } from '@/platform/utils/audit-field';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string): string {
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 function formatActor(event: AuditEventDto): string {

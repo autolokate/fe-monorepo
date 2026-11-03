@@ -53,6 +53,15 @@ export const AUDIT_ACTION_OPTIONS: { value: AuditAction; label: string }[] = [
   { value: 'WEBSITE_BOOKING_STATUS_CHANGED', label: 'Website booking status changed' },
 ];
 
+const AUDIT_ACTION_LABELS = new Map<string, string>(
+  AUDIT_ACTION_OPTIONS.map((option) => [option.value, option.label]),
+);
+
+/** Curated label ("RC record access"), never the mechanical one ("Rcrecord Access"). */
+export function auditActionLabel(action: string, fallback: (value: string) => string): string {
+  return AUDIT_ACTION_LABELS.get(action) ?? fallback(action);
+}
+
 export const AUDIT_PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 
 export type AuditPageSize = (typeof AUDIT_PAGE_SIZE_OPTIONS)[number];

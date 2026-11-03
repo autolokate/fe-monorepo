@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { AUDIT_ACTION_OPTIONS, resolveActionFilter } from './audit-filters';
+import { AUDIT_ACTION_OPTIONS, auditActionLabel, resolveActionFilter } from './audit-filters';
 
 /** The backend `GET /admin/v1/audit-events` `action` enum (apps/api/openapi.json). */
 const BACKEND_AUDIT_ACTIONS = [
@@ -67,5 +67,12 @@ describe('audit action filter', () => {
   it('resolves by label and ignores unknown text', () => {
     expect(resolveActionFilter('user role granted')).toBe('USER_ROLE_GRANTED');
     expect(resolveActionFilter('NOT_A_REAL_ACTION')).toBeUndefined();
+  });
+});
+
+describe('auditActionLabel', () => {
+  it('uses the curated label and falls back for actions it does not list', () => {
+    expect(auditActionLabel('RCRECORD_ACCESS', () => 'x')).toBe('RC record access');
+    expect(auditActionLabel('SOMETHING_NEW', (v) => v.toLowerCase())).toBe('something_new');
   });
 });

@@ -3,9 +3,10 @@ import { AlText, type ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { ShipmentStatusBadge } from '@/platform/components/EntityStatusBadge';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string | null): string {
-  return value ? new Date(value).toLocaleString() : '—';
+  return value ? formatAdminDateTime(value) : '—';
 }
 
 /** Read-only columns: shipments are a projection of paid retail orders (no status-update route). */

@@ -12,6 +12,7 @@ import type {
   QrCodeStatus,
 } from '@autolokate/api-client';
 
+import { auditActionLabel } from '@/features/audit/audit-filters';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 import '../../styles/entity-status-badges.css';
@@ -97,7 +98,7 @@ export function IncidentStatusBadge({ status }: { status: AdminIncidentStatus })
 export function AuditActionBadge({ action }: { action: AuditAction }) {
   return (
     <EntityStatusBadge
-      label={humanizeAdminLabel(action)}
+      label={auditActionLabel(action, humanizeAdminLabel)}
       modifier={`admin-entity-status-badge--audit admin-entity-status-badge--audit-${action}`}
     />
   );

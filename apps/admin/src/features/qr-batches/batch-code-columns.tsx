@@ -4,12 +4,13 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
 import { QrCodeStatusBadge } from '@/platform/components/EntityStatusBadge';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string | null): string {
   if (!value) {
     return '—';
   }
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 export function useBatchCodeColumns(): ColumnDef<BatchCodeDto>[] {

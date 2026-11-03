@@ -52,7 +52,8 @@
   --ax-border-strong: #d0d5dc;
   --ax-text: var(--al-color-on-surface);
   --ax-text-muted: var(--al-color-on-surface-muted);
-  --ax-text-subtle: #7b8390;
+  /* Sidebar group headers are 11px: #7b8390 measured 3.69:1 on the rail; this is ≥ 4.5:1. */
+  --ax-text-subtle: #626a77;
   --ax-sidebar-bg: #fbfbfc;
   --ax-header-bg: color-mix(in srgb, #ffffff 86%, transparent);
   --ax-overlay: rgba(11, 13, 18, 0.42);

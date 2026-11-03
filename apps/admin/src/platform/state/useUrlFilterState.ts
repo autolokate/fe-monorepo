@@ -24,16 +24,12 @@ export function useUrlFilterState<T extends string>(
 
   const setValue = useCallback<SetFilter<T>>(
     (next) => {
-      setParams(
-        (current) => {
-          const resolved =
-            typeof next === 'function'
-              ? next(readUrlFilterValue(current, key, initial, allowed))
-              : next;
-          return writeUrlFilterValue(current, key, resolved, initial);
-        },
-        { replace: true },
-      );
+      // Build on the LIVE query string: React Router's functional updater sees the params of the
+      // last render, so two chips clicked back-to-back (result, then window) lost the first one.
+      const live = new URLSearchParams(window.location.search);
+      const resolved =
+        typeof next === 'function' ? next(readUrlFilterValue(live, key, initial, allowed)) : next;
+      setParams(writeUrlFilterValue(live, key, resolved, initial), { replace: true });
     },
     [allowed, initial, key, setParams],
   );
@@ -47,7 +43,9 @@ export function useUrlFlagState(key: string): [boolean, (value: boolean) => void
   const value = readUrlFlag(params, key);
   const setValue = useCallback(
     (next: boolean) => {
-      setParams((current) => writeUrlFlag(current, key, next), { replace: true });
+      setParams(writeUrlFlag(new URLSearchParams(window.location.search), key, next), {
+        replace: true,
+      });
     },
     [key, setParams],
   );

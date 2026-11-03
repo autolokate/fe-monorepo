@@ -3,12 +3,13 @@ import type { ColumnDef } from '@autolokate/ui';
 import { useMemo } from 'react';
 
 import { BatchStatusBadge } from '@/platform/components/EntityStatusBadge';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string | null): string {
   if (!value) {
     return '—';
   }
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 export function useInventoryColumns(): ColumnDef<BatchSummaryDto>[] {

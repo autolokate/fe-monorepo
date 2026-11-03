@@ -1,6 +1,8 @@
 import type { AdminGaragePassPurchaseDto } from '@autolokate/api-client';
-import { AlDataTable, AlText, type ColumnDef } from '@autolokate/ui';
+import { AlButton, AlDataTable, AlText, type ColumnDef } from '@autolokate/ui';
+import { useState } from 'react';
 
+import { AdjustFreeBidsSheet, GrantPassSheet } from '@/features/garage/GarageEntitlementSheets';
 import { useGarageAccess, useGaragePasses } from '@/hooks/garage/useGarageAccess';
 import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
 import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
@@ -10,6 +12,7 @@ import {
   humanizeAdminLabel,
   type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { formatAdminDateTime, formatRupeeAmount } from '@/platform/utils/format-admin-date';
 
 const STATE_LABEL: Record<string, string> = {
@@ -79,6 +82,10 @@ const PASS_COLUMNS: ColumnDef<AdminGaragePassPurchaseDto>[] = [
 export function PartnerGarageAccessSection({ orgId }: { orgId: string }) {
   const { access, isLoading, notDeployed, userErrorMessage } = useGarageAccess(orgId);
   const passes = useGaragePasses(orgId);
+  // Same permission as Garage commercial, where these actions also live (there the org id is typed).
+  const canWrite = useAdminPermission('settings:write');
+  const [grantOpen, setGrantOpen] = useState(false);
+  const [adjustOpen, setAdjustOpen] = useState(false);
 
   return (
     <>
@@ -96,6 +103,30 @@ export function PartnerGarageAccessSection({ orgId }: { orgId: string }) {
                 label={STATE_LABEL[access.state] ?? humanizeAdminLabel(access.state)}
                 tone={STATE_TONE[access.state] ?? 'neutral'}
               />
+            ) : null}
+            {access && canWrite ? (
+              <>
+                <AlButton
+                  size="sm"
+                  variant="secondary"
+                  data-testid="partners-garage-grant-pass"
+                  onClick={() => {
+                    setGrantOpen(true);
+                  }}
+                >
+                  Grant pass
+                </AlButton>
+                <AlButton
+                  size="sm"
+                  variant="secondary"
+                  data-testid="partners-garage-adjust-free-bids"
+                  onClick={() => {
+                    setAdjustOpen(true);
+                  }}
+                >
+                  Free-bid bonus
+                </AlButton>
+              </>
             ) : null}
           </div>
         </div>
@@ -156,6 +187,17 @@ export function PartnerGarageAccessSection({ orgId }: { orgId: string }) {
             />
             <AdminDetailField label="Store eligible" value={access.storeEligible ? 'Yes' : 'No'} />
           </AdminDetailGrid>
+        ) : null}
+        {canWrite ? (
+          <>
+            <GrantPassSheet initialOrgId={orgId} open={grantOpen} onOpenChange={setGrantOpen} />
+            <AdjustFreeBidsSheet
+              weekly
+              initialOrgId={orgId}
+              open={adjustOpen}
+              onOpenChange={setAdjustOpen}
+            />
+          </>
         ) : null}
       </section>
 

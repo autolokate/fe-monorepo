@@ -5,13 +5,14 @@ import { useMemo } from 'react';
 import { PaymentOutcomeBadge } from '@/platform/components/EntityStatusBadge';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { adminOrderLabel } from '@/platform/utils/admin-order-label';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatInr(paise: number): string {
   return (paise / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
 }
 
 function formatDateTime(value: string): string {
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 export function usePaymentsColumns(): ColumnDef<AdminPaymentSummary>[] {

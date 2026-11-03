@@ -22,6 +22,7 @@ import {
   humanizeAdminLabel,
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export type OwnershipClaimDetailSheetProps = {
   claim: OwnershipClaimDto | null;
@@ -36,7 +37,7 @@ export type OwnershipClaimDetailSheetProps = {
 function formatWhen(value: string | null): string {
   if (!value) return '—';
   const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
+  return Number.isNaN(parsed.getTime()) ? value : formatAdminDateTime(value);
 }
 
 function displayOrDash(value: string | null | undefined): string {

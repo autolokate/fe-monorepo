@@ -18,6 +18,7 @@ import {
   shortAdminId,
   type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export type BreakGlassDualControlPanelProps = {
   approval: BreakGlassApprovalDto | null;
@@ -290,7 +291,7 @@ export function BreakGlassDualControlPanel({
               />
               <AlText variant="caption" tone="muted" title={approval.id}>
                 {shortAdminId(approval.id)} · {formatScopeLabel(approval.scopeKey)} · expires{' '}
-                {new Date(approval.expiresAt).toLocaleString()}
+                {formatAdminDateTime(approval.expiresAt)}
                 {approval.status === 'PENDING' ? ' · checking for approval every 5 s' : ''}
               </AlText>
             </div>

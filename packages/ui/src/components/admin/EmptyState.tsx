@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { cn } from '../../utils/cn';
-import { AlButton, AlHeading, AlStack, AlText } from '../primitives/index';
+import { AlButton, AlStack, AlText } from '../primitives/index';
 import './EmptyState.css';
 
 export type AlEmptyStateProps = {
@@ -29,7 +29,8 @@ export function AlEmptyState({
         </div>
       ) : null}
       <AlStack gap="xs" align="center">
-        <AlHeading variant="h4">{title}</AlHeading>
+        {/* Styled like an h4 but not a heading: a status message is not page structure (axe heading-order). */}
+        <p className="al-heading al-heading--h4">{title}</p>
         {description ? <AlText tone="muted">{description}</AlText> : null}
       </AlStack>
       {actionLabel && onAction ? (
@@ -67,7 +68,8 @@ export function AlErrorState({
         </svg>
       </div>
       <AlStack gap="xs" align="center">
-        <AlHeading variant="h4">{title}</AlHeading>
+        {/* Styled like an h4 but not a heading: a status message is not page structure (axe heading-order). */}
+        <p className="al-heading al-heading--h4">{title}</p>
         <AlText tone="muted">{message}</AlText>
       </AlStack>
       {onRetry ? (

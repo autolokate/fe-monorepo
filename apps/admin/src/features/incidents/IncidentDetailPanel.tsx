@@ -13,6 +13,7 @@ import {
   shortAdminId,
   type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export type IncidentDetailPanelProps = {
   detail: AdminIncidentDetail | null;
@@ -24,7 +25,7 @@ export type IncidentDetailPanelProps = {
 function formatWhen(value: string | null | undefined): string {
   if (!value) return '—';
   const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleString();
+  return Number.isNaN(parsed.getTime()) ? value : formatAdminDateTime(value);
 }
 
 function statusTone(status: string): AdminStatusChipTone {

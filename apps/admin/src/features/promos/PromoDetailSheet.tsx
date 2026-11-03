@@ -9,6 +9,7 @@ import {
 import { AdminStatusChip, humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { formatPaiseAsRupees } from '@/services/catalog/catalog-money';
 import { formatPromoDiscount, getPromoLifecycleStatus } from '@/services/promos/promo-metrics';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 export type PromoDetailSheetProps = {
   promo: AdminPromoDto | null;
@@ -22,7 +23,7 @@ function formatDateTime(value: string | null): string {
   if (!value) {
     return 'No end date';
   }
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 function formatLimit(value: number | null): string {

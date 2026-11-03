@@ -16,6 +16,7 @@ import {
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
 import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
 import { SupportTicketStatusBadge } from '@/platform/components/EntityStatusBadge';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 const NOTE_MAX = 2000;
 
@@ -27,7 +28,7 @@ export type SupportTicketDetailSheetProps = {
 };
 
 function formatDateTime(value: string): string {
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 function TriageForm({ ticket }: { ticket: AdminSupportTicket }) {

@@ -4,9 +4,10 @@ import { useMemo } from 'react';
 
 import { SubscriptionStatusBadge } from '@/platform/components/EntityStatusBadge';
 import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function formatDateTime(value: string | null): string {
-  return value ? new Date(value).toLocaleString() : '—';
+  return value ? formatAdminDateTime(value) : '—';
 }
 
 /**

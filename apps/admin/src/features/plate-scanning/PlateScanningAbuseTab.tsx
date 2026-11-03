@@ -1,7 +1,9 @@
 import type { AdminScanFlagDto, AdminScanScannerDto } from '@autolokate/api-client';
 import { AlButton, AlDataTable, AlErrorState, AlModal, type ColumnDef } from '@autolokate/ui';
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
+import { adminPaths } from '@/app/routes/admin-paths';
 import {
   HOUR_OPTIONS,
   HOUR_VALUES,
@@ -54,8 +56,25 @@ export function PlateScanningAbuseTab() {
       { accessorKey: 'stepUps', header: 'Step-ups' },
       { accessorKey: 'retryLater', header: 'Retry later' },
       { accessorKey: 'maxScore', header: 'Max score' },
+      {
+        id: 'lookups-link',
+        header: '',
+        enableSorting: false,
+        cell: ({ row }) =>
+          row.original.accountId ? (
+            <Link
+              className="admin-link"
+              data-testid={`plate-abuse-view-lookups-${row.original.accountId}`}
+              to={`${adminPaths.plateScanning}?tab=lookups&hours=${hours}&account=${encodeURIComponent(
+                row.original.accountId,
+              )}`}
+            >
+              View lookups
+            </Link>
+          ) : null,
+      },
     ],
-    [],
+    [hours],
   );
 
   const flagColumns = useMemo<ColumnDef<AdminScanFlagDto>[]>(

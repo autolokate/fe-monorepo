@@ -39,6 +39,7 @@ import {
 import { adminPaths } from '@/app/routes/admin-paths';
 
 import './qr-batches.css';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 type BatchDetailLocationState = {
   batch?: BatchSummaryDto;
@@ -48,7 +49,7 @@ function formatDateTime(value: string | null): string {
   if (!value) {
     return '—';
   }
-  return new Date(value).toLocaleString();
+  return formatAdminDateTime(value);
 }
 
 type PendingLifecycleAction = {

@@ -10,6 +10,7 @@ import {
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
 import { IncidentStatusBadge } from '@/platform/components/EntityStatusBadge';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 const COLUMNS: ColumnDef<AdminIncidentFeedItem>[] = [
   {
@@ -36,12 +37,12 @@ const COLUMNS: ColumnDef<AdminIncidentFeedItem>[] = [
   {
     accessorKey: 'createdAt',
     header: 'Reported',
-    cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
+    cell: ({ row }) => formatAdminDateTime(row.original.createdAt),
   },
   {
     accessorKey: 'updatedAt',
     header: 'Updated',
-    cell: ({ row }) => new Date(row.original.updatedAt).toLocaleString(),
+    cell: ({ row }) => formatAdminDateTime(row.original.updatedAt),
   },
 ];
 

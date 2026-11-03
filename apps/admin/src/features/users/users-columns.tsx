@@ -8,6 +8,7 @@ import {
   humanizeAdminLabel,
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 function statusTone(status: AdminUserSummaryDto['status']) {
   return status === 'ACTIVE' ? 'active' : 'none';
@@ -90,7 +91,7 @@ export function useUsersColumns(): ColumnDef<AdminUserSummaryDto>[] {
         accessorFn: (row) => row.createdAt,
         cell: ({ row }) => (
           <AlText variant="caption" tone="muted">
-            {new Date(row.original.createdAt).toLocaleString()}
+            {formatAdminDateTime(row.original.createdAt)}
           </AlText>
         ),
       },

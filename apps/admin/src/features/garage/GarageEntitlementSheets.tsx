@@ -30,27 +30,35 @@ import {
 } from '@/platform/components/AdminWowSurface';
 
 export type GrantPassSheetProps = {
+  /** Pre-fills the organization (e.g. opened from a partner's page). */
+  initialOrgId?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onGranted?: (result: GaragePassGrantResultDto) => void;
 };
 
-export function GrantPassSheet({ open, onOpenChange, onGranted }: GrantPassSheetProps) {
+export function GrantPassSheet({
+  initialOrgId = '',
+  open,
+  onOpenChange,
+  onGranted,
+}: GrantPassSheetProps) {
   const abortRef = useRef<AbortController | null>(null);
   const { grantPassMutation, mapMutationError } = useGarageEntitlementMutations();
 
   const form = useForm<GrantGaragePassFormValues>({
     resolver: zodResolver(grantGaragePassSchema),
-    defaultValues: { orgId: '', kind: 'DAY', idempotencyKey: '' },
+    defaultValues: { orgId: initialOrgId, kind: 'DAY', idempotencyKey: '' },
   });
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      form.reset({ orgId: initialOrgId, kind: 'DAY', idempotencyKey: '' });
+    } else {
       abortRef.current?.abort();
       abortRef.current = null;
-      form.reset({ orgId: '', kind: 'DAY', idempotencyKey: '' });
     }
-  }, [form, open]);
+  }, [form, initialOrgId, open]);
 
   const submitError = grantPassMutation.isError
     ? mapMutationError(grantPassMutation.error).userMessage
@@ -162,6 +170,8 @@ export type AdjustFreeBidsSheetProps = {
    * Monday 00:00 IST) and the legacy "raise lifetime" flag is ignored by the server.
    */
   weekly?: boolean;
+  /** Pre-fills the organization (e.g. opened from a partner's page). */
+  initialOrgId?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAdjusted?: (result: GarageFreeBidsBalanceDto) => void;
@@ -169,6 +179,7 @@ export type AdjustFreeBidsSheetProps = {
 
 export function AdjustFreeBidsSheet({
   weekly = false,
+  initialOrgId = '',
   open,
   onOpenChange,
   onAdjusted,
@@ -179,7 +190,7 @@ export function AdjustFreeBidsSheet({
   const form = useForm<AdjustGarageFreeBidsFormValues>({
     resolver: zodResolver(adjustGarageFreeBidsSchema),
     defaultValues: {
-      orgId: '',
+      orgId: initialOrgId,
       delta: '1',
       note: '',
       raiseLifetime: false,
@@ -188,18 +199,19 @@ export function AdjustFreeBidsSheet({
   });
 
   useEffect(() => {
-    if (!open) {
-      abortRef.current?.abort();
-      abortRef.current = null;
+    if (open) {
       form.reset({
-        orgId: '',
+        orgId: initialOrgId,
         delta: '1',
         note: '',
         raiseLifetime: false,
         idempotencyKey: '',
       });
+    } else {
+      abortRef.current?.abort();
+      abortRef.current = null;
     }
-  }, [form, open]);
+  }, [form, initialOrgId, open]);
 
   const submitError = adjustFreeBidsMutation.isError
     ? mapMutationError(adjustFreeBidsMutation.error).userMessage

@@ -36,6 +36,7 @@ import {
   exportTableToCsv,
   getColumnDisplayLabel,
   loadDataTablePrefs,
+  matchesGlobalSearch,
   saveDataTablePrefs,
   type DataTableDensity,
   type DataTablePrefs,
@@ -83,6 +84,10 @@ function getAriaSortValue(
     return 'descending';
   }
   return 'none';
+}
+
+function isBlankHeader(header: unknown): boolean {
+  return header === undefined || (typeof header === 'string' && header.trim() === '');
 }
 
 export type AlDataTableProps<TData> = {
@@ -241,6 +246,8 @@ export function AlDataTable<TData>({
     },
     onColumnPinningChange: setColumnPinning,
     onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, columnId, filterValue) =>
+      matchesGlobalSearch(row.id, row.getValue(columnId), filterValue),
     onRowSelectionChange: onRowSelectionChange ?? setInternalRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -378,7 +385,7 @@ export function AlDataTable<TData>({
                   ? 'Loading…'
                   : isRefreshing
                     ? 'Refreshing…'
-                    : `${String(filteredCount)} rows`}
+                    : `${filteredCount.toLocaleString()} ${filteredCount === 1 ? 'row' : 'rows'}`}
               </span>
             )}
             {enableDensitySwitch ? (
@@ -509,6 +516,12 @@ export function AlDataTable<TData>({
                             {flexRender(header.column.columnDef.header, header.getContext())}
                             <SortIcon />
                           </button>
+                        ) : isBlankHeader(header.column.columnDef.header) ? (
+                          // Row-action columns have no visible title; name them for screen readers.
+                          <span className="al-data-table__sr-only">
+                            {(header.column.columnDef.meta as { label?: string } | undefined)
+                              ?.label ?? 'Actions'}
+                          </span>
                         ) : (
                           flexRender(header.column.columnDef.header, header.getContext())
                         )}

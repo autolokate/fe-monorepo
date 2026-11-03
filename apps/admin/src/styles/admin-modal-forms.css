@@ -11,7 +11,8 @@
 
 [data-theme='light'] .al-page-layout,
 [data-theme='light'] .al-modal {
-  --al-admin-hint-color: color-mix(in srgb, var(--al-color-on-surface) 58%, transparent);
+  /* 62% keeps hint text ≥ 4.5:1 on white and the #fafbfc table footer (56% measured 4.39:1). */
+  --al-admin-hint-color: color-mix(in srgb, var(--al-color-on-surface) 62%, transparent);
   --al-admin-label-color: color-mix(in srgb, var(--al-color-on-surface) 78%, transparent);
 }
 

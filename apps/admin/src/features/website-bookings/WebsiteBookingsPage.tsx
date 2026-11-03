@@ -41,6 +41,7 @@ import {
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
+import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 const WEEK_DAYS = 7;
 
@@ -339,7 +340,7 @@ function BookingsPanel({ canWrite }: { canWrite: boolean }) {
       {
         accessorKey: 'updatedAt',
         header: 'Updated',
-        cell: ({ row }) => new Date(row.original.updatedAt).toLocaleString(),
+        cell: ({ row }) => formatAdminDateTime(row.original.updatedAt),
       },
       {
         id: 'actions',

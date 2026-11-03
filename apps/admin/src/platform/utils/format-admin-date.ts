@@ -31,3 +31,11 @@ export function shortAdminId(value: string | null | undefined): string {
   if (!value) return '—';
   return value.length > 12 ? `${value.slice(0, 8)}…` : value;
 }
+
+/** Date only, same locale-stable style as `formatAdminDateTime` ("04 Nov 2026" — never "11/4/2026"). */
+export function formatAdminDate(value: string | null | undefined): string {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
