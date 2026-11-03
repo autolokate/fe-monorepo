@@ -189,10 +189,12 @@ export async function upsertServiceProvider(
 export async function deactivateServiceProvider(
   client: ApiClient,
   id: string,
-  options: { signal?: AbortSignal } = {},
+  options: { signal?: AbortSignal; reason?: string } = {},
 ): Promise<AdminServiceProviderDto> {
+  // Optional {reason 3..500} → `SERVICE_PROVIDER_DEACTIVATED` audit row. No body when absent.
   const response = await client.delete<unknown>(endpoints.admin.deactivateServiceProvider(id), {
     ...(options.signal ? { signal: options.signal } : {}),
+    ...(options.reason ? { body: { reason: options.reason } } : {}),
   });
   return unwrapEnvelope(response) as AdminServiceProviderDto;
 }

@@ -104,9 +104,57 @@ export type AdminGarageRequestInboxDto = {
   closesAt: string | null;
   sourceReelId: string | null;
   preferredOrgId: string | null;
+  /** Quotes v4 — server-derived from `category` (Store / Parts → PARTS). Absent on pre-v4 servers. */
+  requestKind?: 'SERVICE' | 'PARTS';
+  placeId?: string | null;
+  /** Server-derived "Name, formatted address" of the customer's Google place (requester + admin). */
+  locationLabel?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  /** Vehicle snapshot at create — show `displayName`; the full plate is never returned. */
+  vehicle?: AdminGarageRequestVehicleDto | null;
+  photoCount?: number;
+  /** Detail only — short-lived signed URLs (refetch the request after expiry). */
+  photos?: AdminGarageRequestPhotoDto[];
+  sourceClipId?: string | null;
+  sourceClip?: AdminSourceClipDto | null;
   createdAt: string;
   updatedAt: string;
   bids: AdminGarageBidDto[];
+};
+
+/** Quotes v4 `GarageRequestVehicleDto`. */
+export type AdminGarageRequestVehicleDto = {
+  vehicleId: string;
+  make: string | null;
+  model: string | null;
+  /** e.g. "Hyundai Creta". */
+  displayName: string | null;
+  /** e.g. "MH12••34". */
+  plateMasked: string | null;
+};
+
+/** Quotes v4 `GarageRequestPhotoDto` — `url` is a signed GET valid for `urlExpiresInSeconds`. */
+export type AdminGarageRequestPhotoDto = {
+  id: string;
+  url: string;
+  urlExpiresInSeconds: number;
+  contentType: string | null;
+  sortOrder: number;
+  createdAt: string;
+};
+
+/** Quotes v4 `SourceClip` — a preview frozen at create, signed at read. */
+export type AdminSourceClipDto = {
+  clipId: string;
+  title: string;
+  captionExcerpt: string;
+  authorDisplayName: string | null;
+  authorType: 'GARAGE' | 'STORE' | 'AUTOLOKATE';
+  mediaKind: 'VIDEO' | 'IMAGE';
+  thumbnailUrl: string | null;
+  thumbnailUrlExpiresInSeconds: number | null;
+  snapshotAt: string;
 };
 
 export type ListAdminGarageRequestsQuery = {
@@ -153,6 +201,9 @@ export type AdminTaxiRequestInboxDto = {
   estimatedFareRupees: number;
   notes: string | null;
   closesAt: string | null;
+  /** Quotes v4 — "quote from a clip" preview. */
+  sourceClipId?: string | null;
+  sourceClip?: AdminSourceClipDto | null;
   createdAt: string;
   updatedAt: string;
   bids: AdminTaxiBidDto[];
@@ -160,6 +211,12 @@ export type AdminTaxiRequestInboxDto = {
 
 export type ListAdminTaxiRequestsQuery = {
   status?: AdminTaxiRequestStatus;
+  /** Normalized like the partner feed; an unknown name answers 400. */
+  pickupState?: string;
+  pickupCity?: string;
+  /** ISO bounds on `createdAt` (from inclusive, to exclusive). */
+  from?: string;
+  to?: string;
   limit?: number;
   cursor?: string;
 };
@@ -275,6 +332,10 @@ export async function listAdminTaxiRequestsPage(
 ): Promise<AdminPartnersPageResult<AdminTaxiRequestInboxDto>> {
   const path = `${endpoints.adminTaxi.requests}${buildQuery({
     status: query.status,
+    pickupState: query.pickupState?.trim(),
+    pickupCity: query.pickupCity?.trim(),
+    from: query.from,
+    to: query.to,
     limit: query.limit,
     cursor: query.cursor,
   })}`;
@@ -290,6 +351,24 @@ export async function getAdminTaxiRequest(
 ): Promise<AdminTaxiRequestInboxDto> {
   const response = await client.get<unknown>(
     endpoints.adminTaxi.request(id),
+    signalOption(options),
+  );
+  return unwrapEnvelope(response) as AdminTaxiRequestInboxDto;
+}
+
+/**
+ * POST /admin/v1/taxi/requests/{id}/close {reason 3..500} — OPEN → EXPIRED, bidders notified;
+ * audit `TAXI_REQUEST_ADMIN_CLOSED`. 409 `taxi_request_not_open`.
+ */
+export async function closeAdminTaxiRequest(
+  client: ApiClient,
+  id: string,
+  body: { reason: string },
+  options: RequestOptions = {},
+): Promise<AdminTaxiRequestInboxDto> {
+  const response = await client.post<unknown>(
+    `${endpoints.adminTaxi.request(id)}/close`,
+    body,
     signalOption(options),
   );
   return unwrapEnvelope(response) as AdminTaxiRequestInboxDto;

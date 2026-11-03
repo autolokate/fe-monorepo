@@ -228,6 +228,54 @@ function LazyFallback() {
   return <AdminPageLoader fullscreen label="Loading admin page…" />;
 }
 
+const TaxiFleetPage = lazy(() =>
+  import('@/features/taxi/TaxiFleetPage').then((module) => ({
+    default: module.TaxiFleetPage,
+  })),
+);
+
+const TaxiRefundsPage = lazy(() =>
+  import('@/features/taxi/TaxiRefundsPage').then((module) => ({
+    default: module.TaxiRefundsPage,
+  })),
+);
+
+const GarageRevenuePage = lazy(() =>
+  import('@/features/garage/GarageRevenuePage').then((module) => ({
+    default: module.GarageRevenuePage,
+  })),
+);
+
+const RoadsideRequestsPage = lazy(() =>
+  import('@/features/roadside/RoadsideRequestsPage').then((module) => ({
+    default: module.RoadsideRequestsPage,
+  })),
+);
+
+const DiscoveryCommentsPage = lazy(() =>
+  import('@/features/discovery/DiscoveryCommentsPage').then((module) => ({
+    default: module.DiscoveryCommentsPage,
+  })),
+);
+
+const VehiclesPage = lazy(() =>
+  import('@/features/vehicles/VehiclesPage').then((module) => ({
+    default: module.VehiclesPage,
+  })),
+);
+
+const PlateScanningPage = lazy(() =>
+  import('@/features/plate-scanning/PlateScanningPage').then((module) => ({
+    default: module.PlateScanningPage,
+  })),
+);
+
+const SystemBroadcastPage = lazy(() =>
+  import('@/features/notifications/SystemBroadcastPage').then((module) => ({
+    default: module.SystemBroadcastPage,
+  })),
+);
+
 export function AdminRoutes() {
   return (
     <Suspense fallback={<LazyFallback />}>
@@ -286,6 +334,14 @@ export function AdminRoutes() {
             <Route path={adminPaths.websiteBookings} element={<WebsiteBookingsPage />} />
             <Route path={adminPaths.taxiRevenue} element={<TaxiRevenuePage />} />
             <Route path={`${adminPaths.partners}/:orgId`} element={<PartnerDetailPage />} />
+            <Route path={adminPaths.taxiFleet} element={<TaxiFleetPage />} />
+            <Route path={adminPaths.taxiRefunds} element={<TaxiRefundsPage />} />
+            <Route path={adminPaths.garageRevenue} element={<GarageRevenuePage />} />
+            <Route path={adminPaths.roadside} element={<RoadsideRequestsPage />} />
+            <Route path={adminPaths.discoveryComments} element={<DiscoveryCommentsPage />} />
+            <Route path={adminPaths.vehicles} element={<VehiclesPage />} />
+            <Route path={adminPaths.plateScanning} element={<PlateScanningPage />} />
+            <Route path={adminPaths.broadcast} element={<SystemBroadcastPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to={adminPaths.dashboard} replace />} />

@@ -1,6 +1,13 @@
 import {
   ArrowLeftRight,
   BadgeCheck,
+  Car,
+  ImagePlay,
+  Megaphone,
+  MessageCircle,
+  RotateCcw,
+  ScanLine,
+  Construction,
   Boxes,
   Building2,
   CalendarClock,
@@ -73,6 +80,14 @@ export const ADMIN_NAV_ICONS: Record<string, LucideIcon> = {
   [adminPaths.finance]: Landmark,
   [adminPaths.users]: UserRoundSearch,
   [adminPaths.auditEvents]: History,
+  [adminPaths.taxiFleet]: ImagePlay,
+  [adminPaths.taxiRefunds]: RotateCcw,
+  [adminPaths.garageRevenue]: IndianRupee,
+  [adminPaths.roadside]: Construction,
+  [adminPaths.discoveryComments]: MessageCircle,
+  [adminPaths.vehicles]: Car,
+  [adminPaths.plateScanning]: ScanLine,
+  [adminPaths.broadcast]: Megaphone,
 };
 
 export function adminNavIcon(path: string): LucideIcon {

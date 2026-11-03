@@ -524,6 +524,7 @@ export {
   type AdminReelSort,
   type AdminReelStatus,
   type AdminReelTransition,
+  type AdminReelCreatorKind,
   type CommunityQuestionCategory,
   type CommunityQuestionKind,
   type CreateAdminCommunityQuestionBody,
@@ -580,6 +581,10 @@ export {
   getAdminPartnerGarageRequest,
   listAdminTaxiRequestsPage,
   getAdminTaxiRequest,
+  closeAdminTaxiRequest,
+  type AdminGarageRequestVehicleDto,
+  type AdminGarageRequestPhotoDto,
+  type AdminSourceClipDto,
   listAdminPartnersKycPage,
   type AdminPartnerKycItemDto,
   type ListAdminPartnersKycQuery,
@@ -652,3 +657,4 @@ export {
   type AdminExpertTimeSlotDto,
   type AdminExpertBookingDto,
 } from './experts-admin';
+export * from './admin-v4';

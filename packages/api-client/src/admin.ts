@@ -268,6 +268,8 @@ export type QrAutoDetachResultDto = {
 /** OpenAPI `ClawbackBodyDto` */
 export type ClawbackBody = {
   paymentRef: string;
+  /** Optional 3..500 — stored on the `REFUND_OR_CLAWBACK` audit row. */
+  reason?: string;
 };
 
 /** OpenAPI `ClawbackResultDto` */
@@ -859,9 +861,11 @@ export async function replaceQrCode(
 export async function retireQrCode(
   client: ApiClient,
   code: string,
-  options: { signal?: AbortSignal } = {},
+  options: { signal?: AbortSignal; reason?: string } = {},
 ): Promise<RetiredDto> {
-  const response = await client.post<unknown>(endpoints.admin.retireQr(code), undefined, {
+  // Optional {reason 3..500} → `QR_CODE_DEACTIVATED.metadata.adminReason`. No body when absent.
+  const body = options.reason ? { reason: options.reason } : undefined;
+  const response = await client.post<unknown>(endpoints.admin.retireQr(code), body, {
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as RetiredDto;
@@ -910,11 +914,12 @@ export async function approveOwnershipTransfer(
 export async function fulfilPartnerReorder(
   client: ApiClient,
   reorderId: string,
-  options: { signal?: AbortSignal } = {},
+  options: { signal?: AbortSignal; reason?: string } = {},
 ): Promise<ReorderFulfilResultDto> {
+  // Optional {reason 3..500} → `BATCH_ALLOCATED.metadata.reason`. No body when absent.
   const response = await client.post<unknown>(
     endpoints.admin.fulfilPartnerReorder(reorderId),
-    undefined,
+    options.reason ? { reason: options.reason } : undefined,
     { ...(options.signal ? { signal: options.signal } : {}) },
   );
   return unwrapEnvelope(response) as ReorderFulfilResultDto;
@@ -2296,10 +2301,12 @@ export async function revokeUserRole(
   client: ApiClient,
   userId: string,
   role: GrantableUserRole,
-  options: { signal?: AbortSignal } = {},
+  options: { signal?: AbortSignal; reason?: string } = {},
 ): Promise<AdminUserSummaryDto> {
+  // Optional {reason 3..500} → `USER_ROLE_REVOKED` audit row. No body when absent.
   const response = await client.delete<unknown>(endpoints.admin.userRole(userId, role), {
     ...(options.signal ? { signal: options.signal } : {}),
+    ...(options.reason ? { body: { reason: options.reason } } : {}),
   });
   return unwrapEnvelope(response) as AdminUserSummaryDto;
 }
