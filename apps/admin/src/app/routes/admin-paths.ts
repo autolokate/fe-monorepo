@@ -33,6 +33,14 @@ export const adminPaths = {
   taxiBookings: '/taxi/bookings',
   taxiEnrollments: '/taxi/partners',
   taxiRevenue: '/taxi/revenue',
+  taxiFleet: '/taxi/fleet',
+  taxiRefunds: '/taxi/refunds',
+  garageRevenue: '/garage/revenue',
+  roadside: '/roadside',
+  discoveryComments: '/discovery/comments',
+  vehicles: '/vehicles',
+  plateScanning: '/plate-scanning',
+  broadcast: '/notifications/broadcast',
   experts: '/experts',
   websiteBookings: '/website-bookings',
 } as const;
@@ -145,6 +153,13 @@ export const adminRoutes: AdminRouteMeta[] = [
     nav: true,
   },
   {
+    path: adminPaths.roadside,
+    label: 'Roadside assistance',
+    description: 'Roadside assistance (RAS) requests — status, vehicle, location and provider',
+    group: 'operations',
+    nav: true,
+  },
+  {
     path: adminPaths.websiteBookings,
     label: 'Session bookings',
     description: 'Publish website session slots and manage bookings',
@@ -184,6 +199,21 @@ export const adminRoutes: AdminRouteMeta[] = [
     nav: true,
   },
   {
+    path: adminPaths.taxiFleet,
+    label: 'Fleet & media',
+    description:
+      'Taxi fleet vehicles — bid blockers, camera media, driver; remove a photo or video',
+    group: 'taxi',
+    nav: true,
+  },
+  {
+    path: adminPaths.taxiRefunds,
+    label: 'Refunds queue',
+    description: 'Failed and unreconciled taxi refunds — retry with a reason',
+    group: 'taxi',
+    nav: true,
+  },
+  {
     path: adminPaths.taxiRevenue,
     label: 'Revenue',
     description: 'Booking fees earned/forfeited and partner deposits forfeited',
@@ -210,6 +240,13 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.garageCommercial,
     label: 'Commercial',
     description: 'Pass pricing, free bids, and partner provisioning for Garage',
+    group: 'garage',
+    nav: true,
+  },
+  {
+    path: adminPaths.garageRevenue,
+    label: 'Pass revenue',
+    description: 'Garage day / month pass sales (paid checkouts, GST-inclusive)',
     group: 'garage',
     nav: true,
   },
@@ -281,6 +318,13 @@ export const adminRoutes: AdminRouteMeta[] = [
     nav: true,
   },
   {
+    path: adminPaths.discoveryComments,
+    label: 'Comments',
+    description: 'Moderate comments on reels and partner clips — hide or restore',
+    group: 'content',
+    nav: true,
+  },
+  {
     path: adminPaths.discoveryReels,
     label: 'Reels',
     description: 'Upload, publish and archive Discovery reels',
@@ -317,6 +361,14 @@ export const adminRoutes: AdminRouteMeta[] = [
     group: 'safety',
     nav: true,
   },
+  {
+    path: adminPaths.plateScanning,
+    label: 'Plate scanning',
+    description:
+      'Plate lookups, abuse flags, plate collisions, unparsed plates and duplicate plans',
+    group: 'safety',
+    nav: true,
+  },
 
   // Finance — payments and the money back office.
   {
@@ -339,6 +391,20 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.users,
     label: 'Customers',
     description: 'Find a customer by phone — their orders, coverage and account access',
+    group: 'users',
+    nav: true,
+  },
+  {
+    path: adminPaths.vehicles,
+    label: 'Vehicles',
+    description: 'Find a vehicle by registration — owner, protection, drivers and invites',
+    group: 'users',
+    nav: true,
+  },
+  {
+    path: adminPaths.broadcast,
+    label: 'System broadcast',
+    description: 'Send a SYSTEM notification to up to 500 accounts (rate-limited, audited)',
     group: 'users',
     nav: true,
   },

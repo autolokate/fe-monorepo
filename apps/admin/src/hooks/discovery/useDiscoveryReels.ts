@@ -1,4 +1,4 @@
-import type { AdminDiscoveryReelDto } from '@autolokate/api-client';
+import type { AdminDiscoveryReelDto, AdminReelCreatorKind } from '@autolokate/api-client';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -8,6 +8,8 @@ import {
   type DiscoveryReelListParams,
 } from '@/hooks/discovery/discovery-query-keys';
 import { useDebouncedValue } from '@/hooks/discovery/useDebouncedValue';
+import { useUrlTextState } from '@/platform/state/useUrlTextState';
+import { useUrlFilterState } from '@/platform/state/useUrlFilterState';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import { reportAdminApiError } from '@/platform/errors/report-admin-api-error';
 import {
@@ -16,14 +18,31 @@ import {
 } from '@/services/discovery/admin-discovery-service';
 import { describeDiscoveryReadError } from '@/services/discovery/discovery-errors';
 
+const REEL_CREATOR_VALUES: readonly (AdminReelCreatorKind | 'ALL')[] = [
+  'ALL',
+  'AUTOLOKATE',
+  'GARAGE',
+  'STORE',
+];
+
 export function useDiscoveryReels() {
   const canRead = useAdminPermission('discovery:read');
   const [status, setStatus] = useState<DiscoveryReelListParams['status']>('ALL');
   const [sort, setSort] = useState<DiscoveryReelListParams['sort']>('updated');
   const [search, setSearch] = useState('');
   const q = useDebouncedValue(search.trim(), 300);
+  const [creatorKind, setCreatorKind] = useUrlFilterState<AdminReelCreatorKind | 'ALL'>(
+    'creator',
+    'ALL',
+    REEL_CREATOR_VALUES,
+  );
+  const [partnerOrgId, setPartnerOrgId] = useUrlTextState('partnerOrgId');
+  const org = useDebouncedValue(partnerOrgId.trim(), 400);
 
-  const params = useMemo<DiscoveryReelListParams>(() => ({ status, sort, q }), [status, sort, q]);
+  const params = useMemo<DiscoveryReelListParams>(
+    () => ({ status, sort, q, creatorKind, partnerOrgId: org }),
+    [status, sort, q, creatorKind, org],
+  );
 
   const query = useInfiniteQuery({
     queryKey: discoveryQueryKeys.reelsList(params),
@@ -34,6 +53,8 @@ export function useDiscoveryReels() {
           ...(status === 'ALL' ? {} : { status }),
           sort,
           ...(q ? { q } : {}),
+          ...(creatorKind === 'ALL' ? {} : { creatorKind }),
+          ...(org ? { partnerOrgId: org } : {}),
           limit: DISCOVERY_LIST_LIMIT,
           ...(pageParam ? { cursor: pageParam } : {}),
         },
@@ -73,6 +94,10 @@ export function useDiscoveryReels() {
     setSort,
     search,
     setSearch,
+    creatorKind,
+    setCreatorKind,
+    partnerOrgId,
+    setPartnerOrgId,
     userErrorMessage: query.isError ? describeDiscoveryReadError(query.error) : null,
     refresh: () => {
       void query.refetch();

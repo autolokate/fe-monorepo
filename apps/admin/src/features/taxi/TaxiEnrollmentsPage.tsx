@@ -3,7 +3,6 @@ import {
   AlButton,
   AlDataTable,
   AlErrorState,
-  AlModal,
   AlPageHeader,
   AlPageHeaderAction,
   AlStack,
@@ -18,6 +17,7 @@ import { useTaxiEnrollments } from '@/hooks/taxi/useTaxiOperations';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
 import { AdminNotDeployedState } from '@/platform/components/AdminNotDeployedState';
+import { AdminReasonDialog } from '@/platform/components/AdminReasonDialog';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
@@ -52,7 +52,6 @@ export function TaxiEnrollmentsPage() {
     reinstateError,
   } = useTaxiEnrollments();
   const [pending, setPending] = useState<PendingAction>(null);
-  const [reason, setReason] = useState('');
   const [provisionOpen, setProvisionOpen] = useState(false);
 
   const columns = useMemo<ColumnDef<AdminTaxiEnrollmentDto>[]>(
@@ -102,7 +101,6 @@ export function TaxiEnrollmentsPage() {
               onClick={(event) => {
                 event.stopPropagation();
                 suspend.reset();
-                setReason('');
                 setPending({ kind: 'suspend', row: row.original });
               }}
             >
@@ -216,7 +214,7 @@ export function TaxiEnrollmentsPage() {
           </>
         )}
 
-        <AlModal
+        <AdminReasonDialog
           open={pending !== null}
           onOpenChange={(next) => {
             if (!next && !busy) setPending(null);
@@ -224,69 +222,35 @@ export function TaxiEnrollmentsPage() {
           title={
             pending?.kind === 'suspend' ? 'Suspend Taxi enrollment?' : 'Reinstate Taxi enrollment?'
           }
-          description={
-            pending
-              ? `${pending.row.orgName ?? pending.row.orgId} — ${
+          {...(pending
+            ? {
+                description: `${pending.row.orgName ?? pending.row.orgId} — ${
                   pending.kind === 'suspend'
                     ? 'the partner can no longer bid on new ride requests.'
                     : 'the partner can bid on ride requests again.'
-                }`
-              : undefined
-          }
-          footer={
-            <div className="admin-modal-actions">
-              <AlButton
-                variant="secondary"
-                disabled={busy}
-                onClick={() => {
-                  setPending(null);
-                }}
-              >
-                Cancel
-              </AlButton>
-              <AlButton
-                data-testid="taxi-enrollment-confirm"
-                loading={busy}
-                disabled={pending?.kind === 'suspend' && reason.trim().length < 3}
-                onClick={() => {
-                  if (!pending) return;
-                  const done = {
-                    onSuccess: () => {
-                      setPending(null);
-                    },
-                  };
-                  if (pending.kind === 'suspend') {
-                    suspend.mutate({ orgId: pending.row.orgId, reason: reason.trim() }, done);
-                  } else {
-                    reinstate.mutate(pending.row.orgId, done);
-                  }
-                }}
-              >
-                {pending?.kind === 'suspend' ? 'Suspend' : 'Reinstate'}
-              </AlButton>
-            </div>
-          }
-        >
-          {pending?.kind === 'suspend' ? (
-            <label className="admin-field">
-              Reason (recorded in the audit log)
-              <textarea
-                data-testid="taxi-enrollment-reason"
-                rows={3}
-                maxLength={500}
-                value={reason}
-                onChange={(event) => {
-                  setReason(event.target.value);
-                }}
-              />
-            </label>
-          ) : null}
-          {actionError ? (
-            <AlText tone="muted" role="alert">
-              {actionError}
-            </AlText>
-          ) : null}
-        </AlModal>
+                }`,
+              }
+            : {})}
+          confirmLabel={pending?.kind === 'suspend' ? 'Suspend' : 'Reinstate'}
+          required={pending?.kind === 'suspend'}
+          destructive={pending?.kind === 'suspend'}
+          loading={busy}
+          error={actionError}
+          testIdPrefix="taxi-enrollment"
+          onConfirm={(reason) => {
+            if (!pending) return;
+            const done = {
+              onSuccess: () => {
+                setPending(null);
+              },
+            };
+            if (pending.kind === 'suspend') {
+              suspend.mutate({ orgId: pending.row.orgId, reason: reason ?? '' }, done);
+            } else {
+              reinstate.mutate({ orgId: pending.row.orgId, ...(reason ? { reason } : {}) }, done);
+            }
+          }}
+        />
 
         <TaxiProvisionSheet open={provisionOpen} onOpenChange={setProvisionOpen} />
       </AlStack>

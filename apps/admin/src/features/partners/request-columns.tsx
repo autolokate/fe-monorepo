@@ -13,6 +13,7 @@ import {
   formatRupees,
   shortId,
 } from '@/features/partners/partners-filters';
+import { TaxiBidDriverCell } from '@/features/partners/QuotesV4Blocks';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 export function useGarageRequestColumns(): ColumnDef<AdminGarageRequestInboxDto>[] {
@@ -28,6 +29,33 @@ export function useGarageRequestColumns(): ColumnDef<AdminGarageRequestInboxDto>
             </span>
             <span className="partners-cell-title__secondary">
               {[row.original.category, row.original.subcategory].filter(Boolean).join(' · ')}
+            </span>
+          </div>
+        ),
+      },
+      {
+        id: 'vehicle',
+        header: 'Vehicle',
+        accessorFn: (row) => row.vehicle?.displayName ?? '',
+        cell: ({ row }) => (
+          <div className="partners-cell-title">
+            <span className="partners-cell-title__primary">
+              {row.original.vehicle?.displayName ?? 'Vehicle'}
+            </span>
+            <span className="partners-cell-title__secondary">
+              {[
+                row.original.requestKind === 'PARTS'
+                  ? 'Parts'
+                  : row.original.requestKind === 'SERVICE'
+                    ? 'Service'
+                    : null,
+                typeof row.original.photoCount === 'number'
+                  ? `${String(row.original.photoCount)} photo${row.original.photoCount === 1 ? '' : 's'}`
+                  : null,
+                row.original.sourceClipId ? 'from a clip' : null,
+              ]
+                .filter(Boolean)
+                .join(' · ') || '—'}
             </span>
           </div>
         ),
@@ -208,9 +236,10 @@ export function useTaxiBidColumns(): ColumnDef<AdminTaxiBidDto>[] {
         cell: ({ row }) => humanizeAdminLabel(row.original.status),
       },
       {
-        id: 'vehicle',
-        header: 'Vehicle',
-        accessorFn: (row) => shortId(row.vehicleId),
+        id: 'driver',
+        header: 'Driver',
+        enableSorting: false,
+        cell: ({ row }) => <TaxiBidDriverCell vehicleId={row.original.vehicleId} />,
       },
       {
         accessorKey: 'createdAt',

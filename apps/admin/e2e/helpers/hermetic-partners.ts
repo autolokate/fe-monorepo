@@ -8,6 +8,15 @@ export const HERMETIC_GARAGE_BID_ID = 'dddddddd-0000-4000-8000-0000000000dd';
 export const HERMETIC_TAXI_REQUEST_ID = 'eeeeeeee-0000-4000-8000-0000000000ee';
 export const HERMETIC_TAXI_BID_ID = 'ffffffff-0000-4000-8000-0000000000ff';
 
+import {
+  HERMETIC_GARAGE_ACCESS,
+  HERMETIC_GARAGE_PASS,
+  HERMETIC_GARAGE_PHOTO,
+  HERMETIC_GARAGE_V4_FIELDS,
+  HERMETIC_SOURCE_CLIP,
+  hermeticFleetDetail,
+} from './hermetic-taxi-v4';
+
 const NOW = '2026-10-20T12:00:00.000Z';
 
 function envelope<T>(
@@ -138,6 +147,7 @@ export async function installHermeticPartnersRoutes(
     closesAt: NOW,
     sourceReelId: null,
     preferredOrgId: null,
+    ...HERMETIC_GARAGE_V4_FIELDS,
     createdAt: NOW,
     updatedAt: NOW,
     bids: [
@@ -173,6 +183,8 @@ export async function installHermeticPartnersRoutes(
     estimatedFareRupees: 450,
     notes: null,
     closesAt: NOW,
+    sourceClipId: HERMETIC_SOURCE_CLIP.clipId,
+    sourceClip: HERMETIC_SOURCE_CLIP,
     createdAt: NOW,
     updatedAt: NOW,
     bids: [
@@ -230,7 +242,11 @@ export async function installHermeticPartnersRoutes(
         await fulfillJson(route, listStatus, errorEnvelope('Not deployed', 'not_found'));
         return;
       }
-      await fulfillJson(route, 200, envelope(garageRequest));
+      await fulfillJson(
+        route,
+        200,
+        envelope({ ...garageRequest, photos: [HERMETIC_GARAGE_PHOTO] }),
+      );
       return;
     }
 
@@ -323,6 +339,40 @@ export async function installHermeticPartnersRoutes(
 
     capture.unexpected.push(`${request.method()} ${path}`);
     await fulfillJson(route, 404, errorEnvelope('Unhandled taxi requests path', 'not_found'));
+  });
+
+  // Flow v3 garage access + pass history on the partner detail page (reads only).
+  await page.route(/\/admin\/v1\/garage\/orgs\/[^/]+\/(access|passes)/, async (route) => {
+    const request = route.request();
+    if (request.method() !== 'GET') {
+      await route.fallback();
+      return;
+    }
+    const path = new URL(request.url()).pathname;
+    if (path.endsWith('/access')) {
+      await fulfillJson(route, 200, envelope(HERMETIC_GARAGE_ACCESS));
+      return;
+    }
+    await fulfillJson(
+      route,
+      200,
+      envelope([HERMETIC_GARAGE_PASS], {
+        limit: 20,
+        cursor: null,
+        nextCursor: null,
+        hasMore: false,
+      }),
+    );
+  });
+
+  // Taxi bid driver identity: bid.vehicleId → fleet vehicle detail.
+  await page.route(/\/admin\/v1\/taxi\/vehicles\/[^/?]+$/, async (route) => {
+    if (route.request().method() !== 'GET') {
+      await route.fallback();
+      return;
+    }
+    const id = new URL(route.request().url()).pathname.split('/').pop() ?? '';
+    await fulfillJson(route, 200, envelope({ ...hermeticFleetDetail(), id }));
   });
 
   return capture;

@@ -1,4 +1,5 @@
-import { useQueries } from '@tanstack/react-query';
+import type { AdminQueueStatsDto } from '@autolokate/api-client';
+import { useQueries, useQuery } from '@tanstack/react-query';
 
 import { adminPaths } from '@/app/routes/admin-paths';
 import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
@@ -6,12 +7,17 @@ import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 import {
   ATTENTION_PAGE_LIMIT,
   attentionCount,
+  attentionFromQueueStats,
   countListPage,
   REVENUE_PAGE_LIMIT,
   summarizeTaxiRevenue,
   type AttentionCount,
   type TaxiRevenueSummary,
 } from '@/services/dashboard/dashboard-attention';
+import {
+  fetchQueueStats,
+  fetchTaxiRefundsNeedingActionPage,
+} from '@/services/dashboard/dashboard-service';
 import { fetchOwnershipClaims } from '@/services/ownership-claims/ownership-claims-service';
 import { fetchAdminPartnersKycPage } from '@/services/partners/admin-partners-service';
 import { fetchSupportTicketsPage } from '@/services/support/support-service';
@@ -28,7 +34,8 @@ export type AttentionItemId =
   | 'taxi-awaiting-deposit'
   | 'gst-reviews'
   | 'open-tickets'
-  | 'session-bookings';
+  | 'session-bookings'
+  | 'taxi-refunds';
 
 export type AttentionItem = {
   id: AttentionItemId;
@@ -45,10 +52,23 @@ export type AttentionItem = {
 
 const STALE_MS = 30_000;
 
+/** Which counter of `GET /admin/v1/stats/queues` answers each tile. */
+const QUEUE_STAT_KEY: Record<AttentionItemId, keyof AdminQueueStatsDto> = {
+  'rc-reviews': 'ownershipClaimsPending',
+  'taxi-disputes': 'taxiDisputed',
+  'taxi-never-started': 'taxiFlagged',
+  'taxi-awaiting-deposit': 'taxiPendingPartnerDeposit',
+  'gst-reviews': 'kycPendingReview',
+  'open-tickets': 'supportOpen',
+  'session-bookings': 'websiteBookingsPending',
+  'taxi-refunds': 'taxiRefundsNeedingAction',
+};
+
 /**
- * The operator's queue — every count is a real first-page read from an existing admin list route
- * (never an aggregate the server doesn't provide). Reads that write audit rows (audit log, incidents)
- * are deliberately excluded.
+ * The operator's queue. Counts come from `GET /admin/v1/stats/queues` (exact integers in one cheap
+ * read). On a server without that route (or if it fails) each tile falls back to a first-page read of
+ * its list route, shown as "50+" when capped — never a made-up total. Reads that write audit rows
+ * (audit log, incidents) are deliberately excluded.
  */
 export function useDashboardAttention() {
   const canClaims = useAdminPermission('inventory:view');
@@ -56,12 +76,23 @@ export function useDashboardAttention() {
   const canPartners = useAdminPermission('partners:read');
   const canSupport = useAdminPermission('support:view');
   const canSessions = useAdminPermission('website-bookings:view');
+  const canDashboard = useAdminPermission('dashboard:view');
+
+  const stats = useQuery({
+    queryKey: ['admin', 'dashboard', 'queue-stats'],
+    queryFn: ({ signal }) => fetchQueueStats(signal),
+    enabled: canDashboard,
+    staleTime: STALE_MS,
+    retry: false,
+  });
+  // Per-tile list reads only run when the exact counters are unavailable.
+  const fallback = stats.isError;
 
   const results = useQueries({
     queries: [
       {
         queryKey: ['admin', 'dashboard', 'attention', 'rc-reviews'],
-        enabled: canClaims,
+        enabled: fallback && canClaims,
         staleTime: STALE_MS,
         retry: false,
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
@@ -76,7 +107,7 @@ export function useDashboardAttention() {
       },
       {
         queryKey: ['admin', 'dashboard', 'attention', 'taxi-disputes'],
-        enabled: canTaxi,
+        enabled: fallback && canTaxi,
         staleTime: STALE_MS,
         retry: false,
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
@@ -89,7 +120,7 @@ export function useDashboardAttention() {
       },
       {
         queryKey: ['admin', 'dashboard', 'attention', 'taxi-never-started'],
-        enabled: canTaxi,
+        enabled: fallback && canTaxi,
         staleTime: STALE_MS,
         retry: false,
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
@@ -102,7 +133,7 @@ export function useDashboardAttention() {
       },
       {
         queryKey: ['admin', 'dashboard', 'attention', 'taxi-awaiting-deposit'],
-        enabled: canTaxi,
+        enabled: fallback && canTaxi,
         staleTime: STALE_MS,
         retry: false,
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
@@ -115,7 +146,7 @@ export function useDashboardAttention() {
       },
       {
         queryKey: ['admin', 'dashboard', 'attention', 'gst-reviews'],
-        enabled: canPartners,
+        enabled: fallback && canPartners,
         staleTime: STALE_MS,
         retry: false,
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
@@ -128,7 +159,7 @@ export function useDashboardAttention() {
       },
       {
         queryKey: ['admin', 'dashboard', 'attention', 'open-tickets'],
-        enabled: canSupport,
+        enabled: fallback && canSupport,
         staleTime: STALE_MS,
         retry: false,
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
@@ -141,7 +172,7 @@ export function useDashboardAttention() {
       },
       {
         queryKey: ['admin', 'dashboard', 'attention', 'session-bookings'],
-        enabled: canSessions,
+        enabled: fallback && canSessions,
         staleTime: STALE_MS,
         retry: false,
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
@@ -149,6 +180,16 @@ export function useDashboardAttention() {
             { status: 'PENDING', limit: ATTENTION_PAGE_LIMIT },
             signal,
           );
+          return countListPage(page.items, page.pagination?.hasMore === true);
+        },
+      },
+      {
+        queryKey: ['admin', 'dashboard', 'attention', 'taxi-refunds'],
+        enabled: fallback && canTaxi,
+        staleTime: STALE_MS,
+        retry: false,
+        queryFn: async ({ signal }: { signal: AbortSignal }) => {
+          const page = await fetchTaxiRefundsNeedingActionPage(ATTENTION_PAGE_LIMIT, signal);
           return countListPage(page.items, page.pagination?.hasMore === true);
         },
       },
@@ -212,9 +253,33 @@ export function useDashboardAttention() {
       urgent: false,
       allowed: canSessions,
     },
+    {
+      id: 'taxi-refunds',
+      label: 'Taxi refunds to fix',
+      hint: 'Failed or unreconciled refunds — retry after a fix',
+      to: adminPaths.taxiRefunds,
+      urgent: true,
+      allowed: canTaxi,
+    },
   ];
 
   const items: AttentionItem[] = meta.map((entry, index) => {
+    if (!fallback) {
+      if (!stats.data) {
+        return { ...entry, isLoading: entry.allowed, error: null, value: null };
+      }
+      try {
+        const value = attentionFromQueueStats(stats.data, QUEUE_STAT_KEY[entry.id]);
+        return { ...entry, isLoading: false, error: null, value };
+      } catch (error) {
+        return {
+          ...entry,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Unable to load this queue.',
+          value: null,
+        };
+      }
+    }
     const query = results[index];
     return {
       ...entry,
@@ -226,8 +291,11 @@ export function useDashboardAttention() {
 
   return {
     items,
-    isFetching: results.some((query) => query.isFetching),
+    /** `exact` = server counters; `list` = first-page fallback (counts may read "50+"). */
+    source: fallback ? ('list' as const) : ('exact' as const),
+    isFetching: stats.isFetching || results.some((query) => query.isFetching),
     refetch: () => {
+      void stats.refetch();
       for (const query of results) void query.refetch();
     },
   };

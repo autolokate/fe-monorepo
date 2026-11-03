@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ReorderFulfilResultDto } from '@autolokate/api-client';
-import { AlButton, AlConfirmationDialog, AlModal } from '@autolokate/ui';
+import { AlButton, AlModal } from '@autolokate/ui';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -8,6 +8,7 @@ import {
   fulfilPartnerReorderSchema,
   type FulfilPartnerReorderFormValues,
 } from '@/features/qr-batches/fulfil-reorder-schema';
+import { AdminReasonDialog } from '@/platform/components/AdminReasonDialog';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
 import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
 import {
@@ -30,6 +31,7 @@ export function FulfilPartnerReorderSheet({
 }: FulfilPartnerReorderSheetProps) {
   const abortRef = useRef<AbortController | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const reasonRef = useRef<string | undefined>(undefined);
   const { fulfilReorderMutation, mapMutationError } = useQrBatchMutations();
 
   const form = useForm<FulfilPartnerReorderFormValues>({
@@ -70,6 +72,7 @@ export function FulfilPartnerReorderSheet({
     try {
       const result = await fulfilReorderMutation.mutateAsync({
         reorderId: values.reorderId,
+        ...(reasonRef.current ? { reason: reasonRef.current } : {}),
         signal: controller.signal,
       });
       onFulfilled?.(result);
@@ -146,18 +149,21 @@ export function FulfilPartnerReorderSheet({
         </form>
       </AlModal>
 
-      <AlConfirmationDialog
+      <AdminReasonDialog
         open={confirmOpen}
         onOpenChange={(next) => {
           if (!fulfilReorderMutation.isPending) {
             setConfirmOpen(next);
           }
         }}
-        title="Fulfil partner reorder"
+        title="Confirm reorder fulfilment"
         description="Allocate ready stock and confirm this reorder?"
         confirmLabel="Fulfil reorder"
+        required={false}
+        testIdPrefix="partner-reorder-fulfil"
         loading={fulfilReorderMutation.isPending}
-        onConfirm={() => {
+        onConfirm={(reason) => {
+          reasonRef.current = reason;
           void runFulfil();
         }}
       />

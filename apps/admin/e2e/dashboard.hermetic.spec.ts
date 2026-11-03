@@ -54,3 +54,49 @@ test('needs-attention queue shows real counts, revenue sums and deep-links into 
   expect(capture.auditEventsGet).toBe(0);
   expect(capture.unexpected).toEqual([]);
 });
+
+test('needs-attention uses the exact GET /admin/v1/stats/queues counters (no 50+ caps)', async ({
+  page,
+}) => {
+  const capture = await installHermeticApiRoutes(page, {
+    sessionRole: 'OPERATOR',
+    queueStats: { taxiDisputed: 73, supportOpen: 128, taxiRefundsNeedingAction: 4 },
+  });
+  await seedHermeticSession(page);
+  await page.goto('/dashboard');
+
+  const disputes = page.getByTestId('dashboard-attention-taxi-disputes');
+  await expect(disputes).toContainText('73', { timeout: 30_000 });
+  await expect(disputes).not.toContainText('+');
+  await expect(page.getByTestId('dashboard-attention-open-tickets')).toContainText('128');
+  const refunds = page.getByTestId('dashboard-attention-taxi-refunds');
+  await expect(refunds).toContainText('Taxi refunds to fix');
+  await expect(refunds).toContainText('4');
+  await expect(refunds).toHaveAttribute('href', '/taxi/refunds');
+  await expect(page.getByText('Live queue counts from the admin API')).toBeVisible();
+  // One counters read replaces the per-queue list reads.
+  expect(capture.dashboardReads).toContain('/admin/v1/stats/queues');
+  expect(capture.dashboardReads.some((read) => read.includes('status=DISPUTED'))).toBe(false);
+  expect(capture.unexpected).toEqual([]);
+});
+
+test('needs-attention falls back to first-page list counts when stats/queues is not deployed', async ({
+  page,
+}) => {
+  const capture = await installHermeticApiRoutes(page, {
+    sessionRole: 'OPERATOR',
+    queueStatsStatus: 404,
+  });
+  await seedHermeticSession(page);
+  await page.goto('/dashboard');
+
+  await expect(page.getByTestId('dashboard-attention-taxi-disputes')).toContainText('1', {
+    timeout: 30_000,
+  });
+  await expect(page.getByTestId('dashboard-attention-taxi-refunds')).toContainText('0');
+  await expect(page.getByText('Counts above 50 show as 50+.')).toBeVisible();
+  await expect
+    .poll(() => capture.dashboardReads.some((read) => read.includes('status=DISPUTED')))
+    .toBe(true);
+  expect(capture.unexpected).toEqual([]);
+});

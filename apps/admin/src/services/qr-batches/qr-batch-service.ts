@@ -56,13 +56,23 @@ export async function replaceCode(code: string, signal?: AbortSignal): Promise<R
   return replaceQrCode(getAdminApiClient(), code, { signal });
 }
 
-export async function retireCode(code: string, signal?: AbortSignal): Promise<RetiredDto> {
-  return retireQrCode(getAdminApiClient(), code, { signal });
+/** POST /admin/v1/qr/{code}/retire — optional reason lands on the audit row (`adminReason`). */
+export async function retireCode(
+  code: string,
+  reason?: string,
+  signal?: AbortSignal,
+): Promise<RetiredDto> {
+  return retireQrCode(getAdminApiClient(), code, { signal, ...(reason ? { reason } : {}) });
 }
 
+/** POST /admin/v1/partner-reorders/{id}/fulfil — optional reason lands on the audit row. */
 export async function fulfilPartnerReorderById(
   reorderId: string,
+  reason?: string,
   signal?: AbortSignal,
 ): Promise<ReorderFulfilResultDto> {
-  return fulfilPartnerReorder(getAdminApiClient(), reorderId, { signal });
+  return fulfilPartnerReorder(getAdminApiClient(), reorderId, {
+    signal,
+    ...(reason ? { reason } : {}),
+  });
 }

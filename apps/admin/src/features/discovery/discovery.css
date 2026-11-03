@@ -217,3 +217,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* @mention highlight inside a moderated comment (comment moderation page). */
+.discovery-mention {
+  color: var(--ax-accent);
+  font-weight: 600;
+}

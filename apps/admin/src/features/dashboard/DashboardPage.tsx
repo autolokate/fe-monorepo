@@ -165,7 +165,7 @@ function AttentionTile({ item }: { item: AttentionItem }) {
 }
 
 function AttentionPanel() {
-  const { items } = useDashboardAttention();
+  const { items, source } = useDashboardAttention();
   const visible = items.filter((item) => item.allowed);
   const settled = visible.filter((item) => !item.isLoading && !item.error && item.value);
   const allClear =
@@ -174,7 +174,11 @@ function AttentionPanel() {
   return (
     <AdminPanel
       title="Needs attention"
-      subtitle="Live queues from the admin API — open one to work it. Counts above 50 show as 50+."
+      subtitle={
+        source === 'exact'
+          ? 'Live queue counts from the admin API — open one to work it.'
+          : 'Live queues from the admin list routes — open one to work it. Counts above 50 show as 50+.'
+      }
       meta={
         allClear ? (
           <span className="ax-all-clear">

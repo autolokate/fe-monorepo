@@ -13,7 +13,8 @@ import {
   AlText,
 } from '@autolokate/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
 import { filterCareByVehicleId } from '@/features/users/filter-care-by-vehicle';
@@ -22,6 +23,12 @@ import {
   UserStreakPanel,
   UserVehicleMembershipsPanel,
 } from '@/features/users/UserConsumerStatePanels';
+import {
+  UserDriverInvitesPanel,
+  VehicleDriverInvitesPanel,
+} from '@/features/users/DriverInvitesPanel';
+import { UserDriveQuantPanel } from '@/features/users/UserDriveQuantPanel';
+import { UserNotificationsPanel } from '@/features/users/UserNotificationsPanel';
 import { UserRolesPanel } from '@/features/users/UserRolesPanel';
 import { useUsersColumns } from '@/features/users/users-columns';
 import { VehicleRosterPanel } from '@/features/users/VehicleRosterPanel';
@@ -287,6 +294,8 @@ function UserDetailPanel({
             onOpenAccount={onOpenAccount}
             testId="vehicle-care-roster"
           />
+
+          <VehicleDriverInvitesPanel vehicleId={selectedVehicle.vehicleId} />
 
           <AdminPanel title="Expenses" subtitle="Personal expenses for this vehicle.">
             {expensesError ? (
@@ -613,6 +622,12 @@ function UserDetailPanel({
             onOpenAccount={onOpenAccount}
           />
 
+          <UserDriverInvitesPanel userId={account.id} />
+
+          <UserNotificationsPanel userId={account.id} />
+
+          <UserDriveQuantPanel userId={account.id} />
+
           <CustomerDrilldown accountId={account.id} />
         </>
       )}
@@ -670,6 +685,25 @@ export function UsersPage() {
         setOpeningAccountId(null);
       });
   };
+
+  // `/users?account=<id>` (e.g. from Vehicles or Plate scanning) opens that account directly.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const deepLinkAccount = searchParams.get('account');
+  const handledDeepLink = useRef<string | null>(null);
+  useEffect(() => {
+    if (!deepLinkAccount || handledDeepLink.current === deepLinkAccount) return;
+    handledDeepLink.current = deepLinkAccount;
+    openAccount(deepLinkAccount);
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete('account');
+        return next;
+      },
+      { replace: true },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open once per deep-linked id
+  }, [deepLinkAccount]);
 
   const pageDescription = 'Look up customers and review account care.';
 

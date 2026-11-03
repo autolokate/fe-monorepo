@@ -2,6 +2,7 @@ import {
   getAdminPartner,
   getAdminPartnerGarageRequest,
   getAdminTaxiRequest,
+  closeAdminTaxiRequest,
   listAdminPartnerGarageRequestsPage,
   listAdminPartnersPage,
   listAdminTaxiRequestsPage,
@@ -74,4 +75,12 @@ export async function fetchAdminPartnersKycPage(
   signal?: AbortSignal,
 ): Promise<AdminPartnersPageResult<AdminPartnerKycItemDto>> {
   return listAdminPartnersKycPage(getAdminApiClient(), query, { signal });
+}
+
+/** POST /admin/v1/taxi/requests/{id}/close {reason} — OPEN → EXPIRED; bidders notified; audited. */
+export async function submitAdminTaxiRequestClose(
+  id: string,
+  reason: string,
+): Promise<AdminTaxiRequestInboxDto> {
+  return closeAdminTaxiRequest(getAdminApiClient(), id, { reason });
 }

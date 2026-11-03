@@ -145,8 +145,13 @@ export type AdminDiscoveryReelDto = {
   media?: { mediaId: string; mediaType: 'VIDEO' | 'IMAGE'; url: string | null }[];
 };
 
+export type AdminReelCreatorKind = 'AUTOLOKATE' | 'GARAGE' | 'STORE';
+
 export type ListAdminReelsQuery = {
   status?: AdminReelStatus;
+  /** AUTOLOKATE = no partner org; STORE = org with a PUBLISHED STORE storefront; GARAGE = others. */
+  creatorKind?: AdminReelCreatorKind;
+  partnerOrgId?: string;
   /** Server-side title / stableKey / caption search (max 120 chars). */
   q?: string;
   sort?: AdminReelSort;
@@ -328,6 +333,8 @@ export async function listAdminReelsPage(
 ): Promise<AdminDiscoveryPageResult<AdminDiscoveryReelDto>> {
   const path = `${endpoints.admin.communityReels}${buildQuery({
     status: query.status,
+    creatorKind: query.creatorKind,
+    partnerOrgId: query.partnerOrgId,
     q: query.q?.trim(),
     sort: query.sort,
     limit: query.limit,

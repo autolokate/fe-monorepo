@@ -205,8 +205,15 @@ export function useQrBatchMutations() {
   });
 
   const retireMutation = useMutation({
-    mutationFn: ({ code, signal }: { code: string; signal?: AbortSignal }) =>
-      retireCode(code, signal),
+    mutationFn: ({
+      code,
+      reason,
+      signal,
+    }: {
+      code: string;
+      reason?: string;
+      signal?: AbortSignal;
+    }) => retireCode(code, reason, signal),
     retry: 0,
     onSuccess: async (result) => {
       await invalidateBatchCodes();
@@ -219,8 +226,15 @@ export function useQrBatchMutations() {
   });
 
   const fulfilReorderMutation = useMutation({
-    mutationFn: ({ reorderId, signal }: { reorderId: string; signal?: AbortSignal }) =>
-      fulfilPartnerReorderById(reorderId, signal),
+    mutationFn: ({
+      reorderId,
+      reason,
+      signal,
+    }: {
+      reorderId: string;
+      reason?: string;
+      signal?: AbortSignal;
+    }) => fulfilPartnerReorderById(reorderId, reason, signal),
     retry: 0,
     onSuccess: async (result) => {
       await invalidateInventory();

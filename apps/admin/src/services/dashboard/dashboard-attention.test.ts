@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   attentionCount,
+  attentionFromQueueStats,
   attentionTone,
   countListPage,
   formatAttentionCount,
@@ -26,6 +27,20 @@ describe('dashboard attention counts', () => {
     expect(attentionTone(attentionCount(0, false), true)).toBe('calm');
     expect(attentionTone(attentionCount(2, false), true)).toBe('urgent');
     expect(attentionTone(attentionCount(2, false), false)).toBe('attention');
+  });
+});
+
+describe('queue stats counters', () => {
+  it('reads exact counters from GET /admin/v1/stats/queues (never capped)', () => {
+    const value = attentionFromQueueStats({ taxiDisputed: 73 }, 'taxiDisputed');
+    expect(value).toEqual({ count: 73, capped: false });
+    expect(formatAttentionCount(value)).toBe('73');
+  });
+
+  it('rejects a missing or non-integer counter instead of guessing', () => {
+    expect(() => attentionFromQueueStats({}, 'supportOpen')).toThrow(/Unexpected response/);
+    expect(() => attentionFromQueueStats({ supportOpen: 1.5 }, 'supportOpen')).toThrow();
+    expect(() => attentionFromQueueStats(null, 'supportOpen')).toThrow();
   });
 });
 

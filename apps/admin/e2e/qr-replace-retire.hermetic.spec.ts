@@ -63,7 +63,7 @@ test.describe('QR replace / retire (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('retire success — POST path + empty body + result panel + inventory refresh', async ({
+  test('retire success — POST path + reason body + result panel + inventory refresh', async ({
     page,
   }) => {
     const capture = await installHermeticApiRoutes(page, {
@@ -78,8 +78,9 @@ test.describe('QR replace / retire (hermetic)', () => {
     await page.getByTestId('qr-code-action-input').fill(HERMETIC_QR_CODE);
     await page.getByTestId('qr-code-retire').click();
 
-    const confirm = page.getByRole('alertdialog', { name: 'Retire QR code' });
+    const confirm = page.getByRole('dialog', { name: 'Retire QR code' });
     await expect(confirm).toBeVisible();
+    await confirm.getByTestId('qr-retire-reason').fill('Sticker reported stolen');
     await confirm.getByRole('button', { name: 'Retire code' }).click();
 
     await expect(page.locator('.admin-toast-host')).toContainText(
@@ -95,7 +96,8 @@ test.describe('QR replace / retire (hermetic)', () => {
     expect(capture.qrRetire).toHaveLength(1);
     expect(capture.qrRetire[0]?.method).toBe('POST');
     expect(capture.qrRetire[0]?.path).toBe(`/admin/v1/qr/${HERMETIC_QR_CODE}/retire`);
-    expect(capture.qrRetire[0]?.body).toBeNull();
+    // Optional audit reason → `QR_CODE_DEACTIVATED.metadata.adminReason`.
+    expect(capture.qrRetire[0]?.body).toEqual({ reason: 'Sticker reported stolen' });
     expect(capture.qrReplace).toEqual([]);
     // Detail refresh re-reads the batch via GET /admin/v1/qr-batches/{id}.
     expect(capture.qrBatchGet).toBeGreaterThan(batchReadsBefore);

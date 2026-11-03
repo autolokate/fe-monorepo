@@ -1,0 +1,215 @@
+/* Admin v4 user / vehicle / plate-scanning / broadcast surfaces — ax tokens only (light + dark). */
+
+.admin-audit-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--ax-warning);
+  border-radius: var(--ax-radius-md);
+  background: var(--ax-warning-soft);
+  color: var(--ax-text);
+  font-size: var(--ax-text-sm);
+  line-height: 1.45;
+}
+
+.admin-audit-note strong {
+  font-weight: 600;
+}
+
+.admin-v4-gate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem 0 0.75rem;
+}
+
+.admin-v4-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-v4-toolbar .admin-field {
+  min-width: 10rem;
+}
+
+.admin-v4-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.admin-v4-stack__primary {
+  color: var(--ax-text);
+  font-weight: 550;
+}
+
+.admin-v4-stack__secondary {
+  color: var(--ax-text-muted);
+  font-size: var(--ax-text-xs);
+  overflow-wrap: anywhere;
+}
+
+.admin-v4-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.admin-v4-subsection {
+  margin-top: 1rem;
+}
+
+.admin-v4-subsection__title {
+  margin: 0 0 0.5rem;
+  font-size: var(--ax-text-md);
+  font-weight: 600;
+  color: var(--ax-text);
+}
+
+.admin-v4-result {
+  margin-top: 0.75rem;
+}
+
+.admin-v4-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.0625rem 0.5rem;
+  border-radius: var(--ax-radius-pill);
+  border: 1px solid var(--ax-border);
+  background: var(--ax-surface-2);
+  color: var(--ax-text-muted);
+  font-size: var(--ax-text-xs);
+  white-space: nowrap;
+}
+
+.admin-v4-tag--danger {
+  border-color: var(--ax-danger);
+  background: var(--ax-danger-soft);
+  color: var(--ax-text);
+}
+
+.admin-v4-tag--warning {
+  border-color: var(--ax-warning);
+  background: var(--ax-warning-soft);
+  color: var(--ax-text);
+}
+
+.admin-v4-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* The vehicle drawer carries roster + invite tables — give it room (scoped, other sheets keep 28rem). */
+.al-sheet:has(.admin-v4-wide-drawer) {
+  width: min(52rem, 100vw);
+}
+
+.admin-v4-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.admin-v4-search .admin-field {
+  flex: 1 1 16rem;
+  max-width: 24rem;
+}
+
+.admin-v4-search input {
+  font-family: var(--ax-font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* System broadcast composer: form + live preview. */
+.admin-broadcast-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .admin-broadcast-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.admin-broadcast-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-broadcast-form .admin-field__hint--error {
+  color: var(--ax-danger);
+}
+
+.admin-broadcast-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--ax-border);
+  border-radius: var(--ax-radius-lg);
+  background: var(--ax-surface-2);
+  box-shadow: var(--ax-shadow-xs);
+}
+
+.admin-broadcast-preview__app {
+  color: var(--ax-text-muted);
+  font-size: var(--ax-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-broadcast-preview__title {
+  margin: 0;
+  color: var(--ax-text);
+  font-size: var(--ax-text-md);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.admin-broadcast-preview__body {
+  margin: 0;
+  color: var(--ax-text);
+  font-size: var(--ax-text-sm);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-broadcast-preview__link {
+  color: var(--ax-text-muted);
+  font-size: var(--ax-text-xs);
+}
+
+.admin-broadcast-summary {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.375rem 1rem;
+  font-size: var(--ax-text-sm);
+}
+
+.admin-broadcast-summary dt {
+  color: var(--ax-text-muted);
+}
+
+.admin-broadcast-summary dd {
+  margin: 0;
+  color: var(--ax-text);
+  overflow-wrap: anywhere;
+}

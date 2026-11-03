@@ -1,10 +1,16 @@
-import type {
-  AdminPlanDto,
-  AdminPromoDto,
-  QrInventoryPageResult,
-  SkuSummaryDto,
+import {
+  getAdminQueueStats,
+  listAdminTaxiRefunds,
+  type AdminPlanDto,
+  type AdminPromoDto,
+  type AdminQueueStatsDto,
+  type AdminTaxiRefundQueueDto,
+  type AdminV4Page,
+  type QrInventoryPageResult,
+  type SkuSummaryDto,
 } from '@autolokate/api-client';
 
+import { getAdminApiClient } from '@/platform/api/admin-api-client';
 import { fetchAdminPlans, fetchCatalogSkus } from '@/services/catalog/admin-catalog-service';
 import { INVENTORY_PAGE_LIMIT } from '@/services/inventory/inventory-metrics';
 import { fetchQrInventoryPage } from '@/services/inventory/inventory-service';
@@ -39,4 +45,17 @@ export async function fetchDashboardSnapshot(signal?: AbortSignal): Promise<Dash
     plans: plansResult.status === 'fulfilled' ? plansResult.value : null,
     skus: skusResult.status === 'fulfilled' ? skusResult.value : null,
   };
+}
+
+/** GET /admin/v1/stats/queues — exact queue counters (no PII, not audited). */
+export async function fetchQueueStats(signal?: AbortSignal): Promise<AdminQueueStatsDto> {
+  return getAdminQueueStats(getAdminApiClient(), { signal });
+}
+
+/** First page of the taxi refunds queue (server default = FAILED + NEEDS_RECONCILIATION). */
+export async function fetchTaxiRefundsNeedingActionPage(
+  limit: number,
+  signal?: AbortSignal,
+): Promise<AdminV4Page<AdminTaxiRefundQueueDto>> {
+  return listAdminTaxiRefunds(getAdminApiClient(), { limit }, { signal });
 }

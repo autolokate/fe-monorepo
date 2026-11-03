@@ -75,7 +75,11 @@ export async function saveServiceProvider(
 /** DELETE /admin/v1/services/providers/{id} */
 export async function deactivateProvider(
   id: string,
+  reason?: string,
   signal?: AbortSignal,
 ): Promise<AdminServiceProviderDto> {
-  return deactivateServiceProvider(getAdminApiClient(), id, { signal });
+  return deactivateServiceProvider(getAdminApiClient(), id, {
+    signal,
+    ...(reason ? { reason } : {}),
+  });
 }

@@ -1,6 +1,7 @@
 import type {
   AdminQaSort,
   AdminQaStatus,
+  AdminReelCreatorKind,
   AdminReelSort,
   AdminReelStatus,
   CommunityQuestionCategory,
@@ -53,6 +54,14 @@ export const REEL_STATUS_FILTERS: FilterOption<AdminReelStatus | 'ALL'>[] = [
   { value: 'PUBLISHED', label: 'Published' },
   { value: 'DRAFT', label: 'Draft' },
   { value: 'ARCHIVED', label: 'Archived' },
+];
+
+/** Creator filter — Autolokate editorial reels vs partner (garage / store) clips. */
+export const REEL_CREATOR_FILTERS: FilterOption<AdminReelCreatorKind | 'ALL'>[] = [
+  { value: 'ALL', label: 'All creators' },
+  { value: 'AUTOLOKATE', label: 'Autolokate' },
+  { value: 'GARAGE', label: 'Garage' },
+  { value: 'STORE', label: 'Store' },
 ];
 
 export const REEL_SORT_OPTIONS: FilterOption<AdminReelSort>[] = [

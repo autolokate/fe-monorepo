@@ -1,0 +1,15 @@
+.roadside-cell-clip {
+  display: inline-block;
+  max-width: 22rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.roadside-detail-text {
+  margin: 0;
+  white-space: pre-wrap;
+  color: var(--ax-text);
+  line-height: 1.5;
+}

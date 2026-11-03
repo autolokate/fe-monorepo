@@ -21,6 +21,7 @@ import { useQrBatchById } from '@/hooks/qr-batches/useQrBatchById';
 import { useQrBatchMutations } from '@/hooks/qr-batches/useQrBatchMutations';
 import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
+import { AdminReasonDialog } from '@/platform/components/AdminReasonDialog';
 import {
   AdminKpiStrip,
   AdminPanel,
@@ -114,6 +115,7 @@ export function BatchManagementDetailPage() {
   const distributeMutationRef = useRef(distributeMutation);
   const replaceMutationRef = useRef(replaceMutation);
   const retireMutationRef = useRef(retireMutation);
+  const retireReasonRef = useRef<string | undefined>(undefined);
 
   generateMutationRef.current = generateMutation;
   provisionMutationRef.current = provisionMutation;
@@ -244,6 +246,7 @@ export function BatchManagementDetailPage() {
       } else {
         const result = await retireMutation.mutateAsync({
           code: values.code,
+          ...(retireReasonRef.current ? { reason: retireReasonRef.current } : {}),
           signal: controller.signal,
         });
         setRetireResult(result);
@@ -442,21 +445,36 @@ export function BatchManagementDetailPage() {
         }}
       />
 
-      <AlConfirmationDialog
-        open={pendingQrAction !== null}
+      <AdminReasonDialog
+        open={pendingQrAction === 'retire'}
         onOpenChange={(nextOpen) => {
           if (!nextOpen && !qrPending) {
             setPendingQrAction(null);
           }
         }}
-        title={pendingQrAction === 'retire' ? 'Retire QR code' : 'Replace QR code'}
-        description={
-          pendingQrAction === 'retire'
-            ? `Permanently retire ${qrForm.getValues('code')}? This cannot be undone.`
-            : `Issue a replacement for code ${qrForm.getValues('code')}?`
-        }
-        confirmLabel={pendingQrAction === 'retire' ? 'Retire code' : 'Replace code'}
-        destructive={pendingQrAction === 'retire'}
+        title="Retire QR code"
+        description={`Permanently retire ${qrForm.getValues('code')}? This cannot be undone.`}
+        confirmLabel="Retire code"
+        required={false}
+        destructive
+        testIdPrefix="qr-retire"
+        loading={qrPending}
+        onConfirm={(reason) => {
+          retireReasonRef.current = reason;
+          void runQrAction();
+        }}
+      />
+
+      <AlConfirmationDialog
+        open={pendingQrAction === 'replace'}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen && !qrPending) {
+            setPendingQrAction(null);
+          }
+        }}
+        title="Replace QR code"
+        description={`Issue a replacement for code ${qrForm.getValues('code')}?`}
+        confirmLabel="Replace code"
         loading={qrPending}
         onConfirm={() => {
           void runQrAction();

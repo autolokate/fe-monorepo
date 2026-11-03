@@ -545,11 +545,12 @@ export async function resolveAdminTaxiDispute(
 export async function releaseAdminTaxiBookingDeposit(
   client: ApiClient,
   id: string,
-  options: TaxiRequestOptions = {},
+  options: TaxiRequestOptions & { reason?: string } = {},
 ): Promise<AdminTaxiBookingMutationDto> {
+  // Optional {reason 3..500} → `TAXI_DEPOSIT_RELEASED.metadata.reason`.
   const response = await client.post<unknown>(
     endpoints.adminTaxi.bookingDepositRelease(id),
-    {},
+    options.reason ? { reason: options.reason } : {},
     taxiSignal(options),
   );
   return readMutation(response);
@@ -605,11 +606,12 @@ export async function suspendAdminTaxiEnrollment(
 export async function reinstateAdminTaxiEnrollment(
   client: ApiClient,
   orgId: string,
-  options: TaxiRequestOptions = {},
+  options: TaxiRequestOptions & { reason?: string } = {},
 ): Promise<AdminTaxiEnrollmentDto> {
+  // Optional {reason 3..500} → `TAXI_ENROLLMENT_REINSTATED` audit row.
   const response = await client.post<unknown>(
     endpoints.adminTaxi.enrollmentReinstate(orgId),
-    {},
+    options.reason ? { reason: options.reason } : {},
     taxiSignal(options),
   );
   return unwrapEnvelope(response) as AdminTaxiEnrollmentDto;

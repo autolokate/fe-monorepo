@@ -129,8 +129,12 @@ export async function revokeRole(
   userId: string,
   role: GrantableUserRole,
   signal?: AbortSignal,
+  reason?: string,
 ): Promise<AdminUserSummaryDto> {
-  return revokeUserRole(getAdminApiClient(), userId, role, { signal });
+  return revokeUserRole(getAdminApiClient(), userId, role, {
+    signal,
+    ...(reason ? { reason } : {}),
+  });
 }
 
 /** GET /admin/v1/users/{userId}/entitlements — what the consumer app sees (paid, tier, premium flags, vehicle roles). */

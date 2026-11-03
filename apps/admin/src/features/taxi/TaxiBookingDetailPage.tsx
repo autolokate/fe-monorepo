@@ -38,6 +38,7 @@ import {
 } from '@/platform/components/AdminDetailField';
 import { AdminNotDeployedState } from '@/platform/components/AdminNotDeployedState';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
+import { AdminReasonDialog } from '@/platform/components/AdminReasonDialog';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
 import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
@@ -820,42 +821,28 @@ export function TaxiBookingDetailPage() {
           )}
         </AlModal>
 
-        <AlModal
+        <AdminReasonDialog
           open={dialog === 'release'}
           onOpenChange={(next) => {
             if (!next) closeDialog();
           }}
           title="Return the partner deposit now?"
           description="Issues a real provider refund of the deposit payment now, instead of waiting for the settlement window. This ends the customer's chance to dispute affecting the deposit."
-          footer={
-            <div className="admin-modal-actions">
-              <AlButton variant="secondary" disabled={pending} onClick={closeDialog}>
-                Keep holding
-              </AlButton>
-              <AlButton
-                data-testid="taxi-booking-release-confirm"
-                loading={release.isPending}
-                disabled={release.isPending}
-                onClick={() => {
-                  release.mutate(undefined, {
-                    onSuccess: () => {
-                      setDialog(null);
-                    },
-                  });
-                }}
-              >
-                Return deposit
-              </AlButton>
-            </div>
-          }
+          confirmLabel="Return deposit"
+          required={false}
+          loading={release.isPending}
+          error={releaseError}
+          testIdPrefix="taxi-booking-release"
+          onConfirm={(reason) => {
+            release.mutate(reason, {
+              onSuccess: () => {
+                setDialog(null);
+              },
+            });
+          }}
         >
           <AlText>Deposit: {formatMoneySide(deposit)}</AlText>
-          {releaseError ? (
-            <p className="admin-form-error" role="alert">
-              {releaseError}
-            </p>
-          ) : null}
-        </AlModal>
+        </AdminReasonDialog>
       </AlStack>
     </RequirePermission>
   );

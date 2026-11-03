@@ -23,10 +23,13 @@ import {
   shortId,
   TAXI_REQUEST_STATUS_FILTERS,
 } from '@/features/partners/partners-filters';
+import { RequestPhotoGrid, SourceClipCard } from '@/features/partners/QuotesV4Blocks';
+import { useGarageRequestDetail } from '@/hooks/partners/useGarageRequestDetail';
 import { useGarageRequestsInbox } from '@/hooks/partners/useGarageRequestsInbox';
 import { useTaxiRequestsInbox } from '@/hooks/partners/useTaxiRequestsInbox';
 import { AdminDataBlock, AdminFilterField } from '@/platform/components/AdminDataBlock';
 import { AdminFilterChips } from '@/platform/components/AdminFilterChips';
+import { AdminReasonDialog } from '@/platform/components/AdminReasonDialog';
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import {
   AdminKpiStrip,
@@ -37,6 +40,7 @@ import {
   type AdminStatusChipTone,
 } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
+import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
 import './partners.css';
 
@@ -126,6 +130,11 @@ export function PartnerRequestsInboxPage() {
 
   const garage = useGarageRequestsInbox();
   const taxi = useTaxiRequestsInbox();
+  const canCloseTaxi = useAdminPermission('taxi:write');
+  const [closeOpen, setCloseOpen] = useState(false);
+  const garageDetail = useGarageRequestDetail(selectedGarage?.id ?? null);
+  // The detail read carries signed photo URLs; fall back to the list row while it loads.
+  const garageView = garageDetail.detail ?? selectedGarage;
 
   const garageColumns = useGarageRequestColumns();
   const garageBidColumns = useGarageBidColumns();
@@ -154,13 +163,18 @@ export function PartnerRequestsInboxPage() {
       ? 'Garage service requests and partner bids.'
       : 'Taxi trip requests and partner bids.';
 
-  if (active.userErrorMessage && !active.data) {
+  const keepFilters = tab === 'taxi' && (taxi.hasFilters || taxi.inverted);
+  if (active.userErrorMessage && !active.data && !keepFilters) {
     return (
       <RequirePermission permission="partners:read">
         <AlErrorState message={active.userErrorMessage} onRetry={active.refresh} />
       </RequirePermission>
     );
   }
+
+  const sourceClip = selectedGarage
+    ? (garageView?.sourceClip ?? null)
+    : (selectedTaxi?.sourceClip ?? null);
 
   const selectedTitle = selectedGarage
     ? (selectedGarage.title ?? humanizeAdminLabel(selectedGarage.category))
@@ -231,16 +245,77 @@ export function PartnerRequestsInboxPage() {
         ) : (
           <AdminDataBlock
             filters={
-              <AdminFilterField label="Status">
-                <AdminFilterChips
-                  options={TAXI_REQUEST_STATUS_FILTERS}
-                  value={taxi.status}
-                  onChange={taxi.setStatus}
-                  aria-label="Taxi request status"
-                />
-              </AdminFilterField>
+              <>
+                <AdminFilterField label="Status">
+                  <AdminFilterChips
+                    options={TAXI_REQUEST_STATUS_FILTERS}
+                    value={taxi.status}
+                    onChange={taxi.setStatus}
+                    aria-label="Taxi request status"
+                  />
+                </AdminFilterField>
+                <div className="partners-taxi-filters">
+                  <AdminFilterField label="Pickup city">
+                    <input
+                      className="partners-filter-input"
+                      data-testid="taxi-filter-city"
+                      aria-label="Pickup city"
+                      placeholder="e.g. Bengaluru"
+                      value={taxi.pickupCity}
+                      onChange={(event) => {
+                        taxi.setPickupCity(event.target.value);
+                      }}
+                    />
+                  </AdminFilterField>
+                  <AdminFilterField label="Pickup state">
+                    <input
+                      className="partners-filter-input"
+                      data-testid="taxi-filter-state"
+                      aria-label="Pickup state"
+                      placeholder="e.g. Karnataka"
+                      value={taxi.pickupState}
+                      onChange={(event) => {
+                        taxi.setPickupState(event.target.value);
+                      }}
+                    />
+                  </AdminFilterField>
+                  <AdminFilterField label="Created from">
+                    <input
+                      type="date"
+                      className="partners-filter-input"
+                      data-testid="taxi-filter-from"
+                      aria-label="Created from"
+                      value={taxi.fromDay}
+                      onChange={(event) => {
+                        taxi.setFromDay(event.target.value);
+                      }}
+                    />
+                  </AdminFilterField>
+                  <AdminFilterField label="Created to (inclusive)">
+                    <input
+                      type="date"
+                      className="partners-filter-input"
+                      data-testid="taxi-filter-to"
+                      aria-label="Created to"
+                      value={taxi.toDay}
+                      onChange={(event) => {
+                        taxi.setToDay(event.target.value);
+                      }}
+                    />
+                  </AdminFilterField>
+                </div>
+              </>
             }
           >
+            {taxi.inverted ? (
+              <p className="partners-filter-error" role="alert">
+                The end date is before the start date.
+              </p>
+            ) : taxi.filterErrorMessage ? (
+              <p className="partners-filter-error" role="alert" data-testid="taxi-filter-error">
+                {taxi.filterErrorMessage}
+              </p>
+            ) : null}
             <AlDataTable
               {...ADMIN_LIST_TABLE_PROPS}
               tableId="partners-taxi-requests"
@@ -248,7 +323,13 @@ export function PartnerRequestsInboxPage() {
               data={taxi.requests}
               loading={taxi.isLoading}
               isRefreshing={taxi.isFetching && !taxi.isFetchingNextPage}
-              error={taxi.userErrorMessage && taxi.data ? taxi.userErrorMessage : null}
+              error={
+                taxi.filterErrorMessage
+                  ? null
+                  : taxi.userErrorMessage && (taxi.data || keepFilters)
+                    ? taxi.userErrorMessage
+                    : null
+              }
               onRetry={taxi.refresh}
               enableGlobalSearch={false}
               emptyTitle="No taxi requests"
@@ -293,37 +374,62 @@ export function PartnerRequestsInboxPage() {
             }
           >
             <div className="admin-detail-card-grid" data-testid="partners-request-detail">
-              {selectedGarage ? (
+              {garageView ? (
                 <>
-                  <DetailCard label="Request" value={shortAdminId(selectedGarage.id)} mono />
-                  <DetailCard label="Status" value={humanizeAdminLabel(selectedGarage.status)} />
-                  <DetailCard label="Urgency" value={humanizeAdminLabel(selectedGarage.urgency)} />
+                  <DetailCard label="Request" value={shortAdminId(garageView.id)} mono />
+                  <DetailCard label="Status" value={humanizeAdminLabel(garageView.status)} />
+                  <DetailCard label="Urgency" value={humanizeAdminLabel(garageView.urgency)} />
                   <DetailCard
                     label="Category"
-                    value={[selectedGarage.category, selectedGarage.subcategory]
+                    value={[garageView.category, garageView.subcategory]
                       .filter(Boolean)
                       .join(' · ')}
                   />
                   <DetailCard
                     label="Location"
                     value={
-                      [selectedGarage.locality, selectedGarage.city, selectedGarage.state]
+                      [garageView.locality, garageView.city, garageView.state]
                         .filter(Boolean)
                         .join(', ') || '—'
                     }
                   />
-                  <DetailCard label="Account" value={shortId(selectedGarage.accountId)} mono />
-                  <DetailCard label="Vehicle" value={shortId(selectedGarage.vehicleId)} mono />
+                  <DetailCard label="Account" value={shortId(garageView.accountId)} mono />
                   <DetailCard
-                    label="Closes"
-                    value={formatPartnersDateTime(selectedGarage.closesAt)}
+                    label="Vehicle"
+                    value={
+                      <>
+                        {garageView.vehicle?.displayName ?? 'Vehicle'}
+                        {garageView.vehicle?.plateMasked ? (
+                          <span className="partners-cell-title__secondary">
+                            {' '}
+                            · {garageView.vehicle.plateMasked}
+                          </span>
+                        ) : null}
+                      </>
+                    }
                   />
+                  {garageView.requestKind ? (
+                    <DetailCard
+                      label="Kind"
+                      value={garageView.requestKind === 'PARTS' ? 'Parts (Store)' : 'Service'}
+                    />
+                  ) : null}
+                  <DetailCard label="Place" value={garageView.locationLabel ?? 'Not captured'} />
+                  <DetailCard
+                    label="Place point"
+                    value={<MapPointLink lat={garageView.lat} lng={garageView.lng} />}
+                  />
+                  <DetailCard
+                    label="Photos"
+                    value={String(garageView.photoCount ?? garageView.photos?.length ?? 0)}
+                  />
+                  <DetailCard label="Closes" value={formatPartnersDateTime(garageView.closesAt)} />
                   <DetailCard
                     label="Created"
-                    value={formatPartnersDateTime(selectedGarage.createdAt)}
+                    value={formatPartnersDateTime(garageView.createdAt)}
                   />
-                  {selectedGarage.description ? (
-                    <DetailCard label="Description" value={selectedGarage.description} />
+                  {garageView.description ? (
+                    <DetailCard label="Description" value={garageView.description} />
                   ) : null}
                 </>
               ) : null}
@@ -386,6 +492,48 @@ export function PartnerRequestsInboxPage() {
               ) : null}
             </div>
 
+            {garageView && selectedGarage ? (
+              <section className="partners-v4-section" aria-label="Customer photos">
+                <h3 className="partners-v4-section__title">Customer photos</h3>
+                {garageDetail.isLoading ? (
+                  <p className="admin-empty-note">Loading photos…</p>
+                ) : garageDetail.userErrorMessage ? (
+                  <p className="admin-form-error" role="alert">
+                    {garageDetail.userErrorMessage}
+                  </p>
+                ) : garageView.photos && garageView.photos.length > 0 ? (
+                  <RequestPhotoGrid photos={garageView.photos} />
+                ) : (
+                  <p className="admin-empty-note" data-testid="partners-request-no-photos">
+                    No photos on this request.
+                  </p>
+                )}
+              </section>
+            ) : null}
+
+            {sourceClip ? (
+              <section className="partners-v4-section" aria-label="Source clip">
+                <h3 className="partners-v4-section__title">Quoted from a clip</h3>
+                <SourceClipCard clip={sourceClip} />
+              </section>
+            ) : null}
+
+            {selectedTaxi && canCloseTaxi && selectedTaxi.status === 'OPEN' ? (
+              <div className="partners-detail-actions">
+                <AlButton
+                  variant="secondary"
+                  size="sm"
+                  data-testid="taxi-request-close"
+                  onClick={() => {
+                    taxi.close.reset();
+                    setCloseOpen(true);
+                  }}
+                >
+                  Close request
+                </AlButton>
+              </div>
+            ) : null}
+
             <section
               className="admin-panel admin-panel--nested"
               data-testid="partners-bids-panel"
@@ -425,6 +573,34 @@ export function PartnerRequestsInboxPage() {
             </section>
           </AdminPanel>
         ) : null}
+
+        <AdminReasonDialog
+          open={closeOpen && selectedTaxi !== null}
+          onOpenChange={setCloseOpen}
+          title="Close this taxi request?"
+          description="The request stops taking bids (it becomes Expired) and every bidder is notified. Use for spam or abuse."
+          confirmLabel="Close request"
+          destructive
+          loading={taxi.close.isPending}
+          error={taxi.closeError}
+          testIdPrefix="taxi-request-close"
+          onConfirm={(reason) => {
+            if (!selectedTaxi || !reason) return;
+            taxi.close.mutate(
+              { id: selectedTaxi.id, reason },
+              {
+                onSuccess: (updated) => {
+                  setSelectedTaxi({
+                    ...selectedTaxi,
+                    ...updated,
+                    bids: Array.isArray(updated.bids) ? updated.bids : selectedTaxi.bids,
+                  });
+                  setCloseOpen(false);
+                },
+              },
+            );
+          }}
+        />
       </AlStack>
     </RequirePermission>
   );
