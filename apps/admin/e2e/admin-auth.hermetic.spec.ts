@@ -29,6 +29,86 @@ test.describe('Admin auth gates (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
+  test('ADM-01 — OTP login lands as OPERATOR with step_up: straight to the dashboard, no second OTP', async ({
+    page,
+  }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
+    const verifyBodies: unknown[] = [];
+    let stepUpCalls = 0;
+    const loginToken = hermeticJwt({ role: 'OPERATOR', step_up: true, amr: ['otp'] });
+    await page.route('**/v1/auth/otp/request', async (route) => {
+      await json(route, 200, { data: { channel: 'sms' } });
+    });
+    await page.route('**/v1/auth/otp/verify', async (route) => {
+      verifyBodies.push(route.request().postDataJSON() as unknown);
+      await json(route, 200, {
+        data: {
+          ...HERMETIC_TOKENS,
+          accessToken: loginToken,
+          isNewUser: false,
+        },
+      });
+    });
+    await page.route('**/v1/auth/step-up/otp/**', async (route) => {
+      stepUpCalls += 1;
+      await json(route, 500, { error: { code: 'server', message: 'must not be called' } });
+    });
+
+    await page.goto('/login');
+    await page.getByPlaceholder('10-digit mobile').fill('9000000000');
+    await page.getByRole('button', { name: 'Send code' }).click();
+    await page.locator('.admin-login-otp input').first().click();
+    await page.keyboard.type('123456');
+    await page.getByRole('button', { name: 'Verify & continue' }).click();
+
+    await expect(page.getByRole('navigation', { name: 'Admin navigation' })).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.getByTestId('admin-step-up')).toHaveCount(0);
+    // The login asks for an OPERATOR session directly — the server counts that OTP as step-up.
+    expect(verifyBodies).toEqual([{ phone: '+919000000000', code: '123456', role: 'OPERATOR' }]);
+    expect(stepUpCalls).toBe(0);
+    expect(capture.unexpected).toEqual([]);
+  });
+
+  test('ADM-01 — an older server that rejects the login role retries plainly, then asks for step-up', async ({
+    page,
+  }) => {
+    await installHermeticApiRoutes(page, { sessionRole: 'OPERATOR' });
+    const verifyBodies: unknown[] = [];
+    await page.route('**/v1/auth/otp/request', async (route) => {
+      await json(route, 200, { data: { channel: 'sms' } });
+    });
+    await page.route('**/v1/auth/otp/verify', async (route) => {
+      const body = route.request().postDataJSON() as Record<string, unknown>;
+      verifyBodies.push(body);
+      if ('role' in body) {
+        await json(route, 400, {
+          error: { code: 'validation', message: 'property role should not exist' },
+        });
+        return;
+      }
+      await json(route, 200, {
+        data: {
+          ...HERMETIC_TOKENS,
+          accessToken: hermeticJwt({ role: 'OPERATOR', step_up: false }),
+          isNewUser: false,
+        },
+      });
+    });
+
+    await page.goto('/login');
+    await page.getByPlaceholder('10-digit mobile').fill('9000000000');
+    await page.getByRole('button', { name: 'Send code' }).click();
+    await page.locator('.admin-login-otp input').first().click();
+    await page.keyboard.type('123456');
+    await page.getByRole('button', { name: 'Verify & continue' }).click();
+
+    await expect(page.getByTestId('admin-step-up')).toBeVisible({ timeout: 15_000 });
+    expect(verifyBodies).toHaveLength(2);
+    expect(verifyBodies[1]).toEqual({ phone: '+919000000000', code: '123456' });
+  });
+
   test('ADM-01 — OPERATOR token without step_up must verify an OTP; stepped-up token is stored', async ({
     page,
   }) => {
