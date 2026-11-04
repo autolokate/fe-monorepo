@@ -1,4 +1,5 @@
 import {
+  Ambulance,
   ArrowLeftRight,
   BadgeCheck,
   Car,
@@ -76,6 +77,7 @@ export const ADMIN_NAV_ICONS: Record<string, LucideIcon> = {
   [adminPaths.discoveryAcademy]: GraduationCap,
   [adminPaths.experts]: Sparkles,
   [adminPaths.incidents]: Siren,
+  [adminPaths.sosIncidents]: Ambulance,
   [adminPaths.payments]: CreditCard,
   [adminPaths.finance]: Landmark,
   [adminPaths.users]: UserRoundSearch,

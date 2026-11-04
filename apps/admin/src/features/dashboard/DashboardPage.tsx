@@ -14,6 +14,7 @@ import { ArrowUpRight, CircleCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
+import { SosDashboardTile } from '@/features/sos/SosDashboardTile';
 import { useDashboard } from '@/hooks/dashboard/useDashboard';
 import {
   useDashboardAttention,
@@ -291,6 +292,7 @@ export function DashboardPage() {
           }
         />
 
+        <SosDashboardTile />
         <AttentionPanel />
         <TaxiRevenuePanel />
 

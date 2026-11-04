@@ -2379,6 +2379,13 @@ export async function installHermeticApiRoutes(
       return;
     }
 
+    // SOS console default: no live emergencies (the dashboard tile polls this). Specs that exercise
+    // the console install `installHermeticSosRoutes` on top.
+    if (method === 'GET' && path === '/admin/v1/sos-incidents') {
+      await fulfillJson(route, 200, envelope([]));
+      return;
+    }
+
     if (method === 'GET' && path === '/admin/v1/incidents') {
       capture.incidentsGet += 1;
       const approvalId = url.searchParams.get('approvalId');

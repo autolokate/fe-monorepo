@@ -12,6 +12,7 @@ export const adminPaths = {
   payments: '/payments',
   support: '/support',
   incidents: '/incidents',
+  sosIncidents: '/sos',
   auditEvents: '/audit-events',
   garageCommercial: '/garage-commercial',
   garageTaxonomy: '/garage-taxonomy',
@@ -47,6 +48,10 @@ export const adminPaths = {
 
 export function adminTaxiBookingPath(bookingId: string): string {
   return `${adminPaths.taxiBookings}/${encodeURIComponent(bookingId)}`;
+}
+
+export function adminSosIncidentPath(incidentId: string): string {
+  return `${adminPaths.sosIncidents}/${encodeURIComponent(incidentId)}`;
 }
 
 export function adminInventoryBatchPath(batchId: string): string {
@@ -107,6 +112,13 @@ export const adminRoutes: AdminRouteMeta[] = [
     path: adminPaths.dashboard,
     label: 'Dashboard',
     description: 'Operational overview',
+    group: 'operations',
+    nav: true,
+  },
+  {
+    path: adminPaths.sosIncidents,
+    label: 'SOS console',
+    description: 'Live SOS and crash emergencies — safety calls, family, ambulance (audited)',
     group: 'operations',
     nav: true,
   },

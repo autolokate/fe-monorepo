@@ -157,6 +157,9 @@ export const endpoints = {
     adminIncidents: '/admin/v1/incidents',
     adminIncidentsFeed: '/admin/v1/incidents/feed',
     adminIncident: (incidentId: string) => `/admin/v1/incidents/${encodeURIComponent(incidentId)}`,
+    adminSosIncidents: '/admin/v1/sos-incidents',
+    adminSosIncident: (incidentId: string) =>
+      `/admin/v1/sos-incidents/${encodeURIComponent(incidentId)}`,
     breakGlassApprovals: '/admin/v1/break-glass/approvals',
     breakGlassApproval: (approvalId: string) =>
       `/admin/v1/break-glass/approvals/${encodeURIComponent(approvalId)}`,
