@@ -1,4 +1,5 @@
 import {
+  ApiError,
   getOrSwitchSession,
   getProfile,
   logoutSession,
@@ -81,6 +82,28 @@ async function loadAuthenticatedSession(): Promise<{ profile: Profile; session: 
     }
   }
   return { profile, session };
+}
+
+/**
+ * Verify the login OTP asking for an OPERATOR session directly. The backend counts that fresh OTP as
+ * the admin step-up (the token comes back with `step_up`), so there is no second "Confirm it's you"
+ * OTP. A backend that predates the `role` field rejects it with 400 before the code is checked —
+ * retry without it; the step-up screen then covers that older server.
+ */
+async function verifyLoginOtp(phone: string, code: string) {
+  const client = getAdminBootstrapClient();
+  try {
+    return await verifyOtp(client, { phone, code, role: 'OPERATOR' });
+  } catch (cause) {
+    if (
+      cause instanceof ApiError &&
+      cause.status === 400 &&
+      /\brole\b/i.test(`${cause.message} ${JSON.stringify(cause.details ?? '')}`)
+    ) {
+      return verifyOtp(client, { phone, code });
+    }
+    throw cause;
+  }
 }
 
 function clearLocalSession(): void {
@@ -190,7 +213,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   const verifyAdminOtp = useCallback(
     async (phone: string, code: string) => {
-      const tokens = await verifyOtp(getAdminBootstrapClient(), { phone, code });
+      const tokens = await verifyLoginOtp(phone, code);
       tokenManager.save(tokens);
       const next = await loadAuthenticatedSession();
       applySession(next);

@@ -6,8 +6,9 @@ import { useAdminAuth } from '@/providers/AdminAuthProvider';
 
 /**
  * Admin-plane step-up (2FA). The server refuses every `/admin/v1/*` call without the `step_up`
- * claim, so an operator confirms a fresh OTP (sent to their own account phone) before the console
- * loads, and again whenever the short-lived stepped-up token lapses (403 `step_up_required`).
+ * claim. Signing in with the phone OTP straight into OPERATOR already carries it (the login OTP is
+ * the fresh verification), so this screen is NOT shown after login — only when the stepped-up token
+ * later lapses (a refreshed token drops it → 403 `step_up_required`) or a restored session lacks it.
  */
 export function StepUpGate() {
   const { profile, requestStepUp, verifyStepUp, signOut } = useAdminAuth();

@@ -18,6 +18,11 @@ export type VerifyOtpBody = {
   phone: string;
   code: string;
   deviceId?: string;
+  /**
+   * Preferred active role for the new session (honoured only when granted). The admin console sends
+   * `OPERATOR`: an OPERATOR session minted by this OTP verify already carries `step_up`.
+   */
+  role?: string;
 };
 
 export type TokenPair = {
