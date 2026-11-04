@@ -36,6 +36,8 @@ export type AdminPermission =
   | 'support:view'
   | 'support:write'
   | 'incidents:view'
+  | 'sos:view'
+  | 'sos:write'
   | 'audit:read'
   | 'audit:view'
   | 'settlements:write'
@@ -76,6 +78,8 @@ const ALL_PERMISSIONS: readonly AdminPermission[] = [
   'support:view',
   'support:write',
   'incidents:view',
+  'sos:view',
+  'sos:write',
   'audit:read',
   'audit:view',
   'settlements:write',

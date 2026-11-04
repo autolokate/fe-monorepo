@@ -246,6 +246,16 @@ const GarageRevenuePage = lazy(() =>
   })),
 );
 
+const SosIncidentsPage = lazy(() =>
+  import('@/features/sos/SosIncidentsPage').then((module) => ({
+    default: module.SosIncidentsPage,
+  })),
+);
+const SosIncidentDetailPage = lazy(() =>
+  import('@/features/sos/SosIncidentDetailPage').then((module) => ({
+    default: module.SosIncidentDetailPage,
+  })),
+);
 const RoadsideRequestsPage = lazy(() =>
   import('@/features/roadside/RoadsideRequestsPage').then((module) => ({
     default: module.RoadsideRequestsPage,
@@ -316,6 +326,11 @@ export function AdminRoutes() {
             <Route path={adminPaths.payments} element={<PaymentsPage />} />
             <Route path={adminPaths.support} element={<SupportTicketsPage />} />
             <Route path={adminPaths.incidents} element={<IncidentsPage />} />
+            <Route path={adminPaths.sosIncidents} element={<SosIncidentsPage />} />
+            <Route
+              path={`${adminPaths.sosIncidents}/:incidentId`}
+              element={<SosIncidentDetailPage />}
+            />
             <Route path={adminPaths.auditEvents} element={<AuditEventsPage />} />
             <Route path={adminPaths.finance} element={<FinanceOperationsPage />} />
             <Route path={adminPaths.ownershipTransfers} element={<OwnershipTransfersPage />} />

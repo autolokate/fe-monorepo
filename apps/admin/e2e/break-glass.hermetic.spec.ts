@@ -43,7 +43,7 @@ test.describe('Break-glass incidents (hermetic)', () => {
     await page.getByTestId('break-glass-load-incidents').click();
     // Table shows short uuid prefix + status badge / source label.
     await expect(page.getByText('aaaaaaaa')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByText(/SOS/i)).toBeVisible();
+    await expect(page.getByRole('main').getByText(/SOS/i)).toBeVisible();
     expect(capture.incidentsGet).toBeGreaterThanOrEqual(1);
     expect(capture.unexpected).toEqual([]);
   });
