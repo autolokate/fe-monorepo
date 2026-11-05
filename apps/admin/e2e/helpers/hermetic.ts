@@ -6,7 +6,6 @@ export const HERMETIC_QR_CODE = 'ALK-HERM-OT';
 export const HERMETIC_QR_CODE_REPLACEMENT = 'ALK-HERM-NW';
 export const HERMETIC_QR_CODE_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeabcd';
 export const HERMETIC_SUBSCRIPTION_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeabce';
-export const HERMETIC_TRANSFER_ID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
 export const HERMETIC_VEHICLE_ID = '11111111-2222-4333-8444-555555555555';
 /** Second owned vehicle — used to prove vehicle-care lists never leak across vehicles. */
 export const HERMETIC_VEHICLE_ID_B = '22222222-3333-4444-8555-666666666666';
@@ -15,7 +14,6 @@ export const HERMETIC_EXPENSE_TITLE_B = 'Hermetic expense vehicle B LEAK';
 export const HERMETIC_SERVICE_LOG_TITLE_A = 'Hermetic service log vehicle A';
 export const HERMETIC_SERVICE_LOG_TITLE_B = 'Hermetic service log vehicle B LEAK';
 
-export const HERMETIC_TO_ACCOUNT_ID = '66666666-7777-4888-8999-aaaaaaaaaaaa';
 export const HERMETIC_USER_ID = 'hermetic-admin-user';
 export const HERMETIC_GARAGE_ORG_ID = 'hermetic-garage-org';
 export const HERMETIC_GARAGE_PURCHASE_ID = '99999999-aaaa-4bbb-8ccc-dddddddddddd';
@@ -64,6 +62,11 @@ export type HermeticCapture = {
   ownershipClaimsGetStatusParams: Array<string | null>;
   ownershipClaimsReview: Array<{ method: string; path: string; body: unknown }>;
   ownershipClaimsRcProofGet: Array<{ method: string; path: string }>;
+  /** Captured `cursor` query values of the claim list (`null` = first page). */
+  ownershipClaimsGetCursorParams: Array<string | null>;
+  ownershipReviewAccessGet: number;
+  ownershipHistoryGet: string[];
+  ownershipPlateSearch: string[];
   servicesCategoriesGet: number;
   servicesProvidersGet: Array<{ method: string; path: string; category: string | null }>;
   servicesProvidersPut: Array<{ method: string; path: string; body: unknown }>;
@@ -294,11 +297,37 @@ export const HERMETIC_OWNERSHIP_CLAIM = {
   reviewedAt: null as string | null,
   createdAt: '2026-10-19T00:00:00.000Z',
   updatedAt: '2026-10-19T00:00:00.000Z',
+  registration: 'DL7CQ1939' as string | null,
+  claimantUsername: 'hermetic_customer' as string | null,
+  precheck: 'MISMATCHED' as 'MATCHED' | 'MISMATCHED' | 'MANUAL_REVIEW' | null,
+  precheckMismatchCode: 'rc_chassis_mismatch' as string | null,
+  precheckDetails: {
+    registry: 'SANDBOX',
+    registration: 'MATCH',
+    ownerName: 'MATCH',
+    claimantName: 'MATCH',
+    chassis: 'MISMATCH',
+    engine: 'UNAVAILABLE',
+  } as Record<string, string> | null,
+  plateConflict: { otherRows: 0, verifiedElsewhere: false },
+  rcRegistration: 'DL7CQ1939' as string | null,
+  rcChassisLast5: '12345' as string | null,
+  rcEngineLast5: null as string | null,
+  reviewRemarks: null as string | null,
 };
+
+/** An open claim by the vehicle's ACTIVE driver on the same plate (conflicting claimant). */
+export const HERMETIC_OWNERSHIP_CLAIM_ID_CONFLICT = 'cccccccc-dddd-4eee-8fff-000000000005';
 
 /** Approved RC claim: the claimant is the verified OWNER of HERMETIC_VEHICLE_ID_B in the roster stub. */
 export const HERMETIC_OWNERSHIP_CLAIM_APPROVED = {
+  ...HERMETIC_OWNERSHIP_CLAIM,
   id: HERMETIC_OWNERSHIP_CLAIM_ID_APPROVED,
+  registration: 'MH12AB9999' as string | null,
+  rcRegistration: 'MH12AB9999' as string | null,
+  precheck: 'MATCHED' as 'MATCHED' | 'MISMATCHED' | 'MANUAL_REVIEW' | null,
+  precheckMismatchCode: null as string | null,
+  reviewRemarks: 'RC names the claimant' as string | null,
   status: 'APPROVED' as const,
   vehicleId: HERMETIC_VEHICLE_ID_B,
   claimantAccountId: HERMETIC_CUSTOMER_ACCOUNT_ID,
@@ -319,6 +348,7 @@ export const HERMETIC_OWNERSHIP_CLAIM_REJECTED = {
   notes: null as string | null,
   planSubscriptionId: null as string | null,
   rejectionReason: HERMETIC_OWNERSHIP_CLAIM_REJECTION_REASON as string | null,
+  reviewRemarks: HERMETIC_OWNERSHIP_CLAIM_REJECTION_REASON as string | null,
   reviewedByAdminId: HERMETIC_USER_ID as string | null,
   reviewedAt: '2026-10-17T12:00:00.000Z' as string | null,
   createdAt: '2026-10-17T00:00:00.000Z',
@@ -461,10 +491,6 @@ async function fulfillJson(route: Route, status: number, body: unknown): Promise
 
 export type InstallHermeticRoutesOptions = {
   sessionRole?: HermeticSessionRole;
-  /** When set, initiate POST returns this status instead of 201. */
-  initiateStatus?: number;
-  /** When set, approve POST returns this status instead of 200. */
-  approveStatus?: number;
   /** When set, garage commercial-config GET returns this status instead of 200. */
   garageConfigGetStatus?: number;
   /** When set, garage commercial-config/history GET returns this status instead of 200. */
@@ -493,6 +519,25 @@ export type InstallHermeticRoutesOptions = {
   ownershipClaimsGetStatus?: number;
   /** When set, claim RC-proof GET returns this status (default 403 ACL blocker). */
   ownershipClaimsRcProofGetStatus?: number;
+  /** `GET /admin/v1/ownership-claims/review-access` → `{ canDecide }` (default true). */
+  ownershipReviewCanDecide?: boolean;
+  /** When set, review-access GET answers this status instead of 200. */
+  ownershipReviewAccessStatus?: number;
+  /** When set, the review POST fails with this status and `ownershipReviewErrorCode`. */
+  ownershipReviewStatus?: number;
+  /** Apply `ownershipReviewStatus` to the FIRST review POST only (later ones succeed). */
+  ownershipReviewFailOnce?: boolean;
+  /** `transferSummary` added to an APPROVED review response (absent by default). */
+  ownershipTransferSummary?: Record<string, number | boolean>;
+  ownershipReviewErrorCode?: string;
+  /** Serve the ALL claim list as two keyset pages (1 row, then the rest). */
+  ownershipClaimsPaged?: boolean;
+  /** Add an open claim by another account (an ACTIVE driver) on the same plate. */
+  ownershipConflictingClaim?: boolean;
+  /** Mark the claim's plate as RC-verified on another vehicle row (`plateConflict` + plate search). */
+  ownershipVerifiedElsewhere?: boolean;
+  /** When set, `GET /admin/v1/vehicles/{id}/ownership-history` answers this status. */
+  ownershipHistoryStatus?: number;
   /** When set, services providers GET returns this status instead of 200. */
   servicesProvidersGetStatus?: number;
   /** When set, orders GET returns this status instead of 200. */
@@ -594,8 +639,6 @@ export async function installHermeticApiRoutes(
   options: InstallHermeticRoutesOptions = {},
 ): Promise<HermeticCapture> {
   const sessionRole = options.sessionRole ?? 'ADMIN';
-  const initiateStatus = options.initiateStatus ?? 201;
-  const approveStatus = options.approveStatus ?? 200;
   const garageConfigGetStatus = options.garageConfigGetStatus ?? 200;
   const garageConfigHistoryGetStatus = options.garageConfigHistoryGetStatus ?? 200;
   const garageConfigPutStatus = options.garageConfigPutStatus ?? 200;
@@ -655,6 +698,10 @@ export async function installHermeticApiRoutes(
     ownershipClaimsGetStatusParams: [],
     ownershipClaimsReview: [],
     ownershipClaimsRcProofGet: [],
+    ownershipClaimsGetCursorParams: [],
+    ownershipReviewAccessGet: 0,
+    ownershipHistoryGet: [],
+    ownershipPlateSearch: [],
     servicesCategoriesGet: 0,
     servicesProvidersGet: [],
     servicesProvidersPut: [],
@@ -815,11 +862,44 @@ export async function installHermeticApiRoutes(
     consumedAt: null as string | null,
     createdAt: '2026-10-20T11:00:00.000Z',
   };
-  let ownershipClaimState = { ...HERMETIC_OWNERSHIP_CLAIM };
+  const verifiedElsewhere = options.ownershipVerifiedElsewhere === true;
+  let ownershipClaimState = {
+    ...HERMETIC_OWNERSHIP_CLAIM,
+    plateConflict: verifiedElsewhere
+      ? { otherRows: 1, verifiedElsewhere: true }
+      : HERMETIC_OWNERSHIP_CLAIM.plateConflict,
+  };
   const ownershipClaimsCatalog = [
     ownershipClaimState,
     { ...HERMETIC_OWNERSHIP_CLAIM_APPROVED },
     { ...HERMETIC_OWNERSHIP_CLAIM_REJECTED },
+    ...(options.ownershipConflictingClaim
+      ? [
+          {
+            ...HERMETIC_OWNERSHIP_CLAIM,
+            id: HERMETIC_OWNERSHIP_CLAIM_ID_CONFLICT,
+            claimantAccountId: HERMETIC_ROSTER_OTHER_ACCOUNT_ID,
+            claimantUsername: HERMETIC_ROSTER_OTHER_USERNAME as string | null,
+            notes: null as string | null,
+            createdAt: '2026-10-18T06:00:00.000Z',
+            updatedAt: '2026-10-18T06:00:00.000Z',
+          },
+        ]
+      : []),
+  ];
+  const ownershipHistory: Array<Record<string, unknown>> = [
+    {
+      id: 'hhhhhhhh-0000-4000-8000-000000000001',
+      vehicleId: HERMETIC_VEHICLE_ID,
+      fromAccountId: 'ffffffff-0000-4000-8000-000000000001',
+      toAccountId: null,
+      reason: 'PROVISIONAL_EXPIRED',
+      claimId: null,
+      decidedByAdminId: null,
+      remarks: null,
+      removedDriverCount: 0,
+      createdAt: '2026-10-01T00:00:00.000Z',
+    },
   ];
   let serviceProvidersState: Array<
     Omit<typeof HERMETIC_SERVICE_PROVIDER, 'status'> & { status: 'ACTIVE' | 'INACTIVE' }
@@ -2028,43 +2108,12 @@ export async function installHermeticApiRoutes(
       return;
     }
 
-    if (method === 'POST' && path === '/admin/v1/ownership-transfers') {
+    // D-8: the lost-QR transfer is retired — every write answers 410 feature_retired.
+    const transferApproveMatch = path.match(/^\/admin\/v1\/ownership-transfers\/([^/]+)\/approve$/);
+    if (method === 'POST' && (path === '/admin/v1/ownership-transfers' || transferApproveMatch)) {
       const body = JSON.parse(req.postData() ?? '{}') as unknown;
-      capture.initiate.push({ method, path, body });
-      if (initiateStatus >= 400) {
-        await fulfillJson(route, initiateStatus, errorEnvelope('Forbidden', 'forbidden'));
-        return;
-      }
-      await fulfillJson(
-        route,
-        initiateStatus,
-        envelope({
-          transferId: HERMETIC_TRANSFER_ID,
-          vehicleId: HERMETIC_VEHICLE_ID,
-          status: 'INITIATED',
-        }),
-      );
-      return;
-    }
-
-    const approveMatch = path.match(/^\/admin\/v1\/ownership-transfers\/([^/]+)\/approve$/);
-    if (method === 'POST' && approveMatch) {
-      const body = JSON.parse(req.postData() ?? '{}') as unknown;
-      capture.approve.push({ method, path, body });
-      if (approveStatus >= 400) {
-        await fulfillJson(route, approveStatus, errorEnvelope('Forbidden', 'forbidden'));
-        return;
-      }
-      await fulfillJson(
-        route,
-        approveStatus,
-        envelope({
-          transferId: approveMatch[1],
-          vehicleId: HERMETIC_VEHICLE_ID,
-          toAccountId: HERMETIC_TO_ACCOUNT_ID,
-          status: 'COMPLETED',
-        }),
-      );
+      (transferApproveMatch ? capture.approve : capture.initiate).push({ method, path, body });
+      await fulfillJson(route, 410, errorEnvelope('This feature is retired.', 'feature_retired'));
       return;
     }
 
@@ -2468,10 +2517,94 @@ export async function installHermeticApiRoutes(
       }
       // Keep catalog in sync with mutable submitted claim.
       ownershipClaimsCatalog[0] = ownershipClaimState;
+      const cursor = url.searchParams.get('cursor');
+      capture.ownershipClaimsGetCursorParams.push(cursor);
       const rows = !status
         ? [...ownershipClaimsCatalog]
         : ownershipClaimsCatalog.filter((row) => row.status === status);
-      await fulfillJson(route, ownershipClaimsGetStatus, envelope(rows));
+      const paged = options.ownershipClaimsPaged === true && !status;
+      const slice = paged ? (cursor ? rows.slice(1) : rows.slice(0, 1)) : rows;
+      const nextCursor = paged && !cursor ? '2026-10-19T00:00:00.000Z|page-2' : null;
+      await fulfillJson(route, ownershipClaimsGetStatus, {
+        data: slice,
+        meta: {
+          requestId: 'hermetic-req',
+          correlationId: 'hermetic-corr',
+          pagination: {
+            limit: Number(url.searchParams.get('limit') ?? 50),
+            cursor,
+            nextCursor,
+            hasMore: nextCursor !== null,
+          },
+        },
+      });
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/ownership-claims/review-access') {
+      capture.ownershipReviewAccessGet += 1;
+      const accessStatus = options.ownershipReviewAccessStatus ?? 200;
+      if (accessStatus >= 400) {
+        await fulfillJson(route, accessStatus, errorEnvelope('Server error', 'internal_error'));
+        return;
+      }
+      await fulfillJson(
+        route,
+        200,
+        envelope({ canDecide: options.ownershipReviewCanDecide ?? true }),
+      );
+      return;
+    }
+
+    const historyMatch = path.match(/^\/admin\/v1\/vehicles\/([^/]+)\/ownership-history$/);
+    if (method === 'GET' && historyMatch) {
+      const vehicleId = decodeURIComponent(historyMatch[1] ?? '');
+      capture.ownershipHistoryGet.push(vehicleId);
+      const historyStatus = options.ownershipHistoryStatus ?? 200;
+      if (historyStatus >= 400) {
+        await fulfillJson(route, historyStatus, errorEnvelope('Server error', 'internal_error'));
+        return;
+      }
+      await fulfillJson(
+        route,
+        200,
+        envelope(ownershipHistory.filter((row) => row.vehicleId === vehicleId)),
+      );
+      return;
+    }
+
+    if (method === 'GET' && path === '/admin/v1/vehicles' && url.searchParams.has('plate')) {
+      const plate = (url.searchParams.get('plate') ?? '').replace(/[^a-z0-9]/gi, '').toUpperCase();
+      capture.ownershipPlateSearch.push(plate);
+      const self = {
+        vehicleId: HERMETIC_VEHICLE_ID,
+        registration: 'DL7CQ1939',
+        plateKey: 'DL7CQ1939',
+        ownerAccountId: HERMETIC_CUSTOMER_ACCOUNT_ID,
+        ownershipVerified: false,
+        protection: 'PROTECTED',
+        make: null,
+        model: null,
+        color: null,
+      };
+      const items =
+        plate === 'DL7CQ1939'
+          ? [
+              self,
+              ...(verifiedElsewhere
+                ? [
+                    {
+                      ...self,
+                      vehicleId: '99999999-2222-4333-8444-555555555555',
+                      registration: 'DL07CQ1939',
+                      ownerAccountId: 'ffffffff-0000-4000-8000-000000000002',
+                      ownershipVerified: true,
+                    },
+                  ]
+                : []),
+            ]
+          : [];
+      await fulfillJson(route, 200, envelope({ items }));
       return;
     }
 
@@ -2501,21 +2634,54 @@ export async function installHermeticApiRoutes(
     if (method === 'POST' && claimReviewMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
       capture.ownershipClaimsReview.push({ method, path, body });
+      const failThisReview =
+        !options.ownershipReviewFailOnce || capture.ownershipClaimsReview.length === 1;
+      if (options.ownershipReviewStatus && options.ownershipReviewStatus >= 400 && failThisReview) {
+        await fulfillJson(
+          route,
+          options.ownershipReviewStatus,
+          errorEnvelope('Review refused', options.ownershipReviewErrorCode ?? 'forbidden'),
+        );
+        return;
+      }
       const decision =
         typeof body.decision === 'string' ? body.decision : ownershipClaimState.status;
-      const rejectionReason =
-        typeof body.rejectionReason === 'string' ? body.rejectionReason : null;
+      const remarks = typeof body.remarks === 'string' ? body.remarks : null;
+      const rejectionReason = remarks;
+      if (decision === 'APPROVED') {
+        ownershipHistory.unshift({
+          id: 'hhhhhhhh-0000-4000-8000-000000000002',
+          vehicleId: ownershipClaimState.vehicleId,
+          fromAccountId: HERMETIC_ROSTER_OTHER_ACCOUNT_ID,
+          toAccountId: ownershipClaimState.claimantAccountId,
+          reason: 'CLAIM_APPROVED',
+          claimId: decodeURIComponent(claimReviewMatch[1] ?? HERMETIC_OWNERSHIP_CLAIM_ID),
+          decidedByAdminId: HERMETIC_USER_ID,
+          remarks,
+          removedDriverCount: 2,
+          createdAt: '2026-10-20T12:00:00.000Z',
+        });
+      }
       ownershipClaimState = {
         ...ownershipClaimState,
         id: decodeURIComponent(claimReviewMatch[1] ?? HERMETIC_OWNERSHIP_CLAIM_ID),
         status: decision as typeof ownershipClaimState.status,
         rejectionReason: decision === 'REJECTED' ? rejectionReason : null,
+        reviewRemarks: decision === 'UNDER_REVIEW' ? ownershipClaimState.reviewRemarks : remarks,
         reviewedByAdminId: HERMETIC_USER_ID,
         reviewedAt: '2026-10-20T12:00:00.000Z',
         updatedAt: '2026-10-20T12:00:00.000Z',
       };
       ownershipClaimsCatalog[0] = ownershipClaimState;
-      await fulfillJson(route, 200, envelope(ownershipClaimState));
+      await fulfillJson(
+        route,
+        200,
+        envelope(
+          decision === 'APPROVED' && options.ownershipTransferSummary
+            ? { ...ownershipClaimState, transferSummary: options.ownershipTransferSummary }
+            : ownershipClaimState,
+        ),
+      );
       return;
     }
 
@@ -3037,10 +3203,10 @@ export function hermeticJwt(claims: Record<string, unknown>): string {
   return `${b64({ alg: 'none', typ: 'JWT' })}.${b64(claims)}.hermetic`;
 }
 
-/** Land on ownership-transfers after auth bootstrap. */
+/** Land on the retired ownership-transfers page after auth bootstrap. */
 export async function openOwnershipTransfersPage(page: Page): Promise<void> {
   await page.goto('/ownership-transfers', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('heading', { name: 'Ownership' }).waitFor({ timeout: 30_000 });
+  await page.getByRole('heading', { name: 'Ownership transfers' }).waitFor({ timeout: 30_000 });
   await page.getByText('Sign out').waitFor({ timeout: 15_000 });
 }
 

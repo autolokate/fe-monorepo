@@ -1,129 +1,37 @@
 import { expect, test } from '@playwright/test';
 
 import {
-  HERMETIC_QR_CODE,
-  HERMETIC_TO_ACCOUNT_ID,
-  HERMETIC_TRANSFER_ID,
   installHermeticApiRoutes,
   openOwnershipTransfersPage,
   seedHermeticSession,
 } from './helpers/hermetic';
 
 /**
- * Hermetic Admin ownership-transfer UI regression (Phase 0 Step 3B4 / Option A).
- *
- * Verifies route, permission-gated CTAs, initiate/approve request wiring, and
- * existing success/error surfaces with stubbed HTTP only.
- *
- * Does NOT verify BE authz, FSM, persistence, audit, or notifications.
- * Never uses E2E_ADMIN_*, live OTP, or real account/QR/transfer ids.
+ * The lost-QR ownership transfer is retired (D-8 / BE-OWN-06): the page explains where ownership
+ * moves now, offers no initiate / approve action, and the nav no longer links to it.
+ * Stubbed HTTP only — never uses E2E_ADMIN_*, live OTP, or real ids.
  */
-test.describe('Ownership transfer (hermetic)', () => {
-  test('initiate success — write CTAs, POST body, success panel + toast', async ({ page }) => {
-    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
-    await seedHermeticSession(page);
-    await openOwnershipTransfersPage(page);
-
-    await expect(page.getByRole('button', { name: 'Initiate transfer' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Approve transfer' })).toBeVisible();
-    await expect(
-      page.getByText('Status appears here after you initiate or approve a transfer.'),
-    ).toBeVisible();
-
-    await page.getByRole('button', { name: 'Initiate transfer' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Initiate ownership transfer' });
-    await expect(dialog).toBeVisible();
-
-    await dialog.getByLabel('QR code').fill(HERMETIC_QR_CODE);
-    await dialog.getByRole('button', { name: 'Initiate transfer' }).click();
-
-    await expect(page.getByRole('status')).toContainText('Transfer initiated.', {
-      timeout: 10_000,
-    });
-    await expect(page.getByRole('heading', { name: 'Transfer initiated' })).toBeVisible();
-    await expect(page.getByText('Initiated', { exact: true })).toBeVisible();
-    await expect(dialog).toBeHidden();
-
-    expect(capture.initiate).toHaveLength(1);
-    expect(capture.initiate[0]?.path).toBe('/admin/v1/ownership-transfers');
-    expect(capture.initiate[0]?.method).toBe('POST');
-    expect(capture.initiate[0]?.body).toEqual({ code: HERMETIC_QR_CODE });
-    expect(capture.unexpected).toEqual([]);
-  });
-
-  test('approve success — path/body, success panel + toast', async ({ page }) => {
-    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
-    await seedHermeticSession(page);
-    await openOwnershipTransfersPage(page);
-
-    await page.getByRole('button', { name: 'Approve transfer' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Approve ownership transfer' });
-    await expect(dialog).toBeVisible();
-
-    await dialog.getByLabel('Transfer reference').fill(HERMETIC_TRANSFER_ID);
-    await dialog.getByLabel('New owner account').fill(HERMETIC_TO_ACCOUNT_ID);
-    await dialog.getByRole('button', { name: 'Approve transfer' }).click();
-
-    await expect(page.getByRole('status')).toContainText('Transfer completed.', {
-      timeout: 10_000,
-    });
-    await expect(page.getByRole('heading', { name: 'Transfer completed' })).toBeVisible();
-    await expect(page.getByText('Completed', { exact: true })).toBeVisible();
-    await expect(dialog).toBeHidden();
-
-    expect(capture.approve).toHaveLength(1);
-    expect(capture.approve[0]?.method).toBe('POST');
-    expect(capture.approve[0]?.path).toBe(
-      `/admin/v1/ownership-transfers/${HERMETIC_TRANSFER_ID}/approve`,
-    );
-    expect(capture.approve[0]?.body).toEqual({ toAccountId: HERMETIC_TO_ACCOUNT_ID });
-    expect(capture.unexpected).toEqual([]);
-  });
-
-  test('permission — READ_ONLY (not OPERATOR) gets the access-denied gate, no admin calls', async ({
+test.describe('Ownership transfer — retired (hermetic)', () => {
+  test('old link lands on the retired notice with no write actions and no transfer calls', async ({
     page,
   }) => {
-    // ADM-03: the server has a single admin role (OPERATOR); any other session never sees the shell.
-    const capture = await installHermeticApiRoutes(page, { sessionRole: 'READ_ONLY' });
-    await seedHermeticSession(page);
-    await page.goto('/ownership-transfers');
-    await expect(page.getByTestId('admin-access-denied')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('button', { name: 'Initiate transfer' })).toHaveCount(0);
-    expect(capture.initiate).toEqual([]);
-    expect(capture.unexpected).toEqual([]);
-  });
-
-  test('error — stubbed 403 surfaces form error + toast', async ({ page }) => {
-    // normalizeApiError maps 403 → code `unknown` → userMessage
-    // "The server refused this action for your operator session." (admin-api-errors.ts USER_MESSAGES).
-    const capture = await installHermeticApiRoutes(page, {
-      sessionRole: 'ADMIN',
-      initiateStatus: 403,
-    });
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
     await seedHermeticSession(page);
     await openOwnershipTransfersPage(page);
 
-    await page.getByRole('button', { name: 'Initiate transfer' }).click();
-    const dialog = page.getByRole('dialog', { name: 'Initiate ownership transfer' });
-    await expect(dialog).toBeVisible();
+    await expect(page.getByTestId('ownership-transfers-retired')).toContainText(
+      'approves it from Ownership claims',
+    );
+    await expect(page.getByRole('button', { name: 'Initiate transfer' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Approve transfer' })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Ownership claims' }).first()).toBeVisible();
 
-    await dialog.getByLabel('QR code').fill(HERMETIC_QR_CODE);
-    await dialog.getByRole('button', { name: 'Initiate transfer' }).click();
+    const nav = page.getByRole('navigation', { name: 'Admin navigation' });
+    await expect(nav.getByRole('link', { name: /Ownership transfers/ })).toHaveCount(0);
+    await expect(nav.getByRole('link', { name: 'Ownership claims' })).toBeVisible();
 
-    // mapAdminApiError(403) → unknown → USER_MESSAGES.unknown
-    const expectedMessage = 'The server refused this action for your operator session.';
-    // Durable in-sheet surface (OwnershipTransferSheets submitError).
-    await expect(dialog.locator('.admin-form-error')).toHaveText(expectedMessage, {
-      timeout: 10_000,
-    });
-    // ToastHost also emits the same message; while the modal is open Radix sets
-    // aria-hidden on outside content, so assert via DOM class (not getByRole('alert')).
-    await expect(page.locator('.admin-toast.admin-toast--error')).toContainText(expectedMessage);
-    await expect(dialog).toBeVisible();
-    await expect(page.getByLabel('Transfer initiated')).toHaveCount(0);
-
-    expect(capture.initiate).toHaveLength(1);
-    expect(capture.initiate[0]?.body).toEqual({ code: HERMETIC_QR_CODE });
+    expect(capture.initiate).toHaveLength(0);
+    expect(capture.approve).toHaveLength(0);
     expect(capture.unexpected).toEqual([]);
   });
 });

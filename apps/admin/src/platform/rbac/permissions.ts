@@ -52,7 +52,12 @@ export type AdminPermission =
   | 'taxi:write'
   | 'experts:write'
   | 'website-bookings:view'
-  | 'website-bookings:write';
+  | 'website-bookings:write'
+  /**
+   * Open the ownership-claim review. Approve / reject is further gated by the SERVER reviewer
+   * allowlist (`GET /admin/v1/ownership-claims/review-access`), never by this label.
+   */
+  | 'ownership:review';
 
 const ALL_PERMISSIONS: readonly AdminPermission[] = [
   'dashboard:view',
@@ -95,6 +100,7 @@ const ALL_PERMISSIONS: readonly AdminPermission[] = [
   'experts:write',
   'website-bookings:view',
   'website-bookings:write',
+  'ownership:review',
 ];
 
 const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {

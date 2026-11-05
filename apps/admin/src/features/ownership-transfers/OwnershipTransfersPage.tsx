@@ -1,85 +1,43 @@
-import type { TransferCompletedDto, TransferInitiatedDto } from '@autolokate/api-client';
-import { AlPageHeader, AlPageHeaderAction, AlStack } from '@autolokate/ui';
-import { useState } from 'react';
+import { AlPageHeader, AlStack, AlText } from '@autolokate/ui';
+import { Link } from 'react-router-dom';
 
-import {
-  ApproveTransferSheet,
-  InitiateTransferSheet,
-  TransferCompletedPanel,
-  TransferInitiatedPanel,
-} from '@/features/ownership-transfers/OwnershipTransferSheets';
+import { adminPaths } from '@/app/routes/admin-paths';
 import { AdminPanel } from '@/platform/components/AdminWowSurface';
 import { RequirePermission } from '@/platform/rbac/RequirePermission';
-import { useAdminPermission } from '@/platform/rbac/useAdminPermission';
 
+/**
+ * The lost-QR ownership transfer is retired (D-8 / BE-OWN-06): it moved ownership and the previous
+ * owner's plan without an RC review. Every write on `/admin/v1/ownership-transfers*` now answers 410
+ * `feature_retired`, so this page offers no initiate / approve action. The route stays so old links
+ * land on an explanation; past transfers remain in the Activity Log (`TRANSFER_APPROVED`) and in
+ * each vehicle's ownership history on the claim review.
+ */
 export function OwnershipTransfersPage() {
-  const canWrite = useAdminPermission('qr-lifecycle:write');
-  const [initiateOpen, setInitiateOpen] = useState(false);
-  const [approveOpen, setApproveOpen] = useState(false);
-  const [initiatedResult, setInitiatedResult] = useState<TransferInitiatedDto | null>(null);
-  const [approvedResult, setApprovedResult] = useState<TransferCompletedDto | null>(null);
-  const [approveTransferId, setApproveTransferId] = useState('');
-
   return (
     <RequirePermission permission="inventory:view">
       <AlStack gap="md">
         <AlPageHeader
-          title="Ownership"
-          description="Initiate and approve vehicle ownership transfers."
-          actions={
-            canWrite ? (
-              <>
-                <AlPageHeaderAction
-                  label="Initiate transfer"
-                  onClick={() => {
-                    setInitiateOpen(true);
-                  }}
-                />
-                <AlPageHeaderAction
-                  label="Approve transfer"
-                  variant="secondary"
-                  onClick={() => {
-                    setApproveTransferId(initiatedResult?.transferId ?? '');
-                    setApproveOpen(true);
-                  }}
-                />
-              </>
-            ) : undefined
-          }
+          title="Ownership transfers"
+          description="Retired. Vehicle ownership now moves only through an approved ownership claim."
         />
-
         <AdminPanel
-          title="Transfer results"
-          subtitle="Status appears here after you initiate or approve a transfer."
+          title="This tool is retired"
+          subtitle="Lost-QR transfers moved ownership without an RC review."
         >
-          {initiatedResult || approvedResult ? (
-            <div className="admin-operations-results">
-              {initiatedResult ? <TransferInitiatedPanel result={initiatedResult} /> : null}
-              {approvedResult ? <TransferCompletedPanel result={approvedResult} /> : null}
-            </div>
-          ) : (
-            <p className="admin-empty-note admin-operations-empty">
-              No transfers yet this session. Start with Initiate transfer when a QR needs a new
-              owner.
-            </p>
-          )}
+          <AlStack gap="sm" data-testid="ownership-transfers-retired">
+            <AlText>
+              To give a vehicle to its real owner, the owner buys a plan and submits an ownership
+              claim with the RC from the app. An authorized reviewer then approves it from{' '}
+              <Link to={adminPaths.ownershipClaims}>Ownership claims</Link>.
+            </AlText>
+            <AlText variant="caption" tone="muted">
+              Past transfers stay visible: filter the{' '}
+              <Link to={adminPaths.auditEvents}>Activity Log</Link> by “Transfer approved” or
+              “Vehicle ownership transferred”, or open a claim to see the vehicle’s ownership
+              history.
+            </AlText>
+          </AlStack>
         </AdminPanel>
-
-        <InitiateTransferSheet
-          open={initiateOpen}
-          onOpenChange={setInitiateOpen}
-          onInitiated={(result) => {
-            setInitiatedResult(result);
-            setApproveTransferId(result.transferId);
-          }}
-        />
-
-        <ApproveTransferSheet
-          open={approveOpen}
-          onOpenChange={setApproveOpen}
-          defaultTransferId={approveTransferId}
-          onApproved={setApprovedResult}
-        />
       </AlStack>
     </RequirePermission>
   );
