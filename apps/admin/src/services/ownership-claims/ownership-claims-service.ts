@@ -8,7 +8,7 @@ import {
   type AdminOwnershipClaimDto,
   type AdminOwnershipClaimsPageResult,
   type ListAdminOwnershipClaimsQuery,
-  type OwnershipClaimDto,
+  type OwnershipClaimReviewResultDto,
   type OwnershipClaimRcProofDto,
   type OwnershipReviewAccessDto,
   type ReviewOwnershipClaimBody,
@@ -38,7 +38,7 @@ export async function reviewClaim(
   claimId: string,
   body: ReviewOwnershipClaimBody,
   signal?: AbortSignal,
-): Promise<OwnershipClaimDto> {
+): Promise<OwnershipClaimReviewResultDto> {
   return reviewOwnershipClaim(getAdminApiClient(), claimId, body, { signal });
 }
 

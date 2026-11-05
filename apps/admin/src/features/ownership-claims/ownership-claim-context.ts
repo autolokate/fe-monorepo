@@ -6,6 +6,7 @@ import {
   type OwnershipClaimDto,
   type OwnershipClaimPrecheck,
   type OwnershipClaimPrecheckField,
+  type OwnershipTransferSummary,
   type VehicleOwnershipHistoryDto,
   type VehicleOwnershipHistoryReason,
 } from '@autolokate/api-client';
@@ -212,25 +213,66 @@ export function approveBlocker(input: {
   return null;
 }
 
-/** What the server did on approval, from the matching ownership-history row. */
+/**
+ * What the server did on approval. Counts come from the review response's `transferSummary` when
+ * the API sends it; otherwise from the matching ownership-history row (drivers only). `null` count =
+ * not reported.
+ */
 export type TransferOutcome = {
   previousOwnerId: string | null;
+  previousOwnerRemoved: number | null;
   suspendedDrivers: number | null;
+  invitesCancelled: number | null;
+  taxiAssignmentsEnded: number | null;
+  otherClaimsAutoRejected: number | null;
   decidedAt: string | null;
   remarks: string | null;
 };
 
+function count(value: unknown): number | null {
+  if (typeof value === 'boolean') return value ? 1 : 0;
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+/** Normalizes `transferSummary`; null when absent or carrying no usable count. */
+export function readTransferSummary(
+  summary: OwnershipTransferSummary | null | undefined,
+): Pick<
+  TransferOutcome,
+  | 'previousOwnerRemoved'
+  | 'suspendedDrivers'
+  | 'invitesCancelled'
+  | 'taxiAssignmentsEnded'
+  | 'otherClaimsAutoRejected'
+> | null {
+  if (!summary || typeof summary !== 'object') return null;
+  const read = {
+    previousOwnerRemoved: count(summary.previousOwnerRemoved),
+    suspendedDrivers: count(summary.driversSuspended),
+    invitesCancelled: count(summary.invitesCancelled),
+    taxiAssignmentsEnded: count(summary.taxiAssignmentsEnded),
+    otherClaimsAutoRejected: count(summary.otherClaimsAutoRejected),
+  };
+  return Object.values(read).some((value) => value !== null) ? read : null;
+}
+
 export function transferOutcome(
   history: readonly VehicleOwnershipHistoryDto[],
   claimId: string,
+  summary?: OwnershipTransferSummary | null,
 ): TransferOutcome | null {
   const row = history.find((item) => item.claimId === claimId && item.reason === 'CLAIM_APPROVED');
-  if (!row) return null;
+  const fromSummary = readTransferSummary(summary);
+  if (!row && !fromSummary) return null;
   return {
-    previousOwnerId: row.fromAccountId,
-    suspendedDrivers: row.removedDriverCount,
-    decidedAt: row.createdAt,
-    remarks: row.remarks,
+    previousOwnerId: row?.fromAccountId ?? null,
+    previousOwnerRemoved: fromSummary?.previousOwnerRemoved ?? null,
+    suspendedDrivers: fromSummary?.suspendedDrivers ?? row?.removedDriverCount ?? null,
+    invitesCancelled: fromSummary?.invitesCancelled ?? null,
+    taxiAssignmentsEnded: fromSummary?.taxiAssignmentsEnded ?? null,
+    otherClaimsAutoRejected: fromSummary?.otherClaimsAutoRejected ?? null,
+    decidedAt: row?.createdAt ?? null,
+    remarks: row?.remarks ?? null,
   };
 }
 

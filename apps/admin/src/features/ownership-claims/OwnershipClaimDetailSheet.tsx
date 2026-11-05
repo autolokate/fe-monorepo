@@ -1,5 +1,6 @@
 import type {
   AdminOwnershipClaimDto,
+  OwnershipTransferSummary,
   AdminVehicleDriversDto,
   OwnershipClaimPrecheckField,
 } from '@autolokate/api-client';
@@ -50,6 +51,10 @@ export type OwnershipClaimDetailSheetProps = {
   reviewAccess: OwnershipReviewAccess;
   /** True right after this reviewer approved the claim (shows the outcome summary first). */
   justApproved: boolean;
+  /** `transferSummary` from this session's approve response, when the API sent one. */
+  transferSummary: OwnershipTransferSummary | null;
+  /** Set when a decision on this claim was interrupted by step-up; its remarks draft is kept. */
+  resumedDecision: OwnershipDecision | null;
   onRequestDecision: (
     claim: AdminOwnershipClaimDto,
     decision: OwnershipDecision,
@@ -128,6 +133,8 @@ export function OwnershipClaimDetailSheet({
   busy,
   reviewAccess,
   justApproved,
+  transferSummary,
+  resumedDecision,
   onRequestDecision,
   onMarkUnderReview,
 }: OwnershipClaimDetailSheetProps) {
@@ -168,7 +175,8 @@ export function OwnershipClaimDetailSheet({
   const openForReview = isOpenClaim(claim);
   const rcViewed = rcViewedFor === claim.id;
   const blocker = approveBlocker({ claim, rcViewed, verifiedOwnerOnOtherRow });
-  const outcome = claim.status === 'APPROVED' ? transferOutcome(history.rows, claim.id) : null;
+  const outcome =
+    claim.status === 'APPROVED' ? transferOutcome(history.rows, claim.id, transferSummary) : null;
   const claimantLabel = claim.claimantUsername
     ? `@${claim.claimantUsername}`
     : shortAdminId(claim.claimantAccountId);
@@ -189,6 +197,17 @@ export function OwnershipClaimDetailSheet({
       description={`${plate ? `${plate} · ` : ''}${humanizeAdminLabel(claim.status)} · ${shortAdminId(claim.id)}`}
     >
       <AlStack gap="md" data-testid="ownership-claim-detail-sheet">
+        {resumedDecision && openForReview ? (
+          <Callout tone="info" testId="ownership-claim-resume">
+            You were asked to verify again before your{' '}
+            {resumedDecision === 'APPROVED' ? 'approval' : 'rejection'} was sent. Your remarks were
+            kept —{' '}
+            {resumedDecision === 'APPROVED'
+              ? 'view the RC, then choose Approve…'
+              : 'choose Reject…'}{' '}
+            to finish.
+          </Callout>
+        ) : null}
         {justApproved && claim.status === 'APPROVED' ? (
           <TransferOutcomePanel
             outcome={outcome}
@@ -638,12 +657,11 @@ function ReviewActions({
         <Callout tone="info" testId="ownership-claim-not-reviewer">
           <strong>You&apos;re not an authorized ownership reviewer.</strong> Only operators on the
           server&apos;s reviewer list can approve or reject ownership claims. You can still read the
-          claim and mark it under review.
+          claim.
           {access.errorMessage ? (
             <span className="ownership-callout__detail"> ({access.errorMessage})</span>
           ) : null}
         </Callout>
-        {underReview ? <div className="admin-modal-actions">{underReview}</div> : null}
       </AlStack>
     );
   }
@@ -746,6 +764,12 @@ function OwnershipHistoryList({
   );
 }
 
+/** A reported count, or what the contract guarantees when the API sent no count. */
+function countText(value: number | null | undefined, loading: boolean, fallback = 'not reported') {
+  if (value != null) return String(value);
+  return loading ? 'loading…' : fallback;
+}
+
 function TransferOutcomePanel({
   outcome,
   loading,
@@ -761,12 +785,14 @@ function TransferOutcomePanel({
       <ul className="ownership-callout__list">
         <li data-testid="ownership-outcome-previous-owner">
           Previous owner removed:{' '}
-          {outcome ? (
-            outcome.previousOwnerId ? (
-              <AccountLink accountId={outcome.previousOwnerId} />
-            ) : (
-              'none (vehicle had no owner)'
-            )
+          {outcome?.previousOwnerId ? (
+            <AccountLink accountId={outcome.previousOwnerId} />
+          ) : outcome?.previousOwnerRemoved === 0 ? (
+            'none (the vehicle had no other owner)'
+          ) : outcome?.previousOwnerRemoved != null ? (
+            'yes'
+          ) : outcome ? (
+            'none (the vehicle had no other owner)'
           ) : loading ? (
             'loading…'
           ) : (
@@ -775,19 +801,24 @@ function TransferOutcomePanel({
         </li>
         <li data-testid="ownership-outcome-drivers">
           Drivers suspended until the new owner re-approves:{' '}
-          {outcome?.suspendedDrivers != null
-            ? String(outcome.suspendedDrivers)
-            : loading
-              ? 'loading…'
-              : 'not reported'}
+          {countText(outcome?.suspendedDrivers, loading)}
         </li>
-        <li>Pending driver requests and invites: cancelled</li>
-        <li>Open taxi assignments: ended, and the previous owner&apos;s fleet card unlinked</li>
-        <li>Other open claims on this vehicle: rejected</li>
+        <li data-testid="ownership-outcome-invites">
+          Pending driver requests and invites cancelled:{' '}
+          {countText(outcome?.invitesCancelled, false, 'yes')}
+        </li>
+        <li data-testid="ownership-outcome-taxi">
+          Open taxi assignments ended (previous owner&apos;s fleet card unlinked):{' '}
+          {countText(outcome?.taxiAssignmentsEnded, false, 'yes')}
+        </li>
+        <li data-testid="ownership-outcome-claims">
+          Other open claims auto-rejected:{' '}
+          {countText(outcome?.otherClaimsAutoRejected, false, 'yes')}
+        </li>
       </ul>
       {unavailable ? (
         <span className="ownership-callout__detail">
-          The ownership history could not be loaded, so counts are not shown.
+          The ownership history could not be loaded.
         </span>
       ) : null}
     </Callout>

@@ -525,6 +525,10 @@ export type InstallHermeticRoutesOptions = {
   ownershipReviewAccessStatus?: number;
   /** When set, the review POST fails with this status and `ownershipReviewErrorCode`. */
   ownershipReviewStatus?: number;
+  /** Apply `ownershipReviewStatus` to the FIRST review POST only (later ones succeed). */
+  ownershipReviewFailOnce?: boolean;
+  /** `transferSummary` added to an APPROVED review response (absent by default). */
+  ownershipTransferSummary?: Record<string, number | boolean>;
   ownershipReviewErrorCode?: string;
   /** Serve the ALL claim list as two keyset pages (1 row, then the rest). */
   ownershipClaimsPaged?: boolean;
@@ -2630,7 +2634,9 @@ export async function installHermeticApiRoutes(
     if (method === 'POST' && claimReviewMatch) {
       const body = JSON.parse(req.postData() ?? '{}') as Record<string, unknown>;
       capture.ownershipClaimsReview.push({ method, path, body });
-      if (options.ownershipReviewStatus && options.ownershipReviewStatus >= 400) {
+      const failThisReview =
+        !options.ownershipReviewFailOnce || capture.ownershipClaimsReview.length === 1;
+      if (options.ownershipReviewStatus && options.ownershipReviewStatus >= 400 && failThisReview) {
         await fulfillJson(
           route,
           options.ownershipReviewStatus,
@@ -2667,7 +2673,15 @@ export async function installHermeticApiRoutes(
         updatedAt: '2026-10-20T12:00:00.000Z',
       };
       ownershipClaimsCatalog[0] = ownershipClaimState;
-      await fulfillJson(route, 200, envelope(ownershipClaimState));
+      await fulfillJson(
+        route,
+        200,
+        envelope(
+          decision === 'APPROVED' && options.ownershipTransferSummary
+            ? { ...ownershipClaimState, transferSummary: options.ownershipTransferSummary }
+            : ownershipClaimState,
+        ),
+      );
       return;
     }
 

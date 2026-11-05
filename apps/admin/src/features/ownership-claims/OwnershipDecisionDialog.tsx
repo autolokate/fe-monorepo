@@ -2,6 +2,7 @@ import type { AdminOwnershipClaimDto } from '@autolokate/api-client';
 import { AlButton, AlModal } from '@autolokate/ui';
 import { useEffect, useId, useState } from 'react';
 
+import { loadDecisionDraft, saveDecisionDraft } from '@/features/ownership-claims/decision-draft';
 import {
   decisionRemarksError,
   OWNERSHIP_REMARKS_MAX,
@@ -43,12 +44,13 @@ export function OwnershipDecisionDialog({
   const [remarks, setRemarks] = useState('');
   const [touched, setTouched] = useState(false);
 
+  const claimId = claim?.id ?? null;
+
+  // Restore the unsent draft for this claim + decision (kept across a step-up re-verification).
   useEffect(() => {
-    if (!open) {
-      setRemarks('');
-      setTouched(false);
-    }
-  }, [open]);
+    setRemarks(claimId !== null && decision !== null ? loadDecisionDraft(claimId, decision) : '');
+    setTouched(false);
+  }, [claimId, decision]);
 
   const remarksError = decisionRemarksError(remarks);
   const approving = decision === 'APPROVED';
@@ -143,6 +145,7 @@ export function OwnershipDecisionDialog({
           }}
           onChange={(event) => {
             setRemarks(event.target.value);
+            if (claimId && decision) saveDecisionDraft(claimId, decision, event.target.value);
           }}
         />
         {touched && remarksError ? (

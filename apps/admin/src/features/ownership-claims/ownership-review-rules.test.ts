@@ -126,11 +126,36 @@ describe('transferOutcome', () => {
     );
     expect(outcome).toEqual({
       previousOwnerId: 'acct-old',
+      previousOwnerRemoved: null,
       suspendedDrivers: 2,
+      invitesCancelled: null,
+      taxiAssignmentsEnded: null,
+      otherClaimsAutoRejected: null,
       decidedAt: '2026-11-05T10:00:00Z',
       remarks: 'RC matches',
     });
     expect(transferOutcome([], 'claim-1')).toBeNull();
+  });
+});
+
+describe('transferOutcome with the review transferSummary', () => {
+  it('prefers the response counts and falls back to the history row', () => {
+    const outcome = transferOutcome([], 'claim-1', {
+      previousOwnerRemoved: true,
+      driversSuspended: 3,
+      invitesCancelled: 1,
+      taxiAssignmentsEnded: 0,
+      otherClaimsAutoRejected: 2,
+    });
+    expect(outcome).toMatchObject({
+      previousOwnerRemoved: 1,
+      suspendedDrivers: 3,
+      invitesCancelled: 1,
+      taxiAssignmentsEnded: 0,
+      otherClaimsAutoRejected: 2,
+    });
+    expect(transferOutcome([], 'claim-1', {})).toBeNull();
+    expect(transferOutcome([], 'claim-1', null)).toBeNull();
   });
 });
 

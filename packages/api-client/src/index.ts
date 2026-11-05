@@ -465,6 +465,8 @@ export {
   type OwnershipClaimPrecheckDetails,
   type OwnershipClaimPlateConflict,
   type OwnershipReviewAccessDto,
+  type OwnershipTransferSummary,
+  type OwnershipClaimReviewResultDto,
   type VehicleOwnershipHistoryDto,
   type VehicleOwnershipHistoryReason,
   type ListAdminOwnershipClaimsQuery,

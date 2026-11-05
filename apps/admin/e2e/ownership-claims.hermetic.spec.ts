@@ -1,6 +1,7 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page, type Route } from '@playwright/test';
 
 import {
+  hermeticJwt,
   HERMETIC_OWNERSHIP_CLAIM_ID,
   HERMETIC_OWNERSHIP_CLAIM_ID_CONFLICT,
   HERMETIC_OWNERSHIP_CLAIM_ID_REJECTED,
@@ -189,7 +190,7 @@ test.describe('Ownership claims (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('not an authorized reviewer — no approve/reject, clear notice, under review still allowed', async ({
+  test('not an authorized reviewer — no decide or under-review buttons, clear notice', async ({
     page,
   }) => {
     const capture = await installHermeticApiRoutes(page, {
@@ -210,9 +211,9 @@ test.describe('Ownership claims (hermetic)', () => {
     await expect(page.getByTestId('ownership-claim-detail-approve')).toHaveCount(0);
     await expect(page.getByTestId('ownership-claim-detail-reject')).toHaveCount(0);
 
-    await page.getByTestId('ownership-claim-detail-under-review').click();
-    await expect.poll(() => capture.ownershipClaimsReview.length, { timeout: 10_000 }).toBe(1);
-    expect(capture.ownershipClaimsReview[0]?.body).toEqual({ decision: 'UNDER_REVIEW' });
+    // UNDER_REVIEW is reviewer-only too.
+    await expect(page.getByTestId('ownership-claim-detail-under-review')).toHaveCount(0);
+    expect(capture.ownershipClaimsReview).toHaveLength(0);
     expect(capture.ownershipReviewAccessGet).toBeGreaterThanOrEqual(1);
     expect(capture.unexpected).toEqual([]);
   });
@@ -254,24 +255,6 @@ test.describe('Ownership claims (hermetic)', () => {
     expect(capture.unexpected).toEqual([]);
   });
 
-  test('step-up expired on decide — the step-up 2FA gate takes over', async ({ page }) => {
-    const capture = await installHermeticApiRoutes(page, {
-      sessionRole: 'ADMIN',
-      ownershipClaimsRcProofGetStatus: 200,
-      ownershipReviewStatus: 403,
-      ownershipReviewErrorCode: 'step_up_required',
-    });
-    await seedHermeticSession(page);
-    await openOwnershipClaimsPage(page);
-    await openClaim(page);
-    await page.getByTestId('ownership-claim-detail-approve').click();
-    await page.getByTestId('ownership-decision-remarks').fill('RC verified');
-    await page.getByTestId('ownership-decision-confirm').click();
-    // The admin plane re-prompts for step-up (2FA) globally; nothing was decided.
-    await expect(page.getByTestId('admin-step-up')).toBeVisible({ timeout: 15_000 });
-    expect(capture.ownershipClaimsReview).toHaveLength(1);
-  });
-
   test('server refusal — plate_verified_elsewhere is explained', async ({ page }) => {
     await installHermeticApiRoutes(page, {
       sessionRole: 'ADMIN',
@@ -288,6 +271,100 @@ test.describe('Ownership claims (hermetic)', () => {
     await expect(page.getByTestId('ownership-decision-error')).toContainText(
       'Resolve the duplicate plate first',
     );
+  });
+
+  test('reviewer can mark under review', async ({ page }) => {
+    const capture = await installHermeticApiRoutes(page, { sessionRole: 'ADMIN' });
+    await seedHermeticSession(page);
+    await openOwnershipClaimsPage(page);
+    await openClaim(page);
+    await page.getByTestId('ownership-claim-detail-under-review').click();
+    await expect.poll(() => capture.ownershipClaimsReview.length, { timeout: 10_000 }).toBe(1);
+    expect(capture.ownershipClaimsReview[0]?.body).toEqual({ decision: 'UNDER_REVIEW' });
+  });
+
+  test('approve — the review response transferSummary counts are shown', async ({ page }) => {
+    await installHermeticApiRoutes(page, {
+      sessionRole: 'ADMIN',
+      ownershipClaimsRcProofGetStatus: 200,
+      ownershipTransferSummary: {
+        previousOwnerRemoved: 1,
+        driversSuspended: 3,
+        invitesCancelled: 4,
+        taxiAssignmentsEnded: 1,
+        otherClaimsAutoRejected: 2,
+      },
+    });
+    await seedHermeticSession(page);
+    await openOwnershipClaimsPage(page);
+    await openClaim(page);
+    await page.getByTestId('ownership-claim-detail-approve').click();
+    await page.getByTestId('ownership-decision-remarks').fill('RC verified');
+    await page.getByTestId('ownership-decision-confirm').click();
+    await expect(page.getByTestId('ownership-outcome-drivers').first()).toContainText('3', {
+      timeout: 10_000,
+    });
+    await expect(page.getByTestId('ownership-outcome-invites').first()).toContainText('4');
+    await expect(page.getByTestId('ownership-outcome-taxi').first()).toContainText('1');
+    await expect(page.getByTestId('ownership-outcome-claims').first()).toContainText('2');
+  });
+
+  test('step-up mid-decision keeps the remarks draft and resumes the claim after re-verifying', async ({
+    page,
+  }) => {
+    const capture = await installHermeticApiRoutes(page, {
+      sessionRole: 'ADMIN',
+      ownershipClaimsRcProofGetStatus: 200,
+      ownershipReviewStatus: 403,
+      ownershipReviewErrorCode: 'step_up_required',
+      ownershipReviewFailOnce: true,
+    });
+    await page.route('**/v1/auth/step-up/otp/**', async (route: Route) => {
+      const stepUpPath = new URL(route.request().url()).pathname;
+      const body = stepUpPath.endsWith('/request')
+        ? { data: { channel: 'sms' } }
+        : {
+            data: { accessToken: hermeticJwt({ role: 'OPERATOR', step_up: true }), expiresIn: 900 },
+          };
+      await route.fulfill({
+        status: stepUpPath.endsWith('/request') ? 202 : 200,
+        contentType: 'application/json',
+        body: JSON.stringify(body),
+      });
+    });
+    await seedHermeticSession(page);
+    await openOwnershipClaimsPage(page);
+    await openClaim(page);
+    await page.getByTestId('ownership-claim-detail-approve').click();
+    await page.getByTestId('ownership-decision-remarks').fill('Draft kept across step-up');
+    await page.getByTestId('ownership-decision-confirm').click();
+
+    await expect(page.getByTestId('admin-step-up')).toBeVisible({ timeout: 15_000 });
+    await page.getByTestId('admin-step-up-send').click();
+    await page.locator('.admin-login-otp input').first().click();
+    await page.keyboard.type('123456');
+    await page.getByTestId('admin-step-up-verify').click();
+
+    // Back on the queue: the interrupted claim reopens with a note, and the draft is restored.
+    await expect(page.getByTestId('ownership-claim-resume')).toBeVisible({ timeout: 15_000 });
+    await page.getByTestId('ownership-claim-detail-approve').click();
+    await expect(page.getByTestId('ownership-decision-remarks')).toHaveValue(
+      'Draft kept across step-up',
+    );
+    await page.getByTestId('ownership-decision-confirm').click();
+    await expect.poll(() => capture.ownershipClaimsReview.length, { timeout: 10_000 }).toBe(2);
+    expect(capture.ownershipClaimsReview[1]?.body).toEqual({
+      decision: 'APPROVED',
+      remarks: 'Draft kept across step-up',
+    });
+    await expect(page.getByTestId('ownership-transfer-outcome').first()).toBeVisible({
+      timeout: 10_000,
+    });
+    // Cleared on success.
+    const leftovers = await page.evaluate(() =>
+      Object.keys(sessionStorage).filter((key) => key.startsWith('admin.ownership-decision')),
+    );
+    expect(leftovers).toEqual([]);
   });
 
   test('roster unavailable — the claim is still readable', async ({ page }) => {

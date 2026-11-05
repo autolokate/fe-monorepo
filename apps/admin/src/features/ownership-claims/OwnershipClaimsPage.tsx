@@ -1,4 +1,4 @@
-import type { AdminOwnershipClaimDto } from '@autolokate/api-client';
+import type { AdminOwnershipClaimDto, OwnershipTransferSummary } from '@autolokate/api-client';
 import {
   AlDataTable,
   AlErrorState,
@@ -6,8 +6,14 @@ import {
   AlPageHeaderAction,
   AlStack,
 } from '@autolokate/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import {
+  clearDecisionDraft,
+  markDecisionResume,
+  readDecisionResume,
+  type DecisionResume,
+} from '@/features/ownership-claims/decision-draft';
 import { OwnershipClaimDetailSheet } from '@/features/ownership-claims/OwnershipClaimDetailSheet';
 import {
   OwnershipDecisionDialog,
@@ -15,6 +21,7 @@ import {
 } from '@/features/ownership-claims/OwnershipDecisionDialog';
 import {
   claimAttempts,
+  isOpenClaim,
   ownershipReviewErrorView,
   type OwnershipReviewErrorView,
 } from '@/features/ownership-claims/ownership-claim-context';
@@ -82,12 +89,32 @@ export function OwnershipClaimsPage() {
   const [justApprovedId, setJustApprovedId] = useState<string | null>(null);
   const [pending, setPending] = useState<PendingDecision | null>(null);
   const [decisionError, setDecisionError] = useState<OwnershipReviewErrorView | null>(null);
+  const [transferSummaries, setTransferSummaries] = useState<
+    Record<string, OwnershipTransferSummary>
+  >({});
+  /** A decision interrupted by step-up: reopen that claim once the console is back. */
+  const [pendingResume, setPendingResume] = useState<DecisionResume | null>(() =>
+    readDecisionResume(),
+  );
+  const [resumed, setResumed] = useState<DecisionResume | null>(null);
 
   const openDetail = useCallback((claim: AdminOwnershipClaimDto) => {
     setSelectedClaim(claim);
     setJustApprovedId(null);
     setDetailOpen(true);
   }, []);
+
+  useEffect(() => {
+    if (!pendingResume || isLoading) return;
+    const match = claims.find((row) => row.id === pendingResume.claimId);
+    if (match && isOpenClaim(match)) {
+      openDetail(match);
+      setResumed(pendingResume);
+    } else {
+      markDecisionResume(null);
+    }
+    setPendingResume(null);
+  }, [claims, isLoading, openDetail, pendingResume]);
 
   const markUnderReview = useCallback(
     (claim: AdminOwnershipClaimDto) => {
@@ -112,10 +139,19 @@ export function OwnershipClaimsPage() {
   const confirmDecision = useCallback(
     (claim: AdminOwnershipClaimDto, decision: OwnershipDecision, remarks: string) => {
       setDecisionError(null);
+      // If the server asks for step-up, the console is replaced by "Confirm it's you"; this marker
+      // (with the draft saved on every keystroke) brings the reviewer back to the same claim.
+      markDecisionResume({ claimId: claim.id, decision });
       reviewMutation.mutate(
         { claimId: claim.id, body: { decision, remarks } },
         {
           onSuccess: (updated) => {
+            clearDecisionDraft(claim.id);
+            setResumed(null);
+            const summary = updated.transferSummary;
+            if (summary) {
+              setTransferSummaries((current) => ({ ...current, [updated.id]: summary }));
+            }
             setSelectedClaim((current) =>
               current?.id === updated.id
                 ? { ...current, ...updated, reviewRemarks: remarks }
@@ -131,6 +167,7 @@ export function OwnershipClaimsPage() {
           },
           onError: (error) => {
             const view = ownershipReviewErrorView(error);
+            if (!view.stepUp) markDecisionResume(null);
             setDecisionError(view);
             if (view.stale) refresh();
           },
@@ -243,11 +280,16 @@ export function OwnershipClaimsPage() {
             if (!open) {
               setSelectedClaim(null);
               setJustApprovedId(null);
+              setResumed(null);
             }
           }}
           busy={busy}
           reviewAccess={reviewAccess}
           justApproved={selectedClaim !== null && justApprovedId === selectedClaim.id}
+          transferSummary={selectedClaim ? (transferSummaries[selectedClaim.id] ?? null) : null}
+          resumedDecision={
+            selectedClaim && resumed?.claimId === selectedClaim.id ? resumed.decision : null
+          }
           onRequestDecision={(claim, decision, context) => {
             reviewMutation.reset();
             setDecisionError(null);

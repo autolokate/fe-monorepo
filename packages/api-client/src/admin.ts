@@ -1834,17 +1834,34 @@ export async function listAdminOwnershipClaims(
   return (await listAdminOwnershipClaimsPage(client, query, options)).items;
 }
 
+/**
+ * What an APPROVED review did, as counts (backend addition; absent on older APIs and on reject /
+ * under review). `previousOwnerRemoved` may arrive as a count (0/1) or a boolean.
+ */
+export type OwnershipTransferSummary = {
+  previousOwnerRemoved?: number | boolean;
+  driversSuspended?: number;
+  invitesCancelled?: number;
+  taxiAssignmentsEnded?: number;
+  otherClaimsAutoRejected?: number;
+};
+
+/** `POST /admin/v1/ownership-claims/{id}/review` response: the claim plus the transfer summary. */
+export type OwnershipClaimReviewResultDto = OwnershipClaimDto & {
+  transferSummary?: OwnershipTransferSummary | null;
+};
+
 /** POST /admin/v1/ownership-claims/{id}/review */
 export async function reviewOwnershipClaim(
   client: ApiClient,
   claimId: string,
   body: ReviewOwnershipClaimBody,
   options: { signal?: AbortSignal } = {},
-): Promise<OwnershipClaimDto> {
+): Promise<OwnershipClaimReviewResultDto> {
   const response = await client.post<unknown>(endpoints.admin.reviewOwnershipClaim(claimId), body, {
     ...(options.signal ? { signal: options.signal } : {}),
   });
-  return unwrapEnvelope(response) as OwnershipClaimDto;
+  return unwrapEnvelope(response) as OwnershipClaimReviewResultDto;
 }
 
 /** `GET /admin/v1/ownership-claims/review-access` — the server's reviewer allowlist verdict (D-13). */
