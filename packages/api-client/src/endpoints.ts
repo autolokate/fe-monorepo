@@ -137,9 +137,6 @@ export const endpoints = {
     auditEvents: '/admin/v1/audit-events',
     clawbacks: '/admin/v1/clawbacks',
     inventory: '/admin/v1/inventory',
-    ownershipTransfers: '/admin/v1/ownership-transfers',
-    approveOwnershipTransfer: (id: string) =>
-      `/admin/v1/ownership-transfers/${encodeURIComponent(id)}/approve`,
     fulfilPartnerReorder: (id: string) =>
       `/admin/v1/partner-reorders/${encodeURIComponent(id)}/fulfil`,
     adminOrders: '/admin/v1/orders',
@@ -168,6 +165,9 @@ export const endpoints = {
     denyBreakGlassApproval: (approvalId: string) =>
       `/admin/v1/break-glass/approvals/${encodeURIComponent(approvalId)}/deny`,
     adminOwnershipClaims: '/admin/v1/ownership-claims',
+    ownershipReviewAccess: '/admin/v1/ownership-claims/review-access',
+    vehicleOwnershipHistory: (vehicleId: string) =>
+      `/admin/v1/vehicles/${encodeURIComponent(vehicleId)}/ownership-history`,
     ownershipClaimRcProof: (id: string) =>
       `/admin/v1/ownership-claims/${encodeURIComponent(id)}/rc-proof`,
     reviewOwnershipClaim: (id: string) =>

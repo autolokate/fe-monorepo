@@ -32,7 +32,9 @@ test.describe('Combined QA regressions (hermetic)', () => {
     await expect(page.locator('tbody tr')).toHaveCount(3, { timeout: 10_000 });
 
     // The Claim column sorts by status; the id is only the row id — search must still find it.
-    await page.getByPlaceholder('Search claim…').fill(HERMETIC_OWNERSHIP_CLAIM_ID);
+    await page
+      .getByPlaceholder('Search plate, claimant or claim…')
+      .fill(HERMETIC_OWNERSHIP_CLAIM_ID);
     await expect(page.locator('tbody tr')).toHaveCount(1);
     await expect(page.locator('.al-toolbar__meta')).toHaveText('1 row');
     await expect(

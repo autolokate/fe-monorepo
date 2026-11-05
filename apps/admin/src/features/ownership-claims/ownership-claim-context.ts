@@ -1,4 +1,16 @@
-import type { AdminVehicleDriversDto, OwnershipClaimDto } from '@autolokate/api-client';
+import {
+  ApiError,
+  isStepUpRequiredError,
+  type AdminOwnershipClaimDto,
+  type AdminVehicleDriversDto,
+  type OwnershipClaimDto,
+  type OwnershipClaimPrecheck,
+  type OwnershipClaimPrecheckField,
+  type VehicleOwnershipHistoryDto,
+  type VehicleOwnershipHistoryReason,
+} from '@autolokate/api-client';
+
+import { mapAdminApiError } from '@/platform/errors/admin-api-errors';
 
 import type { AdminStatusChipTone } from '@/platform/components/AdminWowSurface';
 
@@ -109,4 +121,174 @@ export function claimStatusTone(status: OwnershipClaimDto['status']): AdminStatu
   if (status === 'REJECTED' || status === 'WITHDRAWN') return 'none';
   if (status === 'UNDER_REVIEW') return 'draft';
   return 'neutral';
+}
+
+/** Remarks bound shared with the server DTO (`MaxLength(2000)`). */
+export const OWNERSHIP_REMARKS_MAX = 2000;
+
+/** Null when the remarks are acceptable for an approve / reject (both mandatory). */
+export function decisionRemarksError(remarks: string): string | null {
+  const trimmed = remarks.trim();
+  if (!trimmed) return 'Remarks are required for every decision.';
+  if (trimmed.length > OWNERSHIP_REMARKS_MAX) {
+    return `Remarks must be at most ${String(OWNERSHIP_REMARKS_MAX)} characters.`;
+  }
+  return null;
+}
+
+export function isOpenClaim(claim: Pick<OwnershipClaimDto, 'status'>): boolean {
+  return claim.status === 'SUBMITTED' || claim.status === 'UNDER_REVIEW';
+}
+
+/** Compact plate key for comparisons only (case and separators ignored). */
+export function compactPlate(value: string | null | undefined): string | null {
+  const compact = value?.replace(/[^a-z0-9]/gi, '').toUpperCase() ?? '';
+  return compact.length > 0 ? compact : null;
+}
+
+/**
+ * Other claims for the same plate (any vehicle row of it), newest first — from the loaded window.
+ * Matched on the compact registration the queue row carries; same-vehicle claims count too.
+ */
+export function conflictingPlateClaims(
+  claims: readonly AdminOwnershipClaimDto[],
+  current: AdminOwnershipClaimDto,
+  plate: string | null,
+): AdminOwnershipClaimDto[] {
+  const key = compactPlate(current.registration ?? plate);
+  return claims
+    .filter((row) => row.id !== current.id && row.claimantAccountId !== current.claimantAccountId)
+    .filter(
+      (row) =>
+        row.vehicleId === current.vehicleId ||
+        (key !== null && compactPlate(row.registration) === key),
+    )
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export const PRECHECK_COPY: Record<
+  OwnershipClaimPrecheck,
+  { label: string; tone: AdminStatusChipTone }
+> = {
+  MATCHED: { label: 'Registry: matched', tone: 'active' },
+  MISMATCHED: { label: 'Registry: mismatch', tone: 'draft' },
+  MANUAL_REVIEW: { label: 'Registry: manual review', tone: 'neutral' },
+};
+
+export const PRECHECK_FIELD_COPY: Record<
+  OwnershipClaimPrecheckField,
+  { label: string; tone: AdminStatusChipTone }
+> = {
+  MATCH: { label: 'Match', tone: 'active' },
+  MISMATCH: { label: 'Mismatch', tone: 'draft' },
+  UNAVAILABLE: { label: 'Not checked', tone: 'none' },
+};
+
+export const HISTORY_REASON_LABEL: Record<VehicleOwnershipHistoryReason, string> = {
+  CLAIM_APPROVED: 'Claim approved — ownership transferred',
+  PROVISIONAL_EXPIRED: 'Provisional ownership expired (no plan in 30 days)',
+  ACCOUNT_ERASED: 'Owner account erased — vehicle released',
+};
+
+export type ApproveBlocker = { reason: string } | null;
+
+/**
+ * Why Approve is unavailable, if it is. The server re-checks everything; this only keeps the
+ * reviewer from sending a request it will refuse, and forces the RC to be viewed first.
+ */
+export function approveBlocker(input: {
+  claim: AdminOwnershipClaimDto;
+  rcViewed: boolean;
+  verifiedOwnerOnOtherRow: boolean;
+}): ApproveBlocker {
+  if (!isOpenClaim(input.claim)) return { reason: 'This claim is already decided.' };
+  if (input.claim.plateConflict?.verifiedElsewhere || input.verifiedOwnerOnOtherRow) {
+    return {
+      reason:
+        'Another vehicle row for this plate already has an RC-verified owner. Resolve the duplicate plate first.',
+    };
+  }
+  if (!input.rcViewed) return { reason: 'Open and view the RC before approving.' };
+  return null;
+}
+
+/** What the server did on approval, from the matching ownership-history row. */
+export type TransferOutcome = {
+  previousOwnerId: string | null;
+  suspendedDrivers: number | null;
+  decidedAt: string | null;
+  remarks: string | null;
+};
+
+export function transferOutcome(
+  history: readonly VehicleOwnershipHistoryDto[],
+  claimId: string,
+): TransferOutcome | null {
+  const row = history.find((item) => item.claimId === claimId && item.reason === 'CLAIM_APPROVED');
+  if (!row) return null;
+  return {
+    previousOwnerId: row.fromAccountId,
+    suspendedDrivers: row.removedDriverCount,
+    decidedAt: row.createdAt,
+    remarks: row.remarks,
+  };
+}
+
+export type OwnershipReviewErrorView = {
+  message: string;
+  /** 403 step_up — the operator must verify again before deciding. */
+  stepUp: boolean;
+  /** The claim or plate changed under us — refresh before retrying. */
+  stale: boolean;
+};
+
+/** Reviewer-facing text for a failed review call. Never echoes remarks or PII. */
+export function ownershipReviewErrorView(error: unknown): OwnershipReviewErrorView {
+  if (isStepUpRequiredError(error)) {
+    return {
+      message: 'Your admin verification expired. Verify again, then repeat the decision.',
+      stepUp: true,
+      stale: false,
+    };
+  }
+  if (error instanceof ApiError) {
+    switch (error.code) {
+      case 'ownership_reviewer_required':
+        return {
+          message:
+            'You’re not an authorized ownership reviewer. Ask an authorized reviewer to decide.',
+          stepUp: false,
+          stale: false,
+        };
+      case 'plate_verified_elsewhere':
+        return {
+          message:
+            'Another vehicle row for this plate already has an RC-verified owner. Resolve the duplicate plate first.',
+          stepUp: false,
+          stale: true,
+        };
+      case 'plan_required':
+        return {
+          message: 'The claimant no longer holds a live plan, so the claim cannot be approved.',
+          stepUp: false,
+          stale: true,
+        };
+      case 'ownership_claim_invalid_transition':
+        return {
+          message:
+            'This claim was already decided (possibly by another reviewer). The list was refreshed.',
+          stepUp: false,
+          stale: true,
+        };
+      default:
+        break;
+    }
+    if (error.status === 404) {
+      return { message: 'This claim no longer exists.', stepUp: false, stale: true };
+    }
+  }
+  const mapped = mapAdminApiError(error);
+  const message =
+    mapped.code === 'validation' && mapped.message.trim() ? mapped.message : mapped.userMessage;
+  return { message, stepUp: false, stale: false };
 }

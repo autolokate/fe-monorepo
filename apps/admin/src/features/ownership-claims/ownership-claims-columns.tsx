@@ -1,8 +1,12 @@
-import type { OwnershipClaimDto } from '@autolokate/api-client';
+import type { AdminOwnershipClaimDto } from '@autolokate/api-client';
 import { AlButton, AlText, type ColumnDef } from '@autolokate/ui';
-import { useMemo, type MouseEvent } from 'react';
+import { useMemo } from 'react';
 
-import { claimStatusTone } from '@/features/ownership-claims/ownership-claim-context';
+import {
+  claimStatusTone,
+  isOpenClaim,
+  PRECHECK_COPY,
+} from '@/features/ownership-claims/ownership-claim-context';
 import {
   AdminStatusChip,
   humanizeAdminLabel,
@@ -17,20 +21,19 @@ function formatDate(value: string | null | undefined): string {
 }
 
 export type OwnershipClaimsColumnHandlers = {
-  onOpenDetail: (claim: OwnershipClaimDto) => void;
-  onApprove: (claim: OwnershipClaimDto) => void;
-  onReject: (claim: OwnershipClaimDto) => void;
-  onMarkUnderReview: (claim: OwnershipClaimDto) => void;
-  busyClaimId: string | null;
+  onOpenDetail: (claim: AdminOwnershipClaimDto) => void;
   /** Attempt number per claim (same claimant + vehicle) among the loaded rows; >1 = resubmission. */
   attemptByClaimId?: ReadonlyMap<string, number>;
 };
 
+/**
+ * Queue columns. There is deliberately no Approve / Reject here (ADM-OWN-04): a decision needs the
+ * claim opened, the RC viewed and the owner comparison read, so the row only offers "Review".
+ */
 export function useOwnershipClaimsColumns(
   handlers: OwnershipClaimsColumnHandlers,
-): ColumnDef<OwnershipClaimDto>[] {
-  const { onOpenDetail, onApprove, onReject, onMarkUnderReview, busyClaimId, attemptByClaimId } =
-    handlers;
+): ColumnDef<AdminOwnershipClaimDto>[] {
+  const { onOpenDetail, attemptByClaimId } = handlers;
 
   return useMemo(
     () => [
@@ -67,30 +70,64 @@ export function useOwnershipClaimsColumns(
         },
       },
       {
-        id: 'vehicleId',
+        id: 'registration',
         header: 'Vehicle',
-        accessorFn: (row) => row.vehicleId,
-        cell: ({ row }) => (
-          <AlText variant="mono" tone="muted" title={row.original.vehicleId}>
-            {shortAdminId(row.original.vehicleId)}
-          </AlText>
-        ),
+        accessorFn: (row) => row.registration ?? row.vehicleId,
+        cell: ({ row }) => {
+          const claim = row.original;
+          const conflict = claim.plateConflict;
+          return (
+            <div className="admin-primary-cell">
+              <AlText variant="mono" title={claim.vehicleId}>
+                {claim.registration ?? shortAdminId(claim.vehicleId)}
+              </AlText>
+              {conflict && conflict.otherRows > 0 ? (
+                <span data-testid={`ownership-claim-plate-conflict-${claim.id}`}>
+                  <AdminStatusChip
+                    label={
+                      conflict.verifiedElsewhere
+                        ? 'Duplicate plate · verified elsewhere'
+                        : `Duplicate plate · ${String(conflict.otherRows)} other`
+                    }
+                    tone="draft"
+                  />
+                </span>
+              ) : null}
+            </div>
+          );
+        },
       },
       {
         id: 'claimant',
         header: 'Claimant',
-        accessorFn: (row) => row.claimantAccountId,
+        accessorFn: (row) => row.claimantUsername ?? row.claimantAccountId,
         cell: ({ row }) => (
-          <AlText variant="mono" tone="muted" title={row.original.claimantAccountId}>
-            {shortAdminId(row.original.claimantAccountId)}
+          <AlText
+            variant={row.original.claimantUsername ? 'body' : 'mono'}
+            tone="muted"
+            title={row.original.claimantAccountId}
+          >
+            {row.original.claimantUsername
+              ? `@${row.original.claimantUsername}`
+              : shortAdminId(row.original.claimantAccountId)}
           </AlText>
         ),
       },
       {
-        id: 'reviewedAt',
-        header: 'Reviewed',
-        accessorFn: (row) => row.reviewedAt ?? '',
-        cell: ({ row }) => formatDate(row.original.reviewedAt),
+        id: 'precheck',
+        header: 'Registry check',
+        accessorFn: (row) => row.precheck ?? '',
+        cell: ({ row }) => {
+          const precheck = row.original.precheck;
+          return precheck ? (
+            <AdminStatusChip
+              label={PRECHECK_COPY[precheck].label}
+              tone={PRECHECK_COPY[precheck].tone}
+            />
+          ) : (
+            <AlText tone="muted">—</AlText>
+          );
+        },
       },
       {
         id: 'createdAt',
@@ -99,72 +136,32 @@ export function useOwnershipClaimsColumns(
         cell: ({ row }) => formatDate(row.original.createdAt),
       },
       {
+        id: 'reviewedAt',
+        header: 'Reviewed',
+        accessorFn: (row) => row.reviewedAt ?? '',
+        cell: ({ row }) => formatDate(row.original.reviewedAt),
+      },
+      {
         id: 'actions',
         header: 'Review',
         cell: ({ row }) => {
           const claim = row.original;
-          const open = claim.status === 'SUBMITTED' || claim.status === 'UNDER_REVIEW';
-          const busy = busyClaimId === claim.id;
-          const stopRowClick = (event: MouseEvent) => {
-            event.stopPropagation();
-          };
           return (
-            <div className="admin-inline-actions">
-              <AlButton
-                size="sm"
-                variant="secondary"
-                data-testid={`ownership-claim-details-${claim.id}`}
-                onClick={(event) => {
-                  stopRowClick(event);
-                  onOpenDetail(claim);
-                }}
-              >
-                Details
-              </AlButton>
-              {open ? (
-                <>
-                  <AlButton
-                    size="sm"
-                    variant="secondary"
-                    disabled={busy}
-                    loading={busy}
-                    onClick={(event) => {
-                      stopRowClick(event);
-                      onMarkUnderReview(claim);
-                    }}
-                  >
-                    Under review
-                  </AlButton>
-                  <AlButton
-                    size="sm"
-                    disabled={busy}
-                    loading={busy}
-                    onClick={(event) => {
-                      stopRowClick(event);
-                      onApprove(claim);
-                    }}
-                  >
-                    Approve
-                  </AlButton>
-                  <AlButton
-                    size="sm"
-                    variant="secondary"
-                    disabled={busy}
-                    loading={busy}
-                    onClick={(event) => {
-                      stopRowClick(event);
-                      onReject(claim);
-                    }}
-                  >
-                    Reject
-                  </AlButton>
-                </>
-              ) : null}
-            </div>
+            <AlButton
+              size="sm"
+              variant={isOpenClaim(claim) ? 'primary' : 'secondary'}
+              data-testid={`ownership-claim-details-${claim.id}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpenDetail(claim);
+              }}
+            >
+              {isOpenClaim(claim) ? 'Review' : 'Details'}
+            </AlButton>
           );
         },
       },
     ],
-    [attemptByClaimId, busyClaimId, onApprove, onMarkUnderReview, onOpenDetail, onReject],
+    [attemptByClaimId, onOpenDetail],
   );
 }

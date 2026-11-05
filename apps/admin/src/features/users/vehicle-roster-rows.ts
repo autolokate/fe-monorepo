@@ -14,15 +14,21 @@ const OWNER_ROLE_LABEL: Record<AdminVehicleOwnerRole, string> = {
 const DRIVER_STATUS_LABEL: Record<AdminVehicleDriverStatus, string> = {
   PENDING: 'Pending',
   ACTIVE: 'Active',
+  SUSPENDED: 'Suspended',
   REJECTED: 'Rejected',
   REMOVED: 'Removed',
+  CANCELLED: 'Cancelled',
+  EXPIRED: 'Expired',
 };
 
 const DRIVER_STATUS_TONE: Record<AdminVehicleDriverStatus, AdminStatusChipTone> = {
   PENDING: 'draft',
   ACTIVE: 'active',
+  SUSPENDED: 'draft',
   REJECTED: 'none',
   REMOVED: 'none',
+  CANCELLED: 'none',
+  EXPIRED: 'none',
 };
 
 export type VehicleRosterRow = {

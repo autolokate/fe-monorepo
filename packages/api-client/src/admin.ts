@@ -95,6 +95,12 @@ export type AuditAction =
   | 'OWNERSHIP_CLAIM_APPROVED'
   | 'OWNERSHIP_CLAIM_REJECTED'
   | 'OWNERSHIP_CLAIM_UNDER_REVIEW'
+  | 'OWNERSHIP_CLAIM_SUBMITTED'
+  | 'OWNERSHIP_CLAIM_WITHDRAWN'
+  | 'VEHICLE_OWNERSHIP_TRANSFERRED'
+  | 'VEHICLE_PROVISIONAL_EXPIRED'
+  | 'VEHICLE_OWNERSHIP_RELEASED'
+  | 'VEHICLE_DRIVER_CHANGED'
   | 'DISCOVERY_REEL_MUTATION'
   | 'DISCOVERY_QA_MODERATION'
   | 'TAXI_POLICY_PUBLISHED'
@@ -277,31 +283,6 @@ export type ClawbackResultDto = {
   paymentRef: string;
   paymentState: 'CB_LOST';
   commissionStatus: string | null;
-};
-
-/** OpenAPI `InitiateTransferDto` */
-export type InitiateTransferBody = {
-  code: string;
-};
-
-/** OpenAPI `ApproveTransferDto` */
-export type ApproveTransferBody = {
-  toAccountId: string;
-};
-
-/** OpenAPI `TransferInitiatedDto` */
-export type TransferInitiatedDto = {
-  transferId: string;
-  vehicleId: string;
-  status: 'INITIATED';
-};
-
-/** OpenAPI `TransferCompletedDto` */
-export type TransferCompletedDto = {
-  transferId: string;
-  vehicleId: string;
-  toAccountId: string;
-  status: 'COMPLETED';
 };
 
 /** OpenAPI `SettlementBatchResultDto` */
@@ -881,33 +862,6 @@ export async function createClawback(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as ClawbackResultDto;
-}
-
-/** POST /admin/v1/ownership-transfers */
-export async function initiateOwnershipTransfer(
-  client: ApiClient,
-  body: InitiateTransferBody,
-  options: { signal?: AbortSignal } = {},
-): Promise<TransferInitiatedDto> {
-  const response = await client.post<unknown>(endpoints.admin.ownershipTransfers, body, {
-    ...(options.signal ? { signal: options.signal } : {}),
-  });
-  return unwrapEnvelope(response) as TransferInitiatedDto;
-}
-
-/** POST /admin/v1/ownership-transfers/{id}/approve */
-export async function approveOwnershipTransfer(
-  client: ApiClient,
-  transferId: string,
-  body: ApproveTransferBody,
-  options: { signal?: AbortSignal } = {},
-): Promise<TransferCompletedDto> {
-  const response = await client.post<unknown>(
-    endpoints.admin.approveOwnershipTransfer(transferId),
-    body,
-    { ...(options.signal ? { signal: options.signal } : {}) },
-  );
-  return unwrapEnvelope(response) as TransferCompletedDto;
 }
 
 /** POST /admin/v1/partner-reorders/{id}/fulfil */
@@ -1768,8 +1722,10 @@ export type OwnershipClaimDto = {
   claimantAccountId: string;
   status: OwnershipClaimStatus;
   rcMediaAssetId: string;
+  /** Server-derived (BE-OWN-17) — never a client-supplied value. */
   planSubscriptionId: string | null;
   notes: string | null;
+  /** The Admin's remarks when REJECTED. */
   rejectionReason: string | null;
   reviewedByAdminId: string | null;
   reviewedAt: string | null;
@@ -1777,28 +1733,105 @@ export type OwnershipClaimDto = {
   updatedAt: string;
 };
 
-/** Query for `GET /admin/v1/ownership-claims`. */
+/** Advisory registry pre-check outcome on an admin claim row. Never decides anything. */
+export type OwnershipClaimPrecheck = 'MATCHED' | 'MISMATCHED' | 'MANUAL_REVIEW';
+
+/** One field of the pre-check — the outcome only, never the compared values. */
+export type OwnershipClaimPrecheckField = 'MATCH' | 'MISMATCH' | 'UNAVAILABLE';
+
+/** `precheckDetails` — per-field outcome of the advisory registry pre-check. */
+export type OwnershipClaimPrecheckDetails = {
+  registry?: 'VAHAN' | 'SANDBOX' | 'UNAVAILABLE' | 'NO_RECORD';
+  registration?: OwnershipClaimPrecheckField;
+  ownerName?: OwnershipClaimPrecheckField;
+  /** The claimant's profile name against the RC owner name(s) (any joint owner matches). */
+  claimantName?: OwnershipClaimPrecheckField;
+  chassis?: OwnershipClaimPrecheckField;
+  engine?: OwnershipClaimPrecheckField;
+};
+
+/** `plateConflict` — other vehicle rows carrying the same plate (legacy duplicates, D-2). */
+export type OwnershipClaimPlateConflict = {
+  otherRows: number;
+  /** True when another row of this plate has an RC-verified owner → approve answers 409. */
+  verifiedElsewhere: boolean;
+};
+
+/**
+ * OpenAPI `AdminOwnershipClaimDto` — an admin queue row. The extra fields are optional so an older
+ * API that still returns the bare claim degrades to "unknown" instead of crashing.
+ */
+export type AdminOwnershipClaimDto = OwnershipClaimDto & {
+  registration?: string | null;
+  claimantUsername?: string | null;
+  precheck?: OwnershipClaimPrecheck | null;
+  precheckMismatchCode?: string | null;
+  precheckDetails?: OwnershipClaimPrecheckDetails | null;
+  plateConflict?: OwnershipClaimPlateConflict | null;
+  rcRegistration?: string | null;
+  rcChassisLast5?: string | null;
+  rcEngineLast5?: string | null;
+  /** The Admin decision remarks (approve and reject). */
+  reviewRemarks?: string | null;
+};
+
+/** Query for `GET /admin/v1/ownership-claims` (keyset, newest first). */
 export type ListAdminOwnershipClaimsQuery = {
   status?: OwnershipClaimStatus;
+  /** 1–100, server default 50. */
+  limit?: number;
+  /** Opaque `meta.pagination.nextCursor` from the previous page (same `status`). */
+  cursor?: string;
 };
 
-/** Body for `POST /admin/v1/ownership-claims/{id}/review`. */
-export type ReviewOwnershipClaimBody = {
-  decision: 'APPROVED' | 'REJECTED' | 'UNDER_REVIEW';
-  rejectionReason?: string;
+/** One keyset page of the admin claim queue. */
+export type AdminOwnershipClaimsPageResult = {
+  items: AdminOwnershipClaimDto[];
+  pagination: PaginationDto | null;
 };
 
-/** GET /admin/v1/ownership-claims */
+/**
+ * Body for `POST /admin/v1/ownership-claims/{id}/review`. `remarks` is mandatory for APPROVED and
+ * REJECTED (owner rule); UNDER_REVIEW takes none.
+ */
+export type ReviewOwnershipClaimBody =
+  | { decision: 'APPROVED' | 'REJECTED'; remarks: string }
+  | { decision: 'UNDER_REVIEW'; remarks?: string };
+
+/** GET /admin/v1/ownership-claims — one keyset page with `meta.pagination`. */
+export async function listAdminOwnershipClaimsPage(
+  client: ApiClient,
+  query: ListAdminOwnershipClaimsQuery = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<AdminOwnershipClaimsPageResult> {
+  const path = `${endpoints.admin.adminOwnershipClaims}${buildQuery({
+    status: query.status,
+    limit: query.limit,
+    cursor: query.cursor,
+  })}`;
+  const response = await client.get<unknown>(path, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const pagination = readEnvelopeMeta(response)?.pagination;
+  return {
+    items: unwrapEnvelope(response) as AdminOwnershipClaimDto[],
+    pagination:
+      pagination &&
+      typeof pagination === 'object' &&
+      'hasMore' in pagination &&
+      'limit' in pagination
+        ? (pagination as PaginationDto)
+        : null,
+  };
+}
+
+/** GET /admin/v1/ownership-claims — first page only (dashboard counts). */
 export async function listAdminOwnershipClaims(
   client: ApiClient,
   query: ListAdminOwnershipClaimsQuery = {},
   options: { signal?: AbortSignal } = {},
-): Promise<OwnershipClaimDto[]> {
-  const path = `${endpoints.admin.adminOwnershipClaims}${buildQuery({ status: query.status })}`;
-  const response = await client.get<unknown>(path, {
-    ...(options.signal ? { signal: options.signal } : {}),
-  });
-  return unwrapEnvelope(response) as OwnershipClaimDto[];
+): Promise<AdminOwnershipClaimDto[]> {
+  return (await listAdminOwnershipClaimsPage(client, query, options)).items;
 }
 
 /** POST /admin/v1/ownership-claims/{id}/review */
@@ -1812,6 +1845,57 @@ export async function reviewOwnershipClaim(
     ...(options.signal ? { signal: options.signal } : {}),
   });
   return unwrapEnvelope(response) as OwnershipClaimDto;
+}
+
+/** `GET /admin/v1/ownership-claims/review-access` — the server's reviewer allowlist verdict (D-13). */
+export type OwnershipReviewAccessDto = {
+  canDecide: boolean;
+};
+
+/** GET /admin/v1/ownership-claims/review-access */
+export async function getOwnershipReviewAccess(
+  client: ApiClient,
+  options: { signal?: AbortSignal } = {},
+): Promise<OwnershipReviewAccessDto> {
+  const response = await client.get<unknown>(endpoints.admin.ownershipReviewAccess, {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  return unwrapEnvelope(response) as OwnershipReviewAccessDto;
+}
+
+export type VehicleOwnershipHistoryReason =
+  | 'CLAIM_APPROVED'
+  | 'PROVISIONAL_EXPIRED'
+  | 'ACCOUNT_ERASED';
+
+/** One `vehicle_ownership_history` row (newest first). */
+export type VehicleOwnershipHistoryDto = {
+  id: string;
+  vehicleId: string;
+  fromAccountId: string | null;
+  toAccountId: string | null;
+  reason: VehicleOwnershipHistoryReason;
+  claimId: string | null;
+  decidedByAdminId: string | null;
+  remarks: string | null;
+  /** Drivers suspended by this change. */
+  removedDriverCount: number;
+  createdAt: string;
+};
+
+/** GET /admin/v1/vehicles/{vehicleId}/ownership-history */
+export async function listAdminVehicleOwnershipHistory(
+  client: ApiClient,
+  vehicleId: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<VehicleOwnershipHistoryDto[]> {
+  const response = await client.get<unknown>(endpoints.admin.vehicleOwnershipHistory(vehicleId), {
+    ...(options.signal ? { signal: options.signal } : {}),
+  });
+  const data = unwrapEnvelope(response);
+  if (Array.isArray(data)) return data as VehicleOwnershipHistoryDto[];
+  const items = (data as { items?: unknown } | null)?.items;
+  return Array.isArray(items) ? (items as VehicleOwnershipHistoryDto[]) : [];
 }
 
 /**
@@ -2230,8 +2314,18 @@ export type AdminVehicleOwnerDto = {
   ownershipVerifiedAt: string | null;
 };
 
-/** OpenAPI `AdminVehicleDriverDto.status` */
-export type AdminVehicleDriverStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'REMOVED';
+/**
+ * OpenAPI `AdminVehicleDriverDto.status`. The ownership rules add SUSPENDED (after a transfer or a
+ * provisional expiry), EXPIRED (pending > 7 days) and CANCELLED (withdrawn / cancelled on transfer).
+ */
+export type AdminVehicleDriverStatus =
+  | 'PENDING'
+  | 'ACTIVE'
+  | 'SUSPENDED'
+  | 'REJECTED'
+  | 'REMOVED'
+  | 'CANCELLED'
+  | 'EXPIRED';
 
 /** OpenAPI `AdminVehicleDriverDto` — one driver membership on a vehicle. */
 export type AdminVehicleDriverDto = {
