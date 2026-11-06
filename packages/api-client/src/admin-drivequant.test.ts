@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { getAdminSosCrashTelemetry, getAdminUserTrip, listAdminUserCrashes } from './admin-v4';
+import {
+  acknowledgeAdminDriveQuantOpsAlert,
+  getAdminSosCrashTelemetry,
+  getAdminUserTrip,
+  listAdminDriveQuantOpsAlerts,
+  listAdminUserCrashes,
+} from './admin-v4';
 import { ApiClient, ApiError } from './client';
 
 const META = { requestId: 'r', correlationId: 'c' };
@@ -64,5 +70,43 @@ describe('admin DriveQuant telemetry contracts', () => {
     );
     expect(rows[0]?.crashId).toBe('c1');
     await expect(getAdminSosCrashTelemetry(client, 'inc-1')).rejects.toBeInstanceOf(ApiError);
+  });
+
+  it('crash rows carry the consent / plan flags as sent', async () => {
+    const fetchImpl = vi.fn().mockResolvedValueOnce(
+      jsonResponse(200, {
+        data: [
+          {
+            crashId: 'c1',
+            state: 'FAILED_TO_PREDICT',
+            withheldReason: 'NO_CONSENT',
+            entitlementStatus: 'NOT_ENTITLED',
+          },
+        ],
+        meta: META,
+      }),
+    );
+    const [row] = await listAdminUserCrashes(clientWith(fetchImpl), 'u-1');
+    expect(row?.withheldReason).toBe('NO_CONSENT');
+    expect(row?.entitlementStatus).toBe('NOT_ENTITLED');
+  });
+
+  it('safety alerts: open by default, includeAcknowledged only when asked; acknowledge posts', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(200, { data: [{ id: 'a1' }], meta: META }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: [], meta: META }))
+      .mockResolvedValueOnce(jsonResponse(200, { data: { acknowledged: true }, meta: META }));
+    const client = clientWith(fetchImpl);
+    expect(await listAdminDriveQuantOpsAlerts(client, { limit: 50 })).toHaveLength(1);
+    expect(urlOf(fetchImpl)).toBe('https://example.test/admin/v1/drivequant/ops-alerts?limit=50');
+    await listAdminDriveQuantOpsAlerts(client, { includeAcknowledged: true });
+    expect(urlOf(fetchImpl, 1)).toBe(
+      'https://example.test/admin/v1/drivequant/ops-alerts?includeAcknowledged=true',
+    );
+    expect(await acknowledgeAdminDriveQuantOpsAlert(client, 'a 1')).toEqual({ acknowledged: true });
+    const [url, init] = fetchImpl.mock.calls[2] as [string, RequestInit];
+    expect(url).toBe('https://example.test/admin/v1/drivequant/ops-alerts/a%201/acknowledge');
+    expect(init.method).toBe('POST');
   });
 });

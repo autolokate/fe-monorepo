@@ -833,18 +833,54 @@ export async function getAdminUserTrip(
   return unwrapEnvelope(response) as AdminUserTripDetailDto;
 }
 
+/** `dq_crashes.state`: FAILED_TO_PREDICT is stored for admin review and never escalated. */
+export type AdminDqCrashState = 'CONFIRMED' | 'UNCONFIRMED' | 'FAILED_TO_PREDICT';
+
+/** `dq_crashes.outcome` (`DqCrashAck.outcome`). */
+export type AdminDqCrashOutcome =
+  | 'DISPATCHED'
+  | 'UNCONFIRMED'
+  | 'UNATTRIBUTED'
+  | 'NO_VEHICLE'
+  | 'NOT_ENTITLED'
+  | 'CANCELLED'
+  | 'QUARANTINED';
+
+/** Consent / plan gap recorded at receipt (a CONFIRMED crash still escalates). */
+export type AdminDqWithheldReason = 'NO_CONSENT' | 'NOT_ENTITLED';
+
+/** The account's own paid-plan state at receipt (null on rows stored before 0250). */
+export type AdminDqEntitlementStatus = 'ENTITLED' | 'NOT_ENTITLED';
+
+/** How the crash vehicle was chosen (`dq_crashes.vehicle_attribution`). */
+export type AdminDqVehicleAttribution =
+  | 'TRIP_MATCH'
+  | 'SINGLE_BINDING'
+  | 'LAST_TRIP'
+  | 'FIRST_BINDING_FALLBACK'
+  | 'ACCOUNT_VEHICLE_FALLBACK'
+  | 'APP_SOS';
+
 /** OpenAPI `DqAdminCrashDto` — one crash of a user (no location). */
 export type AdminDqUserCrashDto = {
   crashId: string;
-  /** CONFIRMED | UNCONFIRMED | FAILED_TO_PREDICT */
+  /** {@link AdminDqCrashState} (kept open for forward-compatible values). */
   state: string;
+  /** 0–100 (integer). */
   probability: number | null;
+  /** {@link AdminDqCrashOutcome} (kept open). */
   outcome: string;
   crashAt: string | null;
   incidentId: string | null;
   vehicleId: string | null;
   dqTripId: string | null;
+  /** {@link AdminDqVehicleAttribution} (kept open). */
   vehicleAttribution: string | null;
+  /** {@link AdminDqWithheldReason} — absent on servers that predate it. */
+  withheldReason?: string | null;
+  /** {@link AdminDqEntitlementStatus} — absent on servers that predate it. */
+  entitlementStatus?: string | null;
+  /** km/h at impact. */
   velocityKmh: number | null;
   crashType: number | null;
   hasSensorData: boolean;
@@ -869,7 +905,9 @@ export async function listAdminUserCrashes(
 /** OpenAPI `DqCrashTelemetryDto` — decrypted crash telemetry (admin SOS console). */
 export type AdminDqCrashTelemetryDto = {
   crashId: string;
+  /** {@link AdminDqCrashState} */
   state: string;
+  /** 0–100 (integer). */
   probability: number | null;
   outcome: string;
   crashAt: string | null;
@@ -877,6 +915,10 @@ export type AdminDqCrashTelemetryDto = {
   dqTripId: string | null;
   vehicleId: string | null;
   vehicleAttribution: string | null;
+  /** {@link AdminDqWithheldReason} — absent on servers that predate it. */
+  withheldReason?: string | null;
+  /** {@link AdminDqEntitlementStatus} — absent on servers that predate it. */
+  entitlementStatus?: string | null;
   predictionVersion: string | null;
   crashType: number | null;
   velocityClass: number | null;
@@ -912,6 +954,59 @@ export async function getAdminSosCrashTelemetry(
   );
   const data = unwrapEnvelope(response);
   return Array.isArray(data) ? (data as AdminDqCrashTelemetryDto[]) : [];
+}
+
+/** OpenAPI `DqOpsAlertDto.kind`. */
+export type AdminDqOpsAlertKind =
+  | 'NO_VEHICLE_CONFIRMED_CRASH'
+  | 'UNPAID_CONFIRMED_CRASH'
+  | 'FAILED_TO_PREDICT_CRASH'
+  | 'MALFORMED_CRASH'
+  | 'VEHICLE_FALLBACK_CRASH';
+
+/** OpenAPI `DqOpsAlertDto` — PII-free (ids, reason codes, timestamps; no account id, no location). */
+export type AdminDqOpsAlertDto = {
+  id: string;
+  /** {@link AdminDqOpsAlertKind} (kept open). */
+  kind: string;
+  /** crashId, or the quarantined payload digest. */
+  ref: string;
+  incidentId: string | null;
+  /** Reason codes only. */
+  detail: unknown;
+  createdAt: string;
+  acknowledgedAt: string | null;
+};
+
+/** GET /admin/v1/drivequant/ops-alerts?limit=1..200&includeAcknowledged= (open only by default). */
+export async function listAdminDriveQuantOpsAlerts(
+  client: ApiClient,
+  query: { limit?: number; includeAcknowledged?: boolean } = {},
+  options: RequestOptions = {},
+): Promise<AdminDqOpsAlertDto[]> {
+  const response = await client.get<unknown>(
+    `/admin/v1/drivequant/ops-alerts${buildQuery({
+      limit: query.limit,
+      includeAcknowledged: query.includeAcknowledged ? true : undefined,
+    })}`,
+    signalOption(options),
+  );
+  const data = unwrapEnvelope(response);
+  return Array.isArray(data) ? (data as AdminDqOpsAlertDto[]) : [];
+}
+
+/** POST /admin/v1/drivequant/ops-alerts/{id}/acknowledge → `{acknowledged:true}` (404 when not open). */
+export async function acknowledgeAdminDriveQuantOpsAlert(
+  client: ApiClient,
+  id: string,
+  options: RequestOptions = {},
+): Promise<{ acknowledged: boolean }> {
+  const response = await client.post<unknown>(
+    `/admin/v1/drivequant/ops-alerts/${enc(id)}/acknowledge`,
+    undefined,
+    signalOption(options),
+  );
+  return unwrapEnvelope(response) as { acknowledged: boolean };
 }
 
 /* ------------------------------------------------------------------------------------------------
