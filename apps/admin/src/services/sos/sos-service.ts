@@ -1,5 +1,7 @@
 import {
   addAdminSosNote,
+  getAdminSosCrashTelemetry,
+  type AdminDqCrashTelemetryDto,
   getAdminSosIncident,
   listAdminSosIncidents,
   resolveAdminSosIncident,
@@ -53,4 +55,12 @@ export function runSosOperatorAction(
     default:
       return runAdminSosAction(client, incidentId, action.kind satisfies AdminSosAction);
   }
+}
+
+/** GET /admin/v1/sos-incidents/{id}/crash-telemetry — decrypted crash data, audited, `no-store`. */
+export function fetchSosCrashTelemetry(
+  incidentId: string,
+  signal?: AbortSignal,
+): Promise<AdminDqCrashTelemetryDto[]> {
+  return getAdminSosCrashTelemetry(getAdminApiClient(), incidentId, signal ? { signal } : {});
 }

@@ -54,6 +54,7 @@ test.describe('Users v4 panels (hermetic)', () => {
     const capture = await installUsersV4Routes(page);
     await seedHermeticSession(page);
     await openAccount(page);
+    await page.getByRole('tab', { name: 'Driving' }).click();
 
     await expect(page.getByTestId('user-trips-audit-note')).toContainText('DRIVER_TRIP_ACCESS');
     expect(capture.trips).toEqual([]);

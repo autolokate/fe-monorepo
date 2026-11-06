@@ -33,7 +33,14 @@ function minutes(value: number | null | undefined): string {
  * DriveQuant trips (push / pull / client) and the driver score the app shows — for score disputes and
  * crash-alert questions. Both reads write a `DRIVER_TRIP_ACCESS` audit row, so they load on request.
  */
-export function UserDriveQuantPanel({ userId }: { userId: string }) {
+export function UserDriveQuantPanel({
+  userId,
+  onOpenTrip,
+}: {
+  userId: string;
+  /** Open the trip drawer (audited detail read). */
+  onOpenTrip?: (trip: AdminUserTripDto) => void;
+}) {
   const [optedIn, setOptedIn] = useState(false);
   const [fromDraft, setFromDraft] = useState('');
   const [toDraft, setToDraft] = useState('');
@@ -96,7 +103,11 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
         accessorFn: (row) => row.source,
         cell: ({ row }) => (
           <span className="admin-v4-stack">
-            <span>{humanizeAdminLabel(row.original.source)}</span>
+            <span>
+              {row.original.source === 'CLIENT'
+                ? 'Phone'
+                : `DriveQuant ${humanizeAdminLabel(row.original.source).toLowerCase()}`}
+            </span>
             <span className="admin-v4-stack__secondary admin-mono" title={row.original.tripId}>
               {shortAdminId(row.original.tripId, 12)}
             </span>
@@ -223,7 +234,14 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
                 emptyTitle="No trips"
                 emptyDescription="No DriveQuant trips for this account in this range."
                 getRowId={(row) => row.tripId}
+                {...(onOpenTrip ? { onRowClick: onOpenTrip } : {})}
               />
+              {onOpenTrip && trips.items.length > 0 ? (
+                <p className="admin-muted dq-footnote">
+                  Open a trip for every DriveQuant metric and event (audited read). Transport mode
+                  and driver / passenger are shown in the trip.
+                </p>
+              ) : null}
               <AdminLoadMore
                 hasMore={trips.hasMore}
                 loading={trips.isFetchingNextPage}

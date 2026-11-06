@@ -770,6 +770,150 @@ export async function getAdminUserDriverScore(
   return unwrapEnvelope(response) as AdminDriverScoreDto;
 }
 
+/** DriveQuant event kinds (`DqTripEventDto.kind`). */
+export type AdminDqEventKind = 'SAFETY' | 'DISTRACTION' | 'CALL' | 'SPEEDING' | 'STOP';
+
+/** Decrypted event location — present only when the server returns it. */
+export type AdminDqGeoPoint = { lat: number; lng: number; heading?: number; elevation?: number };
+
+/** OpenAPI `DqTripEventDto`. */
+export type AdminDqTripEvent = {
+  /** {@link AdminDqEventKind} (kept open for forward-compatible values). */
+  kind: string;
+  seq: number;
+  /** Seconds since trip start. */
+  offsetS: number | null;
+  at: string | null;
+  /** SAFETY 1 adherence / 2 acceleration / 3 braking; DISTRACTION 1 screen on / 2 off; CALL 3 start / 4 end; SPEEDING 1 start / 0 end. */
+  type: number | null;
+  /** SAFETY: 1 strong, 2 harsh. */
+  level: number | null;
+  /** SAFETY: m/s² (acceleration / braking) or 0–1 (adherence). */
+  value: number | null;
+  velocityKmh: number | null;
+  distanceM: number | null;
+  durationS: number | null;
+  attrs: Record<string, unknown>;
+  location: AdminDqGeoPoint | null;
+};
+
+/** OpenAPI `DqTripTelemetryDto` — the admin read never carries `route`. */
+export type AdminDqTripTelemetry = {
+  schemaVersion: number;
+  processingDate: string | null;
+  timezoneOffsetMin: number | null;
+  /** PUSH | PULL (kept open for forward-compatible values). */
+  source: string;
+  versionsReceived: number;
+  /** DriveQuant metric sections keyed by DriveQuant name (DriveQuant units). */
+  metrics: Record<string, unknown>;
+  places: Record<string, string> | null;
+  events: AdminDqTripEvent[];
+  routePoints: number | null;
+  receivedAt: string;
+  updatedAt: string;
+};
+
+/** OpenAPI `AdminUserTripDetailDto` — the trip summary + telemetry (null for a phone-reported trip). */
+export type AdminUserTripDetailDto = Omit<AdminUserTripDto, 'source'> & {
+  telemetry: AdminDqTripTelemetry | null;
+};
+
+/** GET /admin/v1/users/{userId}/trips/{tripId} — audited (`DRIVER_TRIP_ACCESS`), `no-store`. */
+export async function getAdminUserTrip(
+  client: ApiClient,
+  userId: string,
+  tripId: string,
+  options: RequestOptions = {},
+): Promise<AdminUserTripDetailDto> {
+  const response = await client.get<unknown>(
+    `/admin/v1/users/${enc(userId)}/trips/${enc(tripId)}`,
+    signalOption(options),
+  );
+  return unwrapEnvelope(response) as AdminUserTripDetailDto;
+}
+
+/** OpenAPI `DqAdminCrashDto` — one crash of a user (no location). */
+export type AdminDqUserCrashDto = {
+  crashId: string;
+  /** CONFIRMED | UNCONFIRMED | FAILED_TO_PREDICT */
+  state: string;
+  probability: number | null;
+  outcome: string;
+  crashAt: string | null;
+  incidentId: string | null;
+  vehicleId: string | null;
+  dqTripId: string | null;
+  vehicleAttribution: string | null;
+  velocityKmh: number | null;
+  crashType: number | null;
+  hasSensorData: boolean;
+  receivedAt: string;
+};
+
+/** GET /admin/v1/users/{userId}/crashes?limit=1..200 — audited (`DRIVER_TRIP_ACCESS`). */
+export async function listAdminUserCrashes(
+  client: ApiClient,
+  userId: string,
+  query: { limit?: number } = {},
+  options: RequestOptions = {},
+): Promise<AdminDqUserCrashDto[]> {
+  const response = await client.get<unknown>(
+    `/admin/v1/users/${enc(userId)}/crashes${buildQuery({ limit: query.limit })}`,
+    signalOption(options),
+  );
+  const data = unwrapEnvelope(response);
+  return Array.isArray(data) ? (data as AdminDqUserCrashDto[]) : [];
+}
+
+/** OpenAPI `DqCrashTelemetryDto` — decrypted crash telemetry (admin SOS console). */
+export type AdminDqCrashTelemetryDto = {
+  crashId: string;
+  state: string;
+  probability: number | null;
+  outcome: string;
+  crashAt: string | null;
+  tripStartedAt: string | null;
+  dqTripId: string | null;
+  vehicleId: string | null;
+  vehicleAttribution: string | null;
+  predictionVersion: string | null;
+  crashType: number | null;
+  velocityClass: number | null;
+  /** km/h at impact. */
+  velocityKmh: number | null;
+  velocityOffsetNearKmh: number | null;
+  /** gpsFeatures (no lat/lng), movementFeatures, windows, metaData. */
+  features: Record<string, unknown> | null;
+  gpsSamples: number | null;
+  imuSamples: number | null;
+  gpsAccuracyM: { min: number | null; max: number | null };
+  location: { lat: number; lng: number } | null;
+  userLocationUrl: string | null;
+  /** GPS window: timestamp (s), latitude, longitude, velocity (km/h), heading, accuracy (m), elevation. */
+  gps: Record<string, number[]> | null;
+  /** IMU window: timestamp (ms), accelerationX/Y/Z (mG) + any further series DriveQuant adds. */
+  imu: Record<string, number[]> | null;
+  /** Crash Report push: tripConditions, driverFatigue, aggressiveDriving, phoneUsage, speeding, riskFactors. */
+  report: Record<string, unknown> | null;
+  versionsReceived: number;
+  receivedAt: string;
+};
+
+/** GET /admin/v1/sos-incidents/{incidentId}/crash-telemetry — audited `INCIDENT_PII_ACCESS`, `no-store`. */
+export async function getAdminSosCrashTelemetry(
+  client: ApiClient,
+  incidentId: string,
+  options: RequestOptions = {},
+): Promise<AdminDqCrashTelemetryDto[]> {
+  const response = await client.get<unknown>(
+    `/admin/v1/sos-incidents/${enc(incidentId)}/crash-telemetry`,
+    signalOption(options),
+  );
+  const data = unwrapEnvelope(response);
+  return Array.isArray(data) ? (data as AdminDqCrashTelemetryDto[]) : [];
+}
+
 /* ------------------------------------------------------------------------------------------------
  * Dashboard queue counters
  * ---------------------------------------------------------------------------------------------- */

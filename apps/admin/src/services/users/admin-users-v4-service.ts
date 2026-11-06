@@ -12,6 +12,8 @@ import type {
   AdminSystemNotificationResultDto,
   AdminUserDeviceDto,
   AdminUserNotificationDto,
+  AdminDqUserCrashDto,
+  AdminUserTripDetailDto,
   AdminUserTripDto,
   AdminV4Page,
   ListAdminScanLookupsQuery,
@@ -21,6 +23,8 @@ import {
   getAdminActiveVehicleDuplicates,
   getAdminScanAbuse,
   getAdminUserDriverScore,
+  getAdminUserTrip,
+  listAdminUserCrashes,
   listAdminPlateCollisions,
   listAdminScanLookups,
   listAdminUnparsedPlates,
@@ -117,6 +121,31 @@ export function fetchUserDriverScore(
   signal?: AbortSignal,
 ): Promise<AdminDriverScoreDto> {
   return getAdminUserDriverScore(getAdminApiClient(), userId, { signal });
+}
+
+/** Crashes listed on the Driving tab (server max 200). */
+export const USER_CRASHES_LIMIT = 50;
+
+/** GET /admin/v1/users/{userId}/trips/{tripId} — audited (`DRIVER_TRIP_ACCESS`), never the route. */
+export function fetchUserTripDetail(
+  userId: string,
+  tripId: string,
+  signal?: AbortSignal,
+): Promise<AdminUserTripDetailDto> {
+  return getAdminUserTrip(getAdminApiClient(), userId, tripId, { signal });
+}
+
+/** GET /admin/v1/users/{userId}/crashes — audited (`DRIVER_TRIP_ACCESS`), no location. */
+export function fetchUserCrashes(
+  userId: string,
+  signal?: AbortSignal,
+): Promise<AdminDqUserCrashDto[]> {
+  return listAdminUserCrashes(
+    getAdminApiClient(),
+    userId,
+    { limit: USER_CRASHES_LIMIT },
+    { signal },
+  );
 }
 
 /** GET /admin/v1/vehicles?plate= */

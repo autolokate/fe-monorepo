@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
+import { SosCrashTelemetryPanel } from '@/features/drivequant/SosCrashTelemetryPanel';
 import { SosActionBar } from '@/features/sos/SosActionBar';
 import { SosLocationMap } from '@/features/sos/SosLocationMap';
 import { sosErrorView } from '@/features/sos/sos-errors';
@@ -364,7 +365,15 @@ export function SosIncidentDetailPage() {
                 <CallsPanel detail={detail} />
                 <ContactsPanel detail={detail} />
                 <DispatchPanel detail={detail} />
-                <CrashPanel detail={detail} />
+                {detail.trigger === 'CRASH' ? (
+                  <SosCrashTelemetryPanel
+                    incidentId={detail.incidentId}
+                    accountId={detail.subject.accountId}
+                    summary={detail.crash}
+                  />
+                ) : (
+                  <CrashPanel detail={detail} />
+                )}
               </div>
               <div className="sos-detail-grid__col">
                 <AdminPanel
