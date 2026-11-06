@@ -20,6 +20,16 @@ import {
   type DqMetricSection,
 } from '@/features/drivequant/drivequant-model';
 import { DqChip, DqErrorBlock, DqRawBlock } from '@/features/drivequant/dq-ui';
+import {
+  formatIst,
+  formatIstTime,
+  formatKm,
+  formatMinutes,
+  formatScore,
+  tripSourceStatus,
+  vehicleLabel,
+  type VehicleIdentity,
+} from '@/features/drivequant/driving-status';
 import { googleMapsPointHref } from '@/features/sos/sos-model';
 import { useUserTripDetail } from '@/hooks/drivequant/useDriveQuantTelemetry';
 import {
@@ -28,25 +38,12 @@ import {
   AdminDetailSection,
 } from '@/platform/components/AdminDetailField';
 import { AdminPageLoader } from '@/platform/components/AdminPageLoader';
-import { humanizeAdminLabel, shortAdminId } from '@/platform/components/AdminWowSurface';
-import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
+import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 const EVENTS_PAGE = 100;
 
-function score(value: number | null | undefined): string {
-  return typeof value === 'number' && Number.isFinite(value) ? formatDqNumber(value, 1) : '—';
-}
-
-function minutes(value: number | null | undefined): string {
-  return typeof value === 'number' && Number.isFinite(value)
-    ? `${String(Math.round(value))} min`
-    : '—';
-}
-
 export function dqSourceLabel(source: string | undefined, verified: boolean): string {
-  if (source === 'CLIENT' || (!source && !verified)) return 'Phone-reported (unverified)';
-  if (source === 'PULL') return 'DriveQuant verified (pull)';
-  return 'DriveQuant verified (push)';
+  return tripSourceStatus(source, verified).label;
 }
 
 function MetricSectionView({ section }: { section: DqMetricSection }) {
@@ -106,7 +103,7 @@ function EventItem({ event }: { event: AdminDqTripEvent }) {
         {detail ? <p className="dq-timeline__detail">{detail}</p> : null}
         <p className="admin-muted dq-timeline__meta ax-num">
           {event.offsetS !== null ? formatDqOffset(event.offsetS) : ''}
-          {event.at ? ` · ${formatAdminDateTime(event.at)}` : ''}
+          {event.at ? ` · ${formatIstTime(event.at)}` : ''}
           {event.location ? (
             <>
               {' · '}
@@ -116,6 +113,7 @@ function EventItem({ event }: { event: AdminDqTripEvent }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="dq-event-map"
+                title="Open this point in maps (new tab)"
               >
                 {event.location.lat.toFixed(5)}, {event.location.lng.toFixed(5)}{' '}
                 <ExternalLink size={12} aria-hidden />
@@ -128,6 +126,10 @@ function EventItem({ event }: { event: AdminDqTripEvent }) {
   );
 }
 
+function placeLine(parts: (string | undefined)[]): string {
+  return parts.filter(Boolean).join(', ') || '—';
+}
+
 function TripTelemetry({ trip }: { trip: AdminUserTripDetailDto }) {
   const telemetry = trip.telemetry;
   const view = useMemo(() => buildDqMetricsView(telemetry?.metrics), [telemetry]);
@@ -138,8 +140,8 @@ function TripTelemetry({ trip }: { trip: AdminUserTripDetailDto }) {
   if (!telemetry) {
     return (
       <p className="admin-empty-note" data-testid="dq-trip-no-telemetry">
-        No DriveQuant telemetry for this trip — it was reported by the phone, or stored before the
-        full data was kept.
+        No detailed telemetry for this trip — it was reported by the phone, or stored before
+        detailed data was kept. The summary above is all that exists.
       </p>
     );
   }
@@ -152,58 +154,23 @@ function TripTelemetry({ trip }: { trip: AdminUserTripDetailDto }) {
           <AdminDetailGrid>
             <AdminDetailField
               label="From"
-              value={
-                [places.departureAddress, places.departureCity, places.departureCountry]
-                  .filter(Boolean)
-                  .join(', ') || '—'
-              }
+              value={placeLine([
+                places.departureAddress,
+                places.departureCity,
+                places.departureCountry,
+              ])}
             />
             <AdminDetailField
               label="To"
-              value={
-                [places.arrivalAddress, places.arrivalCity, places.arrivalCountry]
-                  .filter(Boolean)
-                  .join(', ') || '—'
-              }
+              value={placeLine([places.arrivalAddress, places.arrivalCity, places.arrivalCountry])}
             />
           </AdminDetailGrid>
         </AdminDetailSection>
       ) : null}
 
-      {view.groups.map((group) => (
-        <AdminDetailSection key={group.id} title={group.title}>
-          <div className="dq-group" data-testid={`dq-group-${group.id}`}>
-            {group.sections.map((section) => (
-              <MetricSectionView key={section.key} section={section} />
-            ))}
-          </div>
-        </AdminDetailSection>
-      ))}
-
-      {view.advice.length > 0 ? (
-        <AdminDetailSection title="Coaching advice" description="DriveQuant advice ids and themes.">
-          <ul className="dq-advice" data-testid="dq-advice">
-            {view.advice.map((advice, index) => (
-              <li key={advice.id ?? index}>
-                <strong>{advice.title ?? 'Advice'}</strong>
-                <span className="admin-muted admin-mono">
-                  {' '}
-                  {[
-                    advice.messageId,
-                    advice.theme !== null ? `theme ${String(advice.theme)}` : null,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </AdminDetailSection>
-      ) : null}
-
       <AdminDetailSection
         title={`Events (${String(events.length)})`}
-        description="Trip order. A location shows only when the server returned one; the full route is never shown to admins."
+        description="Trip order, times in IST. A location shows only when the server returned one; the full route is never shown to admins."
       >
         {events.length === 0 ? (
           <p className="admin-muted">No events on this trip.</p>
@@ -249,32 +216,78 @@ function TripTelemetry({ trip }: { trip: AdminUserTripDetailDto }) {
         )}
       </AdminDetailSection>
 
-      {view.unknown.length > 0 || view.unmappedKeys.length > 0 ? (
+      {view.advice.length > 0 ? (
         <AdminDetailSection
-          title="Other data"
-          description="Fields this console has no layout for yet, shown as sent."
+          title="Coaching advice"
+          description="Advice shown to the driver for this trip."
         >
-          {view.unmappedKeys.length > 0 ? (
-            <p className="admin-muted" data-testid="dq-unmapped-keys">
-              DriveQuant sent keys the server does not map yet:{' '}
-              <span className="admin-mono">{view.unmappedKeys.join(', ')}</span>
-            </p>
-          ) : null}
-          {view.unknown.map((entry) => (
-            <DqRawBlock
-              key={entry.key}
-              title={humanizeAdminLabel(entry.key)}
-              value={entry.value}
-              testId={`dq-raw-${entry.key}`}
-            />
-          ))}
+          <ul className="dq-advice" data-testid="dq-advice">
+            {view.advice.map((advice, index) => (
+              <li key={advice.id ?? index}>
+                <strong>{advice.title ?? 'Advice'}</strong>
+                <span className="admin-muted admin-mono">
+                  {' '}
+                  {[
+                    advice.messageId,
+                    advice.theme !== null ? `theme ${String(advice.theme)}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+              </li>
+            ))}
+          </ul>
         </AdminDetailSection>
       ) : null}
 
+      {view.groups.length > 0 ? (
+        <details className="dq-investigate" data-testid="dq-trip-advanced">
+          <summary>
+            <strong>Detailed metrics</strong>{' '}
+            <span className="admin-muted">
+              ({String(view.groups.length)} {view.groups.length === 1 ? 'group' : 'groups'} — for
+              investigating a score or event)
+            </span>
+          </summary>
+          <div className="dq-investigate__body">
+            {view.groups.map((group) => (
+              <AdminDetailSection key={group.id} title={group.title}>
+                <div className="dq-group" data-testid={`dq-group-${group.id}`}>
+                  {group.sections.map((section) => (
+                    <MetricSectionView key={section.key} section={section} />
+                  ))}
+                </div>
+              </AdminDetailSection>
+            ))}
+            {view.unknown.length > 0 || view.unmappedKeys.length > 0 ? (
+              <AdminDetailSection
+                title="Other data"
+                description="Fields this console has no layout for yet, shown as sent."
+              >
+                {view.unmappedKeys.length > 0 ? (
+                  <p className="admin-muted" data-testid="dq-unmapped-keys">
+                    Fields the server received but does not map yet:{' '}
+                    <span className="admin-mono">{view.unmappedKeys.join(', ')}</span>
+                  </p>
+                ) : null}
+                {view.unknown.map((entry) => (
+                  <DqRawBlock
+                    key={entry.key}
+                    title={humanizeAdminLabel(entry.key)}
+                    value={entry.value}
+                    testId={`dq-raw-${entry.key}`}
+                  />
+                ))}
+              </AdminDetailSection>
+            ) : null}
+          </div>
+        </details>
+      ) : null}
+
       <p className="admin-muted dq-footnote">
-        {telemetry.source === 'PULL' ? 'Pulled from DriveQuant' : 'DriveQuant push'} · processed{' '}
-        {formatAdminDateTime(telemetry.processingDate)} · version{' '}
-        {String(telemetry.versionsReceived)} · schema {String(telemetry.schemaVersion)}
+        {telemetry.source === 'PULL' ? 'Verified (server sync)' : 'Verified'} · processed{' '}
+        {formatIst(telemetry.processingDate)} · version {String(telemetry.versionsReceived)} ·
+        schema {String(telemetry.schemaVersion)}
         {telemetry.routePoints !== null
           ? ` · ${String(telemetry.routePoints)} route points (route not shown to admins)`
           : ''}
@@ -284,16 +297,18 @@ function TripTelemetry({ trip }: { trip: AdminUserTripDetailDto }) {
 }
 
 /**
- * Trip drawer: summary, every DriveQuant metric grouped, the events timeline. Opening it is an
- * audited `DRIVER_TRIP_ACCESS` read; the data is dropped from memory when the drawer closes.
+ * Trip drawer: summary, events timeline, then detailed metrics behind a disclosure. Opening it is
+ * an audited `DRIVER_TRIP_ACCESS` read; the data is dropped from memory when the drawer closes.
  */
 export function UserTripDetailSheet({
   userId,
   trip,
+  vehicles = [],
   onClose,
 }: {
   userId: string;
   trip: AdminUserTripDto | null;
+  vehicles?: readonly VehicleIdentity[];
   onClose: () => void;
 }) {
   const detail = useUserTripDetail(userId, trip?.tripId ?? null);
@@ -301,42 +316,50 @@ export function UserTripDetailSheet({
   const context = dqTripContext(data?.telemetry?.metrics);
   const summary = data ?? trip;
   const when = summary?.startedAt ?? (summary?.receivedAt || null);
+  // A trip opened from a crash event is a stub (no list row) until the detail read answers.
+  const isStub = trip !== null && trip.receivedAt === '';
+  const source =
+    summary && (!isStub || data)
+      ? tripSourceStatus(summary.verified ? trip?.source : 'CLIENT', summary.verified)
+      : null;
+  const vehicle = vehicleLabel(summary?.vehicleId, vehicles);
   return (
     <AlSheet
       open={trip !== null}
       onOpenChange={(open) => {
         if (!open) onClose();
       }}
-      title={when ? `Trip · ${formatAdminDateTime(when)}` : 'Trip'}
-      description="Every DriveQuant metric and event. Viewing is audited (DRIVER_TRIP_ACCESS)."
+      title={when ? `Trip · ${formatIst(when)}` : 'Trip'}
+      description="Trip summary, events and detailed metrics. Viewing is audited (DRIVER_TRIP_ACCESS)."
     >
       <div className="dq-drawer" data-testid="dq-trip-drawer">
         {summary ? (
           <AdminDetailSection title="Summary">
             <AdminDetailGrid>
-              <AdminDetailField label="Started" value={formatAdminDateTime(summary.startedAt)} />
-              <AdminDetailField label="Ended" value={formatAdminDateTime(summary.endedAt)} />
-              <AdminDetailField
-                label="Distance"
-                value={
-                  summary.distanceKm === null ? '—' : `${formatDqNumber(summary.distanceKm, 1)} km`
-                }
-              />
+              <AdminDetailField label="Started" value={formatIst(summary.startedAt)} />
+              <AdminDetailField label="Ended" value={formatIst(summary.endedAt)} />
+              <AdminDetailField label="Distance" value={formatKm(summary.distanceKm)} />
               <AdminDetailField
                 label="Duration (driving)"
-                value={`${minutes(summary.durationMinutes)} (${minutes(summary.drivingDurationMinutes)})`}
+                value={`${formatMinutes(summary.durationMinutes)} (${formatMinutes(summary.drivingDurationMinutes)})`}
               />
               <AdminDetailField
                 label="Safety / eco"
-                value={`${score(summary.scores.safety)} / ${score(summary.scores.eco)}`}
+                value={`${formatScore(summary.scores.safety)} / ${formatScore(summary.scores.eco)}`}
               />
               <AdminDetailField
                 label="Distraction / speeding"
-                value={`${score(summary.scores.distraction)} / ${score(summary.scores.speeding)}`}
+                value={`${formatScore(summary.scores.distraction)} / ${formatScore(summary.scores.speeding)}`}
               />
               <AdminDetailField
                 label="Source"
-                value={dqSourceLabel(trip?.source, summary.verified)}
+                value={source ? <DqChip label={source.label} tone={source.tone} /> : '—'}
+              />
+              <AdminDetailField
+                label="Vehicle"
+                value={
+                  vehicle.secondary ? `${vehicle.primary} · ${vehicle.secondary}` : vehicle.primary
+                }
               />
               <AdminDetailField label="Transport" value={context.transport ?? '—'} />
               <AdminDetailField
@@ -347,7 +370,6 @@ export function UserTripDetailSheet({
                     : '—'
                 }
               />
-              <AdminDetailField label="Vehicle" value={shortAdminId(summary.vehicleId)} mono />
               <AdminDetailField label="Trip id" value={summary.tripId} mono />
             </AdminDetailGrid>
           </AdminDetailSection>

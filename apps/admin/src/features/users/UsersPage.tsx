@@ -668,7 +668,14 @@ function UserDetailPanel({
                 {
                   id: 'driving',
                   label: 'Driving',
-                  content: <UserDrivingTab userId={account.id} />,
+                  content: (
+                    <UserDrivingTab
+                      userId={account.id}
+                      name={detail?.name ?? null}
+                      vehicles={vehicles}
+                      entitlements={entitlements}
+                    />
+                  ),
                 },
               ]}
             />
