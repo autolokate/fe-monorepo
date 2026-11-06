@@ -10,12 +10,14 @@ import {
   AlPageHeader,
   AlPageHeaderAction,
   AlStack,
+  AlTabs,
   AlText,
 } from '@autolokate/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { UserDrivingTab } from '@/features/drivequant/UserDrivingTab';
 import { CustomerDrilldown } from '@/features/users/CustomerDrilldown';
 import { filterCareByVehicleId } from '@/features/users/filter-care-by-vehicle';
 import {
@@ -27,7 +29,6 @@ import {
   UserDriverInvitesPanel,
   VehicleDriverInvitesPanel,
 } from '@/features/users/DriverInvitesPanel';
-import { UserDriveQuantPanel } from '@/features/users/UserDriveQuantPanel';
 import { UserNotificationsPanel } from '@/features/users/UserNotificationsPanel';
 import { UserRolesPanel } from '@/features/users/UserRolesPanel';
 import { useUsersColumns } from '@/features/users/users-columns';
@@ -172,6 +173,19 @@ function UserDetailPanel({
 
   const [localeDraft, setLocaleDraft] = useState(account.locale);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const detailTab = searchParams.get('tab') === 'driving' ? 'driving' : 'account';
+  const setDetailTab = (next: string) => {
+    setSearchParams(
+      (current) => {
+        const params = new URLSearchParams(current);
+        if (next === 'driving') params.set('tab', 'driving');
+        else params.delete('tab');
+        return params;
+      },
+      { replace: true },
+    );
+  };
 
   const selectedVehicle: AdminUserVehicleDto | null = useMemo(
     () => vehicles.find((row) => row.vehicleId === selectedVehicleId) ?? null,
@@ -472,164 +486,200 @@ function UserDetailPanel({
             </div>
           </AdminPanel>
 
-          <UserPlanPanel
-            state={entitlements}
-            onRetry={refreshConsumer}
-            mainVehiclePlate={
-              vehicles.find((row) => row.vehicleId === entitlements.data?.mainVehicleId)?.plate ??
-              null
-            }
-          />
+          <div data-testid="user-detail-tabs">
+            <AlTabs
+              ariaLabel="Customer sections"
+              value={detailTab}
+              onValueChange={setDetailTab}
+              items={[
+                {
+                  id: 'account',
+                  label: 'Account',
+                  content: (
+                    <AlStack gap="md">
+                      <UserPlanPanel
+                        state={entitlements}
+                        onRetry={refreshConsumer}
+                        mainVehiclePlate={
+                          vehicles.find((row) => row.vehicleId === entitlements.data?.mainVehicleId)
+                            ?.plate ?? null
+                        }
+                      />
 
-          <UserStreakPanel state={streak} onRetry={refreshConsumer} />
+                      <UserStreakPanel state={streak} onRetry={refreshConsumer} />
 
-          {canWrite ? (
-            <UserRolesPanel userId={account.id} roles={roles} onChanged={refreshDetail} />
-          ) : null}
+                      {canWrite ? (
+                        <UserRolesPanel
+                          userId={account.id}
+                          roles={roles}
+                          onChanged={refreshDetail}
+                        />
+                      ) : null}
 
-          {canWrite ? (
-            <AdminPanel
-              title="Authorized edits"
-              subtitle="Locale and review flag only. Identity and billing use dedicated workflows."
-            >
-              <div className="admin-form-grid">
-                <label className="admin-field">
-                  Locale
-                  <input
-                    value={localeDraft}
-                    onChange={(event) => {
-                      setLocaleDraft(event.target.value);
-                    }}
-                    data-testid="users-edit-locale"
-                  />
-                  <span className="admin-field__hint">
-                    Phone and subscription changes use dedicated workflows.
-                  </span>
-                </label>
-              </div>
-              <div className="admin-user-account__actions">
-                <AlButton
-                  type="button"
-                  size="sm"
-                  data-testid="users-save-locale"
-                  loading={patchMutation.isPending}
-                  disabled={
-                    patchMutation.isPending || localeDraft === (detail?.locale ?? account.locale)
-                  }
-                  onClick={() => {
-                    void patchMutation.mutateAsync({ locale: localeDraft }).then(refresh);
-                  }}
-                >
-                  Save locale
-                </AlButton>
-                <AlButton
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  data-testid="users-flag-review"
-                  loading={patchMutation.isPending}
-                  disabled={patchMutation.isPending || (detail ?? account).fraudFlagged}
-                  onClick={() => {
-                    void patchMutation.mutateAsync({ fraudFlagged: true }).then(refresh);
-                  }}
-                >
-                  Flag for review
-                </AlButton>
-              </div>
-              <p className="admin-inline-alert" data-testid="users-delete-unavailable">
-                Permanent delete is unavailable here. Accounts close only through customer data
-                erasure so ownership and financial evidence stay intact. Use Flag for review for ops
-                follow-up.
-              </p>
-            </AdminPanel>
-          ) : null}
+                      {canWrite ? (
+                        <AdminPanel
+                          title="Authorized edits"
+                          subtitle="Locale and review flag only. Identity and billing use dedicated workflows."
+                        >
+                          <div className="admin-form-grid">
+                            <label className="admin-field">
+                              Locale
+                              <input
+                                value={localeDraft}
+                                onChange={(event) => {
+                                  setLocaleDraft(event.target.value);
+                                }}
+                                data-testid="users-edit-locale"
+                              />
+                              <span className="admin-field__hint">
+                                Phone and subscription changes use dedicated workflows.
+                              </span>
+                            </label>
+                          </div>
+                          <div className="admin-user-account__actions">
+                            <AlButton
+                              type="button"
+                              size="sm"
+                              data-testid="users-save-locale"
+                              loading={patchMutation.isPending}
+                              disabled={
+                                patchMutation.isPending ||
+                                localeDraft === (detail?.locale ?? account.locale)
+                              }
+                              onClick={() => {
+                                void patchMutation
+                                  .mutateAsync({ locale: localeDraft })
+                                  .then(refresh);
+                              }}
+                            >
+                              Save locale
+                            </AlButton>
+                            <AlButton
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              data-testid="users-flag-review"
+                              loading={patchMutation.isPending}
+                              disabled={patchMutation.isPending || (detail ?? account).fraudFlagged}
+                              onClick={() => {
+                                void patchMutation
+                                  .mutateAsync({ fraudFlagged: true })
+                                  .then(refresh);
+                              }}
+                            >
+                              Flag for review
+                            </AlButton>
+                          </div>
+                          <p className="admin-inline-alert" data-testid="users-delete-unavailable">
+                            Permanent delete is unavailable here. Accounts close only through
+                            customer data erasure so ownership and financial evidence stay intact.
+                            Use Flag for review for ops follow-up.
+                          </p>
+                        </AdminPanel>
+                      ) : null}
 
-          <AdminPanel
-            title="Emergency contacts"
-            subtitle="Account-level contacts. Vehicle care stays on each vehicle."
-            meta={
-              <AlText variant="caption" tone="muted" data-testid="users-contacts-ro">
-                {CARE_RO_CAPTION}
-              </AlText>
-            }
-          >
-            {emergencyContactsError ? (
-              <AlErrorState message={emergencyContactsError} onRetry={refresh} />
-            ) : (
-              <AlDataTable
-                {...ADMIN_LIST_TABLE_PROPS}
-                tableId="account-emergency-contacts"
-                columns={[
-                  { id: 'name', header: 'Name', accessorKey: 'name' },
-                  { id: 'relation', header: 'Relation', accessorKey: 'relation' },
-                  { id: 'phoneMasked', header: 'Phone', accessorKey: 'phoneMasked' },
-                ]}
-                data={emergencyContacts}
-                loading={emergencyContactsLoading}
-                emptyTitle="No emergency contacts"
-                emptyDescription="This account has no emergency contacts yet."
-                getRowId={(row) => row.id}
-              />
-            )}
-          </AdminPanel>
+                      <AdminPanel
+                        title="Emergency contacts"
+                        subtitle="Account-level contacts. Vehicle care stays on each vehicle."
+                        meta={
+                          <AlText variant="caption" tone="muted" data-testid="users-contacts-ro">
+                            {CARE_RO_CAPTION}
+                          </AlText>
+                        }
+                      >
+                        {emergencyContactsError ? (
+                          <AlErrorState message={emergencyContactsError} onRetry={refresh} />
+                        ) : (
+                          <AlDataTable
+                            {...ADMIN_LIST_TABLE_PROPS}
+                            tableId="account-emergency-contacts"
+                            columns={[
+                              { id: 'name', header: 'Name', accessorKey: 'name' },
+                              { id: 'relation', header: 'Relation', accessorKey: 'relation' },
+                              { id: 'phoneMasked', header: 'Phone', accessorKey: 'phoneMasked' },
+                            ]}
+                            data={emergencyContacts}
+                            loading={emergencyContactsLoading}
+                            emptyTitle="No emergency contacts"
+                            emptyDescription="This account has no emergency contacts yet."
+                            getRowId={(row) => row.id}
+                          />
+                        )}
+                      </AdminPanel>
 
-          <AdminPanel
-            title="Vehicles"
-            subtitle="Vehicles on this account. Open one to view expenses, maintenance, and documents."
-          >
-            {vehiclesError ? (
-              <AlErrorState message={vehiclesError} onRetry={refresh} />
-            ) : (
-              <AlDataTable
-                {...ADMIN_LIST_TABLE_PROPS}
-                tableId="account-vehicles"
-                columns={[
-                  { id: 'plate', header: 'Plate', accessorKey: 'plate' },
-                  { id: 'make', header: 'Make', accessorKey: 'make' },
-                  { id: 'model', header: 'Model', accessorKey: 'model' },
-                  {
-                    id: 'protection',
-                    header: 'Protection',
-                    accessorFn: (row) => protectionLabel(row.protection),
-                  },
-                  {
-                    id: 'ownershipVerifiedAt',
-                    header: 'Ownership verified',
-                    accessorFn: (row) => row.ownershipVerifiedAt ?? '',
-                    cell: ({ row }) =>
-                      row.original.ownershipVerifiedAt
-                        ? row.original.ownershipVerifiedAt.slice(0, 10)
-                        : '—',
-                  },
-                ]}
-                data={vehicles}
-                loading={vehiclesLoading}
-                emptyTitle="No vehicles"
-                emptyDescription="This account has no vehicles yet."
-                getRowId={(row) => row.vehicleId}
-                onRowClick={(row) => {
-                  setSelectedVehicleId(row.vehicleId);
-                }}
-              />
-            )}
-          </AdminPanel>
+                      <AdminPanel
+                        title="Vehicles"
+                        subtitle="Vehicles on this account. Open one to view expenses, maintenance, and documents."
+                      >
+                        {vehiclesError ? (
+                          <AlErrorState message={vehiclesError} onRetry={refresh} />
+                        ) : (
+                          <AlDataTable
+                            {...ADMIN_LIST_TABLE_PROPS}
+                            tableId="account-vehicles"
+                            columns={[
+                              { id: 'plate', header: 'Plate', accessorKey: 'plate' },
+                              { id: 'make', header: 'Make', accessorKey: 'make' },
+                              { id: 'model', header: 'Model', accessorKey: 'model' },
+                              {
+                                id: 'protection',
+                                header: 'Protection',
+                                accessorFn: (row) => protectionLabel(row.protection),
+                              },
+                              {
+                                id: 'ownershipVerifiedAt',
+                                header: 'Ownership verified',
+                                accessorFn: (row) => row.ownershipVerifiedAt ?? '',
+                                cell: ({ row }) =>
+                                  row.original.ownershipVerifiedAt
+                                    ? row.original.ownershipVerifiedAt.slice(0, 10)
+                                    : '—',
+                              },
+                            ]}
+                            data={vehicles}
+                            loading={vehiclesLoading}
+                            emptyTitle="No vehicles"
+                            emptyDescription="This account has no vehicles yet."
+                            getRowId={(row) => row.vehicleId}
+                            onRowClick={(row) => {
+                              setSelectedVehicleId(row.vehicleId);
+                            }}
+                          />
+                        )}
+                      </AdminPanel>
 
-          <UserVehicleMembershipsPanel
-            state={entitlements}
-            vehicles={vehicles}
-            onRetry={refreshConsumer}
-            onOpenVehicle={setSelectedVehicleId}
-            accountId={account.id}
-            onOpenAccount={onOpenAccount}
-          />
+                      <UserVehicleMembershipsPanel
+                        state={entitlements}
+                        vehicles={vehicles}
+                        onRetry={refreshConsumer}
+                        onOpenVehicle={setSelectedVehicleId}
+                        accountId={account.id}
+                        onOpenAccount={onOpenAccount}
+                      />
 
-          <UserDriverInvitesPanel userId={account.id} />
+                      <UserDriverInvitesPanel userId={account.id} />
 
-          <UserNotificationsPanel userId={account.id} />
+                      <UserNotificationsPanel userId={account.id} />
 
-          <UserDriveQuantPanel userId={account.id} />
-
-          <CustomerDrilldown accountId={account.id} />
+                      <CustomerDrilldown accountId={account.id} />
+                    </AlStack>
+                  ),
+                },
+                {
+                  id: 'driving',
+                  label: 'Driving',
+                  content: (
+                    <UserDrivingTab
+                      userId={account.id}
+                      name={detail?.name ?? null}
+                      vehicles={vehicles}
+                      entitlements={entitlements}
+                    />
+                  ),
+                },
+              ]}
+            />
+          </div>
         </>
       )}
     </AlStack>

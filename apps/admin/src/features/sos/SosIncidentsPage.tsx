@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { adminSosIncidentPath } from '@/app/routes/admin-paths';
+import { SafetyAlertsPanel } from '@/features/drivequant/SafetyAlertsPanel';
 import { sosErrorView } from '@/features/sos/sos-errors';
 import { SOS_POLL_MS } from '@/features/sos/sos-list-sync';
 import {
@@ -335,6 +336,8 @@ export function SosIncidentsPage() {
             ) : null}
           </>
         )}
+
+        <SafetyAlertsPanel />
       </AlStack>
     </RequirePermission>
   );

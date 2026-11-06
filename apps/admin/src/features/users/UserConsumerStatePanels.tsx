@@ -52,7 +52,7 @@ function rcStatusTone(row: RcFields): 'active' | 'draft' | 'none' | 'neutral' {
 }
 
 const FEATURE_ROWS: { key: keyof AdminUserEntitlementsDto['features']; label: string }[] = [
-  { key: 'driveQuant', label: 'DriveQuant (trips, driver score, crash detection)' },
+  { key: 'driveQuant', label: 'Driving Activity (trips, driver score, crash detection)' },
   { key: 'leaderboard', label: 'Leaderboard' },
   { key: 'academy', label: 'Academy videos' },
   { key: 'ai', label: 'Autolokate AI' },
@@ -283,7 +283,7 @@ export function UserVehicleMembershipsPanel({
   return (
     <AdminPanel
       title={title}
-      subtitle="This customer's role on each vehicle: owner (RC approved), provisional owner (paid, RC not yet approved) or driver. Vehicle premium (DriveQuant binding, protection badge) applies to the main vehicle the plan was bought with."
+      subtitle="This customer's role on each vehicle: owner (RC approved), provisional owner (paid, RC not yet approved) or driver. Vehicle premium (Driving Activity vehicle link, protection badge) applies to the main vehicle the plan was bought with."
     >
       {state.error ? (
         <AlErrorState message={state.error} onRetry={onRetry} />

@@ -2,6 +2,16 @@ import type { AdminUserTripDto } from '@autolokate/api-client';
 import { AlButton, AlDataTable, AlErrorState, type ColumnDef } from '@autolokate/ui';
 import { useMemo, useState } from 'react';
 
+import { DqChip } from '@/features/drivequant/dq-ui';
+import {
+  formatIst,
+  formatKm,
+  formatMinutes,
+  formatScore,
+  tripSourceStatus,
+  vehicleLabel,
+  type VehicleIdentity,
+} from '@/features/drivequant/driving-status';
 import { useUserDriveQuant } from '@/hooks/users/useAdminUserV4';
 import { AdminDetailField, AdminDetailGrid } from '@/platform/components/AdminDetailField';
 import { AdminLoadMore } from '@/platform/components/AdminLoadMore';
@@ -9,31 +19,42 @@ import { AdminNotDeployedState } from '@/platform/components/AdminNotDeployedSta
 import { ADMIN_LIST_TABLE_PROPS } from '@/platform/components/admin-list-table-props';
 import {
   AdminPanel,
-  AdminStatusChip,
   humanizeAdminLabel,
   shortAdminId,
 } from '@/platform/components/AdminWowSurface';
-import { formatAdminDateTime } from '@/platform/utils/format-admin-date';
 
 import './users-v4.css';
 
-function num(value: number | null | undefined, digits = 1): string {
-  return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(digits) : '—';
-}
-
-function minutes(value: number | null | undefined): string {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return '—';
-  const total = Math.round(value);
-  return total >= 60
-    ? `${String(Math.floor(total / 60))} h ${String(total % 60)} min`
-    : `${String(total)} min`;
+/** Driver score `source`: verified trips, the app's own trip events, or nothing yet. */
+function driverScoreSource(source: string): string {
+  switch (source) {
+    case 'DRIVEQUANT':
+      return 'Verified trips';
+    case 'ACCOUNT_TRIPS':
+      return 'App trip events (no score)';
+    case 'NONE':
+      return 'No trips yet';
+    default:
+      return humanizeAdminLabel(source);
+  }
 }
 
 /**
- * DriveQuant trips (push / pull / client) and the driver score the app shows — for score disputes and
- * crash-alert questions. Both reads write a `DRIVER_TRIP_ACCESS` audit row, so they load on request.
+ * Trips (server-verified or phone-reported) and the driver score the app shows — for score disputes
+ * and crash-event questions. Both reads write a `DRIVER_TRIP_ACCESS` audit row, so they load on
+ * request. All times IST.
  */
-export function UserDriveQuantPanel({ userId }: { userId: string }) {
+export function UserDriveQuantPanel({
+  userId,
+  vehicles = [],
+  onOpenTrip,
+}: {
+  userId: string;
+  /** The account's vehicles, to show plates instead of ids. */
+  vehicles?: readonly VehicleIdentity[];
+  /** Open the trip drawer (audited detail read). */
+  onOpenTrip?: (trip: AdminUserTripDto) => void;
+}) {
   const [optedIn, setOptedIn] = useState(false);
   const [fromDraft, setFromDraft] = useState('');
   const [toDraft, setToDraft] = useState('');
@@ -44,75 +65,84 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
     () => [
       {
         id: 'startedAt',
-        header: 'Trip',
+        header: 'Trip (IST)',
         accessorFn: (row) => row.startedAt ?? row.receivedAt,
         cell: ({ row }) => (
           <span className="admin-v4-stack">
-            <span className="admin-v4-stack__primary">
-              {formatAdminDateTime(row.original.startedAt)}
-            </span>
-            <span className="admin-v4-stack__secondary">
-              to {formatAdminDateTime(row.original.endedAt)}
-            </span>
+            <span className="admin-v4-stack__primary">{formatIst(row.original.startedAt)}</span>
+            <span className="admin-v4-stack__secondary">to {formatIst(row.original.endedAt)}</span>
           </span>
         ),
+      },
+      {
+        id: 'vehicle',
+        header: 'Vehicle',
+        accessorFn: (row) => vehicleLabel(row.vehicleId, vehicles).primary,
+        cell: ({ row }) => {
+          const label = vehicleLabel(row.original.vehicleId, vehicles);
+          return (
+            <span className="admin-v4-stack">
+              <span className={label.known ? 'admin-v4-stack__primary' : 'admin-mono'}>
+                {label.primary}
+              </span>
+              {label.secondary ? (
+                <span className="admin-v4-stack__secondary">{label.secondary}</span>
+              ) : null}
+            </span>
+          );
+        },
       },
       {
         id: 'distanceKm',
         header: 'Distance',
         accessorFn: (row) => row.distanceKm ?? -1,
-        cell: ({ row }) =>
-          row.original.distanceKm === null ? '—' : `${num(row.original.distanceKm)} km`,
+        cell: ({ row }) => formatKm(row.original.distanceKm),
       },
       {
         id: 'duration',
         header: 'Duration (driving)',
         accessorFn: (row) => row.durationMinutes ?? -1,
         cell: ({ row }) =>
-          `${minutes(row.original.durationMinutes)} (${minutes(row.original.drivingDurationMinutes)})`,
+          `${formatMinutes(row.original.durationMinutes)} (${formatMinutes(row.original.drivingDurationMinutes)})`,
       },
-      { id: 'safety', header: 'Safety', accessorFn: (row) => num(row.scores.safety) },
-      { id: 'eco', header: 'Eco', accessorFn: (row) => num(row.scores.eco) },
+      { id: 'safety', header: 'Safety', accessorFn: (row) => formatScore(row.scores.safety) },
+      { id: 'eco', header: 'Eco', accessorFn: (row) => formatScore(row.scores.eco) },
       {
         id: 'distraction',
         header: 'Distraction',
-        accessorFn: (row) => num(row.scores.distraction),
+        accessorFn: (row) => formatScore(row.scores.distraction),
       },
-      { id: 'speeding', header: 'Speeding', accessorFn: (row) => num(row.scores.speeding) },
       {
-        id: 'verified',
-        header: 'Verified',
-        accessorFn: (row) => (row.verified ? 'Yes' : 'No'),
-        cell: ({ row }) => (
-          <AdminStatusChip
-            label={row.original.verified ? 'Verified' : 'Unverified'}
-            tone={row.original.verified ? 'active' : 'none'}
-          />
-        ),
+        id: 'speeding',
+        header: 'Speeding',
+        accessorFn: (row) => formatScore(row.scores.speeding),
       },
       {
         id: 'source',
         header: 'Source',
-        accessorFn: (row) => row.source,
-        cell: ({ row }) => (
-          <span className="admin-v4-stack">
-            <span>{humanizeAdminLabel(row.original.source)}</span>
-            <span className="admin-v4-stack__secondary admin-mono" title={row.original.tripId}>
-              {shortAdminId(row.original.tripId, 12)}
+        accessorFn: (row) => tripSourceStatus(row.source, row.verified).label,
+        cell: ({ row }) => {
+          const status = tripSourceStatus(row.original.source, row.original.verified);
+          return (
+            <span className="admin-v4-stack">
+              <DqChip label={status.label} tone={status.tone} />
+              <span className="admin-v4-stack__secondary admin-mono" title={row.original.tripId}>
+                {shortAdminId(row.original.tripId, 12)}
+              </span>
             </span>
-          </span>
-        ),
+          );
+        },
       },
     ],
-    [],
+    [vehicles],
   );
 
   const dq = score.data?.driveQuant;
 
   return (
     <AdminPanel
-      title="DriveQuant trips & score"
-      subtitle="Trips received from DriveQuant and the driver score this account sees."
+      title="Trips & driver score"
+      subtitle="Recorded trips and the driver score this account sees in the app. Scores are 0–10."
     >
       <p className="admin-audit-note" data-testid="user-trips-audit-note">
         <span>
@@ -134,7 +164,7 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
         </div>
       ) : trips.notDeployed ? (
         <AdminNotDeployedState
-          title="DriveQuant trips"
+          title="Trips"
           endpoint="GET /admin/v1/users/{userId}/trips"
           description="Trips can't be read on this server yet."
         />
@@ -145,27 +175,27 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
           ) : score.data ? (
             <div data-testid="user-driver-score">
               <AdminDetailGrid>
-                <AdminDetailField label="Driver score" value={num(score.data.score)} />
+                <AdminDetailField label="Driver score" value={formatScore(score.data.score)} />
                 <AdminDetailField label="Trips counted" value={String(score.data.tripCount)} />
-                <AdminDetailField label="Source" value={humanizeAdminLabel(score.data.source)} />
+                <AdminDetailField
+                  label="Score basis"
+                  value={driverScoreSource(score.data.source)}
+                />
                 {dq ? (
                   <>
                     <AdminDetailField
                       label={`Window (${String(dq.windowDays)} days)`}
-                      value={`${String(dq.windowTripCount)} trips · ${num(dq.windowDistanceKm)} km`}
+                      value={`${String(dq.windowTripCount)} trips · ${formatKm(dq.windowDistanceKm)}`}
                     />
                     <AdminDetailField
                       label={`Safety / eco (of ${String(dq.scale)})`}
-                      value={`${num(dq.safety)} / ${num(dq.eco)}`}
+                      value={`${formatScore(dq.safety)} / ${formatScore(dq.eco)}`}
                     />
                     <AdminDetailField
                       label="Distraction / speeding"
-                      value={`${num(dq.distraction)} / ${num(dq.speeding)}`}
+                      value={`${formatScore(dq.distraction)} / ${formatScore(dq.speeding)}`}
                     />
-                    <AdminDetailField
-                      label="Last trip"
-                      value={formatAdminDateTime(dq.lastTripAt)}
-                    />
+                    <AdminDetailField label="Last trip" value={formatIst(dq.lastTripAt)} />
                   </>
                 ) : null}
               </AdminDetailGrid>
@@ -183,7 +213,7 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
             }}
           >
             <label className="admin-field">
-              From
+              From (IST)
               <input
                 type="date"
                 data-testid="user-trips-from"
@@ -194,7 +224,7 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
               />
             </label>
             <label className="admin-field">
-              To
+              To (IST, inclusive)
               <input
                 type="date"
                 data-testid="user-trips-to"
@@ -221,9 +251,16 @@ export function UserDriveQuantPanel({ userId }: { userId: string }) {
                 loading={trips.isLoading}
                 enableGlobalSearch={false}
                 emptyTitle="No trips"
-                emptyDescription="No DriveQuant trips for this account in this range."
+                emptyDescription="No trips were recorded for this account in this date range."
                 getRowId={(row) => row.tripId}
+                {...(onOpenTrip ? { onRowClick: onOpenTrip } : {})}
               />
+              {onOpenTrip && trips.items.length > 0 ? (
+                <p className="admin-muted dq-footnote">
+                  Open a trip for its events and detailed metrics (audited read). Transport mode and
+                  driver / passenger are shown in the trip.
+                </p>
+              ) : null}
               <AdminLoadMore
                 hasMore={trips.hasMore}
                 loading={trips.isFetchingNextPage}

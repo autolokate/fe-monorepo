@@ -5,6 +5,14 @@ import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { adminPaths } from '@/app/routes/admin-paths';
+import { DqChip } from '@/features/drivequant/dq-ui';
+import {
+  crashOutcomeStatus,
+  crashStateStatus,
+  formatIst,
+  formatProbability,
+} from '@/features/drivequant/driving-status';
+import { SosCrashTelemetryPanel } from '@/features/drivequant/SosCrashTelemetryPanel';
 import { SosActionBar } from '@/features/sos/SosActionBar';
 import { SosLocationMap } from '@/features/sos/SosLocationMap';
 import { sosErrorView } from '@/features/sos/sos-errors';
@@ -229,22 +237,26 @@ function VehiclesPanel({ detail }: { detail: AdminSosDetail }) {
 function CrashPanel({ detail }: { detail: AdminSosDetail }) {
   if (detail.crash.length === 0) return null;
   return (
-    <AdminPanel title="Crash telemetry" subtitle="DriveQuant crash detection.">
+    <AdminPanel title="Crash events" subtitle="Possible crashes linked to this incident.">
       <ul className="sos-list" data-testid="sos-crash">
-        {detail.crash.map((crash) => (
-          <li key={crash.crashId} className="sos-list__item">
-            <div className="sos-list__head">
-              <strong>{humanizeAdminLabel(crash.state)}</strong>
-              <span className="sos-chip-muted">{humanizeAdminLabel(crash.outcome)}</span>
-            </div>
-            <p className="sos-list__body">
-              {typeof crash.probability === 'number'
-                ? `Crash probability ${String(Math.round(crash.probability <= 1 ? crash.probability * 100 : crash.probability))}%`
-                : 'Probability not reported'}
-              {crash.crashAt ? ` · ${formatAdminDateTime(crash.crashAt)}` : ''}
-            </p>
-          </li>
-        ))}
+        {detail.crash.map((crash) => {
+          const state = crashStateStatus(crash.state);
+          const outcome = crashOutcomeStatus(crash.outcome, crash.state);
+          return (
+            <li key={crash.crashId} className="sos-list__item">
+              <div className="sos-list__head">
+                <DqChip label={state.label} tone={state.tone} />
+                <span className="sos-chip-muted">{outcome.label}</span>
+              </div>
+              <p className="sos-list__body">
+                {typeof crash.probability === 'number'
+                  ? `Crash probability ${formatProbability(crash.probability)}`
+                  : 'Probability not reported'}
+                {crash.crashAt ? ` · ${formatIst(crash.crashAt)}` : ''}
+              </p>
+            </li>
+          );
+        })}
       </ul>
     </AdminPanel>
   );
@@ -364,7 +376,17 @@ export function SosIncidentDetailPage() {
                 <CallsPanel detail={detail} />
                 <ContactsPanel detail={detail} />
                 <DispatchPanel detail={detail} />
-                <CrashPanel detail={detail} />
+                {detail.trigger === 'CRASH' ? (
+                  <SosCrashTelemetryPanel
+                    incidentId={detail.incidentId}
+                    accountId={detail.subject.accountId}
+                    subjectName={detail.subject.name}
+                    vehicles={detail.vehicles}
+                    summary={detail.crash}
+                  />
+                ) : (
+                  <CrashPanel detail={detail} />
+                )}
               </div>
               <div className="sos-detail-grid__col">
                 <AdminPanel
