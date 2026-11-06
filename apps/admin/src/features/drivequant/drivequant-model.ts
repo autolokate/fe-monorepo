@@ -1,9 +1,10 @@
 import type { AdminDqTripEvent } from '@autolokate/api-client';
 
+import { crashStateStatus, formatProbability } from '@/features/drivequant/driving-status';
 import { humanizeAdminLabel } from '@/platform/components/AdminWowSurface';
 
 /**
- * Pure helpers for the DriveQuant telemetry views (trip metrics, events, crash windows). Field names
+ * Pure helpers for the Driving Activity telemetry views (trip metrics, events, crash windows). Field names
  * and units follow DRIVEQUANT_DATA_MAPPING.md / the DriveQuant push docs — a key we don't know is
  * still shown, raw, never dropped. Nothing here logs or persists data.
  */
@@ -46,10 +47,9 @@ export function formatDqOffset(seconds: number): string {
   return h > 0 ? `+${String(h)}:${pad(m)}:${pad(s)}` : `+${pad(m)}:${pad(s)}`;
 }
 
-/** Crash probability: the API sends 0–100; tolerate a 0–1 fraction. */
+/** Crash probability: the API sends an integer 0–100 (see `formatProbability`). */
 export function formatDqProbability(value: number | null | undefined): string {
-  if (!isFiniteNumber(value)) return '—';
-  return `${String(Math.round(value <= 1 ? value * 100 : value))}%`;
+  return formatProbability(value);
 }
 
 /* ------------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ const SECTION_TITLES: Record<string, string> = {
   itineraryStatistics: 'Itinerary',
   occupantInfo: 'Occupant',
   weather: 'Weather',
-  vehicle: 'DriveQuant vehicle model',
+  vehicle: 'Vehicle model (estimated)',
   smartphoneData: 'Phone & SDK',
   beacon: 'Beacon',
 };
@@ -632,16 +632,8 @@ export function countDqEventsByKind(events: readonly AdminDqTripEvent[]): Record
  * ---------------------------------------------------------------------------------------------- */
 
 export function dqCrashStateMeta(state: string): { label: string; tone: DqTone } {
-  switch (state) {
-    case 'CONFIRMED':
-      return { label: 'Confirmed crash', tone: 'danger' };
-    case 'UNCONFIRMED':
-      return { label: 'Unconfirmed', tone: 'warning' };
-    case 'FAILED_TO_PREDICT':
-      return { label: 'Prediction failed', tone: 'neutral' };
-    default:
-      return { label: humanizeAdminLabel(state), tone: 'neutral' };
-  }
+  const { label, tone } = crashStateStatus(state);
+  return { label, tone };
 }
 
 export function dqRiskTone(level: unknown): DqTone {

@@ -182,9 +182,10 @@ describe('DriveQuant crash windows (doc crash sample)', () => {
 
   it('state + probability formatting', () => {
     expect(dqCrashStateMeta('CONFIRMED').tone).toBe('danger');
-    expect(dqCrashStateMeta('FAILED_TO_PREDICT').label).toBe('Prediction failed');
+    expect(dqCrashStateMeta('FAILED_TO_PREDICT').label).toBe('Needs review');
     expect(formatDqProbability(78)).toBe('78%');
-    expect(formatDqProbability(0.5)).toBe('50%');
+    // The server sends integers 0–100: 1 means 1 %, never 100 %.
+    expect(formatDqProbability(1)).toBe('1%');
     expect(formatDqProbability(null)).toBe('—');
   });
 });

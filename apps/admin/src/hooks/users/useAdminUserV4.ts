@@ -2,6 +2,7 @@ import type { AdminNotificationAudience, AdminV4Page } from '@autolokate/api-cli
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { istDayStartIso } from '@/features/drivequant/driving-status';
 import { isAdminListNotDeployed, mapAdminApiError } from '@/platform/errors/admin-api-errors';
 import {
   fetchUserDevices,
@@ -130,8 +131,9 @@ export function useUserDriveQuant(
       fetchUserTrips(
         userId,
         {
-          ...(range.from ? { from: new Date(`${range.from}T00:00:00`).toISOString() } : {}),
-          ...(range.to ? { to: new Date(`${range.to}T23:59:59`).toISOString() } : {}),
+          ...(range.from ? { from: istDayStartIso(range.from) } : {}),
+          // `to` is exclusive on the server: the day after the picked (inclusive) IST day.
+          ...(range.to ? { to: istDayStartIso(range.to, 1) } : {}),
         },
         cursor,
         signal,
