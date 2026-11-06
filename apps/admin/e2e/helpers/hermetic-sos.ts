@@ -218,6 +218,12 @@ export async function installHermeticSosRoutes(
     route.fulfill({ status: 200, contentType: 'text/html', body: '<html><body>map</body></html>' }),
   );
 
+  // Safety alerts (crash review feed) on the console — none by default.
+  await page.route(
+    (url) => url.pathname.startsWith('/admin/v1/drivequant/ops-alerts'),
+    (route) => json(route, 200, { data: [], meta: META }),
+  );
+
   await page.route(/\/admin\/v1\/sos-incidents/, async (route) => {
     const req = route.request();
     const url = new URL(req.url());

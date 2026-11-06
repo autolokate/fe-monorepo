@@ -1,6 +1,12 @@
 import type { Page, Route } from '@playwright/test';
 
-import { DQ_CRASH_TELEMETRY, DQ_TRIP_DETAIL, DQ_USER_CRASH } from './drivequant-fixtures';
+import {
+  DQ_CRASH_TELEMETRY,
+  DQ_SAFETY_ALERTS,
+  DQ_TRIP_DETAIL,
+  DQ_USER_CRASH,
+  DQ_USER_CRASH_REVIEW,
+} from './drivequant-fixtures';
 import { HERMETIC_VEHICLE_ID } from './hermetic';
 import { V4_TRIP } from './hermetic-users-v4';
 
@@ -12,6 +18,8 @@ export type DriveQuantCapture = {
   tripDetail: string[];
   crashes: string[];
   sosCrashTelemetry: string[];
+  alerts: string[];
+  acknowledged: string[];
 };
 
 async function json(route: Route, status: number, body: unknown): Promise<void> {
@@ -48,10 +56,17 @@ export async function installDriveQuantRoutes(
     trip?: DriveQuantMode;
     crashes?: DriveQuantMode;
     sos?: DriveQuantMode;
+    alerts?: DriveQuantMode;
     incidentId?: string;
   } = {},
 ): Promise<DriveQuantCapture> {
-  const capture: DriveQuantCapture = { tripDetail: [], crashes: [], sosCrashTelemetry: [] };
+  const capture: DriveQuantCapture = {
+    tripDetail: [],
+    crashes: [],
+    sosCrashTelemetry: [],
+    alerts: [],
+    acknowledged: [],
+  };
 
   await page.route(
     (url) => /^\/admin\/v1\/users\/[^/]+\/trips\/[^/]+$/.test(url.pathname),
@@ -98,6 +113,7 @@ export async function installDriveQuantRoutes(
                 incidentId: options.incidentId ?? null,
                 vehicleId: HERMETIC_VEHICLE_ID,
               },
+              DQ_USER_CRASH_REVIEW,
             ];
       await json(route, 200, { data: rows, meta: META });
     },
@@ -113,6 +129,33 @@ export async function installDriveQuantRoutes(
         data: options.sos === 'empty' ? [] : [DQ_CRASH_TELEMETRY],
         meta: META,
       });
+    },
+  );
+
+  const acked = new Set<string>();
+  await page.route(
+    (url) => url.pathname.startsWith('/admin/v1/drivequant/ops-alerts'),
+    async (route) => {
+      const req = route.request();
+      const url = new URL(req.url());
+      const ack = /^\/admin\/v1\/drivequant\/ops-alerts\/([^/]+)\/acknowledge$/.exec(url.pathname);
+      if (req.method() === 'POST' && ack) {
+        const id = decodeURIComponent(ack[1] ?? '');
+        capture.acknowledged.push(id);
+        acked.add(id);
+        await json(route, 200, { data: { acknowledged: true }, meta: META });
+        return;
+      }
+      capture.alerts.push(url.search);
+      if (await fail(route, options.alerts ?? 'ok', url.pathname)) return;
+      const all = url.searchParams.get('includeAcknowledged') === 'true';
+      const rows =
+        options.alerts === 'empty'
+          ? []
+          : DQ_SAFETY_ALERTS.map((row) =>
+              acked.has(row.id) ? { ...row, acknowledgedAt: '2024-12-18T17:10:00.000Z' } : row,
+            ).filter((row) => all || row.acknowledgedAt === null);
+      await json(route, 200, { data: rows, meta: META });
     },
   );
 
